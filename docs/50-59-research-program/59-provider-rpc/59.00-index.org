@@ -46,10 +46,12 @@ It does not introduce another permission or transport owner.
 - [[file:59.12-final-invocation-cancellation.org][Final invocation cancellation after deciding-lock waits]]
 - [[file:59.13-original-release-capability.org][Original plan, encoding and session bound response release]]
 - [[file:59.14-go-fuzz-coordinator.org][Go fuzz parent-deadline repair and native failure integrity]]
+- [[file:59.15-committed-cold-assurance.org][Committed source, cold dependency preparation and independent CI]]
 
 * Development commands
 
 #+begin_example
+ go run ./go/cmd/weaver-dev bootstrap
  go run ./go/cmd/weaver-dev generate-rpc
  go run ./go/cmd/weaver-dev check
  go run ./go/cmd/weaver-dev bench
@@ -60,3 +62,7 @@ scripts are not the verification or interprocess request architecture. All Rust
 packages inherit dependencies from the Cargo workspace; Criterion and ASP Rust
 remain development-only. Every current Rust package declares a =gateway=
 benchmark target.
+
+Use the declared Nix development environment for these commands. In CI, the
+=ci= profile retains the same language SDKs and validation tools, and each mode
+uses =-clean-source= to admit only committed input bytes.

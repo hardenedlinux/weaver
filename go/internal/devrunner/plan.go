@@ -2,8 +2,15 @@ package devrunner
 
 import "fmt"
 
+const proofToolchain = "leanprover/lean4:v4.34.1"
+
 func Plan(goBinary string) []Stage {
 	return []Stage{
+		{"rust-environment", "rustc", []string{"-vV"}},
+		{"go-environment", goBinary, []string{"version"}},
+		{"quint-environment", "quint", []string{"--version"}},
+		{"proof-environment", "elan", []string{"run", proofToolchain, "lean", "--version"}},
+		{"workflow-contract", "actionlint", []string{".github/workflows/assurance.yml"}},
 		{"rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
 		{"rust-default-profile", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
 		{"rust-tests", "cargo", []string{"test", "--workspace", "--all-features", "--locked", "--offline"}},
@@ -16,16 +23,16 @@ func Plan(goBinary string) []Stage {
 		{"quint-stream-safety", "quint", []string{"run", "dev/proofs/quint/StreamingExecution.qnt", "--main", "StreamingExecution", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"quint-lifecycle-tests", "quint", []string{"test", "dev/proofs/quint/RuntimeLifecycle.qnt", "--main", "RuntimeLifecycle", "--seed", "293"}},
 		{"quint-lifecycle-safety", "quint", []string{"run", "dev/proofs/quint/RuntimeLifecycle.qnt", "--main", "RuntimeLifecycle", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
-		{"lean-stream", "elan", []string{"run", "leanprover/lean4:v4.34.1", "lean", "dev/proofs/lean/StreamingExecution.lean"}},
-		{"cedar-proof-bridge", "elan", []string{"run", "leanprover/lean4:v4.34.1", "lake", "-d", "dev/proofs/cedar", "build", "WeaverPolicyBridge"}},
+		{"lean-stream", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/StreamingExecution.lean"}},
+		{"cedar-proof-bridge", "elan", []string{"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "build", "WeaverPolicyBridge"}},
 		{"quint-typecheck", "quint", []string{"typecheck", "dev/proofs/quint/RuntimeAdmission.qnt"}},
 		{"quint-tests", "quint", []string{"test", "dev/proofs/quint/RuntimeAdmission.qnt", "--main", "RuntimeAdmission", "--seed", "293"}},
 		{"quint-safety", "quint", []string{"run", "dev/proofs/quint/RuntimeAdmission.qnt", "--main", "RuntimeAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "50", "--seed", "293"}},
-		{"lean", "elan", []string{"run", "leanprover/lean4:v4.34.1", "lean", "dev/proofs/lean/RuntimeAdmission.lean"}},
+		{"lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/RuntimeAdmission.lean"}},
 		{"provider-routing-pbt", goBinary, []string{"test", "./go/internal/routing", "-run", "^$", "-fuzz", "FuzzProviderPlanCannotExpandAuthority", "-fuzztime=3s", "-parallel=1"}},
 		{"provider-quint-tests", "quint", []string{"test", "dev/proofs/quint/ProviderRpc.qnt", "--main", "ProviderRpc", "--seed", "293"}},
 		{"provider-quint-safety", "quint", []string{"run", "dev/proofs/quint/ProviderRpc.qnt", "--main", "ProviderRpc", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
-		{"provider-lean", "elan", []string{"run", "leanprover/lean4:v4.34.1", "lean", "dev/proofs/lean/ProviderRpc.lean"}},
+		{"provider-lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/ProviderRpc.lean"}},
 		{"dispatch-cancellation-tests", "quint", []string{"test", "dev/proofs/quint/DispatchCancellation.qnt", "--main", "DispatchCancellation", "--seed", "293"}},
 		{"dispatch-cancellation-safety", "quint", []string{"run", "dev/proofs/quint/DispatchCancellation.qnt", "--main", "DispatchCancellation", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"release-binding-tests", "quint", []string{"test", "dev/proofs/quint/ReleaseBinding.qnt", "--main", "ReleaseBinding", "--seed", "293"}},
@@ -38,7 +45,7 @@ func Plan(goBinary string) []Stage {
 		{"source-ingress-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceIngress.qnt", "--main", "SourceIngress", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"publication-quint-tests", "quint", []string{"test", "dev/proofs/quint/PublicationRecovery.qnt", "--main", "PublicationRecovery", "--seed", "293"}},
 		{"publication-quint-safety", "quint", []string{"run", "dev/proofs/quint/PublicationRecovery.qnt", "--main", "PublicationRecovery", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
-		{"publication-lean", "elan", []string{"run", "leanprover/lean4:v4.34.1", "lean", "dev/proofs/lean/PublicationRecovery.lean"}},
+		{"publication-lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/PublicationRecovery.lean"}},
 		{"source-owner-quint-tests", "quint", []string{"test", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--seed", "293"}},
 		{"source-owner-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"go-native-integration", goBinary, []string{"test", "-count=1", "-race", "-tags=integration", "./go/dev", "-run", "TestProvider", "-v"}},
@@ -46,6 +53,13 @@ func Plan(goBinary string) []Stage {
 }
 func Stages(mode, goBinary string) ([]Stage, error) {
 	switch mode {
+	case "bootstrap":
+		return []Stage{
+			{"rust-dependencies", "cargo", []string{"fetch", "--locked"}},
+			{"go-dependencies", goBinary, []string{"-C", "go", "mod", "download"}},
+			{"proof-toolchain", "elan", []string{"run", "--install", proofToolchain, "lean", "--version"}},
+			{"proof-dependencies", "elan", []string{"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "build", "WeaverPolicyBridge"}},
+		}, nil
 	case "check":
 		return Plan(goBinary), nil
 	case "bench":

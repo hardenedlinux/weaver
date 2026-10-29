@@ -36,6 +36,10 @@ func TestStagePreservesFailureAndLiteralArguments(t *testing.T) {
 		literal := "$(touch should-not-exist); not a shell"
 		stage := Stage{Name: mode, Binary: binary, Args: []string{"-test.run=^TestToolProcess$", "--", literal}}
 		result := runStage(context.Background(), directory, directory, Environment(map[string]string{"WEAVER_TEST_TOOL": mode}), stage)
+		resolved, err := filepath.EvalSymlinks(binary)
+		if err != nil || result.ResolvedBinary != resolved {
+			t.Fatalf("executable identity missing: %v: %+v", err, result)
+		}
 		expected := 0
 		status := "PASS"
 		if mode == "failure" {

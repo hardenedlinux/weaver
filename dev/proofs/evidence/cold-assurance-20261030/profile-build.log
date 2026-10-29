@@ -1,0 +1,29 @@
+• Validating lock
+✓ Validating lock in 996µs
+• Configuring cachix
+✓ Configuring cachix in 5.58ms
+• Building
+• Evaluating Nix
+✓ Evaluating Nix in 893ms
+• Evaluating devenv.config.shell
+• Downloading quint-cli-0.30.0
+• Downloading https://cache.nixos.org/nar/1paqcblpjm9cspdvmqqwmlrw59av01d5ay17ga19kmy0z89lswbz.nar.xz
+• Building tasks.json
+✓ Building tasks.json in 73.8ms
+✓ Downloading https://cache.nixos.org/nar/1paqcblpjm9cspdvmqqwmlrw59av01d5ay17ga19kmy0z89lswbz.nar.xz in 5.59s
+✓ Downloading quint-cli-0.30.0 in 7.30s
+• Downloading quint-0.30.0
+• Downloading https://cache.nixos.org/nar/0a0qw3kazrh6n4hxf0fms18l5j4kxmnc9wpm2basykzclyjl2c03.nar.xz
+✓ Downloading https://cache.nixos.org/nar/0a0qw3kazrh6n4hxf0fms18l5j4kxmnc9wpm2basykzclyjl2c03.nar.xz in 32.1s
+✓ Downloading quint-0.30.0 in 32.1s
+• Building devenv-profile
+created 177 symlinks in user environment
+✓ Building devenv-profile in 201ms
+• Building devenv-shell
+Running phase: buildPhase
+✓ Building devenv-shell in 130ms
+✓ Evaluating devenv.config.shell in 43.1s
+✓ Building in 44.0s
+{
+  "shell": "/nix/store/7rv223k02ys52mx9w8f9ahmkkjc3dam8-devenv-shell"
+}

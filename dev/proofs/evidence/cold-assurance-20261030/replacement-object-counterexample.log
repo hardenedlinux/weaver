@@ -1,0 +1,6 @@
+=== RUN   TestCommittedSourceRejectsReplacementObjects
+    replacement_test.go:35: replacement tree admitted as original revision: {Name:source Status:PASS Binary:git ResolvedBinary:/nix/store/6qbj40r0s289k5slmy8yna5x2hfz01wg-git-2.53.0/bin/git Args:[cat-file --batch] Log:source.log ExitCode:<nil> Error: Duration:}
+--- FAIL: TestCommittedSourceRejectsReplacementObjects (0.30s)
+FAIL
+FAIL	github.com/HardenedLinux/weaver/go/internal/devrunner	0.722s
+FAIL

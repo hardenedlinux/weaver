@@ -10,15 +10,24 @@
   ...
 }:
 
+let
+  assurancePackages = [
+    pkgs.pkg-config
+    pkgs.openssl
+    pkgs.protobuf
+    pkgs.quint
+    pkgs.elan
+    pkgs.actionlint
+    pkgs.git
+    pkgs.stdenv.cc
+  ];
+in
 {
   # https://devenv.sh/basics/
   env.GREET = "devenv";
 
   # https://devenv.sh/packages/
-  packages = [
-    pkgs.pkg-config
-    pkgs.openssl
-    pkgs.protobuf
+  packages = assurancePackages ++ [
     pkgs.just
     pkgs.codeql
     pkgs.fd
@@ -40,6 +49,16 @@
   languages.go = {
     enable = true;
     package = import ./dev/toolchains/go { go = pkgs.go; };
+  };
+
+  profiles.ci.module = {
+    packages = lib.mkForce (
+      assurancePackages
+      ++ [
+        config.languages.go.package
+        config.languages.rust.toolchainPackage
+      ]
+    );
   };
 
   # https://devenv.sh/languages/

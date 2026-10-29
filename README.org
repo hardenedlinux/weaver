@@ -116,6 +116,7 @@ quiescent transaction boundaries and observed explicit close; connection reuse
 does not cache authority or final-send decisions.
 Response release now [[file:docs/50-59-research-program/59-provider-rpc/59.13-original-release-capability.org][binds each private capability to the original plan, prepared encoding and ledger session]], independently of equal batch payload digests.
 The development Go package [[file:docs/50-59-research-program/59-provider-rpc/59.14-go-fuzz-coordinator.org][backports the upstream fuzz parent-deadline repair]] with native positive and property-failure controls, without changing dependency locks or fuzz windows.
+The [[file:docs/50-59-research-program/59-provider-rpc/59.15-committed-cold-assurance.org][committed-source assurance workflow]] prepares locked dependencies with =bootstrap= and runs the same native/formal and per-package benchmark gates in CI. Use the declared Nix environment; CI additionally requires =-clean-source=.
 The provider owner also [[file:docs/50-59-research-program/59-provider-rpc/59.12-final-invocation-cancellation.org][rechecks its original cancellation context inside the final
 deciding callback]] immediately before entering HTTPS transport. A pre-lock read
 alone cannot admit a request after that context has stopped.

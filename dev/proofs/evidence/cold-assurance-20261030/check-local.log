@@ -1,0 +1,70 @@
+• Validating lock
+✓ Validating lock in 687µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.50ms
+• Evaluating shell
+✓ Evaluating shell in 18.1ms (cached)
+✓ Configuring shell in 21.7ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 785µs (cached)
+✓ Loading tasks in 1.70ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 15.9ms
+• Running devenv:files
+✓ Running devenv:files in 24.2ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 44.3ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 18.1ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 7.58µs (no command)
+✓ Running tasks in 103ms
+💡 The dotenv file '.env' was not found.
+PASS rust-environment
+PASS go-environment
+PASS quint-environment
+PASS proof-environment
+PASS workflow-contract
+PASS rust-format
+PASS rust-default-profile
+PASS rust-tests
+PASS rust-clippy
+PASS go-tests
+PASS go-routing-pbt
+PASS go-decoder-pbt
+PASS go-stream-pbt
+PASS quint-stream-tests
+PASS quint-stream-safety
+PASS quint-lifecycle-tests
+PASS quint-lifecycle-safety
+PASS lean-stream
+PASS cedar-proof-bridge
+PASS quint-typecheck
+PASS quint-tests
+PASS quint-safety
+PASS lean
+PASS provider-routing-pbt
+PASS provider-quint-tests
+PASS provider-quint-safety
+PASS provider-lean
+PASS dispatch-cancellation-tests
+PASS dispatch-cancellation-safety
+PASS release-binding-tests
+PASS release-binding-safety
+PASS admission-quint-tests
+PASS admission-quint-safety
+PASS connection-quint-tests
+PASS connection-quint-safety
+PASS source-ingress-quint-tests
+PASS source-ingress-quint-safety
+PASS publication-quint-tests
+PASS publication-quint-safety
+PASS publication-lean
+PASS source-owner-quint-tests
+PASS source-owner-quint-safety
+PASS go-native-integration
+PASS source-currentness
+Evidence: /Users/guangtao/ghq/github.com/tao3k/weaver/.data/verification-2789452134

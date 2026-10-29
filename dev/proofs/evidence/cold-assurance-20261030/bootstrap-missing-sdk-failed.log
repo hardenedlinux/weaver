@@ -1,0 +1,30 @@
+• Validating lock
+✓ Validating lock in 650µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.57ms
+• Evaluating shell
+• Building devenv-shell-env
+✓ Building devenv-shell-env in 229ms
+✓ Evaluating shell in 2.88s
+✓ Configuring shell in 2.89s
+• Evaluating bash
+✓ Evaluating bash in 2.35ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 5.75ms
+✓ Loading tasks in 7.11ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 1.88s
+• Running devenv:files
+✓ Running devenv:files in 1.59s
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 929ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 914ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 30.9µs (no command)
+✓ Running tasks in 5.31s
+💡 The dotenv file '.env' was not found.
+/Users/guangtao/ghq/github.com/tao3k/weaver/.devenv/profiles/ci/shell-db78c7f5929d5f0a.sh: line 2287: exec: go: cannot execute: Is a directory

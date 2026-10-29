@@ -1,0 +1,10 @@
+=== RUN   TestBootstrapPreservesLockedDependencyAndCompilerIdentity
+--- PASS: TestBootstrapPreservesLockedDependencyAndCompilerIdentity (0.00s)
+=== RUN   TestCommittedSourceRejectsHiddenMutationAndUncommittedInputs
+--- PASS: TestCommittedSourceRejectsHiddenMutationAndUncommittedInputs (0.29s)
+=== RUN   TestCommittedSourceRejectsReplacementObjects
+--- PASS: TestCommittedSourceRejectsReplacementObjects (0.30s)
+=== RUN   TestStagePreservesFailureAndLiteralArguments
+--- PASS: TestStagePreservesFailureAndLiteralArguments (1.04s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/internal/devrunner	3.084s

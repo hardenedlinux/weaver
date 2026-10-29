@@ -30,6 +30,7 @@ func SourceInputs(root string) (map[string]string, error) {
 	}
 	for _, path := range []string{"Cargo.toml", "Cargo.lock", "go.work", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml",
 		"devenv.nix", "devenv.lock", "dev/toolchains/go/default.nix", "dev/toolchains/go/fuzz-parent-deadline.patch",
+		"devenv.yaml", ".envrc", ".github/workflows/assurance.yml",
 		"dev/proofs/lean/RuntimeAdmission.lean", "dev/proofs/lean/StreamingExecution.lean", "dev/proofs/lean/ProviderRpc.lean", "dev/proofs/lean/PublicationRecovery.lean",
 		"dev/proofs/quint/RuntimeAdmission.qnt", "dev/proofs/quint/StreamingExecution.qnt", "dev/proofs/quint/RuntimeLifecycle.qnt", "dev/proofs/quint/ProviderRpc.qnt", "dev/proofs/quint/DispatchCancellation.qnt", "dev/proofs/quint/NativeAdmission.qnt", "dev/proofs/quint/ConnectionAdmission.qnt", "dev/proofs/quint/SourceIngress.qnt", "dev/proofs/quint/PublicationRecovery.qnt", "dev/proofs/quint/SourceOwner.qnt",
 		"dev/proofs/quint/ReleaseBinding.qnt",

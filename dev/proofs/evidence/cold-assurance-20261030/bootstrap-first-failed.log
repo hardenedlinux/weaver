@@ -1,0 +1,41 @@
+• Validating lock
+✓ Validating lock in 721µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 4.42ms
+• Evaluating shell
+• Building devenv-profile
+created 736 symlinks in user environment
+✓ Building devenv-profile in 275ms
+• Building devenv-shell
+Running phase: buildPhase
+✓ Building devenv-shell in 196ms
+• Building devenv-shell-env
+✓ Building devenv-shell-env in 299ms
+✓ Evaluating shell in 4.19s
+✓ Configuring shell in 4.99s
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 4.25ms
+✓ Loading tasks in 5.30ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 20.8ms
+• Running devenv:files
+✓ Running devenv:files in 33.2ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 54.6ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 18.1ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 6.79µs (no command)
+✓ Running tasks in 127ms
+💡 The dotenv file '.env' was not found.
+PASS rust-dependencies
+PASS go-dependencies
+FAIL proof-toolchain
+PASS proof-dependencies
+FAIL source-currentness
+Evidence: /Users/guangtao/ghq/github.com/tao3k/weaver/.data/verification-1743605223
+verification did not pass; retained stage logs and receipt.json
+exit status 1

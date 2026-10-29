@@ -15,28 +15,33 @@ import (
 	"time"
 )
 
-type Config struct{ Root, GoBinary, Mode string }
+type Config struct {
+	Root, GoBinary, Mode string
+	RequireClean         bool
+}
 type Stage struct {
 	Name, Binary string
 	Args         []string
 }
 type Result struct {
-	Name     string   `json:"name"`
-	Status   string   `json:"status"`
-	Binary   string   `json:"binary"`
-	Args     []string `json:"args"`
-	Log      string   `json:"log"`
-	ExitCode *int     `json:"exitCode,omitempty"`
-	Error    string   `json:"error,omitempty"`
-	Duration string   `json:"duration"`
+	Name           string   `json:"name"`
+	Status         string   `json:"status"`
+	Binary         string   `json:"binary"`
+	ResolvedBinary string   `json:"resolvedBinary,omitempty"`
+	Args           []string `json:"args"`
+	Log            string   `json:"log"`
+	ExitCode       *int     `json:"exitCode,omitempty"`
+	Error          string   `json:"error,omitempty"`
+	Duration       string   `json:"duration"`
 }
 type Receipt struct {
-	Status  string            `json:"status"`
-	Root    string            `json:"root"`
-	Started string            `json:"started"`
-	Stages  []Result          `json:"stages"`
-	Mode    string            `json:"mode"`
-	Inputs  map[string]string `json:"inputs"`
+	Revision string            `json:"revision,omitempty"`
+	Status   string            `json:"status"`
+	Root     string            `json:"root"`
+	Started  string            `json:"started"`
+	Stages   []Result          `json:"stages"`
+	Mode     string            `json:"mode"`
+	Inputs   map[string]string `json:"inputs"`
 }
 
 func FindRoot(start string) (string, error) {
@@ -81,10 +86,16 @@ func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	environment := Environment(map[string]string{
+	settings := map[string]string{
 		"GOCACHE": filepath.Join(data, "go-build-cache"), "GOMODCACHE": filepath.Join(data, "go-mod-cache"),
 		"GOTMPDIR": filepath.Join(data, "go-tmp"), "GOTOOLCHAIN": "local",
-	})
+	}
+	if config.Mode == "bootstrap" {
+		// Prefetch the existing module requirements, without expanding workspace sums.
+		// Verification itself continues to use the repository's Go workspace.
+		settings["GOWORK"] = "off"
+	}
+	environment := Environment(settings)
 	mode := config.Mode
 	if mode == "" {
 		mode = "check"
@@ -98,6 +109,20 @@ func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
 		return directory, err
 	}
 	receipt := Receipt{Status: "RUNNING", Root: root, Mode: mode, Inputs: inputs, Started: time.Now().UTC().Format(time.RFC3339Nano)}
+	if config.RequireClean {
+		admission, revision := committedSource(ctx, root, directory, "committed-source-before", "", inputs)
+		receipt.Revision = revision
+		receipt.Stages = append(receipt.Stages, admission)
+		if admission.Status != "PASS" {
+			receipt.Status = "FAIL"
+			if err := writeReceipt(directory, receipt); err != nil {
+				return directory, err
+			}
+			fmt.Fprintf(output, "FAIL %s\nEvidence: %s\n", admission.Name, directory)
+			return directory, errors.New("source does not match a committed revision")
+		}
+		fmt.Fprintf(output, "PASS %s\n", admission.Name)
+	}
 	failed := false
 	for _, stage := range stages {
 		if ctx.Err() != nil {
@@ -129,6 +154,14 @@ func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
 			fmt.Fprintf(output, "FAIL benchmark artifacts: %v\n", err)
 		}
 	}
+	if config.RequireClean {
+		admission, _ := committedSource(ctx, root, directory, "committed-source-after", receipt.Revision, inputs)
+		receipt.Stages = append(receipt.Stages, admission)
+		if admission.Status != "PASS" {
+			failed = true
+		}
+		fmt.Fprintf(output, "%s %s\n", admission.Status, admission.Name)
+	}
 	if ctx.Err() != nil {
 		receipt.Status = "CANCELLED"
 		failed = true
@@ -157,6 +190,10 @@ func runStage(ctx context.Context, root, directory string, environment []string,
 		return result
 	}
 	cmd := exec.CommandContext(ctx, stage.Binary, stage.Args...)
+	result.ResolvedBinary = cmd.Path
+	if resolved, err := filepath.EvalSymlinks(cmd.Path); err == nil {
+		result.ResolvedBinary = resolved
+	}
 	cmd.Dir = root
 	cmd.Env = environment
 	cmd.Stdout = log

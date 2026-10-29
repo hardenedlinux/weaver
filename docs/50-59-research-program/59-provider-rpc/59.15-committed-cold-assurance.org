@@ -1,0 +1,118 @@
+#+TITLE: 59.15 Committed Source and Cold Dependency Assurance
+#+LANGUAGE: en
+
+* Executable scope
+
+The current Gateway profile is checked through one Go-owned development runner.
+The new =bootstrap= mode prepares the existing dependency graph before =check=
+and =bench=. It executes fixed argument vectors for Cargo, Go and Elan/Lake.
+There is no second request bridge or application transport involved. Go/Rust
+operation traffic remains authenticated gRPC; the final provider and response
+release owners remain in Rust.
+
+| Phase | Contract |
+|-------+----------|
+| bootstrap | Fetch locked Cargo sources, prefetch the existing Go module, install the fixed Lean compiler if needed, and build the imported Cedar proof bridge |
+| check | Record actual tool identities, lint the workflow, and run all existing native, PBT, SysML, Quint and Lean gates |
+| bench | Measure every declared Rust case and the actual mTLS gRPC benchmark families |
+| clean-source admission | Match each declared input to committed Git blob bytes and retain the same revision before and after execution |
+
+Dependency preparation is not test acceptance. A successful bootstrap cannot
+replace native child completion, sampled model checks, checked Lean declarations,
+the full benchmark matrix or remote CI completion. Existing bounds, samples,
+fuzz windows and ASP Rust deny rules are unchanged.
+
+* Locked tools and environment
+
+The shared Nix package list now declares Quint, Elan, protoc and actionlint with
+the native build tools. The =ci= profile removes unrelated interactive packages
+while explicitly retaining the configured Go and Rust SDKs. The initial profile
+used =mkForce= without those language packages and failed before executing Go;
+that failure is retained. The top-level =go/= directory remains in place.
+
+The existing Nix lock selects Quint 0.30 and Elan 4.2.1. Earlier host receipts
+used Quint 0.33 and Elan 4.2.3. The Lean language compiler remains the existing
+fixed =leanprover/lean4:v4.34.1=, shared by native files and the imported Cedar
+bridge. Actual executable paths and version output are recorded rather than
+inferred from the package declaration. Model control outcomes, source hashes and
+backend identity belong to each receipt; samples from different interpreters
+are not a matched performance or trace-equivalence experiment.
+
+The workflow uses the same fixed devenv installation reference already present
+in =.envrc=. Its external actions are pinned to verified commits. Repository
+permissions are read-only; checkout credentials are not persisted. Only the
+public signed devenv cache is configured, without a cache-push credential.
+All imported Cargo and Lean repositories needed by this profile were checked
+for public visibility; no new repository secret is required.
+
+* Preparation failures and repaired behavior
+
+The first offline profile build attempted source downloads and failed on TLS.
+Its log remains separate from the later successful build using the trusted
+binary cache. This is SDK preparation evidence, not a model counterexample.
+
+The first actual bootstrap also exposed two command semantics. A workspace-wide
+Go dependency download expanded =go.work.sum=; Elan's explicit install returned
+failure for an already installed compiler. The runner rejected that receipt
+through source currentness. The checksum expansion and failure are retained,
+and only that automatic checksum edit was restored.
+
+Bootstrap now prefetches the existing module with =GOWORK=off= for that mode only.
+Normal verification still uses =go.work=. The official =elan run --install=
+entrypoint installs only when necessary and works with the existing compiler.
+No module manifest, dependency version or lock was updated to make preparation
+pass. The successful local bootstrap is a warm-cache command check; cold-cache
+qualification belongs to the independent CI run.
+
+* Committed source identity
+
+The =-clean-source= option rejects undeclared source drift before any dependency
+or test stage. The runner resolves a revision, streams its declared blobs through
+Git's batch object interface, and compares their SHA-256 hashes with the input
+snapshot. It does not infer identity from a clean =git status=: hidden index
+flags and ignored compiler inputs are covered by explicit negative controls.
+Git replacement objects are disabled for object and revision reads. A native
+counterexample first demonstrated that a replacement tree could otherwise be
+accepted under an unchanged revision ID; that failed test remains in evidence.
+End-of-run source currentness and revision admission must also pass.
+
+The receipt records the revision and resolved executable paths. Inputs include
+the workflow and SDK configuration. An SDK initialization that changes a tracked
+lock before the Go runner starts is therefore still rejected against the
+committed blob. A dirty local working tree can be checked without this option,
+but that receipt is a working-tree snapshot, not committed-source acceptance.
+
+This checks declared input snapshots under the trusted compiler/tool premise.
+It does not prove arbitrary toolchains, malicious transient filesystem writes,
+or every historical research asset. SDK caches and generated runtime artifacts
+remain outside the committed source input set.
+
+* CI and retained results
+
+The GitHub workflow invokes the same Go modes with =-clean-source=, then retains
+per-stage logs, source hashes and benchmark data even when a stage fails. It has
+no passing-retry wrapper and no conditional skip of the safety checks. Model
+sampling and real loopback HTTPS/mTLS execution keep their original limits.
+
+The core D2 and SysML Gateway design retain their runtime roles. No CI result,
+compiler version or acceptance count is added to the architecture diagram.
+Existing Quint and Lean models continue to describe the execution contracts;
+source and SDK admission are separately verified host obligations.
+
+The adjacent [[file:../../../dev/proofs/evidence/cold-assurance-20261030/][evidence directory]] retains the initial SDK and bootstrap failures, the
+checksum expansion, the successful preparation and the uncommitted-source
+negative control. Remote completion must be observed for the exact pushed
+revision before it can qualify this independent consumer profile.
+
+The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/verification-before-replacement-guard/receipt.json][local profile run]] passes forty-four stages under the declared Nix SDK,
+including all existing Rust/Go native checks and the original Quint/Lean gates.
+Its Quint 0.30 safety logs identify the TypeScript interpreter. This receipt
+precedes the final Git-replacement guard and is retained under its own inputs.
+The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/source-admission-controls.log][subsequent source-admission controls]] pass after that guard, including hidden
+index mutation, ignored source, head replacement and literal command arguments.
+
+CI uses clean-source admission at both ends of each mode; that adds two identity
+stages. Documentation-only and historical-evidence-only pushes do not repeat the
+compiled-input workflow. Changes to any declared verification source still
+trigger it. Repository checks and artifacts remain separately observable at the
+[[https://github.com/hardenedlinux/weaver/actions/workflows/assurance.yml][assurance workflow]].

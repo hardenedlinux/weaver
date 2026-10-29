@@ -1,0 +1,1296 @@
+• Validating lock
+✓ Validating lock in 3.72ms
+• Building
+• Evaluating Nix
+✓ Evaluating Nix in 12.5s
+• Evaluating devenv.config.shell
+• Building builder.pl
+• Building devenv-files-cleanup
+• Building devenv-files
+✓ Building builder.pl in 10.4s
+✓ Building devenv-files-cleanup in 9.58s
+✓ Building devenv-files in 7.81s
+• Building 0001-Specify-MIGCC-for-use-with-substitute.patch
+• Building 001-fix-rpath.patch
+• Building PySocks-1.7.1.tar.gz
+Running phase: patchPhase
+structuredAttrs is enabled
+Running phase: updateAutotoolsGnuConfigScriptsPhase
+Running phase: patchPhase
+Running phase: updateAutotoolsGnuConfigScriptsPhase
+Running phase: configurePhase
+Running phase: configurePhase
+no configure script, doing nothing
+Running phase: buildPhase
+Running phase: checkPhase
+no configure script, doing nothing
+Running phase: buildPhase
+Running phase: installPhase
+Running phase: checkPhase
+no Makefile or custom installPhase, doing nothing
+Running phase: fixupPhase
+
+trying https://files.pythonhosted.org/packages/source/P/PySocks/PySocks-1.7.1.tar.gz
+Running phase: installPhase
+no Makefile or custom installPhase, doing nothing
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+checking for references to /nix/var/nix/builds/nix-36286-469928077/ in /nix/store/1yj28vhjwg1fijr58z8i4nszj6ccbw1n-0001-Specify-MIGCC-for-use-with-substitute.patch...
+Running phase: fixupPhase
+patching script interpreter paths in /nix/store/1yj28vhjwg1fijr58z8i4nszj6ccbw1n-0001-Specify-MIGCC-for-use-with-substitute.patch
+checking for references to /nix/var/nix/builds/nix-36286-469928078/ in /nix/store/hd4bmbkdfjxd38lfzxsqjqdg5vmy5maq-001-fix-rpath.patch...
+patching script interpreter paths in /nix/store/hd4bmbkdfjxd38lfzxsqjqdg5vmy5maq-001-fix-rpath.patch
+✓ Building 0001-Specify-MIGCC-for-use-with-substitute.patch in 773ms
+• Building autoconf-2.72.tar.xz
+✓ Building 001-fix-rpath.patch in 937ms
+  0      0   0      0   0      0      0      0                              0
+• Building automake-1.18.1.tar.xz
+100 277.7k 100 277.7k   0      0 705.9k      0                              0
+structuredAttrs is enabled
+
+trying https://ftpmirror.gnu.org/autoconf/autoconf-2.72.tar.xz
+✓ Building PySocks-1.7.1.tar.gz in 1.12s
+• Building bin
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+structuredAttrs is enabled
+
+trying https://ftpmirror.gnu.org/automake/automake-1.18.1.tar.xz
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+✓ Building bin in 93.7ms
+• Building bison-3.8.2.tar.gz
+structuredAttrs is enabled
+
+trying https://ftpmirror.gnu.org/bison/bison-3.8.2.tar.gz
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0           00:04              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 1 second. 3 retries left.
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 1 second. 3 retries left.
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 1 second. 3 retries left.
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 2 seconds. 2 retries 
+Warning: left.
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 2 seconds. 2 retries 
+Warning: left.
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 2 seconds. 2 retries 
+Warning: left.
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 4 seconds. 1 retry left.
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 4 seconds. 1 retry left.
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 4 seconds. 1 retry left.
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+
+trying https://ftp.nluug.nl/pub/gnu/autoconf/autoconf-2.72.tar.xz
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+
+trying https://ftp.nluug.nl/pub/gnu/automake/automake-1.18.1.tar.xz
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+
+trying https://ftp.nluug.nl/pub/gnu/bison/bison-3.8.2.tar.gz
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+100  1.32M 100  1.32M   0      0 377.9k      0   00:03   00:03          99896
+✓ Building autoconf-2.72.tar.xz in 31.9s
+• Building bootstrap-tools.tar.xz
+100  1.57M 100  1.57M   0      0 453.2k      0   00:03   00:03         213.2k
+✓ Building automake-1.18.1.tar.xz in 31.9s
+• Downloading http://tarballs.nixos.org/stdenv/aarch64-apple-darwin/d8657587c0c1ce2191b4b489299c386b5b7148c6/bootstrap-tools.tar.xz
+100  5.38M 100  5.38M   0      0  1.30M      0   00:04   00:04         209.4k
+✓ Building bison-3.8.2.tar.gz in 32.2s
+✓ Downloading http://tarballs.nixos.org/stdenv/aarch64-apple-darwin/d8657587c0c1ce2191b4b489299c386b5b7148c6/bootstrap-tools.tar.xz in 2.31s
+✓ Building bootstrap-tools.tar.xz in 2.53s
+• Building byacc-20241231.tgz
+• Building c-ares-1.34.6.tar.gz
+• Building cargo-build-hook.sh
+structuredAttrs is enabled
+structuredAttrs is enabled
+
+trying https://invisible-mirror.net/archives/byacc/byacc-20241231.tgz
+✓ Building cargo-build-hook.sh in 90.0ms
+• Building cargo-check-hook.sh
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+trying https://github.com/c-ares/c-ares/releases/download/v1.34.6/c-ares-1.34.6.tar.gz
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+✓ Building cargo-check-hook.sh in 92.1ms
+• Building cargo-install-hook.sh
+✓ Building cargo-install-hook.sh in 78.7ms
+• Building cargo-setup-hook.sh
+  0      0   0      0   0      0      0      0                              0
+✓ Building cargo-setup-hook.sh in 121ms
+• Building catalog-legacy-uris.patch
+100 994.0k 100 994.0k   0      0  1.36M      0                              0
+✓ Building c-ares-1.34.6.tar.gz in 894ms
+• Building catalog-legacy-uris.patch
+Running phase: patchPhase
+Running phase: updateAutotoolsGnuConfigScriptsPhase
+Running phase: configurePhase
+no configure script, doing nothing
+Running phase: buildPhase
+Running phase: checkPhase
+Running phase: installPhase
+no Makefile or custom installPhase, doing nothing
+Running phase: fixupPhase
+Running phase: patchPhase
+Running phase: updateAutotoolsGnuConfigScriptsPhase
+checking for references to /nix/var/nix/builds/nix-36286-469928091/ in /nix/store/63rf861b8cqgp86f7s2zhjxn492rq3c3-catalog-legacy-uris.patch...
+Running phase: configurePhase
+patching script interpreter paths in /nix/store/63rf861b8cqgp86f7s2zhjxn492rq3c3-catalog-legacy-uris.patch
+no configure script, doing nothing
+Running phase: buildPhase
+✓ Building catalog-legacy-uris.patch in 276ms
+• Building config.guess-948ae97
+Running phase: checkPhase
+Running phase: installPhase
+no Makefile or custom installPhase, doing nothing
+Running phase: fixupPhase
+checking for references to /nix/var/nix/builds/nix-36286-469928092/ in /nix/store/i1w5khnv2bj6ligg0hw6328ayjq0rfsz-catalog-legacy-uris.patch...
+patching script interpreter paths in /nix/store/i1w5khnv2bj6ligg0hw6328ayjq0rfsz-catalog-legacy-uris.patch
+✓ Building catalog-legacy-uris.patch in 268ms
+• Building config.sub-948ae97
+structuredAttrs is enabled
+
+trying https://git.savannah.gnu.org/cgit/config.git/plain/config.guess?id=948ae97ca5703224bd3eada06b7a69f40dd15a02
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+structuredAttrs is enabled
+
+trying https://git.savannah.gnu.org/cgit/config.git/plain/config.sub?id=948ae97ca5703224bd3eada06b7a69f40dd15a02
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+100 891.0k 100 891.0k   0      0 539.0k      0   00:01   00:01         539.0k
+✓ Building byacc-20241231.tgz in 1.81s
+• Building crate-aho-corasick-1.1.4.tar.gz
+structuredAttrs is enabled
+
+trying https://crates.io/api/v1/crates/aho-corasick/1.1.4/download
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0
+100 179.7k 100 179.7k   0      0 368.8k      0                              0
+✓ Building crate-aho-corasick-1.1.4.tar.gz in 598ms
+• Building byacc-20241231
+Running phase: unpackPhase
+unpacking source archive /nix/store/ra6dm7jyqr32wy3mih9mh9gwpw86551f-byacc-20241231.tgz
+source root is byacc-20241231
+setting SOURCE_DATE_EPOCH to timestamp 1735683525 of file "byacc-20241231/package/pkgsrc/distinfo"
+Running phase: patchPhase
+Running phase: updateAutotoolsGnuConfigScriptsPhase
+Updating Autotools / GNU config script to a newer upstream version: ./config.sub
+Updating Autotools / GNU config script to a newer upstream version: ./config.guess
+Running phase: configurePhase
+patching script interpreter paths in ./configure
+./configure: interpreter directive changed from "#! /bin/sh" to "/nix/store/s0psayl7zvkvwdcqc8fy1sbv8rlf1yq8-bash-5.3p9/bin/sh"
+configure flags: --prefix=/nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231 --program-transform-name=\'s\,\^\,b\,\'
+checking build system type... aarch64-apple-darwin25.6.0
+checking host system type... aarch64-apple-darwin25.6.0
+checking target system type... aarch64-apple-darwin25.6.0
+Configuring for darwin25.6.0
+checking for gcc... clang
+checking for C compiler default output... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... no
+checking for executable suffix... 
+checking for object suffix... o
+checking whether we are using the GNU C compiler... yes
+checking whether clang accepts -g... yes
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 1 second. 3 retries left.
+checking version of clang... 21.1.8
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 1 second. 3 retries left.
+checking if this is really Clang C compiler... yes
+checking version of clang... 21.1.8
+checking if option -Qunused-arguments works... yes
+checking if option -Wno-error=implicit-function-declaration works... yes
+checking for clang option to accept ANSI C... none needed
+checking $CFLAGS variable... ok
+checking $CC variable... ok
+checking whether make sets ${MAKE}... yes
+checking for a BSD compatible install... /nix/store/akih5l2yxpzqyh63xvyc6zsxl7kl2x4v-coreutils-9.10/bin/install -c
+checking if filesystem supports mixed-case filenames... no
+checking for exctags... no
+checking for ctags... no
+checking for exetags... no
+checking for etags... no
+checking for ctags... no
+checking for mawk... no
+checking for gawk... gawk
+checking for lint... no
+checking for cppcheck... no
+checking for splint... no
+checking if the POSIX test-macros are already defined... no
+checking for ggrep... no
+checking for grep... grep
+checking for egrep... grep -E
+checking how to run the C preprocessor... clang -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking whether exit is declared... yes
+checking for fcntl.h... yes
+checking for unistd.h... (cached) yes
+checking for working mkstemp... yes
+checking for getopt.h... yes
+checking for header declaring getopt variables... unistd.h
+checking for getopt... yes
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 2 seconds. 2 retries 
+Warning: left.
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 2 seconds. 2 retries 
+Warning: left.
+checking for vsnprintf... yes
+checking for maximum table size... default
+checking if backtracking extension is wanted... yes
+checking for fgrep... grep -F
+checking if you want to use C11 _Noreturn feature... no
+checking if you want to turn on gcc warnings... no
+configure: checking for clang __attribute__ directives...
+... scanf
+... printf
+... unused
+... noreturn
+checking if you want to see long compiling messages... yes
+checking if you want to use dmalloc for testing... no
+checking if you want to use dbmalloc for testing... no
+checking if you want to use valgrind for testing... no
+checking if you want to perform memory-leak testing... no
+checking for PATH separator... :
+checking format of man-pages...  normal
+checking whether ln -s works... yes
+configure: creating install-man.in
+checking for groff... no
+checking for nroff... no
+checking for mandoc... no
+checking for tbl... cat
+(cached) Configuring for darwin25.6.0
+checking for man2html... no
+checking for program to convert manpage to html... no
+checking for mode_t... yes
+configure: creating ./config.status
+config.status: creating install-man
+config.status: creating makefile
+config.status: creating config.h
+Running phase: buildPhase
+build flags: SHELL=/nix/store/s0psayl7zvkvwdcqc8fy1sbv8rlf1yq8-bash-5.3p9/bin/bash
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  closure.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  error.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  graph.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  lalr.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  lr0.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  main.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  mkpar.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  mstring.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  output.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  reader.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  btyaccpar.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  symtab.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  verbose.c
+clang -c -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  warshall.c
+clang  -g -O2 -Qunused-arguments -Wno-error=implicit-function-declaration -I. -I.  -DHAVE_CONFIG_H -DYYPATCH=`cat ./VERSION` -D_DARWIN_C_SOURCE  -o yacc closure.o error.o graph.o lalr.o lr0.o main.o mkpar.o mstring.o output.o reader.o btyaccpar.o symtab.o verbose.o warshall.o 
+Running phase: checkPhase
+check flags: SHELL=/nix/store/s0psayl7zvkvwdcqc8fy1sbv8rlf1yq8-bash-5.3p9/bin/bash VERBOSE=y check
+** making check
+** Thu Oct 29 20:15:33 UTC 2026
+** testing flags help -z
+...ok ./test/btyacc/help.output
+...ok ./test/btyacc/help.error
+** testing flags big_b -B
+...ok ./test/btyacc/big_b.output
+...ok ./test/btyacc/big_b.error
+** testing flags big_l -L
+...ok ./test/btyacc/big_l.output
+...ok ./test/btyacc/big_l.error
+** testing flags nostdin - nosuchfile.y
+...ok ./test/btyacc/nostdin.output
+...ok ./test/btyacc/nostdin.error
+** testing flags no_opts -- nosuchfile.y
+...ok ./test/btyacc/no_opts.output
+...ok ./test/btyacc/no_opts.error
+** testing flags no_b_opt -b
+...ok ./test/btyacc/no_b_opt.output
+...ok ./test/btyacc/no_b_opt.error
+** testing flags no_b_opt1 -bBASE -o nosuchfile.c nosuchfile.y
+...ok ./test/btyacc/no_b_opt1.output
+...ok ./test/btyacc/no_b_opt1.error
+** testing flags no_p_opt -p
+...ok ./test/btyacc/no_p_opt.output
+...ok ./test/btyacc/no_p_opt.error
+** testing flags no_p_opt1 -pBASE -o nosuchfile.c nosuchfile.y
+...ok ./test/btyacc/no_p_opt1.output
+...ok ./test/btyacc/no_p_opt1.error
+** testing flags no_graph -g -o nosuchfile.c nosuchfile.y
+...ok ./test/btyacc/no_graph.output
+...ok ./test/btyacc/no_graph.error
+** testing flags no_verbose -v -o nosuchfile.c nosuchfile.y
+...ok ./test/btyacc/no_verbose.output
+...ok ./test/btyacc/no_verbose.error
+** testing flags no_output -o nosuchfile.output nosuchfile.y
+...ok ./test/btyacc/no_output.output
+...ok ./test/btyacc/no_output.error
+** testing flags no_output1 -onosuchfile.output nosuchfile.y
+...ok ./test/btyacc/no_output1.output
+...ok ./test/btyacc/no_output1.error
+** testing flags no_output2 -o
+...ok ./test/btyacc/no_output2.output
+...ok ./test/btyacc/no_output2.error
+** testing flags no_defines -d -o nosuchfile.c nosuchfile.y
+...ok ./test/btyacc/no_defines.output
+...ok ./test/btyacc/no_defines.error
+** testing flags no_include -i -o nosuchfile.c nosuchfile.y
+...ok ./test/btyacc/no_include.output
+...ok ./test/btyacc/no_include.error
+** testing flags no_code_c -r -o nosuchfile.c nosuchfile.y
+...ok ./test/btyacc/no_code_c.output
+...ok ./test/btyacc/no_code_c.error
+** testing stdin stdin1 - ./test/calc.y
+...ok ./test/btyacc/stdin1.output
+...ok ./test/btyacc/stdin1.error
+...ok ./test/btyacc/stdin1.calc.c
+** testing stdin stdin2 -- ./test/calc.y
+...ok ./test/btyacc/stdin2.output
+...ok ./test/btyacc/stdin2.error
+...ok ./test/btyacc/stdin2.calc.c
+** testing defines defines1 ./test/calc.y
+...ok ./test/btyacc/defines1.output
+...ok ./test/btyacc/defines1.error
+...ok ./test/btyacc/defines1.calc.h
+...ok ./test/btyacc/defines1.calc.c
+** testing defines defines2 -d ./test/calc.y
+...ok ./test/btyacc/defines2.output
+...ok ./test/btyacc/defines2.error
+...ok ./test/btyacc/defines2.calc.h
+...ok ./test/btyacc/defines2.calc.c
+** testing defines defines3 -b prefix ./test/calc.y
+...ok ./test/btyacc/defines3.output
+...ok ./test/btyacc/defines3.error
+...ok ./test/btyacc/defines3.calc.h
+...ok ./test/btyacc/defines3.calc.c
+** testing ./test/btyacc_calc1.y
+...ok ./test/btyacc/btyacc_calc1.error
+...ok ./test/btyacc/btyacc_calc1.output
+...ok ./test/btyacc/btyacc_calc1.tab.c
+...ok ./test/btyacc/btyacc_calc1.tab.h
+** testing ./test/btyacc_demo.y
+...ok ./test/btyacc/btyacc_demo.error
+...ok ./test/btyacc/btyacc_demo.output
+...ok ./test/btyacc/btyacc_demo.tab.c
+...ok ./test/btyacc/btyacc_demo.tab.h
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 4 seconds. 1 retry left.
+** testing ./test/btyacc_destroy1.y
+...ok ./test/btyacc/btyacc_destroy1.error
+...ok ./test/btyacc/btyacc_destroy1.output
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+Warning: Problem (retrying all errors). Will retry in 4 seconds. 1 retry left.
+...ok ./test/btyacc/btyacc_destroy1.tab.c
+...ok ./test/btyacc/btyacc_destroy1.tab.h
+** testing ./test/btyacc_destroy2.y
+...ok ./test/btyacc/btyacc_destroy2.error
+...ok ./test/btyacc/btyacc_destroy2.output
+...ok ./test/btyacc/btyacc_destroy2.tab.c
+...ok ./test/btyacc/btyacc_destroy2.tab.h
+** testing ./test/btyacc_destroy3.y
+...ok ./test/btyacc/btyacc_destroy3.error
+...ok ./test/btyacc/btyacc_destroy3.output
+...ok ./test/btyacc/btyacc_destroy3.tab.c
+...ok ./test/btyacc/btyacc_destroy3.tab.h
+** testing ./test/calc.y
+...ok ./test/btyacc/calc.error
+...ok ./test/btyacc/calc.output
+...ok ./test/btyacc/calc.tab.c
+...ok ./test/btyacc/calc.tab.h
+** testing ./test/calc1.y
+...ok ./test/btyacc/calc1.error
+...ok ./test/btyacc/calc1.output
+...ok ./test/btyacc/calc1.tab.c
+...ok ./test/btyacc/calc1.tab.h
+** testing ./test/calc2.y
+...ok ./test/btyacc/calc2.error
+...ok ./test/btyacc/calc2.output
+...ok ./test/btyacc/calc2.tab.c
+...ok ./test/btyacc/calc2.tab.h
+** testing ./test/calc3.y
+...ok ./test/btyacc/calc3.error
+...ok ./test/btyacc/calc3.output
+...ok ./test/btyacc/calc3.tab.c
+...ok ./test/btyacc/calc3.tab.h
+** testing ./test/calc_code_all.y
+...ok ./test/btyacc/calc_code_all.error
+...ok ./test/btyacc/calc_code_all.output
+...ok ./test/btyacc/calc_code_all.tab.c
+...ok ./test/btyacc/calc_code_all.tab.h
+** testing ./test/calc_code_default.y
+...ok ./test/btyacc/calc_code_default.error
+...ok ./test/btyacc/calc_code_default.output
+...ok ./test/btyacc/calc_code_default.tab.c
+...ok ./test/btyacc/calc_code_default.tab.h
+** testing ./test/calc_code_imports.y
+...ok ./test/btyacc/calc_code_imports.error
+...ok ./test/btyacc/calc_code_imports.output
+...ok ./test/btyacc/calc_code_imports.tab.c
+...ok ./test/btyacc/calc_code_imports.tab.h
+** testing ./test/calc_code_provides.y
+...ok ./test/btyacc/calc_code_provides.error
+...ok ./test/btyacc/calc_code_provides.output
+...ok ./test/btyacc/calc_code_provides.tab.c
+...ok ./test/btyacc/calc_code_provides.tab.h
+** testing ./test/calc_code_requires.y
+...ok ./test/btyacc/calc_code_requires.error
+...ok ./test/btyacc/calc_code_requires.output
+...ok ./test/btyacc/calc_code_requires.tab.c
+...ok ./test/btyacc/calc_code_requires.tab.h
+** testing ./test/calc_code_top.y
+...ok ./test/btyacc/calc_code_top.error
+...ok ./test/btyacc/calc_code_top.output
+...ok ./test/btyacc/calc_code_top.tab.c
+...ok ./test/btyacc/calc_code_top.tab.h
+** testing ./test/code_calc.y
+...ok ./test/btyacc/code_calc.error
+...ok ./test/btyacc/code_calc.output
+...ok ./test/btyacc/code_calc.tab.c
+...ok ./test/btyacc/code_calc.tab.h
+...ok ./test/btyacc/code_calc.code.c
+** testing ./test/code_debug.y
+...ok ./test/btyacc/rename_debug.error
+...ok ./test/btyacc/rename_debug.output
+...ok ./test/btyacc/rename_debug.c
+...ok ./test/btyacc/rename_debug.h
+...ok ./test/btyacc/rename_debug.i
+** testing ./test/code_error.y
+...ok ./test/btyacc/code_error.error
+...ok ./test/btyacc/code_error.output
+...ok ./test/btyacc/code_error.tab.c
+...ok ./test/btyacc/code_error.tab.h
+...ok ./test/btyacc/code_error.code.c
+** testing ./test/empty.y
+...ok ./test/btyacc/empty.error
+...ok ./test/btyacc/empty.output
+...ok ./test/btyacc/empty.tab.c
+...ok ./test/btyacc/empty.tab.h
+** testing ./test/err_inherit1.y
+...ok ./test/btyacc/err_inherit1.error
+...ok ./test/btyacc/err_inherit1.output
+...ok ./test/btyacc/err_inherit1.tab.c
+...ok ./test/btyacc/err_inherit1.tab.h
+** testing ./test/err_inherit2.y
+...ok ./test/btyacc/err_inherit2.error
+...ok ./test/btyacc/err_inherit2.output
+...ok ./test/btyacc/err_inherit2.tab.c
+...ok ./test/btyacc/err_inherit2.tab.h
+** testing ./test/err_inherit3.y
+...ok ./test/btyacc/err_inherit3.error
+...ok ./test/btyacc/err_inherit3.output
+...ok ./test/btyacc/err_inherit3.tab.c
+...ok ./test/btyacc/err_inherit3.tab.h
+** testing ./test/err_inherit4.y
+...ok ./test/btyacc/err_inherit4.error
+...ok ./test/btyacc/err_inherit4.output
+...ok ./test/btyacc/err_inherit4.tab.c
+...ok ./test/btyacc/err_inherit4.tab.h
+** testing ./test/err_inherit5.y
+...ok ./test/btyacc/err_inherit5.error
+...ok ./test/btyacc/err_inherit5.output
+...ok ./test/btyacc/err_inherit5.tab.c
+...ok ./test/btyacc/err_inherit5.tab.h
+** testing ./test/err_syntax1.y
+...ok ./test/btyacc/err_syntax1.error
+...ok ./test/btyacc/err_syntax1.output
+...ok ./test/btyacc/err_syntax1.tab.c
+...ok ./test/btyacc/err_syntax1.tab.h
+** testing ./test/err_syntax10.y
+...ok ./test/btyacc/err_syntax10.error
+...ok ./test/btyacc/err_syntax10.output
+...ok ./test/btyacc/err_syntax10.tab.c
+...ok ./test/btyacc/err_syntax10.tab.h
+** testing ./test/err_syntax11.y
+...ok ./test/btyacc/err_syntax11.error
+...ok ./test/btyacc/err_syntax11.output
+...ok ./test/btyacc/err_syntax11.tab.c
+...ok ./test/btyacc/err_syntax11.tab.h
+** testing ./test/err_syntax12.y
+...ok ./test/btyacc/err_syntax12.error
+...ok ./test/btyacc/err_syntax12.output
+...ok ./test/btyacc/err_syntax12.tab.c
+...ok ./test/btyacc/err_syntax12.tab.h
+** testing ./test/err_syntax13.y
+...ok ./test/btyacc/err_syntax13.error
+...ok ./test/btyacc/err_syntax13.output
+...ok ./test/btyacc/err_syntax13.tab.c
+...ok ./test/btyacc/err_syntax13.tab.h
+** testing ./test/err_syntax14.y
+...ok ./test/btyacc/err_syntax14.error
+...ok ./test/btyacc/err_syntax14.output
+...ok ./test/btyacc/err_syntax14.tab.c
+...ok ./test/btyacc/err_syntax14.tab.h
+** testing ./test/err_syntax15.y
+...ok ./test/btyacc/err_syntax15.error
+...ok ./test/btyacc/err_syntax15.output
+...ok ./test/btyacc/err_syntax15.tab.c
+...ok ./test/btyacc/err_syntax15.tab.h
+** testing ./test/err_syntax16.y
+...ok ./test/btyacc/err_syntax16.error
+...ok ./test/btyacc/err_syntax16.output
+...ok ./test/btyacc/err_syntax16.tab.c
+...ok ./test/btyacc/err_syntax16.tab.h
+** testing ./test/err_syntax17.y
+...ok ./test/btyacc/err_syntax17.error
+...ok ./test/btyacc/err_syntax17.output
+...ok ./test/btyacc/err_syntax17.tab.c
+...ok ./test/btyacc/err_syntax17.tab.h
+** testing ./test/err_syntax18.y
+...ok ./test/btyacc/err_syntax18.error
+...ok ./test/btyacc/err_syntax18.output
+...ok ./test/btyacc/err_syntax18.tab.c
+...ok ./test/btyacc/err_syntax18.tab.h
+** testing ./test/err_syntax19.y
+...ok ./test/btyacc/err_syntax19.error
+...ok ./test/btyacc/err_syntax19.output
+...ok ./test/btyacc/err_syntax19.tab.c
+...ok ./test/btyacc/err_syntax19.tab.h
+** testing ./test/err_syntax2.y
+...ok ./test/btyacc/err_syntax2.error
+...ok ./test/btyacc/err_syntax2.output
+...ok ./test/btyacc/err_syntax2.tab.c
+...ok ./test/btyacc/err_syntax2.tab.h
+** testing ./test/err_syntax20.y
+...ok ./test/btyacc/err_syntax20.error
+...ok ./test/btyacc/err_syntax20.output
+...ok ./test/btyacc/err_syntax20.tab.c
+...ok ./test/btyacc/err_syntax20.tab.h
+** testing ./test/err_syntax21.y
+...ok ./test/btyacc/err_syntax21.error
+...ok ./test/btyacc/err_syntax21.output
+...ok ./test/btyacc/err_syntax21.tab.c
+...ok ./test/btyacc/err_syntax21.tab.h
+** testing ./test/err_syntax22.y
+...ok ./test/btyacc/err_syntax22.error
+...ok ./test/btyacc/err_syntax22.output
+...ok ./test/btyacc/err_syntax22.tab.c
+...ok ./test/btyacc/err_syntax22.tab.h
+** testing ./test/err_syntax23.y
+...ok ./test/btyacc/err_syntax23.error
+...ok ./test/btyacc/err_syntax23.output
+...ok ./test/btyacc/err_syntax23.tab.c
+...ok ./test/btyacc/err_syntax23.tab.h
+** testing ./test/err_syntax24.y
+...ok ./test/btyacc/err_syntax24.error
+...ok ./test/btyacc/err_syntax24.output
+...ok ./test/btyacc/err_syntax24.tab.c
+...ok ./test/btyacc/err_syntax24.tab.h
+** testing ./test/err_syntax25.y
+...ok ./test/btyacc/err_syntax25.error
+...ok ./test/btyacc/err_syntax25.output
+...ok ./test/btyacc/err_syntax25.tab.c
+...ok ./test/btyacc/err_syntax25.tab.h
+** testing ./test/err_syntax26.y
+...ok ./test/btyacc/err_syntax26.error
+...ok ./test/btyacc/err_syntax26.output
+...ok ./test/btyacc/err_syntax26.tab.c
+...ok ./test/btyacc/err_syntax26.tab.h
+** testing ./test/err_syntax27.y
+...ok ./test/btyacc/err_syntax27.error
+...ok ./test/btyacc/err_syntax27.output
+...ok ./test/btyacc/err_syntax27.tab.c
+...ok ./test/btyacc/err_syntax27.tab.h
+** testing ./test/err_syntax3.y
+...ok ./test/btyacc/err_syntax3.error
+...ok ./test/btyacc/err_syntax3.output
+...ok ./test/btyacc/err_syntax3.tab.c
+...ok ./test/btyacc/err_syntax3.tab.h
+** testing ./test/err_syntax4.y
+...ok ./test/btyacc/err_syntax4.error
+...ok ./test/btyacc/err_syntax4.output
+...ok ./test/btyacc/err_syntax4.tab.c
+...ok ./test/btyacc/err_syntax4.tab.h
+** testing ./test/err_syntax5.y
+...ok ./test/btyacc/err_syntax5.error
+...ok ./test/btyacc/err_syntax5.output
+...ok ./test/btyacc/err_syntax5.tab.c
+...ok ./test/btyacc/err_syntax5.tab.h
+** testing ./test/err_syntax6.y
+...ok ./test/btyacc/err_syntax6.error
+...ok ./test/btyacc/err_syntax6.output
+...ok ./test/btyacc/err_syntax6.tab.c
+...ok ./test/btyacc/err_syntax6.tab.h
+** testing ./test/err_syntax7.y
+...ok ./test/btyacc/err_syntax7.error
+...ok ./test/btyacc/err_syntax7.output
+...ok ./test/btyacc/err_syntax7.tab.c
+...ok ./test/btyacc/err_syntax7.tab.h
+** testing ./test/err_syntax7a.y
+...ok ./test/btyacc/err_syntax7a.error
+...ok ./test/btyacc/err_syntax7a.output
+...ok ./test/btyacc/err_syntax7a.tab.c
+...ok ./test/btyacc/err_syntax7a.tab.h
+** testing ./test/err_syntax7b.y
+...ok ./test/btyacc/err_syntax7b.error
+...ok ./test/btyacc/err_syntax7b.output
+...ok ./test/btyacc/err_syntax7b.tab.c
+...ok ./test/btyacc/err_syntax7b.tab.h
+** testing ./test/err_syntax8.y
+...ok ./test/btyacc/err_syntax8.error
+...ok ./test/btyacc/err_syntax8.output
+...ok ./test/btyacc/err_syntax8.tab.c
+...ok ./test/btyacc/err_syntax8.tab.h
+** testing ./test/err_syntax8a.y
+...ok ./test/btyacc/err_syntax8a.error
+...ok ./test/btyacc/err_syntax8a.output
+...ok ./test/btyacc/err_syntax8a.tab.c
+...ok ./test/btyacc/err_syntax8a.tab.h
+** testing ./test/err_syntax9.y
+...ok ./test/btyacc/err_syntax9.error
+...ok ./test/btyacc/err_syntax9.output
+...ok ./test/btyacc/err_syntax9.tab.c
+...ok ./test/btyacc/err_syntax9.tab.h
+** testing ./test/error.y
+...ok ./test/btyacc/error.error
+...ok ./test/btyacc/error.output
+...ok ./test/btyacc/error.tab.c
+...ok ./test/btyacc/error.tab.h
+** testing ./test/expr.oxout.y
+...ok ./test/btyacc/expr.oxout.error
+...ok ./test/btyacc/expr.oxout.output
+...ok ./test/btyacc/expr.oxout.tab.c
+...ok ./test/btyacc/expr.oxout.tab.h
+** testing ./test/grammar.y
+...ok ./test/btyacc/grammar.error
+...ok ./test/btyacc/grammar.output
+...ok ./test/btyacc/grammar.tab.c
+...ok ./test/btyacc/grammar.tab.h
+...ok ./test/btyacc/grammar.dot
+** testing ./test/inherit0.y
+...ok ./test/btyacc/inherit0.error
+...ok ./test/btyacc/inherit0.output
+...ok ./test/btyacc/inherit0.tab.c
+...ok ./test/btyacc/inherit0.tab.h
+** testing ./test/inherit1.y
+...ok ./test/btyacc/inherit1.error
+...ok ./test/btyacc/inherit1.output
+...ok ./test/btyacc/inherit1.tab.c
+...ok ./test/btyacc/inherit1.tab.h
+** testing ./test/inherit2.y
+...ok ./test/btyacc/inherit2.error
+...ok ./test/btyacc/inherit2.output
+...ok ./test/btyacc/inherit2.tab.c
+...ok ./test/btyacc/inherit2.tab.h
+** testing ./test/ok_syntax1.y
+...ok ./test/btyacc/ok_syntax1.error
+...ok ./test/btyacc/ok_syntax1.output
+...ok ./test/btyacc/ok_syntax1.tab.c
+...ok ./test/btyacc/ok_syntax1.tab.h
+** testing ./test/pure_calc.y
+...ok ./test/btyacc/pure_calc.error
+...ok ./test/btyacc/pure_calc.output
+...ok ./test/btyacc/pure_calc.tab.c
+...ok ./test/btyacc/pure_calc.tab.h
+** testing ./test/pure_error.y
+...ok ./test/btyacc/pure_error.error
+...ok ./test/btyacc/pure_error.output
+...ok ./test/btyacc/pure_error.tab.c
+...ok ./test/btyacc/pure_error.tab.h
+** testing ./test/quote_calc.y
+...ok ./test/btyacc/quote_calc.error
+...ok ./test/btyacc/quote_calc.output
+...ok ./test/btyacc/quote_calc.tab.c
+...ok ./test/btyacc/quote_calc.tab.h
+...ok ./test/btyacc/quote_calc-s.error
+...ok ./test/btyacc/quote_calc-s.output
+...ok ./test/btyacc/quote_calc-s.tab.c
+...ok ./test/btyacc/quote_calc-s.tab.h
+** testing ./test/quote_calc2.y
+...ok ./test/btyacc/quote_calc2.error
+...ok ./test/btyacc/quote_calc2.output
+...ok ./test/btyacc/quote_calc2.tab.c
+...ok ./test/btyacc/quote_calc2.tab.h
+...ok ./test/btyacc/quote_calc2-s.error
+...ok ./test/btyacc/quote_calc2-s.output
+...ok ./test/btyacc/quote_calc2-s.tab.c
+...ok ./test/btyacc/quote_calc2-s.tab.h
+** testing ./test/quote_calc3.y
+...ok ./test/btyacc/quote_calc3.error
+...ok ./test/btyacc/quote_calc3.output
+...ok ./test/btyacc/quote_calc3.tab.c
+...ok ./test/btyacc/quote_calc3.tab.h
+...ok ./test/btyacc/quote_calc3-s.error
+...ok ./test/btyacc/quote_calc3-s.output
+...ok ./test/btyacc/quote_calc3-s.tab.c
+...ok ./test/btyacc/quote_calc3-s.tab.h
+** testing ./test/quote_calc4.y
+...ok ./test/btyacc/quote_calc4.error
+...ok ./test/btyacc/quote_calc4.output
+...ok ./test/btyacc/quote_calc4.tab.c
+...ok ./test/btyacc/quote_calc4.tab.h
+...ok ./test/btyacc/quote_calc4-s.error
+...ok ./test/btyacc/quote_calc4-s.output
+...ok ./test/btyacc/quote_calc4-s.tab.c
+...ok ./test/btyacc/quote_calc4-s.tab.h
+** testing ./test/varsyntax_calc1.y
+...ok ./test/btyacc/varsyntax_calc1.error
+...ok ./test/btyacc/varsyntax_calc1.output
+...ok ./test/btyacc/varsyntax_calc1.tab.c
+...ok ./test/btyacc/varsyntax_calc1.tab.h
+Running phase: installPhase
+install flags: SHELL=/nix/store/s0psayl7zvkvwdcqc8fy1sbv8rlf1yq8-bash-5.3p9/bin/bash install
+mkdir -p /nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231/bin
+mkdir -p /nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231/share/man/man1
+/nix/store/akih5l2yxpzqyh63xvyc6zsxl7kl2x4v-coreutils-9.10/bin/install -c yacc /nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231/bin/`echo yacc        | sed 's/$//'       |sed ''s,^,b,''|sed 's/$//'`
+** installing ./yacc.1 to /nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231/share/man/man1/byacc.1
+*** ./yacc.1	Tue Dec 31 15:46:49 2024
+--- /nix/var/nix/builds/nix-36286-469928096/tmp.irs8sJ2D7Z/yacc.1	Thu Oct 29 20:15:44 2026
+***************
+*** 1,9 ****
+  .\" $Id: yacc.1,v 1.44 2024/12/31 15:46:49 tom Exp $
+  .\"
+! .TH YACC 1 2024-12-31 "Berkeley Yacc" "User Commands"
+  .
+! .ds N Yacc
+! .ds n yacc
+  .
+  .ie n .ds CW R
+  .el   \{
+--- 1,9 ----
+  .\" $Id: yacc.1,v 1.44 2024/12/31 15:46:49 tom Exp $
+  .\"
+! .TH BYACC 1 2024-12-31 "Berkeley Yacc" "User Commands"
+  .
+! .ds N Byacc
+! .ds n byacc
+  .
+  .ie n .ds CW R
+  .el   \{
+***************
+*** 42,48 ****
+  .el    .IP \(bu 2
+  ..
+  .SH NAME
+! \*N \-
+  an LALR(1) parser generator
+  .SH SYNOPSIS
+  .B \*n [ \-BdghilLPrtvVy ] [ \-b
+--- 42,48 ----
+  .el    .IP \(bu 2
+  ..
+  .SH NAME
+! byacc \-
+  an LALR(1) parser generator
+  .SH SYNOPSIS
+  .B \*n [ \-BdghilLPrtvVy ] [ \-b
+...installed /nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231/share/man/man1/byacc.1
+Running phase: fixupPhase
+checking for references to /nix/var/nix/builds/nix-36286-469928096/ in /nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231...
+gzipping man pages under /nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231/share/man/
+patching script interpreter paths in /nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231
+stripping (with command strip and flags -S) in  /nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231/bin
+making symlink relative: /nix/store/6jvak4hm8r05yl25m80d3324mc9rj6ml-byacc-20241231/bin/yacc
+✓ Building byacc-20241231 in 26.0s
+• Building aho-corasick-1.1.4
+✓ Building aho-corasick-1.1.4 in 295ms
+• Building crate-anstream-0.6.21.tar.gz
+structuredAttrs is enabled
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+  0      0   0      0   0      0      0      0           00:05              0
+curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+
+trying https://crates.io/api/v1/crates/anstream/0.6.21/download
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0
+100  29516 100  29516   0      0  73075      0                              0
+✓ Building crate-anstream-0.6.21.tar.gz in 554ms
+• Building crate-anstyle-1.0.13.tar.gz
+structuredAttrs is enabled
+
+trying https://crates.io/api/v1/crates/anstyle/1.0.13/download
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+error: cannot download config.guess-948ae97 from any mirror
+✓ Building config.guess-948ae97 in 28.9s
+✖ error: cannot download config.guess-948ae97 from any mirror
+       For full logs, run:
+         nix log /nix/store/96pwaiyvvz6q0b317gffppxnhvg47lzf-config.guess-948ae97.drv
+[31;1merror:[0m Cannot build '[35;1m/nix/store/96pwaiyvvz6q0b317gffppxnhvg47lzf-config.guess-948ae97.drv[0m'.
+       Reason: [31;1mbuilder failed with exit code 1[0m.
+       Output paths:
+         [35;1m/nix/store/vq0j27nvpks679djbiykl8ikdyj6z5a9-config.guess-948ae97[0m
+       Last 18 log lines:
+       > structuredAttrs is enabled
+       >
+       > trying https://git.savannah.gnu.org/cgit/config.git/plain/config.guess?id=948ae97ca5703224bd3eada06b7a69f40dd15a02
+       >   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+       >                                  Dload  Upload  Total   Spent   Left   Speed
+       >   0      0   0      0   0      0      0      0           00:05              0
+       > curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+       > Warning: Problem (retrying all errors). Will retry in 1 second. 3 retries left.
+       >   0      0   0      0   0      0      0      0           00:05              0
+       > curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+       > Warning: Problem (retrying all errors). Will retry in 2 seconds. 2 retries
+       > Warning: left.
+       >   0      0   0      0   0      0      0      0           00:05              0
+       > curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+       > Warning: Problem (retrying all errors). Will retry in 4 seconds. 1 retry left.
+       >   0      0   0      0   0      0      0      0           00:05              0
+       > curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading
+       > error: cannot download config.guess-948ae97 from any mirror
+       For full logs, run:
+         [1mnix log /nix/store/96pwaiyvvz6q0b317gffppxnhvg47lzf-config.guess-948ae97.drv[0m
+• Building anstream-0.6.21
+[31;1merror:[0m build of resolved derivation '[35;1m/nix/store/96pwaiyvvz6q0b317gffppxnhvg47lzf-config.guess-948ae97.drv[0m' failed
+✖ error: build of resolved derivation '/nix/store/96pwaiyvvz6q0b317gffppxnhvg47lzf-config.guess-948ae97.drv' failed
+[31;1merror:[0m Cannot build '[35;1m/nix/store/87c4lfb7f4fkq3ysbnpw26n9c7dxjqbk-gnu-config-2024-01-01.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/62rcfa9hlp68ck88pcwrc3hdc7pq5bvi-gnu-config-2024-01-01[0m
+✖ error: Cannot build '/nix/store/87c4lfb7f4fkq3ysbnpw26n9c7dxjqbk-gnu-config-2024-01-01.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/62rcfa9hlp68ck88pcwrc3hdc7pq5bvi-gnu-config-2024-01-01
+✓ Building config.sub-948ae97 in 28.9s
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+• Building crate-anstyle-parse-0.2.7.tar.gz
+[31;1merror:[0m Cannot build '[35;1m/nix/store/069syw26lg9sqraldg4dkbc7np4b5nn8-update-autotools-gnu-config-scripts-hook.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/sfch9vxx4s6rw28lmzivk2v0q1y86fd3-update-autotools-gnu-config-scripts-hook[0m
+✖ error: Cannot build '/nix/store/069syw26lg9sqraldg4dkbc7np4b5nn8-update-autotools-gnu-config-scripts-hook.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/sfch9vxx4s6rw28lmzivk2v0q1y86fd3-update-autotools-gnu-config-scripts-hook
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+[31;1merror:[0m Cannot build '[35;1m/nix/store/lb2by7bd1wlqfkkhgcjapqvlgky33q60-automake-1.18.1.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/vikklxmipzacnz5c673y51lilgkqpsmn-automake-1.18.1[0m
+✖ error: Cannot build '/nix/store/lb2by7bd1wlqfkkhgcjapqvlgky33q60-automake-1.18.1.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/vikklxmipzacnz5c673y51lilgkqpsmn-automake-1.18.1
+[31;1merror:[0m Cannot build '[35;1m/nix/store/5fa7j72v22v1b3pzprd3x0cyc48wbxan-c-ares-1.34.6.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/c0q1fiykxs8j3w4xi7b3h43irm3ig3aq-c-ares-1.34.6-man[0m
+         [35;1m/nix/store/d2dk66ngvb345bmg1rs4akqj0wnqlkhf-c-ares-1.34.6[0m
+         [35;1m/nix/store/qmzqn5l7cgpimlf57hrgxycy2v8ifijv-c-ares-1.34.6-dev[0m
+✖ error: Cannot build '/nix/store/5fa7j72v22v1b3pzprd3x0cyc48wbxan-c-ares-1.34.6.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/c0q1fiykxs8j3w4xi7b3h43irm3ig3aq-c-ares-1.34.6-man
+         /nix/store/d2dk66ngvb345bmg1rs4akqj0wnqlkhf-c-ares-1.34.6
+         /nix/store/qmzqn5l7cgpimlf57hrgxycy2v8ifijv-c-ares-1.34.6-dev
+[31;1merror:[0m Cannot build '[35;1m/nix/store/4ik09wkzv4w72skvvlv1nmndb8g4k1dh-libtool-2.5.4.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/1giklskmjrwikyfajnhhnpla7li4z0ac-libtool-2.5.4-lib[0m
+         [35;1m/nix/store/k4x1q97gjqk98c7yzrbkflmqiwvvvy9r-libtool-2.5.4[0m
+✖ error: Cannot build '/nix/store/4ik09wkzv4w72skvvlv1nmndb8g4k1dh-libtool-2.5.4.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/1giklskmjrwikyfajnhhnpla7li4z0ac-libtool-2.5.4-lib
+         /nix/store/k4x1q97gjqk98c7yzrbkflmqiwvvvy9r-libtool-2.5.4
+[31;1merror:[0m Cannot build '[35;1m/nix/store/jfscl3jlgkjnnav06y7l0bqfj3dsq5b9-libunistring-1.4.1.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/7gp2ksp6pl1jl90y23lm2g9nji29fnnq-libunistring-1.4.1-dev[0m
+         [35;1m/nix/store/dvh7xiaz7ag6ifp5gc6wcqvl63yg1bkx-libunistring-1.4.1-doc[0m
+         [35;1m/nix/store/ra2srxhgdi5gdiza4j82v3p38cljgavf-libunistring-1.4.1[0m
+         [35;1m/nix/store/sljib7x32plgl9kridrlbri2aivjy6nd-libunistring-1.4.1-info[0m
+✖ error: Cannot build '/nix/store/jfscl3jlgkjnnav06y7l0bqfj3dsq5b9-libunistring-1.4.1.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/7gp2ksp6pl1jl90y23lm2g9nji29fnnq-libunistring-1.4.1-dev
+         /nix/store/dvh7xiaz7ag6ifp5gc6wcqvl63yg1bkx-libunistring-1.4.1-doc
+         /nix/store/ra2srxhgdi5gdiza4j82v3p38cljgavf-libunistring-1.4.1
+         /nix/store/sljib7x32plgl9kridrlbri2aivjy6nd-libunistring-1.4.1-info
+[31;1merror:[0m Cannot build '[35;1m/nix/store/567ns8nrislf8gssywrwnypqf8x89np7-texinfo-7.2.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/4akx0k3aqm8pnvbq308xsqqmkpn9z7s6-texinfo-7.2[0m
+✖ error: Cannot build '/nix/store/567ns8nrislf8gssywrwnypqf8x89np7-texinfo-7.2.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/4akx0k3aqm8pnvbq308xsqqmkpn9z7s6-texinfo-7.2
+[31;1merror:[0m Build failed due to failed dependency
+[31;1merror:[0m Build failed due to failed dependency
+[31;1merror:[0m Build failed due to failed dependency
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+✖ error: Cannot build '/nix/store/lfnxg1w1yd4ymsh9wlwy8rwd628wimvm-autoconf-2.72.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/7aqva22ffqviy9kqwc0918bbgpx6vzj6-autoconf-2.72-doc
+         /nix/store/i5y6kj4z3lc66dx4cdmnf6iaz5gr1ak7-autoconf-2.72
+[31;1merror:[0m Cannot build '[35;1m/nix/store/lfnxg1w1yd4ymsh9wlwy8rwd628wimvm-autoconf-2.72.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/7aqva22ffqviy9kqwc0918bbgpx6vzj6-autoconf-2.72-doc[0m
+         [35;1m/nix/store/i5y6kj4z3lc66dx4cdmnf6iaz5gr1ak7-autoconf-2.72[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/fqrw3jg0bkkckrp02fhhiafmikyz21nf-autoreconf-hook.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/yf2rhhi50k6f8r6mc6wjbarl3h4sx7fi-autoreconf-hook[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/hlmmr410q562b5iw4wrzkr2kj6fgrryi-libidn2-2.3.8.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/6i2xanbli2hahrkz50jf3455ravfkgkp-libidn2-2.3.8-info[0m
+         [35;1m/nix/store/6m6cfg1f0h5awmrwki4f1qh67q28va94-libidn2-2.3.8-devdoc[0m
+         [35;1m/nix/store/hfc4ccbjbvyad3zwnrzyx9866ahj417k-libidn2-2.3.8-dev[0m
+         [35;1m/nix/store/l8r992rrqhg39pwiykh634f8cmgfqcgg-libidn2-2.3.8-bin[0m
+         [35;1m/nix/store/zpmr8qjjh8gkkhlldhfghzfl6ahppbva-libidn2-2.3.8[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/w74r6gmddxkv9c6r1yhpkcj5m6smi107-libpsl-0.21.5.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/0lrb7s1bw6hsk6cxfj8w5bps5kn9byal-libpsl-0.21.5-dev[0m
+         [35;1m/nix/store/ngrr1j1h19wak5d38qkdm84mxl7p0hc4-libpsl-0.21.5[0m
+✖ error: Cannot build '/nix/store/fqrw3jg0bkkckrp02fhhiafmikyz21nf-autoreconf-hook.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/yf2rhhi50k6f8r6mc6wjbarl3h4sx7fi-autoreconf-hook
+✖ error: Cannot build '/nix/store/hlmmr410q562b5iw4wrzkr2kj6fgrryi-libidn2-2.3.8.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/6i2xanbli2hahrkz50jf3455ravfkgkp-libidn2-2.3.8-info
+         /nix/store/6m6cfg1f0h5awmrwki4f1qh67q28va94-libidn2-2.3.8-devdoc
+         /nix/store/hfc4ccbjbvyad3zwnrzyx9866ahj417k-libidn2-2.3.8-dev
+         /nix/store/l8r992rrqhg39pwiykh634f8cmgfqcgg-libidn2-2.3.8-bin
+         /nix/store/zpmr8qjjh8gkkhlldhfghzfl6ahppbva-libidn2-2.3.8
+✖ error: Cannot build '/nix/store/w74r6gmddxkv9c6r1yhpkcj5m6smi107-libpsl-0.21.5.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/0lrb7s1bw6hsk6cxfj8w5bps5kn9byal-libpsl-0.21.5-dev
+         /nix/store/ngrr1j1h19wak5d38qkdm84mxl7p0hc4-libpsl-0.21.5
+[31;1merror:[0m Cannot build '[35;1m/nix/store/nj9winw9s76pg3cgyxjjdypgw2i3a5bs-nghttp2-1.67.1.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/0n8ymd22pj8j7m2zicaw7fky58rni1mn-nghttp2-1.67.1-dev[0m
+         [35;1m/nix/store/6539lmb9izq67awsa4vm3d6nz82y8l4a-nghttp2-1.67.1-lib[0m
+         [35;1m/nix/store/6wkdbvz4ksd3p4byvfh7ndk32a4l5ggs-nghttp2-1.67.1[0m
+         [35;1m/nix/store/j7ldzi76ryh7kyz7928d3wvv0cps30hl-nghttp2-1.67.1-doc[0m
+         [35;1m/nix/store/lfq8f0kvsm4idvwdj7hbz4ya085dv97c-nghttp2-1.67.1-man[0m
+✖ error: Cannot build '/nix/store/nj9winw9s76pg3cgyxjjdypgw2i3a5bs-nghttp2-1.67.1.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/0n8ymd22pj8j7m2zicaw7fky58rni1mn-nghttp2-1.67.1-dev
+         /nix/store/6539lmb9izq67awsa4vm3d6nz82y8l4a-nghttp2-1.67.1-lib
+         /nix/store/6wkdbvz4ksd3p4byvfh7ndk32a4l5ggs-nghttp2-1.67.1
+         /nix/store/j7ldzi76ryh7kyz7928d3wvv0cps30hl-nghttp2-1.67.1-doc
+         /nix/store/lfq8f0kvsm4idvwdj7hbz4ya085dv97c-nghttp2-1.67.1-man
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+[31;1merror:[0m Cannot build '[35;1m/nix/store/wkvnmhqiifgvnc6jkmf95xsc13mxxjfb-asciidoc-10.2.1.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/0srhw2ypdqwxw5nqjfgwnb1cc2gkqkd7-asciidoc-10.2.1-dist[0m
+         [35;1m/nix/store/mix55kyra5f3jrj8461mr8539kwvdxyy-asciidoc-10.2.1[0m
+✖ error: Cannot build '/nix/store/wkvnmhqiifgvnc6jkmf95xsc13mxxjfb-asciidoc-10.2.1.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/0srhw2ypdqwxw5nqjfgwnb1cc2gkqkd7-asciidoc-10.2.1-dist
+         /nix/store/mix55kyra5f3jrj8461mr8539kwvdxyy-asciidoc-10.2.1
+[31;1merror:[0m Cannot build '[35;1m/nix/store/9f2i20yq3jp4yhaxk3qnxhazp7syqmvn-curl-8.18.0.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/2xrq7swcyjrvsbp5wk4qivwbzrqxasxr-curl-8.18.0-dev[0m
+         [35;1m/nix/store/7bxrgix4f88r6xvidyl035vxdbn2rnyk-curl-8.18.0[0m
+         [35;1m/nix/store/gki71gmvlp9d86rqh8b4b6wp7wg396qg-curl-8.18.0-bin[0m
+         [35;1m/nix/store/vrff2ib15qhdig8ich94visj28x9m931-curl-8.18.0-devdoc[0m
+         [35;1m/nix/store/wd2w49jdql1n3c6cg4qimqbq5k6m6j4f-curl-8.18.0-man[0m
+✖ error: Cannot build '/nix/store/9f2i20yq3jp4yhaxk3qnxhazp7syqmvn-curl-8.18.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/2xrq7swcyjrvsbp5wk4qivwbzrqxasxr-curl-8.18.0-dev
+         /nix/store/7bxrgix4f88r6xvidyl035vxdbn2rnyk-curl-8.18.0
+         /nix/store/gki71gmvlp9d86rqh8b4b6wp7wg396qg-curl-8.18.0-bin
+         /nix/store/vrff2ib15qhdig8ich94visj28x9m931-curl-8.18.0-devdoc
+         /nix/store/wd2w49jdql1n3c6cg4qimqbq5k6m6j4f-curl-8.18.0-man
+[31;1merror:[0m Cannot build '[35;1m/nix/store/c2z5y7yrd6q44nizj5mi4akpd74m5lhm-flex-2.6.4.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/g3kfa91zihk2423fngk6fw3c5l5scs90-flex-2.6.4[0m
+✖ error: Cannot build '/nix/store/c2z5y7yrd6q44nizj5mi4akpd74m5lhm-flex-2.6.4.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/g3kfa91zihk2423fngk6fw3c5l5scs90-flex-2.6.4
+[31;1merror:[0m Cannot build '[35;1m/nix/store/4c6gjl7qk0qv1bcc8x7xanjkn5fz9bcm-libedit-20251016-3.1.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/aq6zm20yky7h5qwh7lc1i5w52jh22i9r-libedit-20251016-3.1[0m
+         [35;1m/nix/store/csql4431q1w9ypflxcaa74r4p1yaii3l-libedit-20251016-3.1-dev[0m
+         [35;1m/nix/store/g5asly0wgl3hrz7ijhzncsp3zmnh8zhd-libedit-20251016-3.1-man[0m
+✖ error: Cannot build '/nix/store/4c6gjl7qk0qv1bcc8x7xanjkn5fz9bcm-libedit-20251016-3.1.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/aq6zm20yky7h5qwh7lc1i5w52jh22i9r-libedit-20251016-3.1
+         /nix/store/csql4431q1w9ypflxcaa74r4p1yaii3l-libedit-20251016-3.1-dev
+         /nix/store/g5asly0wgl3hrz7ijhzncsp3zmnh8zhd-libedit-20251016-3.1-man
+[31;1merror:[0m Cannot build '[35;1m/nix/store/3y6c5113xxyjx71wqmrk4da23xwqmaqa-libxslt-1.1.45.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/14fbdpza5mxqk08iswr1ll1f2xmrblj3-libxslt-1.1.45-bin[0m
+         [35;1m/nix/store/4fbmgwi1gix4v758kllijyv7kqm60b5q-libxslt-1.1.45-doc[0m
+         [35;1m/nix/store/mkmyaqbqkrmkknm08khk2l1hvv7fdgc1-libxslt-1.1.45-devdoc[0m
+         [35;1m/nix/store/vbnmjzbyqyig9ya77r0vc117fzmk8f9n-libxslt-1.1.45-dev[0m
+         [35;1m/nix/store/wxfz5r34mx8jqx2d15f18hpvyfn48kxa-libxslt-1.1.45[0m
+✖ error: Cannot build '/nix/store/3y6c5113xxyjx71wqmrk4da23xwqmaqa-libxslt-1.1.45.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/14fbdpza5mxqk08iswr1ll1f2xmrblj3-libxslt-1.1.45-bin
+         /nix/store/4fbmgwi1gix4v758kllijyv7kqm60b5q-libxslt-1.1.45-doc
+         /nix/store/mkmyaqbqkrmkknm08khk2l1hvv7fdgc1-libxslt-1.1.45-devdoc
+         /nix/store/vbnmjzbyqyig9ya77r0vc117fzmk8f9n-libxslt-1.1.45-dev
+         /nix/store/wxfz5r34mx8jqx2d15f18hpvyfn48kxa-libxslt-1.1.45
+[31;1merror:[0m Cannot build '[35;1m/nix/store/dmdkl9lglqy8j436syfik306iw08nmlm-re2c-4.4.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/j484lr6iiy9syaninwj9ljblhy21fkiv-re2c-4.4[0m
+✖ error: Cannot build '/nix/store/dmdkl9lglqy8j436syfik306iw08nmlm-re2c-4.4.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/j484lr6iiy9syaninwj9ljblhy21fkiv-re2c-4.4
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+[31;1merror:[0m Cannot build '[35;1m/nix/store/10nalypx02s7kbmlj7fn6164jlmrl2xj-cargo-1.94.0.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/qc11ia0117063fppa4c3bzc64pvlg0nr-cargo-1.94.0[0m
+✖ error: Cannot build '/nix/store/10nalypx02s7kbmlj7fn6164jlmrl2xj-cargo-1.94.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/qc11ia0117063fppa4c3bzc64pvlg0nr-cargo-1.94.0
+[31;1merror:[0m Cannot build '[35;1m/nix/store/a2713bk1jc9idm8drn5p5jgpn06n9w7g-cargo-1.94.0.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/fp6mq617pb2rwrkc2fspjbwgf85jdb6n-cargo-1.94.0[0m
+✖ error: Cannot build '/nix/store/a2713bk1jc9idm8drn5p5jgpn06n9w7g-cargo-1.94.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/fp6mq617pb2rwrkc2fspjbwgf85jdb6n-cargo-1.94.0
+[31;1merror:[0m Cannot build '[35;1m/nix/store/6lflvhfw0msjcnhxb1d38g6h5g6cc5jv-dash-0.5.13.1.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/g7714yg7zxnip9nhmyknwdvb4nawl6v1-dash-0.5.13.1[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/a2k7fbhjwaixgql873340p7wf10n0kn5-prefetch-npm-deps-0.1.0.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/srzb724qbl2s871jjkjja61zdfqwzv2j-prefetch-npm-deps-0.1.0[0m
+✖ error: Cannot build '/nix/store/6lflvhfw0msjcnhxb1d38g6h5g6cc5jv-dash-0.5.13.1.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/g7714yg7zxnip9nhmyknwdvb4nawl6v1-dash-0.5.13.1
+✖ error: Cannot build '/nix/store/a2k7fbhjwaixgql873340p7wf10n0kn5-prefetch-npm-deps-0.1.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/srzb724qbl2s871jjkjja61zdfqwzv2j-prefetch-npm-deps-0.1.0
+✓ Building crate-anstyle-1.0.13.tar.gz in 1.16s
+✓ Building anstream-0.6.21 in 736ms
+✓ Building crate-anstyle-parse-0.2.7.tar.gz in 1.17s
+[31;1merror:[0m Build failed due to failed dependency
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+[31;1merror:[0m Build failed due to failed dependency
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+• Building ensure-newer-sources-hook.sh
+• Building install-shell-files
+• Building make-binary-wrapper-hook
+[31;1merror:[0m Cannot build '[35;1m/nix/store/9sy5gixv1qa7aihh0l3r3p9hycn53plr-auditable-cargo-1.94.0.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/s1s57bqw1w7ppq2cs0c92rh6x0448872-auditable-cargo-1.94.0[0m
+✖ error: Cannot build '/nix/store/9sy5gixv1qa7aihh0l3r3p9hycn53plr-auditable-cargo-1.94.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/s1s57bqw1w7ppq2cs0c92rh6x0448872-auditable-cargo-1.94.0
+[31;1merror:[0m Cannot build '[35;1m/nix/store/yvy6x0lz9r6mgvwj68wrnzch8bljagg0-auditable-cargo-1.94.0.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/axab2cr2cyardzy7k98m3jbgsg64hbrw-auditable-cargo-1.94.0[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/zal0428m6jl4gnznh1dibkh1yszna42w-cargo-auditable-0.7.2-vendor.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/n0dxgwi6fhiaxly2fsigpvhw2nvpaf9m-cargo-auditable-0.7.2-vendor[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/zkj592afcrzy24vryg4sgxzdbmri7z34-cargo-auditable-0.7.2.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/6y709dhvdljpy7qib6d77nxdqzsmm2ms-cargo-auditable-0.7.2[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/g384c1kp5mx50wskcixhss63lbr12fns-cargo-auditable-bootstrap-0.7.2-vendor.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/zb0zvra186kp13i2gs9a4m8rdv097nnd-cargo-auditable-bootstrap-0.7.2-vendor[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/lm01qwnlb17nzlcfx7j3b6cqjmdcc2vk-cargo-auditable-bootstrap-0.7.2.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/6ysln55jfjs4kyl0skk1krdv4hh90nam-cargo-auditable-bootstrap-0.7.2[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/fapd5f0viiyhn7m927r4xgqqg16qckf0-npm-config-hook.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/2vp8j38yl7h9374smc9l0vsygl8n36da-npm-config-hook[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/1m27g9qw7a1xpvrbicxpgfcpfdiqff13-pythoncheck.sh.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/zmi6s9z3aa8yfhk9wir6s1z31nkfhqdg-pythoncheck.sh[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/qz4l2qkg4172rk9kph38gwn7hqd9z0rg-pythoncheck.sh.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/c098399w177xh0l5mkbiqmsivjkn2hzg-pythoncheck.sh[0m
+✖ error: Cannot build '/nix/store/yvy6x0lz9r6mgvwj68wrnzch8bljagg0-auditable-cargo-1.94.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/axab2cr2cyardzy7k98m3jbgsg64hbrw-auditable-cargo-1.94.0
+✖ error: Cannot build '/nix/store/zal0428m6jl4gnznh1dibkh1yszna42w-cargo-auditable-0.7.2-vendor.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/n0dxgwi6fhiaxly2fsigpvhw2nvpaf9m-cargo-auditable-0.7.2-vendor
+✖ error: Cannot build '/nix/store/zkj592afcrzy24vryg4sgxzdbmri7z34-cargo-auditable-0.7.2.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/6y709dhvdljpy7qib6d77nxdqzsmm2ms-cargo-auditable-0.7.2
+✖ error: Cannot build '/nix/store/g384c1kp5mx50wskcixhss63lbr12fns-cargo-auditable-bootstrap-0.7.2-vendor.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/zb0zvra186kp13i2gs9a4m8rdv097nnd-cargo-auditable-bootstrap-0.7.2-vendor
+✖ error: Cannot build '/nix/store/lm01qwnlb17nzlcfx7j3b6cqjmdcc2vk-cargo-auditable-bootstrap-0.7.2.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/6ysln55jfjs4kyl0skk1krdv4hh90nam-cargo-auditable-bootstrap-0.7.2
+✖ error: Cannot build '/nix/store/fapd5f0viiyhn7m927r4xgqqg16qckf0-npm-config-hook.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/2vp8j38yl7h9374smc9l0vsygl8n36da-npm-config-hook
+✖ error: Cannot build '/nix/store/1m27g9qw7a1xpvrbicxpgfcpfdiqff13-pythoncheck.sh.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/zmi6s9z3aa8yfhk9wir6s1z31nkfhqdg-pythoncheck.sh
+✖ error: Cannot build '/nix/store/qz4l2qkg4172rk9kph38gwn7hqd9z0rg-pythoncheck.sh.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/c098399w177xh0l5mkbiqmsivjkn2hzg-pythoncheck.sh
+[31;1merror:[0m Cannot build '[35;1m/nix/store/s2milkljcpslfjyib9f6rfalccrgn4c0-quint-cli-0.30.0-npm-deps.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/5vd70nzi9ggx6m4nvsrahqydi5n8nm7i-quint-cli-0.30.0-npm-deps[0m
+✖ error: Cannot build '/nix/store/s2milkljcpslfjyib9f6rfalccrgn4c0-quint-cli-0.30.0-npm-deps.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/5vd70nzi9ggx6m4nvsrahqydi5n8nm7i-quint-cli-0.30.0-npm-deps
+[31;1merror:[0m Cannot build '[35;1m/nix/store/bcdz4bpxblxzmjh9451b5q8w1spvkhnl-quint-evaluator-0.4.0-vendor.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/b3mpsr119q7079g0bq2dl14kzz81xg7h-quint-evaluator-0.4.0-vendor[0m
+✖ error: Cannot build '/nix/store/bcdz4bpxblxzmjh9451b5q8w1spvkhnl-quint-evaluator-0.4.0-vendor.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/b3mpsr119q7079g0bq2dl14kzz81xg7h-quint-evaluator-0.4.0-vendor
+✓ Building make-binary-wrapper-hook in 10.7ms
+✓ Building ensure-newer-sources-hook.sh in 65.4ms
+[31;1merror:[0m Cannot build '[35;1m/nix/store/f4ppi5cj6vsqj6cwrw7mwz1ldk46xy6y-quint-evaluator-0.4.0.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/yac1cgf46346mkcckm3d3rychjwa9059-quint-evaluator-0.4.0[0m
+✖ error: Cannot build '/nix/store/f4ppi5cj6vsqj6cwrw7mwz1ldk46xy6y-quint-evaluator-0.4.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/yac1cgf46346mkcckm3d3rychjwa9059-quint-evaluator-0.4.0
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+• Building npm-build-hook
+[31;1merror:[0m Cannot build '[35;1m/nix/store/jj4kzv03rmz9lzl0k01zcmd6smkkjw64-quint-0.30.0.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/39dsi8lwfk6gclk40y73q7bw56r7d9x5-quint-0.30.0[0m
+• Building source
+✖ error: Cannot build '/nix/store/jj4kzv03rmz9lzl0k01zcmd6smkkjw64-quint-0.30.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/39dsi8lwfk6gclk40y73q7bw56r7d9x5-quint-0.30.0
+✓ Building source in 6.25ms
+[31;1merror:[0m Cannot build '[35;1m/nix/store/hfx06y03ldkgai2l4m6f0v38vn6ixcky-quint-cli-0.30.0.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/29pc2yhgw2f77ifp4v1b14r5rnbsdr6f-quint-cli-0.30.0[0m
+✖ error: Cannot build '/nix/store/hfx06y03ldkgai2l4m6f0v38vn6ixcky-quint-cli-0.30.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/29pc2yhgw2f77ifp4v1b14r5rnbsdr6f-quint-cli-0.30.0
+✓ Building npm-build-hook in 50.0ms
+✓ Building install-shell-files in 131ms
+[31;1merror:[0m Build failed due to failed dependency
+✖ error: Build failed due to failed dependency
+• Building tasks.json
+[31;1merror:[0m Cannot build '[35;1m/nix/store/5063wbrmlm1ab9v32xvwbd4cyqlp271y-devenv-profile.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/ygz2h53sjkl2v58qrxfrp0rikvf4mg4q-devenv-profile[0m
+[31;1merror:[0m Cannot build '[35;1m/nix/store/xq3g0p3vn9ldrwlwg7w4y69w3g0vd334-devenv-shell.drv[0m'.
+       Reason: [31;1m1 dependency failed[0m.
+       Output paths:
+         [35;1m/nix/store/fsz2y1wp2867ydb06yvr0p0d3xdcw40j-devenv-shell[0m
+✖ error: Cannot build '/nix/store/5063wbrmlm1ab9v32xvwbd4cyqlp271y-devenv-profile.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/ygz2h53sjkl2v58qrxfrp0rikvf4mg4q-devenv-profile
+✖ error: Cannot build '/nix/store/xq3g0p3vn9ldrwlwg7w4y69w3g0vd334-devenv-shell.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/fsz2y1wp2867ydb06yvr0p0d3xdcw40j-devenv-shell
+✓ Building tasks.json in 4.96ms
+✓ Evaluating devenv.config.shell in 126s
+✓ Building in 139s
+  [31m×[0m Failed to build attribute: devenv.config.shell: [31;1merror:[0m Cannot build '[35;1m/nix/store/xq3g0p3vn9ldrwlwg7w4y69w3g0vd334-devenv-shell.drv[0m'.
+  [31m [0m Reason: [31;1m1 dependency failed[0m.
+  [31m [0m Output paths:
+  [31m [0m   [35;1m/nix/store/fsz2y1wp2867ydb06yvr0p0d3xdcw40j-devenv-shell[0m
+

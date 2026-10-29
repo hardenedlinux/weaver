@@ -1,0 +1,55 @@
+name: Native and formal assurance
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - docs/**
+      - README.org
+      - dev/proofs/evidence/**
+      - dev/specs/evidence/**
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: assurance-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  assurance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GOTOOLCHAIN: local
+      CARGO_BUILD_JOBS: "2"
+      GOMAXPROCS: "2"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31
+        with:
+          enable_kvm: false
+          extra_nix_config: |
+            max-jobs = 1
+            cores = 2
+            extra-substituters = https://devenv.cachix.org
+            extra-trusted-public-keys = devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=
+      - name: Fetch locked dependencies
+        run: nix run github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv -- --profile ci shell -- go run ./go/cmd/weaver-dev -clean-source bootstrap
+      - name: Verify native and formal contracts
+        run: nix run github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv -- --profile ci shell -- go run ./go/cmd/weaver-dev -clean-source check
+      - name: Measure all Rust packages and gRPC
+        run: nix run github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv -- --profile ci shell -- go run ./go/cmd/weaver-dev -clean-source bench
+      - name: Retain source-bound receipts and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: assurance-${{ runner.os }}-${{ github.sha }}
+          path: .data/verification-*
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
