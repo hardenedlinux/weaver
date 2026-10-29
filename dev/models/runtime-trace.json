@@ -191,7 +191,7 @@
     {"file":"go/internal/routing/provider_test.go","pattern":"func TestProviderRoutingCannotRewriteOriginalContract"},
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderGRPCStreamingAndArrowOption"}]},
   {"id":"UnambiguousProviderRequestBounds","witnesses":[
-    {"file":"crates/contracts/tests/provider_bounds.rs","pattern":"fn exactly_one_provider_cap_is_bounded"},
+    {"file":"crates/contracts/tests/unit/provider_bounds.rs","pattern":"fn exactly_one_provider_cap_is_bounded"},
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn rejected_competing_caps_leave_no_claim_or_hold_after_restart"},
     {"file":"go/internal/routing/provider_test.go","pattern":"func FuzzProviderRequestBounds"},
     {"file":"go/dev/provider_bounds_test.go","pattern":"func TestProviderCompetingCapsCannotReachDispatch"},

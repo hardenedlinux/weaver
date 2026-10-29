@@ -1,7 +1,7 @@
-#[path = "../../../dev/benchmarks/contracts.rs"]
+#[path = "../../../../dev/benchmarks/contracts.rs"]
 mod fixtures;
 
-use proptest::prelude::*;
+use proptest::{arbitrary::any, prop_assert_eq, proptest, test_runner::Config};
 
 #[test]
 fn competing_provider_limits_are_rejected_even_when_the_preferred_one_is_bounded() {
@@ -32,7 +32,7 @@ fn provider_cap_must_be_a_positive_bounded_integer() {
 }
 
 proptest! {
-    #![proptest_config(ProptestConfig::with_cases(64))]
+    #![proptest_config(Config::with_cases(64))]
     #[test]
     fn exactly_one_provider_cap_is_bounded(modern in any::<bool>(), legacy in any::<bool>(), tokens in 0u64..8193) {
         let (_, mut plan) = fixtures::task_plan(8, "https://provider.invalid/v1/chat/completions");

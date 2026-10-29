@@ -1,0 +1,1654 @@
+An example execution:
+
+[State 0]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: -1,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 1,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 0,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 0, 2 -> 0)
+    }
+}
+
+[State 1]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: -1,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 1,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 0,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 0, 2 -> 0)
+    }
+}
+
+[State 2]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: -1,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 1,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 0,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 0, 2 -> 0)
+    }
+}
+
+[State 3]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: -1,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 1,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 0,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 4]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: -1,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 1,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 0,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 5]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: -1,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 1,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 0,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 6]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: -1,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 1,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 0,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 7]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: -1,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 2,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 1,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 8]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 0,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 2,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 1,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 9]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 0,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 2,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 1,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 10]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 0,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 3,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 2,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 11]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 0,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 4,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 3,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 12]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 0,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 4,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 3,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 13]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 0,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 5,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 4,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 14]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 0,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 5,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 4,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 15]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 0,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 6,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 5,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 16]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 0,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 6,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 5,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 17]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 4,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 6,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 5,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 18]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 4,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 7,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 6,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 19]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 4,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 8,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 7,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 20]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 4,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 9,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 8,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 21]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 4,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 9,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 8,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 22]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 4,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 9,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 8,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 23]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 4,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 9,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 8,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 24]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 9,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 8,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 25]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 9,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 8,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 26]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 9,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 8,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 27]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 9,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 8,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 28]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 10,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 9,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 29]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 10,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 9,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 30]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 11,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 10,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 31]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 11,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 10,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 32]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 11,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 10,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 33]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 11,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 10,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 34]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 11,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 10,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 35]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 11,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 10,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 36]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 12,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 11,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 37]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 13,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 12,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 38]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 14,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 13,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 39]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 14,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 13,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 40]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 15,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 14,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 41]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 7,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 15,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 14,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 42]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 13,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 15,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 14,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 43]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 13,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 15,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 14,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 44]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 13,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 16,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 15,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 45]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 13,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 16,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 15,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 46]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 13,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 16,
+      generation: 0,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 1,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 15,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 47]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 13,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 16,
+      generation: 1,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 16,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 15,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 48]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 14,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 16,
+      generation: 1,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 16,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 15,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 49]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 14,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 17,
+      generation: 1,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 16,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 16,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 50]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 14,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 17,
+      generation: 2,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 17,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 16,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 51]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 1, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 14,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 18,
+      generation: 2,
+      hold: Map(0 -> 0, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 17,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 17,
+      stale: false,
+      status: Map(0 -> 0, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 52]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 18, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 17, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 14,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 18,
+      generation: 2,
+      hold: Map(0 -> 1, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 17,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 17,
+      stale: false,
+      status: Map(0 -> 1, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 53]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 18, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 17, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 14,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 18,
+      generation: 3,
+      hold: Map(0 -> 1, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 18,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 17,
+      stale: false,
+      status: Map(0 -> 1, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 54]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 18, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 17, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 14,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 19,
+      generation: 3,
+      hold: Map(0 -> 1, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 18,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 18,
+      stale: false,
+      status: Map(0 -> 1, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 55]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 18, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 17, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 17,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 19,
+      generation: 3,
+      hold: Map(0 -> 1, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 18,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 18,
+      stale: false,
+      status: Map(0 -> 1, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 56]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 18, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 17, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 17,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 20,
+      generation: 3,
+      hold: Map(0 -> 1, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 18,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 19,
+      stale: false,
+      status: Map(0 -> 1, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 57]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 18, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 17, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 17,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 21,
+      generation: 3,
+      hold: Map(0 -> 1, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 18,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 20,
+      stale: false,
+      status: Map(0 -> 1, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 58]
+{
+  s:
+    {
+      allowed: true,
+      authFence: Map(0 -> 18, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 17, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 19,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 21,
+      generation: 3,
+      hold: Map(0 -> 1, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 18,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 20,
+      stale: false,
+      status: Map(0 -> 1, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 59]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 18, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 17, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 19,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 22,
+      generation: 3,
+      hold: Map(0 -> 1, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 18,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 21,
+      stale: false,
+      status: Map(0 -> 1, 1 -> 1, 2 -> 0)
+    }
+}
+
+[State 60]
+{
+  s:
+    {
+      allowed: false,
+      authFence: Map(0 -> 18, 1 -> 1, 2 -> 1),
+      authRev: Map(0 -> 17, 1 -> 0, 2 -> 0),
+      burned: 0,
+      cachedRevision: 19,
+      calls: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0, 4 -> 0, 5 -> 0),
+      cursor: Map(0 -> 0, 1 -> 0, 2 -> 0),
+      fence: 22,
+      generation: 3,
+      hold: Map(0 -> 1, 1 -> 1, 2 -> 0),
+      invoked: 0,
+      lock: false,
+      observed: false,
+      ownerFence: 18,
+      permit: -1,
+      permitGen: 0,
+      permitOffset: 0,
+      revision: 21,
+      stale: false,
+      status: Map(0 -> 1, 1 -> 1, 2 -> 0)
+    }
+}
+
+[ok] No violation found (3770ms at 265 traces/second).
+Trace length statistics: max=61, min=61, average=61.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0x125 --backend=typescript to reproduce.

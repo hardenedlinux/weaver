@@ -1,0 +1,59 @@
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.06s
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-930e053f6ced3ce5)
+
+running 1 test
+test enforce_asp_rust_gate ... FAILED
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (23818694) panicked at crates/contracts/src/lib.rs:22:1:
+[RUST-AGENT-PROJECT-001] Warning: Root test file lacks explicit harness role
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts/tests/provider_bounds.rs:1:1
+fix: move this file under tests/unit or tests/integration
+Help: tests/provider_bounds.rs is a root-level test file without an explicit harness role.
+Contract: Move root-level test files under tests/unit or tests/integration and declare nonstandard isolated targets directly in Cargo.toml.
+
+[RUST-AGENT-PROJECT-007] Warning: Root test target contains implementation
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts/tests/provider_bounds.rs:6:1
+fix: move test implementation into a suite module and mount it from the root target
+line: 6 | #[test]
+Help: tests/provider_bounds.rs contains top-level implementation item `fn`.
+Contract: Keep root Cargo test targets as thin aggregates with external module mounts only.
+
+[RUST-AGENT-PROJECT-007] Warning: Root test target contains implementation
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts/tests/provider_bounds.rs:15:1
+fix: move test implementation into a suite module and mount it from the root target
+line: 15 | #[test]
+Help: tests/provider_bounds.rs contains top-level implementation item `fn`.
+Contract: Keep root Cargo test targets as thin aggregates with external module mounts only.
+
+[RUST-AGENT-PROJECT-008] Warning: Root test module mount is implicit or misplaced
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts/tests/provider_bounds.rs:1:1
+fix: point this root test module at tests/unit, tests/integration, or another standard suite
+line: 1 | #[path = "../../../dev/benchmarks/contracts.rs"]
+Help: tests/provider_bounds.rs mounts `../../../dev/benchmarks/contracts.rs`, but root test modules must resolve under an allowed tests suite directory.
+Contract: Root Cargo test targets must mount external modules with explicit #[path] attributes pointing under an allowed tests suite directory.
+
+[RUST-MOD-R010] Warning: Glob import hides owner scope
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts/tests/provider_bounds.rs:4:1
+fix: replace glob import with explicit owner imports
+line: 4 | use proptest::prelude::*;
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts/tests/provider_bounds.rs uses prelude glob import `proptest::prelude::*` in test context.
+Contract: Avoid every Rust glob import, including absolute crate globs; import owner names explicitly so module dependencies stay visible.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+error: test failed, to rerun pass `-p weaver-contracts --lib`

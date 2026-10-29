@@ -1,0 +1,11 @@
+'Weaver.StreamingExecution.safe_step' depends on axioms: [propext, Quot.sound]
+'Weaver.StreamingExecution.safe_run' depends on axioms: [propext, Quot.sound]
+'Weaver.StreamingExecution.arbitrary_finite_messages_and_ranges' depends on axioms: [propext, Quot.sound]
+'Weaver.StreamingExecution.unknown_cannot_resume' depends on axioms: [propext]
+'Weaver.StreamingExecution.old_generation_cannot_pass' does not depend on any axioms
+'Weaver.StreamingExecution.held_never_decreases' depends on axioms: [propext, Quot.sound]
+'Weaver.StreamingExecution.bounded_range_copy_work' depends on axioms: [propext, Quot.sound]
+'Weaver.StreamingExecution.Lifecycle.drain_has_no_live_writer' does not depend on any axioms
+'Weaver.StreamingExecution.Lifecycle.disconnect_keeps_tracking' does not depend on any axioms
+'Weaver.StreamingExecution.Lifecycle.shutdown_blocks_admission' depends on axioms: [propext]
+'Weaver.StreamingExecution.Lifecycle.execution_and_drain_composition' depends on axioms: [propext, Quot.sound]

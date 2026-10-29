@@ -1,0 +1,922 @@
+An example execution:
+
+[State 0]
+{
+  s:
+    {
+      current: true,
+      emissions: [],
+      held: 12,
+      pending: Set(),
+      reserved: Set(),
+      session: 0,
+      tokens: [],
+      used: Set()
+    }
+}
+
+[State 1]
+{
+  s:
+    {
+      current: true,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 0,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set()
+    }
+}
+
+[State 2]
+{
+  s:
+    {
+      current: true,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 0,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set()
+    }
+}
+
+[State 3]
+{
+  s:
+    {
+      current: true,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 1,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set()
+    }
+}
+
+[State 4]
+{
+  s:
+    {
+      current: true,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 1,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set()
+    }
+}
+
+[State 5]
+{
+  s:
+    {
+      current: true,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 1,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 6]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 1,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 7]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 2,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 8]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 3,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 9]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 3,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 10]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 4,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 11]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 5,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 12]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 5,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 13]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 5,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 14]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 6,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 15]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 6,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 16]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 6,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 17]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 7,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 18]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 7,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 19]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 7,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 20]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 8,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 21]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 9,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 22]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 9,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 23]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 10,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 24]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 10,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 25]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 10,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 26]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 11,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 27]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 12,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 28]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 12,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 29]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 12,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 30]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 13,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 31]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 13,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 32]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 13,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 33]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 14,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 34]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 15,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 35]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 15,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 36]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 16,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 37]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 16,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 38]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 17,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 39]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 17,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 40]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 18,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 41]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 19,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 42]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 20,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 43]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 20,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 44]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 20,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 45]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 21,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 46]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 21,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 47]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 21,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 48]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 22,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 49]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 22,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 50]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 22,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 51]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 22,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 52]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 23,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 53]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 23,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 54]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 24,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 55]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 24,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 56]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 24,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 57]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 24,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 58]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 24,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 59]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 24,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[State 60]
+{
+  s:
+    {
+      current: false,
+      emissions: [],
+      held: 12,
+      pending: Set(2),
+      reserved: Set(2),
+      session: 24,
+      tokens: [{ encoding: 0, owner: 2, session: 0 }],
+      used: Set(0)
+    }
+}
+
+[ok] No violation found (1455ms at 687 traces/second).
+Trace length statistics: max=61, min=61, average=61.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0x125 --backend=typescript to reproduce.

@@ -1,0 +1,50 @@
+• Validating lock
+✓ Validating lock in 1.38ms
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 7.94ms
+• Evaluating shell
+✓ Evaluating shell in 95.0ms (cached)
+✓ Configuring shell in 112ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 1.03ms (cached)
+✓ Loading tasks in 2.37ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 24.5ms
+• Running devenv:files
+✓ Running devenv:files in 46.6ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 83.2ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 37.1ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 5.08µs (no command)
+✓ Running tasks in 192ms
+💡 The dotenv file '.env' was not found.
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.95s
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-fab6646098ca0d4a)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-2ee680a3d6ef9af6)
+
+running 4 tests
+test decoder::duplicate_keys_unknown_fields_and_streams_are_rejected ... ok
+test provider_bounds::competing_provider_limits_are_rejected_even_when_the_preferred_one_is_bounded ... ok
+test provider_bounds::provider_cap_must_be_a_positive_bounded_integer ... ok
+test provider_bounds::exactly_one_provider_cap_is_bounded ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+   Doc-tests weaver_contracts
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

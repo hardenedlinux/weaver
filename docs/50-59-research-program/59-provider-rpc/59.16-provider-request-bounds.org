@@ -102,3 +102,11 @@ twenty-six Quint controls and Lean compilation pass. Printed Lean axiom evidence
 contains no =sorryAx=. D2 SVG rendering succeeds, and the PNG preview was inspected
 for spacing and label overlap. These focused results precede the final complete
 source-bound gate; they do not replace it or the measured benchmark matrix.
+
+The first complete committed run at =ad24ce3= finishes naturally with exactly one
+failed stage: ASP rejects the new root test target's implementation, non-suite
+fixture mount and glob import. Its [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-asp-rejected/receipt.json][complete failure receipt]] retains all stages,
+including passing final source identity and actual provider integration. The
+correction moves implementation under =tests/unit/provider_bounds.rs=, mounts it
+from the existing thin =unit_test.rs= aggregate and uses explicit owner imports.
+No ASP rule is suppressed and no focused result reclassifies this run as passing.
