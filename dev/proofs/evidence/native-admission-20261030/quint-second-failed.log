@@ -1,0 +1,7 @@
+Command: quint test dev/proofs/quint/NativeAdmission.qnt --main NativeAdmission --seed 293
+Error [QNT202]: Multiple updates of variable lanes
+at dev/proofs/quint/NativeAdmission.qnt:4:3
+var lanes:Lanes
+error: typechecking failed
+Exit code: 1
+Repair: rejected-action runs end at fail(); they no longer combine a failed updating action with a second inert assignment or assert a nonexistent next state.

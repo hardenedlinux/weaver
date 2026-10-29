@@ -1,0 +1,234 @@
+[
+  {
+    "module": "LogicalMessageAuthority",
+    "path": "specs/lean/LogicalMessageAuthority.lean",
+    "sha256": "649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca",
+    "imports": [
+      "Std"
+    ]
+  },
+  {
+    "module": "SharedMessageBudget",
+    "path": "specs/lean/SharedMessageBudget.lean",
+    "sha256": "be3f2237e83c6d1ecf824795919d7278654aa05012d30a8c5363f1bc24a3904f",
+    "imports": [
+      "LogicalMessageAuthority"
+    ]
+  },
+  {
+    "module": "FiniteDomainMigration",
+    "path": "specs/lean/FiniteDomainMigration.lean",
+    "sha256": "89a16ca38a6b6e21e4fd4892c26043c0d4f68881c7c4626a2e648cadaabf1c2d",
+    "imports": [
+      "SharedMessageBudget"
+    ]
+  },
+  {
+    "module": "GatewayHeadCAS",
+    "path": "proofs/lean/GatewayHeadCAS.lean",
+    "sha256": "a8f03aa567aef9376254cc04e4539ba19df072c0693693d968edf115a133f828",
+    "imports": [
+      "FiniteDomainMigration"
+    ]
+  },
+  {
+    "module": "BrokerConsumptionQueue",
+    "path": "proofs/lean/BrokerConsumptionQueue.lean",
+    "sha256": "3c9f52a3fd90e965b9a96e653a40fd29e2e7942d76899167cb7d0be8d297ac6f",
+    "imports": [
+      "GatewayHeadCAS"
+    ]
+  },
+  {
+    "module": "LogicalRangeRecovery",
+    "path": "proofs/lean/LogicalRangeRecovery.lean",
+    "sha256": "5b5c48048213d702a181aed1bb96e21fb251bc7bc459674423241e118133efa4",
+    "imports": [
+      "BrokerConsumptionQueue"
+    ]
+  },
+  {
+    "module": "LlmRouting",
+    "path": "proofs/lean/LlmRouting.lean",
+    "sha256": "222f1af3fae8368fcf384ffebb28bd725fedeccab5f00c033287a0a17e3769d9",
+    "imports": [
+      "LogicalRangeRecovery"
+    ]
+  },
+  {
+    "module": "LlmAttemptLedger",
+    "path": "proofs/lean/LlmAttemptLedger.lean",
+    "sha256": "0e2492282f799210084c7c331f5d6303b05fee8b7fa960147a0e351d06da82cc",
+    "imports": [
+      "LlmRouting"
+    ]
+  },
+  {
+    "module": "LlmSemanticContract",
+    "path": "proofs/lean/LlmSemanticContract.lean",
+    "sha256": "a2fdbbaf7b56cb7c2f8a9581045dfc33da74f5c460530982524b438c2bca3cf1",
+    "imports": [
+      "LlmAttemptLedger"
+    ]
+  },
+  {
+    "module": "LlmAuthoritativeScope",
+    "path": "proofs/lean/LlmAuthoritativeScope.lean",
+    "sha256": "9f29996b8651270ac6ddf91bfdd1c1e8252cf1abfe81c140b325cf75ba36ef99",
+    "imports": [
+      "LlmSemanticContract"
+    ]
+  },
+  {
+    "module": "LlmRegistryPublication",
+    "path": "proofs/lean/LlmRegistryPublication.lean",
+    "sha256": "3a77d696cb08ec6419b577de2cea90c6b4747fca6224796d420c98d17bc8fcba",
+    "imports": [
+      "LlmAuthoritativeScope"
+    ]
+  },
+  {
+    "module": "LlmRecoveryCAS",
+    "path": "proofs/lean/LlmRecoveryCAS.lean",
+    "sha256": "d242ba4832ba5436b19470836fbbe0d75b8d858bab6123585b2a5c7f3b77ddf0",
+    "imports": [
+      "LlmRegistryPublication"
+    ]
+  },
+  {
+    "module": "LlmPolicyPublication",
+    "path": "proofs/lean/LlmPolicyPublication.lean",
+    "sha256": "302b7b322c955ab005c8c6a2f71a926fb5b8617e1761ed435a32cc0a17c2848e",
+    "imports": [
+      "LlmRecoveryCAS"
+    ]
+  },
+  {
+    "module": "LlmPolicyContinuation",
+    "path": "proofs/lean/LlmPolicyContinuation.lean",
+    "sha256": "fd49f4d88b22349e18efc7ec1b43e500f04828f7334a2ddb2be420285dd2cbe2",
+    "imports": [
+      "LlmPolicyPublication"
+    ]
+  },
+  {
+    "module": "LlmCanonicalRegistry",
+    "path": "proofs/lean/LlmCanonicalRegistry.lean",
+    "sha256": "325ff6ecd404cdee29bfbae4c25334b8a9a78712f6d209068c0cae66aee2a6a6",
+    "imports": [
+      "LlmPolicyContinuation"
+    ]
+  },
+  {
+    "module": "LlmMultiKeyRegistry",
+    "path": "proofs/lean/LlmMultiKeyRegistry.lean",
+    "sha256": "53c906914b6ba7f1175cea5dcfdd8068be90b02306b05adf770ca1325d15f633",
+    "imports": [
+      "LlmCanonicalRegistry"
+    ]
+  },
+  {
+    "module": "LlmResultProjection",
+    "path": "proofs/lean/LlmResultProjection.lean",
+    "sha256": "c4ea3e74fb2e272004601dc2a00d12714d5cf9744841b704e803f53edea288da",
+    "imports": [
+      "LlmMultiKeyRegistry"
+    ]
+  },
+  {
+    "module": "LlmJoinEnqueue",
+    "path": "proofs/lean/LlmJoinEnqueue.lean",
+    "sha256": "3358b66528f34934dacb0dba895c8a572087493a86bdc1b17c10a77dc07b3d4f",
+    "imports": [
+      "LlmResultProjection"
+    ]
+  },
+  {
+    "module": "LlmExecutorOffer",
+    "path": "proofs/lean/LlmExecutorOffer.lean",
+    "sha256": "e38fb0923723a80636dc95595f3e63685e1d7c690c0308af2efcde6838853926",
+    "imports": [
+      "LlmJoinEnqueue"
+    ]
+  },
+  {
+    "module": "LlmExecutionReconciliation",
+    "path": "proofs/lean/LlmExecutionReconciliation.lean",
+    "sha256": "930aff05bfe233593321ada71865c1eb5c664b86d9df7a75977273e543cccf33",
+    "imports": [
+      "LlmExecutorOffer"
+    ]
+  },
+  {
+    "module": "LlmAccountCommit",
+    "path": "proofs/lean/LlmAccountCommit.lean",
+    "sha256": "b7b0e1e14463eca993f2ae7ce7ba0e1882be53ad6296d1999af492c1f1dcca15",
+    "imports": [
+      "LlmExecutionReconciliation"
+    ]
+  },
+  {
+    "module": "LlmWalActivation",
+    "path": "proofs/lean/LlmWalActivation.lean",
+    "sha256": "a6c721020b430b6d36d3a0d2696d59bbadfd58a56e7c71500ba232f0b1f60997",
+    "imports": [
+      "LlmAccountCommit"
+    ]
+  },
+  {
+    "module": "LlmCheckpointTruncation",
+    "path": "proofs/lean/LlmCheckpointTruncation.lean",
+    "sha256": "f8ee23e465b183aab68575e5a0ee06d6149dcee98b464ad773bb846e0ae0f269",
+    "imports": [
+      "LlmWalActivation"
+    ]
+  },
+  {
+    "module": "LlmManifestSwitch",
+    "path": "proofs/lean/LlmManifestSwitch.lean",
+    "sha256": "c089085bbc089395fccce1725e5be0aad5a611bae27a547ef23ac77602e5644b",
+    "imports": [
+      "LlmCheckpointTruncation"
+    ]
+  },
+  {
+    "module": "LlmAppendHandoff",
+    "path": "proofs/lean/LlmAppendHandoff.lean",
+    "sha256": "79e357507ccd9006c42746e5a6007d7083cec47cda9bf095c6f91aaa82106e51",
+    "imports": [
+      "LlmManifestSwitch"
+    ]
+  },
+  {
+    "module": "LlmAdmissionFloor",
+    "path": "proofs/lean/LlmAdmissionFloor.lean",
+    "sha256": "41c8913e049fb17034be672b361c431d4712fadbe7221762dece3f96dcfc4aaf",
+    "imports": [
+      "LlmAppendHandoff"
+    ]
+  },
+  {
+    "module": "LlmSourceJoin",
+    "path": "proofs/lean/LlmSourceJoin.lean",
+    "sha256": "4ceddb6ff0e3845b8fbeddac5c7ffae23c16adb5c4c5f14b592c6ca65359eb55",
+    "imports": [
+      "LlmAdmissionFloor"
+    ]
+  },
+  {
+    "module": "LlmSourceCustody",
+    "path": "proofs/lean/LlmSourceCustody.lean",
+    "sha256": "f7b94cf70c364616b4580cc92544f8c69d8a75a611c3026cb475ed52fcbf0fee",
+    "imports": [
+      "LlmSourceJoin"
+    ]
+  },
+  {
+    "module": "LlmCustodyPublication",
+    "path": "proofs/lean/LlmCustodyPublication.lean",
+    "sha256": "fb3e16ec8a74cff9cf34b8fc04ccaa16f4a69a28e959605265e0b8c4c4846758",
+    "imports": [
+      "LlmSourceCustody"
+    ]
+  }
+]

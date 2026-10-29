@@ -1,0 +1,31 @@
+proofs/lean/LlmBeneficiaryRegistration.lean:273:26: error(lean.unknownIdentifier): Unknown identifier `s.inner.inner.epoch`
+proofs/lean/LlmBeneficiaryRegistration.lean:274:14: error(lean.unknownIdentifier): Unknown identifier `t.inner.inner.epoch`
+proofs/lean/LlmBeneficiaryRegistration.lean:274:36: error(lean.unknownIdentifier): Unknown identifier `s.inner.inner.epoch`
+proofs/lean/LlmBeneficiaryRegistration.lean:274:76: error(lean.unknownIdentifier): Unknown identifier `t.inner.inner.epoch`
+'Weaver.LlmBeneficiaryRegistration.root_retained' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.binding_retained' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.publication_retained' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.binding_run' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.no_replacement' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.shared_identity_not_entitlement' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.beneficiary_possession_required' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.session_cannot_be_selected' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.original_previous_preserved' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.stale_epoch_cannot_publish' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.stale_read_cannot_publish' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.valid_bindings_step' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.valid_bindings_run' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.covered_step' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.covered_run' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.root_origin' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.published_from_entitlement' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.joined_step' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.new_publication_has_current_binding' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.revision_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmBeneficiaryRegistration.old_ticket_epoch_rejected' depends on axioms: [sorryAx]
+'Weaver.LlmBeneficiaryRegistration.joined_run' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.outcome_bound_step' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.outcome_bound_run' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.composition' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.original_reservation_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmBeneficiaryRegistration.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]

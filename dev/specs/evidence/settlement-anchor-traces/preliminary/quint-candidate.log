@@ -1,0 +1,29 @@
+
+ Error [QNT000]: extraneous input ')' expecting {'}', 'const', 'var', 'assume', 'val', 'pure', 'type', 'def', 'action', 'run', 'temporal', 'nondet', 'import', 'export', DOCCOMMENT}
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:125:158
+  125:   run cacheEqualityOnlyCounterexampleTest = applied.then(trustMixedCache(view.with("receipts",a.receipts.set(0,W::blankUsage(0).pipe(_ => blankPermit(0)))))))
+                                                                                                                                                                    ^
+
+
+ Error [QNT404]: Name 'isEmpty' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:87:31
+  87:   action sourceFixture = all {a.intents.isEmpty(),a.accepted.isEmpty(),W::terminal,a' = sourceChanged(a)}
+                                    ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT404]: Name 'isEmpty' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:87:51
+  87:   action sourceFixture = all {a.intents.isEmpty(),a.accepted.isEmpty(),W::terminal,a' = sourceChanged(a)}
+                                                        ^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT404]: Name 'pipe' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:125:112
+  125:   run cacheEqualityOnlyCounterexampleTest = applied.then(trustMixedCache(view.with("receipts",a.receipts.set(0,W::blankUsage(0).pipe(_ => blankPermit(0)))))))
+                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: parsing failed

@@ -1,0 +1,193 @@
+#+title: Weaver Atomic Account Commit Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and bounded result
+
+Run [[file:../../../dev/proofs/check_llm_account_commit.py][the isolated checker]] for [[file:../../../dev/proofs/lean/LlmAccountCommit.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmAccountCommit.qnt][Quint]]. Retain
+[[file:../../../dev/proofs/evidence/llm-account-commit/commands.json][command results]], [[file:../../../dev/proofs/evidence/llm-account-commit/receipt.json][the receipt]] and [[file:../../../dev/proofs/evidence/llm-account-commit/SHA256SUMS][the byte manifest]]. Preliminary diagnostics are preserved separately.
+
+The workload compiles 21 Lean modules and prints 23 new declarations without
+=sorryAx=. Quint checks 43 new controls (33 guarded controls and 10 deliberate broken
+protocols) and 46 directly imported reconciliation controls: 89 total. The separate
+parent regression checks 88 controls, including its own imported executor controls.
+Seven initializers each sample ten paths, with at most 30 post-initializer steps and
+seed 229. These are conditional formal and finite sampled results, not exhaustive
+model checking, native WAL qualification or a performance/liveness claim.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| AT1 | Atomic commit preserves the account invariant | atomicCommitPairsRecordAndBalanceTest | initialized_safe | broker.cas |
+| AT2 | Available, held and charged remain conserved | rebaseOtherReservationPreservesBothChargesTest | balance_conserved | registry.query |
+| AT3 | New application ID cannot consume an original reservation twice | sameReservationNewApplicationIdRejectedTest | original_reservation_at_most_once | recovery.fence |
+| AT4 | Application and original reservation consumption remain linked | atomicCommitPairsRecordAndBalanceTest | application_and_reservation_join | broker.cas |
+| AT5 | Existing application body cannot be replaced | sameApplicationChangedUsageRejectedTest | applications_immutable | broker.cas |
+| AT6 | Original reservation key cannot be reassigned | sameApplicationOtherReservationRejectedTest | original_reservation_immutable | registry.origin |
+| AT7 | Financial commit writes the complete application and after-image | commitClosesBalanceVisibilityTest | commit_is_atomic | recovery.fence |
+| AT8 | Final commit requires actual qualified source evidence | sourceTerminalWithoutUsageCannotPrepareTest | new_commit_requires_final_source | recovery.projection |
+| AT9 | Competing shared-account proposal must revalidate the current image | twoPreparedOneSharedAccountRevisionTest | stale_before_image_blocks_commit | recovery.join |
+| AT10 | Old worker cannot commit against a fresh image | oldWorkerCannotUseFreshImageTest | old_worker_blocks_commit | registry.alias |
+| AT11 | Public balance requires a complete current image | revisionOnlyCannotRecoverTest | complete_image_before_visibility | broker.alias |
+| AT12 | Restoring an account image cannot restore authority backwards | fullOldSnapshotCannotRecoverTest | restore_cannot_rollback_authority | broker.alias |
+| AT13 | Lost acknowledgment preserves the original outcome | lostCommitResponseQueriesOriginalTest | commit_response_loss_preserves_result | protocols.mcp |
+| AT14 | Zero remainder still consumes original keys | zeroRemainderStillConsumesReservationTest | account_zero_delta_is_still_consumed | recovery.fence |
+| AT15 | Actual reconciliation supplies terminal and bounded usage | wrongUsageApplicationCannotPrepareTest | actual_reconciliation_has_terminal_and_bound | recovery.projection |
+| AT16 | Unknown usage has no selected account authority | unknownUsageCannotPrepareTest | unknown_reconciliation_has_no_account_authority | protocols.a2a |
+| AT17 | Unapplied reservation keeps its original hold | unknownOriginalCanCoexistWithOtherSettlementTest | unknown_reservation_hold_is_unchanged | registry.query |
+| AT18 | Account revision counts actual committed records | atomicCommitPairsRecordAndBalanceTest | journal_revision | broker.cas |
+| AT19 | Recovery retains every committed financial prefix | restoredCommitCannotReleaseAgainTest | journal_prefix_retained | broker.alias |
+| AT20 | Account commit composes with the actual preceding source run | accountAheadCanReplayOriginalSourceEvidenceTest | commit_joins_actual_reconciliation | recovery.projection |
+| AT21 | Source generation change invalidates a prepared proposal | sourceConflictAfterPrepareBlocksCommitTest | changed_source_generation_blocks_commit | registry.alias |
+| AT22 | A blocked original source cannot consume its reservation | sourceTerminalWithoutUsageCannotPrepareTest | blocked_reservation_unapplied | registry.query |
+| AT23 | Unknown original budget survives other account settlements | unknownOriginalCanCoexistWithOtherSettlementTest | unknown_source_retains_original_hold | broker.hold |
+
+Correspondence joins complementary controls; it does not equate the languages'
+concrete state representations. AT15 checks an altered usage application ID in
+Quint; the Lean bridge proves terminal/bound consequences under explicit original
+receipt binding. AT20 composes an actual initialized reconciliation run with a
+per-commit source mapping; Quint reaches an original metered source state and
+recovers its original account result. Neither result authenticates native receipts
+merely because integer IDs match.
+
+* Atomic account model and actual source composition
+
+The Lean account image has balances indexed by account, immutable applications
+indexed by application ID, consumed reservations indexed by original reservation,
+per-reservation holds and a revision. =commit= performs one =applyImage= transition
+and appends that exact result. =commit_is_atomic= characterizes every change in
+financial revision. There is no guarded constructor that inserts only an ID,
+changes only a balance or resets an original reservation.
+
+=initialized_safe= proves conservation, one write per original reservation, original
+application/reservation linkage, exact image equality before visibility and hold
+retention for unconsumed reservations. =journal_revision= and
+=journal_prefix_retained= separately connect financial commits to the append-only
+record sequence. Counter maps are proof monitors; uniqueness gates use immutable
+application and reservation tables, never a restored counter.
+
+=OriginalReady= connects a globally selected original reservation key, actual
+=LlmAttemptLedger.Attempt= bound and actual =LlmExecutionReconciliation.State=
+metering. =actual_reconciliation_has_terminal_and_bound= reuses the preceding
+initialized product invariant. =commit_joins_actual_reconciliation= joins an actual
+account commit with that actual source run under an explicit sourceReady binding.
+The binding must authenticate full root/profile/domain/receipt correspondence;
+the compact numerical projection does not supply native authenticity.
+
+=unknown_source_retains_original_hold= proves that, when every account commit path
+for the selected key must refine that unknown original source, the reservation
+cannot be consumed and its hold remains unchanged. Other qualified reservations
+can settle. This requires the binding for all relevant sourceReady paths, not just
+a validation callback that an alternative account writer can bypass.
+
+The account and reconciliation models remain separate typed products joined by
+this explicit per-commit mapping. They do not model a native transport, database
+and quorum as one atomic action. The account owner receives the full account state
+for sourceReady; source invalidation advances a monotonic source generation and
+closes source qualification. An old proposal stays stale even if source qualification
+is later restored. Current owner is checked again at commit, independently of the
+proposal's original preparation.
+
+The native anti-rollback premise is isolated in =prefixAuthentic= and the transition
+universe: only financial commit advances authority, local restore never changes it,
+and owner/source generation stamps cannot be restored backwards. The unsafe
+co-rollback control deliberately breaks that premise. An independent monitor keeps
+already exposed credits for the test; that monitor is not a production authority.
+
+* Deliberate broken protocols
+
+| Missing contract | Counterexample control | Required independently decoded observation |
+|------------------+------------------------+-------------------------------------------|
+| Atomic ID and delta | idWithoutDeltaAccountCounterexampleTest | Application exists while balance and financial journal remain at genesis |
+| Atomic delta and ID | deltaWithoutIdAccountCounterexampleTest | Changed balance and hold without its application/reservation record |
+| Original result after lost response | retryAfterLostReplyAccountCounterexampleTest | Two committed financial records consume the same original reservation |
+| Original reservation uniqueness | newIdSameReservationAccountCounterexampleTest | Different application IDs consume the same reservation |
+| Exact current shared-account predecessor | staleSharedBalanceAccountCounterexampleTest | Second record uses the first record's old predecessor |
+| Current account owner | oldWorkerAccountCounterexampleTest | Fresh account image but record worker differs from current commit epoch |
+| Full image before visibility | mixedIdBalanceAccountCounterexampleTest | New application/hold metadata and old balance become visible together |
+| Independent non-rollback authority | anchorRollbackAccountCounterexampleTest | Authority and local image return to genesis after a credit was already exposed |
+| Final usage evidence before release | unknownBudgetAccountCounterexampleTest | Original source usage is unknown while its account delta releases money |
+| Atomic original-reservation tombstone | tombstoneLossAccountCounterexampleTest | Application remains but original reservation consumption disappears |
+
+Unsafe constructors are excluded from =step=. Passing negative controls mean the
+named broken protocol reproduced the intended invariant violation. The
+[[file:../../../dev/proofs/evidence/llm-account-commit/check-counterexample-observations.py][independent ITF decoder]] verifies payloads, original source/executor history and
+financial before/after evidence rather than relying on control names alone.
+
+Guarded controls also reject old complete images, ID-new/balance-old images,
+balance-new/ID-old images, matching-revision-only images, forged recovery evidence,
+old workers holding fresh account images and new application IDs for consumed
+reservations. Lost responses and late full-range observations preserve the same
+original financial result. Full-cost usage releases zero but consumes both keys.
+
+* Source audit: reuse and required extension
+
+[[file:../../../dev/proofs/evidence/llm-account-commit/source-review.json][Pinned source identities]], [[file:../../../dev/proofs/evidence/llm-account-commit/source-receipt-check.json][fresh blob/excerpt checks]] and
+[[file:../../../dev/proofs/evidence/llm-account-commit/account-source-audit.json][the focused account source extract]] cover the following nineteen files.
+Repeated identifiers denote paired files, not extra dependencies.
+
+| Source | Grounded mechanism | Reuse | Extension needed for this protocol |
+|--------+--------------------+-------+------------------------------------|
+| P12 authorized-effect-token.ss | Exact immutable effect/root/nonce/payload binding; pure consumption | Original financial effect and source lineage | Bind canonical application/reservation plus complete account effect; durable financial commit |
+| P13 strict-mediation.ss | Failed validation leaves state unchanged; unavailable observation records spent nonce | Unknown outcomes cannot resurrect execution rights | Unknown account outcome must retain original hold and immutable application identity |
+| P15 effect-host.ss | reserve! executes no external effect; deliver! consumes on rejection/exception/indeterminate; receipt durable? false | Inert proposal versus irreversible committed handoff | Does not implement atomic durable balance/application WAL or anti-rollback account recovery |
+| P17 store-backend.ss | Scheme projects backend contracts; runtime owns append/fsync/leases/checkpoint/rebuild/repair | Preserve native persistence ownership | Native transactional ID/hold/delta durability and protected-prefix restore contract |
+| P18 PromotionTransactionRecovery.lean | Recovery receipt and attributable effect observation | Complete source-bound evidence mapping | Account identity/delta crash trace and restored projection qualification |
+| P19 authorized transaction recovery bridge | Exact recovery member and authority correspondence | Per-commit source-to-effect binding premise | Actual account materialization and independent protected-prefix correspondence |
+| P20 CommittedEffectApplicationExactlyOnce.lean | Exactly-once occurrence depends on effectUniverseExecutesExactlyOnce trace premise | Explicit actual-effect universe and witness | No automatic proof that an unwritten account backend commits ID and delta atomically |
+| P22 store.ss | Scheme validates store receipts; runtime owns locking, leases, fsync, replay and side effects | Store negotiation and semantic/native separation | Single financial authority; complete record replay; no second delta during projection |
+| P31 SessionAttempt.lean | recover retains active attempt in pending | Unknown original financial obligation remains pending | Native source/application readback and full account recovery evidence |
+| P31 SessionAttempt.qnt | Recovery preserves obligation and closed state | Model adverse restart ordering | Add ID/hold/balance atomicity and mixed-image controls |
+| P33 deterministic budget closure | Source-bound cost witness | Original bound and units | Authentic final usage and unused-remainder financial application |
+| P33 runtime budget separation | Watchdog timeout differs from semantic resource evidence | No zero usage from timeout | Per-original-reservation hold remains independent of SDK completion |
+| P35 receipt context monotonicity | Governed context progression | Monotonic authority/fence interpretation | Protected account/source generation persistence across restores |
+| P35 receipt lineage prefix | Explicit authenticated lineage inheritance | Current prefix qualification | Whole account body plus original source/usage application recovery |
+| P43 funs-attempt.ss | Pure scheduling/CAS intents; runtime-published?, action-authorized?, durable? false; reconcile is not acknowledgment | Expected generation/revision and unresolved pending intent | Financial commit truth cannot be inferred from a pure reconcile proposal |
+| P44 objects-attempt.ss | Frozen producer, scope and profile references | Keep original canonical scope | Authenticate actual account/reservation and application bodies at commit |
+| C8 BoundOperation.lean | Exact effect/state matching; Host must authenticate actual effect/state | Code as Policy for atomic original financial effect | Matching request fields alone is not a durable commit or current-prefix proof |
+| C10 CompoundAuthorization.lean | Nonempty required layers all allow without errors; runtime owns atomic business execution and authentic facts | Deny/error handling and exact POO model binding | Host must implement one atomic application/hold/delta transaction |
+| C11 Composition.lean | Validation/evaluation certificate alignment | Reuse semantic certificates only under correct invalidation | No theorem here proves account WAL durability or snapshot anti-rollback |
+
+The Weaver source check recompiles Weaver's actual composition chain, not the
+upstream nineteen files. Upstream bytes/excerpts are freshly verified. No upstream
+implementation or dependency pin is modified.
+
+* Earlier Weaver proof reuse boundary
+
+The existing =SettlementAnchorRecovery= model already separates protected authority
+from a restorable local image and treats application plus immutable receipt as a
+logical transaction. =GateConsumptionPersistence= retains unresolved gate burns and
+requires an archived actual result before confirmation. =WriterSettlementClosure=
+separates authentic terminal evidence, final usage and settlement.
+
+Those mechanisms guide this extension; their sealed sources and receipts stay
+unchanged. This runner does not claim to import their entire driver/hardware
+lineage into the current AI Agent Gateway product. The new executable refinement
+adds explicit per-reservation hold and balance mutation, with the actual category-23
+source product as its direct Lean dependency. Older write counters alone are not
+an implementation proof of atomic balance persistence.
+
+* Current source identity and native acceptance
+
+[[file:../../../dev/proofs/evidence/llm-account-commit/working-source-check.json][Working source hashes]] freshly distinguish pinned references from live files.
+Eighteen match the reviewed bytes; P17 differs only in two control-plane import
+paths, captured in [[file:../../../dev/proofs/evidence/llm-account-commit/P17-working-diff.patch][the exact working diff]]. Import-target runtime/ABI equivalence is not
+established by that textual comparison.
+
+| Native gate | Required evidence before implementation acceptance |
+|-------------+----------------------------------------------------|
+| Atomic financial commit | Kill/restart at every WAL/transaction point; recover either full ID/reservation/hold/delta record or no record; never a split |
+| Durable acknowledgment | Lose response after commit; query exact original outcome and expose one credit only |
+| No premature credit | Persist a draft and fail before protected commit; no account API, grant or cache exposes the draft's available balance |
+| Independent prefix | Restore account/worker and storage snapshots behind committed authority; prove current prefix is independently governed or remain closed |
+| Complete recovery image | Restore each ID/hold/balance/source/usage participant at different positions; no mutation or balance visibility until exact reconciliation |
+| Shared account concurrency | Same reservation/different IDs, same ID/different bodies, and different reservations/same account revision |
+| Current fences | Old worker with fresh image, old prepared transaction and source generation change between preparation and final commit |
+| Unknown budgets | No terminal usage, contradictory late usage and lost source application; unknown original hold survives other qualified settlements |
+| Full funding reconciliation | Initial finite reservation holds agree with aggregate booked funds, source capacity, units and original account domain |
+| Complete mediation | Every real account delta/refund/new-grant read passes the qualified account authority; SDK adapters have no bypass writer |
+
+The local results close the selected logical account contract under these premises.
+Native storage, distributed prefix durability/currentness, provider receipt truth,
+arbitrary-many-source composition and recovery liveness remain separate evidence.

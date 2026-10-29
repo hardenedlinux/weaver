@@ -1,0 +1,42 @@
+   Compiling cedar-policy-core v4.12.0
+   Compiling rusty-fork v0.3.1
+   Compiling proptest v1.11.0
+   Compiling cedar-policy-formatter v4.12.0
+   Compiling cedar-policy v4.12.0
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 28.93s
+     Running unittests src/lib.rs (target/debug/deps/weaver_server-b9226e6f30c6af13)
+
+running 4 tests
+test runtime::tests::poisoned_admission_still_closes_and_drains ... ok
+test runtime::tests::detached_native_writer_keeps_slot_until_drain_acknowledges_completion ... ok
+test runtime::tests::arbitrary_disconnect_shutdown_and_drain_schedules_keep_native_custody ... ok
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running unittests src/main.rs (target/debug/deps/weaver_server-ab3692e5569d7fc1)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-c11fe0a924fd7fa0)
+
+running 4 tests
+test owner_api::incomplete_request_body_cannot_block_graceful_shutdown ... ok
+test owner_api::valid_transport_credential_cannot_impersonate_original_task_owner ... ok
+test owner_api::current_revocation_prevents_server_from_opening_an_egress_connection ... ok
+test owner_api::authenticated_api_preserves_identity_and_final_range_effects ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+   Doc-tests weaver_server
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

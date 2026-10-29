@@ -1,0 +1,18 @@
+'Weaver.LlmCallerCustody.projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCallerCustody.composition' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCallerCustody.workload_is_insufficient' does not depend on any axioms
+'Weaver.LlmCallerCustody.old_key_rejected' does not depend on any axioms
+'Weaver.LlmCallerCustody.old_capability_rejected' does not depend on any axioms
+'Weaver.LlmCallerCustody.expired_rejected' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCallerCustody.scope_retained' does not depend on any axioms
+'Weaver.LlmCallerCustody.serial_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCallerCustody.incarnation_change_requires_recovery' does not depend on any axioms
+'Weaver.LlmCallerCustody.final_append_requires_permit' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCallerCustody.no_detached_mint' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCallerCustody.used_incarnations_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCallerCustody.floor_publication_has_caller_and_join' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LlmCallerCustody.original_result_unique' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCallerCustody.original_reservation_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCallerCustody.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]

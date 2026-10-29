@@ -1,0 +1,129 @@
+#+TITLE: Support Resolution Task and Minimum Gateway Profile
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Representative task
+=support.resolve= answers a tenant-authorized support question using an admitted
+local knowledge snapshot. The routine is =retrieve -> infer -> release=.
+Retrieval performs a governed local read, without another model or external tool
+call. Its artifact binds snapshot identity, document authorization labels and
+ordered content commitment. Retrieved text is untrusted input, not Policy.
+Inference uses one admitted concrete model binding and one candidate; release
+produces one schema-valid result. No automatic external tool execution is enabled.
+
+The externally supplied task/request ID is correlation data. Canonical admission
+owns origin/family, logical node key, original input, profile commitment, budget
+and history domains. Reconnect or another protocol's task ID resolves that same
+identity or fails; it must not create another reservation for the same work.
+The Lean =key= denotes the logical inference message under its original source
+root/domain, not an unrelated task created by an adapter.
+
+* Concrete transcript
+1. Authenticate caller and tenant. Register/recover the original task and pinned
+   profile; reject a conflicting task/input binding.
+2. Authorize local retrieval. Bind its admitted artifact into canonical ordered
+   messages before constructing the inference claim/payload commitment. A changed
+   retrieval artifact creates an explicitly governed task continuation, never an
+   in-place payload rewrite under an already consumed claim.
+3. Allocate the inference reservation from the original account. Select an
+   eligible model after capability, region, Policy and history filtering.
+4. Freeze exact request wire and binding. Queue without network effects. At the
+   final executor transition, validate current authority and consume the same
+   durable execution identity before one transport attempt.
+5. Receive bounded provider fragments. Validate the complete response document,
+   recheck release Policy and current range authority, then emit one business
+   result. Attribute accepted usage to the original reservation exactly once.
+
+* Frozen research limits
+These are conservative research input limits, not measured capacity claims.
+| Dimension | Baseline |
+|-----------+----------|
+| Public surface | One chat-style request profile with bounded SSE response |
+| Routine graph | Three sequential nodes; no fan-out, loops or automatic replanning |
+| Canonical content | Ordered system/user/retrieved-text blocks; no media/reasoning passthrough |
+| Provider candidates | One; tools empty; tool choice none; parallel tools false |
+| Response | Strict JSON object: answer string, citations array of admitted document IDs |
+| Context | At most 4,096 input tokens under the admitted binding's tokenizer contract |
+| Generation | At most 1,024 output tokens; reject an unenforceable output bound |
+| Provider response buffer | At most 64 KiB encoded body; fragment bound 4 KiB |
+| Financial units | Integer microcredits; no floating-point authoritative balances |
+| Financial reservation | One inference allowance; price identity and rounding frozen at admission |
+| Client recovery | No automatic business-result replay or token-stream resume |
+| Provider recovery | No hidden retries, hedging, redirects or post-prefix failover |
+
+If these limits cannot represent a real workload, record a deliberate profile
+revision with its resource and proof impact. Do not silently weaken the contract.
+Retrieval consumes bounded local resource capacity; it does not create a second
+unbooked model budget. Future external retrieval or tool calls require separately
+admitted child effects and explicit shared allocation, not a free extension here.
+
+* Streaming and release semantics
+Provider SSE is an input transport. A partial JSON prefix is not a validated
+business result. The baseline buffers within limits and emits the typed result
+only after full validation; client SSE progress events contain no retrieved or
+model business content and have their own disclosure contract. Report provider
+first-byte latency and validated-result latency separately.
+
+A client disconnect or unknown final-result delivery does not authorize replay.
+A restart after provider consumption permits reconciliation/termination, not
+another provider call. Resuming arbitrary logical ranges remains a later RP6
+qualification. No protocol can retract bytes already accepted by an external
+transport: revocation is ordered at the next defined write/release boundary.
+
+* Deployment and capability profiles
+The design allows two candidate deployment classes: a managed external provider
+and a private model service. These are schema profiles, not claims that a vendor
+currently supports them. Start qualification with a binding that preserves every
+required feature; reject a binding that needs lossy role, schema or usage mapping.
+
+MCP may describe future retrieval/tools; A2A may describe remote task delegation;
+Client ACP may describe agent/client sessions. This checkpoint does not claim
+wire conformance for these protocols. Their identities/capabilities must enter
+the same canonical admission and semantic projection. ASP is not a prerequisite
+for the LLM Gateway execution path.
+
+* Responsibilities and interfaces
+| Owner | Owned output | Restriction |
+|-------+--------------+-------------|
+| Scheme / POO | Contracts, graph, ordered canonical payload, node normal form and admitted package | No transport credential in authoring evaluation |
+| Go | Kubernetes reconciler, discovery lifecycle, optional protocol adapters, provider proposals/observations | Cannot send, retry or replace origin behind Rust |
+| Rust | Bounded request execution, reservation/claim CAS, queue, transport owner and release checks | Must execute admitted semantics, not reinterpret them |
+| Cedar | Explicit authorize-read/invoke/release decisions over authentic entities and current context | Receipt alone does not consume budget or authenticate facts |
+
+Logical interfaces are =CompilePackage=, =ResolveOriginal=, =ProposeBinding=,
+=AdmitExecution=, =ObserveOutcome= and =ReleaseResult=. Each names original task,
+logical node, package/profile commitment, semantic/wire commitment and deciding
+state/fence where applicable. Responses distinguish rejected, committed, unknown
+and pending; timeouts never become a fresh operation ID. JSON/YAML are authoring
+surfaces, not per-request arbitrary code or credential containers.
+
+Go is valuable for Kubernetes and protocol ecosystems. The baseline keeps final
+network sends in Rust: a Go SDK that hides network effects is not accepted just
+because it is convenient. A future Go transport owner requires an explicit
+replacement of that ownership contract and native fencing qualification.
+
+* Baseline process and cross-language boundary
+For this first profile, Rust terminates the selected public chat/SSE API and owns
+provider HTTP connections. Go runs the Kubernetes/control-plane reconciler;
+optional Go protocol adapters are outside the mandatory request path. Scheme
+runs at authoring/publication time and emits the admitted semantic package.
+There is no required per-request Scheme evaluation, Go SDK hop, or in-process
+Gerbil/Go/Rust ABI embedding. This is a topology decision to qualify, not a
+measured performance result.
+
+The control boundary is an authenticated typed package-publication API. Its
+canonical payload uses UTF-8 JSON with the common integer/duplicate-field rules,
+explicit schema-profile identity, source/semantic closure commitments, referenced
+immutable artifacts and original publication intent ID. Unknown schema profiles
+are rejected. The receive acknowledgment reports stored outcome identity and
+whether hard authority has become effective; byte upload success is insufficient.
+No raw credentials are embedded. Credential references resolve only at the final
+owner under admitted scope. A binary representation can be considered later with
+an explicit semantic parity and cost result, not as a second authority format.
+
+Rust's request path consumes immutable compiled projections plus current deciding
+facts. Cached Policy/config data is useful only under its documented freshness
+contract; a package hash never replaces a current original-claim/fence check.
+Future Go request adapters submit canonical proposals to Rust using the same
+identity/commitment/error rules. They cannot introduce an alternate final-send
+path without reopening the native effect and fencing gates.

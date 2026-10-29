@@ -1,0 +1,163 @@
+# Core design only. Proof names, tool versions and evidence belong in Org.
+...@lib/theme
+title: ONE AUTHORITY CHAIN / DURABLE RECOVERY / FINAL DELEGATION {
+  class: title
+  near: top-center
+}
+semantic: SCHEME / POLICY SEMANTICS {
+  top: 0
+  left: 0
+  width: 320
+  height: 620
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  identity: Original intent and claim\nShared budget / history roots {
+    top: 90
+    left: 25
+    width: 270
+    height: 110
+    class: semantic
+  }
+  policy: Cedar / error-free admission\nExact subject and source context {
+    top: 280
+    left: 25
+    width: 270
+    height: 110
+    class: policy
+  }
+  go: Go / cloud-native lifecycle\nDiscovery / operation resolution\nSDKs use the broker {
+    label.near: center-center
+    top: 465
+    left: 25
+    width: 270
+    height: 110
+    class: cloud
+  }
+}
+journal: RUST / INDEPENDENT JOURNAL {
+  top: 0
+  left: 440
+  width: 360
+  height: 620
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  request: Canonical migration request\nPredecessor / lineage / target {
+    top: 90
+    left: 25
+    width: 310
+    height: 110
+    class: ledger
+  }
+  decision: One durable commit or abort\nLost reply resolves the same record {
+    top: 280
+    left: 25
+    width: 310
+    height: 110
+    class: ledger
+  }
+  recovery: Complete authoritative recovery\nOriginal claims / holds / history {
+    top: 465
+    left: 25
+    width: 310
+    height: 110
+    class: ledger
+  }
+}
+owner: RUST / ACTUAL TRANSPORT OWNER {
+  top: 0
+  left: 920
+  width: 420
+  height: 620
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  activation: Durable seal / exact request\nCommit-bound activation\nCurrent owner incarnation {
+    top: 90
+    left: 25
+    width: 370
+    height: 110
+    class: runtime
+  }
+  gate: Recheck at irreversible delegation\nOriginal executor / range / history\nSerialize with seal at the writer {
+    top: 280
+    left: 25
+    width: 370
+    height: 110
+    class: runtime
+  }
+  durable: Durable no-replay range record\nSurvives owner restart\nUnknown never becomes a fresh range {
+    top: 465
+    left: 25
+    width: 370
+    height: 110
+    class: ledger
+  }
+}
+transport: TRANSPORT / RECEIVER {
+  top: 0
+  left: 1460
+  width: 330
+  height: 620
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  buffer: Original transport range capability\nMay drain across seal and restart {
+    top: 90
+    left: 25
+    width: 280
+    height: 110
+    class: unknown
+  }
+  boundary: Wire exposure is irreversible\nNo automatic resend on recovery {
+    top: 280
+    left: 25
+    width: 280
+    height: 110
+    class: unknown
+  }
+  receiver: Receiver epoch / deduplication\nSeparate business application cut {
+    top: 465
+    left: 25
+    width: 280
+    height: 110
+    class: policy
+  }
+}
+quint: QUINT\nConcurrent phases / reply loss / restart schedules {
+  top: 745
+  left: 360
+  width: 500
+  height: 100
+  class: policy
+}
+lean: LEAN\nComposed reachability / original obligations / no replay {
+  top: 745
+  left: 1030
+  width: 500
+  height: 100
+  class: semantic
+}
+semantic.identity -> semantic.policy
+semantic.policy -> journal.request: exact admitted request
+semantic.go -> journal.decision: reconcile original operation
+journal.request -> owner.activation: seal the writer
+owner.activation -> journal.decision: seal before commit
+journal.decision -> journal.recovery
+journal.recovery -> owner.activation: full current state
+owner.activation -> owner.gate
+owner.gate -> owner.durable: record before external call
+owner.durable -> transport.buffer
+transport.buffer -> transport.boundary
+transport.boundary -> transport.receiver
+quint -> journal.decision: explore schedules {
+  style.stroke-dash: 5
+}
+lean -> owner.durable: preserve obligations {
+  style.stroke-dash: 5
+}

@@ -1,0 +1,115 @@
+#+TITLE: Dynamic Loader Runtime Ownership and Proof Contract
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Actual execution contract
+1. Start installed ordinary gxi with the original source fixture and fresh process
+   state. The original fifteen-second monotonic clock starts before process spawn.
+2. Resolve the narrowed JSON/parser interfaces and their original public bindings
+   through the existing expander and mutex-protected runtime module registry.
+3. Resolve runtime and macro-phase bodies through normal native dynamic loading.
+   Import narrowing cannot manufacture a loaded registry entry or alter an executable body.
+4. Execute all eleven original Contract assertions and actual duplicate-key decoder
+   rejection. The workload source must retain its original byte identity.
+5. Observe actual module paths, acquire a separately rebuilt dynamic cleanup canary
+   and return normally. The fresh canary marker must be exactly LU after exit.
+6. Let ordinary Gambit cleanup close every acquired image handle and run destructors.
+   Accept only natural exit zero within fifteen seconds. Unknown exit remains open;
+   late zero exit remains failed. No forced exit or keepalive output is permitted.
+
+The runtime registry retains its existing loading, loaded and error states. Import narrowing changes dependency ownership, not registry concurrency, reload semantics,
+error recovery or cross-process state. The idempotence proof assumes the original
+registry serialization; it is not a replacement proof for its mutex implementation.
+
+* Proof correspondence
+| Contract | Lean declaration | Quint control |
+|----------+------------------+---------------|
+| Umbrella and defining owner agree | binding_agreement_composes; admitted_bindings_keep_original_owner | bindingSubstitutionRejectedTest; substitutedBindingCounterexampleTest |
+| Required initializers remain reachable | required_initializer_cannot_be_pruned; absent_required_initializer_rejects | requiredInitializerCannotBePrunedTest; omittedInitializerCounterexampleTest |
+| Executable bodies unchanged | executable_bodies_are_unchanged | executableMutationCounterexampleTest |
+| Interface ABI retained | interface_abi_is_preserved | interfaceSubstitutionRejectedTest; interfaceDriftCounterexampleTest |
+| Original registry still owns dynamic modules | Publication and actual runtime premise | duplicateImportIdempotentTest; publicationFreezesClosureTest |
+| Complete dynamic cleanup | dynamic_native_pass_still_closes_handles | narrowedDynamicCleanupTest; outstandingHandleRejectsExitTest |
+| Complete workload and unchanged deadline | late_dynamic_exit_is_not_qualification | missingDecoderRejectsReturnTest; lateNaturalExitRejectedTest |
+| Assurance never grants dispatch | dynamic_pass_still_requires_final_policy | Native qualification remains separate from execution authority |
+
+[[file:../../../dev/proofs/lean/NativeDynamicImportBoundary.lean][Lean]] states binding/ABI and required-initializer preservation as explicit
+admission premises and proves their composition with the prior native lifecycle
+and actual Gateway Policy guards. It does not prove the compiler, interpreter,
+Darwin or selection of every required initializer. Import-only source diffs,
+actual resolver/ABI comparisons and matched native execution must discharge the
+operational side of those premises for this bounded workload.
+
+[[file:../../../dev/proofs/quint/NativeDynamicImportBoundary.qnt][Quint]] supplies finite executable controls and explicit unsafe import-publication
+counterexamples. Unsafe mutations are excluded from the safe step. The two-check
+finite abstraction is distinct from the eleven-assertion native workload. Neither
+these traces nor printed Lean axioms establish a real-time scheduling guarantee.
+
+The earlier [[file:../../../dev/proofs/lean/DynamicLoaderPublication.lean][thin-loader proof]] and [[file:../../../dev/proofs/quint/DynamicLoaderPublication.qnt][its finite controls]] remain research artifacts,
+not proofs that thin-loader publication fixed the actual execution path.
+
+* Gateway authority remains unchanged
+Scheme owns Contract semantics and import/binding identity. Go owns cloud
+native configuration and canonical proposals; it receives no new authorization
+from interpreter qualification. Rust still owns the final current Policy/history
+join, fencing and actual provider dispatch. A successful local verifier cannot
+replace the original task claim, reservation, history or final consumption CAS.
+
+* Shared dynamic image custody
+[[file:../../../dev/proofs/lean/DynamicImageCustody.lean][The additional Lean composition]] models fresh successful load reference IDs,
+independent image ownership, shutdown, each successful close and final image
+release for arbitrary finite acquisition lists. The proofs
+=shared_image_step_preserves_custody= and =initialized_shared_image_custody=
+retain every reference. =live_alias_blocks_image_release= and
+=all_aliases_closed_after_image_release= prevent early unmapping while another
+alias remains live. =stopping_blocks_new_acquisition= and
+=repeated_close_is_not_fresh= bound shutdown/retry behavior.
+=shutdown_blocks_late_initialization= and
+=released_image_blocks_late_initialization= reject deferred entry execution after
+shutdown or image release. The Quint model additionally rejects initialization
+through an already closed logical reference.
+=image_packing_does_not_grant_policy= composes with the existing actual dispatch
+guards; physical image sharing does not merge Gateway claims or authorization.
+
+[[file:../../../dev/proofs/quint/DynamicImageCustody.qnt][The shared-image Quint model]] checks distinct lazy entries, multiple logical
+references per image, intermediate versus final closes, duplicate operations,
+shutdown, independent images and forbidden foreign initializers. Explicit unsafe
+controls demonstrate early unmapping, forgotten references, eager foreign
+initializers and collapsed entries. A separate issued-reference set makes
+forgetting the live ledger observable rather than vacuously safe.
+
+The operational premises remain explicit: ordinary dyld reference accounting;
+faithful Gambit linker entries and ABI; no C init/term sections in admitted
+images; actual module initialization remains lazy; and a quiescent ordinary
+runtime cleanup phase. The model does not prove Apple's loader or the compiler.
+The native handle observer, image headers, distinct entry symbols and exact
+source hashes supply bounded implementation evidence for those premises.
+
+* Complete native execution profile binding
+The unchanged original fixture is not the entire native execution identity. Narrowed
+imports and grouped native objects constitute a new dependency/artifact profile.
+Its qualification binds the complete closed native input manifest, logical module ID,
+original lowered-source digest, independent linker entry, image digest, native
+ABI and run context. Equal image bytes or an equal inode are insufficient identity.
+No earlier AOT receipt or old verifier profile is silently reused.
+
+The existing NativeExitQualification source guard and
+=wrong_source_is_not_qualified= theorem apply to that complete profile identity,
+with its retained substituted-source Quint counterexample. The native controller
+checks the closed manifest before/after the final exact-original-script run.
+Changing this assurance profile does not recreate a Gateway operation identity,
+claim, reservation, history domain or permission. Actual final Policy guards
+remain mandatory for any dispatch.
+
+The native qualification assumes a single trusted owner of the isolated inputs
+and unchanged installed package artifacts throughout each run. Before/after hashes
+do not independently detect transient modification followed by restoration. The
+script-level byte-seal guard preserves research generations; it is not an OS
+immutability mechanism or a substitute for a production fenced publication/CAS
+protocol. Those enforcement boundaries remain separate Gateway work.
+
+The [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/official-abi/native-execution-profile.json][primary native execution profile]] describes the exact-original-script run with
+its passive observer. Audit-extended scripts retain separate complete program
+digests in addition to their original-fixture prefix digest. Final controller,
+recipe, proof and receipt bytes are covered separately by the research byte seal;
+these are local trusted-controller receipts, not cryptographic runtime attestation.

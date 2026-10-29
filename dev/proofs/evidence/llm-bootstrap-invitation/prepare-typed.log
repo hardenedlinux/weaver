@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/prepare_bootstrap_invitation_closure.py", line 53, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/prepare_bootstrap_invitation_closure.py", line 16, in main
+    subprocess.run(['quint','parse',str(PRIOR/'quint-core/LlmIncarnationIssuance.qnt'),'--out',str(OUT/'parent-parsed.json'),'--source-map',str(OUT/'parent-source-map.json')],check=True,timeout=20)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/subprocess.py", line 556, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/subprocess.py", line 1222, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/subprocess.py", line 2180, in _communicate
+    self.wait(timeout=self._remaining_time(endtime))
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/subprocess.py", line 1280, in wait
+    return self._wait(timeout=timeout)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/subprocess.py", line 2077, in _wait
+    raise TimeoutExpired(self.args, timeout)
+subprocess.TimeoutExpired: Command '['quint', 'parse', '/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt', '--out', '/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-bootstrap-invitation/parent-parsed.json', '--source-map', '/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-bootstrap-invitation/parent-source-map.json']' timed out after 20 seconds

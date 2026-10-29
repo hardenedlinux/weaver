@@ -1,0 +1,76 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":4,"sourceSha256":"6e7c4f99249b04c4d221e2ca594ef40a1a548e4df15df11acbd28291aa2b57f1"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"cfbfe7aee69597f5646e3fa988cc4716366c245c709e54b1ebc8bc1321f05fcf"}
+@@START {"label":"api-controls-0","limit":20}
+
+  CommittedSemanticProfile
+    ok completeProfileReachesActualDispatchTest passed 1 test(s)
+    ok missingPublicationCannotBindTest passed 1 test(s)
+    ok forgedCommitmentContentRejectedTest passed 1 test(s)
+
+  3 passing (62ms)
+@@DONE {"label":"api-controls-0","passed":["completeProfileReachesActualDispatchTest","missingPublicationCannotBindTest","forgedCommitmentContentRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  CommittedSemanticProfile
+    ok droppedCapabilityRejectedTest passed 1 test(s)
+    ok changedContextRejectedTest passed 1 test(s)
+    ok changedRegionRejectedTest passed 1 test(s)
+
+  3 passing (5ms)
+@@DONE {"label":"api-controls-1","passed":["droppedCapabilityRejectedTest","changedContextRejectedTest","changedRegionRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  CommittedSemanticProfile
+    ok changedNodeRejectedTest passed 1 test(s)
+    ok duplicateNodeIdentityRejectedTest passed 1 test(s)
+    ok otherPublishedProfileDoesNotAuthorizeOriginalTest passed 1 test(s)
+
+  3 passing (3ms)
+@@DONE {"label":"api-controls-2","passed":["changedNodeRejectedTest","duplicateNodeIdentityRejectedTest","otherPublishedProfileDoesNotAuthorizeOriginalTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  CommittedSemanticProfile
+    ok duplicatePublicationDoesNotOverwriteTest passed 1 test(s)
+    ok duplicateBindingDoesNotRecreateClaimTest passed 1 test(s)
+    ok lostPublicationReplyRecoversSameRecordTest passed 1 test(s)
+
+  3 passing (8ms)
+@@DONE {"label":"api-controls-3","passed":["duplicatePublicationDoesNotOverwriteTest","duplicateBindingDoesNotRecreateClaimTest","lostPublicationReplyRecoversSameRecordTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  CommittedSemanticProfile
+    ok lostBindingReplyRetainsOriginalTest passed 1 test(s)
+    ok unrelatedPublicationDoesNotRepinOriginalTest passed 1 test(s)
+    ok restartPreservesProfileAndBindingTest passed 1 test(s)
+
+  3 passing (9ms)
+@@DONE {"label":"api-controls-4","passed":["lostBindingReplyRetainsOriginalTest","unrelatedPublicationDoesNotRepinOriginalTest","restartPreservesProfileAndBindingTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-5","limit":20}
+
+  CommittedSemanticProfile
+    ok oldReadCannotEnqueueAfterRestartTest passed 1 test(s)
+    ok oldReadCannotConsumeAfterRestartTest passed 1 test(s)
+    ok recoveredReadAndRejoinProgressTest passed 1 test(s)
+
+  3 passing (22ms)
+@@DONE {"label":"api-controls-5","passed":["oldReadCannotEnqueueAfterRestartTest","oldReadCannotConsumeAfterRestartTest","recoveredReadAndRejoinProgressTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-6","limit":20}
+
+  CommittedSemanticProfile
+    ok postConsumptionRestartCannotRetryTest passed 1 test(s)
+    ok unknownSendRetainsBudgetTest passed 1 test(s)
+    ok replacementProfileCounterexampleTest passed 1 test(s)
+
+  3 passing (22ms)
+@@DONE {"label":"api-controls-6","passed":["postConsumptionRestartCannotRetryTest","unknownSendRetainsBudgetTest","replacementProfileCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-7","limit":20}
+
+  CommittedSemanticProfile
+    ok replacementBindingCounterexampleTest passed 1 test(s)
+    ok rollbackPublicationCounterexampleTest passed 1 test(s)
+    ok forgottenConsumptionCounterexampleTest passed 1 test(s)
+
+  3 passing (13ms)
+@@DONE {"label":"api-controls-7","passed":["replacementBindingCounterexampleTest","rollbackPublicationCounterexampleTest","forgottenConsumptionCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

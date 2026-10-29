@@ -1,0 +1,113 @@
+#+TITLE: Ordinary Dynamic gxi Import and Image Publication
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Retained dynamic failure
+The unmodified fixture processed by ordinary gxi with the previous isolated
+native library again missed the fifteen-second whole-process deadline. It
+returned naturally at 24.355 seconds; that remains failed evidence. The observer
+recorded failure at fifteen seconds and waited for natural termination without
+killing the process. Post-failure observation does not extend acceptance.
+
+The earlier current-process stack samples showed synchronous Darwin image
+notifications during both dlopen and dlclose. Those samples motivate reducing
+unnecessary image churn; they do not establish that unload order alone is a fix.
+Reversing cleanup order, disabling unload, bypassing destructors or muting system
+notifications is not the proposed repair.
+
+* Failed thin-loader hypothesis
+The retained source-loader publication experiment did not repair the workload.
+Publishing source without matching interfaces first produced an unbound-identifier
+error. Matching interfaces repaired that setup defect, but the observed workload
+still registered 315 dynamically loaded body/phase modules and no thin loader
+modules. Its complete cleanup probe returned LU yet natural exit took 19.954
+seconds. The actual expanded execution loads body modules directly, so avoiding
+thin native stubs did not remove the dominant image fan-out. A formal equivalence
+argument about those stubs is not evidence that this workload traverses them.
+
+A separate exploratory invocation placed -e after a script; this installed gxi
+did not execute that epilogue. Its eleven assertion outputs and late exit remain
+recorded, but it has no cleanup probe evidence and is not qualified. Final audited
+scripts retain the original fixture as an exact byte prefix and append observations.
+
+* The source-level dependency defect
+The JSON reader, writer, I/O extensions and utilities import the umbrella std/io.
+The LL(1) parser does the same. That umbrella reexports interface, buffered I/O,
+socket APIs, files and other utilities. Its socket dependency graph includes TLS
+and crypto even for an in-memory JSON Contract check. Ordinary interpreter
+expansion loads the transitive runtime/macro bodies, amplifying Darwin image
+load and cleanup notifications. AOT had hidden that dynamic fan-out.
+
+The isolated candidate narrows those five imports to their existing defining
+owners: std/io/interface, std/io/bio/api and std/io/util as required. It changes
+no function or macro implementation and keeps all public JSON exports. The first
+narrowing omitted the owner of with-buffered-reader and failed expansion; that
+failure is retained. The corrected candidate explicitly imports the utility owner.
+
+[[file:../../../proofs/evidence/dynamic-gxi-exit/stdlib-import-only.patch][The exact import-only patch]] and [[file:../../../proofs/evidence/dynamic-gxi-exit/stdlib-source-snapshot.json][original/candidate source hashes]] define the
+source boundary. The surrounding eight JSON/parser modules are rebuilt so their
+interfaces and phase bodies resolve coherently. No installed source is edited,
+no runtime cleanup hook changes, and no dependency pin changes.
+
+* Ownership and qualification boundary
+The [[file:../../../proofs/evidence/dynamic-gxi-exit/build-source.py][Core/POO builder]] starts with a new native output directory and an empty
+prelude-aware compile set. Source snapshots retain the prior exact Core working
+bytes and POO dependency commit. The [[file:../../../proofs/evidence/dynamic-gxi-exit/build-narrow-stdlib.py][stdlib builder]] owns only its isolated
+JSON/parser output. Installed Gerbil/Gambit and all other stdlib artifacts remain
+explicit trusted reuse; this is not a full toolchain rebuild.
+
+The final ordinary gxi run selects the narrowed stdlib followed by the newly
+rebuilt Core/POO library. The failed thin-loader overlay is excluded. Actual
+module paths must demonstrate selection of rebuilt native bodies and the absence
+of the unwanted socket/TLS closure. Every acquired image still uses the normal
+loader and normal complete cleanup. No notification suppression, dlclose bypass,
+forced exit or timeout extension is part of the candidate.
+
+Import narrowing is admitted only if every used binding retains its defining
+owner and ABI and every required initializer remains reachable. Omitted network
+initializers are outside this bounded JSON/Contract obligation; this is not yet
+full network/plugin regression qualification of a global stdlib release.
+
+* Remaining cost and multi-entry dynamic image contract
+Import narrowing removed 55 body/phase modules, but its full cleanup run still
+returned at 20.379 seconds. It remains failed, not an accepted repair by itself.
+The remaining cost includes numerous pure Scheme macro and Core/POO images.
+
+The next candidate preserves ordinary dynamic module loading while sharing OS
+image mappings. Each admitted module retains its own Gambit linker entry and
+its own lazy initialization. Per-directory native objects link into one dynamic
+image with distinct entries. Hard-linked module filenames preserve the ordinary
+loader's expected entry name and filesystem lookup. They do not merge registry
+identities or execute all Scheme initializers at image mapping time.
+
+[[file:../../../proofs/evidence/dynamic-gxi-exit/build-dynamic-images.py][The isolated image builder]] regenerates C and native objects from the exact
+observed lowered Scheme sources. It excludes foreign/C forms and rejects any
+linked image with C initialization or termination sections. Modules outside that
+admission keep their existing dynamic objects. The original interpreter binary,
+module registry and Gambit cleanup loop remain unchanged. No fixture AOT entry,
+notification suppression or skipped dlclose is used. Physical image/handle identity
+is never the logical module identity or an authorization key; the original module
+registry retains each independent name and outcome.
+
+Every successful load still acquires a reference, including multiple references
+to one physical image. Ordinary cleanup must close every reference. Physical
+unmapping is allowed only when the final reference is closed; a shared image is
+not permission to drop intermediate close operations. A separately loaded C
+canary retains its constructor/destructor and must report LU after natural exit.
+
+The [[file:../../../proofs/evidence/dynamic-gxi-exit/module-cleanup-observer.c][verification-only observer]] calls the real dlopen/dlclose on every intercepted
+operation, counts successful Scheme-image acquisitions and closes, and reports
+outstanding references and errors at process teardown. Its observed result must
+be positive and balanced; a missing or ignored observer is not a cleanup pass.
+It does not replace the loader or force process termination. Foreign process-wide
+library handles are outside that Scheme-image counter and remain under the
+unchanged runtime's ownership.
+
+* Reproduction and immutable generations
+Use a new isolation root and evidence directory for reproduction. The retained
+recipes name this specific generation; copy/adapt those paths before building.
+Native build/run recipes refuse to mutate a generation with a nonempty byte seal.
+Keep failed generations and exact exit classifications. Installed packages,
+shared package outputs, existing pins and historical sealed evidence are not
+build destinations. Build duration remains separate from the unchanged native
+whole-process acceptance clock.

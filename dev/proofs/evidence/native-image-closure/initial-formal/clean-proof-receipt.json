@@ -1,0 +1,441 @@
+{
+  "targets": [
+    "NativeLocatorClosure"
+  ],
+  "compiledDirectory": "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf",
+  "modules": [
+    {
+      "module": "LogicalMessageAuthority",
+      "source": "specs/lean/LogicalMessageAuthority.lean",
+      "sourceSha256": "649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca",
+      "imports": [],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/LogicalMessageAuthority.olean",
+        "specs/lean/LogicalMessageAuthority.lean"
+      ],
+      "exit": 0,
+      "seconds": 2.113,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 5,
+      "compiledSha256": "53e72fc574dd26ec72131b2cb60c8c663f29e60e1c799f1ca23276819b44a878"
+    },
+    {
+      "module": "SharedMessageBudget",
+      "source": "specs/lean/SharedMessageBudget.lean",
+      "sourceSha256": "be3f2237e83c6d1ecf824795919d7278654aa05012d30a8c5363f1bc24a3904f",
+      "imports": [
+        "LogicalMessageAuthority"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/SharedMessageBudget.olean",
+        "specs/lean/SharedMessageBudget.lean"
+      ],
+      "exit": 0,
+      "seconds": 3.217,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 5,
+      "compiledSha256": "e7e221c84ab895c2995373d2c98757c9a7b05682d0a88e5d2a2f2bc33650d78a"
+    },
+    {
+      "module": "FiniteDomainMigration",
+      "source": "specs/lean/FiniteDomainMigration.lean",
+      "sourceSha256": "89a16ca38a6b6e21e4fd4892c26043c0d4f68881c7c4626a2e648cadaabf1c2d",
+      "imports": [
+        "SharedMessageBudget"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/FiniteDomainMigration.olean",
+        "specs/lean/FiniteDomainMigration.lean"
+      ],
+      "exit": 0,
+      "seconds": 3.789,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 7,
+      "compiledSha256": "234c16a73a61c783e435c13a296e4415e390bdcbd9e4b078d3639dc9a1c3baf9"
+    },
+    {
+      "module": "GatewayHeadCAS",
+      "source": "proofs/lean/GatewayHeadCAS.lean",
+      "sourceSha256": "a8f03aa567aef9376254cc04e4539ba19df072c0693693d968edf115a133f828",
+      "imports": [
+        "FiniteDomainMigration"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/GatewayHeadCAS.olean",
+        "proofs/lean/GatewayHeadCAS.lean"
+      ],
+      "exit": 0,
+      "seconds": 3.042,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 23,
+      "compiledSha256": "48682bb9763379bb10251579380cfa8602f84f942ba30499487dde3613075b78"
+    },
+    {
+      "module": "BrokerConsumptionQueue",
+      "source": "proofs/lean/BrokerConsumptionQueue.lean",
+      "sourceSha256": "3c9f52a3fd90e965b9a96e653a40fd29e2e7942d76899167cb7d0be8d297ac6f",
+      "imports": [
+        "GatewayHeadCAS"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/BrokerConsumptionQueue.olean",
+        "proofs/lean/BrokerConsumptionQueue.lean"
+      ],
+      "exit": 0,
+      "seconds": 3.683,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 21,
+      "compiledSha256": "df7380c576aea10f3779d86f578050675f706b4b2d254ff1a84684ad21db4d92"
+    },
+    {
+      "module": "LogicalRangeRecovery",
+      "source": "proofs/lean/LogicalRangeRecovery.lean",
+      "sourceSha256": "5b5c48048213d702a181aed1bb96e21fb251bc7bc459674423241e118133efa4",
+      "imports": [
+        "BrokerConsumptionQueue"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/LogicalRangeRecovery.olean",
+        "proofs/lean/LogicalRangeRecovery.lean"
+      ],
+      "exit": 0,
+      "seconds": 2.272,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 21,
+      "compiledSha256": "c9866d140bb4002a0af3aaca5f15dd0d06ab9942949343b73dfedaac1c78cf5a"
+    },
+    {
+      "module": "LlmRouting",
+      "source": "proofs/lean/LlmRouting.lean",
+      "sourceSha256": "222f1af3fae8368fcf384ffebb28bd725fedeccab5f00c033287a0a17e3769d9",
+      "imports": [
+        "LogicalRangeRecovery"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/LlmRouting.olean",
+        "proofs/lean/LlmRouting.lean"
+      ],
+      "exit": 0,
+      "seconds": 1.65,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 15,
+      "compiledSha256": "05d56de437291d126e20f6b8eb065efdb082636d461fd4a10fc8003cd61b9ff4"
+    },
+    {
+      "module": "RoutineRoutingConfig",
+      "source": "proofs/lean/RoutineRoutingConfig.lean",
+      "sourceSha256": "bda1312b57e0d1e6c234d48fddc4741619a8b7a34ed0d4d49e96cf5fe93b129b",
+      "imports": [
+        "LlmRouting"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/RoutineRoutingConfig.olean",
+        "proofs/lean/RoutineRoutingConfig.lean"
+      ],
+      "exit": 0,
+      "seconds": 2.145,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 24,
+      "compiledSha256": "134e216ada888e15e4992e1ff659c06575df255afac336a9e328ce145071299a"
+    },
+    {
+      "module": "LlmAttemptLedger",
+      "source": "proofs/lean/LlmAttemptLedger.lean",
+      "sourceSha256": "0e2492282f799210084c7c331f5d6303b05fee8b7fa960147a0e351d06da82cc",
+      "imports": [
+        "LlmRouting"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/LlmAttemptLedger.olean",
+        "proofs/lean/LlmAttemptLedger.lean"
+      ],
+      "exit": 0,
+      "seconds": 3.233,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 15,
+      "compiledSha256": "9b695e19a7e6207418f01a7e472c63e48092f3a6057302ebbffaa9441038bb3c"
+    },
+    {
+      "module": "LlmSemanticContract",
+      "source": "proofs/lean/LlmSemanticContract.lean",
+      "sourceSha256": "a2fdbbaf7b56cb7c2f8a9581045dfc33da74f5c460530982524b438c2bca3cf1",
+      "imports": [
+        "LlmAttemptLedger"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/LlmSemanticContract.olean",
+        "proofs/lean/LlmSemanticContract.lean"
+      ],
+      "exit": 0,
+      "seconds": 2.407,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 17,
+      "compiledSha256": "4a93abb0abfb04de1b71b1cfe9acd45294939bcd5995164c445da4f8232a0f4f"
+    },
+    {
+      "module": "LlmAuthoritativeScope",
+      "source": "proofs/lean/LlmAuthoritativeScope.lean",
+      "sourceSha256": "9f29996b8651270ac6ddf91bfdd1c1e8252cf1abfe81c140b325cf75ba36ef99",
+      "imports": [
+        "LlmSemanticContract"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/LlmAuthoritativeScope.olean",
+        "proofs/lean/LlmAuthoritativeScope.lean"
+      ],
+      "exit": 0,
+      "seconds": 2.882,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 21,
+      "compiledSha256": "4e49db5db07c34afcee8b06f4a07bc474d8c31091bdc5c54929a2ee2ce06ad2b"
+    },
+    {
+      "module": "SemanticGatewaySlice",
+      "source": "proofs/lean/SemanticGatewaySlice.lean",
+      "sourceSha256": "8d28619721316f3f10c7717619a380d0d4afaa049166b64ca6571baf26b6fa1c",
+      "imports": [
+        "RoutineRoutingConfig",
+        "LlmAuthoritativeScope"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/SemanticGatewaySlice.olean",
+        "proofs/lean/SemanticGatewaySlice.lean"
+      ],
+      "exit": 0,
+      "seconds": 0.608,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 19,
+      "compiledSha256": "4c9b491bb2ab7c135d7bb2f34a998d43284831fae570e0789cf03242944cab22"
+    },
+    {
+      "module": "CommittedSemanticProfile",
+      "source": "proofs/lean/CommittedSemanticProfile.lean",
+      "sourceSha256": "e07c1ac22e81a3184df6e9726e7a9d45ea1ce59d649b108e807003bb3bc18245",
+      "imports": [
+        "SemanticGatewaySlice"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/CommittedSemanticProfile.olean",
+        "proofs/lean/CommittedSemanticProfile.lean"
+      ],
+      "exit": 0,
+      "seconds": 2.99,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 22,
+      "compiledSha256": "f7ae981835dce968b334553f148d8466b1c78326c06039ad110abb265e5d1432"
+    },
+    {
+      "module": "NativeExitQualification",
+      "source": "proofs/lean/NativeExitQualification.lean",
+      "sourceSha256": "c4295b3fb815599150821de0e5ff57110288c58bb48fa7cc1663bc79ffc9caf8",
+      "imports": [
+        "CommittedSemanticProfile"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/NativeExitQualification.olean",
+        "proofs/lean/NativeExitQualification.lean"
+      ],
+      "exit": 0,
+      "seconds": 0.553,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 9,
+      "compiledSha256": "a95afd28a9563e225a1c5cf0c062ee817228d5ef2bac0badf14b318cda062650"
+    },
+    {
+      "module": "NativeDynamicImportBoundary",
+      "source": "proofs/lean/NativeDynamicImportBoundary.lean",
+      "sourceSha256": "7d2adb3e1073798ca15905a3cb27b69c031b55c1b61074ac989087c714986383",
+      "imports": [
+        "NativeExitQualification"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/NativeDynamicImportBoundary.olean",
+        "proofs/lean/NativeDynamicImportBoundary.lean"
+      ],
+      "exit": 0,
+      "seconds": 2.249,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 9,
+      "compiledSha256": "ca4a049cbfbba8869708249fe71b123c2f7dc667e4e6169863d4db9190157c23"
+    },
+    {
+      "module": "DynamicImageCustody",
+      "source": "proofs/lean/DynamicImageCustody.lean",
+      "sourceSha256": "883670354109d3ae149fce1ca743debcdc89f0032bdfffa1da804a314e8c3a51",
+      "imports": [
+        "NativeDynamicImportBoundary"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/DynamicImageCustody.olean",
+        "proofs/lean/DynamicImageCustody.lean"
+      ],
+      "exit": 0,
+      "seconds": 0.514,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 9,
+      "compiledSha256": "56ec48d4c59abe05b8d0f6c062732b79eb3383acc367b3bd3a31305456da8a70"
+    },
+    {
+      "module": "DynamicPairedEvidence",
+      "source": "proofs/lean/DynamicPairedEvidence.lean",
+      "sourceSha256": "69fdb3d90cc2a211e427f9c485e20b967230195e6b346c6aa0c82e33fa968178",
+      "imports": [
+        "DynamicImageCustody"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/DynamicPairedEvidence.olean",
+        "proofs/lean/DynamicPairedEvidence.lean"
+      ],
+      "exit": 0,
+      "seconds": 2.133,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 11,
+      "compiledSha256": "9ccce577caa3552d29ab1c979de01e0ed9b3c463f9e731d15e3d9fc376b2f9e8"
+    },
+    {
+      "module": "NativeLocatorClosure",
+      "source": "proofs/lean/NativeLocatorClosure.lean",
+      "sourceSha256": "7b7981ef4885a6aeb8d26e55221dcc11cebaf9392861cbd07a0b3b7406915b06",
+      "imports": [
+        "DynamicPairedEvidence"
+      ],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-uefwirzf/NativeLocatorClosure.olean",
+        "proofs/lean/NativeLocatorClosure.lean"
+      ],
+      "exit": 0,
+      "seconds": 0.501,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 10,
+      "compiledSha256": "0e6607a0842def979439f5ff4f7ca6a1c49666379069b7e9d010fe884f10b943"
+    }
+  ],
+  "sourceClosure": [
+    "LogicalMessageAuthority",
+    "SharedMessageBudget",
+    "FiniteDomainMigration",
+    "GatewayHeadCAS",
+    "BrokerConsumptionQueue",
+    "LogicalRangeRecovery",
+    "LlmRouting",
+    "RoutineRoutingConfig",
+    "LlmAttemptLedger",
+    "LlmSemanticContract",
+    "LlmAuthoritativeScope",
+    "SemanticGatewaySlice",
+    "CommittedSemanticProfile",
+    "NativeExitQualification",
+    "NativeDynamicImportBoundary",
+    "DynamicImageCustody",
+    "DynamicPairedEvidence",
+    "NativeLocatorClosure"
+  ]
+}

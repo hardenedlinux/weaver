@@ -1,0 +1,36 @@
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.39s
+=== RUN   TestProviderGRPCStreamingAndArrowOption
+=== RUN   TestProviderGRPCStreamingAndArrowOption/PROTOBUF
+=== RUN   TestProviderGRPCStreamingAndArrowOption/ARROW_IPC
+--- PASS: TestProviderGRPCStreamingAndArrowOption (3.48s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/PROTOBUF (2.38s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/ARROW_IPC (1.10s)
+=== RUN   TestProviderFailuresNeverRetryOrFallback
+=== RUN   TestProviderFailuresNeverRetryOrFallback/redirect
+=== RUN   TestProviderFailuresNeverRetryOrFallback/overload
+=== RUN   TestProviderFailuresNeverRetryOrFallback/partial-sse
+=== RUN   TestProviderFailuresNeverRetryOrFallback/tool-proposal
+--- PASS: TestProviderFailuresNeverRetryOrFallback (4.32s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/redirect (1.07s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/overload (1.09s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/partial-sse (1.06s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/tool-proposal (1.10s)
+=== RUN   TestProviderPartialRequestAndRestartRetainUnknownClaim
+--- PASS: TestProviderPartialRequestAndRestartRetainUnknownClaim (3.52s)
+=== RUN   TestProviderRevocationDuringSSEStopsNextRelease
+--- PASS: TestProviderRevocationDuringSSEStopsNextRelease (1.10s)
+=== RUN   TestProviderArrowChecksEveryRow
+--- PASS: TestProviderArrowChecksEveryRow (1.08s)
+=== RUN   TestProviderConcurrentRPCDuplicatesInvokeOnce
+--- PASS: TestProviderConcurrentRPCDuplicatesInvokeOnce (1.10s)
+=== RUN   TestProviderRPCIdentityAndCancellation
+--- PASS: TestProviderRPCIdentityAndCancellation (1.06s)
+=== RUN   TestProviderClientCancellationCannotReplay
+--- PASS: TestProviderClientCancellationCannotReplay (1.08s)
+=== RUN   TestProviderAuthenticationPrecedesRPCBodyDecode
+--- PASS: TestProviderAuthenticationPrecedesRPCBodyDecode (1.06s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	25.254s

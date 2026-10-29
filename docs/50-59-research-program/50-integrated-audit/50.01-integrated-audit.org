@@ -1,0 +1,170 @@
+#+TITLE: Weaver Integrated Audit: Research Priorities and Hidden Assumptions
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Conclusion and evidence boundary
+The architecture offers a plausible advantage: POO-native configurable routines
+and routing, one semantic contract across authoring formats, Cedar authorization,
+and explicit execution/accounting authority. None of these establishes lower
+latency, better model quality, lower cost, or a qualified native Gateway today.
+The next research milestone must connect these advantages in one bounded task.
+
+P0 means required to decide the first coherent slice; P1 means required before
+broader qualification; P2 means deferred until evidence justifies expansion.
+An open research item is not automatically a defect in an existing theorem.
+
+* Findings
+** A01 / P0: Freeze the useful slice
+The existing delivery plan already identifies core LLM routing as the product
+center. Its first slice still spans several strategies and profiles. Freeze a
+representative =support.resolve= task: retrieval, one typed inference, and a
+governed response release. Specify one client API, bounded SSE, one response
+mode, and a small explicit deployment/provider matrix. Use one provider admission
+per inference step initially. Hidden SDK retries, hedging, redirects to a new
+provider, and failover after an emitted prefix must not silently expand it.
+
+This is a proposed research baseline, not a claim that every first deployment
+must have retrieval or a particular vendor. Record the reason if the chosen
+workload differs. Treat MCP, A2A, and Client ACP as distinct protocol profiles;
+schema seams do not establish full runtime conformance for all three.
+
+** A02 / P0: Supply the constructive composition witness
+Category 13 already derives scope from an authoritative canonical source and
+composes actual prior semantic/child/root steps. Reuse that progress. Category 49
+proves route refinement subject to a supplied =Refines= witness and compiler
+owner predicates =admitted= and =currentAtCAS=. Its routing import alone does
+not derive that witness from category 13's original task registry and an admitted
+configuration package.
+
+The missing research artifact is an explicit mapping from original task,
+published profile/package, and routine node to the normal form, refinement
+witness, child admission, actual wire operation, queue/executor decision, and
+accounting identity. Each mapping must identify a deciding event and its current
+facts. Do not substitute additional assumed Boolean owner predicates for this
+construction. There is no complete verified asynchronous product of all these
+machines and native stores yet; a single enormous model is not the default remedy.
+
+** A03 / P0: Make Scheme plus JSON/YAML one semantic contract
+The existing finite configuration fixture checks are useful regression evidence;
+the illustrative Scheme block is not an executed native compiler. Normal-form
+equality lemmas assume normalization equality rather than proving native parser
+or compiler parity.
+
+Specify the common declarative POO/Contracts subset first: defaults, units,
+references, namespaced extensions, duplicates, unknown fields, null/boolean/number
+behavior, deterministic identities, and source diagnostics. Compare canonical
+normal forms and rejection behavior across authoring formats. General Scheme
+programs need not round-trip through YAML. Preserve Scheme's composition and
+refinement advantage without equating unrestricted code with declarative data.
+The small example's reference order must not become an accidental restriction
+on the general routine graph.
+
+Native Scheme imports and initializers can execute effects. Source-currentness
+checks are not an IO sandbox. Specify trusted publisher authority, allowed
+capabilities, evaluation limits, and the source closure before admitting a
+compiled package. A configurable callback must not gain a transport credential.
+
+** A04 / P0: Authenticate the predicates that guard real effects
+Cedar operation equality does not authenticate its inputs. Inventory every native
+premise such as =durable=, =currentRead=, =verifyNewIssue=, =admitted=, and
+=currentAtCAS=: who owns the fact, how it is authenticated, its deciding
+transaction, invalidation, recovery, and unknown-result behavior.
+
+The final owner must bind destination, operation/body commitment, relevant
+headers, credential scope, current fence, original claim, and reservation.
+A successful configuration publication, Policy decision, upload, cache lookup,
+or HTTP status is not itself permission to send. Retry, redirect, queued work,
+and partial writes must remain within this actual-effect contract.
+
+** A05 / P0: Select the smallest sufficient trusted topology
+Logical roles do not mandate a service or database per role. Co-locate records
+when that preserves the deciding transaction; document the authentic accepted
+prefix/floor needed where atomicity ends. An outer configuration or identity
+commit may change while inner source/account floors stay unchanged, so the
+accepted prefix must cover the actual deciding state.
+
+Separate ordinary crash recovery from adversarial rollback of every trusted
+copy and anchor. Zero Trust has an explicit trusted basis; it does not create
+one from mutually rollbackable snapshots. The default target remains a software
+AI Agent Gateway. Historical HSM, physical isolation, and advanced quorum models
+are optional stronger assurance profiles, not universal entry requirements.
+Reuse an adequate enterprise identity authority rather than requiring a new IdP.
+Unknown execution and budget remain held until authoritative reconciliation;
+fail-closed safety alone does not establish recovery progress.
+
+** A06 / P1: Qualify provider semantics independently
+Freeze a supported-feature matrix and independent canonical/wire golden corpus
+for response modes, tool proposals, context, reasoning/media, streaming, usage
+units, and unsupported/lossy conversions. Model names and equal JSON documents
+do not establish equivalent model behavior. Declare rejected combinations.
+Provider observations cannot self-certify capability or authorize a tool effect.
+
+** A07 / P1: Bound routine execution and capability discovery
+Category 49's node-level LLM refinement is not a complete routine interpreter
+proof. Specify graph validation, branches, fan-out, bounded loops, cancellation,
+canonical child identities, and the sum of reservations. Capability discovery
+needs authentic ownership and current support facts. A model, tool, or remote
+agent proposal creates a separately governed effect under the original shared
+budget/history. New sessions must not create fresh families or allowances.
+
+** A08 / P1: Complete attempts and settlement coupling before expansion
+Category 11 already models child attempts and explicitly requires the original
+root reservation to remain booked. Its general Lean equality for the exact sum
+of accepted usage is future work, and the asynchronous winner/range/settlement
+product is not fully proved. Retain the initial one-attempt profile until actual
+attempt identities, winner/prefix rules, accepted receipts, and shared accounting
+are joined. Timeout or cancelled losers do not prove zero usage or justify refund.
+
+** A09 / P1: Make assurance portable and compositional
+Content seals protect historical byte identity; the current untracked design
+workspace is not an immutable reviewed commit or exact-head CI receipt. Some
+reuse checks establish source/log identity and artifact existence without a
+complete fresh imported-artifact reconstruction. This does not disprove the
+historical theorems. The new clean eleven-module build strengthens the selected
+product closure only. Do not sum inherited control counts as native coverage.
+
+Require a reproducible dependency DAG with source, tool, and compiled-artifact
+identity. Distinguish logical theorem checking, finite model controls, fixture
+parity, native fault tests, deployment controls, and performance measurements.
+
+** A10 / P1: Design observable recovery and finite resource limits
+Expose why a route was selected/rejected, committed profile and Policy identity,
+reservation/unknown usage state, and recovery fence without leaking payloads or
+secrets. Bound queues, graph expansion, counters, stream buffers, retries, and
+normalization work. Record unknown-hold age and authorized reconciliation.
+Eventual release cannot be promised when authoritative external evidence never
+arrives; specify that availability boundary and operator actions explicitly.
+
+** A11 / P1: Measure the advantage rather than infer it from languages
+Count cross-language calls, serialization, durable operations and round trips,
+queue work, candidate filtering, and tokenization. Compile-once projection and
+Rust hot-path ownership are hypotheses until measured end to end. Compare equal
+supported semantics with the inspected agentgateway snapshot, not an invented
+weaker baseline or a claim about its latest release. Quality, full cost, TTFT,
+throughput, memory, cancellation, and config churn all matter.
+
+** A12 / P2: Prevent scope recursion
+Defer adaptive routing, paid classifiers, hedging, arbitrary extensions, wider
+protocols, and deeper bootstrap trust chains until a selected workload needs
+them. A new model should name a concrete missing requirement or counterexample
+and the design decision it changes. Keep old sealed indexes historical; use the
+new research index to navigate current product evidence.
+
+* Language and assurance responsibilities
+| Boundary | Responsibility | Must not substitute for |
+|----------+----------------+-------------------------|
+| Scheme / POO | Contracts, configuration semantics, routine graph and refinement, authoritative semantic package construction | Per-request transport ownership or unauthenticated mutable facts |
+| Go | Kubernetes reconciliation, service/capability discovery, protocol/SDK integration and lifecycle adapters; emit canonical proposals and observations | Hidden retry/redirect, new family/budget, direct ungoverned final sends |
+| Rust | Canonical admission consumption, fences, durable queue/executor ownership, bounded stream processing and actual-effect checks | Independently redefining Scheme semantics or treating an old permit as current |
+| Cedar | Code as Policy decisions over authenticated typed entities/actions/context, explicit obligations for actual effects | Budget storage, authenticity, or delivery guarantees |
+| Quint | Executable interleavings and negative controls for deciding events and faults | Unbounded proof or native conformance |
+| Lean | Parametric safety and explicit composition assumptions/witnesses | Authentic native implementation by theorem name alone |
+
+Go's cloud-native ecosystem is the reason to consider it, not a requirement to
+copy an upstream language split. A provider client may run in Go only if every
+actual send remains within the final broker/executor contract. If an SDK cannot
+expose that boundary, reject the integration or revise ownership explicitly.
+Rust's low-level strengths similarly require measured benefit and a narrow ABI.
+
+See [[file:50.02-research-plan.org][research packages]] for exit decisions and
+[[file:50.03-audit-evidence.org][audit evidence]] for the exact validation boundary.

@@ -1,0 +1,657 @@
+[
+  {
+    "id": "P12",
+    "path": "modules/governance/policy/authorized-effect-token.ss",
+    "matches": [
+      {
+        "line": 66,
+        "text": "                              arena arena-gen offset length pld-digest lease)"
+      },
+      {
+        "line": 77,
+        "text": "         (cons 'payload-digest pld-digest) (cons 'lease-id lease))))"
+      },
+      {
+        "line": 111,
+        "text": "        (.ref binding 'payload-digest) (.ref binding 'lease-id)))"
+      }
+    ]
+  },
+  {
+    "id": "P13",
+    "path": "modules/governance/policy/strict-mediation.ss",
+    "matches": []
+  },
+  {
+    "id": "P15",
+    "path": "modules/assurance/effect-host.ss",
+    "matches": [
+      {
+        "line": 45,
+        "text": "(def (assurance-effect-host authorize deliver clock lease)"
+      },
+      {
+        "line": 47,
+        "text": "               (exact-integer? lease) (> lease 0))"
+      },
+      {
+        "line": 50,
+        "text": "    (hash-put! hosts host (vector (current-thread) authorize deliver clock lease 0 0 #f 0))"
+      },
+      {
+        "line": 126,
+        "text": "      delivered?: (eq? outcome-value 'delivered) durable?: #f distributed-authority?: #f))"
+      },
+      {
+        "line": 133,
+        "text": "      ;; Consume even on rejection / exception / unknown acknowledgement."
+      }
+    ]
+  },
+  {
+    "id": "P17",
+    "path": "modules/ai-agentic-context/features/memory/durable/store-backend.ss",
+    "matches": [
+      {
+        "line": 8,
+        "text": ";;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs."
+      },
+      {
+        "line": 30,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-runtime-owner"
+      },
+      {
+        "line": 99,
+        "text": "    runtime-owner"
+      },
+      {
+        "line": 238,
+        "text": "         (runtime-owner"
+      },
+      {
+        "line": 241,
+        "text": "           'runtime-owner"
+      },
+      {
+        "line": 258,
+        "text": "      (cons 'runtime-owner runtime-owner)"
+      },
+      {
+        "line": 318,
+        "text": "        (runtime-owner"
+      },
+      {
+        "line": 319,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'runtime-owner #f))"
+      },
+      {
+        "line": 364,
+        "text": "       (if (string? runtime-owner)"
+      },
+      {
+        "line": 368,
+        "text": "           'invalid-runtime-owner"
+      },
+      {
+        "line": 369,
+        "text": "           'runtime-owner"
+      },
+      {
+        "line": 372,
+        "text": "                 (cons 'value runtime-owner)"
+      },
+      {
+        "line": 405,
+        "text": "   runtime-owner"
+      },
+      {
+        "line": 424,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'runtime-owner #f)"
+      },
+      {
+        "line": 453,
+        "text": "           (runtime-owner"
+      },
+      {
+        "line": 454,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-runtime-owner"
+      },
+      {
+        "line": 585,
+        "text": "   runtime-owner"
+      },
+      {
+        "line": 685,
+        "text": "                                                 'runtime-owner"
+      },
+      {
+        "line": 754,
+        "text": "           (runtime-owner"
+      },
+      {
+        "line": 755,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner"
+      },
+      {
+        "line": 815,
+        "text": "                       (cons 'runtime-owner"
+      },
+      {
+        "line": 816,
+        "text": "                             (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner"
+      },
+      {
+        "line": 843,
+        "text": "     (cons 'runtime-owner"
+      },
+      {
+        "line": 844,
+        "text": "           (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner"
+      }
+    ]
+  },
+  {
+    "id": "P18",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean",
+    "matches": [
+      {
+        "line": 5,
+        "text": "import PooFlowProof.Enterprise.PromotionTransactionAtomicity"
+      },
+      {
+        "line": 9,
+        "text": "open PromotionTransactionAtomicity"
+      },
+      {
+        "line": 51,
+        "text": "    outcomePreservesAtomicState,"
+      },
+      {
+        "line": 123,
+        "text": "    outcomePreservesAtomicState commitRequestA orphanDuplicateReceipt \u2227"
+      },
+      {
+        "line": 130,
+        "text": "      outcomePreservesAtomicState,"
+      },
+      {
+        "line": 188,
+        "text": "      outcomePreservesAtomicState,"
+      },
+      {
+        "line": 199,
+        "text": "structure AtomicEffectReceipt where"
+      },
+      {
+        "line": 217,
+        "text": "    (receipt : AtomicEffectReceipt) : Prop :="
+      },
+      {
+        "line": 241,
+        "text": "def committedAtomicEffectReceipt : AtomicEffectReceipt where"
+      },
+      {
+        "line": 246,
+        "text": "theorem committedAtomicEffectCloses :"
+      },
+      {
+        "line": 251,
+        "text": "      committedAtomicEffectReceipt := by"
+      },
+      {
+        "line": 255,
+        "text": "    committedAtomicEffectReceipt,"
+      },
+      {
+        "line": 266,
+        "text": "    (receipt : AtomicEffectReceipt)"
+      },
+      {
+        "line": 278,
+        "text": "    (receipt : AtomicEffectReceipt)"
+      },
+      {
+        "line": 435,
+        "text": "  effectReceipt : AtomicEffectReceipt"
+      },
+      {
+        "line": 491,
+        "text": "  effectReceipt := committedAtomicEffectReceipt"
+      },
+      {
+        "line": 533,
+        "text": "      committedAtomicEffectReceipt,"
+      },
+      {
+        "line": 536,
+        "text": "  \u00b7 exact committedAtomicEffectCloses"
+      }
+    ]
+  },
+  {
+    "id": "P19",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean",
+    "matches": [
+      {
+        "line": 7,
+        "text": "import PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore"
+      },
+      {
+        "line": 13,
+        "text": "open PromotionTransactionAtomicity"
+      },
+      {
+        "line": 15,
+        "text": "open SourceBoundCheckpointRestoreAuthorizationClosure"
+      },
+      {
+        "line": 19,
+        "text": "open SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore"
+      },
+      {
+        "line": 22,
+        "text": "  SourceBoundLatestCheckpointRestoreRequest \u2192"
+      },
+      {
+        "line": 130,
+        "text": "  humanAtomicBridge :"
+      },
+      {
+        "line": 131,
+        "text": "    SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridge"
+      },
+      {
+        "line": 198,
+        "text": "  recordRequestMatchesAtomic :"
+      },
+      {
+        "line": 200,
+        "text": "  recoveryBaseReceiptMatchesAtomic :"
+      },
+      {
+        "line": 215,
+        "text": "theorem closedAuthorizedRecoveryProvidesHumanAtomicBridge"
+      },
+      {
+        "line": 308,
+        "text": "    SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridge"
+      },
+      {
+        "line": 337,
+        "text": "  closed.humanAtomicBridge"
+      },
+      {
+        "line": 541,
+        "text": "theorem wrongAtomicReceiptRejectsAuthorizedBridge"
+      },
+      {
+        "line": 635,
+        "text": "  exact wrong closed.recoveryBaseReceiptMatchesAtomic"
+      }
+    ]
+  },
+  {
+    "id": "P20",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean",
+    "matches": []
+  },
+  {
+    "id": "P22",
+    "path": "modules/ai-agentic-context/features/memory/durable/store.ss",
+    "matches": [
+      {
+        "line": 8,
+        "text": ";;; owns storage, locking, leases, fsync, backfill, replay, and side effects."
+      },
+      {
+        "line": 23,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-store-owner"
+      },
+      {
+        "line": 28,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-runtime-owner"
+      },
+      {
+        "line": 31,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref"
+      },
+      {
+        "line": 34,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-repair-journal-ref"
+      },
+      {
+        "line": 72,
+        "text": "  '(fact-log checkpoint derived-index job repair artifact communication sandbox))"
+      },
+      {
+        "line": 77,
+        "text": "    write-checkpoint"
+      },
+      {
+        "line": 79,
+        "text": "    claim-job-lease"
+      },
+      {
+        "line": 80,
+        "text": "    append-repair-event"
+      },
+      {
+        "line": 146,
+        "text": ";; : (-> PooDurableRuntimeStoreId PooDurableRuntimeOwner PooDurablePolicy [PooDurableRuntimeStoreOptionRow] PooDurableRuntimeStoreContract)"
+      },
+      {
+        "line": 158,
+        "text": "         (checkpoint-store-ref"
+      },
+      {
+        "line": 160,
+        "text": "                                                'checkpoint-store-ref"
+      },
+      {
+        "line": 161,
+        "text": "                                                'runtime/checkpoint-store))"
+      },
+      {
+        "line": 170,
+        "text": "         (repair-journal-ref"
+      },
+      {
+        "line": 172,
+        "text": "                                                'repair-journal-ref"
+      },
+      {
+        "line": 173,
+        "text": "                                                'runtime/repair-journal))"
+      },
+      {
+        "line": 205,
+        "text": "      (cons 'runtime-store-owner store-owner)"
+      },
+      {
+        "line": 209,
+        "text": "      (cons 'runtime-store-checkpoint-store-ref checkpoint-store-ref)"
+      },
+      {
+        "line": 212,
+        "text": "      (cons 'runtime-store-repair-journal-ref repair-journal-ref)"
+      },
+      {
+        "line": 337,
+        "text": "    'runtime-store-owner"
+      },
+      {
+        "line": 339,
+        "text": "    (poo-flow-durable-runtime-store-slot contract 'runtime-store-owner #f))"
+      },
+      {
+        "line": 350,
+        "text": "    'checkpoint-store-ref"
+      },
+      {
+        "line": 351,
+        "text": "    'missing-checkpoint-store-ref"
+      },
+      {
+        "line": 354,
+        "text": "     'runtime-store-checkpoint-store-ref"
+      }
+    ]
+  },
+  {
+    "id": "P31",
+    "path": "packages/proofs/lean-poo/SessionAttempt.lean",
+    "matches": [
+      {
+        "line": 14,
+        "text": "  pending : List (Nat \u00d7 \u03b1)"
+      },
+      {
+        "line": 19,
+        "text": "                  active := none, pending := s.active.toList ++ s.pending }"
+      },
+      {
+        "line": 36,
+        "text": "    (recover s).map Schedule.pending = some (s.active.toList ++ s.pending) := by"
+      },
+      {
+        "line": 61,
+        "text": "    if (`PooFlowSessionAttemptProof).isPrefixOf name then"
+      }
+    ]
+  },
+  {
+    "id": "P31",
+    "path": "packages/proofs/quint/SessionAttempt.qnt",
+    "matches": [
+      {
+        "line": 7,
+        "text": "  var pending: int"
+      },
+      {
+        "line": 12,
+        "text": "  action init = all { generation' = 0, active' = -1, pending' = -1,"
+      },
+      {
+        "line": 15,
+        "text": "    not(closed), active == -1, pending == -1, generation < 3,"
+      },
+      {
+        "line": 17,
+        "text": "    pending' = pending, closed' = closed, everClosed' = everClosed, routed' = routed, recoveries' = recoveries"
+      },
+      {
+        "line": 23,
+        "text": "    generation' = generation, pending' = pending, closed' = closed, everClosed' = everClosed, recoveries' = recoveries"
+      },
+      {
+        "line": 28,
+        "text": "    pending' = if (BUG == \"dropObligation\") -1 else if (active >= 0) active else pending,"
+      },
+      {
+        "line": 29,
+        "text": "    recoveries' = recoveries.append((if (active >= 0) active else pending,"
+      },
+      {
+        "line": 30,
+        "text": "      if (BUG == \"dropObligation\") -1 else if (active >= 0) active else pending)),"
+      },
+      {
+        "line": 34,
+        "text": "    pending >= 0, pending' = -1, active' = active, generation' = generation,"
+      },
+      {
+        "line": 38,
+        "text": "    not(closed), active == -1, pending == -1, closed' = true, everClosed' = true,"
+      },
+      {
+        "line": 39,
+        "text": "    generation' = generation, active' = active, pending' = pending,"
+      }
+    ]
+  },
+  {
+    "id": "P33",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean",
+    "matches": []
+  },
+  {
+    "id": "P33",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean",
+    "matches": []
+  },
+  {
+    "id": "P35",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean",
+    "matches": []
+  },
+  {
+    "id": "P35",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean",
+    "matches": [
+      {
+        "line": 7,
+        "text": "namespace PooFlowProof.Enterprise.ReceiptContextLineagePrefixClosure"
+      },
+      {
+        "line": 12,
+        "text": "structure AuthorityContextLineagePrefix where"
+      },
+      {
+        "line": 16,
+        "text": "def lineagePrefixAt"
+      },
+      {
+        "line": 18,
+        "text": "    (headPosition : Nat) : AuthorityContextLineagePrefix :="
+      },
+      {
+        "line": 21,
+        "text": "def publishedByLineagePrefix"
+      },
+      {
+        "line": 22,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 25,
+        "text": "    position \u2264 lineagePrefix.headPosition \u2227"
+      },
+      {
+        "line": 26,
+        "text": "      lineagePrefix.lineage.contextAt position = context"
+      },
+      {
+        "line": 28,
+        "text": "theorem lineagePrefixHeadIsPublished"
+      },
+      {
+        "line": 29,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix) :"
+      },
+      {
+        "line": 30,
+        "text": "    publishedByLineagePrefix"
+      },
+      {
+        "line": 31,
+        "text": "      lineagePrefix"
+      },
+      {
+        "line": 32,
+        "text": "      (lineagePrefix.lineage.contextAt lineagePrefix.headPosition) :="
+      },
+      {
+        "line": 33,
+        "text": "  \u27e8lineagePrefix.headPosition, Nat.le_refl _, rfl\u27e9"
+      },
+      {
+        "line": 36,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 38,
+        "text": "    (notAfterHead : position \u2264 lineagePrefix.headPosition) :"
+      },
+      {
+        "line": 39,
+        "text": "    publishedByLineagePrefix"
+      },
+      {
+        "line": 40,
+        "text": "      lineagePrefix"
+      },
+      {
+        "line": 41,
+        "text": "      (lineagePrefix.lineage.contextAt position) :="
+      },
+      {
+        "line": 45,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 47,
+        "text": "    (afterHead : lineagePrefix.headPosition < position) :"
+      },
+      {
+        "line": 48,
+        "text": "    \u00ac publishedByLineagePrefix"
+      },
+      {
+        "line": 49,
+        "text": "        lineagePrefix"
+      },
+      {
+        "line": 50,
+        "text": "        (lineagePrefix.lineage.contextAt position) := by"
+      }
+    ]
+  },
+  {
+    "id": "P43",
+    "path": "modules/session/funs-attempt.ss",
+    "matches": [
+      {
+        "line": 25,
+        "text": "      schedule: state-value runtime-published?: #f action-authorized?: #f durable?: #f))"
+      },
+      {
+        "line": 80,
+        "text": "    (let ((pending (if (.ref state 'active) (cons (.ref state 'active) (.ref state 'obligations))"
+      },
+      {
+        "line": 83,
+        "text": "      (receipt #t 'recovery-proposed (next-state state (if (null? pending) 'idle 'recovering)"
+      },
+      {
+        "line": 84,
+        "text": "        #f pending (.ref state 'completed) generation-value))))))"
+      },
+      {
+        "line": 98,
+        "text": "      (receipt #f 'pending-obligation state)))))"
+      }
+    ]
+  },
+  {
+    "id": "C8",
+    "path": "CedarPooSpec/Admission/BoundOperation.lean",
+    "matches": []
+  },
+  {
+    "id": "C10",
+    "path": "CedarPooSpec/CompoundAuthorization.lean",
+    "matches": [
+      {
+        "line": 7,
+        "text": "responsible for atomic business execution and authentic input facts."
+      },
+      {
+        "line": 27,
+        "text": "      response.decision == .allow && response.erroringPolicies.isEmpty)"
+      },
+      {
+        "line": 47,
+        "text": "def layersAllowed {model : Model} {entities : Entities}"
+      },
+      {
+        "line": 50,
+        "text": "    layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty"
+      }
+    ]
+  },
+  {
+    "id": "C11",
+    "path": "CedarPooSpec/Composition.lean",
+    "matches": []
+  },
+  {
+    "id": "P44",
+    "path": "modules/session/objects-attempt.ss",
+    "matches": [
+      {
+        "line": 4,
+        "text": ";;; Inert scheduling proposals. Runtime ownership and producer admission are separate."
+      }
+    ]
+  }
+]

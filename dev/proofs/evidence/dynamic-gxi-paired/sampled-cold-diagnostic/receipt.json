@@ -1,0 +1,41 @@
+{
+  "args": [
+    "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/bin/gxi",
+    "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-paired-20261020/fixture.ss"
+  ],
+  "pid": 45041,
+  "exit": 0,
+  "seconds": 62.28646562498761,
+  "gateSeconds": 15,
+  "deadlineFailed": true,
+  "forcedExit": false,
+  "sampled": true,
+  "excludedFromPairedTimings": true,
+  "samplerExits": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "checks": [
+    "scheme-object-contract",
+    "native-json-contract",
+    "native-negative-ceiling",
+    "native-boolean-ceiling",
+    "native-string-ceiling",
+    "native-null-ceiling",
+    "native-unknown-authority-field",
+    "native-changed-node",
+    "native-overflow-ceiling",
+    "native-empty-targets",
+    "native-duplicate-targets"
+  ],
+  "cleanup": {
+    "moduleOpens": 315,
+    "moduleCloses": 315,
+    "outstandingModuleRefs": 0,
+    "closeErrors": 0,
+    "overflow": 0,
+    "peakDyldImages": 362
+  }
+}

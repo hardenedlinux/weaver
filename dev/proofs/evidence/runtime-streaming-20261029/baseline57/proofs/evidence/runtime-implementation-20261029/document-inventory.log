@@ -1,0 +1,9 @@
+fatal: cannot change to '/private/tmp/weaver-cedar-poo-spec-reference-20261018': No such file or directory
+Traceback (most recent call last):
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/runtime-implementation-20261029/check-document-inventory.py", line 29, in <module>
+    repo,sha=repos[alias];subprocess.run(['git','-C',str(repo),'cat-file','-e',sha+':'+path],check=True)
+                          ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', '-C', '/private/tmp/weaver-cedar-poo-spec-reference-20261018', 'cat-file', '-e', 'c8d1a0641120cf65e299e8a98f9fe7666ca96ab5:README.org']' returned non-zero exit status 128.

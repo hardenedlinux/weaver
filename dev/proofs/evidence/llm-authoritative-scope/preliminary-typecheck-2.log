@@ -1,0 +1,8 @@
+
+ Error [QNT101]: Built-in name 'size' is redefined in module 'LlmAuthoritativeScope'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmAuthoritativeScope.qnt:54:25
+  54:   action propose(t,tool,size,finished,schema)=all {s.tickets.contains(t),current(t),s.calls.get(t.child.id)==1,
+                              ^^^^
+
+error: parsing failed

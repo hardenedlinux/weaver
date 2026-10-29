@@ -1,0 +1,230 @@
+#+title: Weaver Task Sponsorship, LLM Attempts and Stream Winner
+#+language: en
+#+options: toc:3
+
+* Product outcome and design advantage
+
+A virtual model can select another eligible deployment without losing the original
+agent task, budget domain, history restrictions or response contract. Weaver uses
+POO Flow's task and policy semantics to govern this ordinary LLM reliability
+feature. The advantage is a task-aware inference path: one accountable task can
+contain several explicitly authorized and separately attributable paid attempts.
+Routing quality, provider coverage and streaming remain core product features.
+
+Weighted, conditional, priority and advisory routing feed the eligible-candidate
+router in [[file:../10-routing-and-inference/10.01-llm-gateway-and-routing.org][10.01]]. This category defines what happens after an attempt is
+allocated or may have reached a provider. A route failure is a selection signal;
+it does not erase an execution, authorize another paid generation or free money.
+The default profile stops on unknown execution. An explicit non-tool inference
+profile can permit duplicate generation with separate child allowances and one
+response winner. This is useful for latency hedging and provider uncertainty,
+subject to an explicit spend limit and application semantics.
+
+* Identity and authority hierarchy
+
+| Object | Immutable binding | Authority |
+|--------+-------------------+-----------|
+| Original task root | Tenant, principal, canonical input, claim, budget/history domains, response contract | Existing admitted claim plus new task sponsorship contract |
+| Task sponsorship | Original root, total escrow, retry profile, allowed operation scope, policy generation | Scheme semantics; trusted admission and durable root owner |
+| Child attempt | Root, owner-assigned ordinal, input/encoding digest, actual provider/model/endpoint, maximum cost, hard route view, epoch | Fresh child authorization and Rust broker admission |
+| Stream range | Root, winning attempt, manifest, range identity, disclosure policy, current owner fence | Existing range broker and persistent consumption contract |
+| Usage observation | Exact child, provider request identity, terminal evidence, final amount or unknown | Attributable reconciliation, never authority to send |
+
+The ordinal is allocated by a serialized durable owner; a client nonce, SDK retry
+identifier, model alias or reconnect identifier cannot choose a new root or
+reset the ordinal. Recovery queries by the original root and child operation ID.
+A lost allocation reply cannot cause allocation of another child merely because
+the caller does not know the result. Query or retry the identical allocation
+transaction; creating a distinct child requires the retry predicate again.
+The formal allocation action is atomic and its response loss is stuttering.
+This assumes a durable unique operation-key/CAS implementation; it does not model
+the storage protocol or prove that an arbitrary retry API deduplicates allocation.
+
+The existing target-bound effect token is not a wildcard for a backup provider.
+=RootSponsor= is a new task-level contract binding the actual admitted root and
+escrow to an immutable profile. Its =sponsorValid= premise is an extension point,
+not an inferred property of existing tokens. Every child needs an independently
+validated operation binding and current policy for its actual target and wire
+representation. No child can turn task sponsorship into an external tool grant.
+
+* Retry profiles and failure classes
+
+| Situation | Allowed next action | Budget treatment |
+|-----------+---------------------+------------------|
+| No child admitted | Select an eligible model and allocate within escrow | Reserve the child's maximum inside root escrow |
+| Qualified proof of no execution for every prior child | Allocate another eligible child under the same root | Prior allocations remain held in this conservative profile |
+| Timeout, canceled future, lost reply, connection reset, partial write | Reconcile the original child; default profile cannot generate again | Execution and cost remain unknown |
+| Explicit duplicate-generation profile for non-tool inference | Allocate an additional independently authorized child before winner commitment | Hold both maximum costs inside original escrow |
+| Tool-capable or side-effecting operation | Use a separate effect/idempotency contract | Duplicate-generation profile is insufficient |
+| Winner already committed | Finish or fail that stream; no new child or winner switch | Reconcile every admitted child, including losers |
+
+HTTP status codes, including rate limits and server errors, are not universal
+proofs of zero execution or zero billing. A no-execution observation is qualified
+only when its provider/transport contract establishes that exact assertion for
+the exact attempt. A local invocation count of zero helps only after the durable
+owner fences the corresponding admission and excludes every old queue worker.
+Retirement alone closes future logical admission. It does not retract buffered
+bytes, drain a remote request or prove no execution. Known terminal failure can
+still have nonzero usage; a qualified no-execution result can still need a final
+billing observation. These are separate fields.
+
+The immutable profile authorizes potential duplicate generation, not duplicate
+tool effects or remote exactly-once behavior. All policy checks remain current.
+A provider idempotency key can strengthen a provider-specific contract only after
+its scope, retention, conflict behavior and restart semantics are qualified.
+It cannot be assumed from a generic SDK method or shared request body.
+
+* Budget and settlement
+
+The original task admission books one escrow against its shared account. Each
+child consumes a maximum allowance inside that escrow. The sum of child maxima
+is monotone and cannot exceed the root allowance. This first profile does not
+recycle an earlier child's allocation, even after qualified zero usage. An
+operator cannot create capacity by renaming a model, changing Authority,
+reconnecting, restarting or creating a fresh nonce.
+
+Final child observations update an internal root usage accumulator exactly once
+per immutable child slot. They are not separate external account debits followed
+by another full root debit. The root decision settles the aggregate once using
+the original settlement key, account application record and anti-rollback anchor
+contracts. Every child must be retired, terminal and have authoritative final
+usage before unused root allowance can be released. A winning response does not
+settle a losing attempt. Unknown usage keeps the root hold even after the client
+has received a complete answer. Usage above the quoted child maximum is a
+contract violation: quarantine and retain holds for investigation; do not clamp
+and refund. Such a provider lacks a qualified hard cost bound for this profile.
+
+The model's =closed= flag means ready for root settlement, not an account credit.
+The existing settlement gate remains necessary and must reconcile its own lost
+commit replies. Concurrent roots still use the shared-account authority. The
+new Lean bridge reuses the existing booked-capacity invariant at the admitted
+root; it does not implement a multi-root accounting API or atomically commit
+independent stores. A wider root escrow or mid-root recycling requires a separate
+policy-approved reservation transaction and proof extension.
+
+* Attempt state, crash windows and SDK ownership
+
+| Transition | Preconditions | Lost reply / restart rule |
+|------------+---------------+---------------------------|
+| Allocate child | Sponsored retry, no winner, root open, eligible current route, sum of maxima fits | Recover exact allocation operation; no implicit second child |
+| Invoke child | Exact registered record, current epoch/view, unretired, call slot zero, current child policy | Persist consume before SDK handoff; consumed but unobserved stays unknown |
+| Retire child | Exact registered child | Blocks future admissions; does not prove remote quiescence |
+| Record no execution | Qualified exact-attempt observation, retired, no prefix, terminal unset | Delayed observation may reconcile old child, never authorize old worker |
+| Record terminal | Actual child invocation, qualified outcome, terminal unset | Partial failure remains attributable and potentially billable |
+| Commit response winner | Actual invoked child, validated prefix, current disclosure policy, winner empty | CAS fixes one winner before any client-visible bytes |
+| Record final usage | Exact registered child, retired and terminal, fresh usage slot, qualified bounded amount | Duplicate/late callback queries same durable slot |
+| Close root | Every admitted child retired, terminal and usage-known | Settlement remains a separate durable original-root decision |
+
+Rust owns the last queue and persistent child call slot. Go SDKs must disable
+transparent request replay, redirects and model fallback unless each additional
+external attempt returns through this ledger. A replayable body is data, not a
+capability. Provider encoders bind target and actual bytes before child admission.
+Redirects select a new qualified destination and authorization; they cannot
+silently reuse a consumed child. Queues contain child IDs and immutable manifests,
+not transferable execution grants. Rust rechecks current route/history/fence at
+actual admission. The consume-to-enqueue crash window remains unknown and does
+not automatically replay the child. Category [[file:../../30-39-assurance/37-broker-consumption-queue/37.00-index.org][37]] supplies that conservative rule.
+
+Restart preserves all child records, call slots, usage slots and winner. It raises
+the owner epoch and retires old admissions. An uncalled old child cannot relabel
+its epoch. A qualified no-call recovery can resolve it and allocate a fresh child
+ordinal under the same root, still within the monotone allowance. An old worker
+may submit attributable data; it cannot regain send authority. Durable rollback
+prevention and the logical final broker remain premises of this abstraction.
+
+* Stream winner and partial output
+
+Validated prefixes may arrive before provider terminal status. Commit the winner
+before releasing the first client-visible range. Race two prefixes with one
+linearizable winner CAS; only one child can disclose. Do not select a winner just
+because an unvalidated first byte arrived. The winner is sticky across restarts,
+client reconnects, provider failure and history/policy updates. A failed stream
+reports partial failure or exposes a separately authorized application restart;
+it does not splice another model's tail onto the original response.
+
+Every later range still passes current disclosure policy, manifest identity,
+range consumption, budget and owner fencing from [[file:../../30-39-assurance/38-logical-range-recovery/38.00-index.org][38 Logical range recovery]].
+A winner bit is not unlimited permission to release cached or newly generated
+bytes. The attempt model proves single-winner selection and budget holds; it does
+not model byte offsets or prove the full asynchronous product of every range
+transition. Integration must bind each range's root and attempt to the committed
+winner in the same broker decision. Cancellation of losers is best effort; their
+already-started executions and late usage remain in the ledger.
+
+* Language and policy responsibilities
+
+| Boundary | Scheme / POO Flow | Go | Rust |
+|----------+-------------------+----+------|
+| Task contract | Canonical root, retry/duplicate profile, sponsorship semantics, history and budget domains | Validate Kubernetes configuration and publish typed snapshots | Admit exact sponsored root and persist allowance |
+| Routing | Define hard capability/residency/semantic constraints and Cedar operation schema | Discover providers/model pools, workload identities, health and prices; reconcile cloud-native resources | Filter hard eligibility, rank eligible candidates, validate actual wire target |
+| Child execution | Define child operation and no-execution/usage observation contracts | Normalize provider-specific SDK responses; report data with source identity | Allocate ordinal, reserve maximum, persist consume, own final queue and epoch fence |
+| Streaming | Define response/tool/disclosure semantics | Adapt protocols without independent replay or winner authority | Commit winner and gate each logical range |
+| Accounting | Define admissible final usage and original-root settlement semantics | Collect attributable provider usage; no refund authority | Durable child slots, aggregate usage, original-root settlement gate |
+
+Go is chosen for Kubernetes controllers, resource APIs, workload identity,
+cloud/provider integrations and their ecosystems. Its network ecosystem is
+useful where a protocol adapter materially benefits from it. Putting a Go SDK in
+the hot path is optional and must preserve the Rust broker boundary. Rust owns
+connection/stream processing, bounded buffers and the last authoritative send
+path. Scheme owns semantic composition and Code as Policy; Cedar evaluates the
+typed actual operation and all required policy layers, with deny/indeterminate
+closed. Quint explores races and negative cases; Lean proves invariant preservation
+under explicitly supplied owner and storage contracts. No language choice by
+itself supplies Zero Trust.
+
+* High-performance path and operational tradeoffs
+
+Compile static semantic contracts and reuse typed catalog snapshots; keep mutable
+history, revocation, hard route view and spent-state current at final admission.
+Separate soft health/latency ranking from authority. Use bounded queues, request
+body limits and token/output limits. Charge one root escrow and a small durable
+child allocation/consume record per actual attempt. Streaming ranges stay in the
+Rust broker; avoid synchronous Scheme or Go crossings for every token when a
+validated bounded manifest can carry the semantic contract.
+
+Batching durable records is allowed only when the acknowledgement covers the
+exact consumed prefix before handoff; a buffered write is insufficient. Queue
+residence, policy-evaluation cost, allocation/consume fsync cost, first-token
+latency, throughput, tail latency, maximum held escrow and orphan reconciliation
+age need matched benchmarks. Compare single-attempt, qualified fallback and
+explicit duplicate profiles separately. No benchmark or speed claim is made by
+this design-only change. Conservative non-recycling can exhaust an escrow despite
+known zero cost; size profiles accordingly and expose a typed stop reason.
+
+* Source comparison and evidence boundary
+
+The [[file:../../../dev/proofs/evidence/llm-attempt-ledger/source-review.json][fresh source register]] verifies 18 pinned POO Flow / cedar-poo-spec blobs.
+The [[file:../../../dev/proofs/evidence/llm-attempt-ledger/agentgateway-source-review.json][agentgateway register]] verifies 10 pinned blobs. These are source snapshots,
+not a claim about an uninspected latest release or a compatible native ABI.
+
+| Source | Direct semantic reuse | Required extension / limitation |
+|--------+-----------------------+---------------------------------|
+| P12 authorized-effect-token; P13 strict-mediation | Exact operation roots, one-shot consumption, unknown still spent | Durable root sponsorship and child schema; caller must publish authoritative spent-state |
+| P15 effect-host | Serialized owner, consume before delivery, indeterminate retained | Local non-durable host is not the distributed Gateway broker |
+| P31 SessionAttempt; P43 session/funs-attempt | Attempt identity, generation/CAS intent, recovery obligations | Pure intents explicitly lack runtime publication/action authority/durability; add root-to-many-child ledger |
+| P17/P22 durable store | Runtime-owned durable backend/checkpoint/rebuild boundary | Atomic operation keys, rollback-safe recovery, winner and child accounting records need qualification |
+| P18/P19 recovery bridges | Source-bound prior receipt and authorized recovery composition | Old receipts reconcile old child; cannot authorize a new target or call |
+| P20 exactly-once | Declared effect-universe reasoning | =effectUniverseExecutesExactlyOnce= is supplied evidence; no remote LLM exactly-once theorem |
+| P33 budget separation; P35 lineage/prefix | Keep watchdog/recovery budgets and monotone context domains distinct | Provider billing bounds/finality, retries and winner-bound ranges require new contracts |
+| C8 BoundOperation | Bind actual operation and host authorization inputs | New task sponsorship and child/provider action schema must match actual encoded request |
+| C10 CompoundAuthorization; C11 Composition | Required policy layers and typed composition | Do not infer durable send, SDK replay suppression or cross-store atomicity |
+| AGL1/2/3/6/7/8 | Virtual model routing, catalog, advice, provider pools and Go cloud-native publication patterns | Route advice/health/failure status does not establish task-specific retry or cost authority |
+| AGL4/5/10 | Provider conversion, streaming, usage and representative golden wire cases | Qualify attempt/usage attribution and winner-bound streams with real providers |
+| AGL9 HTTP retry | Explicit attempt count, conditions and replay buffering as useful reliability mechanisms | Require a child grant per actual invocation; buffered bytes and HTTP retryability are not Policy authority |
+
+No upstream code is changed or copied into the Gateway. The new Lean module
+imports prior Weaver abstract proofs; POO Flow and Cedar snapshots are reviewed
+as reusable contracts, not silently recompiled as native-compatible dependencies.
+
+* Remaining integration gates
+
+Before implementation acceptance, exercise durable allocation response loss;
+consume-before/after enqueue crashes; live SDK redirects/retries; mixed model
+wire manifests; winner CAS races; late loser usage after restart; maximum-token
+bound violations; account apply response loss; rollback and old-worker recovery.
+Require source-bound receipts and real provider/transport controls. The current
+models omit arbitrary storage failure transitions, temporal liveness, provider
+wire parsing and malicious owner-predicate implementations. Fail-closed safety
+can retain budget indefinitely when a provider supplies no authoritative finality.
+A manual reconciliation decision needs its own policy and evidence, not a timeout
+that silently sets unknown usage to zero.

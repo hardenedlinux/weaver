@@ -1,0 +1,121 @@
+[
+  {
+    "id": "WA1",
+    "design": "Every financial transition refines the actual account model",
+    "quint": "recoveryDoesNotRepeatFinancialDeltaTest",
+    "lean": "core_projection",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "WA2",
+    "design": "The actual initialized account history is preserved",
+    "quint": "committedLostReplyCanRecoverSameResultTest",
+    "lean": "actual_account_composition",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "WA3",
+    "design": "Active projection obeys the complete current-view invariant",
+    "quint": "truncatedWalCanRepairFromAuthorityTest",
+    "lean": "initialized_live",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "WA4",
+    "design": "Balance visibility needs current confirmation and complete WAL",
+    "quint": "equalRevisionWrongWalBodyRejectedTest",
+    "lean": "visible_balance_is_current",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "WA5",
+    "design": "Duplicate original candidate cannot settle twice",
+    "quint": "originalCandidateCannotCommitTwiceTest",
+    "lean": "original_reservation_once",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "WA6",
+    "design": "Account totals remain conserved across staged recovery",
+    "quint": "truncatedWalCanRepairFromAuthorityTest",
+    "lean": "account_conservation",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "WA7",
+    "design": "Restoring local images cannot erase original application",
+    "quint": "snapshotDoesNotEraseOriginalApplicationTest",
+    "lean": "committed_application_retained",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "WA8",
+    "design": "Missing anchored WAL records block visibility",
+    "quint": "truncatedCommittedWalCannotActivateTest",
+    "lean": "truncated_wal_cannot_be_visible",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "WA9",
+    "design": "Old confirmation cannot survive an owner change",
+    "quint": "oldConfirmationAfterRotateCannotActivateTest",
+    "lean": "changed_epoch_invalidates_confirmation",
+    "d2": "protocols.acp"
+  },
+  {
+    "id": "WA10",
+    "design": "WAL repair creates no financial delta",
+    "quint": "truncatedWalCanRepairFromAuthorityTest",
+    "lean": "repair_does_not_change_account",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "WA11",
+    "design": "Candidate acceptance creates no financial delta",
+    "quint": "candidateAcceptanceDoesNotReleaseBudgetTest",
+    "lean": "unconfirmed_candidate_has_no_financial_effect",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "WA12",
+    "design": "Local WAL durability creates no financial delta",
+    "quint": "walDurableDoesNotReleaseBudgetTest",
+    "lean": "wal_flush_has_no_financial_effect",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "WA13",
+    "design": "Old worker cannot commit an earlier accepted candidate",
+    "quint": "oldWorkerCannotAnchorAcceptedCandidateTest",
+    "lean": "stale_worker_cannot_anchor",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "WA14",
+    "design": "Local restore cannot truncate the protected committed prefix",
+    "quint": "snapshotDoesNotEraseOriginalApplicationTest",
+    "lean": "committed_prefix_retained",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "WA15",
+    "design": "Unknown original usage retains its hold through account refinement",
+    "quint": "sourceChangeBlocksAcceptedCandidateTest",
+    "lean": "unknown_budget_hold_retained",
+    "d2": "registry.query"
+  },
+  {
+    "id": "WA16",
+    "design": "Late account commit invalidates an earlier activated head",
+    "quint": "lateCommitInvalidatesAlreadyActivatedOldHeadTest",
+    "lean": "financial_change_requires_anchor",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "WA17",
+    "design": "Local WAL loss cannot silently cancel an accepted candidate",
+    "quint": "localWalLossCannotCancelPendingCandidateTest",
+    "lean": "accepted_candidate_retained",
+    "d2": "recovery.join"
+  }
+]

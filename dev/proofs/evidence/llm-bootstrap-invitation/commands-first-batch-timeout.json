@@ -1,0 +1,53 @@
+[
+  {
+    "label": "LlmBootstrapInvitation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmBootstrapInvitation.olean",
+      "proofs/lean/LlmBootstrapInvitation.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmBootstrapInvitation.lean": "439574d3221b4c419a83f66b4c1bce97eaa0aee6edff911bd8fb0ef918ec558a"
+    },
+    "exit": 0,
+    "seconds": 4.471,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "prepare-closure",
+    "args": [
+      "python3",
+      "proofs/prepare_bootstrap_invitation_closure.py"
+    ],
+    "sourceSha256": {
+      "proofs/prepare_bootstrap_invitation_closure.py": "fad57fe0edf0589793c89aaf573184e5b4206047989e6428bcb253058ed870df"
+    },
+    "exit": 0,
+    "seconds": 12.271,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-bootstrap-invitation/quint-core/LlmBootstrapInvitation.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(registrationDoesNotIssueTest|independentAssignmentRequiredTest|selfSelectedKeyRejectedTest|duplicateCanonicalLaunchRejectedTest|unregisteredInvitationRejectedTest|sharedKubernetesIdentityRejectedTest|forwardedInvitationNoKeyRejectedTest|invalidPossessionRejectedTest|substitutedSessionRejectedTest|exactBindingRequiredTest|consumptionCommitsExactResultTest|lostReplyCannotConsumeTwiceTest|lostReplyRecoversSameResultTest|oldWorkerCannotRecoverTest|recoveryReadPolicyRequiredTest|concurrentReadInvalidatedTest|revokedEpochRejectedTest|recoveryDoesNotReactivateTest|originalUnknownBudgetRetainedTest|bearerOnlyInvitationCounterexampleTest|lostConsumptionRecordInvitationCounterexampleTest|splitCommitInvitationCounterexampleTest|replacedKeyBindingInvitationCounterexampleTest)$"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-bootstrap-invitation/quint-core/LlmBootstrapInvitation.qnt": "b46c0802c8a1e5ce80bc627b20691c7e4ddf2a9fd3d49195246f113a4f59e9b2"
+    },
+    "exit": 124,
+    "seconds": 55.047,
+    "watchdogSeconds": 55
+  }
+]

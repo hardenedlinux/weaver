@@ -1,0 +1,3934 @@
+[
+  {
+    "name": "acceptanceAsConfirmation",
+    "path": "proofs/evidence/llm-wal-activation/itf/acceptanceAsConfirmationWalCounterexampleTest-1.itf.json",
+    "states": 25,
+    "finalWal": {
+      "active": true,
+      "candidates": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "haveReceipt": true,
+      "receipt": {
+        "epoch": 0,
+        "head": {
+          "applications": [
+            {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            }
+          ],
+          "balance": {
+            "available": 6,
+            "charged": 2,
+            "held": 2
+          },
+          "holds": {
+            "11": 0,
+            "12": 2
+          },
+          "revision": 1,
+          "used": [
+            11
+          ]
+        },
+        "journal": [
+          {
+            "after": {
+              "applications": [
+                {
+                  "bound": 3,
+                  "id": 100,
+                  "key": {
+                    "budget": 5,
+                    "claim": 11,
+                    "history": 9,
+                    "profile": 30,
+                    "reservation": 11,
+                    "root": 10
+                  },
+                  "meter": 1,
+                  "resolution": 1,
+                  "source": 1,
+                  "usage": 2
+                }
+              ],
+              "balance": {
+                "available": 6,
+                "charged": 2,
+                "held": 2
+              },
+              "holds": {
+                "11": 0,
+                "12": 2
+              },
+              "revision": 1,
+              "used": [
+                11
+              ]
+            },
+            "epoch": 0,
+            "proposal": {
+              "before": {
+                "applications": [],
+                "balance": {
+                  "available": 5,
+                  "charged": 0,
+                  "held": 5
+                },
+                "holds": {
+                  "11": 3,
+                  "12": 2
+                },
+                "revision": 0,
+                "used": []
+              },
+              "sourceGeneration": 0,
+              "transaction": {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              },
+              "worker": 0
+            }
+          }
+        ],
+        "sourceGeneration": 0
+      },
+      "records": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "sourceQualified": true
+    },
+    "finalAccount": {
+      "anchor": {
+        "applications": [],
+        "balance": {
+          "available": 5,
+          "charged": 0,
+          "held": 5
+        },
+        "holds": {
+          "11": 3,
+          "12": 2
+        },
+        "revision": 0,
+        "used": []
+      },
+      "epoch": 0,
+      "everCharged": 0,
+      "everReleased": 0,
+      "journal": [],
+      "local": {
+        "applications": [],
+        "balance": {
+          "available": 5,
+          "charged": 0,
+          "held": 5
+        },
+        "holds": {
+          "11": 3,
+          "12": 2
+        },
+        "revision": 0,
+        "used": []
+      },
+      "observed": [],
+      "otherEvidence": true,
+      "prepared": [
+        {
+          "before": {
+            "applications": [],
+            "balance": {
+              "available": 5,
+              "charged": 0,
+              "held": 5
+            },
+            "holds": {
+              "11": 3,
+              "12": 2
+            },
+            "revision": 0,
+            "used": []
+          },
+          "sourceGeneration": 0,
+          "transaction": {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          },
+          "worker": 0
+        }
+      ],
+      "qualified": true,
+      "sourceGeneration": 0
+    }
+  },
+  {
+    "name": "forgedWalBody",
+    "path": "proofs/evidence/llm-wal-activation/itf/forgedWalBodyWalCounterexampleTest-7.itf.json",
+    "states": 31,
+    "finalWal": {
+      "active": true,
+      "candidates": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "haveReceipt": true,
+      "receipt": {
+        "epoch": 0,
+        "head": {
+          "applications": [
+            {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            }
+          ],
+          "balance": {
+            "available": 6,
+            "charged": 2,
+            "held": 2
+          },
+          "holds": {
+            "11": 0,
+            "12": 2
+          },
+          "revision": 1,
+          "used": [
+            11
+          ]
+        },
+        "journal": [
+          {
+            "after": {
+              "applications": [
+                {
+                  "bound": 3,
+                  "id": 100,
+                  "key": {
+                    "budget": 5,
+                    "claim": 11,
+                    "history": 9,
+                    "profile": 30,
+                    "reservation": 11,
+                    "root": 10
+                  },
+                  "meter": 1,
+                  "resolution": 1,
+                  "source": 1,
+                  "usage": 2
+                }
+              ],
+              "balance": {
+                "available": 6,
+                "charged": 2,
+                "held": 2
+              },
+              "holds": {
+                "11": 0,
+                "12": 2
+              },
+              "revision": 1,
+              "used": [
+                11
+              ]
+            },
+            "epoch": 0,
+            "proposal": {
+              "before": {
+                "applications": [],
+                "balance": {
+                  "available": 5,
+                  "charged": 0,
+                  "held": 5
+                },
+                "holds": {
+                  "11": 3,
+                  "12": 2
+                },
+                "revision": 0,
+                "used": []
+              },
+              "sourceGeneration": 0,
+              "transaction": {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              },
+              "worker": 0
+            }
+          }
+        ],
+        "sourceGeneration": 0
+      },
+      "records": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 1
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "sourceQualified": true
+    },
+    "finalAccount": {
+      "anchor": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "epoch": 0,
+      "everCharged": 2,
+      "everReleased": 1,
+      "journal": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "local": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "observed": [],
+      "otherEvidence": true,
+      "prepared": [
+        {
+          "before": {
+            "applications": [],
+            "balance": {
+              "available": 5,
+              "charged": 0,
+              "held": 5
+            },
+            "holds": {
+              "11": 3,
+              "12": 2
+            },
+            "revision": 0,
+            "used": []
+          },
+          "sourceGeneration": 0,
+          "transaction": {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          },
+          "worker": 0
+        }
+      ],
+      "qualified": true,
+      "sourceGeneration": 0
+    }
+  },
+  {
+    "name": "lostReplyRetry",
+    "path": "proofs/evidence/llm-wal-activation/itf/lostReplyRetryWalCounterexampleTest-5.itf.json",
+    "states": 31,
+    "finalWal": {
+      "active": false,
+      "candidates": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "haveReceipt": false,
+      "receipt": {
+        "epoch": 0,
+        "head": {
+          "applications": [
+            {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            }
+          ],
+          "balance": {
+            "available": 6,
+            "charged": 2,
+            "held": 2
+          },
+          "holds": {
+            "11": 0,
+            "12": 2
+          },
+          "revision": 1,
+          "used": [
+            11
+          ]
+        },
+        "journal": [
+          {
+            "after": {
+              "applications": [
+                {
+                  "bound": 3,
+                  "id": 100,
+                  "key": {
+                    "budget": 5,
+                    "claim": 11,
+                    "history": 9,
+                    "profile": 30,
+                    "reservation": 11,
+                    "root": 10
+                  },
+                  "meter": 1,
+                  "resolution": 1,
+                  "source": 1,
+                  "usage": 2
+                }
+              ],
+              "balance": {
+                "available": 6,
+                "charged": 2,
+                "held": 2
+              },
+              "holds": {
+                "11": 0,
+                "12": 2
+              },
+              "revision": 1,
+              "used": [
+                11
+              ]
+            },
+            "epoch": 0,
+            "proposal": {
+              "before": {
+                "applications": [],
+                "balance": {
+                  "available": 5,
+                  "charged": 0,
+                  "held": 5
+                },
+                "holds": {
+                  "11": 3,
+                  "12": 2
+                },
+                "revision": 0,
+                "used": []
+              },
+              "sourceGeneration": 0,
+              "transaction": {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              },
+              "worker": 0
+            }
+          }
+        ],
+        "sourceGeneration": 0
+      },
+      "records": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "sourceQualified": true
+    },
+    "finalAccount": {
+      "anchor": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 7,
+          "charged": 4,
+          "held": -1
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 2,
+        "used": [
+          11
+        ]
+      },
+      "epoch": 0,
+      "everCharged": 4,
+      "everReleased": 2,
+      "journal": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        },
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 7,
+              "charged": 4,
+              "held": -1
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 2,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "local": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "observed": [],
+      "otherEvidence": true,
+      "prepared": [
+        {
+          "before": {
+            "applications": [],
+            "balance": {
+              "available": 5,
+              "charged": 0,
+              "held": 5
+            },
+            "holds": {
+              "11": 3,
+              "12": 2
+            },
+            "revision": 0,
+            "used": []
+          },
+          "sourceGeneration": 0,
+          "transaction": {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          },
+          "worker": 0
+        }
+      ],
+      "qualified": false,
+      "sourceGeneration": 0
+    }
+  },
+  {
+    "name": "oldCandidateRetry",
+    "path": "proofs/evidence/llm-wal-activation/itf/oldCandidateRetryWalCounterexampleTest-8.itf.json",
+    "states": 31,
+    "finalWal": {
+      "active": false,
+      "candidates": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "haveReceipt": true,
+      "receipt": {
+        "epoch": 0,
+        "head": {
+          "applications": [
+            {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            }
+          ],
+          "balance": {
+            "available": 6,
+            "charged": 2,
+            "held": 2
+          },
+          "holds": {
+            "11": 0,
+            "12": 2
+          },
+          "revision": 1,
+          "used": [
+            11
+          ]
+        },
+        "journal": [
+          {
+            "after": {
+              "applications": [
+                {
+                  "bound": 3,
+                  "id": 100,
+                  "key": {
+                    "budget": 5,
+                    "claim": 11,
+                    "history": 9,
+                    "profile": 30,
+                    "reservation": 11,
+                    "root": 10
+                  },
+                  "meter": 1,
+                  "resolution": 1,
+                  "source": 1,
+                  "usage": 2
+                }
+              ],
+              "balance": {
+                "available": 6,
+                "charged": 2,
+                "held": 2
+              },
+              "holds": {
+                "11": 0,
+                "12": 2
+              },
+              "revision": 1,
+              "used": [
+                11
+              ]
+            },
+            "epoch": 0,
+            "proposal": {
+              "before": {
+                "applications": [],
+                "balance": {
+                  "available": 5,
+                  "charged": 0,
+                  "held": 5
+                },
+                "holds": {
+                  "11": 3,
+                  "12": 2
+                },
+                "revision": 0,
+                "used": []
+              },
+              "sourceGeneration": 0,
+              "transaction": {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              },
+              "worker": 0
+            }
+          }
+        ],
+        "sourceGeneration": 0
+      },
+      "records": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "sourceQualified": true
+    },
+    "finalAccount": {
+      "anchor": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 7,
+          "charged": 4,
+          "held": -1
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 2,
+        "used": [
+          11
+        ]
+      },
+      "epoch": 1,
+      "everCharged": 4,
+      "everReleased": 2,
+      "journal": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        },
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 7,
+              "charged": 4,
+              "held": -1
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 2,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 1,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "local": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "observed": [],
+      "otherEvidence": true,
+      "prepared": [
+        {
+          "before": {
+            "applications": [],
+            "balance": {
+              "available": 5,
+              "charged": 0,
+              "held": 5
+            },
+            "holds": {
+              "11": 3,
+              "12": 2
+            },
+            "revision": 0,
+            "used": []
+          },
+          "sourceGeneration": 0,
+          "transaction": {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          },
+          "worker": 0
+        }
+      ],
+      "qualified": false,
+      "sourceGeneration": 0
+    }
+  },
+  {
+    "name": "oldSnapshot",
+    "path": "proofs/evidence/llm-wal-activation/itf/oldSnapshotWalCounterexampleTest-3.itf.json",
+    "states": 32,
+    "finalWal": {
+      "active": true,
+      "candidates": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "haveReceipt": true,
+      "receipt": {
+        "epoch": 0,
+        "head": {
+          "applications": [
+            {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            }
+          ],
+          "balance": {
+            "available": 6,
+            "charged": 2,
+            "held": 2
+          },
+          "holds": {
+            "11": 0,
+            "12": 2
+          },
+          "revision": 1,
+          "used": [
+            11
+          ]
+        },
+        "journal": [
+          {
+            "after": {
+              "applications": [
+                {
+                  "bound": 3,
+                  "id": 100,
+                  "key": {
+                    "budget": 5,
+                    "claim": 11,
+                    "history": 9,
+                    "profile": 30,
+                    "reservation": 11,
+                    "root": 10
+                  },
+                  "meter": 1,
+                  "resolution": 1,
+                  "source": 1,
+                  "usage": 2
+                }
+              ],
+              "balance": {
+                "available": 6,
+                "charged": 2,
+                "held": 2
+              },
+              "holds": {
+                "11": 0,
+                "12": 2
+              },
+              "revision": 1,
+              "used": [
+                11
+              ]
+            },
+            "epoch": 0,
+            "proposal": {
+              "before": {
+                "applications": [],
+                "balance": {
+                  "available": 5,
+                  "charged": 0,
+                  "held": 5
+                },
+                "holds": {
+                  "11": 3,
+                  "12": 2
+                },
+                "revision": 0,
+                "used": []
+              },
+              "sourceGeneration": 0,
+              "transaction": {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              },
+              "worker": 0
+            }
+          }
+        ],
+        "sourceGeneration": 0
+      },
+      "records": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "sourceQualified": true
+    },
+    "finalAccount": {
+      "anchor": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "epoch": 1,
+      "everCharged": 2,
+      "everReleased": 1,
+      "journal": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "local": {
+        "applications": [],
+        "balance": {
+          "available": 5,
+          "charged": 0,
+          "held": 5
+        },
+        "holds": {
+          "11": 3,
+          "12": 2
+        },
+        "revision": 0,
+        "used": []
+      },
+      "observed": [],
+      "otherEvidence": true,
+      "prepared": [
+        {
+          "before": {
+            "applications": [],
+            "balance": {
+              "available": 5,
+              "charged": 0,
+              "held": 5
+            },
+            "holds": {
+              "11": 3,
+              "12": 2
+            },
+            "revision": 0,
+            "used": []
+          },
+          "sourceGeneration": 0,
+          "transaction": {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          },
+          "worker": 0
+        }
+      ],
+      "qualified": false,
+      "sourceGeneration": 0
+    }
+  },
+  {
+    "name": "sharedRollback",
+    "path": "proofs/evidence/llm-wal-activation/itf/sharedRollbackWalCounterexampleTest-6.itf.json",
+    "states": 30,
+    "finalWal": {
+      "active": true,
+      "candidates": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "haveReceipt": true,
+      "receipt": {
+        "epoch": 0,
+        "head": {
+          "applications": [
+            {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            }
+          ],
+          "balance": {
+            "available": 6,
+            "charged": 2,
+            "held": 2
+          },
+          "holds": {
+            "11": 0,
+            "12": 2
+          },
+          "revision": 1,
+          "used": [
+            11
+          ]
+        },
+        "journal": [
+          {
+            "after": {
+              "applications": [
+                {
+                  "bound": 3,
+                  "id": 100,
+                  "key": {
+                    "budget": 5,
+                    "claim": 11,
+                    "history": 9,
+                    "profile": 30,
+                    "reservation": 11,
+                    "root": 10
+                  },
+                  "meter": 1,
+                  "resolution": 1,
+                  "source": 1,
+                  "usage": 2
+                }
+              ],
+              "balance": {
+                "available": 6,
+                "charged": 2,
+                "held": 2
+              },
+              "holds": {
+                "11": 0,
+                "12": 2
+              },
+              "revision": 1,
+              "used": [
+                11
+              ]
+            },
+            "epoch": 0,
+            "proposal": {
+              "before": {
+                "applications": [],
+                "balance": {
+                  "available": 5,
+                  "charged": 0,
+                  "held": 5
+                },
+                "holds": {
+                  "11": 3,
+                  "12": 2
+                },
+                "revision": 0,
+                "used": []
+              },
+              "sourceGeneration": 0,
+              "transaction": {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              },
+              "worker": 0
+            }
+          }
+        ],
+        "sourceGeneration": 0
+      },
+      "records": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "sourceQualified": true
+    },
+    "finalAccount": {
+      "anchor": {
+        "applications": [],
+        "balance": {
+          "available": 5,
+          "charged": 0,
+          "held": 5
+        },
+        "holds": {
+          "11": 3,
+          "12": 2
+        },
+        "revision": 0,
+        "used": []
+      },
+      "epoch": 0,
+      "everCharged": 2,
+      "everReleased": 1,
+      "journal": [],
+      "local": {
+        "applications": [],
+        "balance": {
+          "available": 5,
+          "charged": 0,
+          "held": 5
+        },
+        "holds": {
+          "11": 3,
+          "12": 2
+        },
+        "revision": 0,
+        "used": []
+      },
+      "observed": [],
+      "otherEvidence": true,
+      "prepared": [
+        {
+          "before": {
+            "applications": [],
+            "balance": {
+              "available": 5,
+              "charged": 0,
+              "held": 5
+            },
+            "holds": {
+              "11": 3,
+              "12": 2
+            },
+            "revision": 0,
+            "used": []
+          },
+          "sourceGeneration": 0,
+          "transaction": {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          },
+          "worker": 0
+        }
+      ],
+      "qualified": true,
+      "sourceGeneration": 0
+    }
+  },
+  {
+    "name": "staleConfirmation",
+    "path": "proofs/evidence/llm-wal-activation/itf/staleConfirmationWalCounterexampleTest-4.itf.json",
+    "states": 32,
+    "finalWal": {
+      "active": true,
+      "candidates": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "haveReceipt": true,
+      "receipt": {
+        "epoch": 0,
+        "head": {
+          "applications": [
+            {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            }
+          ],
+          "balance": {
+            "available": 6,
+            "charged": 2,
+            "held": 2
+          },
+          "holds": {
+            "11": 0,
+            "12": 2
+          },
+          "revision": 1,
+          "used": [
+            11
+          ]
+        },
+        "journal": [
+          {
+            "after": {
+              "applications": [
+                {
+                  "bound": 3,
+                  "id": 100,
+                  "key": {
+                    "budget": 5,
+                    "claim": 11,
+                    "history": 9,
+                    "profile": 30,
+                    "reservation": 11,
+                    "root": 10
+                  },
+                  "meter": 1,
+                  "resolution": 1,
+                  "source": 1,
+                  "usage": 2
+                }
+              ],
+              "balance": {
+                "available": 6,
+                "charged": 2,
+                "held": 2
+              },
+              "holds": {
+                "11": 0,
+                "12": 2
+              },
+              "revision": 1,
+              "used": [
+                11
+              ]
+            },
+            "epoch": 0,
+            "proposal": {
+              "before": {
+                "applications": [],
+                "balance": {
+                  "available": 5,
+                  "charged": 0,
+                  "held": 5
+                },
+                "holds": {
+                  "11": 3,
+                  "12": 2
+                },
+                "revision": 0,
+                "used": []
+              },
+              "sourceGeneration": 0,
+              "transaction": {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              },
+              "worker": 0
+            }
+          }
+        ],
+        "sourceGeneration": 0
+      },
+      "records": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "sourceQualified": true
+    },
+    "finalAccount": {
+      "anchor": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "epoch": 1,
+      "everCharged": 2,
+      "everReleased": 1,
+      "journal": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "local": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "observed": [],
+      "otherEvidence": true,
+      "prepared": [
+        {
+          "before": {
+            "applications": [],
+            "balance": {
+              "available": 5,
+              "charged": 0,
+              "held": 5
+            },
+            "holds": {
+              "11": 3,
+              "12": 2
+            },
+            "revision": 0,
+            "used": []
+          },
+          "sourceGeneration": 0,
+          "transaction": {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          },
+          "worker": 0
+        }
+      ],
+      "qualified": true,
+      "sourceGeneration": 0
+    }
+  },
+  {
+    "name": "truncatedWal",
+    "path": "proofs/evidence/llm-wal-activation/itf/truncatedWalWalCounterexampleTest-2.itf.json",
+    "states": 31,
+    "finalWal": {
+      "active": true,
+      "candidates": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "haveReceipt": true,
+      "receipt": {
+        "epoch": 0,
+        "head": {
+          "applications": [
+            {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            }
+          ],
+          "balance": {
+            "available": 6,
+            "charged": 2,
+            "held": 2
+          },
+          "holds": {
+            "11": 0,
+            "12": 2
+          },
+          "revision": 1,
+          "used": [
+            11
+          ]
+        },
+        "journal": [
+          {
+            "after": {
+              "applications": [
+                {
+                  "bound": 3,
+                  "id": 100,
+                  "key": {
+                    "budget": 5,
+                    "claim": 11,
+                    "history": 9,
+                    "profile": 30,
+                    "reservation": 11,
+                    "root": 10
+                  },
+                  "meter": 1,
+                  "resolution": 1,
+                  "source": 1,
+                  "usage": 2
+                }
+              ],
+              "balance": {
+                "available": 6,
+                "charged": 2,
+                "held": 2
+              },
+              "holds": {
+                "11": 0,
+                "12": 2
+              },
+              "revision": 1,
+              "used": [
+                11
+              ]
+            },
+            "epoch": 0,
+            "proposal": {
+              "before": {
+                "applications": [],
+                "balance": {
+                  "available": 5,
+                  "charged": 0,
+                  "held": 5
+                },
+                "holds": {
+                  "11": 3,
+                  "12": 2
+                },
+                "revision": 0,
+                "used": []
+              },
+              "sourceGeneration": 0,
+              "transaction": {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              },
+              "worker": 0
+            }
+          }
+        ],
+        "sourceGeneration": 0
+      },
+      "records": [],
+      "sourceQualified": true
+    },
+    "finalAccount": {
+      "anchor": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "epoch": 0,
+      "everCharged": 2,
+      "everReleased": 1,
+      "journal": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "local": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "observed": [],
+      "otherEvidence": true,
+      "prepared": [
+        {
+          "before": {
+            "applications": [],
+            "balance": {
+              "available": 5,
+              "charged": 0,
+              "held": 5
+            },
+            "holds": {
+              "11": 3,
+              "12": 2
+            },
+            "revision": 0,
+            "used": []
+          },
+          "sourceGeneration": 0,
+          "transaction": {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          },
+          "worker": 0
+        }
+      ],
+      "qualified": true,
+      "sourceGeneration": 0
+    }
+  },
+  {
+    "name": "unconfirmedTailRefund",
+    "path": "proofs/evidence/llm-wal-activation/itf/unconfirmedTailRefundWalCounterexampleTest-9.itf.json",
+    "states": 25,
+    "finalWal": {
+      "active": false,
+      "candidates": [],
+      "haveReceipt": false,
+      "receipt": {
+        "epoch": 0,
+        "head": {
+          "applications": [],
+          "balance": {
+            "available": 5,
+            "charged": 0,
+            "held": 5
+          },
+          "holds": {
+            "11": 3,
+            "12": 2
+          },
+          "revision": 0,
+          "used": []
+        },
+        "journal": [],
+        "sourceGeneration": 0
+      },
+      "records": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "sourceQualified": true
+    },
+    "finalAccount": {
+      "anchor": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "epoch": 0,
+      "everCharged": 2,
+      "everReleased": 1,
+      "journal": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "local": {
+        "applications": [],
+        "balance": {
+          "available": 5,
+          "charged": 0,
+          "held": 5
+        },
+        "holds": {
+          "11": 3,
+          "12": 2
+        },
+        "revision": 0,
+        "used": []
+      },
+      "observed": [],
+      "otherEvidence": true,
+      "prepared": [
+        {
+          "before": {
+            "applications": [],
+            "balance": {
+              "available": 5,
+              "charged": 0,
+              "held": 5
+            },
+            "holds": {
+              "11": 3,
+              "12": 2
+            },
+            "revision": 0,
+            "used": []
+          },
+          "sourceGeneration": 0,
+          "transaction": {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          },
+          "worker": 0
+        }
+      ],
+      "qualified": false,
+      "sourceGeneration": 0
+    }
+  },
+  {
+    "name": "walAsMoney",
+    "path": "proofs/evidence/llm-wal-activation/itf/walAsMoneyWalCounterexampleTest-0.itf.json",
+    "states": 24,
+    "finalWal": {
+      "active": true,
+      "candidates": [],
+      "haveReceipt": true,
+      "receipt": {
+        "epoch": 0,
+        "head": {
+          "applications": [],
+          "balance": {
+            "available": 5,
+            "charged": 0,
+            "held": 5
+          },
+          "holds": {
+            "11": 3,
+            "12": 2
+          },
+          "revision": 0,
+          "used": []
+        },
+        "journal": [],
+        "sourceGeneration": 0
+      },
+      "records": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "sourceQualified": true
+    },
+    "finalAccount": {
+      "anchor": {
+        "applications": [
+          {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          }
+        ],
+        "balance": {
+          "available": 6,
+          "charged": 2,
+          "held": 2
+        },
+        "holds": {
+          "11": 0,
+          "12": 2
+        },
+        "revision": 1,
+        "used": [
+          11
+        ]
+      },
+      "epoch": 0,
+      "everCharged": 2,
+      "everReleased": 1,
+      "journal": [
+        {
+          "after": {
+            "applications": [
+              {
+                "bound": 3,
+                "id": 100,
+                "key": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "profile": 30,
+                  "reservation": 11,
+                  "root": 10
+                },
+                "meter": 1,
+                "resolution": 1,
+                "source": 1,
+                "usage": 2
+              }
+            ],
+            "balance": {
+              "available": 6,
+              "charged": 2,
+              "held": 2
+            },
+            "holds": {
+              "11": 0,
+              "12": 2
+            },
+            "revision": 1,
+            "used": [
+              11
+            ]
+          },
+          "epoch": 0,
+          "proposal": {
+            "before": {
+              "applications": [],
+              "balance": {
+                "available": 5,
+                "charged": 0,
+                "held": 5
+              },
+              "holds": {
+                "11": 3,
+                "12": 2
+              },
+              "revision": 0,
+              "used": []
+            },
+            "sourceGeneration": 0,
+            "transaction": {
+              "bound": 3,
+              "id": 100,
+              "key": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "profile": 30,
+                "reservation": 11,
+                "root": 10
+              },
+              "meter": 1,
+              "resolution": 1,
+              "source": 1,
+              "usage": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "local": {
+        "applications": [],
+        "balance": {
+          "available": 5,
+          "charged": 0,
+          "held": 5
+        },
+        "holds": {
+          "11": 3,
+          "12": 2
+        },
+        "revision": 0,
+        "used": []
+      },
+      "observed": [],
+      "otherEvidence": true,
+      "prepared": [
+        {
+          "before": {
+            "applications": [],
+            "balance": {
+              "available": 5,
+              "charged": 0,
+              "held": 5
+            },
+            "holds": {
+              "11": 3,
+              "12": 2
+            },
+            "revision": 0,
+            "used": []
+          },
+          "sourceGeneration": 0,
+          "transaction": {
+            "bound": 3,
+            "id": 100,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "history": 9,
+              "profile": 30,
+              "reservation": 11,
+              "root": 10
+            },
+            "meter": 1,
+            "resolution": 1,
+            "source": 1,
+            "usage": 2
+          },
+          "worker": 0
+        }
+      ],
+      "qualified": false,
+      "sourceGeneration": 0
+    }
+  }
+]

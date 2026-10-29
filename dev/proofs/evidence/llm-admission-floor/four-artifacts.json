@@ -1,0 +1,100 @@
+[
+  {
+    "id": "AF1",
+    "design": "Latest determining image and active recovery qualification agree",
+    "quint": "originalPendingTailRecoversAfterOwnerChangeTest",
+    "lean": "initialized_safe",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "AF2",
+    "design": "Publication executes an actual guarded handoff transition",
+    "quint": "publicationClosesOldProjectionTest",
+    "lean": "logical_projection",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "AF3",
+    "design": "Actual initialized handoff/account/source history composes",
+    "quint": "actualLateFinancialCommitRemainsSeparateTest",
+    "lean": "actual_handoff_composition",
+    "d2": "lean"
+  },
+  {
+    "id": "AF4",
+    "design": "Original reservation cannot be consumed twice after recovery",
+    "quint": "duplicateOperationPublicationRejectedTest",
+    "lean": "original_reservation_once",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "AF5",
+    "design": "Unknown original source usage retains its original hold",
+    "quint": "pureControlPublicationCannotReleaseHoldTest",
+    "lean": "unknown_original_hold_retained",
+    "d2": "registry.query"
+  },
+  {
+    "id": "AF6",
+    "design": "Committed determining prefix survives response loss and restart",
+    "quint": "lostCommitResponseResolvesSameOperationTest",
+    "lean": "committed_prefix_retained",
+    "d2": "protocols.mcp"
+  },
+  {
+    "id": "AF7",
+    "design": "Stale attempt and reauthorized same intent remain retained",
+    "quint": "sameIntentMayReauthorizeAgainstNewParentTest",
+    "lean": "pending_intent_retained",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "AF8",
+    "design": "Current metadata without required pending tail stays closed",
+    "quint": "restoredCurrentMetadataWithoutTailCannotActivateTest",
+    "lean": "active_requires_current_floor",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "AF9",
+    "design": "Control publication changes no account money or financial journal",
+    "quint": "pureControlPublicationCannotReleaseHoldTest",
+    "lean": "publication_has_no_financial_effect",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "AF10",
+    "design": "Publication rechecks retained body, parent, current worker and before-image",
+    "quint": "oldWorkerCannotPublishCurrentAttemptTest",
+    "lean": "publication_requires_durable_body",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "AF11",
+    "design": "Protected recovery does not reopen a retired append generation",
+    "quint": "restoredOldFrontierCannotActivateTest",
+    "lean": "guarded_generation_monotone",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "AF12",
+    "design": "Original body references remain protected through actual handoff runs",
+    "quint": "originalPendingTailRecoversAfterOwnerChangeTest",
+    "lean": "reference_copy_retained",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "AF13",
+    "design": "One original operation key cannot determine conflicting results",
+    "quint": "duplicateOperationPublicationRejectedTest",
+    "lean": "committed_operation_unique",
+    "d2": "protocols.a2a"
+  },
+  {
+    "id": "AF14",
+    "design": "Restoring local metadata never installs financial authority",
+    "quint": "restoredOldFrontierCannotActivateTest",
+    "lean": "local_restore_preserves_authority",
+    "d2": "protocols.acp"
+  }
+]

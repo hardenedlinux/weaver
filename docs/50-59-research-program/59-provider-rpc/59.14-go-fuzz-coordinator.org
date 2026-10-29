@@ -1,0 +1,111 @@
+#+TITLE: 59.14 Go Fuzz Deadline Integrity and Toolchain Admission
+#+LANGUAGE: en
+
+* Failure mechanism and source repair
+
+The [[file:../../../dev/proofs/evidence/release-binding-20261030/verification-current/receipt.json][preceding final unified run]] retained one failed provider-routing fuzz stage:
+=context deadline exceeded= at the unchanged three-second fuzz window, without a
+reported property counterexample. An exact-argument retry passed, but neither
+that retry nor the context-ordering probe qualified the failing run.
+
+Go's parent cancellation stores its error and closes Done before propagating
+cancellation to child contexts. The fuzz coordinator derives fuzzCtx from that
+parent, then handles the parent Done event. Its old suppression condition reads
+only fuzzCtx.Err(). During propagation, ctx.Err() can already be DeadlineExceeded
+while fuzzCtx.Err() is still nil; the coordinator retains its own normal duration
+expiry as a fatal test error. This is a source-level ordering defect, not a reason
+to classify every deadline diagnostic as harmless or blame host noise.
+
+The [[https://go.googlesource.com/go/+/5a957dc766aed011cdfe7c953987a2ff86c0829c][upstream Go fix]] adds the parent error to that comparison. The local backport
+changes that one condition. It does not suppress an error by matching its text,
+alter a target property, retry a failed stage, or increase a time/sample limit.
+The old failed coordinator execution was not instrumented; the local source,
+ordering probe and upstream diagnosis identify the mechanism without claiming
+a replay of that exact scheduling trace.
+
+* Project-owned development package
+
+=dev/toolchains/go/default.nix= extends the Go package already selected by the
+existing locked package set with =fuzz-parent-deadline.patch=.
+=devenv.nix= selects that development package. The application keeps the normal
+Go toolchain and standard testing/fuzz entrypoints; no request transport,
+error-filtering runner or forked property engine is introduced.
+
+The existing lock resolves the development Go package to 1.26.1. Earlier receipts
+used an available cached Go 1.25.0 executable and remain labeled accordingly.
+This increment does not rewrite them as evidence for the locked development
+profile. The dependency locks, module requirements and Cedar/ASP pins are not
+updated. The Nix invocation uses =--max-jobs 1 --cores 2=. The core setting is
+a builder hint: Go's bootstrap compiler schedules internal work independently.
+This build is not evidence of a hard two-CPU isolation limit or a Gateway
+runtime resource qualification.
+
+The Go verification input receipt now includes the Nix configuration, its lock,
+package override and patch. A source-admission test checks the actual compiler's
+GOROOT for the reviewed parent-deadline condition. An unpatched compiler fails
+that admission deterministically, even if a probabilistic fuzz run happens to
+avoid the race. This is a development toolchain condition, not an inference from
+the compiler version string.
+
+* Native positive and negative controls
+
+The same standard Go fuzz coordinator runs two explicit testdata targets through
+the configured Go executable, each with the unchanged =-fuzztime=3s= and
+=-parallel=1=. Each child has the existing thirty-second test-helper watchdog.
+The parent waits for actual child completion; an observation marker is not an
+exit receipt.
+
+| Target | Required result |
+|--------+-----------------|
+| FuzzNoop | Normal duration expiry exits successfully |
+| FuzzPropertyFailure | A real failing property exits nonzero and retains its unique failure diagnostic |
+
+The deliberately failing target includes =context deadline exceeded= in its
+message. It must still fail. This protects against introducing a wrapper that
+blindly turns the diagnostic seen in the old failure into success. Negative
+controls are invoked explicitly from the Go test; they are not included as
+always-failing application tests by wildcard package discovery.
+
+* Relationship to Gateway assurance
+
+The defect and backport belong to development admission. They grant no provider
+execution, source publication, release, retry, settlement or budget authority.
+Scheme's original task/Policy commitments, Go's routing/control responsibilities,
+and Rust's final durable consume/dispatch/release guards remain unchanged.
+
+Existing Quint models still check state transitions and concrete counterexamples;
+Lean still proves conditional invariants and composition over arbitrary finite
+histories. Neither proves the Go fuzz implementation. The native controls and
+reviewed toolchain source are separate refinement evidence. Existing SysML
+requirements and the core D2 remain applicable: no toolchain version or acceptance
+count is inserted into the architecture diagram.
+
+* Evidence
+
+The [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/unpatched-toolchain-admission.log][unpatched source-admission failure]] is retained. The
+[[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/nix-build.log][Nix build log]] records the independent development package rebuild. Passing
+controls and final unified results must be qualified under that actual package,
+not under a successful retry with the older compiler.
+
+The rebuilt development package is qualified by the
+[[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/patched-native-controls.log][native controls receipt]] and the separately retained
+[[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/intentional-property-failure.log][intentional failing-target transcript]]. The latter exits nonzero with its
+original unique property diagnostic, despite containing the deadline text.
+The [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/toolchain-source-sha256.log][source hashes]] and [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/toolchain-derivation.log][Nix derivation identity]] identify the actual package.
+
+The [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/verification-current/receipt.json][final unified run]] passes all thirty-nine stages with 164 unchanged input
+hashes. It includes fifty-nine Rust tests and all five ASP deny gates, default
+and all-feature compilation, Clippy, Go race tests, all four unchanged three-second
+fuzz stages, real mTLS/provider integration, strict SysML/trace checks, the imported
+Cedar bridge, and the existing Quint and Lean checks. ReleaseBinding retains its
+thirteen controls; ProviderRpc prints thirty-one Lean declarations without
+sorryAx. The prior thirty-eight-of-thirty-nine receipt is preserved as a failure,
+not overwritten or reclassified by this new run.
+
+The [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/benchmark-current/receipt.json][measured baseline]] passes the full Rust/Go benchmark entrypoint with the
+same 164 input hashes. Its [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/benchmark-current/benchmark-summary.org][eighteen-case Rust summary]] covers all five packages;
+three Go RPC benchmark families each retain three two-second runs and allocation
+counters. Twelve Rust cases improve against the local Criterion cache and six
+show no significant change. These are empirical host samples, not a matched
+claim about the toolchain fix or production latency. Older compiler baselines
+and regression warnings remain under their own receipts.

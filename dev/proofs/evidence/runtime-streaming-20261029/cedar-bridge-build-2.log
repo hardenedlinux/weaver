@@ -1,0 +1,8 @@
+✖ [99/100] Building WeaverPolicyBridge (803ms)
+trace: .> LEAN_PATH=/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/packages/batteries/.lake/build/lib/lean:/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/packages/Cedar/cedar-lean/.lake/build/lib/lean:/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/packages/LeanPoo/.lake/build/lib/lean:/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/packages/CedarPooSpec/.lake/build/lib/lean:/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/build/lib/lean /Users/guangtao/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/WeaverPolicyBridge.lean -o /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/build/lib/lean/WeaverPolicyBridge.olean -i /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/build/lib/lean/WeaverPolicyBridge.ilean -c /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/build/ir/WeaverPolicyBridge.c --setup /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/build/ir/WeaverPolicyBridge.setup.json --json
+error: WeaverPolicyBridge.lean:14:5: unexpected token 'matches'; expected '_' or identifier
+error: WeaverPolicyBridge.lean:28:14: Unknown constant `matching_native_values_preserve_request`
+info: WeaverPolicyBridge.lean:29:0: 'Weaver.PolicyBridge.changed_effect_rejects_bound_reuse' depends on axioms: [propext]
+Some required targets logged failures:
+- WeaverPolicyBridge
+error: build failed

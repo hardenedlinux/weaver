@@ -1,0 +1,405 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-authoritative-scope-ma2km02a/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "exit": 0,
+    "seconds": 3.267,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-authoritative-scope-ma2km02a/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.614,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-authoritative-scope-ma2km02a/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.826,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "GatewayHeadCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-authoritative-scope-ma2km02a/GatewayHeadCAS.olean",
+      "proofs/lean/GatewayHeadCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.735,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "BrokerConsumptionQueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-authoritative-scope-ma2km02a/BrokerConsumptionQueue.olean",
+      "proofs/lean/BrokerConsumptionQueue.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.787,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LogicalRangeRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-authoritative-scope-ma2km02a/LogicalRangeRecovery.olean",
+      "proofs/lean/LogicalRangeRecovery.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.78,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRouting",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-authoritative-scope-ma2km02a/LlmRouting.olean",
+      "proofs/lean/LlmRouting.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.66,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAttemptLedger",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-authoritative-scope-ma2km02a/LlmAttemptLedger.olean",
+      "proofs/lean/LlmAttemptLedger.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.726,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmSemanticContract",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-authoritative-scope-ma2km02a/LlmSemanticContract.olean",
+      "proofs/lean/LlmSemanticContract.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.681,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAuthoritativeScope",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-authoritative-scope-ma2km02a/LlmAuthoritativeScope.olean",
+      "proofs/lean/LlmAuthoritativeScope.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.879,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "typecheck",
+    "args": [
+      "quint",
+      "typecheck",
+      "proofs/qunit/LlmAuthoritativeScope.qnt"
+    ],
+    "exit": 0,
+    "seconds": 1.493,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmAuthoritativeScope.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 1.213,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmAuthoritativeScope.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "(forgedDomain|responseDowngrade|foreignClaim|staleAuthority|historyAlias|toolExpansion|newScopeReplay|unknownRefund)ScopeCounterexampleTest$",
+      "--out-itf",
+      "proofs/evidence/llm-authoritative-scope/itf/{test}-{seq}.itf.json"
+    ],
+    "exit": 0,
+    "seconds": 0.947,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "init",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAuthoritativeScope.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "163",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.868,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "initMissing",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAuthoritativeScope.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "initMissing",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "163",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.895,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "registered",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAuthoritativeScope.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "registered",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "163",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.935,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "prepared",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAuthoritativeScope.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "prepared",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "163",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.884,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "invoked",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAuthoritativeScope.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "invoked",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "163",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.892,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "winner",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAuthoritativeScope.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "winner",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "163",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.889,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "recovered",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAuthoritativeScope.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "recovered",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "163",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.892,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "semantic-regression",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmSemanticContract.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 0.677,
+    "watchdogSeconds": 55
+  }
+]

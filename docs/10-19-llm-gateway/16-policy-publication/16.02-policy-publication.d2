@@ -1,0 +1,192 @@
+# Core design only; source identities and proof receipts remain in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / PENDING CHANGE / EFFECTIVE AUTHORITY PUBLICATION {
+  class: title
+  near: top-center
+}
+producer: SCHEME AND GO / CHANGE INTENT {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  subject: Original admitted subject\nClaim / profile / source / domains\nImmutable stable change identity {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  pending: Durable pending intent\nApproved content / expected parent\nPending does not mean effective {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  approval: Actual publication authorization\nCurrent source state and worker\nStage approval is not a send grant {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+authority: RUST / PUBLICATION OWNER {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  parent: Current parent and owner fence\nExact predecessor / no silent rebase\nRetire stale publishers {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  publish: Atomic effective publication\nDurable log and new Policy generation\nSame serialization as consumption {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  query: Exact stable change lookup\nLost reply queries original decision\nNo second append from cache absence {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+}
+recovery: RUST / ATTRIBUTABLE RECOVERY {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  projection: Independent readable projections\nProducer snapshot is data only\nNever assign current authority {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  prefix: Qualified current prefix recovery\nOwner and source ledger recovery\nUnknown result is not absence {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  ack: Historical committed confirmation\nExact change and original generation\nOld Allow cannot restore authority {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+}
+broker: RUST / FINAL CONSUMPTION {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  cas: Complete current image CAS\nPublished generation / ledger / fence\nOld issued permits stay invalid {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  contract: Original semantic and Policy gate\nOriginal claim / profile / domains\nNo scope expansion by adapter {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  hold: Original budget and usage hold\nUnknown work remains spent and held\nAcknowledgement cannot refund {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+quint: QUINT\nReply loss / stale parent / mixed snapshots\nOld Allow ack / stale publisher / ID alias {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nExact parent chain / durable effective tip\nHistorical ack / original source obligations {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+producer.subject -> producer.pending
+producer.pending -> authority.publish
+producer.approval -> authority.publish { style.stroke-dash: 4 }
+authority.parent -> authority.publish
+authority.publish -> authority.query
+authority.query -> recovery.ack
+recovery.projection -> recovery.prefix
+recovery.prefix -> recovery.ack
+recovery.prefix -> broker.cas { style.stroke-dash: 4 }
+authority.publish -> broker.cas
+broker.contract -> broker.cas { style.stroke-dash: 4 }
+broker.contract -> broker.hold

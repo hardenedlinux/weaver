@@ -1,0 +1,184 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 3,
+    "sourceSha256": "afe75fc1a6f60fdba69ca86b5ed81c323c8a2366c75a16bdc940ac28b7477f3b",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.525
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "c9aa2858383b7c26edb41f444f99a8e2ea1bc44e7263d73c511eb709b532d170",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 2.115
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "queueHasNoExternalSendTest",
+      "actualDispatchUsesOriginalRouterTest",
+      "forgedProfileCannotQueueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.034
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "forgedOriginCannotQueueTest",
+      "changedResponseCannotQueueTest",
+      "generationChangeRejectsOldPermitTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.015
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "rejoinPreservesIdentityTest",
+      "policyAfterQueueRejectsSendTest",
+      "historyAfterQueueRejectsSendTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.017
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "artifactCurrentnessRequiredTest",
+      "actualPolicyRequiredTest",
+      "crashBeforeDispatchKeepsQueueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.017
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "oldWorkerAfterRecoveryRejectedTest",
+      "recoveryRejoinCanProgressTest",
+      "lostReplyCannotRetryTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.024
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "crashAfterDispatchCannotRetryTest",
+      "partialWriteRetainsUnknownHoldTest",
+      "policyChangeStopsNextWriteTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.024
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "historyChangeStopsNextWriteTest",
+      "newGenerationStopsNextWriteTest",
+      "oldWriterCannotReleaseAfterRestartTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.063
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "lateReceiptIsNotFreshSendTest",
+      "timeoutDoesNotReleaseBudgetTest",
+      "foreignUsageReceiptRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.022
+  },
+  {
+    "label": "api-controls-8",
+    "passed": [
+      "untrustedUsageReceiptRejectedTest",
+      "settlementRequiresTerminalTest",
+      "noExecutionSealFencesQueuedWorkTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.045
+  },
+  {
+    "label": "api-controls-9",
+    "passed": [
+      "noExecutionRejectsOldQueuedPermitTest",
+      "duplicateSettlementRejectedTest",
+      "queueSendCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.029
+  },
+  {
+    "label": "api-controls-10",
+    "passed": [
+      "unknownRefundCounterexampleTest",
+      "forgottenConsumptionCounterexampleTest",
+      "sourceZeroCallCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.017
+  },
+  {
+    "label": "api-controls-11",
+    "passed": [
+      "foreignTicketCounterexampleTest",
+      "hiddenSdkRetryCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.033
+  }
+]

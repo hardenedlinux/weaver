@@ -1,0 +1,86 @@
+[
+  {
+    "id": "RC1",
+    "design": "Reads and preparation cannot consume",
+    "quint": "observationCannotConsumeTest",
+    "lean": "restored_observation_is_only_data",
+    "d2": "reads.prepare"
+  },
+  {
+    "id": "RC2",
+    "design": "Torn cross-store reads fail at final use",
+    "quint": "tornReadCannotCommitTest",
+    "lean": "committed_at_exact_cut",
+    "d2": "owner.cas"
+  },
+  {
+    "id": "RC3",
+    "design": "External Policy changes join the authority cut",
+    "quint": "externalHistoryWithoutLedgerWriteBlocksTest",
+    "lean": "stale_policy_generation_cannot_commit",
+    "d2": "owner.generation"
+  },
+  {
+    "id": "RC4",
+    "design": "Permission restoration cannot reuse an old generation",
+    "quint": "policyABACannotCommitTest",
+    "lean": "policy_generation_never_decreases",
+    "d2": "owner.generation"
+  },
+  {
+    "id": "RC5",
+    "design": "Owner change fences previously issued permits",
+    "quint": "ownerRestartInvalidatesPermitTest",
+    "lean": "stale_fence_cannot_commit",
+    "d2": "owner.fence"
+  },
+  {
+    "id": "RC6",
+    "design": "Concurrent ledger writes invalidate old requests",
+    "quint": "ledgerWriteInvalidatesPermitTest",
+    "lean": "stale_execution_revision_cannot_commit",
+    "d2": "owner.cas"
+  },
+  {
+    "id": "RC7",
+    "design": "One stable decision per request",
+    "quint": "duplicateRequestCannotCommitTest",
+    "lean": "decision_ids_remain_unique",
+    "d2": "result.decision"
+  },
+  {
+    "id": "RC8",
+    "design": "Late confirmation reports an existing decision",
+    "quint": "lateConfirmationAfterFenceIsOnlyDataTest",
+    "lean": "confirmed_decision_is_committed",
+    "d2": "result.confirm"
+  },
+  {
+    "id": "RC9",
+    "design": "Confirmation cannot reactivate execution authority",
+    "quint": "lateConfirmationCannotRevivePermitTest",
+    "lean": "late_confirmation_preserves_authority",
+    "d2": "result.confirm"
+  },
+  {
+    "id": "RC10",
+    "design": "Original claim remains one-shot",
+    "quint": "freshRequestCannotReplaySpentClaimTest",
+    "lean": "original_claim_stays_unique",
+    "d2": "broker.consume"
+  },
+  {
+    "id": "RC11",
+    "design": "Original profile and account domains remain bound",
+    "quint": "forgedProfileCannotCommitTest",
+    "lean": "original_profile_stays_bound",
+    "d2": "reads.binding"
+  },
+  {
+    "id": "RC12",
+    "design": "Unknown use retains original allowance and hold",
+    "quint": "freshScopeCannotRefundUnknownTest",
+    "lean": "unknown_usage_retains_hold",
+    "d2": "broker.hold"
+  }
+]

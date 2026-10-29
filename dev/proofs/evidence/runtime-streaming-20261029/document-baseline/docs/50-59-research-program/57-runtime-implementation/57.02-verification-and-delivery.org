@@ -1,0 +1,87 @@
+#+TITLE: Specification, Policy and Native Verification
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Cedar POO specification drives native contracts
+The [[https://docs.cedarpolicy.com/auth/authorization.html][official Cedar semantics]] define default deny and forbid precedence.
+The [[https://www.omg.org/spec/SysML/2.0][SysML v2 specification]] is the modeling reference; a local strict-tool
+verdict is not OMG certification or executable-code refinement.
+
+The [[file:../../../proofs/evidence/runtime-implementation-20261029/source-identity.json][source identity record]] binds reviewed cedar-poo-spec and POO Flow inputs.
+=Admission/BoundOperation.lean= fixes effect/state projection and explicitly
+states that equality does not authenticate inputs. Native original-task lookup,
+exact endpoint/body commitments and current deciding joins implement those host
+duties. =CompoundAuthorization.lean= requires every response to allow with no
+erroring policies; the native adapter rejects evaluation errors even when
+another permit returns allow.
+
+POO Flow's =authorized-effect-token.ss= owns pure immutable binding/validity
+transitions. =strict-mediation.ss= records indeterminate consumption when an
+observation is missing. The native ledger follows that conservative contract
+with durable logical-key uniqueness and retained holds. Scheme pure state alone
+does not provide a persistent spent-state database.
+
+This runtime uses the real Cedar Rust evaluator. It does not yet invoke the
+upstream Lean worker per request, import a proof-bearing authorization receipt,
+or implement the full Scheme native publisher bridge. Specification-driven
+conformance is distinct from a checked refinement of compiled native code.
+
+* Development code policy
+ASP Rust is inherited only under each crate's =[dev-dependencies]= and pinned to
+an exact upstream revision in the new workspace lockfile. Every library mounts
+=asp_rust_cargo_test_gate!= in deny mode. No rule exclusions, advice allowances
+or warning-only mode are installed. Its actual findings caused facade
+implementations, binary command handling, glob imports, public documentation and
+public validation traversal to be repaired before acceptance.
+
+Runtime dependency checks reject a normal dependency path to ASP Rust.
+Runtime lints forbid unsafe code and deny =unwrap_used=; Clippy runs with all
+targets and warnings denied. Formatting and explicit module ownership accompany
+semantic tests. ASP Rust is a development policy provider, not an A2A/MCP
+protocol or a runtime authorization service.
+
+* Requirement correspondence
+| SysML v2 requirement | Native evidence | Formal boundary |
+|----------------------+-----------------+-----------------|
+| OriginalTaskBinding | Body/profile/endpoint negatives; Go refinement and immutable registration | Quint forged-original rejection; upstream BoundOperation host premise |
+| SharedBudget | Stateful PBT with independent hold oracle; concurrent node allocation; original cost-bound rejection | Quint shared capacity and cost floor; Lean bounded reserve and cost coverage |
+| ConsumeBeforeSend | Persistent unknown before callback; enqueue contains no transport | Quint consumed-before-send; Lean send requires spent |
+| CurrentFinalGuard | Publication before dispatch rejects; SQLite lock blocks effective publication | Quint stale ticket and locked publication controls; Lean stale fence inequality |
+| UnknownRetainsHold | Reopen after abandoned consumption; TLS interruption; lost-reply replay | Quint restart/refund counterexample; Lean unchanged hold |
+| NoImplicitRetry | Concurrent consumers; real TLS redirect and disconnect tests | Quint duplicate-retry counterexample; Lean call bound |
+| DevelopmentPolicy | ASP deny gates, Clippy, formatting and dependency closure check | Development assurance, not runtime authority |
+
+The SysML model is strictly validated with the installed tool. The traceability
+checker verifies named requirements, tests and model controls; it is not a
+SysML-to-Rust compiler or a proof of behavioral equivalence. Quint samples a
+finite abstract two-node model. Rust PBT varies event sequences and compares an
+independent oracle. Lean checks the abstract transitions under explicit native
+refinement premises.
+
+* Reproduction and evidence
+Run [[file:../../../scripts/check-runtime.sh][the runtime check entrypoint]] with prepared Rust, Go, Quint, SysML and Lean
+tools. Real loopback TLS tests require permission to listen on localhost;
+a sandbox refusal is retained as an environmental failure and never counted as
+transport qualification. The [[file:../../../scripts/check-runtime-trace.py][traceability/dependency check]] inspects module
+dependencies and requirement references.
+
+Native receipts, source hashes and initial failures live under [[file:../../../proofs/evidence/runtime-implementation-20261029/][the evidence directory]].
+Older sealed checkpoints are not rewritten. The local Go-to-Rust replay checks
+a real Go-produced proposal and Rust queue receipt, same-key replay, changed-wire
+rejection and default-deny behavior.
+
+* Remaining implementation gates
+- Authenticated Scheme publication, canonical cross-protocol origin registration,
+  profile graph admission and external Policy/history intent publication.
+- Kubernetes reconciliation, public LLM/MCP/A2A/ACP adapters and incarnation-bound
+  authentication before exposing management or admission remotely.
+- Streaming range dispatch, response/schema/tool admission, cancellation and
+  authenticated terminal/usage evidence.
+- Account-wide budgets across families, idempotent settlement, independent
+  anti-rollback anchors and qualified backup/recovery.
+- Credential scopes/rotation, DNS/IP admission, observability, high-performance
+  concurrency and matched load/capacity qualification.
+
+These gates remain explicit. Unsupported profiles reject rather than supplying
+permissive placeholders. No existing dependency pin, sealed proof or historical
+native receipt is changed by this checkpoint.

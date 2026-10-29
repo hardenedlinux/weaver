@@ -1,0 +1,39 @@
+{
+  "status": "pass",
+  "commandRoutes": 22,
+  "leanModules": 11,
+  "newPrintedDeclarations": 20,
+  "quintControls": 43,
+  "deterministicControls": 35,
+  "counterexamples": 8,
+  "parentRegressionControls": 41,
+  "boundedSamples": 70,
+  "maxPostInitializerSteps": 30,
+  "seed": 167,
+  "fourArtifactRows": 12,
+  "englishOrgDocuments": 86,
+  "d2Pairs": 42,
+  "historicalManifestsUnchanged": 19,
+  "sourceBlobs": 19,
+  "agentgatewaySourceBlobs": 12,
+  "dependencyPinsChanged": false,
+  "gatewayImplementationChanged": false,
+  "scope": "Conditional sticky registry publication, exact current recovery join and actual prior execution-step projection; bounded simulation",
+  "limitations": [
+    "Independent non-rollback intent/fence, durable journal, immutable object and current execution-prefix reads are explicit owner contracts",
+    "Native original claim/profile publication, cross-store recovery and final conditional consumption remain unimplemented",
+    "No backend consensus/fsync proof, remote exactly-once, full asynchronous range/account product, liveness or performance claim"
+  ],
+  "preliminaryDiagnostics": [
+    "preliminary-commands.json",
+    "preliminary-lean-2.log",
+    "preliminary-lean-3.log",
+    "preliminary-lean-4.log",
+    "preliminary-lean-5.log",
+    "preliminary-lean.log",
+    "preliminary-test-repair.log",
+    "preliminary-tests-2.log",
+    "preliminary-tests.log",
+    "preliminary-typecheck.log"
+  ]
+}

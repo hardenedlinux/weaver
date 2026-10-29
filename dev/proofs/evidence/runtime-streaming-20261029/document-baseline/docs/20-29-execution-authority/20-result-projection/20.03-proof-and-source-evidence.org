@@ -1,0 +1,156 @@
+#+title: Weaver Result Projection Proofs and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and bounded claims
+
+Run [[file:../../../proofs/check_llm_result_projection.py][the isolated runner]] for [[file:../../../proofs/lean/LlmResultProjection.lean][Lean]] and [[file:../../../proofs/qunit/LlmResultProjection.qnt][Quint]]. Read [[file:../../../proofs/evidence/llm-result-projection/commands.json][commands.json]], [[file:../../../proofs/evidence/llm-result-projection/receipt.json][receipt.json]],
+and [[file:../../../proofs/evidence/llm-result-projection/SHA256SUMS][the sealed byte manifest]]. Preliminary diagnostics remain separate from acceptance.
+
+The workload compiles 17 Lean modules and prints 22 new declarations without
+=sorryAx=. It checks 41 Quint controls, including 10 deliberate broken-protocol
+controls; runs the 40 category-19 regression controls; and samples 70 runs of at
+most 30 post-initializer steps with seed 199. Sampled TypeScript exploration is
+not exhaustive model checking. Native barrier/persistence qualification is separate.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| RP1 | Committed result is retained across lost responses | lostCommitReplyQueriesOriginalTest | result_retained | recovery.join |
+| RP2 | Result belongs to the original decision | lostCommitReplyCannotConsumeAgainTest | initialized_result_index | recovery.projection |
+| RP3 | New result cannot reuse an old transaction identity | newTransactionCannotReuseNonceTest | fresh_decision_has_no_old_result | recovery.projection |
+| RP4 | Result positions follow one append order | twoResultsApplyInOrderTest | initialized_positions_ordered | recovery.join |
+| RP5 | Source CAS binds the exact body and before image | exactSourceCASPublishesCommittedBodyTest | exact_source_result | broker.cas |
+| RP6 | Account CAS binds the exact body and before image | accountLostReplyQueryChangesNoExposureTest | exact_account_result | broker.cas |
+| RP7 | Duplicate result cannot be applied as another delta | accountLostReplyCannotApplyDeltaAgainTest | duplicate_position_blocks_application | broker.cas |
+| RP8 | Retired worker cannot apply a valid historical result | oldOwnerCannotApplyAfterRecoveryTest | old_owner_blocks_application | recovery.fence |
+| RP9 | Partial participant progress cannot activate | sourceOnlyCannotActivateTest | partial_projection_blocks_join | broker.claim |
+| RP10 | Complete join retains authoritative unknown exposure | exactReplayAfterProjectionRollbackTest | joined_account_holds_original_exposure | broker.hold |
+| RP11 | Projection recovery cannot repeat source consumption | replayNeverSendsAgainTest | authority_projection | broker.hold |
+| RP12 | Application is data materialization, not authority mutation | exactSourceCASPublishesCommittedBodyTest | source_application_has_no_authority_effect | broker.cas |
+| RP13 | Unknown exposure is never released by this protocol | unknownAccountLagCannotRefundTest | unknown_exposure_retained | registry.query |
+| RP14 | Original spent-state survives old-owner recovery | currentOwnerMayApplyOldCommittedResultTest | original_spent_retained | broker.hold |
+
+The RP3 test also checks the original nonce constraint. Transaction-ID immutability
+is inherited from category 19 and proved here through indexed committed results.
+The RP11 test checks queue deduplication in the fixture; Lean's corresponding
+statement proves actual source-path preservation, not transport exactly-once.
+
+* Actual source composition and new proof scope
+
+=authority_projection= maps every authority mutation to an actual initialized
+category-19 transition. Staging uses its stable-body stage, commit requires its
+actual step, restart advances its fence, and source recovery uses its recovery
+contract. Participant application, restored prefix images, observations and
+activation leave authority untouched.
+
+The projected category-19 run inherits origin/claim/index invariants, original
+pending retention, spent-state retention and the shared exposure bound. Its
+=source_projection= and =canonical_source_composition= then connect the actual
+source path to category 18, with unrelated-origin stuttering and the previously
+explicit per-origin/shared-account refinement obligation. No independent source
+fixture is substituted for these Lean transition types.
+
+=initialized_result_index= relates every result to its immutable original request
+in the authority decision table. =fresh_decision_has_no_old_result= prevents another
+commit under an already indexed transaction ID. =result_retained= preserves the
+full typed result body. =initialized_positions_ordered= proves strict position
+ordering over arbitrary finite logs. The exact application gate checks authoritative
+lookup at the participant cursor, the next position, before-image equality and
+current owner qualification. The duplicate-position lemma forbids a second apply.
+
+The result image excludes pending staging and owner-visibility metadata, which have
+separate recovery/fencing rules. It includes the actual source, identity indexes,
+original decisions, nonce spent-state, exposure and execution revision. Native
+canonical encoding must preserve this semantic footprint and separately bind the
+full pending and owner metadata needed for complete authority recovery.
+
+Recovery requires the owner to be retired/closed first. Its two explicit contracts
+cover the original source recovery state and the complete new result-log wrapper
+state. Qualifying only the old source state is insufficient to authenticate result
+availability, prefix inheritance and participant fencing. A caller-supplied Boolean
+cannot satisfy the native implementation of either contract.
+
+The source/account participants use full typed images. The model permits restoring
+a complete previously committed prefix while closed, then replaying exact results.
+It does not model torn filesystem bytes as authenticated images. Invalid snapshots
+must remain quarantined. Full native snapshot parsing, canonical hashes, fsync,
+replicated prefix recovery and an implementation of atomic cursor/body publication
+are qualification obligations. The result log itself cannot roll back in a valid run.
+
+The extension has no refund, final-usage settlement or cancellation transition.
+=unknown_exposure_retained= is monotonic risk retention, not a final invoice theorem.
+The source relation used at commit must describe durable admission/consumption,
+with transport tickets retained as data. It must exclude provider-offer/delivery
+transitions. The generic source-path theorem does not derive that exclusion; the
+concrete refinement must select actual prior admission constructors and separately
+compose the broker/range execution gate. Applying a result never calls this source
+relation again. The final broker still depends on the earlier durable operation/range queue protocol;
+its native gate and application CAS must both serialize with owner retirement.
+
+* Counterexamples and independent evidence
+
+| Removed contract | Counterexample | Required decoded violation |
+|------------------+----------------+----------------------------|
+| Immutable committed result body | resultReplacementCounterexampleTest | A result after-image differs from the original actual transition |
+| Original nonce / shared exposure admission | duplicateConsumptionCounterexampleTest | Lost response leads to exposure above the account limit |
+| Idempotent exact result assignment | accountDeltaRetryCounterexampleTest | Repeated account delta creates a noncommitted participant image |
+| Atomic complete source image and cursor | tornSourceRowCounterexampleTest | Applied cursor claims completion while original spent-state is missing |
+| Current mutation fence | oldOwnerApplicationCounterexampleTest | Recorded application worker differs from its actual current epoch |
+| Ordered predecessor CAS | skippedPrefixCounterexampleTest | An application jumps from cursor zero to the second result |
+| Authoritative unknown hold | unknownRefundCounterexampleTest | Exposure decreases although original consumption remains committed |
+| Complete participant join | mixedSnapshotActivationCounterexampleTest | Activation occurs with a restored incomplete source projection |
+| Observation has no queue authority | lateObservationResendCounterexampleTest | Original operation is counted as another send after a late query |
+| Original profile commitment | profileReplacementCounterexampleTest | Authority profile differs from the committed source result |
+
+Unsafe alternatives are excluded from =step=. [[file:../../../proofs/evidence/llm-result-projection/itf][ITF traces]] are independently decoded,
+including actual original commits, partial applications and restart epochs. The
+invariants check complete fixture result chains, participant prefix images, CAS
+application observations, activation observations and held exposure. The fixture
+has two original nonces and one shared account; Lean admits arbitrary finite logs
+under the actual source relation. Recovery liveness and arbitrary native storage
+failures are not proved by these finite controls.
+
+* Source-by-source comparison
+
+The [[file:../../../proofs/evidence/llm-result-projection/source-review.json][POO Flow / Cedar register]], [[file:../../../proofs/evidence/llm-result-projection/asp-source-review.json][optional ASP register]] and [[file:../../../proofs/evidence/llm-result-projection/agentgateway-source-review.json][agentgateway register]] retain pinned blobs and
+freshly verified exact excerpts in [[file:../../../proofs/evidence/llm-result-projection/source-receipt-check.json][the source receipt]]. These identities keep the
+comparison reproducible; no runtime compatibility layer or dependency change follows.
+
+| Source | Existing source mechanism | Reuse / new obligation |
+|--------+---------------------------+------------------------|
+| P12 effect token | Exact original operation/root/payload/range binding | Reuse semantic identity; result replay cannot issue another grant |
+| P13 strict mediation | Pure immutable consumed-nonce state; unknown outcome still advances state | Reuse authoritative spent-state; persist exact after-result before publishing an application permit |
+| P15 effect Host | Exact serialized local owner, reserve/deliver separation and explicitly non-durable receipts | Reuse logical execution boundary; add durable result lookup, current participant fencing and atomic cursor/body CAS |
+| P17/P22 durable store/backend | Scheme projects contracts; runtime owns locking, fsync, leases, replay and repair | Reuse typed contract boundary; extend with immutable result bodies, authenticated prefix images and participant applied-result receipts |
+| P18/P19 transaction recovery | Exact source-bound recovery membership and authority-exclusive conditions | Reuse attribution; extend to full source/account result joins and unresolved committed results |
+| P20 occurrence proof | Exactly-once delivery depends on runtime evidence | Do not treat result replay or account apply as external delivery |
+| P31 SessionAttempt / P43 funs-attempt | Pending obligation retention, generation/revision CAS, proposal receipts have no runtime action/durable authority | Reuse pending/source/profile laws; an applied projection is not a reconciliation acknowledgment |
+| P35 lineage | Non-forking prefix and admitted recovery lineage are premises | Qualify journal prefix and current mutation fence before accepting any snapshot |
+| P33 budget / P44 references | Deterministic cost and frozen original source/profile material | Keep unknown exposure and original domain bindings; do not recompute from provider callbacks |
+| C8 BoundOperation | Input equality does not authenticate; eventual execution must bind actual effect/state | Reuse original commit admission; authenticate result before/after bodies and preserve their actual operation mapping |
+| C10 CompoundAuthorization | All required nonempty layers allow without evaluation errors | Reuse at original admission; projection application never obtains a fresh Policy decision to replace the result |
+| C11 Composition | Evaluation/validation certificates require aligned inputs | Reuse semantic proof alignment; not a journal persistence or multi-store CAS theorem |
+| ASP1/ASP2, optional | Shared code-tool contracts, parser-owned source fingerprints and exact read locators | Optional input provenance only; no role in consumption, result commitment or authority recovery |
+| Agentgateway controller/provider code | Cloud-native lifecycle and provider conversion patterns | Inform Go integration; retries still resolve original operations through the Rust broker |
+
+* Native acceptance obligations
+
+Inject crashes before/after result-body durability, journal commit, response release,
+each participant field write, cursor publication and acknowledgment. Restore source
+and account from every relative prefix pair; malformed/torn bodies must never
+qualify as complete images. Lose both commit and application responses, then query
+and replay under a new owner. The original nonce, result, profile and unknown
+exposure must remain unchanged.
+
+Retain old-worker apply handles, queued mutations, SDK retries and late callbacks
+through restart. Only current fenced CAS may publish a participant; historical
+observations remain data. Verify that replay of a committed result never invokes
+the provider, adds another reservation or releases unknown exposure. Verify the
+queue admission check and owner/prefix change share a serialization boundary.
+
+Missing result blobs, broken prefix inheritance or rolled-back fences block native
+acceptance. The evidence here is local conditional formal/finite-model evidence;
+no native storage engine, cryptographic commitment, provider transport, settlement,
+remote exactly-once, liveness or performance result is asserted.

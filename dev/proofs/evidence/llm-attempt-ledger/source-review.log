@@ -1,0 +1,160 @@
+P12 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/authorized-effect-token.ss ef9abd5335f478d15b5b5a782be5ece07380995b009f504c3d5ae41a618281fb
+P13 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/strict-mediation.ss fbb3bfbb16964b382352d1f3afe6aa319caea25adfc92d06c094942b26864916
+5: ;;; Boundary: Strict mediation owns pure nonce/root state transitions.
+6: ;;; Invariant: a token is consumed at most once and roots never fork silently.
+7: (import (only-in :clan/poo/object .o .ref)
+8:         :poo-flow/modules/governance/policy/authorized-effect-token)
+14: 
+15: (def (poo-flow-strict-mediation-state root seq spent revocation)
+16:   (.o (kind 'poo-flow-strict-mediation-state)
+17:       (execution-root root) (sequence seq)
+18:       (consumed-nonces spent) (revocation-epoch revocation)
+19:       (durability 'strict)))
+20: 
+47:                    (.ref state 'execution-root) (+ 1 (.ref state 'sequence))
+48:                    (cons token-nonce (.ref state 'consumed-nonces))
+49:                    (.ref state 'revocation-epoch)))
+50:                  (receipt
+51:                   (.o (kind 'poo-flow-strict-mediation-receipt)
+52:                       (accepted? #t) (outcome 'indeterminate)
+53:                       (code 'observation-unavailable)
+54:                       (token-id (.ref token 'token-id)) (nonce token-nonce)
+58:             (transition next-state receipt))
+59:           (let* ((consumption-receipt
+60:                   (poo-flow-authorized-effect-token-consume
+61:                    token validation (.ref state 'execution-root) observation))
+62:                  (token-nonce (.ref token 'nonce))
+64:                   (poo-flow-strict-mediation-state
+65:                    (.ref consumption-receipt 'execution-root)
+66:                    (+ 1 (.ref state 'sequence))
+67:                    (cons token-nonce (.ref state 'consumed-nonces))
+68:                    (.ref state 'revocation-epoch)))
+69:                  (receipt
+73:                       (before-root (.ref state 'execution-root))
+74:                       (after-root (.ref consumption-receipt 'execution-root))
+75:                       (consumption consumption-receipt) (durability 'strict))))
+76:             (transition next-state receipt)))))))
+77:   )
+P15 cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc modules/assurance/effect-host.ss 0972fd28c7e66c0c4173f8b4116cec29e6c6608a348e7b694ed8f7ead9162de1
+5: ;;; Local serialized integration boundary, not a Cedar evaluator or distributed
+6: ;;; Runtime Host. Only configured runtime operations evaluate policy / deliver.
+7: ;;; Editable preflights, requests, tokens and reports never issue capabilities.
+8: (import (only-in :clan/poo/object .o .ref)
+27:       (error "effect Host requires its exact serialized owner"))
+28:     (when (vector-ref state 7) (error "effect Host mutation during runtime handoff"))
+29:     state))
+30: (def (instant state)
+41: 
+42: ;;; Runtime authorize: Request -> CedarDecision or #f (deny/indeterminate).
+43: ;;; Runtime deliver: Request Token -> delivered / failed / indeterminate.
+44: ;;; 'delivered is an attributable acknowledgement, not inferred from start.
+45: (def (assurance-effect-host authorize deliver clock lease)
+46:   (unless (and (procedure? authorize) (procedure? deliver) (procedure? clock)
+47:                (exact-integer? lease) (> lease 0))
+48:     (error "invalid effect Host runtime configuration"))
+49:   (let (host (.o kind: 'aitia.effect-host.v1))
+50:     (hash-put! hosts host (vector (current-thread) authorize deliver clock lease 0 0 #f 0))
+51:     host))
+52: (def (assurance-effect-host-epoch host) (vector-ref (entry host) 5))
+100:                          (.ref decision 'decision-digest) intent next (.ref request 'action)
+101:                          'configured-runtime 'local 1 1 'local 0 0 1 intent 'local))
+102:                        (until (+ now (vector-ref state 4)))
+103:                        (token (poo-flow-cedar-decision->authorized-effect-token
+105:                                (poo-flow-token-validity now now until epoch)
+106:                                'strict 1 'configured-runtime "local-adapter"))
+107:                        (grant (let ((token-value token) (epoch-value epoch))
+108:                                 (.o kind: 'aitia.effect-grant.v1 token: token-value epoch: epoch-value expires-at: until))))
+114: 
+115: ;;; Reservation consumes the grant once, but executes no external effect.
+116: (def (assurance-effect-host-reserve! host grant)
+117:   (let* ((state (entry host)) (issued (grant-entry host grant)))
+125:   (.o kind: 'aitia.effect-delivery.v1 outcome: outcome-value handoff-executed?: invoked?
+126:       delivered?: (eq? outcome-value 'delivered) durable?: #f distributed-authority?: #f))
+127: (def (assurance-effect-host-deliver! host reservation)
+128:   (let* ((state (entry host)) (issued (hash-get reservations reservation)))
+132:      (else
+133:       ;; Consume even on rejection / exception / unknown acknowledgement.
+134:       (vector-set! issued 3 #t)
+135:       (let (grant-state (vector-ref issued 2))
+140:                                      (vector-ref grant-state 3)))))
+141:             (unless (memq outcome '(delivered failed indeterminate))
+142:               (error "runtime delivery returned an invalid acknowledgement" outcome))
+143:             (delivery-receipt outcome #t))
+144:           (delivery-receipt 'rejected #f)))))))
+P17 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store-backend.ss 6d15089fbe7e6101b478869db230fdec3282a60d781c551483849ec29a15ed8b
+P18 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean 3b6df2df1bdafe0f90445f46a99a94aed4ef9d79552b5435b257f83880529822
+P19 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean 0c28396b16e390a97a1a8491fb29f7d88e4a84b49e11a740a2610ec04bfb459e
+P20 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean 3b1b645f0f9cbdd4b698d19a6a9852c251b60ee1c5194d10af276f8a8a02d629
+51:       traceReceipt
+52:   effectUniverseExecutesExactlyOnce :
+53:     sourceBoundTraceExecutesUniverseExactlyOnce witness traceReceipt
+54: 
+153:       sourceBoundEffectOccurrenceCount effectId traceReceipt = 1 :=
+154:   closed.effectUniverseExecutesExactlyOnce.2
+155: 
+156: theorem evidenceExecutesEveryDeclaredEffectExactlyOnce
+161: 
+162: theorem everyRuntimeEffectBelongsToDeclaredUniverse
+163:     {request : SourceBoundCompositionRequestSubject}
+164:     {activeFenceToken : Nat}
+191:     event.effectId ∈ witness.effectUniverse :=
+192:   closedSourceBoundCompositionCoversEveryRuntimeEvent
+193:     request
+194:     activeFenceToken
+P22 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store.ss ce4fb7cc049d3a5f6395deec31db3130cd87796241506d252a07bcfc73391f1f
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean-poo/SessionAttempt.lean af885ce7b6f3a91f8ab4079a56a7ba439b16a1fc853c3432adfd1b2391b12543
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/quint/SessionAttempt.qnt 2857ad1bc556179f034255a93537a136f08dcc21cd46458a6af18fef206f58b4
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean 560be0ea351e03ab3907f62248c37f9957a02e150ee6ebb32856440a9f2b8a46
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean 4e311cd509f144e842e4bd20293c91da2b4d70534592e9e1b986290692cb9810
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean 47aea64e5a90812311f08aab30ebdbd36b9165a97837ffde373796d5adfb73a0
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean 11178fd01214c99ec7f9863169dc264cc68241a70398645fe026cba28b3e299c
+P43 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/session/funs-attempt.ss 2e7f2282ae2bb987a7122eb466b70fbf11c9fbfb5aa0bc52c0d42a01dac9de95
+4: ;;; Pure scheduling intents. A Host must resolve producer receipts and publish by CAS.
+5: ;;; Recovery reconciliation cannot be inferred from a provider completion.
+6: (import (only-in :clan/poo/object .o .ref .slot? object?)
+7:         (only-in :std/list/list every) "types.ss" "objects-attempt.ss")
+8: (export poo-flow-session-schedule poo-flow-session-claim poo-flow-session-complete
+9:         poo-flow-session-recover poo-flow-session-reconcile poo-flow-session-close)
+10: (def (name? value) (and (string? value) (< 0 (string-length value) 257)))
+11: (def (freeze-input value)
+12:   (let* ((consumer-value (string-copy (.ref value 'consumer-session)))
+13:          (turn-value (.ref value 'consumer-turn))
+14:          (fields (map (lambda (key) (string-copy (.ref value key)))
+15:       '(producer contract identity digest scope-digest source-vector-digest query-digest
+20:         restriction-digest: (list-ref fields 7) profile-digest: (list-ref fields 8)
+21:         receipt-ref: (list-ref fields 9) consumer-session: consumer-value
+22:         consumer-turn: turn-value complete?: #t)))
+23: (def (receipt accepted-value reason-value state-value)
+24:   (.o kind: 'poo-flow.session.transition-intent.v1 accepted?: accepted-value reason: reason-value
+25:       schedule: state-value runtime-published?: #f action-authorized?: #f durable?: #f))
+26: (def (guard state expected operation)
+27:   (cond ((not (poo-flow-session-schedule-shape? state)) (receipt #f 'invalid-schedule #f))
+45:                      (exact-integer? turn-value) (<= 0 turn-value 65535))) (receipt #f 'invalid-claim state))
+46:           ((or (not (equal? (.ref (.ref task-value 'input) 'consumer-session) (.ref state 'identity)))
+47:                (not (= (.ref (.ref task-value 'input) 'consumer-turn) turn-value)))
+48:            (receipt #f 'wrong-consumer state))
+49:           ((or (member attempt-id (.ref state 'completed)) (>= (length (.ref state 'completed)) 128))
+50:            (receipt #f 'attempt-reuse-or-capacity state))
+70:               '(producer contract identity digest scope-digest source-vector-digest query-digest
+71:                 restriction-digest profile-digest receipt-ref complete? consumer-session consumer-turn))))
+72: (def (poo-flow-session-complete state expected attempt-value)
+73:   (guard state expected (lambda ()
+77:       (receipt #f 'wrong-attempt state)))))
+78: (def (poo-flow-session-recover state expected)
+79:   (guard state expected (lambda ()
+80:     (let ((pending (if (.ref state 'active) (cons (.ref state 'active) (.ref state 'obligations))
+82:           (generation-value (+ 1 (.ref state 'generation))))
+83:       (receipt #t 'recovery-proposed (next-state state (if (null? pending) 'idle 'recovering)
+84:         #f pending (.ref state 'completed) generation-value))))))
+85: (def (poo-flow-session-reconcile state expected attempt-value)
+86:   ;; This is an intent for trusted terminal/isolation receipt resolution, never an acknowledgment by itself.
+87:   (guard state expected (lambda ()
+88:     (if (and (eq? (.ref state 'status) 'recovering)
+89:              (= (length (.ref state 'obligations)) 1)
+90:              (same-attempt? (car (.ref state 'obligations)) attempt-value))
+91:       (receipt #t 'reconciliation-proposed (next-state state 'idle #f '()
+92:         (cons (string-copy (.ref attempt-value 'identity)) (.ref state 'completed)) (.ref state 'generation)))
+93:       (receipt #f 'wrong-obligation state)))))
+C8 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Admission/BoundOperation.lean 6105f4f0651886ee413f5edcea44df32323543de8825ca8f0e9f098205cf2afa
+C10 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/CompoundAuthorization.lean bd9c938f6986d6f01051d4fda067ffe1d7d106e5deae6956e88e5e9aa4ec3708
+C11 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Composition.lean 3a6bd1ae53c74d9a6eebdcf56964e0f886b91ae82bb1af2c885b76ca15530be1

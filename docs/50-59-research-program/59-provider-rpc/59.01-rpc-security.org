@@ -1,0 +1,120 @@
+#+TITLE: 59.01 gRPC Security and Logical Execution Ownership
+#+LANGUAGE: en
+
+* Default communication boundary
+
+The control plane calls Rust over HTTP/2 gRPC with Protobuf-defined operations.
+FFI is not the default: Go and Rust retain separate process, credential and
+execution ownership. gRPC supplies typed interfaces, long-lived connections,
+streaming and flow control. This selection is an architectural fit, not evidence
+that every gRPC workload is faster than HTTP. A matched transport comparison has
+not been performed.
+
+The service binds distinct loopback operation/source listeners and requires mutual
+TLS. Rust pins each ingress's approved client certificate digest in addition to checking its chain. An issuer
+can therefore sign two certificates with the same Kubernetes-style name without
+making those keys interchangeable. The Go client explicitly supplies trust roots,
+client certificate and server identity; insecure verification is refused.
+Transport authentication supplies no original task or provider permission.
+
+The pin is the leaf certificate's DER digest, not a stable SPKI identifier across
+renewal. Even a certificate renewed with the same public key requires explicit
+owner reconfiguration.
+
+A transport interceptor authenticates before Protobuf body decoding. Method
+handlers additionally enforce assigned operation versus source-publication roles.
+Metadata, message sizes and concurrent streams are bounded. An incomplete initial
+RPC has a server timeout; normal stream cancellation closes response custody and
+signals the still-tracked native worker. No force-exit path turns incomplete work
+into successful drain.
+
+* Operations and roles
+
+| Operation | Required role | Effect |
+|-----------+---------------+--------|
+| ExecuteProvider | Pinned operator identity plus operation credential | Check original principal, admit original plan, consume once, invoke and release guarded stream events |
+| Inspect | Pinned operator identity plus operation credential | Read the canonical operation receipt under its original principal |
+| RegisterTask | Pinned source identity plus distinct publication credential | Publish an immutable original task; a different record at the same family is rejected |
+| PublishAuthority | Pinned source identity plus distinct publication credential | Strictly validate Cedar/schema and CAS the authority revision/fence |
+| InspectPublication | Pinned source identity plus distinct publication credential | Read the retained original publication decision by ID and exact digest; absence is not abort |
+
+The stream and header ceilings apply per connection. Native admission has three
+independent lanes: configured execution capacity (default sixteen, maximum
+thirty-two), one source-publication worker, and two canonical-observation workers.
+ExecuteProvider cannot borrow publication or observation capacity. RegisterTask
+and PublishAuthority share the source lane with InspectPublication; Inspect uses the observation lane.
+Every method authenticates its role before lane selection. A full lane rejects
+immediately, without a native waiting queue or implicit retry. Tracked workers
+retain their permits through actual completion even after the RPC disappears.
+The [[file:59.11-owned-source-worker.org][owned-source increment]] allocates the native publication permit to one
+tracked worker for its entire connection lifetime. Source RPCs use an additional
+single command permit shared by queued/running work, rather than spawning a new
+native publication task and reopening SQLite per request. Quiescence and current
+CAS checks remain mandatory; storage/close failures retire the owner and propagate.
+
+This bounds native work to configured execution capacity plus three workers.
+Each live server process additionally admits at most sixteen operation connections
+and four independent source connections, including TLS handshakes, with a fixed
+three-second TLS handshake deadline. The combined accepted-socket bound is twenty.
+Capacity is acquired before userspace accept and stays in the socket IO wrapper
+until destruction; TLS completion, a cloned peer identity and peer EOF cannot
+return it. Pending kernel backlog entries are outside this application-owned
+bound. The cap is per process rather than per cluster. See
+[[file:59.08-connection-custody.org][connection custody]] and [[file:59.09-source-ingress.org][independent source ingress]] for their native/formal correspondence.
+
+These limits do not prove a precise global resident-memory bound, reserve
+scheduler time, or guarantee a publication deadline. SQLite deciding locks still serialize source
+publication with request dispatch and final release. An authenticated publication
+can fill its own lane. Independent connections do not bypass role or ledger
+checks. Adversarial multi-connection load and publication scheduling remain
+availability gates. A peer that completes TLS and idles can retain a connection
+slot. Occupying operation slots cannot consume source connection capacity, as
+tested with a new source session under combined execution/connection saturation.
+An attacker able to reach the source address can still occupy its bounded pool;
+source reachability and scheduler fairness remain deployment premises. A rejected,
+waiting or pending publication is not an effective
+fence; only its committed deciding CAS changes subsequent release authority.
+
+The current local deployment has one configured operation principal and two
+distinct approved client leaf pins, one per ingress. Publication and operation
+credentials must also be distinct. Separate private keys require correct issuance
+and provisioning; different DER digests alone do not prove different SPKIs.
+The caller cannot put an effective principal, endpoint override, trust
+root, provider secret, native permit or arbitrary root registration into an
+operation request. Source registration remains a privileged publication interface;
+its production Scheme/POO admission bridge is a separate qualification gate.
+
+* Identity and recovery
+
+The execution key is the original =(family, node)= pair, not an RPC attempt ID,
+stream ID, connection, deadline or nonce. A domain-separated source commitment
+covers the profile, model, exact body digest, ordered provider routes and ceiling.
+Revision and fence are mutable authorization observations, not fresh identities.
+Task registration and consumption share the existing source ledger and family
+budget. Another protocol or a new RPC cannot switch the claim into another
+execution table and obtain a second hold.
+
+A lost operation response does not justify another provider call. Inspect recovers
+knowledge; it cannot reconstruct a consumed native permit. A lost publication
+response is reconciled by its original publication ID and exact request digest.
+Policy, schema and the committed/rejected decision share one deciding transaction.
+Exact replay returns history; changed content under the same ID is rejected.
+The Go source client never rebases or retries automatically. A not-observed
+decision is not an abort certificate. See [[file:59.10-publication-recovery.org][publication recovery]] for the
+contract; independent rollback anchors and multi-store recovery remain separate.
+
+* Trust and revocation limits
+
+The native boundary is logical ownership, private Rust capabilities and mediated
+I/O. It assumes the Rust owner and its local SQLite database are not compromised
+or rolled back. It does not claim physical isolation or an independent rollback
+anchor. TLS termination, the compiler and OS are explicit native premises.
+
+Certificate chains are checked at handshake; this profile pins a certificate at
+service startup. It does not implement a live cross-replica issuer/revocation
+registry. Certificate rotation must replace and drain all affected serving owners;
+a stale instance is not automatically made ineligible by changing another
+instance's configuration. Policy/fence publication invalidates old native
+execution and response-release observations, but is not a substitute for that
+missing credential lifecycle service. Cross-host deployment and multi-tenant
+principal mapping also require separate qualification.

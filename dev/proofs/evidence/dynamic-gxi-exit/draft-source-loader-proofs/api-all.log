@@ -1,0 +1,49 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":1,"sourceSha256":"9d1c3024d48511994deaeb64feab7e83ff67e0f2dedae2839352e666d0b2ac65"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"055ac9e804515b4e98c6c8dae92c0ad24d4e2906e8c6241be4bfbbc96499454e"}
+@@START {"label":"api-controls-0","limit":20}
+
+  DynamicLoaderPublication
+    ok ordinaryDynamicCleanupTest passed 1 test(s)
+    ok bodyRemainsDynamicTest passed 1 test(s)
+    ok duplicateImportIsIdempotentTest passed 1 test(s)
+
+  3 passing (228ms)
+@@DONE {"label":"api-controls-0","passed":["ordinaryDynamicCleanupTest","bodyRemainsDynamicTest","duplicateImportIsIdempotentTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  DynamicLoaderPublication
+    ok liveHandleRejectsExitTest passed 1 test(s)
+    ok missingDecoderRejectsReturnTest passed 1 test(s)
+    ok lateNaturalExitRejectedTest passed 1 test(s)
+
+  3 passing (3ms)
+@@DONE {"label":"api-controls-1","passed":["liveHandleRejectsExitTest","missingDecoderRejectsReturnTest","lateNaturalExitRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  DynamicLoaderPublication
+    ok reorderedCallsRejectedTest passed 1 test(s)
+    ok substitutedBodyRejectedTest passed 1 test(s)
+    ok arbitraryCodeRejectedTest passed 1 test(s)
+
+  3 passing (22ms)
+@@DONE {"label":"api-controls-2","passed":["reorderedCallsRejectedTest","substitutedBodyRejectedTest","arbitraryCodeRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  DynamicLoaderPublication
+    ok reorderedPublicationCounterexampleTest passed 1 test(s)
+    ok bodySubstitutionCounterexampleTest passed 1 test(s)
+    ok arbitraryStubCounterexampleTest passed 1 test(s)
+
+  3 passing (7ms)
+@@DONE {"label":"api-controls-3","passed":["reorderedPublicationCounterexampleTest","bodySubstitutionCounterexampleTest","arbitraryStubCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  DynamicLoaderPublication
+    ok missingInterfaceRejectedTest passed 1 test(s)
+    ok interfaceSubstitutionRejectedTest passed 1 test(s)
+    ok interfaceDriftCounterexampleTest passed 1 test(s)
+
+  3 passing (27ms)
+@@DONE {"label":"api-controls-4","passed":["missingInterfaceRejectedTest","interfaceSubstitutionRejectedTest","interfaceDriftCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

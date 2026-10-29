@@ -1,0 +1,40 @@
+proofs/lean/DeviceIsolationRecovery.lean:273:3: error: unexpected token 'seal'; expected '_' or identifier
+proofs/lean/DeviceIsolationRecovery.lean:273:2: error: Missing alternative name: Expected `delegate`, `register`, `seal`, `block`, `barrier`, `advance`, `readFloor`, `liveFloor`, `activate`, `enqueue`, `start`, `complete`, `emit`, `close`, `loseBuffer`, `resetDevice`, `restartDriver`, `archiveCallback`, or `loseResponse`
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `delegate` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `register` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `seal` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `block` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `barrier` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `advance` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `readFloor` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `liveFloor` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `activate` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `enqueue` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `start` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `complete` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `emit` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `close` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `loseBuffer` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `resetDevice` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `restartDriver` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `archiveCallback` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:269:2: error: Alternative `loseResponse` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:273:8: error: unexpected token '=>'; expected identifier
+'Weaver.DeviceIsolationRecovery.newly_accepted_isolation_has_complete_scope' depends on axioms: [sorryAx]
+'Weaver.DeviceIsolationRecovery.registered_alias_never_relabels' depends on axioms: [propext]
+'Weaver.DeviceIsolationRecovery.every_floor_append_keeps_exact_isolation_cut' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.protected_floor_never_rolls_back' depends on axioms: [propext, Quot.sound]
+'Weaver.DeviceIsolationRecovery.committed_floor_log_never_shrinks' depends on axioms: [propext]
+'Weaver.DeviceIsolationRecovery.journal_tracks_every_floor_commit' depends on axioms: [propext]
+'Weaver.DeviceIsolationRecovery.every_new_export_requires_current_hardware' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.validated_callback_has_original_current_envelope' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.initialized_product_refines_key_boundary' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.initialized_floor_log_is_complete' depends on axioms: [propext]
+'Weaver.DeviceIsolationRecovery.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.DeviceIsolationRecovery.original_budget_remains_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.DeviceIsolationRecovery.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

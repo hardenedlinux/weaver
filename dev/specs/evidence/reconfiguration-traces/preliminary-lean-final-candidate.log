@@ -1,0 +1,79 @@
+specs/lean/AnchorReconfiguration.lean:187:9: error: unsolved goals
+case core.false
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : Family
+store : Store
+s : State
+inv : AdmissionSafe s
+next✝ : AnchorBrokerCommit.State
+event✝ : AnchorBrokerCommit.Step c m p lineage root namespaceId owner projectionStore s.base next✝
+sameLog✝ : next✝.log = s.base.log
+writer✝ :
+  next✝.gateOpen = s.base.gateOpen ∧ next✝.writerTerm = s.base.writerTerm ∧ next✝.writerEpoch = s.base.writerEpoch
+noOpen✝ : next✝.active = true → s.base.active = true
+admitted :
+  { base := next✝, scope := s.scope, revision := s.revision, history := s.history, installed := s.installed,
+        admitted := s.admitted && next✝.active,
+        barrierRevision := if next✝.term = s.base.term then s.barrierRevision else none,
+        fenceRevision := if next✝.term = s.base.term then s.fenceRevision else none, readHead := s.readHead,
+        readTerm := s.readTerm }.admitted =
+    true
+eq : s.admitted = false
+⊢ false = true
+
+case core.true
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : Family
+store : Store
+s : State
+inv : AdmissionSafe s
+next✝ : AnchorBrokerCommit.State
+event✝ : AnchorBrokerCommit.Step c m p lineage root namespaceId owner projectionStore s.base next✝
+sameLog✝ : next✝.log = s.base.log
+writer✝ :
+  next✝.gateOpen = s.base.gateOpen ∧ next✝.writerTerm = s.base.writerTerm ∧ next✝.writerEpoch = s.base.writerEpoch
+noOpen✝ : next✝.active = true → s.base.active = true
+admitted :
+  { base := next✝, scope := s.scope, revision := s.revision, history := s.history, installed := s.installed,
+        admitted := s.admitted && next✝.active,
+        barrierRevision := if next✝.term = s.base.term then s.barrierRevision else none,
+        fenceRevision := if next✝.term = s.base.term then s.fenceRevision else none, readHead := s.readHead,
+        readTerm := s.readTerm }.admitted =
+    true
+eq : s.admitted = true
+⊢ true = true
+specs/lean/AnchorReconfiguration.lean:186:2: error: Alternative `commit` has not been provided
+specs/lean/AnchorReconfiguration.lean:186:2: error: Alternative `enterJoint` has not been provided
+specs/lean/AnchorReconfiguration.lean:186:2: error: Alternative `finishJoint` has not been provided
+specs/lean/AnchorReconfiguration.lean:186:2: error: Alternative `install` has not been provided
+specs/lean/AnchorReconfiguration.lean:186:2: error: Alternative `loseReplica` has not been provided
+specs/lean/AnchorReconfiguration.lean:186:2: error: Alternative `isolate` has not been provided
+specs/lean/AnchorReconfiguration.lean:186:2: error: Alternative `readCurrent` has not been provided
+specs/lean/AnchorReconfiguration.lean:186:2: error: Alternative `activate` has not been provided
+specs/lean/AnchorReconfiguration.lean:188:4: error: unexpected token '·'; expected command
+'Weaver.AnchorReconfiguration.base_reachable' does not depend on any axioms
+'Weaver.AnchorReconfiguration.reachable_base_embeds' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchorReconfiguration.joint_configuration_cannot_open_new_admission' depends on axioms: [sorryAx]
+'Weaver.AnchorReconfiguration.configuration_identity_never_rolls_back' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchorReconfiguration.old_and_joint_quorums_intersect' does not depend on any axioms
+'Weaver.AnchorReconfiguration.joint_and_new_quorums_intersect' does not depend on any axioms
+'Weaver.AnchorReconfiguration.replacement_voters_copy_complete_deciding_image' depends on axioms: [propext]
+'Weaver.AnchorReconfiguration.image_contains_deciding_projection' does not depend on any axioms
+'Weaver.AnchorReconfiguration.membership_revision_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchorReconfiguration.one_original_consumption_and_application' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchorReconfiguration.original_shared_budget_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.AnchorReconfiguration.original_unknown_reservation_retained' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

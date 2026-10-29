@@ -1,0 +1,95 @@
+#+TITLE: Native Module and Authority Contract
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Module ownership
+| Owner | Implementation | Responsibility |
+|-------+----------------+----------------|
+| Scheme / POO | Existing upstream composition | Original semantic profiles, routine graph and source assignment; native publication bridge remains a separate gate |
+| Go contract | =control/contract= | Strict bounded duplicate-rejecting JSON and shared proposal projection |
+| Go routing | =control/routing= | Select an original target and declared node, preserve exact body commitment and tighten ceiling |
+| Go local adapter | =cmd/weaverctl= | Produce canonical proposal data; owns no provider client, credentials or send capability |
+| Rust contracts | =weaver-contracts= | Original task, explicit wire binding and domain-separated proposal digest |
+| Rust policy | =weaver-policy= | Actual Cedar evaluation over trusted original task and exact operation facts; error-free allow required |
+| Rust deciding store | =weaver-ledger= | Immutable task records, shared holds, queue, irreversible consumption, publication CAS and final serialization |
+| Rust final broker | =weaver-broker= | One private bounded HTTPS send with no redirect, proxy inheritance or SDK retry |
+| Rust local adapter | =weaver-cli= | Trusted local publication/registration and explicit enqueue/execute commands |
+
+Go's next adapters can reuse its Kubernetes, networking and protocol ecosystems.
+This implementation supplies the shared contract and refinement boundary before
+adding controllers and public protocol services. A Kubernetes identity alone
+does not authenticate the original task or caller incarnation. Rust remains the
+deciding owner; Go observations never grant an executable capability.
+
+* Canonical original binding
+The trusted publisher fixes family, principal, profile, declared nodes, models,
+target-to-endpoint bindings, exact per-node UTF-8 body commitments and total
+family budget. Registration is immutable and idempotent. Each logical operation
+is keyed by =(family,node)=, independent of nonce, reconnect or process lifetime.
+This first profile commits provider-specific bytes; a future semantic adapter
+must bind each transformation to an admitted original profile.
+
+The publisher also fixes a conservative per-node cost bound for the committed
+wire request. A lower authored ceiling must reject rather than underreserve that
+bound. Authentic tokenizer, pricing and provider-limit admission remain publisher
+premises; this profile does not infer real billing from a caller-chosen ceiling.
+
+An untrusted proposal cannot add a node, change profile, substitute endpoint or
+replace the original body. The actual body model must equal the selected model.
+Streaming and tool profiles fail closed. Their future implementation requires
+message/range, response-schema, disclosure and tool-proposal admission; a boolean
+configuration switch cannot enable those effects.
+
+* Deciding-store sequence
+1. =publish= parses Cedar and performs expected-revision CAS. Fences cannot
+   decrease. Every accepted hard Policy/history publication advances revision.
+2. =register_task= stores or recovers the exact original record. Its caller is
+   the trusted publisher, not the Go request adapter.
+3. =enqueue= joins the original record, current revision/fence and Cedar; then
+   atomically reserves capacity and creates the canonical queue record. A lost
+   reply replays the same digest without reserving again. It never sends.
+4. =consume= rejoins current authority in an immediate write transaction and
+   commits =unknown= before returning a non-clonable, non-serializable permit.
+   The permit is bound to the exact open ledger handle. Reopen or another handle
+   cannot reclaim it; persisted unknown work is never retried automatically.
+5. =dispatch= takes the same deciding write lock, rejoins current original
+   binding, revision, fence and Cedar, and holds the lock through one bounded
+   synchronous send. A publication before this lock rejects the stale permit;
+   a publication arriving while it is held becomes effective after the send.
+6. Response headers are observations only. Timeout, partial write, crash,
+   commit-response loss and even a successful HTTP status retain the full hold.
+   There is no refund/settlement API until authenticated completion/usage and
+   stable application-ID semantics are implemented.
+
+The published revision covers the effective local hard Policy/history view.
+It does not authenticate external history events. External events need the
+pending/publication/acknowledgment bridge specified in earlier chapters.
+Calling a change pending is not an immediate effective revocation.
+
+* Storage and availability premises
+SQLite uses WAL, =synchronous=FULL= and immediate write transactions. The database
+file, WAL and shared-memory file form one local deciding store; operating it over
+unqualified network filesystems or copying a live partial snapshot is forbidden.
+Power-loss durability depends on the SQLite/VFS/filesystem/device contract.
+The profile assumes no rollback of the deciding store. Independently anchored
+rollback detection and distributed owner recovery are not implemented here.
+
+One bounded send holds the global deciding lock. This provides a concrete
+serialization contract at an explicit throughput/availability cost. It is a
+correctness baseline, not a high-performance claim. Sharding or async transport
+must preserve the effective-publication cut and original shared account
+invariants before replacing it. Logical modules do not imply separate services.
+
+* Transport boundary
+The Rust executor requires an exact canonical HTTPS URL with no embedded
+credentials or fragment. The original task binds that destination. The client
+disables redirects, automatic retries, inherited proxies and idle connection
+reuse; connection and request deadlines are bounded. DNS/IP admission, private
+network restrictions and credential rotation require a deployment-owned profile.
+The test-only localhost certificate is trusted explicitly without disabling
+certificate or hostname validation. The default local CLI installs no provider
+credentials and does not release provider response bodies to clients.
+
+At-most-once local send opportunity does not mean exactly-once provider delivery.
+Bytes already accepted by a kernel/provider cannot be revoked by a later fence.
+No physical isolation or HSM is required by this software execution boundary.

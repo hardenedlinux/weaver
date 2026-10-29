@@ -1,0 +1,308 @@
+{
+  "status": "PASS",
+  "root": "/Users/guangtao/ghq/github.com/tao3k/weaver",
+  "started": "2026-10-29T15:57:15.875682Z",
+  "stages": [
+    {
+      "name": "rust-format",
+      "status": "PASS",
+      "binary": "cargo",
+      "args": [
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "log": "rust-format.log",
+      "exitCode": 0,
+      "duration": "405.46975ms"
+    },
+    {
+      "name": "rust-tests",
+      "status": "PASS",
+      "binary": "cargo",
+      "args": [
+        "test",
+        "--workspace",
+        "--locked",
+        "--offline"
+      ],
+      "log": "rust-tests.log",
+      "exitCode": 0,
+      "duration": "11.504946416s"
+    },
+    {
+      "name": "rust-clippy",
+      "status": "PASS",
+      "binary": "cargo",
+      "args": [
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "log": "rust-clippy.log",
+      "exitCode": 0,
+      "duration": "1.843073125s"
+    },
+    {
+      "name": "go-tests",
+      "status": "PASS",
+      "binary": "/nix/store/cr196bvbbai01r0w11p1inkzkdrqdx6y-go-1.25.0/share/go/bin/go",
+      "args": [
+        "test",
+        "-race",
+        "./go/..."
+      ],
+      "log": "go-tests.log",
+      "exitCode": 0,
+      "duration": "3.894995542s"
+    },
+    {
+      "name": "go-routing-pbt",
+      "status": "PASS",
+      "binary": "/nix/store/cr196bvbbai01r0w11p1inkzkdrqdx6y-go-1.25.0/share/go/bin/go",
+      "args": [
+        "test",
+        "./go/internal/routing",
+        "-run",
+        "^$",
+        "-fuzz",
+        "FuzzCeilingNeverExpands",
+        "-fuzztime=3s",
+        "-parallel=1"
+      ],
+      "log": "go-routing-pbt.log",
+      "exitCode": 0,
+      "duration": "3.868533458s"
+    },
+    {
+      "name": "go-decoder-pbt",
+      "status": "PASS",
+      "binary": "/nix/store/cr196bvbbai01r0w11p1inkzkdrqdx6y-go-1.25.0/share/go/bin/go",
+      "args": [
+        "test",
+        "./go/api/v1",
+        "-run",
+        "^$",
+        "-fuzz",
+        "FuzzDecoderNeverPanics",
+        "-fuzztime=3s",
+        "-parallel=1"
+      ],
+      "log": "go-decoder-pbt.log",
+      "exitCode": 0,
+      "duration": "4.883156125s"
+    },
+    {
+      "name": "go-stream-pbt",
+      "status": "PASS",
+      "binary": "/nix/store/cr196bvbbai01r0w11p1inkzkdrqdx6y-go-1.25.0/share/go/bin/go",
+      "args": [
+        "test",
+        "./go/internal/streaming",
+        "-run",
+        "^$",
+        "-fuzz",
+        "FuzzMessageBounds",
+        "-fuzztime=3s",
+        "-parallel=1"
+      ],
+      "log": "go-stream-pbt.log",
+      "exitCode": 0,
+      "duration": "4.623863416s"
+    },
+    {
+      "name": "quint-stream-tests",
+      "status": "PASS",
+      "binary": "quint",
+      "args": [
+        "test",
+        "dev/proofs/quint/StreamingExecution.qnt",
+        "--main",
+        "StreamingExecution",
+        "--seed",
+        "293"
+      ],
+      "log": "quint-stream-tests.log",
+      "exitCode": 0,
+      "duration": "1.115522375s"
+    },
+    {
+      "name": "quint-stream-safety",
+      "status": "PASS",
+      "binary": "quint",
+      "args": [
+        "run",
+        "dev/proofs/quint/StreamingExecution.qnt",
+        "--main",
+        "StreamingExecution",
+        "--invariant",
+        "safe",
+        "--max-samples",
+        "1000",
+        "--max-steps",
+        "60",
+        "--seed",
+        "293"
+      ],
+      "log": "quint-stream-safety.log",
+      "exitCode": 0,
+      "duration": "1.102081625s"
+    },
+    {
+      "name": "quint-lifecycle-tests",
+      "status": "PASS",
+      "binary": "quint",
+      "args": [
+        "test",
+        "dev/proofs/quint/RuntimeLifecycle.qnt",
+        "--main",
+        "RuntimeLifecycle",
+        "--seed",
+        "293"
+      ],
+      "log": "quint-lifecycle-tests.log",
+      "exitCode": 0,
+      "duration": "1.083972542s"
+    },
+    {
+      "name": "quint-lifecycle-safety",
+      "status": "PASS",
+      "binary": "quint",
+      "args": [
+        "run",
+        "dev/proofs/quint/RuntimeLifecycle.qnt",
+        "--main",
+        "RuntimeLifecycle",
+        "--invariant",
+        "safe",
+        "--max-samples",
+        "1000",
+        "--max-steps",
+        "60",
+        "--seed",
+        "293"
+      ],
+      "log": "quint-lifecycle-safety.log",
+      "exitCode": 0,
+      "duration": "1.250063083s"
+    },
+    {
+      "name": "lean-stream",
+      "status": "PASS",
+      "binary": "elan",
+      "args": [
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "dev/proofs/lean/StreamingExecution.lean"
+      ],
+      "log": "lean-stream.log",
+      "exitCode": 0,
+      "duration": "1.844188834s"
+    },
+    {
+      "name": "cedar-proof-bridge",
+      "status": "PASS",
+      "binary": "elan",
+      "args": [
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lake",
+        "-d",
+        "dev/proofs/cedar",
+        "build",
+        "WeaverPolicyBridge"
+      ],
+      "log": "cedar-proof-bridge.log",
+      "exitCode": 0,
+      "duration": "2.325771542s"
+    },
+    {
+      "name": "quint-typecheck",
+      "status": "PASS",
+      "binary": "quint",
+      "args": [
+        "typecheck",
+        "dev/proofs/quint/RuntimeAdmission.qnt"
+      ],
+      "log": "quint-typecheck.log",
+      "exitCode": 0,
+      "duration": "443.928875ms"
+    },
+    {
+      "name": "quint-tests",
+      "status": "PASS",
+      "binary": "quint",
+      "args": [
+        "test",
+        "dev/proofs/quint/RuntimeAdmission.qnt",
+        "--main",
+        "RuntimeAdmission",
+        "--seed",
+        "293"
+      ],
+      "log": "quint-tests.log",
+      "exitCode": 0,
+      "duration": "927.914958ms"
+    },
+    {
+      "name": "quint-safety",
+      "status": "PASS",
+      "binary": "quint",
+      "args": [
+        "run",
+        "dev/proofs/quint/RuntimeAdmission.qnt",
+        "--main",
+        "RuntimeAdmission",
+        "--invariant",
+        "safety",
+        "--max-samples",
+        "1000",
+        "--max-steps",
+        "50",
+        "--seed",
+        "293"
+      ],
+      "log": "quint-safety.log",
+      "exitCode": 0,
+      "duration": "950.22475ms"
+    },
+    {
+      "name": "lean",
+      "status": "PASS",
+      "binary": "elan",
+      "args": [
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "dev/proofs/lean/RuntimeAdmission.lean"
+      ],
+      "log": "lean.log",
+      "exitCode": 0,
+      "duration": "292.316333ms"
+    },
+    {
+      "name": "go-native-integration",
+      "status": "PASS",
+      "binary": "/nix/store/cr196bvbbai01r0w11p1inkzkdrqdx6y-go-1.25.0/share/go/bin/go",
+      "args": [
+        "test",
+        "-race",
+        "-tags=integration",
+        "./go/dev",
+        "-run",
+        "TestOriginalTaskProposalReplay|TestStreamProposalToNativeWire",
+        "-v"
+      ],
+      "log": "go-native-integration.log",
+      "exitCode": 0,
+      "duration": "7.60405375s"
+    }
+  ]
+}

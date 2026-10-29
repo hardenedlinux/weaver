@@ -1,0 +1,369 @@
+{
+  "status": "ORDINARY_DYNAMIC_SELECTED_IMAGE_GATE_CLOSED",
+  "samples": 16,
+  "candidateSamples": 8,
+  "candidatePasses": 8,
+  "candidateSeconds": [
+    4.80817583296448,
+    3.1603378750151023,
+    5.184708500048146,
+    4.106839625048451,
+    5.792792166001163,
+    2.3203630420030095,
+    7.506556250038557,
+    3.1843064590357244
+  ],
+  "failedSamples": [
+    "b0-control-first",
+    "b1-control-first",
+    "b2-control-first",
+    "b3-control-first"
+  ],
+  "allNaturalExit": true,
+  "allExactModulePaths": true,
+  "allTrackedResourcesClosed": true,
+  "peakImages": {
+    "control": [
+      215
+    ],
+    "candidate": [
+      72
+    ]
+  },
+  "contrasts": [
+    {
+      "block": 0,
+      "use": "first",
+      "controlMinusCandidateSeconds": 72.96766629203921,
+      "control": "b0-control-first",
+      "candidate": "b0-candidate-first"
+    },
+    {
+      "block": 0,
+      "use": "repeat",
+      "controlMinusCandidateSeconds": 1.4384647919796407,
+      "control": "b0-control-repeat",
+      "candidate": "b0-candidate-repeat"
+    },
+    {
+      "block": 1,
+      "use": "first",
+      "controlMinusCandidateSeconds": 69.59053549997043,
+      "control": "b1-control-first",
+      "candidate": "b1-candidate-first"
+    },
+    {
+      "block": 1,
+      "use": "repeat",
+      "controlMinusCandidateSeconds": 0.7096005829516798,
+      "control": "b1-control-repeat",
+      "candidate": "b1-candidate-repeat"
+    },
+    {
+      "block": 2,
+      "use": "first",
+      "controlMinusCandidateSeconds": 71.82950287597487,
+      "control": "b2-control-first",
+      "candidate": "b2-candidate-first"
+    },
+    {
+      "block": 2,
+      "use": "repeat",
+      "controlMinusCandidateSeconds": 3.7077326250146143,
+      "control": "b2-control-repeat",
+      "candidate": "b2-candidate-repeat"
+    },
+    {
+      "block": 3,
+      "use": "first",
+      "controlMinusCandidateSeconds": 72.43239083397202,
+      "control": "b3-control-first",
+      "candidate": "b3-candidate-first"
+    },
+    {
+      "block": 3,
+      "use": "repeat",
+      "controlMinusCandidateSeconds": 1.6165487069520168,
+      "control": "b3-control-repeat",
+      "candidate": "b3-candidate-repeat"
+    }
+  ],
+  "loadGroups": [
+    {
+      "sample": "b0-control-first",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 147,
+          "seconds": 72.327046
+        },
+        "selected-repeat-alias": {
+          "count": 91,
+          "seconds": 0.03363999999999998
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.10985099999999998
+        }
+      }
+    },
+    {
+      "sample": "b0-control-repeat",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 147,
+          "seconds": 0.5602969999999999
+        },
+        "selected-repeat-alias": {
+          "count": 91,
+          "seconds": 0.03464799999999998
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.04813500000000001
+        }
+      }
+    },
+    {
+      "sample": "b0-candidate-first",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 4,
+          "seconds": 2.5503080000000002
+        },
+        "selected-repeat-alias": {
+          "count": 234,
+          "seconds": 0.03956800000000001
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.022223999999999994
+        }
+      }
+    },
+    {
+      "sample": "b0-candidate-repeat",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 4,
+          "seconds": 0.006154000000000001
+        },
+        "selected-repeat-alias": {
+          "count": 234,
+          "seconds": 0.050742999999999996
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.013007
+        }
+      }
+    },
+    {
+      "sample": "b1-candidate-first",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 4,
+          "seconds": 2.682142
+        },
+        "selected-repeat-alias": {
+          "count": 234,
+          "seconds": 0.04707799999999998
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.017495
+        }
+      }
+    },
+    {
+      "sample": "b1-candidate-repeat",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 4,
+          "seconds": 0.008964
+        },
+        "selected-repeat-alias": {
+          "count": 234,
+          "seconds": 0.06125199999999998
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.025751999999999997
+        }
+      }
+    },
+    {
+      "sample": "b1-control-first",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 147,
+          "seconds": 71.532435
+        },
+        "selected-repeat-alias": {
+          "count": 91,
+          "seconds": 0.05444200000000001
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.11121500000000001
+        }
+      }
+    },
+    {
+      "sample": "b1-control-repeat",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 147,
+          "seconds": 0.5445570000000001
+        },
+        "selected-repeat-alias": {
+          "count": 91,
+          "seconds": 0.13672699999999993
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.06939999999999999
+        }
+      }
+    },
+    {
+      "sample": "b2-candidate-first",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 4,
+          "seconds": 3.124371
+        },
+        "selected-repeat-alias": {
+          "count": 234,
+          "seconds": 0.13762400000000008
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.035696000000000006
+        }
+      }
+    },
+    {
+      "sample": "b2-candidate-repeat",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 4,
+          "seconds": 0.005929
+        },
+        "selected-repeat-alias": {
+          "count": 234,
+          "seconds": 0.06642599999999996
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.022558
+        }
+      }
+    },
+    {
+      "sample": "b2-control-first",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 147,
+          "seconds": 74.27381800000003
+        },
+        "selected-repeat-alias": {
+          "count": 91,
+          "seconds": 0.019142999999999997
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.07996900000000001
+        }
+      }
+    },
+    {
+      "sample": "b2-control-repeat",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 147,
+          "seconds": 1.2291439999999993
+        },
+        "selected-repeat-alias": {
+          "count": 91,
+          "seconds": 0.04667
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.057048
+        }
+      }
+    },
+    {
+      "sample": "b3-control-first",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 147,
+          "seconds": 74.32247900000002
+        },
+        "selected-repeat-alias": {
+          "count": 91,
+          "seconds": 0.041034999999999995
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.057928
+        }
+      }
+    },
+    {
+      "sample": "b3-control-repeat",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 147,
+          "seconds": 0.553369
+        },
+        "selected-repeat-alias": {
+          "count": 91,
+          "seconds": 0.03716299999999999
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.07582799999999999
+        }
+      }
+    },
+    {
+      "sample": "b3-candidate-first",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 4,
+          "seconds": 2.387413
+        },
+        "selected-repeat-alias": {
+          "count": 234,
+          "seconds": 0.16097899999999998
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.017205
+        }
+      }
+    },
+    {
+      "sample": "b3-candidate-repeat",
+      "groups": {
+        "selected-first-inode-request": {
+          "count": 4,
+          "seconds": 0.006686
+        },
+        "selected-repeat-alias": {
+          "count": 234,
+          "seconds": 0.04019999999999999
+        },
+        "fallback-first-inode-request": {
+          "count": 22,
+          "seconds": 0.013833999999999999
+        }
+      }
+    }
+  ],
+  "gateSeconds": 15,
+  "hostColdControlled": false,
+  "globalLatencyGuarantee": false,
+  "intervalDefinition": "Wrapper interval around the real API plus observer bookkeeping and scheduling, not an isolated syscall duration"
+}

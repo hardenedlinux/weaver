@@ -1,0 +1,11 @@
+
+ Error [QNT000]: Couldn't unify set and list
+Trying to unify Set[_t145] and List[Decision]
+Trying to unify (Set[_t145], _t145) => bool and (List[Decision], t_d_668) => _t146
+
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmRecoveryCAS.qnt:48:26
+  48:   action confirm(d)=all {s.decisions.contains(d),s'=s.with("confirmations",s.confirmations.append(d)).with("ack",true)}
+                               ^^^^^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

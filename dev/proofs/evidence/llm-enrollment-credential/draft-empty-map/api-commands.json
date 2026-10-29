@@ -1,0 +1,65 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 15,
+    "sourceSha256": "699cdbc97e2b29a374acf876f82812089c2085ff15cff749a948ecd78baf664e",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 3.877
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "02453f105332c62ad44f8ab03d02b16f0460f56d3d0f87e081c734472e318c28",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 21.874
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "sharedWorkloadCannotAssignSubjectTest",
+      "producerAssignmentRequiredTest",
+      "sharedWorkloadCannotIssueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.357
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "forwardedSubjectCredentialRejectedTest",
+      "authenticatedSubjectCannotNominateKeyTest",
+      "subjectAuthenticationRequiredTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.38
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "enrollmentPossessionRequiredTest",
+      "issuanceSessionBoundTest",
+      "currentIssuancePolicyRequiredTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.808
+  },
+  {
+    "label": "api-controls-3",
+    "exit": 1,
+    "watchdogSeconds": 20,
+    "seconds": 0.645
+  }
+]

@@ -1,0 +1,48 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":1,"sourceSha256":"d511a3c0ce0c25dc9e119b854e4ddc1b41afb87546cc0d82f829dbff7fa24139"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"e443b80279f591e16f308e756607a1e8e785982d729287bc5ff4435084906407"}
+@@START {"label":"api-controls-0","limit":20}
+
+  DynamicPairedEvidence
+    ok failedFirstIsRetainedTest passed 1 test(s)
+    ok failedSeriesBlocksAdmissionTest passed 1 test(s)
+    ok originalDeadlineTest passed 1 test(s)
+
+  3 passing (13ms)
+@@DONE {"label":"api-controls-0","passed":["failedFirstIsRetainedTest","failedSeriesBlocksAdmissionTest","originalDeadlineTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  DynamicPairedEvidence
+    ok exactlyAtDeadlineTest passed 1 test(s)
+    ok liveResourceBlocksPassTest passed 1 test(s)
+    ok markerAloneBlocksPassTest passed 1 test(s)
+
+  3 passing (6ms)
+@@DONE {"label":"api-controls-1","passed":["exactlyAtDeadlineTest","liveResourceBlocksPassTest","markerAloneBlocksPassTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  DynamicPairedEvidence
+    ok duplicateSampleRejectedTest passed 1 test(s)
+    ok freshInodeIsNotHostColdTest passed 1 test(s)
+    ok changedObjectsRejectPairTest passed 1 test(s)
+
+  3 passing (2ms)
+@@DONE {"label":"api-controls-2","passed":["duplicateSampleRejectedTest","freshInodeIsNotHostColdTest","changedObjectsRejectPairTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  DynamicPairedEvidence
+    ok changedCompilerRejectPairTest passed 1 test(s)
+    ok overwriteFailureCounterexampleTest passed 1 test(s)
+    ok discardColdFailureCounterexampleTest passed 1 test(s)
+
+  3 passing (2ms)
+@@DONE {"label":"api-controls-3","passed":["changedCompilerRejectPairTest","overwriteFailureCounterexampleTest","discardColdFailureCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  DynamicPairedEvidence
+    ok partialProducerRejectedTest passed 1 test(s)
+    ok fewerImagesCanStillBeLateTest passed 1 test(s)
+
+  2 passing (1ms)
+@@DONE {"label":"api-controls-4","passed":["partialProducerRejectedTest","fewerImagesCanStillBeLateTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

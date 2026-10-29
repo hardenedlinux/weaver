@@ -1,0 +1,196 @@
+#+title: Subject Authority Proof and Source Evidence
+#+language: en
+#+startup: overview
+
+* Current evidence and scope
+This category expands configured subject/producer authority, exact Task assignment,
+current credential generations and actual enrollment Plan publication. It retains
+the existing enrollment-key, first-beneficiary and original-budget constraints.
+
+- [[file:../../../dev/proofs/lean/LlmSubjectAuthority.lean][Lean source]]
+- [[file:../../../dev/proofs/quint/LlmSubjectAuthority.qnt][Quint source]]
+- [[file:../../../dev/proofs/check_llm_subject_authority.py][Primary bounded checker]]
+- [[file:../../../dev/proofs/prepare_subject_authority.py][Source-preserving bundle preparation]]
+- [[file:../../../dev/proofs/check_subject_api.py][Official pipeline watchdog]]
+- [[file:../../../dev/proofs/run_subject_authority.cjs][Official type/effect and fresh-evaluator route]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/receipt.json][Current classification receipt]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/commands.json][Current phase receipts]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/LlmSubjectAuthority.log][Lean axiom report]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/api-invocation.json][Executed source/tool association]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/typed-stage-summary.json][Official typed IR and tool hashes]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/bundle-certificate.json][Ancestor and new-leaf source binding]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/counterexample-observations.json][Decoded faults and pre-rejection state]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/source-review.json][Pinned upstream source excerpts]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/source-receipt-check.json][Fresh Git blob checks]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/working-source-check.json][Current working-source comparison]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/four-artifacts.json][Four-artifact obligation mapping]]
+- [[file:../../../dev/proofs/evidence/llm-subject-authority/SHA256SUMS][Sealed byte manifest]]
+
+* Source comparison: reuse and extension
+Nineteen pinned blobs and their exact recorded excerpts are freshly checked. Eighteen
+working files match reviewed bytes; P17 differs only in the two previously recorded
+control-plane import paths. These identities describe evidence, not dependency pins
+or requirements to preserve a compatibility layer.
+
+| Source | Existing mechanism reused as a contract | Additional obligation here |
+|--------+-----------------------------------------+----------------------------|
+| P12 authorized-effect-token | Exact semantic binding, nonce spent state, revocation epoch | Canonical subject/producer/Task binding and credential-generation association; valid token equality alone cannot authenticate identity |
+| P13 strict-mediation | Consume before uncertain observation; indeterminate remains consumed | Unknown assignment/publication response cannot reopen the original slot or release its reservation; pure immutable state is not native persistence |
+| P15 lambda-aitia effect-host | Producer-issued opaque grant provenance, exact serialized/current-thread owner, reserve without external effect | Subject/producer identity authority and durable cross-process recovery are not supplied by weak host tables; durable/distributed authority remains explicitly false in the local receipt |
+| P17 store-backend | Explicit native owner/storage handoff contract | Complete source/Task/assignment/approval/Plan prefix and deciding CAS remain native requirements |
+| P18 promotion recovery | Exact canonical request and pre/post/outcome association | Recover the original assignment and publication despite lost responses; no new key or authority from a callback |
+| P19 authorized recovery bridge | Original claim/source/authority association | Credential rotation cannot create a new family, subject mapping, enrollment key or budget/history domain |
+| P20 committed effect application | Conditional application uniqueness over actual traces | Compose actual initialized Weaver account traces; no native exactly-once identity service or external effect claim |
+| P22 durable store | Locking/fsync/replay ownership contracts | An independent accepted outer prefix is needed even while execution/account floors stay unchanged |
+| P31 SessionAttempt Lean/Quint | Revision/generation and pending recovery discipline | Advance credential generations without discarding original pending intent; old parent cannot renew itself |
+| P33 budget/watchdog | Timeout is not no-execution/refund evidence | Identity and assignment retries retain the original unknown budget hold |
+| P35 context lineage | Dependency invalidation and currentness | Source rotation invalidates cached approval; recheck again at new credential issuance |
+| P43 funs-attempt | Producer receipt fields include identity/digest/scope; expected revision and bounded-coordinate checks | Typed producer strings do not authenticate a producer; receipt explicitly denies runtime publication, action authorization and durability |
+| P44 objects-attempt | Typed identity/generation/anchor vocabulary | Keep stable subject, credential generation, producer, enrollment key and beneficiary key separate |
+| C8 BoundOperation | Bound request equality and proof-bearing admission | Source explicitly says equality authenticates neither input; native owner must authenticate issuer, subject, producer and operation facts |
+| C10 CompoundAuthorization | Cedar over the compiled POO root and entity snapshot | Authentic current identity facts and atomic application remain host obligations; Cedar does not provision an independent subject |
+| C11 composition | Dependency/invalidation composition | Not a cryptographic directory, token issuer, native recovery store or transport proof |
+
+The checked compiled import chain is Weaver's actual predecessor chain. Inspection
+of POO Flow and cedar-poo-spec identifies reuse candidates and boundaries; it is not
+a fresh compiled import/refinement proof of those upstream modules. P12 permits expiry
+equality while the Gateway Blueprint requires time strictly below expiry; no ABI or
+native-equivalence claim follows from the source comparison.
+
+* Four-artifact obligations
+Each row ties the same design obligation to this Org, a printed Lean declaration,
+a concrete passing Quint scenario and a stable core D2 node. This correspondence is
+not a machine-checked bisimulation. Injected-fault actions are excluded from step.
+
+| ID | Obligation | Lean declaration | Quint control | D2 node |
+|----+------------+------------------+---------------+---------|
+| SA1 | Original task and intended subject/producer remain fixed | =task_retained= | =taskOriginCannotComeFromSharedWorkloadTest= | =registry.origin= |
+| SA2 | Canonical assignment cannot be replaced | =assignment_retained= | =existingAssignmentCannotBeReplacedTest= | =recovery.projection= |
+| SA3 | Recovery retains the same original pending intent | =assignment_run= | =lostAssignmentReplyRetainsOriginalTest= | =protocols.acp= |
+| SA4 | Rotation/recovery cannot replace the enrollment key | =no_enrollment_replacement= | =existingAssignmentCannotBeReplacedTest= | =recovery.projection= |
+| SA5 | Original Task fixes the enrollment key | =original_enrollment_bound= | =originalEnrollmentKeyCannotChangeTest= | =registry.origin= |
+| SA6 | Shared workload material is not an independent subject proof | =shared_identity_rejected= | =sharedIdentityCannotAssignTest= | =protocols.mcp= |
+| SA7 | Another issuer is not the configured subject authority | =other_authority_rejected= | =otherIdentityIssuerRejectedTest= | =protocols.mcp= |
+| SA8 | Subject tenant must match the original Task | =other_tenant_rejected= | =tenantSubstitutionRejectedTest= | =protocols.a2a= |
+| SA9 | Producer principal is fixed by the original Task | =wrong_producer_rejected= | =producerSubstitutionRejectedTest= | =registry.alias= |
+| SA10 | Credential rotation cannot rename the subject | =rotation_preserves_identity= | =rotationCannotRenameSubjectTest= | =recovery.join= |
+| SA11 | Credential generation cannot be reopened | =rotation_advances_generation= | =generationCannotBeReopenedTest= | =recovery.join= |
+| SA12 | Old subject approval cannot cross rotation | =stale_subject_rejected= | =subjectRotationInvalidatesOldApprovalTest= | =broker.cas= |
+| SA13 | Old producer approval cannot cross rotation | =stale_producer_rejected= | =producerRotationInvalidatesOldApprovalTest= | =broker.cas= |
+| SA14 | Source changes invalidate the observed outer revision | =stale_read_rejected= | =oldSourceReadCannotPublishTest= | =broker.cas= |
+| SA15 | Source records require authentic configured authority facts | =sources_step= | =forgedAuthorityCounterexampleTest= | =recovery.projection= |
+| SA16 | Every assignment preserves the original Task template | =valid_step= | =replacedEnrollmentCounterexampleTest= | =registry.origin= |
+| SA17 | Every predecessor Plan needs its original assignment and outcome | =joined_step= | =missingPlanOutcomeCounterexampleTest= | =recovery.fence= |
+| SA18 | A publication outcome must identify an actual exact Plan | =outcome_step= | =phantomPlanOutcomeCounterexampleTest= | =broker.cas= |
+| SA19 | Legal updates preserve complete source/assignment/Plan joins | =qualified_step= | =sameKeyCredentialRotationCanReauthorizeTest= | =recovery.fence= |
+| SA20 | Finite recovery cannot erase original assignment provenance | =qualified_run= | =erasedAssignmentCounterexampleTest= | =recovery.fence= |
+| SA21 | Fresh raw reads cannot repair split recovery | =inconsistent_image_rejected= | =splitRecoveryCannotIssueTest= | =broker.alias= |
+| SA22 | Task authority comes from the configured original producer source | =task_origin= | =taskOriginCannotComeFromSharedWorkloadTest= | =registry.origin= |
+| SA23 | Assignment derives from an authoritative original Task | =assignment_from_original_task= | =assignmentDoesNotPublishOrIssueTest= | =recovery.projection= |
+| SA24 | Final publication needs current subject and producer approval | =new_plan_has_current_assignment= | =sameKeyCredentialRotationCanReauthorizeTest= | =broker.cas= |
+| SA25 | Plan commit cannot issue credentials or send | =new_plan_has_no_credential_effect= | =planPublicationHasNoCredentialEffectTest= | =broker.cas= |
+| SA26 | Later credential issuance rechecks rotated identity | =new_credential_rechecks_subject= | =rotatedIdentityRecheckedAtNewIssueTest= | =broker.alias= |
+| SA27 | Authority updates project to actual predecessor traces | =composition= | =actualActivationPreservesOriginalHoldTest= | =broker.alias= |
+| SA28 | Existing enrollment credentials retain their immutable identity | =credential_retained= | =renewalRetainsIssuedCredentialTest= | =recovery.fence= |
+| SA29 | Identity recovery cannot replace the first beneficiary key | =first_key_retained= | =recoveredWorkerCannotReplaceFirstKeyTest= | =broker.alias= |
+| SA30 | Original account application remains conditionally unique | =original_reservation_once= | =actualActivationPreservesOriginalHoldTest= | =broker.hold= |
+| SA31 | Unknown original use retains its exact hold | =unknown_original_hold_retained= | =actualActivationPreservesOriginalHoldTest= | =registry.query= |
+| SA32 | A copied public generation is not a current credential | =missing_current_credential_rejected= | =exactJointProofRequiredTest= | =recovery.join= |
+| SA33 | Current approval cannot substitute for this issue caller credential | =missing_issue_identity_rejected= | =oldCredentialCannotBorrowNewGenerationTest= | =broker.alias= |
+
+* Lean model, assumptions and composition
+Thirty-three printed declarations compile without sorryAx. Nat-indexed registries
+and inductive Run cover arbitrary finite populations and traces. Sources derives
+canonical row association and native authority provenance from legal imports and
+exact-parent rotations. Valid preserves the original Task/Plan relationship.
+Joined and Outcome constrain both directions of predecessor Plan publication.
+qualified_step derives preservation from guards and updates, not an assumed complete
+post-state invariant. History remains qualified after source rotation; live approval
+is checked separately.
+
+Owner.subjectSource and producerSource mean configured, tenant/purpose constrained,
+authenticated native authority evidence, not a valid JWT from any issuer. taskSource
+is the authoritative original task-to-subject/producer and enrollment commitment.
+verify requires current credential authentication for both principals plus enrollment
+possession over one exact body and current channel/challenge. Public generation/key
+metadata is insufficient. Authentic identity-source updates must not be forgeable by
+an old worker's ordinary workload credential.
+
+CanApprove binds the stored assignment to exact current subject and producer rows,
+full native proof, current policy/source facts, outer revision, predecessor epoch and
+original Blueprint. new_plan_has_current_assignment extracts this obligation from
+every newly published Plan. new_plan_has_no_credential_effect fixes the entire child
+successor to the exact Plan/revision append. NewIssues and new_credential_rechecks_subject
+close the later issuance gap after a source rotation. verifyNewIssue is a separate
+native predicate over the current outer state, assignment, approval and exact new
+credential body. It authenticates this caller using a current credential and fresh
+channel/challenge context, not a stored approval proof. missing_issue_identity_rejected
+extracts its necessity from every newly admitted credential.
+
+The model separates authentication-key rotation from enrollment-key replacement.
+Same-key subject credential renewal and producer-key rotation can reapprove the same
+assignment. A changed subject key cannot silently migrate a frozen Plan. Source rotation
+alone does not revoke already-issued enrollment credentials; explicit actual predecessor
+revocation remains available. Existing historical accounting is not guarded by a fresh
+identity login solely because a source credential changed.
+
+composition requires every generic inner edge to carry an actual category-47 Run
+witness. Instantiate edge with actual predecessor Step and one-step Run; do not replace
+its native authentication/currentAllows/durability predicates with True. credential_retained
+and first_key_retained use the actual ancestor theorems. Financial composition retains
+safe handoff, initialized original caller/publication/custody/account prefixes and the
+original sourceReady-to-OriginalReady binding. No credential proof creates a reservation
+refund or discharges these initialization/IO premises.
+
+Native durable covers the complete conditional event, authentic command/proof references,
+projection joins and independently accepted outer prefix. It is not fsync alone. Coherent
+rollback of every source, assignment and projection can satisfy all pure joins. A restored
+map is not an arbitrary admitted initial state; reconcile the accepted prefix before any
+absence/read certificate or CAS. Native counters and canonical namespace encodings must
+reject exhaustion/reuse. Safety is conditional; key-loss migration and liveness are not proved.
+
+* Quint execution and counterexample scope
+Forty-two deterministic controls import fifteen complete ancestor transition modules.
+Only the forty predecessor run declarations are omitted. Official parsed IR comparison
+checks every ancestor non-run declaration and the entire current raw leaf. Full official
+type/effect analysis is performed once; each test group uses official runTests with a
+fresh evaluator and RNG. Typed AST, lookup table and collected definitions are fingerprinted
+and must remain unchanged after every group.
+
+Thirty-six guarded controls exercise configured authority, shared workload rejection,
+issuer/tenant/producer confusion, full proof, immutable enrollment assignment, current
+subject/producer rotation, same-assignment renewal, new-issuance revalidation, lost replies,
+current recovery and actual first-key/custody activation with the original hold. Five
+unsafe faults inject a forged identity authority, changed enrollment key, erased assignment,
+missing publication outcome and phantom outcome. The quarantine control refreshes both
+raw child and outer read coordinates on a split image, records the defined pre-rejection
+state, then requires new issuance to fail. No successor state is claimed after terminal fail.
+
+The fixture has one original canonical task and a shared workload. Trusted source/peer
+assignments and proof/policy booleans represent authentic native verifier results, never
+caller-controlled flags. It does not execute Cedar, an IdP or cryptography. The unchanged
+predecessor fixture admits a fixed subject authentication key; key migration before an
+assignment is described by the general Lean/native contract, not claimed as newly tested
+native/public-key support. Same-key subject renewal and producer-key rotation are executed.
+Existing-credential retention and budget composition are general Lean properties; the
+positive Quint scenarios are focused corresponding observations, not native account tests.
+
+A successful intermediate forty-control run is retained separately in
+before-fresh-credential-controls. The final forty-two-control run adds explicit
+rejection of a copied public generation without a current credential, and retention
+of an already-issued credential through normal identity renewal.
+
+A subsequent review found that current approval alone could conceal a missing
+per-call identity proof at issuance. before-per-issue-identity retains that earlier
+model and its receipts; the final model adds verifyNewIssue and executes a control
+with a current renewed approval but missing fresh caller credential, which must fail.
+
+The first Quint draft reused reserved built-in names assign/next and failed official
+name resolution with QNT101. Its source, invocation and parse errors are retained in
+draft-reserved-names and are not acceptance evidence. Current successful receipts are
+kept separate. The first receipt decoder also encountered stale numbered ITF files
+from the intermediate run. Those old traces are retained in its archive; the current
+directory is checked against the exact final test/group trace names, and the failed
+decoder diagnostic is retained separately. No exhaustive exploration, new random simulation, liveness, native identity/
+storage/SDK qualification, performance result or remote CI result is claimed. Ancestor
+proof receipts are source-identity reuse, not a fresh rebuild or rerun of every ancestor.

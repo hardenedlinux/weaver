@@ -1,0 +1,17 @@
+#+TITLE: Initial ReleaseBinding Test Composition Failure
+#+LANGUAGE: en
+
+Command: =quint test dev/proofs/quint/ReleaseBinding.qnt --main ReleaseBinding --seed 293=.
+Observed result: nine passing controls and one failing control.
+
+#+begin_example
+originalPendingCannotReprepareTest failed after 1 test(s)
+Error [QNT502]: Variable s not set
+at ReleaseBinding.qnt:10:12
+val safe=s.held==12 ...
+#+end_example
+
+The test attempted to inspect safe after a failing action, which does not assign
+the next state. Moving the expectation before that failing action preserves the
+same predicate, rejection and sampling parameters. The corrected ten controls
+pass; the native pre-fix capability counterexamples remain separately retained.

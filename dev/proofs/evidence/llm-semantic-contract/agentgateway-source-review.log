@@ -1,0 +1,208 @@
+AGL1 955d56fae09b45f3cb8e85e797dbb1eb06134f77 controller/api/v1alpha1/agentgateway/agentgateway_model_types.go 3dc64cf826ffb45a44f9130b4432f3cdc616ba074f7f2b3af646af97fabef4ec
+AGL2 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/llm/model_router.rs b28f5459b107893459bc5cc84d728a7c80386eca31822a2f3a1fa04b4b61ceb3
+AGL3 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/llm/catalog/model.rs ab6fadbb408e74b6c15011c43f1071629cf7f3ba7607036709b0ac6089a74d12
+AGL4 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/llm/mod.rs fe83aec161add58845f51bff2f61011faa3d8bde2db2e606e4c1bb9f3e90cad0
+AGL5 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/llm/src/conversion/mod.rs a0adbc97ce8029ebafd9a5d02e2eeff088f5ed9e8ffbf45071fd60624a552bcd
+1: pub mod bedrock;
+2: pub mod completions;
+3: pub mod gemini;
+4: pub mod messages;
+5: pub mod namespace_tools;
+6: pub mod openai_compat;
+7: pub mod responses;
+8: pub mod systemone;
+9: pub mod vertex;
+10: pub mod vertex_gemini;
+11: 
+12: #[derive(Default)]
+13: struct ProviderUsage {
+14: 	input_tokens: u64,
+15: 	total_tokens: u64,
+AGL6 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/llm/router_callout.rs ce1342254288a8175cf290fc431880c01028fcc21f5412d2e8849c6517e1c08b
+AGL7 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/types/loadbalancer.rs cdb3651dddaffcb6e3952adea8a2f9494e3dce49395077bfcc59ba469d9eea1d
+AGL8 955d56fae09b45f3cb8e85e797dbb1eb06134f77 controller/pkg/agentgateway/translator/model_collections.go 23971f9580fdf949206c7dd8ff3f22c07bf0dd5229521f1275cf0b84d2b73ce0
+AGL9 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/http/retry/mod.rs f8b5b9dad5379dfdcdf7fcad13d0eb5f33064b4c955edf29b6a6dae8ec382f20
+AGL10 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/llm/src/golden_tests.rs dc8fd8724c8052c0b9eb610fe12d343ba3f811d24c9f59a36f95846450b9f763
+AGS11 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/llm/src/conversion/messages.rs 2b612aa8a52493e8fb010501e4f347489c894e4ec88895ee187486e92635132c
+287: 		let mut system_blocks = Vec::new();
+288: 		for message in &req.messages {
+289: 			match message {
+290: 				completions::RequestMessage::System(message) => match &message.content {
+291: 					completions::RequestSystemMessageContent::Text(text) => {
+292: 						if !text.trim().is_empty() {
+293: 							system_blocks.push(messages::SystemContentBlock::Text {
+294: 								text: text.clone(),
+295: 								cache_control: None,
+296: 							});
+297: 						}
+298: 					},
+299: 					completions::RequestSystemMessageContent::Array(parts) => {
+300: 						for part in parts {
+301: 							let completions::RequestSystemMessageContentPart::Text(text) = part;
+302: 							if !text.text.trim().is_empty() {
+303: 								system_blocks.push(messages::SystemContentBlock::Text {
+304: 									text: text.text.clone(),
+305: 									cache_control: cache_control(&text.prompt_cache_breakpoint),
+306: 								});
+307: 							}
+308: 						}
+309: 					},
+310: 				},
+311: 				completions::RequestMessage::Developer(message) => match &message.content {
+312: 					completions::RequestDeveloperMessageContent::Text(text) => {
+313: 						if !text.trim().is_empty() {
+314: 							system_blocks.push(messages::SystemContentBlock::Text {
+315: 								text: text.clone(),
+316: 								cache_control: None,
+317: 							});
+318: 						}
+319: 					},
+320: 					completions::RequestDeveloperMessageContent::Array(parts) => {
+321: 						for part in parts {
+322: 							let completions::RequestDeveloperMessageContentPart::Text(text) = part;
+323: 							if !text.text.trim().is_empty() {
+324: 								system_blocks.push(messages::SystemContentBlock::Text {
+325: 									text: text.text.clone(),
+326: 									cache_control: cache_control(&text.prompt_cache_breakpoint),
+327: 								});
+328: 							}
+329: 						}
+330: 					},
+331: 				},
+332: 				_ => {},
+333: 			}
+334: 		}
+335: 		let system = if system_blocks.is_empty() {
+400: 
+401: 		let tools = if let Some(tools) = req.tools {
+402: 			let mapped_tools: Vec<_> = tools
+403: 				.iter()
+404: 				.filter_map(|tool| match tool {
+405: 					completions::Tool::Function(function_tool) => {
+406: 						Some(messages::Tool::Custom(messages::CustomTool {
+407: 							name: function_tool.function.name.clone(),
+408: 							strict: None,
+409: 							description: function_tool.function.description.clone(),
+410: 							input_schema: function_tool
+411: 								.function
+412: 								.parameters
+413: 								.clone()
+414: 								.unwrap_or_default(),
+415: 							cache_control: None,
+416: 						}))
+417: 					},
+418: 					_ => None,
+419: 				})
+420: 				.collect();
+421: 			Some(mapped_tools)
+422: 		} else {
+423: 			None
+424: 		};
+425: 		let metadata = req.user.map(|user| messages::Metadata {
+426: 			fields: HashMap::from([("user_id".to_string(), user)]),
+427: 		});
+428: 
+429: 		let disable_parallel_tool_use = req.parallel_tool_calls.map(|p| !p);
+430: 		let has_tools = tools.as_ref().is_some_and(|tools| !tools.is_empty());
+431: 		let tool_choice = match req.tool_choice {
+432: 			Some(completions::ToolChoiceOption::Function(completions::NamedToolChoice { function })) => {
+433: 				Some(messages::ToolChoice::Tool {
+434: 					name: function.name,
+435: 					disable_parallel_tool_use,
+436: 				})
+437: 			},
+438: 			Some(completions::ToolChoiceOption::Mode(completions::ToolChoiceOptions::Auto)) => {
+439: 				Some(messages::ToolChoice::Auto {
+440: 					disable_parallel_tool_use,
+441: 				})
+442: 			},
+443: 			Some(completions::ToolChoiceOption::Mode(completions::ToolChoiceOptions::Required)) => {
+444: 				Some(messages::ToolChoice::Any {
+445: 					disable_parallel_tool_use,
+446: 				})
+447: 			},
+448: 			Some(completions::ToolChoiceOption::Mode(completions::ToolChoiceOptions::None)) => {
+449: 				Some(messages::ToolChoice::None {})
+450: 			},
+451: 			None if disable_parallel_tool_use.is_some() && has_tools => {
+452: 				Some(messages::ToolChoice::Auto {
+453: 					disable_parallel_tool_use,
+454: 				})
+455: 			},
+456: 			_ => None,
+490: 		let response_format = match req.response_format {
+491: 			Some(completions::ResponseFormat::JsonSchema { json_schema }) => {
+492: 				Some(messages::OutputFormat::JsonSchema {
+493: 					schema: json_schema.schema,
+494: 				})
+495: 			},
+496: 			Some(completions::ResponseFormat::JsonObject) => Some(messages::OutputFormat::JsonSchema {
+497: 				schema: serde_json::json!({
+498: 					"type": "object",
+499: 					"additionalProperties": true
+500: 				}),
+501: 			}),
+502: 			Some(completions::ResponseFormat::Text) | None => None,
+503: 		};
+504: 		let output_config = if response_format.is_some() || effort.is_some() {
+505: 			Some(messages::OutputConfig {
+506: 				effort,
+507: 				format: response_format,
+508: 			})
+509: 		} else {
+510: 			None
+AGS12 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/llm/src/conversion/namespace_tools.rs 05d3922c5bf7b978e4b434359fed7ad248f976bafd88bc44fb4f2da45ae04d72
+23: 	aliases: HashMap<String, OriginalTool>,
+24: }
+25: 
+26: impl NamespaceToolMap {
+27: 	/// Rewrite namespace definitions, forced function choices, and function-call history
+28: 	/// for Chat Completions and Bedrock Converse. Returns aliases for response restoration.
+29: 	/// Bare choices must identify a unique member; qualified `namespace__function` names
+30: 	/// are also accepted. Custom namespace members and allowed-tool constraints are unsupported.
+31: 	/// On error the request may be partially rewritten and must be discarded.
+32: 	pub fn rewrite_request(req: &mut responses::CreateResponse) -> Result<Self, AIError> {
+33: 		let mut map = Self::default();
+34: 		map.flatten_tools(&mut req.tools)?;
+35: 		let mut names = HashSet::new();
+36: 		for tool in req.tools.iter().flatten() {
+37: 			if let responses::Tool::Function(function) = tool
+38: 				&& !names.insert(function.name.as_str())
+39: 			{
+40: 				return Err(AIError::UnsupportedConversion(strng::format!(
+41: 					"duplicate upstream tool name: {}",
+42: 					function.name
+43: 				)));
+44: 			}
+45: 		}
+46: 		map.rewrite_choice(&mut req.tool_choice, &names)?;
+47: 		map.rewrite_history(&mut req.input, &names)?;
+48: 		Ok(map)
+106: 		&self,
+107: 		choice: &mut Option<responses::ToolChoiceParam>,
+108: 		names: &HashSet<&str>,
+109: 	) -> Result<(), AIError> {
+110: 		// Neither target conversion can enforce an allowed-tools constraint.
+111: 		if matches!(choice, Some(responses::ToolChoiceParam::AllowedTools(_))) {
+112: 			return Err(AIError::UnsupportedConversion(strng::literal!(
+113: 				"allowed_tools tool choice is unsupported for Chat Completions and Bedrock Converse"
+114: 			)));
+115: 		}
+116: 
+117: 		if let Some(responses::ToolChoiceParam::Function(choice)) = choice
+118: 			&& !names.contains(choice.name.as_str())
+119: 		{
+120: 			let mut matches = self
+121: 				.aliases
+122: 				.iter()
+123: 				.filter(|(_, original)| original.name == choice.name);
+124: 			match (matches.next(), matches.next()) {
+125: 				(Some((alias, _)), None) => choice.name = alias.clone(),
+126: 				(Some(_), Some(_)) => {
+127: 					return Err(AIError::UnsupportedConversion(strng::format!(
+128: 						"ambiguous namespaced tool choice: {}; use namespace__function to select a member",
+129: 						choice.name
+130: 					)));
+131: 				},
+132: 				_ => {},
+133: 			}

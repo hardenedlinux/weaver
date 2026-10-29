@@ -1,0 +1,61 @@
+{
+  "label": "uuid-b1-C-repeat",
+  "cpuUserSeconds": 1.6659189999999988,
+  "cpuSystemSeconds": 0.6050979999999999,
+  "loadAverageBefore": [
+    120.38037109375,
+    100.18798828125,
+    91.23291015625
+  ],
+  "loadAverageAfter": [
+    132.06298828125,
+    104.42578125,
+    93.0126953125
+  ],
+  "family": "uuid",
+  "block": 1,
+  "cell": "C",
+  "use": "repeat",
+  "args": [
+    "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/bin/gxi",
+    "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-paired-20261020/fixture.ss"
+  ],
+  "pid": 5244,
+  "exit": 0,
+  "seconds": 21.034946291998494,
+  "deadlineFailed": true,
+  "gateSeconds": 15,
+  "forcedExit": false,
+  "checks": [
+    "scheme-object-contract",
+    "native-json-contract",
+    "native-negative-ceiling",
+    "native-boolean-ceiling",
+    "native-string-ceiling",
+    "native-null-ceiling",
+    "native-unknown-authority-field",
+    "native-changed-node",
+    "native-overflow-ceiling",
+    "native-empty-targets",
+    "native-duplicate-targets"
+  ],
+  "markers": {
+    "CHECK ": 17.76688212499721,
+    "NATIVE-AUTHORING-CHECKS-COMPLETE": 17.76688212499721
+  },
+  "cleanup": {
+    "moduleOpens": 315,
+    "moduleCloses": 315,
+    "outstandingModuleRefs": 0,
+    "closeErrors": 0,
+    "overflow": 0,
+    "peakDyldImages": 271
+  },
+  "apiSeconds": {
+    "L": 5.539646,
+    "U": 3.230305
+  },
+  "loadpath": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-paired-20261020/uuid/g1/C/packed-aliases:/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-paired-20261020/lib-native",
+  "fixtureSha256": "68a27a0b594fda7aedab994c2d230464ddb2907176e25d9b8fe5837e24203750",
+  "qualified": false
+}

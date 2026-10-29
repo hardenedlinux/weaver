@@ -1,0 +1,236 @@
+[
+  {
+    "id": "ASP1",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/agent-semantic-protocols",
+    "revision": "2ddeeb8741ab9943f3cb5bd2c9414b669c78c776",
+    "path": "README.md",
+    "sha256": "90fc4da4d7cbd637407d0f0096033cabac81bef6a3948ea6eb453e33ed51b3c7",
+    "excerpts": [
+      {
+        "line": 7,
+        "text": ""
+      },
+      {
+        "line": 8,
+        "text": "Shared protocol contracts, hook runtime, and replay sandtables for semantic"
+      },
+      {
+        "line": 9,
+        "text": "ASP language providers."
+      },
+      {
+        "line": 10,
+        "text": ""
+      },
+      {
+        "line": 11,
+        "text": "This repository keeps the agent-facing surface stable across Rust, TypeScript,"
+      },
+      {
+        "line": 12,
+        "text": "Python, Julia, and future providers. ASP language providers own parser facts and"
+      },
+      {
+        "line": 13,
+        "text": "provider-specific commands; this repository owns the shared schemas, RFCs,"
+      },
+      {
+        "line": 14,
+        "text": "root hook classifier, and scenario evidence used to keep those providers"
+      },
+      {
+        "line": 15,
+        "text": "aligned."
+      },
+      {
+        "line": 16,
+        "text": ""
+      },
+      {
+        "line": 17,
+        "text": "## What Lives Here"
+      },
+      {
+        "line": 18,
+        "text": ""
+      },
+      {
+        "line": 19,
+        "text": "- `docs/10-19-rfcs/`: protocol intent and change process. Start here before changing"
+      },
+      {
+        "line": 20,
+        "text": "  search behavior or hook behavior."
+      },
+      {
+        "line": 21,
+        "text": "- `schemas/`: shared JSON contracts for search packets, language registries,"
+      },
+      {
+        "line": 22,
+        "text": "  hook decisions, hook activations, provider manifests, sandtable scenarios,"
+      },
+      {
+        "line": 23,
+        "text": "  and receipts."
+      },
+      {
+        "line": 24,
+        "text": "- `crates/agent-semantic-protocol/`: shared Rust CLI entrypoint for protocol"
+      },
+      {
+        "line": 25,
+        "text": "  commands such as `hook` and `ast-patch`."
+      },
+      {
+        "line": 26,
+        "text": "- `crates/agent-semantic-hook/`: Rust root hook runtime for Codex, Claude,"
+      },
+      {
+        "line": 27,
+        "text": "  and other agent hook classification and provider routing, used by `asp hook`."
+      },
+      {
+        "line": 28,
+        "text": "- `crates/agent-semantic-client*/`: agent semantic client/backend crates. `asp` is the"
+      },
+      {
+        "line": 29,
+        "text": "  product-facing local/cloud client surface; hook and protocol crates keep"
+      },
+      {
+        "line": 30,
+        "text": "  their `semantic-agent-*` names."
+      }
+    ]
+  },
+  {
+    "id": "ASP2",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/agent-semantic-protocols",
+    "revision": "2ddeeb8741ab9943f3cb5bd2c9414b669c78c776",
+    "path": "docs/10-19-rfcs/10.10-semantic-query-projection-protocol.org",
+    "sha256": "dc64e11ca0c8aa311cdaff37a2a5f61a95f5b5097bc57ec39edb2c804b714621",
+    "excerpts": [
+      {
+        "line": 12,
+        "text": ""
+      },
+      {
+        "line": 13,
+        "text": "* One-sentence summary"
+      },
+      {
+        "line": 14,
+        "text": ""
+      },
+      {
+        "line": 15,
+        "text": "=semantic-query-packet.v1= projection is the parser-owned reasoning tree that"
+      },
+      {
+        "line": 16,
+        "text": "connects compact code or outline text back to native nodes, omitted facts,"
+      },
+      {
+        "line": 17,
+        "text": "bounded expansion actions, and exact read locators."
+      },
+      {
+        "line": 40,
+        "text": ""
+      },
+      {
+        "line": 41,
+        "text": "This RFC owns =semantic-query-packet.v1= projection semantics:"
+      },
+      {
+        "line": 42,
+        "text": ""
+      },
+      {
+        "line": 43,
+        "text": "- =matches[].projection="
+      },
+      {
+        "line": 44,
+        "text": "- =projection.nodes[]="
+      },
+      {
+        "line": 45,
+        "text": "- =projection.renderedNodeIds="
+      },
+      {
+        "line": 46,
+        "text": "- =projection.omitted[]="
+      },
+      {
+        "line": 47,
+        "text": "- =projection.expandActions[]="
+      },
+      {
+        "line": 48,
+        "text": "- =projection.exactRead= and =projection.sourceFingerprint="
+      },
+      {
+        "line": 49,
+        "text": "- projection token-control fields such as =nodeLimit= and"
+      },
+      {
+        "line": 50,
+        "text": "  =expandActionLimit="
+      },
+      {
+        "line": 74,
+        "text": "edit."
+      },
+      {
+        "line": 75,
+        "text": ""
+      },
+      {
+        "line": 76,
+        "text": "* Packet contract"
+      },
+      {
+        "line": 77,
+        "text": ""
+      },
+      {
+        "line": 78,
+        "text": "** Projection modes"
+      },
+      {
+        "line": 79,
+        "text": ""
+      },
+      {
+        "line": 80,
+        "text": "=projection.mode= describes the strongest reasoning surface the provider can"
+      },
+      {
+        "line": 81,
+        "text": "soundly emit for the selected match:"
+      },
+      {
+        "line": 82,
+        "text": ""
+      },
+      {
+        "line": 83,
+        "text": "| Mode | Meaning |"
+      },
+      {
+        "line": 84,
+        "text": "|------+---------|"
+      },
+      {
+        "line": 85,
+        "text": "| =names= | name discovery only; no code reasoning claim |"
+      },
+      {
+        "line": 86,
+        "text": "| =outline= | parser-owned semantic outline with hot-block locators |"
+      }
+    ]
+  }
+]

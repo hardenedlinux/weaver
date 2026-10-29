@@ -1,0 +1,87 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 1,
+    "sourceSha256": "ce3cf7a59d07252d5d6b968f033bb12f87ef324cb11b6285456f285465f92258",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.094
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "1b76d6154ab7bdb6438f4a139689449d854055c26cf1853a3eaf22e95b65c63a",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 1.297
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "twoLogicalRefsOneImageTest",
+      "oneCloseCannotUnmapTest",
+      "finalCloseAllowsUnmapTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.156
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "duplicateAcquisitionRejectedTest",
+      "duplicateCloseRejectedTest",
+      "shutdownRejectsAcquisitionTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.013
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "mappingDoesNotInitializeTest",
+      "requestedEntriesStayLazyTest",
+      "foreignInitializerRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.012
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "duplicateEntryRejectedTest",
+      "independentImageCanReleaseTest",
+      "earlyUnmapCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.007
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "forgottenReferenceCounterexampleTest",
+      "eagerForeignCtorCounterexampleTest",
+      "collapsedEntryCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.162
+  }
+]

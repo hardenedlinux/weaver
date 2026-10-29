@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/dynamic-gxi-paired/audit-dyld-callsite.py", line 11, in <module>
+    s=(p/'sampled-cold-diagnostic'/f).read_text();m=re.search(r'^\s+(\d+) Thread_',s,re.M);n=re.search(r'^\s*(\d+)\s+__fcntl\s+\(in dyld\)',s,re.M);assert m and n and 'mapSegments' in s
+                                                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

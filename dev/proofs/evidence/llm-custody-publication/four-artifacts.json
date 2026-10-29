@@ -1,0 +1,107 @@
+[
+  {
+    "id": "CP1",
+    "theorem": "custody_projection",
+    "test": "stagedIntentHasNoFloorEffectTest",
+    "node": "recovery.projection",
+    "meaning": "Only protected publication advances the actual custody machine"
+  },
+  {
+    "id": "CP2",
+    "theorem": "actual_custody_composition",
+    "test": "newWorkerOriginalAppendTest",
+    "node": "broker.cas",
+    "meaning": "Finite publication runs extend the initialized actual custody prefix"
+  },
+  {
+    "id": "CP3",
+    "theorem": "journal_prefix_step",
+    "test": "transferPreservesCommittedOutcomeTest",
+    "node": "recovery.join",
+    "meaning": "One protected event extends the prior journal"
+  },
+  {
+    "id": "CP4",
+    "theorem": "journal_prefix_run",
+    "test": "lostFloorReplyRetainsOutcomeTest",
+    "node": "recovery.join",
+    "meaning": "Arbitrary finite runs retain the committed prefix"
+  },
+  {
+    "id": "CP5",
+    "theorem": "journal_alignment",
+    "test": "restoreCannotEraseOutcomeTest",
+    "node": "recovery.fence",
+    "meaning": "Last protected record and authority stay aligned despite arbitrary cache restoration"
+  },
+  {
+    "id": "CP6",
+    "theorem": "fence_monotone",
+    "test": "oldWorkerRejectedAtFreshParentTest",
+    "node": "broker.alias",
+    "meaning": "Protected transitions cannot lower the current custody fence"
+  },
+  {
+    "id": "CP7",
+    "theorem": "outcome_retained",
+    "test": "restartRetainsOriginalOutcomeTest",
+    "node": "broker.hold",
+    "meaning": "A known original outcome survives later transitions and crashes"
+  },
+  {
+    "id": "CP8",
+    "theorem": "staging_has_no_authoritative_effect",
+    "test": "stagedIntentHasNoFloorEffectTest",
+    "node": "recovery.projection",
+    "meaning": "Stage/cache-only events cannot mutate authority or admit a tail"
+  },
+  {
+    "id": "CP9",
+    "theorem": "publication_checks_current_parent",
+    "test": "oldParentRejectedAfterTransferTest",
+    "node": "broker.cas",
+    "meaning": "Determining publication repeats current parent and actual custody transition checks"
+  },
+  {
+    "id": "CP10",
+    "theorem": "unqualified_cannot_publish",
+    "test": "exactUntrustedCopyCannotPublishTest",
+    "node": "recovery.fence",
+    "meaning": "Restored equal bytes without an authentic current read cannot publish"
+  },
+  {
+    "id": "CP11",
+    "theorem": "late_ack_cannot_refresh",
+    "test": "lateAckCannotRefreshOldCopyTest",
+    "node": "protocols.mcp",
+    "meaning": "Historical acknowledgement does not qualify a current permit"
+  },
+  {
+    "id": "CP12",
+    "theorem": "original_result_unique",
+    "test": "committedOperationCannotReadmitTest",
+    "node": "broker.alias",
+    "meaning": "Actual floor original-operation uniqueness prevents duplicate admission"
+  },
+  {
+    "id": "CP13",
+    "theorem": "original_reservation_once",
+    "test": "closeAfterOutcomeResolutionTest",
+    "node": "registry.query",
+    "meaning": "Safe initialized account prefix preserves at-most-once original reservation application"
+  },
+  {
+    "id": "CP14",
+    "theorem": "unknown_original_hold_retained",
+    "test": "lostTransferReplyRecoveredTest",
+    "node": "broker.hold",
+    "meaning": "Unmetered source and authentic original-key binding retain the original unknown hold"
+  },
+  {
+    "id": "CP15",
+    "theorem": "floor_outcome_atomic",
+    "test": "lostFloorReplyRetainsOutcomeTest",
+    "node": "broker.cas",
+    "meaning": "Actual floor admission jointly requires current parent/custody/join and publishes its original outcome in that same journal record"
+  }
+]

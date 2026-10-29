@@ -1,0 +1,34 @@
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.20s
+=== RUN   TestProviderGRPCStreamingAndArrowOption
+=== RUN   TestProviderGRPCStreamingAndArrowOption/PROTOBUF
+=== RUN   TestProviderGRPCStreamingAndArrowOption/ARROW_IPC
+--- PASS: TestProviderGRPCStreamingAndArrowOption (4.14s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/PROTOBUF (3.07s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/ARROW_IPC (1.07s)
+=== RUN   TestProviderFailuresNeverRetryOrFallback
+=== RUN   TestProviderFailuresNeverRetryOrFallback/redirect
+=== RUN   TestProviderFailuresNeverRetryOrFallback/overload
+=== RUN   TestProviderFailuresNeverRetryOrFallback/partial-sse
+=== RUN   TestProviderFailuresNeverRetryOrFallback/tool-proposal
+--- PASS: TestProviderFailuresNeverRetryOrFallback (4.26s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/redirect (1.06s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/overload (1.07s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/partial-sse (1.07s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/tool-proposal (1.06s)
+=== RUN   TestProviderPartialRequestAndRestartRetainUnknownClaim
+--- PASS: TestProviderPartialRequestAndRestartRetainUnknownClaim (2.87s)
+=== RUN   TestProviderRevocationDuringSSEStopsNextRelease
+--- PASS: TestProviderRevocationDuringSSEStopsNextRelease (1.11s)
+=== RUN   TestProviderArrowChecksEveryRow
+--- PASS: TestProviderArrowChecksEveryRow (1.13s)
+=== RUN   TestProviderConcurrentRPCDuplicatesInvokeOnce
+--- PASS: TestProviderConcurrentRPCDuplicatesInvokeOnce (1.10s)
+=== RUN   TestProviderRPCIdentityAndCancellation
+--- PASS: TestProviderRPCIdentityAndCancellation (1.08s)
+=== RUN   TestProviderClientCancellationCannotReplay
+--- PASS: TestProviderClientCancellationCannotReplay (1.11s)
+=== RUN   TestProviderAuthenticationPrecedesRPCBodyDecode
+--- PASS: TestProviderAuthenticationPrecedesRPCBodyDecode (1.07s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	22.944s

@@ -1,0 +1,290 @@
+[
+  {
+    "module": "std/text/parser/ll1",
+    "sourceBodiesIdenticalAfterRemovingOnlyImportForm": true,
+    "publicExportSpecs": [],
+    "oldInterface": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/lib/std/text/parser/ll1.ssi",
+    "newInterface": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-narrow/std/text/parser/ll1.ssi",
+    "oldInterfaceSha256": "cf2a3c79168c3452b12a75c9aa2e6c8162ed10a59eab2f4628f2a8c78f2f0ce3",
+    "newInterfaceSha256": "3b0b3913b697a798095d1788ec4f6573d3e114e99750c9a15c3f1d880fd91f61",
+    "exportsIdentical": true
+  },
+  {
+    "module": "std/encoding/json/env",
+    "sourceBodiesIdenticalAfterRemovingOnlyImportForm": true,
+    "publicExportSpecs": [],
+    "oldInterface": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/lib/std/encoding/json/env.ssi",
+    "newInterface": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-narrow/std/encoding/json/env.ssi",
+    "oldInterfaceSha256": "b27400e587be1bb8cb849d58dfffead498cbd5322eb784f3e462d06e104d3570",
+    "newInterfaceSha256": "69c604778e82cf37d9c22b86a163891ca7d538539235cd04be228cdaf7c913fd",
+    "exportsIdentical": true
+  },
+  {
+    "module": "std/encoding/json/reader",
+    "sourceBodiesIdenticalAfterRemovingOnlyImportForm": true,
+    "publicExportSpecs": [
+      [
+        "0",
+        "parse-json",
+        "parse-json"
+      ],
+      [
+        "0",
+        "raise-invalid-json-token",
+        "raise-invalid-json-token"
+      ],
+      [
+        "0",
+        "read-json-hash",
+        "read-json-hash"
+      ],
+      [
+        "0",
+        "read-json-hash/string",
+        "read-json-hash/string"
+      ],
+      [
+        "0",
+        "read-json-hash/symbol",
+        "read-json-hash/symbol"
+      ],
+      [
+        "0",
+        "read-json-list",
+        "read-json-list"
+      ],
+      [
+        "0",
+        "read-json-number",
+        "read-json-number"
+      ],
+      [
+        "0",
+        "read-json-string",
+        "read-json-string"
+      ],
+      [
+        "0",
+        "read-json-walist/string",
+        "read-json-walist/string"
+      ],
+      [
+        "0",
+        "read-json-walist/symbol",
+        "read-json-walist/symbol"
+      ]
+    ],
+    "oldInterface": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/lib/std/encoding/json/reader.ssi",
+    "newInterface": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-narrow/std/encoding/json/reader.ssi",
+    "oldInterfaceSha256": "f2c0e0a5de5b2faf57a298c1a62a82d992b9691be58dfca19e27fb6c97d43453",
+    "newInterfaceSha256": "9d32bbca42df72a863fc6357c9b83aefd31e6a3b2231f9da1da96774f1a71668",
+    "exportsIdentical": true
+  },
+  {
+    "module": "std/encoding/json/writer",
+    "sourceBodiesIdenticalAfterRemovingOnlyImportForm": true,
+    "publicExportSpecs": [
+      [
+        "0",
+        "json-key-string",
+        "json-key-string"
+      ],
+      [
+        "0",
+        "json-simple?",
+        "json-simple?"
+      ],
+      [
+        "0",
+        "json-sort-alist",
+        "json-sort-alist"
+      ],
+      [
+        "0",
+        "write-json-alist",
+        "write-json-alist"
+      ],
+      [
+        "0",
+        "write-json-float",
+        "write-json-float"
+      ],
+      [
+        "0",
+        "write-json-list",
+        "write-json-list"
+      ],
+      [
+        "0",
+        "write-json-number",
+        "write-json-number"
+      ],
+      [
+        "0",
+        "write-json-object",
+        "write-json-object"
+      ],
+      [
+        "0",
+        "write-json-string",
+        "write-json-string"
+      ],
+      [
+        "0",
+        "write-json-vector",
+        "write-json-vector"
+      ]
+    ],
+    "oldInterface": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/lib/std/encoding/json/writer.ssi",
+    "newInterface": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-narrow/std/encoding/json/writer.ssi",
+    "oldInterfaceSha256": "e843f1502aca9359bcd0579add4a1375c024f23c4d159403e6502bfd8850ca63",
+    "newInterfaceSha256": "e2ddefa455e9545cd4c38dd380dc14c27b48d44f49bb592c11c0a4621f8f032d",
+    "exportsIdentical": true
+  },
+  {
+    "module": "std/encoding/json/io",
+    "sourceBodiesIdenticalAfterRemovingOnlyImportForm": true,
+    "publicExportSpecs": [],
+    "oldInterface": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/lib/std/encoding/json/io.ssi",
+    "newInterface": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-narrow/std/encoding/json/io.ssi",
+    "oldInterfaceSha256": "78f04cf3b02f2f028ebd884b49f01e9db373b8e535bf27223fa133f9606e0920",
+    "newInterfaceSha256": "267f13c982311f53d940c857163602796a29bb4cc247fbb282610ea7565f7112",
+    "exportsIdentical": true
+  },
+  {
+    "module": "std/encoding/json/util",
+    "sourceBodiesIdenticalAfterRemovingOnlyImportForm": true,
+    "publicExportSpecs": [],
+    "oldInterface": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/lib/std/encoding/json/util.ssi",
+    "newInterface": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-narrow/std/encoding/json/util.ssi",
+    "oldInterfaceSha256": "5d1e1d2af1de3e0178ad0d93f6e6b3948126be50c452bcd690e1086d2224a5e1",
+    "newInterfaceSha256": "9c6d770e417574d536799093c496aa602ed0c5c9a55e2739d568344b2a53e6b0",
+    "exportsIdentical": true
+  },
+  {
+    "module": "std/encoding/json/api",
+    "sourceBodiesIdenticalAfterRemovingOnlyImportForm": true,
+    "publicExportSpecs": [
+      [
+        "0",
+        "JSONReadOptions",
+        "JSONReadOptions"
+      ],
+      [
+        "0",
+        "JSONWriteContext",
+        "JSONWriteContext"
+      ],
+      [
+        "0",
+        "JSONWriteOptions",
+        "JSONWriteOptions"
+      ],
+      [
+        "0",
+        "current-json-read-options",
+        "current-json-read-options"
+      ],
+      [
+        "0",
+        "current-json-write-options",
+        "current-json-write-options"
+      ],
+      [
+        "0",
+        "default-json-read-options",
+        "default-json-read-options"
+      ],
+      [
+        "0",
+        "default-json-write-options",
+        "default-json-write-options"
+      ],
+      [
+        "0",
+        "json->string",
+        "json->string"
+      ],
+      [
+        "0",
+        "json->u8vector",
+        "json->u8vector"
+      ],
+      [
+        "0",
+        "json-key-string",
+        "json-key-string"
+      ],
+      [
+        "0",
+        "json-sort-alist",
+        "json-sort-alist"
+      ],
+      [
+        "0",
+        "json-write-context",
+        "json-write-context"
+      ],
+      [
+        "0",
+        "make-JSONReadOptions",
+        "make-JSONReadOptions"
+      ],
+      [
+        "0",
+        "make-JSONWriteContext",
+        "make-JSONWriteContext"
+      ],
+      [
+        "0",
+        "make-JSONWriteOptions",
+        "make-JSONWriteOptions"
+      ],
+      [
+        "0",
+        "pretty-json",
+        "pretty-json"
+      ],
+      [
+        "0",
+        "read-json",
+        "read-json"
+      ],
+      [
+        "0",
+        "string->json",
+        "string->json"
+      ],
+      [
+        "0",
+        "u8vector->json",
+        "u8vector->json"
+      ],
+      [
+        "0",
+        "write-json",
+        "write-json"
+      ],
+      [
+        "0",
+        "write-json-object",
+        "write-json-object"
+      ]
+    ],
+    "oldInterface": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/lib/std/encoding/json/api.ssi",
+    "newInterface": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-narrow/std/encoding/json/api.ssi",
+    "oldInterfaceSha256": "9cbb07f0a8f9fd53ea7006191d98d60d2cf3d29b01283871857896bedac21232",
+    "newInterfaceSha256": "9cbb07f0a8f9fd53ea7006191d98d60d2cf3d29b01283871857896bedac21232",
+    "exportsIdentical": true
+  },
+  {
+    "module": "std/encoding/json",
+    "sourceBodiesIdenticalAfterRemovingOnlyImportForm": true,
+    "publicExportSpecs": [],
+    "oldInterface": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/lib/std/encoding/json.ssi",
+    "newInterface": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-narrow/std/encoding/json.ssi",
+    "oldInterfaceSha256": "c59acd623c99bc04589bb9604b2017df239101e1d179ee708b46f24be12589ab",
+    "newInterfaceSha256": "c59acd623c99bc04589bb9604b2017df239101e1d179ee708b46f24be12589ab",
+    "exportsIdentical": true
+  }
+]

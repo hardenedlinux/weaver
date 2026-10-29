@@ -1,0 +1,168 @@
+#+title: Gate Consumption Persistence Check Receipt
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS abstract-checked-physical-qualification-pending
+
+* Identity and evidence boundary
+
+Workspace /Users/guangtao/ghq/github.com/tao3k/weaver, branch main, tracked HEAD
+=4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. The architecture and formal files
+are untracked working-tree artifacts. No gateway implementation, owner source
+change, dependency-pin change, native build, commit or push is part of this work.
+
+[[file:../../docs/architecture/25-gate-consumption-persistence.org][The dossier]] defines protocol/owner correspondence. [[file:gate-consumption-traces/source-review.json][The source review]]
+reverified eighteen committed Git blobs at POO Flow
+=a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=, matching each registered SHA-256
+and retaining exact paths/numbered excerpts. These are source contracts, not a
+new claim of native storage, physical fencing or ABI qualification.
+
+| New artifact | SHA-256 |
+|--------------+---------|
+| [[file:../lean/GateConsumptionPersistence.lean][GateConsumptionPersistence.lean]] | =cfc1a32b414831432cbc3828d201a8bcd62488f6ed8c912ddb8dd64189e05349= |
+| [[file:../quint/GateConsumptionPersistence.qnt][GateConsumptionPersistence.qnt]] | =76a70698c75d032101c0305248eb7d92861d072e49de30908a081de8120b17da= |
+
+[[file:gate-consumption-traces/SHA256SUMS][The byte manifest]] covers final formal dependencies, the dossier/diagram and
+retained raw evidence. Historical receipts, earlier proof/model modules and their
+byte manifests remain unchanged. Evidence counters are ghost observations, not
+recovery records or authorization guards.
+
+* Final checks
+
+Quint =0.33.0=, TypeScript backend. Lean =4.34.1=, arm64 Darwin, Std only.
+All ten modules were compiled from source into isolated
+/private/tmp/weaver-gate-consumption-final-proof. The first nine unchanged modules
+were built once; the changed final module was recompiled after extending the
+confirmation lemma. No installed owner package or dependency pin was changed.
+
+[[file:gate-consumption-traces/commands.json][Eighteen final commands]] retain exact arguments, exit statuses, timings and
+watchdogs. Lean/typecheck/sampling have 20-second watchdogs; deterministic tests
+have a 30-second watchdog. Every final command exited zero. Check time is not
+gateway performance evidence.
+
+| Final command | Exit | Seconds | Raw evidence |
+|---------------+------+---------+--------------|
+| LogicalMessageAuthority | 0 | 4.451 | [[file:gate-consumption-traces/LogicalMessageAuthority.log][log]] |
+| SharedMessageBudget | 0 | 2.167 | [[file:gate-consumption-traces/SharedMessageBudget.log][log]] |
+| FiniteDomainMigration | 0 | 2.267 | [[file:gate-consumption-traces/FiniteDomainMigration.log][log]] |
+| AnchoredRecoveryAndEgress | 0 | 2.256 | [[file:gate-consumption-traces/AnchoredRecoveryAndEgress.log][log]] |
+| ComposedGatewayLifecycle | 0 | 2.221 | [[file:gate-consumption-traces/ComposedGatewayLifecycle.log][log]] |
+| FiniteStreamManifest | 0 | 2.729 | [[file:gate-consumption-traces/FiniteStreamManifest.log][log]] |
+| DriverCompletionRecovery | 0 | 2.311 | [[file:gate-consumption-traces/DriverCompletionRecovery.log][log]] |
+| WriterSettlementClosure | 0 | 2.943 | [[file:gate-consumption-traces/WriterSettlementClosure.log][log]] |
+| SettlementAnchorRecovery | 0 | 2.15 | [[file:gate-consumption-traces/SettlementAnchorRecovery.log][log]] |
+| GateConsumptionPersistence | 0 | 0.721 | [[file:gate-consumption-traces/GateConsumptionPersistence.log][log]] |
+| typecheck | 0 | 5.379 | [[file:gate-consumption-traces/typecheck.log][log]] |
+| tests | 0 | 16.929 | [[file:gate-consumption-traces/tests.log][log]] |
+| emptyInit | 0 | 5.919 | [[file:gate-consumption-traces/emptyInit.log][log]] |
+| singletonInit | 0 | 5.596 | [[file:gate-consumption-traces/singletonInit.log][log]] |
+| init | 0 | 6.22 | [[file:gate-consumption-traces/init.log][log]] |
+| largerInit | 0 | 7.917 | [[file:gate-consumption-traces/largerInit.log][log]] |
+| sealed | 0 | 5.887 | [[file:gate-consumption-traces/sealed.log][log]] |
+| burned | 0 | 6.211 | [[file:gate-consumption-traces/burned.log][log]] |
+
+Deterministic result: 56 passing controls, including 26 direct imported account/
+anchor controls and 30 new controls (24 positive/rejection schedules and six
+excluded-rule traces). [[file:gate-consumption-traces/tests.log][The full output]] and [[file:gate-consumption-traces/itf][56 ITF traces]] retain the actual runs.
+Imported tests are the direct parent module declarations, not a count of every
+transitively imported test.
+
+Each of emptyInit/singletonInit/init/largerInit/sealed/burned sampled ten traces,
+at most 25 transitions each, seed 37: 60 bounded traces total, no violation found.
+Cold fixtures use zero/one/three/five ranges, four admitted logical messages and
+two shared accounts inherited from the source model. sealed and burned build
+the actual source/settlement pipeline, retaining the new product on every step;
+they do not inject a synthetic already-safe account state. Sampling is not
+exhaustive, and no automated Quint-to-Lean translation/equivalence is claimed.
+
+Final compiler logs contain no errors, warnings or sorryAx. Printed inventories
+use only propext, Quot.sound and inherited Classical.choice; cap rejection and
+rebuild-preserves-execution need no axioms. Lean quantifies over arbitrary finite
+source manifests/accounts and finite reachable traces under immutable parameters
+and explicit actual-owner predicates. It proves a conditional relation, not the
+physical existence or authenticity of the root or owner evidence.
+
+* Checked composition
+
+| Lean declaration | Checked consequence |
+|------------------+---------------------|
+| projection / base_reachable | Every new event projects into the actual initialized preceding source relation, including original account application |
+| reachable_invariant | Seals equal original accepted permits; burns/results bind actual original records; grants/burns are unique |
+| covered_root_equals_actual_outcomes | Complete archived root coverage reconstructs all actual semantic outcomes without interpreting absence as unused |
+| no_regrant_or_reburn | At most one original grant and burn per key |
+| actual_account_application_at_most_once | Inherited actual application count remains at most one |
+| sealed_unknown_retains_original_reservation | Original source reservation remains booked across uncertainty |
+| confirmation_requires_archived_actual_result | No confirmation lacks its exact independently archived result |
+| epoch_monotone / fence_rejects_previously_current_cap | Root generation does not roll back; the previously current cap fails the new epoch guard |
+| unresolved_burn_prevents_rebuild | An unarchived burn cannot reopen the full-image recovery profile |
+| rebuild_preserves_execution_state | Projection rebuilding does not create caps, pending IO, grants or burns |
+| archived_result_has_original_settlement | Archived actual receipt retains canonical key, lineage and original final usage |
+| end_to_end_account_conservation | All actual applications remain covered by original shared booked reservations and account capacity |
+
+The historical base authority in these statements is a semantic trace, not an
+unmentioned physical gate disk that survives the modeled loss. The actual-owner
+premise supplies affine original dispatch and atomic actual effect/receipt.
+Original pending IO is not reconstructed from root status. If its final result
+cannot be authenticated, Covered stays false and recovery can block forever.
+The model cannot recover liveness by assuming an unavailable outcome oracle.
+
+* Negative controls and distinguishing observations
+
+| Excluded trace | Relaxed rule | Observed failure |
+|----------------+--------------+------------------|
+| allRootsRollbackCounterexampleTest | Erase root tombstones and prior gate rows after an actual application | A second seal/grant/burn reaches two actual writes; original semantic counters retained |
+| reissueFromStatusCounterexampleTest | Reconstruct a capability from issued status | Issuance count exceeds one |
+| staleHeldCapCounterexampleTest | Admit the old held capability after the actual barrier epoch changes | Forbidden stale acceptance event is recorded; this is a boundary-event control, not an OS FD simulation |
+| syntheticResultCounterexampleTest | Archive result from intent/burn metadata without actual receipt | Root result has no actual matching outcome |
+| absenceAsUnusedCounterexampleTest | Reopen despite unresolved burn and lost journal | Forbidden recovery event is recorded; it does not prove native replay by itself |
+| unknownRefundCounterexampleTest | Erase original settled obligation while application remains unknown | Original source/account chain fails |
+
+Positive/rejection controls cover seal/grant/burn response loss, retained caps
+before/after the barrier, unresolved burn recovery refusal, pending original IO
+completion after fencing, late authentic result recovery, mixed/forged local
+journal results, duplicate application/archive, wrong amount/account/lineage/
+fence, absent actual receipt, missing authenticity and unqualified barriers.
+
+* Preliminary diagnostics retained
+
+[[file:gate-consumption-traces/preliminary-candidate.log][Initial Lean parsing diagnostics]] retain the reserved seal case name and
+multiline-record issues; [[file:gate-consumption-traces/preliminary-typecheck.log][initial Quint parsing diagnostics]] retain the reserved
+keys identifier. These were corrected in the final source. Earlier successful
+candidate checks and the [[file:gate-consumption-traces/preliminary-before-confirmation-extension-commands.json][pre-extension command list]] remain separately named;
+they are not substituted for final-source evidence. Existing historical receipts
+were not rewritten to change their declared source identity or scope.
+
+* Reproduction and remaining physical gate
+
+Rebuild all ten Lean modules in the commands.json dependency order with the
+recorded isolated LEAN_PATH. Then run:
+
+#+begin_src sh
+quint typecheck specs/quint/GateConsumptionPersistence.qnt
+quint test specs/quint/GateConsumptionPersistence.qnt --backend typescript --max-samples 1
+quint run specs/quint/GateConsumptionPersistence.qnt --backend typescript --init burned --step step --invariant safety --max-samples 10 --max-steps 25 --seed 37 --verbosity 1
+#+end_src
+
+Actual independent-root survival/current-prefix authentication, durable
+acknowledgement before capability exposure, final epoch-check/burn serialization,
+all-alias owner isolation, affine original dispatch and actual effect/receipt
+atomicity remain native qualification obligations. The dossier specifies crash,
+response-loss, cross-store snapshot and old-FD/buffer schedules. No check here
+implements the gateway or proves external payment/provider exactly-once behavior.
+If every trusted root rolls back together, the concrete duplication counterexample
+applies; if an original result is lost, unknown budget remains held.
+
+
+* Documentation and historical evidence checks
+
+[[file:gate-consumption-traces/document-check.log][The link/register check]] covers all 39 English Org documents, complete
+acceptance registers, 101 pinned source targets and 26 canonical D2/SVG pairs.
+[[file:gate-consumption-traces/diagram-validation.json][All D2 sources validate]]; the new bundled preview received visual inspection
+and its visible labels contain core design only. [[file:gate-consumption-traces/org-export.log][All Org documents exported]] with
+source execution disabled; the optional htmlize source-fontification warning is
+unrelated to protocol checking or export success.
+
+[[file:gate-consumption-traces/historical-manifests.log][All three historical byte manifests still match]] their 226/112/258 targets.
+The first document-link attempt preceded creation of the new byte manifest and
+failed on that missing file; its diagnostic is retained as
+[[file:gate-consumption-traces/preliminary-document-check.log][preliminary evidence]]. The final check ran after the manifest existed.

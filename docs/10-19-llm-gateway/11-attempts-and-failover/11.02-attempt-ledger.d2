@@ -1,0 +1,191 @@
+# Core design only; proof receipts and dependency identities remain in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / TASK-AWARE LLM ATTEMPTS / ONE RESPONSE STREAM {
+  class: title
+  near: top-center
+}
+control: SCHEME AND GO / TASK CONTROL {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  sponsor: Task sponsorship / Scheme\nOriginal root and escrow\nCedar operation contracts {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  profile: Inference retry profile / Scheme\nQualified fallback or explicit duplication\nHistory and response semantics {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  catalog: Model catalog / Go\nKubernetes pools / provider identity\nCapabilities / prices / health {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 452
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 452
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+attempts: RUST / CHILD ATTEMPT LEDGER {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  select: Eligible model selection\nHard constraints before ranking\nExact target and wire manifest {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  allocate: Sponsored child allocation\nDurable ordinal under original root\nNo implicit retry on unknown {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  allowance: Shared root allowance\nReserve every child maximum\nUnknown cost remains held {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+broker: RUST / FINAL EXECUTION BROKER {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  consume: Current child admission\nPolicy / history / owner epoch\nPersistent one-shot call slot {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  queue: Final bounded send queue\nProvider SDK / stream transport\nNo autonomous replay or redirect {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  observations: Attributable observations\nTerminal / no execution / final usage\nReconcile old child after restart {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+stream: RUST / RESPONSE AND USAGE {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  winner: One response winner\nCommit before visible prefix\nNo model tail substitution {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  ranges: Winner-bound stream ranges\nCurrent disclosure and range gate\nPartial failure retains identity {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  usage: Original-root settlement\nInclude all children and losers\nRelease only known final remainder {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+}
+quint: QUINT\nUnknown retry / SDK replay / winner race\nLate usage / restart / premature release {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nOriginal root / bounded child allowances\nOne child call / sticky winner / held unknown {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+control.sponsor -> attempts.select
+control.profile -> attempts.allocate { style.stroke-dash: 4 }
+control.catalog -> attempts.select { style.stroke-dash: 4 }
+attempts.select -> attempts.allocate
+attempts.allocate -> attempts.allowance
+attempts.allocate -> broker.consume
+broker.consume -> broker.queue
+broker.queue -> broker.observations
+broker.queue -> stream.winner
+stream.winner -> stream.ranges
+broker.observations -> stream.usage

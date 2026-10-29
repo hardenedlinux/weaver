@@ -1,0 +1,15 @@
+'Weaver.GateConsumptionPersistence.reachable_invariant' depends on axioms: [propext, Quot.sound]
+'Weaver.GateConsumptionPersistence.covered_root_equals_actual_outcomes' depends on axioms: [propext, Quot.sound]
+'Weaver.GateConsumptionPersistence.no_regrant_or_reburn' depends on axioms: [propext, Quot.sound]
+'Weaver.GateConsumptionPersistence.actual_account_application_at_most_once' depends on axioms: [propext, Quot.sound]
+'Weaver.GateConsumptionPersistence.sealed_unknown_retains_original_reservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.GateConsumptionPersistence.epoch_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.GateConsumptionPersistence.fence_rejects_previously_current_cap' does not depend on any axioms
+'Weaver.GateConsumptionPersistence.unresolved_burn_prevents_rebuild' depends on axioms: [propext]
+'Weaver.GateConsumptionPersistence.rebuild_preserves_execution_state' does not depend on any axioms
+'Weaver.GateConsumptionPersistence.archived_result_has_original_settlement' depends on axioms: [propext, Quot.sound]
+'Weaver.GateConsumptionPersistence.end_to_end_account_conservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

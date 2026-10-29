@@ -1,0 +1,897 @@
+[
+  {
+    "path": "proofs/evidence/logical-range-recovery/itf/foreignReceiptCounterexampleTest-5.itf.json",
+    "states": 39,
+    "recovery": {
+      "allowed": true,
+      "calls": 1,
+      "decisions": [
+        {
+          "activation": 2,
+          "epoch": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "epoch": 1,
+      "fenced": false,
+      "full": false,
+      "haveInvocation": true,
+      "haveObservation": false,
+      "havePermit": false,
+      "invocation": {
+        "activation": 2,
+        "epoch": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "jobs": [
+        {
+          "calls": 0,
+          "epoch": 1,
+          "revision": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "observed": {
+        "calls": 0,
+        "epoch": 1,
+        "revision": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "permit": {
+        "activation": 2,
+        "epoch": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "receipts": [
+        {
+          "bytes": 2,
+          "call": {
+            "activation": 2,
+            "epoch": 1,
+            "scope": {
+              "budget": 0,
+              "claim": 0,
+              "hi": 2,
+              "history": 0,
+              "lo": 0,
+              "manifest": 10,
+              "payload": 10,
+              "root": 1,
+              "route": 0
+            }
+          }
+        }
+      ],
+      "revision": 3,
+      "unknown": true
+    },
+    "parentQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 0,
+      "frontier": 2,
+      "full": [],
+      "hasPending": true,
+      "intent": true,
+      "pending": {
+        "epoch": 0,
+        "hi": 2,
+        "lo": 0
+      },
+      "ranges": [
+        {
+          "epoch": 0,
+          "hi": 2,
+          "lo": 0
+        }
+      ],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": false,
+      "settlements": 0,
+      "spent": true,
+      "unknown": true,
+      "usage": false
+    }
+  },
+  {
+    "path": "proofs/evidence/logical-range-recovery/itf/recoveryReplayCounterexampleTest-1.itf.json",
+    "states": 39,
+    "recovery": {
+      "allowed": true,
+      "calls": 2,
+      "decisions": [
+        {
+          "activation": 2,
+          "epoch": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "epoch": 1,
+      "fenced": false,
+      "full": false,
+      "haveInvocation": true,
+      "haveObservation": false,
+      "havePermit": false,
+      "invocation": {
+        "activation": 2,
+        "epoch": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "jobs": [
+        {
+          "calls": 0,
+          "epoch": 1,
+          "revision": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "observed": {
+        "calls": 0,
+        "epoch": 1,
+        "revision": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "permit": {
+        "activation": 2,
+        "epoch": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "receipts": [],
+      "revision": 3,
+      "unknown": true
+    },
+    "parentQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 0,
+      "frontier": 2,
+      "full": [],
+      "hasPending": true,
+      "intent": true,
+      "pending": {
+        "epoch": 0,
+        "hi": 2,
+        "lo": 0
+      },
+      "ranges": [
+        {
+          "epoch": 0,
+          "hi": 2,
+          "lo": 0
+        }
+      ],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": false,
+      "settlements": 0,
+      "spent": true,
+      "unknown": true,
+      "usage": false
+    }
+  },
+  {
+    "path": "proofs/evidence/logical-range-recovery/itf/resetConsumedSlotCounterexampleTest-2.itf.json",
+    "states": 40,
+    "recovery": {
+      "allowed": true,
+      "calls": 0,
+      "decisions": [
+        {
+          "activation": 2,
+          "epoch": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "epoch": 2,
+      "fenced": true,
+      "full": false,
+      "haveInvocation": true,
+      "haveObservation": false,
+      "havePermit": false,
+      "invocation": {
+        "activation": 2,
+        "epoch": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "jobs": [
+        {
+          "calls": 0,
+          "epoch": 1,
+          "revision": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "observed": {
+        "calls": 0,
+        "epoch": 1,
+        "revision": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "permit": {
+        "activation": 2,
+        "epoch": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "receipts": [],
+      "revision": 4,
+      "unknown": true
+    },
+    "parentQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 0,
+      "frontier": 2,
+      "full": [],
+      "hasPending": true,
+      "intent": true,
+      "pending": {
+        "epoch": 0,
+        "hi": 2,
+        "lo": 0
+      },
+      "ranges": [
+        {
+          "epoch": 0,
+          "hi": 2,
+          "lo": 0
+        }
+      ],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": false,
+      "settlements": 0,
+      "spent": true,
+      "unknown": true,
+      "usage": false
+    }
+  },
+  {
+    "path": "proofs/evidence/logical-range-recovery/itf/staleNoCallCutCounterexampleTest-3.itf.json",
+    "states": 40,
+    "recovery": {
+      "allowed": true,
+      "calls": 1,
+      "decisions": [
+        {
+          "activation": 2,
+          "epoch": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "epoch": 2,
+      "fenced": true,
+      "full": false,
+      "haveInvocation": true,
+      "haveObservation": false,
+      "havePermit": true,
+      "invocation": {
+        "activation": 2,
+        "epoch": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "jobs": [
+        {
+          "calls": 0,
+          "epoch": 1,
+          "revision": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "observed": {
+        "calls": 0,
+        "epoch": 1,
+        "revision": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "permit": {
+        "activation": 4,
+        "epoch": 2,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "receipts": [],
+      "revision": 4,
+      "unknown": true
+    },
+    "parentQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 0,
+      "frontier": 2,
+      "full": [],
+      "hasPending": true,
+      "intent": true,
+      "pending": {
+        "epoch": 0,
+        "hi": 2,
+        "lo": 0
+      },
+      "ranges": [
+        {
+          "epoch": 0,
+          "hi": 2,
+          "lo": 0
+        }
+      ],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": false,
+      "settlements": 0,
+      "spent": true,
+      "unknown": true,
+      "usage": false
+    }
+  },
+  {
+    "path": "proofs/evidence/logical-range-recovery/itf/stalePermitCounterexampleTest-0.itf.json",
+    "states": 38,
+    "recovery": {
+      "allowed": true,
+      "calls": 0,
+      "decisions": [
+        {
+          "activation": 2,
+          "epoch": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "epoch": 2,
+      "fenced": false,
+      "full": false,
+      "haveInvocation": false,
+      "haveObservation": false,
+      "havePermit": true,
+      "invocation": {
+        "activation": -1,
+        "epoch": -1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "jobs": [
+        {
+          "calls": 0,
+          "epoch": 1,
+          "revision": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "observed": {
+        "calls": 0,
+        "epoch": 1,
+        "revision": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "permit": {
+        "activation": 2,
+        "epoch": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "receipts": [],
+      "revision": 3,
+      "unknown": false
+    },
+    "parentQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 0,
+      "frontier": 2,
+      "full": [],
+      "hasPending": true,
+      "intent": true,
+      "pending": {
+        "epoch": 0,
+        "hi": 2,
+        "lo": 0
+      },
+      "ranges": [
+        {
+          "epoch": 0,
+          "hi": 2,
+          "lo": 0
+        }
+      ],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": false,
+      "settlements": 0,
+      "spent": true,
+      "unknown": false,
+      "usage": false
+    }
+  },
+  {
+    "path": "proofs/evidence/logical-range-recovery/itf/timeoutAsFullCounterexampleTest-4.itf.json",
+    "states": 40,
+    "recovery": {
+      "allowed": true,
+      "calls": 1,
+      "decisions": [
+        {
+          "activation": 2,
+          "epoch": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "epoch": 1,
+      "fenced": false,
+      "full": true,
+      "haveInvocation": true,
+      "haveObservation": false,
+      "havePermit": false,
+      "invocation": {
+        "activation": 2,
+        "epoch": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "jobs": [
+        {
+          "calls": 0,
+          "epoch": 1,
+          "revision": 1,
+          "scope": {
+            "budget": 0,
+            "claim": 0,
+            "hi": 2,
+            "history": 0,
+            "lo": 0,
+            "manifest": 10,
+            "payload": 10,
+            "root": 0,
+            "route": 0
+          }
+        }
+      ],
+      "observed": {
+        "calls": 0,
+        "epoch": 1,
+        "revision": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "permit": {
+        "activation": 2,
+        "epoch": 1,
+        "scope": {
+          "budget": 0,
+          "claim": 0,
+          "hi": 2,
+          "history": 0,
+          "lo": 0,
+          "manifest": 10,
+          "payload": 10,
+          "root": 0,
+          "route": 0
+        }
+      },
+      "receipts": [],
+      "revision": 3,
+      "unknown": true
+    },
+    "parentQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 0,
+      "frontier": 2,
+      "full": [],
+      "hasPending": true,
+      "intent": true,
+      "pending": {
+        "epoch": 0,
+        "hi": 2,
+        "lo": 0
+      },
+      "ranges": [
+        {
+          "epoch": 0,
+          "hi": 2,
+          "lo": 0
+        }
+      ],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": false,
+      "settlements": 0,
+      "spent": true,
+      "unknown": true,
+      "usage": false
+    }
+  }
+]

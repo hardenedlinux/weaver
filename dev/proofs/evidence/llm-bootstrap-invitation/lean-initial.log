@@ -1,0 +1,13 @@
+'Weaver.LlmBootstrapInvitation.invitation_retained' depends on axioms: [propext]
+'Weaver.LlmBootstrapInvitation.launch_retained' depends on axioms: [propext]
+'Weaver.LlmBootstrapInvitation.consumed_retained' depends on axioms: [propext]
+'Weaver.LlmBootstrapInvitation.consumed_run' depends on axioms: [propext]
+'Weaver.LlmBootstrapInvitation.no_second_consume' does not depend on any axioms
+'Weaver.LlmBootstrapInvitation.forwarded_bearer_wrong_key' does not depend on any axioms
+'Weaver.LlmBootstrapInvitation.wrong_session' does not depend on any axioms
+'Weaver.LlmBootstrapInvitation.stale_read' does not depend on any axioms
+'Weaver.LlmBootstrapInvitation.covered_step' depends on axioms: [propext]
+'Weaver.LlmBootstrapInvitation.covered_run' depends on axioms: [propext]
+'Weaver.LlmBootstrapInvitation.registration_origin' depends on axioms: [propext]
+'Weaver.LlmBootstrapInvitation.original_result_unique' depends on axioms: [propext]
+'Weaver.LlmBootstrapInvitation.composition' depends on axioms: [propext, Quot.sound]

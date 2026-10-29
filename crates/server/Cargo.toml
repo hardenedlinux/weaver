@@ -1,0 +1,37 @@
+[package]
+name = "weaver-server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+weaver-contracts.workspace = true
+weaver-ledger.workspace = true
+weaver-execution.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+sha2.workspace = true
+hex.workspace = true
+subtle.workspace = true
+tonic.workspace = true
+tonic-prost.workspace = true
+prost.workspace = true
+tokio-stream.workspace = true
+rustls.workspace = true
+arrow-array = { workspace = true, optional = true }
+arrow-schema = { workspace = true, optional = true }
+arrow-ipc = { workspace = true, optional = true }
+[features]
+default = []
+arrow = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
+[build-dependencies]
+tonic-prost-build.workspace = true
+[dev-dependencies]
+asp-rust.workspace = true
+criterion.workspace = true
+proptest.workspace = true
+tempfile.workspace = true
+[[bench]]
+name = "gateway"
+harness = false
+[lints]
+workspace = true

@@ -1,0 +1,100 @@
+[
+  {
+    "id": "SJ1",
+    "design": "Every publication refines the actual guarded floor pipeline",
+    "quint": "exactCurrentJoinAllowsPublicationTest",
+    "lean": "floor_projection",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "SJ2",
+    "design": "Initialized actual floor/account/source histories compose",
+    "quint": "revalidateAfterRealAccountChangeTest",
+    "lean": "actual_floor_composition",
+    "d2": "lean"
+  },
+  {
+    "id": "SJ3",
+    "design": "Actual final CAS requires exact current join and current source allowance",
+    "quint": "sourceChangeBlocksFinalCASTest",
+    "lean": "final_commit_requires_current_join",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "SJ4",
+    "design": "Source deny/allow ABA cannot reuse an old validation",
+    "quint": "sourceAllowAgainCannotReuseOldTicketTest",
+    "lean": "changed_source_invalidates_ticket",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "SJ5",
+    "design": "Same-floor real account settlement invalidates old validation",
+    "quint": "sameFloorAccountChangeInvalidatesJoinTest",
+    "lean": "changed_account_invalidates_ticket",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "SJ6",
+    "design": "Old worker cannot use a current recovered floor to publish",
+    "quint": "oldWorkerCannotPublishAfterFenceTest",
+    "lean": "changed_worker_invalidates_ticket",
+    "d2": "protocols.acp"
+  },
+  {
+    "id": "SJ7",
+    "design": "Join cannot authorize another original operation",
+    "quint": "differentOriginalOperationCannotUseJoinTest",
+    "lean": "changed_operation_invalidates_ticket",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "SJ8",
+    "design": "Restarts and source changes cannot lower the protected source revision",
+    "quint": "sourceAllowAgainCannotReuseOldTicketTest",
+    "lean": "source_revision_monotone",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "SJ9",
+    "design": "Joined control publication creates no financial delta",
+    "quint": "controlJoinDoesNotApplyMoneyTest",
+    "lean": "publication_no_financial_effect",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "SJ10",
+    "design": "Lost result cannot readmit an original reservation/tail",
+    "quint": "lostReplyRetryCannotReadmitTailTest",
+    "lean": "original_reservation_once",
+    "d2": "registry.query"
+  },
+  {
+    "id": "SJ11",
+    "design": "Source denial retains original unknown obligations",
+    "quint": "sourceChangeKeepsUnknownHoldTest",
+    "lean": "unknown_original_hold_retained",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "SJ12",
+    "design": "One original operation has one determining result",
+    "quint": "commitLostReplyResolvesOriginalOnlyTest",
+    "lean": "original_operation_result_unique",
+    "d2": "protocols.mcp"
+  },
+  {
+    "id": "SJ13",
+    "design": "Revalidation preserves the original pending intent",
+    "quint": "reauthorizeDoesNotResetPendingIntentTest",
+    "lean": "pending_intent_retained",
+    "d2": "protocols.a2a"
+  },
+  {
+    "id": "SJ14",
+    "design": "A changed attempt of the same original intent needs new validation",
+    "quint": "changedAttemptCannotReuseJoinTest",
+    "lean": "changed_attempt_invalidates_ticket",
+    "d2": "recovery.join"
+  }
+]

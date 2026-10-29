@@ -1,0 +1,9 @@
+from pathlib import Path
+import json,subprocess,os,time
+out=Path(__file__).parent;root=Path('.data/native-image-closure-20261020').resolve();d=out/'probe-math';d.mkdir();source=root/'math-abi.ss';source.write_text('(import :std/number/misc)\n(unless (and (= (expt-mod 2 10 0) 1024) (= (expt-mod 7 13 97) 38) (= (integer-log 1000000 10) 6)) (error "MATH-ABI-FAIL"))\n(display "MATH-ABI-PASS\\n")\n');home=Path('/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current');env=dict(os.environ,GERBIL_PREFIX=str(home.parent),GERBIL_HOME=str(home),GAMBOPT=f'~~={home},~~bin={home}/bin,~~lib={home}/lib',GERBIL_LOADPATH=f'{root}/g0/candidate/aliases:{root}/lib-narrow:{root}/lib-native',GERBIL_PATH=str(root/'run-math'),DYLD_INSERT_LIBRARIES=str(root/'observer.dylib'),WEAVER_MODULE_CLEANUP_TRACE=str((d/'cleanup.json').resolve()),WEAVER_DYLD_TIMELINE=str((d/'timeline.tsv').resolve()));Path(env['GERBIL_PATH']).mkdir();t=time.monotonic();late=False
+with (d/'native.log').open('w') as f:
+ child=subprocess.Popen([str(home/'bin/gxi'),str(source)],env=env,stdout=f,stderr=subprocess.STDOUT)
+ while child.poll() is None:
+  if time.monotonic()-t>15:late=True
+  time.sleep(.005)
+code=child.wait();elapsed=time.monotonic()-t;cleanup=json.loads((d/'cleanup.json').read_text());r=dict(exit=code,seconds=elapsed,gateSeconds=15,deadlineFailed=late,forcedExit=False,checksPassed='MATH-ABI-PASS' in (d/'native.log').read_text(),cleanup=cleanup,scope='Original math interfaces through the new profile; current RTLD_NOW library import binding, not a universal math proof');(d/'receipt.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r),flush=True);assert code==0 and r['checksPassed'] and cleanup['moduleOpens']==cleanup['moduleCloses'] and cleanup['outstandingModuleRefs']==cleanup['closeErrors']==0

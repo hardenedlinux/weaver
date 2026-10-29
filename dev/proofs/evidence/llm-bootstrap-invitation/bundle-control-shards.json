@@ -1,0 +1,67 @@
+[
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/bundle-controls-0/LlmBootstrapInvitation.qnt",
+    "sha256": "848b5b6e6e859a2e08cad2e9ac914f087d2faf3c8b5873e1b9f864b4eafd013c",
+    "tests": [
+      "independentAssignmentRequiredTest",
+      "selfSelectedKeyRejectedTest",
+      "registrationDoesNotIssueTest",
+      "duplicateCanonicalLaunchRejectedTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/bundle-controls-1/LlmBootstrapInvitation.qnt",
+    "sha256": "e924e06b4be7ad8b2379b2308d0031e9fc301d20c18036ddba1cbab08cff0f33",
+    "tests": [
+      "unregisteredInvitationRejectedTest",
+      "splitCommitInvitationCounterexampleTest",
+      "sharedKubernetesIdentityRejectedTest",
+      "forwardedInvitationNoKeyRejectedTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/bundle-controls-2/LlmBootstrapInvitation.qnt",
+    "sha256": "00d199a199d76b06a11e9215e28b1889dca3d2c040d7efb97d502b4851e5c27c",
+    "tests": [
+      "invalidPossessionRejectedTest",
+      "substitutedSessionRejectedTest",
+      "exactBindingRequiredTest",
+      "concurrentReadInvalidatedTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/bundle-controls-3/LlmBootstrapInvitation.qnt",
+    "sha256": "4a8c15377a267d83b720934f2f54b2a44a29321fb9879599dc440cd3f119d038",
+    "tests": [
+      "revokedEpochRejectedTest",
+      "bearerOnlyInvitationCounterexampleTest",
+      "consumptionCommitsExactResultTest",
+      "lostReplyCannotConsumeTwiceTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/bundle-controls-4/LlmBootstrapInvitation.qnt",
+    "sha256": "93262dd23b1379c94a0d3dddb8ee0b6b97cee4278e4f43917f8ad63362e20bda",
+    "tests": [
+      "lostReplyRecoversSameResultTest",
+      "oldWorkerCannotRecoverTest",
+      "recoveryReadPolicyRequiredTest",
+      "lostConsumptionRecordInvitationCounterexampleTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/bundle-controls-5/LlmBootstrapInvitation.qnt",
+    "sha256": "c50939b9f96dd6d0915351bd231312d386e41872f6f94c0bfbb1038fc24a1473",
+    "tests": [
+      "replacedKeyBindingInvitationCounterexampleTest",
+      "recoveryDoesNotReactivateTest",
+      "originalUnknownBudgetRetainedTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  }
+]

@@ -1,0 +1,170 @@
+#+title: Weaver Source Join Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and bounded evidence
+
+[[file:../../../dev/proofs/check_llm_source_join.py][Runner]], [[file:../../../dev/proofs/lean/LlmSourceJoin.lean][Lean]], [[file:../../../dev/proofs/quint/LlmSourceJoin.qnt][Quint]], [[file:../../../dev/proofs/evidence/llm-source-join/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-source-join/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-source-join/SHA256SUMS][byte manifest]] separate executable formal
+contracts from native acceptance. The workload compiles 27 Lean modules and prints
+14 new declarations without =sorryAx=. Quint checks 27 new controls (20 guarded
+and seven mutation counterexamples), 33 directly imported floor controls and
+43 directly imported account controls: 103 total. A separate floor regression
+checks 71 controls. Nine initializers each sample ten paths with at most 30
+post-initializer steps and seed 263: 90 bounded samples. Seven ITFs are independently
+decoded. Preliminary diagnostics remain recorded. No native distributed join,
+consensus/IO acceptance, exhaustive exploration, liveness or performance is claimed.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| SJ1 | Every publication refines the actual guarded floor pipeline | exactCurrentJoinAllowsPublicationTest | floor_projection | recovery.fence |
+| SJ2 | Initialized actual floor/account/source histories compose | revalidateAfterRealAccountChangeTest | actual_floor_composition | lean |
+| SJ3 | Actual final CAS requires exact current join and current source allowance | sourceChangeBlocksFinalCASTest | final_commit_requires_current_join | broker.cas |
+| SJ4 | Source deny/allow ABA cannot reuse an old validation | sourceAllowAgainCannotReuseOldTicketTest | changed_source_invalidates_ticket | recovery.projection |
+| SJ5 | Same-floor real account settlement invalidates old validation | sameFloorAccountChangeInvalidatesJoinTest | changed_account_invalidates_ticket | registry.origin |
+| SJ6 | Old worker cannot use a current recovered floor to publish | oldWorkerCannotPublishAfterFenceTest | changed_worker_invalidates_ticket | protocols.acp |
+| SJ7 | Join cannot authorize another original operation | differentOriginalOperationCannotUseJoinTest | changed_operation_invalidates_ticket | registry.alias |
+| SJ8 | Restarts and source changes cannot lower the protected source revision | sourceAllowAgainCannotReuseOldTicketTest | source_revision_monotone | recovery.projection |
+| SJ9 | Joined control publication creates no financial delta | controlJoinDoesNotApplyMoneyTest | publication_no_financial_effect | recovery.fence |
+| SJ10 | Lost result cannot readmit an original reservation/tail | lostReplyRetryCannotReadmitTailTest | original_reservation_once | registry.query |
+| SJ11 | Source denial retains original unknown obligations | sourceChangeKeepsUnknownHoldTest | unknown_original_hold_retained | broker.hold |
+| SJ12 | One original operation has one determining result | commitLostReplyResolvesOriginalOnlyTest | original_operation_result_unique | protocols.mcp |
+| SJ13 | Revalidation preserves the original pending intent | reauthorizeDoesNotResetPendingIntentTest | pending_intent_retained | protocols.a2a |
+| SJ14 | A changed attempt of the same original intent needs new validation | changedAttemptCannotReuseJoinTest | changed_attempt_invalidates_ticket | recovery.join |
+
+Correspondence is complementary. SJ6's actual imported floor gate independently
+rejects a stale-worker proposal after a new validation; its Lean theorem isolates
+worker currentness of a retained old ticket. SJ10 uses both actual original
+reservation uniqueness and original determining-key uniqueness. SJ11's finite
+fixture and decoder retain a pending hold; the inherited Lean unknown-source
+consequence requires the original-key binding on every relevant account path.
+SJ8's monotonicity is a protected-state transition theorem, not proof that a volatile
+counter survives a jointly restored source authority.
+
+* Actual composition and evidence boundary
+
+=State.floorState= is the actual =LlmAdmissionFloor.State=. =Ticket= binds full exact
+proposal, actual floor receipt, account image/journal, worker, source generation,
+source/account qualification and aggregate source-owner revision. =validate= needs
+authentic current state, floor qualification and source allowance. =commit= needs
+the exact current ticket, current source allowance and an actual floor step that
+publishes that exact proposal. =advance= permits actual non-publication floor
+steps, including financial progress and local recovery, without creating a new
+floor record. =sourceChange= advances the governed external dependency revision;
+=restart= drops volatile validation.
+
+=floor_projection= and =actual_floor_composition= connect arbitrary finite guarded
+runs to the real initialized floor/handoff/WAL/account/source chain. There is no
+second fake account or financial delta counter. =publication_no_financial_effect=
+uses the actual prior control-publication theorem. Original reservation uniqueness,
+unknown holds, original-operation result uniqueness and pending preservation use
+the actual inherited proofs.
+
+=final_commit_requires_current_join= characterizes the actual determining step's
+pre-state: a matching complete ticket and current source allowance for its exact
+published proposal. It does not infer native atomicity from the ticket. The
+selected recoverable source-owner custody protocol must serialize the actual
+mutation/commit order; native implementation and progress remain acceptance gates.
+
+Quint imports both the actual floor and actual account modules. They share the
+same account state =a= in the ITF product. =financialCommit= is the actual inherited
+settlement of the accepted second original frame, advancing the actual account
+image/journal while the floor head stays unchanged. The decoder verifies that
+same-prefix/different-account counterexample, its original spent nonce/exposure,
+and real account applications/holds. Directly imported account controls are
+counted separately from new controls and floor controls.
+
+External source/Policy/history mutation is the qualified aggregate revision in
+this product. It preserves financial authority and provider execution state; it
+is not fabricated source-completion evidence. Native qualification must establish
+that every relevant dependency mutation participates and that its revision and
+namespace cannot roll back independently of current-read authority. Lean also
+binds actual governed source generation/qualification. The finite fixture keeps
+the inherited source generation fixed and varies the external aggregate revision.
+
+Storage-only Quint actions use the imported authenticated pure financial read
+with explicit =f'=f= hold. This refines an actual non-publication floor transition
+and the new join step. It cannot manufacture provider delivery or usage receipts.
+=lastChecked= and =attempted= are mutation-test observations, not production permits.
+
+* Counterexamples and independently decoded facts
+
+| Counterexample control | Independently required observation |
+|------------------------+------------------------------------|
+| sameFloorAccountJoinCounterexampleTest | Cached and attempted floor heads match, but actual journal grows from one to two and authoritative account changes before a broken publication |
+| sourceDeniedJoinCounterexampleTest | Account/floor unchanged; aggregate source revision advances to denied while an imported floor publication bypasses the new gate |
+| sourceABAJoinCounterexampleTest | Source denies then allows again; current allowance is true but old ticket revision zero differs from current two |
+| differentIntentJoinCounterexampleTest | Append ticket is used to publish a different original cut operation under the same starting state |
+| lostReplyJoinCounterexampleTest | Original append result is resolved, but a broken consumer treats the result as reusable join permission |
+| restartJoinCounterexampleTest | Volatile ticket has been cleared; actual imported floor publication proceeds only in the broken variant |
+| staleWorkerJoinCounterexampleTest | Owner advances; old-worker proposal attempts to use the new context without a valid original current join |
+
+Unsafe actions are excluded from =step=. Five mutations deliberately call actual
+imported floor operations that remain valid absent the new source join: same-floor
+account change, source denial, source ABA, different original operation and
+cleared-ticket restart. This demonstrates
+the added coordination obligation. Descriptor-only lost-result/stale-worker
+mutations do not claim the earlier floor/account guards were bypassed; they show
+invalid permission reuse while those earlier guards still protect actual effects.
+The different-operation mutation executes the actual alternative cut publication.
+
+The same-floor account trace legitimately settles its known original usage through
+the actual account gate before exposing stale join reuse. Its changed hold is not
+an erroneous refund. Other traces preserve the pending original hold. The decoder
+checks that distinction instead of demanding an unchanged account for every test.
+
+* Source-by-source reuse and extensions
+
+[[file:../../../dev/proofs/evidence/llm-source-join/source-review.json][Nineteen pinned source identities/excerpts]], [[file:../../../dev/proofs/evidence/llm-source-join/source-receipt-check.json][fresh blob/excerpt checks]], [[file:../../../dev/proofs/evidence/llm-source-join/join-source-audit.json][focused actual-state/CAS extract]] and
+[[file:../../../dev/proofs/evidence/llm-source-join/working-source-check.json][fresh working hashes and HEAD identities]] distinguish code reuse from native obligations.
+
+| Source | Direct reuse | Source-join extension or limit |
+|--------+--------------+--------------------------------|
+| P12 authorized-effect-token.ss | Exact immutable effect/root/nonce/payload binding | Bind full original join attempt and current source/account tuple; no substitute claim or key |
+| P13 strict-mediation.ss | Pure nonce/root transitions; conservative indeterminate observation; failed validation unchanged | Commit timeout cannot reset spent state or authorize a second admission |
+| P15 effect-host.ss | Inert reservation, attributable handoff, unknown-result consumption; durable?/distributed-authority? false | Existing host result is not recoverable native source custody or final joined commit |
+| P17 store-backend.ss | Scheme projects backend contracts; runtime owns append/fsync/leases/checkpoint IO/repair | Rust must qualify source-owner custody and independent publication adapter ordering |
+| P18 PromotionTransactionRecovery.lean | Source-bound recovery/effect observation premises | Recovery must resolve original join result and current source custody separately |
+| P19 authorized recovery bridge | Exact original recovery member/source authority | Use original source-admission join under current account/source/floor membership |
+| P20 CommittedEffectApplicationExactlyOnce.lean | Real occurrence depends on runtime trace/universe correspondence | Actual final joined publication must refine the current guarded step, not a cached validation counter |
+| P22 store.ss | Checkpoint references/capabilities and runtime locking/fsync/replay ownership | A store capability cannot serialize independently mutable source/account authorities |
+| P31 SessionAttempt.lean | Recovery retains active work as pending | Unresolved source join cannot drop original obligation or release hold |
+| P31 SessionAttempt.qnt | Pending/closed-state invariants | Add same-floor account mutation, source ABA and cached-join misuse |
+| P33 deterministic budget closure | Original deterministic budget witness | Preserve bound/units and original application/reservation across revalidation |
+| P33 runtime budget separation | Timeout and semantic usage differ | Unknown join result/source custody is not usage or cancellation evidence |
+| P35 receipt context monotonicity | Governed context progression | Add current source-owner revision and effect-time account qualification |
+| P35 receipt lineage prefix | Authenticated ancestry and prefix | Exact account/floor prefix joins must use current authority, not a historical valid receipt |
+| P43 funs-attempt.ss | Revision guard, bounded generation exhaustion, retained pure intents; runtime-published?/action-authorized?/durable? false | Reuse intent/CAS semantics; implement recoverable final source/account custody and current determining CAS |
+| P44 objects-attempt.ss | Frozen producer/scope/profile references | A rebased attempt cannot widen the original immutable semantic request |
+| C8 BoundOperation.lean | Exact actual effect/state matching; equality itself does not authenticate either input | Bind complete current attempt and native authenticated account/source facts at final effect |
+| C10 CompoundAuthorization.lean | Nonempty required layers allow without errors; runtime owns atomic execution/authentic facts | Cedar allowance does not establish cross-store custody or durable joined publication |
+| C11 Composition.lean | Authorization/validation alignment and invalidation | Reuse dependency semantics; add closed source-mutation coverage and effect-time join refinement |
+
+Pinned bytes and every registered excerpt are freshly checked. Eighteen current
+working files match baseline; P17 differs only in two control-plane imports
+captured in [[file:../../../dev/proofs/evidence/llm-source-join/P17-working-diff.patch][the working diff]]. That does not qualify new import targets' native ABI.
+The runner compiles Weaver's actual chain; full upstream runtime/proof builds are
+not claimed. No dependency pin or upstream source is changed.
+
+* Native acceptance gates
+
+| Gate | Required executable evidence |
+|------+------------------------------|
+| Same floor/account race | Pause after validation, perform real original account settlement, leave floor unchanged, resume final CAS; reject/revalidate old account image |
+| Source invalidation | Deny/allow ABA, Policy/history mutation, source generation/fence and unmapped dependency changes; every relevant mutation participates in current revision qualification |
+| Custody and actual CAS | Pause immediately before remote determining CAS; race source/account mutation and owner takeover; one authenticated serialization order, no queued unfenced continuation |
+| Unknown outcome | Lose commit response across source-owner restart; recover original join intent/custody and determining result before accepting progress or releasing constraints |
+| Original retry | Reconnect/SDK retry resolves one original operation; no duplicate admitted segment, new family, new budget domain or repeated financial application |
+| Exact attempt | Rebase same original intent with changed before/after image; old ticket rejects and new current validation is required |
+| Retained pending state | Old worker recovery and inconsistent local snapshots retain exact original tails, claim/profile and unknown holds; no inferred abort from local absence |
+| Current native facts | Caller-supplied revision/allow boolean, replica-local old prefix or valid historical signature cannot authenticate current Host input |
+| Source domain recovery | Source revision/custody survive declared rollback or remain closed; no counter reuse, empty namespace or exhaustion wraparound |
+| Final send | Join/floor/query instrumentation shows no provider IO; actual broker/executor still applies current grant, Policy/history, owner and budget gates |
+
+The abstract joined commit assumes recoverable native custody. This does not
+prove a distributed transaction protocol, quorum implementation, codec/IO/ABI
+correctness, arbitrary-account product, general external dependency coverage,
+pending-owner continuation liveness, archive pruning, provider exactly-once
+or performance. Prior one unresolved cut and one uncommitted settlement frame
+per account lane remain inherited restrictions.

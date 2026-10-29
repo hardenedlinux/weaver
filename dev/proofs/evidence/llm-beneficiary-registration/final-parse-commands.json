@@ -1,0 +1,27 @@
+[
+  {
+    "label": "parse-final-bundle",
+    "args": [
+      "quint",
+      "parse",
+      "proofs/evidence/llm-beneficiary-registration/bundle/LlmBeneficiaryRegistration.qnt",
+      "--out",
+      "proofs/evidence/llm-beneficiary-registration/bundle-parsed.json",
+      "--source-map",
+      "proofs/evidence/llm-beneficiary-registration/bundle-source-map.json"
+    ],
+    "exit": 0,
+    "seconds": 2.440384042041842,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "parse-final-raw",
+    "args": [
+      "/opt/homebrew/opt/node/bin/node",
+      "proofs/evidence/llm-beneficiary-registration/parse-raw-leaf.cjs"
+    ],
+    "exit": 0,
+    "seconds": 0.45893091696780175,
+    "watchdogSeconds": 20
+  }
+]

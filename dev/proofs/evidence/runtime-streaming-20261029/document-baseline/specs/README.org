@@ -1,0 +1,448 @@
+#+title: Weaver Executable Specifications and Proofs
+#+language: en
+#+date: 2026-10-19
+#+options: toc:2
+
+* Checked artifacts and scope
+
+[[file:quint/LogicalMessageAuthority.qnt][LogicalMessageAuthority.qnt]] is an executable Quint model with normal
+transitions and separately selected counterexample controls.
+[[file:lean/LogicalMessageAuthority.lean][LogicalMessageAuthority.lean]] defines a transition relation, reachability,
+step preservation and inductive safety proofs. These are actual checked formal
+artifacts. They do not implement the gateway or change dependency pins.
+
+The unit of reasoning is one already owner-resolved logical message, with
+multiple issuance identities, two competing candidate workers in Quint, a
+sticky claim, transport incarnation, late evidence and a unit upper-bound hold.
+Lean quantifies over arbitrary natural-number issuance keys, workers, revisions
+and incarnations, and all finite reachable traces. Quint uses four scoped keys,
+two issuer incarnations, two workers and three transport incarnations. The
+initial empty revision is an admissible initial worker snapshot; subsequent
+consumption requires a current capture. An effect observation is absent from
+the consume transition: consuming unknown still advances revision and the
+independent consumption count. The execution root can remain constant throughout
+this abstraction; it is never used as the state-identity guard.
+
+One offer denotes the irreversible offer of one complete semantic message to
+the transport. It is not a count of write syscalls, delivered bytes or successful
+remote applications. Range/cursor refinement, partial buffer ownership and
+transport fencing remain separate obligations. This conservative machine cannot
+resume a claimed message on a different stream, even if it had not yet offered.
+
+* Cross-message product extension
+
+[[file:quint/SharedMessageBudget.qnt][SharedMessageBudget.qnt]] and [[file:lean/SharedMessageBudget.lean][SharedMessageBudget.lean]] extend the model
+to two canonical semantic intents, many aliases and one shared weighted budget
+and restrictive-history domain. [[file:../docs/architecture/17-shared-identity-budget-proof.org][The cross-message dossier]] provides exact source
+reuse, new premises, action/theorem correspondence and executable controls.
+[[file:evidence/shared-identity-budget-2026-10-19.org][Its separate evidence receipt]] binds the new artifact bytes and results;
+the earlier receipt below remains unchanged.
+
+Lean imports LogicalMessageAuthority and proves that each product transition
+projects to a previous message Step or a stutter. It adds alias soundness,
+frame preservation, shared weighted conservation and a common history gate.
+The domain has two canonical intents; aliases, revisions, workers, issuer/
+stream coordinates, costs and capacity are unbounded natural values in Lean.
+It is not an arbitrary-cardinality or multi-domain theorem. Immutable owner
+intent/payload/domain admission and physical enforcement remain premises.
+
+Quint uses two intents, four aliases, two workers, four scoped nonce indices,
+two issuer selectors and three stream incarnations. Unequal costs are one and
+two units. Its normal initializer funds three units; tightInit funds two.
+Independent semantic claim/offer counters detect duplication even when each
+misresolved local record remains individually affine. The guide's earlier
+single-message limitations describe that artifact's scope; the new product
+addresses aliases and shared accounting without claiming source refinement.
+
+* Arbitrary finite messages and domain migration
+
+[[file:lean/FiniteDomainMigration.lean][FiniteDomainMigration.lean]] replaces Bool-indexed records and fixed sums
+with arbitrary duplicate-free finite canonical key lists and per-account sums.
+Canonical roots map independently to budget/history account IDs; these maps
+need not be injective. The new proof reuses the unkeyed message Step and Passive
+laws, while proving finite accounting, immutable tickets, retained original
+executor claims and domain migration/restart preservation.
+
+[[file:quint/FiniteDomainMigration.qnt][FiniteDomainMigration.qnt]] provides initWith(n) for nonnegative finite n.
+Concrete simulations use singleton, four-message and seven-message fixtures;
+an explicit empty-universe test checks initial conservation. Domain creation,
+seal/stage/activate, stale shared snapshots, crash/restart and old-worker resume
+are separate normal transitions. Independent audit facts expose stale-context
+execution, account substitution, claim handoff, erased history and checkpoint
+replay in separately selected mutants.
+
+[[file:../docs/architecture/18-finite-domains-and-migration.org][The finite-domain dossier]] records source reuse, exact theorem/action mappings,
+allowed identity-preserving migration, rejected semantic reparenting and the
+storage/physical premises. [[file:evidence/finite-domains-2026-10-19.org][Its validation receipt]] records exact byte identities,
+checked commands, sampling bounds, axiom inventory and retained traces. Earlier
+single-message and two-key artifacts/receipts retain their historical scope.
+
+* Anti-rollback, durable resolution and final egress
+
+[[file:lean/AnchoredRecoveryAndEgress.lean][AnchoredRecoveryAndEgress.lean]] adds an external journal/recovery component
+that imports the arbitrary finite payload proof, an orthogonal original-range
+egress component, ProtectedHandoff and a conditional publication join. It proves
+canonical operation immutability, full-image recovery conservation, stale-handle
+rejection under a qualified gate, and the reachability of post-seal drain.
+
+[[file:quint/AnchoredRecoveryAndEgress.qnt][AnchoredRecoveryAndEgress.qnt]] exercises lost replies, terminal abort,
+missing-versus-unknown results, host snapshot rollback, same-height incomplete
+state, independent transport/receiver cuts and deliberately co-rolled-back
+actors. [[file:../docs/architecture/19-anchor-recovery-and-egress-contract.org][The contract dossier]] makes anchor identity/fate, materialization,
+actual-writer mediation, bounded delegation and receiver authenticity explicit.
+[[file:evidence/anchor-recovery-2026-10-19.org][Its receipt]] records final source hashes, commands, actual results and traces.
+
+The range fixture starts after one claimed range is admitted. The journal
+initialization is separately empty; no automatic end-to-end product/initial-state
+or native source refinement is asserted. ProtectedHandoff requires the actual
+anchored finite claim and complete recovered image, not an untrusted Boolean.
+wire counts abstract application-range exposure events, not TCP packets or
+partial-write offsets. Stronger physical cut claims require the dossier's
+pending evidence, not only a model predicate.
+
+* State and action correspondence
+
+All corresponding fields have the same meaning. Quint finite maps become total
+functions in Lean. The finite token domain embeds into natural numbers; token
+values stand for complete namespaced issuance identities, not bare wire nonces.
+
+| Quint action | Lean Step constructor | Meaning and guard |
+|--------------+-----------------------+-------------------|
+| register | register | Idempotently retain the same logical reservation and restrictive history |
+| issue(t) | issue | Record an admitted issuance without resetting message state |
+| capture(w) | capture | Store the current authoritative revision; creates no effect authority |
+| consume(w,t) | consume | Atomically require issuance, current revision and zero consumption; increment the independent count and revision |
+| claim(t) | claim | Require consumed issuance, held reservation and no existing claim; increment claim count and bind original token/stream |
+| offer | offer | Require the original live stream, a claim, zero prior offers and no retirement |
+| rotate | rotate | Change issuer incarnation only |
+| reconnect | reconnect | Change transport incarnation only |
+| observe(t) | observe | Append admitted evidence bound to the original claim; no consume/claim/send change |
+| retire(t) | retire | Admit original emitter retirement evidence separately |
+| finalUsage(t) | finalUsage | Admit final-cost/no-future-accrual evidence separately |
+| settle | settle | Move the one-unit hold to a charge only with all three evidence facts |
+
+Quint additionally restricts issuance to the current finite issuer namespace;
+Lean permits any admitted key. Thus Lean proves safety for a more permissive
+issue relation. Quint bounds rotate/reconnect; Lean does not. This is a reviewed
+abstraction correspondence, not a machine-checked Quint-to-Lean translation or
+source refinement theorem. No equality of file hashes establishes semantics.
+
+* Properties with actual theorem names
+
+| Quint invariant / observable relation | Lean theorem | Scope |
+|--------------------------------------+--------------+-------|
+| safety | initial_safe, step_preserves_safe, reachable_safe | Initial and every declared transition preserve the inductive invariant |
+| nonceSafety | issuance_consumed_at_most_once | Independent count per admitted, fully scoped issuance never exceeds one |
+| claimSafety | logical_message_claimed_at_most_once, claim_origin_is_sticky | One canonical message cannot acquire another claim or replace its origin |
+| messageSafety | logical_message_offered_at_most_once | At most one abstract complete-message transport offer |
+| historySafety | history_survives_reserved_work, history_is_monotone | Registered restrictions survive issuer/stream changes and late evidence |
+| settlementSafety | settlement_requires_retirement_and_final_usage | An outcome alone cannot settle |
+| Unit hold partition | budget_partition, unknown_retains_hold | Held plus charged equals the reserved unit; uncertainty does not free it |
+| Stale worker revision after consume | consume_invalidates_captured_revision | Unknown consume invalidates a previously captured revision |
+| Original claim versus new stream | reconnect_preserves_claim_origin, old_stream_cannot_offer | Reconnect does not transfer the old transport binding |
+| Observation versus execution | late_observation_preserves_execution | Observation does not reset sends, claim or settlement |
+| Retired execution | retirement_is_monotone | An admitted retirement cannot be reversed |
+
+The Safe invariant counts actual declared consume and claim transitions;
+counts are incremented rather than overwritten with a Boolean. This matters:
+otherwise a duplicate operation can be hidden behind a permanent true marker.
+The one-unit accounting proof has no refund or top-up transition; it does not
+prove parent escrow allocation, cross-message conservation or real pricing.
+
+* Positive and negative controls
+
+The first three tests are legitimate lifecycle controls. The last five select
+invalid transitions excluded from step and assert the resulting invariant
+violation. A passing negative test means that the bad design has a concrete
+counterexample. It does not mean the bad transition was admitted to the safe
+machine. Historical counts remain intact in mutations.
+
+| Test | Evidence |
+|------+----------|
+| normalLifecycleTest | Actual offer and outcome retain the hold until retirement plus final usage; settlement then succeeds |
+| concurrencyTest | Both workers capture the same revision; the winner spends and makes the other snapshot stale |
+| rotationAndReconnectTest | A second admitted issuance can be consumed without replacing the first claim; old observation is admitted after reconnect, with hold retained |
+| rootOnlyCounterexampleTest | Ignoring revision and spent membership consumes the same issuance twice despite an unchanged abstract root |
+| freshNonceCounterexampleTest | Removing only the unclaimed guard lets a new issuer/key acquire a second logical claim |
+| reconnectCounterexampleTest | Removing that guard lets the same issuance acquire another claim on a new stream |
+| lateObservationCounterexampleTest | A completion path that reopens the claim contradicts the historical claim/offer invariant |
+| prematureSettlementCounterexampleTest | Treating an outcome as settlement violates separate retirement/final-cost requirements |
+
+* Trusted premises and remaining refinement
+
+Scheme must resolve the logical key and immutable semantic binding before any
+modeled transition. Caller IDs, content equality and new nonces do not establish
+that identity. This model fixes one key; it cannot prove that a resolver prevents
+an attacker from placing the same intent in a second machine. Registering a
+legitimate distinct message, cross-key isolation and shared parent capacity need
+the product extension described above; implementation refinement remains
+pending.
+
+Issue presupposes authentic, error-free Cedar admission, exact request/entity
+projection, current source guards and actual original-issuer consumption at the
+appropriate runtime join. consume abstracts an authoritative storage transaction;
+it does not prove the existing pure P13 call is atomic. Observer authentication,
+original claim/stream/attempt/evidence binding and actual emitter retirement
+are trusted input contracts. A matching integer token is only their abstraction.
+
+Reconstruction must preserve every durable field. There is deliberately no
+restore-empty or rollback transition. These proofs do not establish storage
+persistence, snapshot lineage, entropy, stop/drain, receiver fencing, scheduling
+fairness, termination, eventual delivery, or liveness. Old-worker physical
+emission requires the separate broker/receiver qualification contract. No theorem
+here imports cedar-poo-spec or POO Flow, or proves their native ABI/projection;
+existing owner laws guide the specification and retain their original premises.
+
+* Reproduce and inspect the evidence
+
+Run from the repository root. The explicit Lean selection leaves all existing
+pins untouched. The commands evaluate specifications only, outside request paths.
+
+#+begin_src sh :eval never
+quint typecheck specs/quint/LogicalMessageAuthority.qnt
+quint test specs/quint/LogicalMessageAuthority.qnt --backend typescript --max-samples 1
+quint run specs/quint/LogicalMessageAuthority.qnt --backend typescript --max-samples 2000 --max-steps 60 --seed 20261019 --invariants safety --verbosity 1
+elan run leanprover/lean4:v4.34.1 lean specs/lean/LogicalMessageAuthority.lean
+#+end_src
+
+The [[file:evidence/2026-10-19.org][local evidence receipt]] records exact scope, artifact identities and results.
+Quint simulation is sampled exploration, not exhaustive TLC/Apalache checking.
+Lean compilation checks the inductive proof for the declared abstract relation;
+it does not turn those samples into exhaustive Quint model checking. Both are
+partial formal coverage of FM3/FM5/FM7/FM9/FM10/FM11/FM12; no complete FM row,
+owner integration or deployed protected profile is marked qualified.
+
+
+* Reproduce the cross-message extension
+
+Run from the repository root. Build the imported proof into an isolated output
+directory; no generated object, dependency pin or owner package is changed.
+Compile the base from current source before checking the consumer. A stale
+cached object is not acceptable evidence of the checked source bytes.
+
+#+begin_src sh :eval never
+mkdir -p /private/tmp/weaver-shared-proof
+elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-shared-proof/LogicalMessageAuthority.olean specs/lean/LogicalMessageAuthority.lean
+LEAN_PATH=/private/tmp/weaver-shared-proof elan run leanprover/lean4:v4.34.1 lean specs/lean/SharedMessageBudget.lean
+quint typecheck specs/quint/SharedMessageBudget.qnt
+quint test specs/quint/SharedMessageBudget.qnt --backend typescript --max-samples 1 --out-itf '/private/tmp/weaver-shared-final-{test}-{seq}.itf.json'
+quint run specs/quint/SharedMessageBudget.qnt --backend typescript --max-samples 3000 --max-steps 120 --seed 20261019 --invariants safety --verbosity 1
+quint run specs/quint/SharedMessageBudget.qnt --backend typescript --init tightInit --max-samples 1000 --max-steps 100 --seed 20261020 --invariants safety --verbosity 1
+#+end_src
+
+The consumer proof is standalone except for the imported checked Weaver model
+and Lean Std. It does not import cedar-poo-spec or POO Flow. Its source relation
+to those packages is documented in the dossier, not claimed as an implemented
+native integration or mechanically checked source refinement.
+
+
+* Reproduce the finite-domain extension
+
+Compile both imported Weaver proofs from current source into isolated output.
+Only the unkeyed Passive relation/laws from the two-key module are reused; its
+Bool store/sum is replaced. No existing dependency pin or owner package changes.
+
+#+begin_src sh :eval never
+mkdir -p /private/tmp/weaver-finite-proof
+elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-finite-proof/LogicalMessageAuthority.olean specs/lean/LogicalMessageAuthority.lean
+LEAN_PATH=/private/tmp/weaver-finite-proof elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-finite-proof/SharedMessageBudget.olean specs/lean/SharedMessageBudget.lean
+LEAN_PATH=/private/tmp/weaver-finite-proof elan run leanprover/lean4:v4.34.1 lean specs/lean/FiniteDomainMigration.lean
+quint typecheck specs/quint/FiniteDomainMigration.qnt
+quint test specs/quint/FiniteDomainMigration.qnt --backend typescript --max-samples 1 --out-itf '/private/tmp/weaver-finite-final-{test}-{seq}.itf.json'
+quint run specs/quint/FiniteDomainMigration.qnt --backend typescript --max-samples 2000 --max-steps 100 --seed 20261019 --invariants safety --verbosity 1
+quint run specs/quint/FiniteDomainMigration.qnt --backend typescript --init largerInit --max-samples 500 --max-steps 80 --seed 20261020 --invariants safety --verbosity 1
+quint run specs/quint/FiniteDomainMigration.qnt --backend typescript --init singletonInit --max-samples 500 --max-steps 80 --seed 20261021 --invariants safety --verbosity 1
+#+end_src
+
+The recorded execution used a 90-second watchdog for the four-message sample
+and 60 seconds per other sample. A timeout remains failed/incomplete evidence;
+no bound is widened to relabel it as success. Commands and bounds are not
+runtime performance claims. No source/native refinement is established by
+compiling the standalone consumer proof.
+
+
+* Reproduce the anchored recovery / egress extension
+
+Rebuild imported sources into isolated temporary output; no owner dependency
+or gateway implementation is changed. The selected explicit Lean invocation
+leaves every repository dependency pin untouched.
+
+#+begin_src sh :eval never
+mkdir -p /private/tmp/weaver-anchor-proof
+elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-anchor-proof/LogicalMessageAuthority.olean specs/lean/LogicalMessageAuthority.lean
+LEAN_PATH=/private/tmp/weaver-anchor-proof elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-anchor-proof/SharedMessageBudget.olean specs/lean/SharedMessageBudget.lean
+LEAN_PATH=/private/tmp/weaver-anchor-proof elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-anchor-proof/FiniteDomainMigration.olean specs/lean/FiniteDomainMigration.lean
+LEAN_PATH=/private/tmp/weaver-anchor-proof elan run leanprover/lean4:v4.34.1 lean specs/lean/AnchoredRecoveryAndEgress.lean
+quint typecheck specs/quint/AnchoredRecoveryAndEgress.qnt
+quint test specs/quint/AnchoredRecoveryAndEgress.qnt --backend typescript --max-samples 1 --out-itf '/private/tmp/weaver-anchor-final-{test}-{seq}.itf.json'
+quint run specs/quint/AnchoredRecoveryAndEgress.qnt --backend typescript --max-samples 3000 --max-steps 100 --seed 20261019 --invariants safety --verbosity 1
+#+end_src
+
+The recorded sampled run used a 60-second watchdog. A timeout would remain
+incomplete evidence; the log's simulator time is not gateway performance.
+All physical acceptance rows in the dossier remain pending independently of
+the checked abstract proofs and expected counterexamples.
+
+
+* Composed journal, recovery and transport-owner lifecycle
+
+[[file:lean/ComposedGatewayLifecycle.lean][ComposedGatewayLifecycle.lean]] now imports the previous components into
+one reachable product initialized with the empty finite ledger. Every product
+step projects to the existing finite ledger relation. Exact seal/commit/activate
+binding, complete recovery, durable range records, restart incarnation fencing,
+trace-wide original claims/history and weighted account conservation are checked
+together. The original conditional component artifacts retain their old scope.
+
+[[file:quint/ComposedGatewayLifecycle.qnt][ComposedGatewayLifecycle.qnt]] uses four already admitted messages and two
+shared accounts. It checks phase races, all three phase reply-loss cases, owner
+restart and old-buffer drain, with ten explicit bad-design controls. This
+fixture is not identified with the Lean empty initializer. The exposure unit is
+one bounded range per canonical message, subordinate to its admitted complete
+message offer; arbitrary multi-range streams need a manifest/sum extension.
+
+[[file:../docs/architecture/20-composed-journal-transport-lifecycle.org][The composition dossier]] maps source reuse and physical obligations.
+[[file:evidence/composed-lifecycle-2026-10-19.org][The receipt]] records exact hashes, commands, checks and reproducibility.
+Owner restart preserves its external durable store by premise; no arbitrary
+owner-image restore is admitted. Full source-to-storage/driver refinement and
+physical acceptance remain pending. No gateway implementation or pin changes.
+
+
+* Arbitrary finite stream manifests and partial offers
+
+[[file:lean/FiniteStreamManifest.lean][FiniteStreamManifest.lean]] imports the actual initialized coordinator and
+replaces its single-range sender projection with arbitrary finite manifests.
+Its structural ControlAdvance filter excludes the old delegate/drain events;
+all administrative transitions retain the earlier checked lifecycle contract.
+The proof checks complete immutable partitions, affine partial-offer cursors,
+original claim/executor/history preservation, one unfinished message and one active range slot per canonical
+stream, qualified full-frontier finish, and range quota sums covered by the original shared budget. Unknown
+outcomes quarantine streams and never release range allocations.
+
+[[file:quint/FiniteStreamManifest.qnt][FiniteStreamManifest.qnt]] imports the actual earlier Quint coordinator and
+adds variable finite range fixtures. Whole-message admission, finite partition
+validity and prefix ownership remain separate facts. Possible-offer counts are
+observations, never execution guards. The fixture uses fixed four-byte ranges
+and a declared fixed-per-run quota-unit conversion; Lean permits arbitrary
+positive range lengths and admitted quota weights.
+
+[[file:../docs/architecture/21-finite-stream-manifest-proof.org][The manifest dossier]] records exact source reuse, input/physical premises,
+Scheme/Go/Rust roles and the high-performance path. [[file:evidence/finite-stream-manifest-2026-10-19.org][The new receipt]] retains
+checked commands, byte identities, deterministic traces and sampling bounds,
+including an incomplete larger sampling attempt. The previous one-range files
+and receipts retain their original scope. No arbitrary driver reconstruction,
+source/native refinement, physical acceptance or runtime speedup is established.
+
+
+* Canonical completion and driver continuity
+
+[[file:lean/DriverCompletionRecovery.lean][DriverCompletionRecovery.lean]] projects a reachable driver/completion product
+into the existing finite manifest relation. It checks immutable original requests
+and results, arbitrary-trace original tail bindings, byte affinity, shared escrow,
+retirement guards and independent final-usage requirements. The original driver
+must authenticate ordered relinquishment; external isolation is a trusted input
+event. Neither a PID nor an SDK callback proves that fact.
+
+[[file:quint/DriverCompletionRecovery.qnt][DriverCompletionRecovery.qnt]] checks pending/committed resolution, lost replies,
+late receipts, driver versus owner restart and conservative quarantine. Its six
+excluded mutants distinguish semantic violations from direct byte/settlement
+invariant failures. [[file:../docs/architecture/22-driver-completion-recovery.org][The design dossier]] maps source reuse, proof assumptions and
+physical acceptance. [[file:evidence/driver-completion-recovery-2026-10-19.org][The executable receipt]] records exact scope and commands.
+No gateway code, owner dependency pins or original proof receipts are changed.
+
+
+* Split-store writer isolation and financial closure
+
+[[file:lean/WriterSettlementClosure.lean][WriterSettlementClosure.lean]] imports the initialized driver product,
+adds separate immutable completion/isolation evidence, one terminal decision,
+conservative local publication, original message closure and independent final
+usage/settlement records. Checked composition joins authentic input predicates,
+original range/driver identity, terminal coverage, charged ledger materialization
+and finite shared-account settlement amounts. Actual authenticity, durability
+and physical writer isolation remain explicit owner premises.
+
+[[file:quint/WriterSettlementClosure.qnt][WriterSettlementClosure.qnt]] imports the preceding driver model and adds
+cross-store reply-loss, terminal-branch races, old FD adoption, late/conflicting
+usage and shared-account scenarios. [[file:../docs/architecture/23-writer-isolation-settlement-closure.org][The dossier]] states event correspondence
+and source reuse; [[file:evidence/writer-settlement-closure-2026-10-19.org][the check receipt]] retains exact commands, bounded runs,
+negative controls and preliminary diagnostics. No gateway implementation or
+owner dependency pins are changed.
+
+
+* Account application and anti-rollback recovery
+
+[[file:lean/SettlementAnchorRecovery.lean][SettlementAnchorRecovery.lean]] imports the initialized settlement product
+and adds immutable intent/permit/application/confirmation records, independently
+fenced workers and complete recovery images. It derives one canonical application
+per original key, original-settlement binding, actual shared reservation coverage
+and retention of unknown holds. Ghost counts are removed from the recovery view
+and do not grant authority.
+
+[[file:quint/SettlementAnchorRecovery.qnt][SettlementAnchorRecovery.qnt]] imports the preceding model and adds account
+response-loss, full-row mixed-snapshot and old-worker controls. Cold and anchored/
+accepted initializers keep sampled scope explicit. [[file:../docs/architecture/24-settlement-anchor-recovery.org][The dossier]] documents gate
+nonrollback/atomicity premises and [[file:evidence/settlement-anchor-recovery-2026-10-19.org][the receipt]] retains exact checks and failed
+fixtures. No gateway implementation, external payment proof or pin changes.
+
+
+* Gate consumption persistence under journal loss
+
+[[file:lean/GateConsumptionPersistence.lean][GateConsumptionPersistence.lean]] imports the account/anchor product and
+adds an independent irreversible seal/grant/burn/result root, actual-writer epoch
+barriers and arbitrary local journal loss. It proves original result binding,
+confirmation coverage, one-time consumption, conservative unknown recovery and
+shared-account conservation from the initialized finite source relation.
+
+[[file:quint/GateConsumptionPersistence.qnt][GateConsumptionPersistence.qnt]] extends that pipeline with lost issuance/
+consumption responses, held old capabilities, fake local results and authentic
+late receipt recovery. Excluded mutants retain actual duplicate writes and
+forbidden boundary events. [[file:../docs/architecture/25-gate-consumption-persistence.org][The dossier]] defines correspondence and physical
+premises; [[file:evidence/gate-consumption-persistence-2026-10-19.org][the receipt]] retains exact commands, bounds and diagnostics. No
+capability is reconstructed by recovery; unknown burns can prevent progress.
+
+
+* Anchor commit confirmation and actual broker handover
+
+[[file:lean/AnchorBrokerCommit.lean][AnchorBrokerCommit.lean]] imports the initialized consumption-root product
+and adds proposals, qualified committed entries, original live responses,
+separate root/writer coordinates, actual submission and physical activation.
+It proves original-body preservation across qualified burns, at most one
+consumption/dispatch/application and inherited original reservation conservation.
+The registered single prefix is an owner premise; no consensus algorithm is proved.
+
+[[file:quint/AnchorBrokerCommit.qnt][AnchorBrokerCommit.qnt]] exercises election before actual isolation, lost commit
+responses, late original confirmations, stale activation reads, root/configuration
+substitution and forked-root replay. [[file:../docs/architecture/26-anchor-commit-broker-fencing.org][The dossier]] defines the exact internal account
+application scope; [[file:evidence/anchor-broker-commit-2026-10-19.org][the receipt]] retains commands, traces, source review and
+conditional proof boundaries. No gateway implementation or dependency-pin changes.
+
+
+* Anchor membership and complete-prefix inheritance
+
+[[file:lean/AnchorReconfiguration.lean][AnchorReconfiguration.lean]] imports the initialized commit/broker product and
+adds immutable mixed data/control history, exact replica installation, serialized
+joint membership and configuration-scoped barrier/read/activation guards. It
+preserves original account uniqueness, booked reservations and shared capacity.
+Quorum-family intersection and native durable publication remain explicit inputs.
+
+[[file:quint/AnchorReconfiguration.qnt][AnchorReconfiguration.qnt]] exercises disjoint majority families, late original
+acknowledgements, stale copied prefixes and elections/fencing during joint transfer.
+[[file:../docs/architecture/27-anchor-configuration-prefix-inheritance.org][The dossier]] explains erasure to the prior fixed logical namespace; it is proof
+bookkeeping, not a runtime compatibility interface. [[file:evidence/anchor-reconfiguration-2026-10-19.org][The receipt]] retains exact
+checks, negative traces and the bounded full-ITF export failure. No gateway code
+or dependency pins are changed.
+
+
+* Quorum durable promises and restored signers
+
+[[file:lean/QuorumDurablePromises.lean][QuorumDurablePromises.lean]] adds append-only protected node promises,
+restorable replicas, signer incarnation, retirement and qualified publication to
+the initialized configuration/execution product. It proves intersecting full
+prefixes comparable across recovery, bridge safety, original uniqueness and
+budget/reservation preservation under explicit native owner premises.
+
+[[file:quint/QuorumDurablePromises.qnt][QuorumDurablePromises.qnt]] independently checks finite node/prefix behavior
+and four excluded rollback/re-enrollment traces. The full account-replay control
+is rerun in the previous model, not simulated by the small quorum abstraction.
+[[file:../docs/architecture/28-quorum-durable-promises-prefix-recovery.org][The dossier]] documents the deliberately blocking sticky-prefix profile and
+[[file:evidence/quorum-durable-promises-2026-10-19.org][the receipt]] retains exact bounds, outputs and byte identities. Neither a
+consensus implementation nor total-root rollback recovery is proved.

@@ -1,0 +1,196 @@
+/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/image-build/image-clan-poo.o1:
+Mach header
+      magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
+ 0xfeedfacf 16777228          0  0x00           8    17       1200 0x00000085
+Load command 0
+      cmd LC_SEGMENT_64
+  cmdsize 312
+  segname __TEXT
+   vmaddr 0x0000000000000000
+   vmsize 0x00000000000e8000
+  fileoff 0
+ filesize 950272
+  maxprot 0x00000005
+ initprot 0x00000005
+   nsects 3
+    flags 0x0
+Section
+  sectname __text
+   segname __TEXT
+      addr 0x000000000000082c
+      size 0x00000000000dc3b4
+    offset 2092
+     align 2^2 (4)
+    reloff 0
+    nreloc 0
+     flags 0x80000400
+ reserved1 0
+ reserved2 0
+Section
+  sectname __cstring
+   segname __TEXT
+      addr 0x00000000000dcbe0
+      size 0x000000000000a57c
+    offset 904160
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000002
+ reserved1 0
+ reserved2 0
+Section
+  sectname __eh_frame
+   segname __TEXT
+      addr 0x00000000000e7160
+      size 0x0000000000000ea0
+    offset 946528
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000000
+ reserved1 0
+ reserved2 0
+Load command 1
+      cmd LC_SEGMENT_64
+  cmdsize 232
+  segname __DATA
+   vmaddr 0x00000000000e8000
+   vmsize 0x0000000000060000
+  fileoff 950272
+ filesize 376832
+  maxprot 0x00000003
+ initprot 0x00000003
+   nsects 2
+    flags 0x0
+Section
+  sectname __data
+   segname __DATA
+      addr 0x00000000000e8000
+      size 0x000000000005b310
+    offset 950272
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000000
+ reserved1 0
+ reserved2 0
+Section
+  sectname __bss
+   segname __DATA
+      addr 0x0000000000143310
+      size 0x0000000000004b60
+    offset 0
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000001
+ reserved1 0
+ reserved2 0
+Load command 2
+      cmd LC_SEGMENT_64
+  cmdsize 72
+  segname __LINKEDIT
+   vmaddr 0x0000000000148000
+   vmsize 0x0000000000008000
+  fileoff 1327104
+ filesize 26544
+  maxprot 0x00000001
+ initprot 0x00000001
+   nsects 0
+    flags 0x0
+Load command 3
+            cmd LC_DYLD_INFO_ONLY
+        cmdsize 48
+     rebase_off 1327104
+    rebase_size 2048
+       bind_off 0
+      bind_size 0
+  weak_bind_off 0
+ weak_bind_size 0
+  lazy_bind_off 0
+ lazy_bind_size 0
+     export_off 1329152
+    export_size 600
+Load command 4
+     cmd LC_SYMTAB
+ cmdsize 24
+  symoff 1329888
+   nsyms 673
+  stroff 1340656
+ strsize 2368
+Load command 5
+            cmd LC_DYSYMTAB
+        cmdsize 80
+      ilocalsym 0
+      nlocalsym 653
+     iextdefsym 653
+     nextdefsym 19
+      iundefsym 672
+      nundefsym 1
+         tocoff 0
+           ntoc 0
+      modtaboff 0
+        nmodtab 0
+   extrefsymoff 0
+    nextrefsyms 0
+ indirectsymoff 0
+  nindirectsyms 0
+      extreloff 0
+        nextrel 0
+      locreloff 0
+        nlocrel 0
+Load command 6
+     cmd LC_UUID
+ cmdsize 24
+    uuid F9CE6F3C-A215-3ED5-8EEC-614EEEF52056
+Load command 7
+       cmd LC_BUILD_VERSION
+   cmdsize 32
+  platform 1
+       sdk 14.4
+     minos 14.0
+    ntools 1
+      tool 3
+   version 954.16
+Load command 8
+      cmd LC_SOURCE_VERSION
+  cmdsize 16
+  version 0.0
+Load command 9
+          cmd LC_LOAD_DYLIB
+      cmdsize 56
+         name /usr/lib/libSystem.B.dylib (offset 24)
+   time stamp 2 Thu Jan  1 08:00:02 1970
+      current version 1356.0.0
+compatibility version 1.0.0
+Load command 10
+          cmd LC_RPATH
+      cmdsize 32
+         path @loader_path (offset 12)
+Load command 11
+          cmd LC_RPATH
+      cmdsize 96
+         path /opt/homebrew/Cellar/gcc/16.2.0/lib/gcc/current/gcc/aarch64-apple-darwin25/16 (offset 12)
+Load command 12
+          cmd LC_RPATH
+      cmdsize 64
+         path /opt/homebrew/Cellar/gcc/16.2.0/lib/gcc/current/gcc (offset 12)
+Load command 13
+          cmd LC_RPATH
+      cmdsize 64
+         path /opt/homebrew/Cellar/gcc/16.2.0/lib/gcc/current (offset 12)
+Load command 14
+      cmd LC_FUNCTION_STARTS
+  cmdsize 16
+  dataoff 1329752
+ datasize 136
+Load command 15
+      cmd LC_DATA_IN_CODE
+  cmdsize 16
+  dataoff 1329888
+ datasize 0
+Load command 16
+      cmd LC_CODE_SIGNATURE
+  cmdsize 16
+  dataoff 1343024
+ datasize 10624

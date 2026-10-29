@@ -1,0 +1,39 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.42s
+     Running unittests src/lib.rs (target/debug/deps/weaver_ledger-098c644f5d85d00b)
+
+running 5 tests
+test publication::tests::outcome_insert_failure_rolls_back_policy_schema_and_result_together ... ok
+test publication::tests::concurrent_publications_serialize_one_winner_and_one_stable_conflict ... ok
+test publication::tests::historical_decisions_survive_restart_and_cannot_rebase_or_replace_original_id ... ok
+test enforce_asp_rust_gate ... FAILED
+test publication::tests::arbitrary_replay_restart_and_late_observation_schedules_keep_decisions ... ok
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (21604705) panicked at crates/ledger/src/lib.rs:17:1:
+[RUST-MOD-R010] Warning: Glob import hides owner scope
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger/tests/unit/publication.rs:1:1
+fix: replace parent-scope glob with explicit imports
+line: 1 | use super::*;
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger/tests/unit/publication.rs uses parent-scope glob import `super::*` in test context.
+Contract: Avoid every Rust glob import, including absolute crate globs; import owner names explicitly so module dependencies stay visible.
+
+[RUST-AGENT-API-TYPE-012] Info: Public semantic identifier uses a primitive type
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger/src/publication.rs:146:1
+fix: wrap this identifier in an owner-named newtype or document why the primitive boundary is intentional
+line: 146 |         operation_id: &str,
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger/src/publication.rs exposes public function `publication_receipt` parameter `operation_id` as primitive `&str`.
+Contract: Give public semantic identifiers a named domain type so agents can preserve invariants without guessing from parameter names.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.13s
+
+error: test failed, to rerun pass `-p weaver-ledger --lib`
+

@@ -1,0 +1,16 @@
+[DEBUG] ignoring listener exception in favor of parse errors. Exception: violated grammar of annotated params return type
+
+ Error [QNT000]: mismatched input '=' expecting ':'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/RuntimeAdmission.qnt:14:44
+  14:     action queue(k:int,n:int,original:bool)=all {
+                                                 ^
+
+
+ Error [QNT000]: extraneous input 'action' expecting {<EOF>, 'module', DOCCOMMENT}
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/RuntimeAdmission.qnt:19:5
+  19:     action consume(k:int)=all {
+          ^^^^^^
+
+error: parsing failed

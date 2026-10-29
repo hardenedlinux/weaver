@@ -1,0 +1,11 @@
+=== RUN   TestSysMLSDKAndRequirementTrace
+    model_test.go:91: Strict in-process SDK analysis and named trace coverage: 13 requirements; no behavioral refinement proof implied
+--- PASS: TestSysMLSDKAndRequirementTrace (0.58s)
+=== RUN   TestSysMLSDKRejectsSemanticErrors
+--- PASS: TestSysMLSDKRejectsSemanticErrors (0.30s)
+=== RUN   TestCargoWorkspaceAndDevelopmentGates
+--- PASS: TestCargoWorkspaceAndDevelopmentGates (0.77s)
+=== RUN   TestSysMLSDKIsAbsentFromProductionBuild
+--- PASS: TestSysMLSDKIsAbsentFromProductionBuild (0.09s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	4.231s

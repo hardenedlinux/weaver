@@ -1,0 +1,191 @@
+#+title: Weaver Launch Authorization, Bootstrap Possession and Activation
+#+language: en
+#+options: toc:3
+
+* Findings
+
+Category 43 checks the current incarnation/key/capability at final publication but
+leaves enrollment as a native owner predicate. Treating a shared Kubernetes
+ServiceAccount as permission to register a new key lets an old worker manufacture
+another apparent incarnation. Checking possession of that self-selected key does
+not establish eligibility for the original task or its custody.
+
+A second hidden assumption is circular: a new worker cannot authenticate as its
+new incarnation in order to prove the key needed to activate that incarnation.
+The bootstrap proof context therefore contains a verified public-key commitment,
+workload eligibility and channel/session binding. It contains no previously
+certified new incarnation. The exact future incarnation is assigned in the ticket
+and included in the signed transcript. Capability activation is a later event.
+
+Issuance, possession and activation must be distinct protected transitions. A
+persisted pending ticket is not an active custody capability; a possession receipt
+is not activation; a response or certificate copy is not proof of a private key.
+
+* Independent launch authorization and the bootstrap root
+
+Scheme derives the canonical launch intent from the existing original task,
+claim/profile commitment, budget domain and history. Cedar Code as Policy decides
+whether the independently authenticated launcher may enroll this beneficiary key
+for that exact intent. Rust verifies the authentic facts and commits the decision's
+bound operation. Go orchestrates Kubernetes lifecycle and transports the request;
+it cannot turn workload metadata into a launch decision.
+
+A concrete software bootstrap pattern is a producer-issued launch invitation,
+scoped to the original task and canonical launch ID. A trusted controller delivers
+it through a launch-specific credential channel, independent of the shared worker
+ServiceAccount. At issuance the Rust authority atomically consumes that canonical
+launch slot and freezes the beneficiary key/session in the ticket. A signed launch
+assignment can provide the same binding. The model treats the canonical launch ID
+as that consumed slot; a client request ID cannot rename it. Persist invitation
+commitments/consumption and public-key bindings, never invitation plaintext or
+private keys in tickets, ordinary history, logs or activation replies.
+
+This requires an actual protected credential-delivery contract. A Pod name, IP,
+shared bearer token, forwarded identity header or client-supplied public key is
+insufficient. If a Kubernetes Secret/volume is used for invitation delivery, its
+recipient binding and effective read/exec/create permissions must be qualified;
+sharing a ServiceAccount must not grant an old worker access to the new launch
+credential. This is software credential isolation, not a hardware or physical
+isolation assumption. A stolen invitation, compromised controller or copied new
+private key violates this trust boundary. Possession alone cannot identify an
+intended process when credentials or signing oracles are deliberately shared.
+
+The official [[https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/][Kubernetes ServiceAccount documentation]] describes bound-object claims and
+TokenReview checks. Those are useful enrollment facts. Offline JWT verification
+does not establish that an object's claims remain current. Neither a successful
+TokenReview nor a Pod UID establishes this Gateway's launch eligibility or proves
+a beneficiary's private key. Require the intended Gateway audience and trusted
+issuer; process incarnation and launch authority remain Gateway concepts.
+
+* Protected records and identity binding
+
+| Record | Required binding | Recovery meaning |
+|--------+------------------+------------------|
+| Canonical launch slot | Original task/family, claim/profile, budget/history domain, authorized launcher, exact beneficiary key/session | One slot maps to one issuance ID; new client nonce cannot create another slot |
+| Pending ticket | Issuance ID, launch ID, prior capability commitment, actual predecessor publication parent, issuer epoch, unique challenge, audience, purpose, original root and full target grant | Immutable after issuance, including when its response is lost |
+| Possession receipt | Exact complete ticket and verified bootstrap key/channel transcript | A proof for another challenge, key, session, future incarnation or original contract is unusable |
+| Activation outcome | Same issuance ID and exact target grant, joined to actual custody handoff and protected publication | Stored once; replay resolves that outcome and never reactivates it |
+| Reserved identities | Every issued incarnation, including expired/unactivated tickets | Restart and garbage collection cannot recycle a previously issued incarnation |
+
+The canonical launch ID is also a reference to its protected authorization
+record and original semantic provenance; it is not an arbitrary client label.
+The authorization record must remain recoverable with the ticket.
+
+The launch index, issued row, reserved identity and challenge allocation commit
+atomically. The ticket is the authoritative key assignment: a redelivery must not
+substitute another public key, extend expiry, reallocate an incarnation or replace
+the original task. All challenge/serial/fence namespaces must reject native
+counter exhaustion rather than wrap. Initializing counters is a first-deployment
+operation, never a process-restart recovery strategy.
+
+Native transcript encoding must cover protocol purpose, issuer/trust domain,
+Gateway audience, original semantic commitment, canonical launch and issuance IDs,
+previous/target grants, predecessor parent, issuer epoch, challenge, deadline and
+bootstrap recipient/channel binding. The model's fields stand for canonical,
+collision-resistant commitments; it does not prove codecs or signature schemes.
+A persisted possession receipt must be attributable to the trusted verifier and
+complete transcript; a client-provided verified flag is never such evidence.
+The bootstrap channel binding is an authenticated session commitment, not a
+client-selected string. Transport reconnection requires a newly verified proof
+for the same stored binding or an explicitly authorized successor protocol; it
+cannot silently edit the ticket.
+
+* Ordering, response loss and activation
+
+1. An independently authorized launcher submits the exact original-bound launch.
+   Rust compares the current source/custody context, reserves the incarnation and
+   challenge and records the immutable ticket and launch index in one event.
+   No active custody, external send or account application changes.
+2. The beneficiary signs the exact ticket using the assigned private key through
+   the bootstrap context. Rust verifies that key and session without requiring
+   login as the future incarnation. It persists the complete transcript receipt,
+   not merely a boolean or proof ID. No active custody changes.
+3. The recovery coordinator prepares the actual inherited handoff. The determining
+   authority reads the current protected enrollment revision and original custody
+   parent, and compares them again at activation. Queued stale reads are rejected.
+4. Activation requires the exact issued row, exact proof receipt, current issuer
+   epoch, unexpired target, current prior grant and actual publication parent,
+   plus current independent recovery authorization. The actual category-43
+   transition performs the custody handoff. Its grant/fence/outcome association
+   and this issuance ID's activation result form one protected outer event.
+5. Reply loss triggers lookup by canonical launch/issuance identity. If the issuance reply containing the challenge was lost, an independently
+   authorized coordinator first looks up the canonical launch under a current
+   read Policy. That lookup requires neither the unknown challenge nor a login
+   as the new incarnation, and grants no execution authority. Issuance loss
+   returns the same ticket; activation loss returns the same committed target and
+   outcome. Neither creates another identity or repeats the handoff.
+
+The outer authority log is the ordering owner. Issuance/proof/revocation events can
+stutter the inherited custody journal; custody publication is its ordered
+projection. These are mathematical projections of one protected authoritative
+history, not independent stores with an assumed distributed transaction. Every
+custody publication must participate in this owner protocol. The final CAS covers
+both the outer enrollment revision and the inherited custody parent. A separately
+updated enrollment cache is not an activation authority.
+
+A different source/history publication can leave the old grant unchanged while
+advancing its publication parent. That still invalidates the old ticket. Issuer
+revocation advances its epoch and invalidates pending proofs without deleting
+issuance/outcome history. A historical acknowledgement cannot establish current
+read qualification. Native restart discards read qualification and recovers the
+protected log, launch index, proof transcripts, reserved identities and outcomes.
+Restored cache equality cannot requalify activation. A checkpoint must preserve
+these complete records and their authorization provenance, or carry an authentic
+commit-prefix derivation that reconstructs them. Restoring arbitrary nonempty
+rows does not satisfy the proof from an empty registry. Certificates supplied
+by recovering workers cannot populate authoritative issued rows. Whole-authority
+rollback is excluded only by the external protected-head/anti-rollback contract,
+not by comparing two locally restored copies.
+
+Pending tickets that lose a parent/epoch race remain auditable obligations. There
+is no automatic rebasing, re-signing or identity recycling. A separately authorized
+successor launch must preserve the original root, claim, pending execution duties
+and budget/history constraints. Recovery liveness and that successor protocol are
+not proved here. Failing closed may retain an unusable ticket and an unknown hold.
+
+* Relation to final execution and financial authority
+
+Activation changes custody, not the original execution-owner generation or
+proposal.worker. It clears the inherited join/resolution through the actual
+handoff. A newly activated worker must establish the original source/account join
+again before any floor admission. The original operation ID, spent-state,
+claim/profile commitment and reservation survive issuance, reconnect and handoff.
+
+The enrollment proof is not a reusable execution grant. Final Rust publication
+still applies category 43's native peer/key/current-capability check and the actual
+source/account/floor CAS. A copied ticket or activation response cannot make an
+old peer's key become the new peer's key. Final dispatch, retries, streaming
+ranges and financial settlement retain the earlier independent evidence gates.
+Issuance, proof, response loss, activation and ticket expiry cannot classify an
+unknown provider execution as absent or release its reservation.
+
+* Responsibilities and performance path
+
+| Layer | Responsibility |
+|-------+----------------|
+| Scheme / POO Flow | Own original semantic/claim/profile identity and canonical launch intent; retain pending recovery duties and budget/history domain; prevent a new launch from becoming a replacement original task |
+| Cedar | Authorize launcher, beneficiary assignment and recovery purpose over authentic current facts; error/indeterminate decisions cannot enroll or activate |
+| Go | Cloud native controller integration, scoped bootstrap delivery orchestration, protocol sessions and idempotent lookups; no implicit issuance from ServiceAccount equality, no automatic identity remint after SDK retry |
+| Rust issuer and broker | Verify launch provenance and key/channel proof; serialize immutable issuance, proof and activation records; compare outer revision and actual custody parent; enforce final native caller mediation and separate send gates |
+| Quint | Execute shared-identity, key/transcript substitution, concurrent launches, lost replies, revocation and old-worker recovery controls over actual inherited custody/account state |
+| Lean | Prove issuance provenance from an empty initial registry, immutable ticket/launch/outcome records, required bootstrap proof at activation, finite-run custody refinement and conditional original budget preservation |
+
+Enrollment verification runs on launch or explicit recovery. The ordinary LLM
+publication path uses the verified current peer and indexed active capability,
+while continuing to check its parent, expiry and source/account join. It need not
+call Kubernetes or re-run enrollment per token. Enrollment receipts may be cached
+by exact ticket identity; cache hits cannot override epoch, current parent or
+activation result checks. No throughput claim follows from these model checks.
+
+* Proof and native qualification boundary
+
+[[file:44.03-proof-and-source-evidence.org][44.03]] maps source reuse and checked proof/control names to the core graph.
+Cryptographic verification, bootstrap credential delivery, authentic launch facts,
+protected log durability/anti-rollback and native CAS/codec refinement remain
+explicit owner contracts. The models expand enrollment sequencing; they do not
+claim to prove key secrecy, a process attestation mechanism, Kubernetes RBAC,
+physical isolation or provider exactly-once IO. Native acceptance must test
+invitation theft/relay resistance, trusted channel binding, shared-ServiceAccount
+privileges, issue/activate commit loss, concurrent key substitution, current-parent
+races and full restore of immutable records. No dependency pin or Gateway runtime
+is changed by this review.

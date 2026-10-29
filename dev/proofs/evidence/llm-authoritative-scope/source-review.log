@@ -1,0 +1,475 @@
+P12 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/authorized-effect-token.ss ef9abd5335f478d15b5b5a782be5ece07380995b009f504c3d5ae41a618281fb
+4: 
+5: ;;; Boundary: Scheme POO owns semantic roots and one-shot effect capabilities.
+6: ;;; Invariant: validation and consumption are pure immutable transitions.
+7: (import (only-in :clan/poo/object .o .ref object<-alist)
+8:         (only-in :std/crypto/digest sha256)
+18:         poo-flow-authorized-effect-token-validate
+19:         poo-flow-authorized-effect-token-consume)
+20: 
+21: (def (canonical-digest value)
+64: (def (poo-flow-effect-binding b-digest b-epoch p-digest e-digest d-digest i-digest
+65:                               attempt effect runtime session seq-start seq-end
+66:                               arena arena-gen offset length pld-digest lease)
+67:   (object<-alist
+68:    (list (cons 'kind 'poo-flow-effect-binding)
+72:          (cons 'attempt-id attempt) (cons 'effect-kind effect)
+73:          (cons 'runtime-id runtime) (cons 'session-id session)
+74:          (cons 'sequence-start seq-start) (cons 'sequence-end seq-end)
+75:          (cons 'arena-id arena) (cons 'arena-generation arena-gen)
+76:          (cons 'payload-offset offset) (cons 'payload-length length)
+77:          (cons 'payload-digest pld-digest) (cons 'lease-id lease))))
+78: 
+79: (def (poo-flow-token-validity issued not-before-time expiry-time revocation)
+96: (def (poo-flow-token-validation-context root expected-binding current-time
+97:                                          current-revocation spent-nonces)
+98:   (.o (kind 'poo-flow-token-validation-context)
+99:       (semantic-root root) (binding expected-binding) (now current-time)
+100:       (revocation-epoch current-revocation) (consumed-nonces spent-nonces)))
+101: 
+102: (def (binding-projection binding)
+106:         (.ref binding 'attempt-id) (.ref binding 'effect-kind)
+107:         (.ref binding 'runtime-id) (.ref binding 'session-id)
+108:         (.ref binding 'sequence-start) (.ref binding 'sequence-end)
+109:         (.ref binding 'arena-id) (.ref binding 'arena-generation)
+110:         (.ref binding 'payload-offset) (.ref binding 'payload-length)
+111:         (.ref binding 'payload-digest) (.ref binding 'lease-id)))
+112: 
+113: (def (binding-equal? left right)
+124:       'binding-substitution)
+125:      ((member nonce (.ref context 'consumed-nonces)) 'token-reuse)
+126:      ((< (.ref context 'now) (.ref validity 'not-before)) 'token-not-yet-valid)
+127:      ((> (.ref context 'now) (.ref validity 'expiry)) 'token-expired)
+141: 
+142: (def (poo-flow-authorized-effect-token-consume token validation
+143:                                                prior-root observation)
+144:   (unless (.ref validation 'accepted?)
+145:     (error "cannot consume rejected AuthorizedEffectToken"))
+146:   (let* ((leaf (list 'poo-flow.execution-leaf.draft.1
+147:                      prior-root (.ref token 'nonce)
+150:          (next-root (canonical-digest leaf)))
+151:     (.o (kind 'poo-flow-token-consumption-receipt)
+152:         (outcome 'committed) (token-id (.ref token 'token-id))
+153:         (nonce (.ref token 'nonce))
+P13 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/strict-mediation.ss fbb3bfbb16964b382352d1f3afe6aa319caea25adfc92d06c094942b26864916
+5: ;;; Boundary: Strict mediation owns pure nonce/root state transitions.
+6: ;;; Invariant: a token is consumed at most once and roots never fork silently.
+7: (import (only-in :clan/poo/object .o .ref)
+8:         :poo-flow/modules/governance/policy/authorized-effect-token)
+14: 
+15: (def (poo-flow-strict-mediation-state root seq spent revocation)
+16:   (.o (kind 'poo-flow-strict-mediation-state)
+17:       (execution-root root) (sequence seq)
+18:       (consumed-nonces spent) (revocation-epoch revocation)
+19:       (durability 'strict)))
+20: 
+47:                    (.ref state 'execution-root) (+ 1 (.ref state 'sequence))
+48:                    (cons token-nonce (.ref state 'consumed-nonces))
+49:                    (.ref state 'revocation-epoch)))
+50:                  (receipt
+51:                   (.o (kind 'poo-flow-strict-mediation-receipt)
+52:                       (accepted? #t) (outcome 'indeterminate)
+53:                       (code 'observation-unavailable)
+54:                       (token-id (.ref token 'token-id)) (nonce token-nonce)
+58:             (transition next-state receipt))
+59:           (let* ((consumption-receipt
+60:                   (poo-flow-authorized-effect-token-consume
+61:                    token validation (.ref state 'execution-root) observation))
+62:                  (token-nonce (.ref token 'nonce))
+64:                   (poo-flow-strict-mediation-state
+65:                    (.ref consumption-receipt 'execution-root)
+66:                    (+ 1 (.ref state 'sequence))
+67:                    (cons token-nonce (.ref state 'consumed-nonces))
+68:                    (.ref state 'revocation-epoch)))
+69:                  (receipt
+73:                       (before-root (.ref state 'execution-root))
+74:                       (after-root (.ref consumption-receipt 'execution-root))
+75:                       (consumption consumption-receipt) (durability 'strict))))
+76:             (transition next-state receipt)))))))
+77:   )
+P15 cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc modules/assurance/effect-host.ss 0972fd28c7e66c0c4173f8b4116cec29e6c6608a348e7b694ed8f7ead9162de1
+P17 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store-backend.ss 6d15089fbe7e6101b478869db230fdec3282a60d781c551483849ec29a15ed8b
+P18 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean 3b6df2df1bdafe0f90445f46a99a94aed4ef9d79552b5435b257f83880529822
+P19 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean 0c28396b16e390a97a1a8491fb29f7d88e4a84b49e11a740a2610ec04bfb459e
+P20 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean 3b1b645f0f9cbdd4b698d19a6a9852c251b60ee1c5194d10af276f8a8a02d629
+P22 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store.ss ce4fb7cc049d3a5f6395deec31db3130cd87796241506d252a07bcfc73391f1f
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean-poo/SessionAttempt.lean af885ce7b6f3a91f8ab4079a56a7ba439b16a1fc853c3432adfd1b2391b12543
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/quint/SessionAttempt.qnt 2857ad1bc556179f034255a93537a136f08dcc21cd46458a6af18fef206f58b4
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean 560be0ea351e03ab3907f62248c37f9957a02e150ee6ebb32856440a9f2b8a46
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean 4e311cd509f144e842e4bd20293c91da2b4d70534592e9e1b986290692cb9810
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean 47aea64e5a90812311f08aab30ebdbd36b9165a97837ffde373796d5adfb73a0
+11: /--
+12: A successor context on one authority path must preserve the authority identity
+13: and strictly advance the authority generation.  Strict advancement makes the
+14: generation an anti-ABA fence rather than a mutable version label.
+15: -/
+16: def validAuthorityContextTransition
+17:     (before after : ReceiptValidationContext) : Prop :=
+18:   before.authorityIdentity = after.authorityIdentity ∧
+19:     before.authorityGeneration < after.authorityGeneration
+20: 
+21: theorem validAuthorityContextTransitionChangesContext
+22:     {before after : ReceiptValidationContext}
+23:     (transitionValid : validAuthorityContextTransition before after) :
+24:     before ≠ after := by
+25:   intro contextsEqual
+26:   have generationsEqual :
+27:       before.authorityGeneration = after.authorityGeneration :=
+28:     congrArg ReceiptValidationContext.authorityGeneration contextsEqual
+29:   exact (Nat.ne_of_lt transitionValid.2) generationsEqual
+30: 
+32:     {before after : ReceiptValidationContext}
+33:     {receipt : ContextBoundAuthorityReceipt}
+34:     (acceptedBefore : acceptedAtContext before receipt)
+35:     (transitionValid : validAuthorityContextTransition before after) :
+36:     ¬ acceptedAtContext after receipt :=
+37:   exactContextAcceptanceRejectsChangedContext
+38:     acceptedBefore
+39:     (validAuthorityContextTransitionChangesContext transitionValid)
+40: 
+41: /--
+42: Countermodel: exact context equality rejects an old receipt while the current
+43: context is different, but accepts it again if the authority publishes the old
+44: context value as current.  Equality alone therefore does not prevent
+45: `C₀ → C₁ → C₀` rollback replay.
+46: -/
+47: theorem exactEqualityAlonePermitsRollbackReplay :
+48:     ∃
+49:       (contextZero contextOne : ReceiptValidationContext)
+50:       (receipt : ContextBoundAuthorityReceipt),
+51:       contextZero ≠ contextOne ∧
+52:         acceptedAtContext contextZero receipt ∧
+56:     {
+57:       authorityIdentity := 61
+58:       authorityGeneration := 5
+59:       policySnapshotIdentity := 67
+60:       authorizationSnapshotIdentity := 71
+64:     {
+65:       authorityIdentity := 61
+66:       authorityGeneration := 6
+67:       policySnapshotIdentity := 79
+68:       authorizationSnapshotIdentity := 83
+70:     }
+71:   let receipt : ContextBoundAuthorityReceipt :=
+72:     {
+73:       issuedContext := contextZero
+88: /--
+89: An authority context lineage is indexed by an authority-owned monotonically
+90: increasing position.  The structure directly records the semantic invariant
+91: needed by receipt validation; it does not derive freshness from wall-clock
+93: -/
+94: structure AuthorityContextLineage where
+95:   authorityIdentity : Nat
+96:   contextAt : Nat → ReceiptValidationContext
+97:   fixedAuthority :
+98:     ∀ position,
+99:       (contextAt position).authorityIdentity = authorityIdentity
+100:   generationStrict :
+101:     ∀ {earlier later},
+102:       earlier < later →
+103:         (contextAt earlier).authorityGeneration <
+104:           (contextAt later).authorityGeneration
+105: 
+106: theorem authorityContextLineageNeverReusesEarlierContext
+107:     (lineage : AuthorityContextLineage)
+108:     {earlier later : Nat}
+109:     (positionAdvanced : earlier < later) :
+112:   have generationsEqual :
+113:       (lineage.contextAt earlier).authorityGeneration =
+114:         (lineage.contextAt later).authorityGeneration :=
+115:     congrArg ReceiptValidationContext.authorityGeneration contextsEqual
+116:   exact
+117:     (Nat.ne_of_lt (lineage.generationStrict positionAdvanced))
+120: theorem receiptIssuedAtEarlierLineagePositionIsRejectedLater
+121:     (lineage : AuthorityContextLineage)
+122:     {earlier later : Nat}
+123:     {receipt : ContextBoundAuthorityReceipt}
+124:     (positionAdvanced : earlier < later)
+125:     (acceptedEarlier :
+129:     acceptedEarlier
+130:     (authorityContextLineageNeverReusesEarlierContext
+131:       lineage
+132:       positionAdvanced)
+133: 
+134: theorem lineagePositionsShareAuthorityIdentity
+135:     (lineage : AuthorityContextLineage)
+136:     (left right : Nat) :
+137:     (lineage.contextAt left).authorityIdentity =
+138:       (lineage.contextAt right).authorityIdentity := by
+139:   exact (lineage.fixedAuthority left).trans (lineage.fixedAuthority right).symm
+140: 
+141: /--
+149:       left ≠ right ∧
+150:         validAuthorityContextTransition before left ∧
+151:         validAuthorityContextTransition before right ∧
+152:         left.authorityGeneration = right.authorityGeneration := by
+153:   let before : ReceiptValidationContext :=
+154:     {
+155:       authorityIdentity := 97
+156:       authorityGeneration := 10
+157:       policySnapshotIdentity := 101
+158:       authorizationSnapshotIdentity := 103
+162:     {
+163:       authorityIdentity := 97
+164:       authorityGeneration := 11
+165:       policySnapshotIdentity := 109
+166:       authorizationSnapshotIdentity := 113
+170:     {
+171:       authorityIdentity := 97
+172:       authorityGeneration := 11
+173:       policySnapshotIdentity := 131
+174:       authorizationSnapshotIdentity := 137
+178:     decide
+179:   have leftValid : validAuthorityContextTransition before left := by
+180:     constructor
+181:     · rfl
+182:     · decide
+183:   have rightValid : validAuthorityContextTransition before right := by
+184:     constructor
+185:     · rfl
+195:       published right →
+196:         left.authorityIdentity = right.authorityIdentity →
+197:           left.authorityGeneration = right.authorityGeneration →
+198:             left = right
+199: 
+200: def publishedByLineage
+201:     (lineage : AuthorityContextLineage)
+202:     (context : ReceiptValidationContext) : Prop :=
+203:   ∃ position, lineage.contextAt position = context
+205: theorem lineagePublicationIsForkFree
+206:     (lineage : AuthorityContextLineage) :
+207:     ForkFreeContextPublication (publishedByLineage lineage) := by
+208:   intro left right leftPublished rightPublished _ generationsEqual
+233:     (rightPublished : published right)
+234:     (sameAuthority :
+235:       left.authorityIdentity = right.authorityIdentity)
+236:     (sameGeneration :
+237:       left.authorityGeneration = right.authorityGeneration) :
+238:     left = right :=
+239:   publicationForkFree
+241:     rightPublished
+242:     sameAuthority
+243:     sameGeneration
+244: 
+246: Countermodel: two locally valid monotone lineage views can disagree about the
+247: context published by one authority at the same generation.  Local monotonicity
+248: does not establish cross-view consistency.
+249: -/
+251:     ∃
+252:       (left right : AuthorityContextLineage),
+253:       left.authorityIdentity = right.authorityIdentity ∧
+254:         (left.contextAt 1).authorityGeneration =
+255:           (right.contextAt 1).authorityGeneration ∧
+256:         left.contextAt 1 ≠ right.contextAt 1 := by
+257:   let left : AuthorityContextLineage :=
+258:     {
+259:       authorityIdentity := 149
+260:       contextAt := fun position =>
+261:         {
+262:           authorityIdentity := 149
+263:           authorityGeneration := position
+264:           policySnapshotIdentity := 151
+265:           authorizationSnapshotIdentity := 157
+267:         }
+268:       fixedAuthority := by
+269:         intro position
+270:         rfl
+274:     }
+275:   let right : AuthorityContextLineage :=
+276:     {
+277:       authorityIdentity := 149
+278:       contextAt := fun position =>
+279:         {
+280:           authorityIdentity := 149
+281:           authorityGeneration := position
+282:           policySnapshotIdentity := 167
+283:           authorizationSnapshotIdentity := 173
+285:         }
+286:       fixedAuthority := by
+287:         intro position
+288:         rfl
+297: /--
+298: The shared authority-owned publication domain against which a verifier checks
+299: membership evidence.  The structure specifies semantics only; it does not
+300: select a database, log, or consensus implementation.
+301: -/
+302: structure AuthoritativeContextPublicationDomain where
+303:   domainIdentity : Nat
+304:   domainSemanticIdentity : Nat
+305:   authorityIdentity : Nat
+306:   published : ReceiptValidationContext → Prop
+307:   authorityBound :
+308:     ∀ {context},
+309:       published context →
+310:         context.authorityIdentity = authorityIdentity
+311:   forkFree : ForkFreeContextPublication published
+312: 
+313: structure ContextPublicationMembershipEvidence
+314:     (domain : AuthoritativeContextPublicationDomain) where
+315:   context : ReceiptValidationContext
+316:   member : domain.published context
+317: 
+318: theorem sharedPublicationDomainRejectsSplitViewEquivocation
+319:     (domain : AuthoritativeContextPublicationDomain)
+320:     (left right : ContextPublicationMembershipEvidence domain)
+321:     (sameGeneration :
+322:       left.context.authorityGeneration =
+323:         right.context.authorityGeneration) :
+324:     left.context = right.context := by
+325:   have sameAuthority :
+326:       left.context.authorityIdentity =
+327:         right.context.authorityIdentity :=
+328:     (domain.authorityBound left.member).trans
+329:       (domain.authorityBound right.member).symm
+330:   exact
+331:     domain.forkFree
+333:       right.member
+334:       sameAuthority
+335:       sameGeneration
+336: 
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean 11178fd01214c99ec7f9863169dc264cc68241a70398645fe026cba28b3e299c
+11: 
+12: structure AuthorityContextLineagePrefix where
+13:   lineage : AuthorityContextLineage
+14:   headPosition : Nat
+15: 
+16: def lineagePrefixAt
+17:     (lineage : AuthorityContextLineage)
+18:     (headPosition : Nat) : AuthorityContextLineagePrefix :=
+19:   { lineage := lineage, headPosition := headPosition }
+20: 
+21: def publishedByLineagePrefix
+22:     (lineagePrefix : AuthorityContextLineagePrefix)
+23:     (context : ReceiptValidationContext) : Prop :=
+24:   ∃ position,
+28: theorem lineagePrefixHeadIsPublished
+29:     (lineagePrefix : AuthorityContextLineagePrefix) :
+30:     publishedByLineagePrefix
+31:       lineagePrefix
+35: theorem lineagePositionAtOrBeforeHeadIsPublished
+36:     (lineagePrefix : AuthorityContextLineagePrefix)
+37:     {position : Nat}
+38:     (notAfterHead : position ≤ lineagePrefix.headPosition) :
+44: theorem lineagePositionAfterHeadIsNotPublished
+45:     (lineagePrefix : AuthorityContextLineagePrefix)
+46:     {position : Nat}
+47:     (afterHead : lineagePrefix.headPosition < position) :
+55:   exact
+56:     (authorityContextLineageNeverReusesEarlierContext
+57:       lineagePrefix.lineage publishedBeforeFuture)
+58:       contextsEqual
+60: theorem lineagePrefixPublicationIsForkFree
+61:     (lineagePrefix : AuthorityContextLineagePrefix) :
+62:     ForkFreeContextPublication (publishedByLineagePrefix lineagePrefix) := by
+63:   intro left right leftPublished rightPublished sameAuthority sameGeneration
+64:   apply lineagePublicationIsForkFree lineagePrefix.lineage
+65:   · rcases leftPublished with ⟨position, _, contextEqual⟩
+68:     exact ⟨position, contextEqual⟩
+69:   · exact sameAuthority
+70:   · exact sameGeneration
+71: 
+72: def AuthorityContextLineagePrefix.toPublicationDomain
+73:     (lineagePrefix : AuthorityContextLineagePrefix)
+74:     (domainIdentity domainSemanticIdentity : Nat) :
+75:     AuthoritativeContextPublicationDomain where
+76:   domainIdentity := domainIdentity
+77:   domainSemanticIdentity := domainSemanticIdentity
+78:   authorityIdentity := lineagePrefix.lineage.authorityIdentity
+79:   published := publishedByLineagePrefix lineagePrefix
+80:   authorityBound := by
+81:     intro context published
+82:     rcases published with ⟨position, _, contextEqual⟩
+83:     rw [← contextEqual]
+84:     exact lineagePrefix.lineage.fixedAuthority position
+85:   forkFree := lineagePrefixPublicationIsForkFree lineagePrefix
+86: 
+87: structure LineagePrefixPublicationDomainBinding
+88:     (lineagePrefix : AuthorityContextLineagePrefix)
+89:     (domain : AuthoritativeContextPublicationDomain) : Prop where
+90:   authorityIdentityBound :
+91:     domain.authorityIdentity = lineagePrefix.lineage.authorityIdentity
+92:   publishedExact :
+93:     ∀ context,
+97: theorem boundDomainPublishesPrefixHead
+98:     {lineagePrefix : AuthorityContextLineagePrefix}
+99:     {domain : AuthoritativeContextPublicationDomain}
+100:     (binding :
+101:       LineagePrefixPublicationDomainBinding lineagePrefix domain) :
+102:     domain.published
+103:       (lineagePrefix.lineage.contextAt lineagePrefix.headPosition) :=
+107: theorem boundDomainRejectsPositionAfterPrefixHead
+108:     {lineagePrefix : AuthorityContextLineagePrefix}
+109:     {domain : AuthoritativeContextPublicationDomain}
+110:     (binding :
+111:       LineagePrefixPublicationDomainBinding lineagePrefix domain)
+112:     {position : Nat}
+113:     (afterHead : lineagePrefix.headPosition < position) :
+P43 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/session/funs-attempt.ss 2e7f2282ae2bb987a7122eb466b70fbf11c9fbfb5aa0bc52c0d42a01dac9de95
+4: ;;; Pure scheduling intents. A Host must resolve producer receipts and publish by CAS.
+5: ;;; Recovery reconciliation cannot be inferred from a provider completion.
+6: (import (only-in :clan/poo/object .o .ref .slot? object?)
+7:         (only-in :std/list/list every) "types.ss" "objects-attempt.ss")
+8: (export poo-flow-session-schedule poo-flow-session-claim poo-flow-session-complete
+9:         poo-flow-session-recover poo-flow-session-reconcile poo-flow-session-close)
+10: (def (name? value) (and (string? value) (< 0 (string-length value) 257)))
+11: (def (freeze-input value)
+12:   (let* ((consumer-value (string-copy (.ref value 'consumer-session)))
+13:          (turn-value (.ref value 'consumer-turn))
+14:          (fields (map (lambda (key) (string-copy (.ref value key)))
+15:       '(producer contract identity digest scope-digest source-vector-digest query-digest
+20:         restriction-digest: (list-ref fields 7) profile-digest: (list-ref fields 8)
+21:         receipt-ref: (list-ref fields 9) consumer-session: consumer-value
+22:         consumer-turn: turn-value complete?: #t)))
+23: (def (receipt accepted-value reason-value state-value)
+24:   (.o kind: 'poo-flow.session.transition-intent.v1 accepted?: accepted-value reason: reason-value
+25:       schedule: state-value runtime-published?: #f action-authorized?: #f durable?: #f))
+26: (def (guard state expected operation)
+27:   (cond ((not (poo-flow-session-schedule-shape? state)) (receipt #f 'invalid-schedule #f))
+45:                      (exact-integer? turn-value) (<= 0 turn-value 65535))) (receipt #f 'invalid-claim state))
+46:           ((or (not (equal? (.ref (.ref task-value 'input) 'consumer-session) (.ref state 'identity)))
+47:                (not (= (.ref (.ref task-value 'input) 'consumer-turn) turn-value)))
+48:            (receipt #f 'wrong-consumer state))
+49:           ((or (member attempt-id (.ref state 'completed)) (>= (length (.ref state 'completed)) 128))
+50:            (receipt #f 'attempt-reuse-or-capacity state))
+70:               '(producer contract identity digest scope-digest source-vector-digest query-digest
+71:                 restriction-digest profile-digest receipt-ref complete? consumer-session consumer-turn))))
+72: (def (poo-flow-session-complete state expected attempt-value)
+73:   (guard state expected (lambda ()
+77:       (receipt #f 'wrong-attempt state)))))
+78: (def (poo-flow-session-recover state expected)
+79:   (guard state expected (lambda ()
+80:     (let ((pending (if (.ref state 'active) (cons (.ref state 'active) (.ref state 'obligations))
+82:           (generation-value (+ 1 (.ref state 'generation))))
+83:       (receipt #t 'recovery-proposed (next-state state (if (null? pending) 'idle 'recovering)
+84:         #f pending (.ref state 'completed) generation-value))))))
+85: (def (poo-flow-session-reconcile state expected attempt-value)
+86:   ;; This is an intent for trusted terminal/isolation receipt resolution, never an acknowledgment by itself.
+87:   (guard state expected (lambda ()
+88:     (if (and (eq? (.ref state 'status) 'recovering)
+89:              (= (length (.ref state 'obligations)) 1)
+90:              (same-attempt? (car (.ref state 'obligations)) attempt-value))
+91:       (receipt #t 'reconciliation-proposed (next-state state 'idle #f '()
+92:         (cons (string-copy (.ref attempt-value 'identity)) (.ref state 'completed)) (.ref state 'generation)))
+93:       (receipt #f 'wrong-obligation state)))))
+C8 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Admission/BoundOperation.lean 6105f4f0651886ee413f5edcea44df32323543de8825ca8f0e9f098205cf2afa
+5: model. The projection is fixed when the operation is constructed; a later Host
+6: must still authenticate the actual effect and state before execution.
+7: -/
+8: 
+22: 
+23: /-- Check a concrete operation against the actual effect and state supplied
+24:     by the caller. This equality check does not authenticate either input. -/
+25: def BoundOperation.matches {Effect State : Type}
+C10 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/CompoundAuthorization.lean bd9c938f6986d6f01051d4fda067ffe1d7d106e5deae6956e88e5e9aa4ec3708
+26:     receipt.responses.all (fun response =>
+27:       response.decision == .allow && response.erroringPolicies.isEmpty)
+28: 
+29: /-- Compile once, then evaluate all requests against the same policy set. -/
+46: /-- All required layers must allow without policy evaluation errors. -/
+47: def layersAllowed {model : Model} {entities : Entities}
+48:     (receipts : List (LayerReceipt model entities)) : Bool :=
+49:   !receipts.isEmpty && receipts.all fun layer =>
+50:     layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty
+51: 
+52: /-- One exact compilation can serve several requests against the same root. -/
+C11 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Composition.lean 3a6bd1ae53c74d9a6eebdcf56964e0f886b91ae82bb1af2c885b76ca15530be1

@@ -1,0 +1,1842 @@
+[
+  {
+    "path": "proofs/evidence/llm-multi-key-registry/itf/aliasRebindCounterexampleTest-3.itf.json",
+    "states": 10,
+    "violation": "aliasRebind",
+    "final": {
+      "aliases": [
+        {
+          "key": 100,
+          "origin": 10
+        },
+        {
+          "key": 100,
+          "origin": 20
+        },
+        {
+          "key": 101,
+          "origin": 20
+        }
+      ],
+      "applied": [],
+      "calls": 0,
+      "charged": 0,
+      "decisions": [
+        {
+          "position": 1,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        },
+        {
+          "position": 2,
+          "request": {
+            "alias": {
+              "key": 101,
+              "origin": 20
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 1,
+            "kind": 0,
+            "parent": 1,
+            "policy": 0,
+            "source": 1
+          }
+        },
+        {
+          "position": 3,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 2,
+            "kind": 1,
+            "parent": 2,
+            "policy": 0,
+            "source": 2
+          }
+        },
+        {
+          "position": 4,
+          "request": {
+            "alias": {
+              "key": 101,
+              "origin": 20
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 3,
+            "kind": 1,
+            "parent": 3,
+            "policy": 0,
+            "source": 3
+          }
+        }
+      ],
+      "denied": false,
+      "everSpent": [],
+      "fence": 0,
+      "online": true,
+      "pending": [
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 0,
+          "kind": 0,
+          "parent": 0,
+          "policy": 0,
+          "source": 0
+        },
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 2,
+          "kind": 1,
+          "parent": 2,
+          "policy": 0,
+          "source": 2
+        },
+        {
+          "alias": {
+            "key": 101,
+            "origin": 20
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 22,
+            "family": 21,
+            "history": 9,
+            "origin": 20,
+            "profile": 31
+          },
+          "fence": 0,
+          "id": 1,
+          "kind": 0,
+          "parent": 1,
+          "policy": 0,
+          "source": 1
+        },
+        {
+          "alias": {
+            "key": 101,
+            "origin": 20
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 22,
+            "family": 21,
+            "history": 9,
+            "origin": 20,
+            "profile": 31
+          },
+          "fence": 0,
+          "id": 3,
+          "kind": 1,
+          "parent": 3,
+          "policy": 0,
+          "source": 3
+        }
+      ],
+      "policy": 0,
+      "revision": 4,
+      "rows": [
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 11,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        },
+        {
+          "budget": 5,
+          "claim": 22,
+          "family": 21,
+          "history": 9,
+          "origin": 20,
+          "profile": 31
+        }
+      ],
+      "source": 4,
+      "spent": [],
+      "uses": [],
+      "visible": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-multi-key-registry/itf/conflictingDecisionCounterexampleTest-8.itf.json",
+    "states": 4,
+    "violation": "conflictingDecision",
+    "final": {
+      "aliases": [],
+      "applied": [],
+      "calls": 0,
+      "charged": 0,
+      "decisions": [
+        {
+          "position": 1,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        },
+        {
+          "position": 2,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        }
+      ],
+      "denied": false,
+      "everSpent": [],
+      "fence": 0,
+      "online": true,
+      "pending": [
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 0,
+          "kind": 0,
+          "parent": 0,
+          "policy": 0,
+          "source": 0
+        }
+      ],
+      "policy": 0,
+      "revision": 1,
+      "rows": [
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 11,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        }
+      ],
+      "source": 1,
+      "spent": [],
+      "uses": [],
+      "visible": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-multi-key-registry/itf/droppedPendingCounterexampleTest-9.itf.json",
+    "states": 4,
+    "violation": "droppedPending",
+    "final": {
+      "aliases": [],
+      "applied": [],
+      "calls": 0,
+      "charged": 0,
+      "decisions": [
+        {
+          "position": 1,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        }
+      ],
+      "denied": false,
+      "everSpent": [],
+      "fence": 0,
+      "online": true,
+      "pending": [],
+      "policy": 0,
+      "revision": 1,
+      "rows": [
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 11,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        }
+      ],
+      "source": 1,
+      "spent": [],
+      "uses": [],
+      "visible": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-multi-key-registry/itf/duplicateClaimCounterexampleTest-2.itf.json",
+    "states": 4,
+    "violation": "duplicateClaim",
+    "final": {
+      "aliases": [],
+      "applied": [],
+      "calls": 0,
+      "charged": 0,
+      "decisions": [
+        {
+          "position": 1,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        }
+      ],
+      "denied": false,
+      "everSpent": [],
+      "fence": 0,
+      "online": true,
+      "pending": [
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 0,
+          "kind": 0,
+          "parent": 0,
+          "policy": 0,
+          "source": 0
+        }
+      ],
+      "policy": 0,
+      "revision": 1,
+      "rows": [
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 11,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        },
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 21,
+          "history": 9,
+          "origin": 20,
+          "profile": 31
+        }
+      ],
+      "source": 1,
+      "spent": [],
+      "uses": [],
+      "visible": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-multi-key-registry/itf/duplicateFamilyCounterexampleTest-1.itf.json",
+    "states": 4,
+    "violation": "duplicateFamily",
+    "final": {
+      "aliases": [],
+      "applied": [],
+      "calls": 0,
+      "charged": 0,
+      "decisions": [
+        {
+          "position": 1,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        }
+      ],
+      "denied": false,
+      "everSpent": [],
+      "fence": 0,
+      "online": true,
+      "pending": [
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 0,
+          "kind": 0,
+          "parent": 0,
+          "policy": 0,
+          "source": 0
+        }
+      ],
+      "policy": 0,
+      "revision": 1,
+      "rows": [
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 11,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        },
+        {
+          "budget": 5,
+          "claim": 22,
+          "family": 11,
+          "history": 9,
+          "origin": 20,
+          "profile": 31
+        }
+      ],
+      "source": 1,
+      "spent": [],
+      "uses": [],
+      "visible": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-multi-key-registry/itf/duplicateOriginCounterexampleTest-0.itf.json",
+    "states": 5,
+    "violation": "duplicateOrigin",
+    "final": {
+      "aliases": [],
+      "applied": [],
+      "calls": 0,
+      "charged": 0,
+      "decisions": [
+        {
+          "position": 1,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        }
+      ],
+      "denied": false,
+      "everSpent": [],
+      "fence": 0,
+      "online": true,
+      "pending": [
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 0,
+          "kind": 0,
+          "parent": 0,
+          "policy": 0,
+          "source": 0
+        }
+      ],
+      "policy": 0,
+      "revision": 1,
+      "rows": [
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 11,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        },
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 99,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        }
+      ],
+      "source": 1,
+      "spent": [],
+      "uses": [],
+      "visible": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-multi-key-registry/itf/oldOwnerCounterexampleTest-4.itf.json",
+    "states": 13,
+    "violation": "oldOwner",
+    "final": {
+      "aliases": [
+        {
+          "key": 100,
+          "origin": 10
+        },
+        {
+          "key": 101,
+          "origin": 20
+        }
+      ],
+      "applied": [],
+      "calls": 0,
+      "charged": 0,
+      "decisions": [
+        {
+          "position": 1,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        },
+        {
+          "position": 2,
+          "request": {
+            "alias": {
+              "key": 101,
+              "origin": 20
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 1,
+            "kind": 0,
+            "parent": 1,
+            "policy": 0,
+            "source": 1
+          }
+        },
+        {
+          "position": 3,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 2,
+            "kind": 1,
+            "parent": 2,
+            "policy": 0,
+            "source": 2
+          }
+        },
+        {
+          "position": 4,
+          "request": {
+            "alias": {
+              "key": 101,
+              "origin": 20
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 3,
+            "kind": 1,
+            "parent": 3,
+            "policy": 0,
+            "source": 3
+          }
+        }
+      ],
+      "denied": false,
+      "everSpent": [],
+      "fence": 1,
+      "online": true,
+      "pending": [
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 0,
+          "kind": 0,
+          "parent": 0,
+          "policy": 0,
+          "source": 0
+        },
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 2,
+          "kind": 1,
+          "parent": 2,
+          "policy": 0,
+          "source": 2
+        },
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 3,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 4,
+          "kind": 2,
+          "parent": 4,
+          "policy": 0,
+          "source": 4
+        },
+        {
+          "alias": {
+            "key": 101,
+            "origin": 20
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 22,
+            "family": 21,
+            "history": 9,
+            "origin": 20,
+            "profile": 31
+          },
+          "fence": 0,
+          "id": 1,
+          "kind": 0,
+          "parent": 1,
+          "policy": 0,
+          "source": 1
+        },
+        {
+          "alias": {
+            "key": 101,
+            "origin": 20
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 22,
+            "family": 21,
+            "history": 9,
+            "origin": 20,
+            "profile": 31
+          },
+          "fence": 0,
+          "id": 3,
+          "kind": 1,
+          "parent": 3,
+          "policy": 0,
+          "source": 3
+        }
+      ],
+      "policy": 0,
+      "revision": 4,
+      "rows": [
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 11,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        },
+        {
+          "budget": 5,
+          "claim": 22,
+          "family": 21,
+          "history": 9,
+          "origin": 20,
+          "profile": 31
+        }
+      ],
+      "source": 4,
+      "spent": [],
+      "uses": [
+        {
+          "fence": 1,
+          "policy": 0,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 3,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 4,
+            "kind": 2,
+            "parent": 4,
+            "policy": 0,
+            "source": 4
+          },
+          "revision": 4,
+          "source": 4
+        }
+      ],
+      "visible": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-multi-key-registry/itf/rollbackCounterexampleTest-7.itf.json",
+    "states": 13,
+    "violation": "rollback",
+    "final": {
+      "aliases": [
+        {
+          "key": 100,
+          "origin": 10
+        },
+        {
+          "key": 101,
+          "origin": 20
+        }
+      ],
+      "applied": [],
+      "calls": 1,
+      "charged": 0,
+      "decisions": [
+        {
+          "position": 1,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        },
+        {
+          "position": 2,
+          "request": {
+            "alias": {
+              "key": 101,
+              "origin": 20
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 1,
+            "kind": 0,
+            "parent": 1,
+            "policy": 0,
+            "source": 1
+          }
+        },
+        {
+          "position": 3,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 2,
+            "kind": 1,
+            "parent": 2,
+            "policy": 0,
+            "source": 2
+          }
+        },
+        {
+          "position": 4,
+          "request": {
+            "alias": {
+              "key": 101,
+              "origin": 20
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 3,
+            "kind": 1,
+            "parent": 3,
+            "policy": 0,
+            "source": 3
+          }
+        },
+        {
+          "position": 5,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 3,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 4,
+            "kind": 2,
+            "parent": 4,
+            "policy": 0,
+            "source": 4
+          }
+        }
+      ],
+      "denied": false,
+      "everSpent": [
+        12
+      ],
+      "fence": 0,
+      "online": false,
+      "pending": [
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 0,
+          "kind": 0,
+          "parent": 0,
+          "policy": 0,
+          "source": 0
+        },
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 2,
+          "kind": 1,
+          "parent": 2,
+          "policy": 0,
+          "source": 2
+        },
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 3,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 4,
+          "kind": 2,
+          "parent": 4,
+          "policy": 0,
+          "source": 4
+        },
+        {
+          "alias": {
+            "key": 101,
+            "origin": 20
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 22,
+            "family": 21,
+            "history": 9,
+            "origin": 20,
+            "profile": 31
+          },
+          "fence": 0,
+          "id": 1,
+          "kind": 0,
+          "parent": 1,
+          "policy": 0,
+          "source": 1
+        },
+        {
+          "alias": {
+            "key": 101,
+            "origin": 20
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 22,
+            "family": 21,
+            "history": 9,
+            "origin": 20,
+            "profile": 31
+          },
+          "fence": 0,
+          "id": 3,
+          "kind": 1,
+          "parent": 3,
+          "policy": 0,
+          "source": 3
+        }
+      ],
+      "policy": 0,
+      "revision": 5,
+      "rows": [
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 11,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        },
+        {
+          "budget": 5,
+          "claim": 22,
+          "family": 21,
+          "history": 9,
+          "origin": 20,
+          "profile": 31
+        }
+      ],
+      "source": 5,
+      "spent": [],
+      "uses": [
+        {
+          "fence": 0,
+          "policy": 0,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 3,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 4,
+            "kind": 2,
+            "parent": 4,
+            "policy": 0,
+            "source": 4
+          },
+          "revision": 4,
+          "source": 4
+        }
+      ],
+      "visible": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-multi-key-registry/itf/sharedBudgetCounterexampleTest-6.itf.json",
+    "states": 12,
+    "violation": "sharedBudget",
+    "final": {
+      "aliases": [
+        {
+          "key": 100,
+          "origin": 10
+        },
+        {
+          "key": 101,
+          "origin": 20
+        }
+      ],
+      "applied": [],
+      "calls": 1,
+      "charged": 6,
+      "decisions": [
+        {
+          "position": 1,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        },
+        {
+          "position": 2,
+          "request": {
+            "alias": {
+              "key": 101,
+              "origin": 20
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 1,
+            "kind": 0,
+            "parent": 1,
+            "policy": 0,
+            "source": 1
+          }
+        },
+        {
+          "position": 3,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 2,
+            "kind": 1,
+            "parent": 2,
+            "policy": 0,
+            "source": 2
+          }
+        },
+        {
+          "position": 4,
+          "request": {
+            "alias": {
+              "key": 101,
+              "origin": 20
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 3,
+            "kind": 1,
+            "parent": 3,
+            "policy": 0,
+            "source": 3
+          }
+        },
+        {
+          "position": 5,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 3,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 4,
+            "kind": 2,
+            "parent": 4,
+            "policy": 0,
+            "source": 4
+          }
+        }
+      ],
+      "denied": false,
+      "everSpent": [
+        12
+      ],
+      "fence": 0,
+      "online": true,
+      "pending": [
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 0,
+          "kind": 0,
+          "parent": 0,
+          "policy": 0,
+          "source": 0
+        },
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 2,
+          "kind": 1,
+          "parent": 2,
+          "policy": 0,
+          "source": 2
+        },
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 3,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 4,
+          "kind": 2,
+          "parent": 4,
+          "policy": 0,
+          "source": 4
+        },
+        {
+          "alias": {
+            "key": 101,
+            "origin": 20
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 22,
+            "family": 21,
+            "history": 9,
+            "origin": 20,
+            "profile": 31
+          },
+          "fence": 0,
+          "id": 1,
+          "kind": 0,
+          "parent": 1,
+          "policy": 0,
+          "source": 1
+        },
+        {
+          "alias": {
+            "key": 101,
+            "origin": 20
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 22,
+            "family": 21,
+            "history": 9,
+            "origin": 20,
+            "profile": 31
+          },
+          "fence": 0,
+          "id": 3,
+          "kind": 1,
+          "parent": 3,
+          "policy": 0,
+          "source": 3
+        }
+      ],
+      "policy": 0,
+      "revision": 5,
+      "rows": [
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 11,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        },
+        {
+          "budget": 5,
+          "claim": 22,
+          "family": 21,
+          "history": 9,
+          "origin": 20,
+          "profile": 31
+        }
+      ],
+      "source": 5,
+      "spent": [
+        12
+      ],
+      "uses": [
+        {
+          "fence": 0,
+          "policy": 0,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 3,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 4,
+            "kind": 2,
+            "parent": 4,
+            "policy": 0,
+            "source": 4
+          },
+          "revision": 4,
+          "source": 4
+        }
+      ],
+      "visible": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-multi-key-registry/itf/staleSourceCounterexampleTest-5.itf.json",
+    "states": 12,
+    "violation": "staleSource",
+    "final": {
+      "aliases": [
+        {
+          "key": 100,
+          "origin": 10
+        },
+        {
+          "key": 101,
+          "origin": 20
+        }
+      ],
+      "applied": [],
+      "calls": 0,
+      "charged": 0,
+      "decisions": [
+        {
+          "position": 1,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 0,
+            "kind": 0,
+            "parent": 0,
+            "policy": 0,
+            "source": 0
+          }
+        },
+        {
+          "position": 2,
+          "request": {
+            "alias": {
+              "key": 101,
+              "origin": 20
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 1,
+            "kind": 0,
+            "parent": 1,
+            "policy": 0,
+            "source": 1
+          }
+        },
+        {
+          "position": 3,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 2,
+            "kind": 1,
+            "parent": 2,
+            "policy": 0,
+            "source": 2
+          }
+        },
+        {
+          "position": 4,
+          "request": {
+            "alias": {
+              "key": 101,
+              "origin": 20
+            },
+            "amount": 0,
+            "entry": {
+              "budget": 5,
+              "claim": 22,
+              "family": 21,
+              "history": 9,
+              "origin": 20,
+              "profile": 31
+            },
+            "fence": 0,
+            "id": 3,
+            "kind": 1,
+            "parent": 3,
+            "policy": 0,
+            "source": 3
+          }
+        }
+      ],
+      "denied": false,
+      "everSpent": [],
+      "fence": 0,
+      "online": true,
+      "pending": [
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 0,
+          "kind": 0,
+          "parent": 0,
+          "policy": 0,
+          "source": 0
+        },
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 2,
+          "kind": 1,
+          "parent": 2,
+          "policy": 0,
+          "source": 2
+        },
+        {
+          "alias": {
+            "key": 100,
+            "origin": 10
+          },
+          "amount": 3,
+          "entry": {
+            "budget": 5,
+            "claim": 12,
+            "family": 11,
+            "history": 9,
+            "origin": 10,
+            "profile": 30
+          },
+          "fence": 0,
+          "id": 4,
+          "kind": 2,
+          "parent": 4,
+          "policy": 0,
+          "source": 4
+        },
+        {
+          "alias": {
+            "key": 101,
+            "origin": 20
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 22,
+            "family": 21,
+            "history": 9,
+            "origin": 20,
+            "profile": 31
+          },
+          "fence": 0,
+          "id": 1,
+          "kind": 0,
+          "parent": 1,
+          "policy": 0,
+          "source": 1
+        },
+        {
+          "alias": {
+            "key": 101,
+            "origin": 20
+          },
+          "amount": 0,
+          "entry": {
+            "budget": 5,
+            "claim": 22,
+            "family": 21,
+            "history": 9,
+            "origin": 20,
+            "profile": 31
+          },
+          "fence": 0,
+          "id": 3,
+          "kind": 1,
+          "parent": 3,
+          "policy": 0,
+          "source": 3
+        }
+      ],
+      "policy": 0,
+      "revision": 5,
+      "rows": [
+        {
+          "budget": 5,
+          "claim": 12,
+          "family": 11,
+          "history": 9,
+          "origin": 10,
+          "profile": 30
+        },
+        {
+          "budget": 5,
+          "claim": 22,
+          "family": 21,
+          "history": 9,
+          "origin": 20,
+          "profile": 31
+        }
+      ],
+      "source": 5,
+      "spent": [],
+      "uses": [
+        {
+          "fence": 0,
+          "policy": 0,
+          "request": {
+            "alias": {
+              "key": 100,
+              "origin": 10
+            },
+            "amount": 3,
+            "entry": {
+              "budget": 5,
+              "claim": 12,
+              "family": 11,
+              "history": 9,
+              "origin": 10,
+              "profile": 30
+            },
+            "fence": 0,
+            "id": 4,
+            "kind": 2,
+            "parent": 4,
+            "policy": 0,
+            "source": 4
+          },
+          "revision": 5,
+          "source": 5
+        }
+      ],
+      "visible": []
+    }
+  }
+]

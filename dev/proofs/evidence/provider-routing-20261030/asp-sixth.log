@@ -1,0 +1,74 @@
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.85s
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-249f78b1f067a4f2)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-b02c9aab2e06f3ec)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_execution-421d5a33e6f762ee)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.09s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_ledger-a4537a23b17a4ebc)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-055a98cc8f07d28d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_policy-c57516304796a3c3)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.03s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-7dd041c1bd5c2073)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_server-93fa33fbdf194d3e)
+
+running 1 test
+test enforce_asp_rust_gate ... FAILED
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (20668238) panicked at crates/server/src/lib.rs:15:1:
+[RUST-AGENT-TOKIO-RUNTIME-002] Info: Tokio runtime operation bypasses a runtime owner
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc_config.rs:83:1
+fix: route Tokio spawn/blocking/runtime construction through a typed runtime facade with task tracking, shutdown, cancellation, and observability
+line: 83 |     let (settings, address) = tokio::task::block_in_place(load)?;
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc_config.rs calls Tokio runtime operation `tokio::task::block_in_place` in `run_from_env` without a runtime owner boundary.
+Contract: Route Tokio spawn, blocking work, and runtime construction through a typed runtime facade so agents preserve task tracking, shutdown, cancellation, thread model, and observability behavior.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.07s
+
+error: test failed, to rerun pass `-p weaver-server --lib`

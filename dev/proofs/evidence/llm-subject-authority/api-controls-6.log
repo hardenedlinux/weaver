@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-6","limit":20}
+
+  LlmSubjectAuthority
+    ok generationCannotBeReopenedTest passed 1 test(s)
+    ok rotationCannotRenameSubjectTest passed 1 test(s)
+    ok sameKeyRotationDoesNotChangeHistoricalPlanTest passed 1 test(s)
+
+  3 passing (1932ms)
+@@DONE {"label":"api-controls-6","passed":["generationCannotBeReopenedTest","rotationCannotRenameSubjectTest","sameKeyRotationDoesNotChangeHistoricalPlanTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

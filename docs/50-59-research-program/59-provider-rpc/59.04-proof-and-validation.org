@@ -1,0 +1,103 @@
+#+TITLE: 59.04 gRPC, Provider and Encoding Assurance
+#+LANGUAGE: en
+
+* Responsibilities
+
+SysML v2 owns component allocation, typed interfaces, explicit resource ceilings
+and named requirement coverage. The Go development test uses the public in-process
+OpenSysML API with strict diagnostics; the requirement inventory is obtained from
+its query API and matched to native/formal witnesses. Protobuf descriptor equality
+independently checks that generated Go bindings match the shared source consumed
+by the Rust build. A successful parser call alone is not model acceptance.
+
+Quint owns operational schedules and counterexamples. =ProviderRpc.qnt= models
+canonical identity across RPC attempts, durable dispatch burn, source views,
+cancellation, route selection before consumption, encoding-independent row guards,
+unknown holds and previously admitted buffer drain. Its release records retain
+both the permitted row set and the actual authority view at release, so a second
+unpermitted Arrow row or a stale grant produces a concrete invariant violation.
+The executable negative controls exercise unsafe reset, first-row-only checks,
+stale release and refund. Sampling is bounded evidence, not exhaustive native
+state-space coverage.
+
+=NativeAdmission.qnt= adds independent native-lane enabledness and a shared-lane
+starvation counterexample. =ConnectionAdmission.qnt= adds socket custody before
+TLS, listener reservations, handshake expiry, peer loss and IO destruction. Its
+unsafe controls return a permit while a live socket remains, or accept beyond
+capacity. A timeout action denotes actual destruction; a timer notification alone
+does not constitute recovered capacity.
+=SourceIngress.qnt= separately models new source admission under operation
+saturation and the exact ingress/certificate/credential/method join. Its shared
+budget and forwarded credential controls expose the corresponding unsafe designs.
+=PublicationRecovery.qnt= models original ID/content/parent/fence binding, atomic
+decisions, historical receipts, missing observation, restart and unchanged held
+budget. Head-only commit, deleted outcome and rebound-ID controls violate its
+invariant. =PublicationRecovery.lean= proves five preservation/composition
+declarations for arbitrary decidable key types, finite runs and original held/call
+totals, assuming faithful durable transactions and retained non-rollback records.
+=SourceOwner.qnt= composes those publication controls with worker custody, caller
+loss, fresh deciding reads, shutdown and storage/close-failure handling. Four new
+Lean owner lemmas preserve custody and require healthy quiescent close before
+success. Native cross-writer and blocked-SQL tests provide the separate SQLite
+reuse evidence; no theorem claims that an SQL session caches authority safely.
+=DispatchCancellation.qnt= adds the pre-lock/final-callback interval, immutable
+callback context and new-RPC attempts. ProviderRpc now records invocation-time
+cancellation snapshots, permits late durable burn, and requires a fresh live
+context at invoke. Lean freezes the permit view at consumption and checks it at
+burn; its cancellation history and original-hold composition remain separate
+from physical transport irreversibility.
+
+Lean owns parametric preservation and composition. =ProviderRpc.lean= checks
+one original operation's affine dispatch accounting, hold preservation, stale
+fence rejection, canonical nonce aliasing, every-row Arrow authority, encoding
+equivalence and caller-key equality. Encoding equivalence is a conditional contract:
+the encoders share the same row predicate; the theorem does not prove their
+compiled implementation. Likewise, canonical nonce aliasing requires the native
+registry to use the same original key, and task/cost authenticity is a premise.
+Additional lane/socket preservation lemmas quantify arbitrary natural capacities
+and compose with provider safety. They require native authentication, permit
+custody and faithful transport destruction. They prove neither scheduler fairness
+nor an unconditional publication deadline.
+
+cedar-poo-spec remains the semantic dependency for native value/effect binding and
+error-free authorization. The existing imported Lean bridge is run with these
+new models. It is not replaced by an unrelated permission language. Scheme/POO
+publication admission, independent anti-rollback anchors, actual issuer recovery
+and complete external history publication remain separate refinement obligations.
+
+* Correspondence
+
+| Property | Native evidence | Model/proof evidence |
+|----------+-----------------+----------------------|
+| Same subject is not the same workload key | mTLS test with a distinct certificate signed by the same issuer and carrying the same subject | Quint sameSubjectDifferentKeyRejectedTest; Lean shared_name_is_not_key_authority |
+| Authentication precedes body decoding | Wrong-token RPC sends headers without a request body and receives unauthenticated, not a decoding deadline | SysML GrpcCallerBinding; native transport premise |
+| Routing cannot rewrite the source | Go mutation tests/fuzzing; Rust commitment and original Task checks | SysML CommittedProviderRouting; immutable-key premise |
+| RPC retry and fallback cannot replay | Concurrent duplicate calls, 307/503, partial body/SSE and restart tests | Quint retry/burn/reset controls; Lean safe_run |
+| Revocation blocks a fresh release | Source publication after first SSE event blocks the delayed tail | Quint staleReleaseRejectedTest and staleGrantReleaseCounterexampleTest; Lean stale_authority_cannot_pass |
+| Every Arrow row remains mediated | A two-row batch is entirely denied when its second row is forbidden | Quint first-row-only counterexample; Lean every_arrow_row_requires_authority |
+| Unknown execution retains its hold | Native ledger PBT and HTTPS/gRPC recovery tests | Quint unknownRefundCounterexampleTest; Lean consumed_unknown_retains_original_hold |
+| Saturated execution preserves source admission | Sixteen slow streams plus successful source CAS and tail denial; shared-lane native mutation fails | NativeAdmission sharedLaneStarvationCounterexampleTest; Lean execution_and_admission_composition |
+| Pre-TLS sockets own global capacity | Actual TLS/pre-TLS saturation, expiry, replacement and natural shutdown; over-budget mutation fails | ConnectionAdmission early-return/over-accept controls; Lean provider_and_connection_composition |
+| New source sessions retain independent capacity and authority | Combined operation saturation; distinct certificate/token/method controls; omitted-source-pin native mutation fails | SourceIngress shared-budget/forwarded-credential controls; Lean ingress_step_preserves_independent_custody and publication_requires_source_ingress_and_leaf |
+| Ambiguous publication preserves its original decision | SQLite outcome-insert fault, concurrent same/different IDs, mTLS reply-loss relay and restart | PublicationRecovery head-only/deletion/rebind controls; Lean recovery_and_provider_accounting_composition |
+| Owned source connection cannot launder stale or failed work | Other-writer visibility, disconnected caller while SQL is blocked, unresolved-transaction rejection, explicit close and worker join | SourceOwner early-release/stale-snapshot/swallowed-close-error controls; Lean owned_worker_and_publication_composition |
+| Preflight cannot authorize a cancelled final request | Real SQLite lock holder, zero TLS contacts, successful TLS control, removed-final-check native mutation | DispatchCancellation context/lock controls; ProviderRpc invocation-history and stale-consumed-view lemmas |
+| Equal response batches cannot transfer release authority | Cross-node and changed-encoding regressions, original-token positive control and session/row-count PBT | ReleaseBinding cross-plan/encoding counterexamples; ProviderRpc release_binding_and_execution_composition |
+| Bounded decoding survives segmentation | Rust PBT varies network fragments and Unicode text; truncated and oversized controls fail | SysML byte/event ceilings; native parser refinement remains separate |
+| Per-package performance is executable | Cargo metadata requires a Criterion development edge and gateway benchmark for every member | SysML NativeBenchmarkCoverage; empirical rather than safety evidence |
+| Fuzz duration expiry cannot launder a real failing property | Reviewed Go parent-deadline backport, actual compiler source admission, native no-op and intentional deadline-text property failure | Development toolchain refinement obligation; existing Quint/Lean domain proofs do not prove the Go fuzz engine |
+
+* Native and source evidence
+
+The Go entrypoint runs Rust tests with all features, the default feature build,
+strict clippy, all crate-owned ASP deny gates, Go race tests and bounded fuzzing,
+the prior admission/streaming/lifecycle models, provider Quint/Lean, the Cedar
+bridge and real mTLS gRPC to HTTPS/SSE integration. No rule exclusions or advisory
+allowances are added to ASP Rust.
+
+Receipts retain SHA-256 inputs for current Rust/Go code, the shared protocol,
+Policy fixtures, models, executed proofs and benchmarks. A final source guard
+rejects changed inputs. Assurance and integration stages disable Go test-result
+caching. Benchmark collection rejects old result files and requires all five
+Rust package namespaces. Earlier failed attempts and retired sources remain
+separate evidence; they are never relabeled as current passes.

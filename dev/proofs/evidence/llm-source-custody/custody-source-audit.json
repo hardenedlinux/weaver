@@ -1,0 +1,3559 @@
+[
+  {
+    "id": "P12",
+    "path": "modules/governance/policy/authorized-effect-token.ss",
+    "matches": [
+      {
+        "line": 66,
+        "text": "                              arena arena-gen offset length pld-digest lease)"
+      },
+      {
+        "line": 75,
+        "text": "         (cons 'arena-id arena) (cons 'arena-generation arena-gen)"
+      },
+      {
+        "line": 77,
+        "text": "         (cons 'payload-digest pld-digest) (cons 'lease-id lease))))"
+      },
+      {
+        "line": 96,
+        "text": "(def (poo-flow-token-validation-context root expected-binding current-time"
+      },
+      {
+        "line": 99,
+        "text": "      (semantic-root root) (binding expected-binding) (now current-time)"
+      },
+      {
+        "line": 109,
+        "text": "        (.ref binding 'arena-id) (.ref binding 'arena-generation)"
+      },
+      {
+        "line": 111,
+        "text": "        (.ref binding 'payload-digest) (.ref binding 'lease-id)))"
+      }
+    ]
+  },
+  {
+    "id": "P13",
+    "path": "modules/governance/policy/strict-mediation.ss",
+    "matches": [
+      {
+        "line": 33,
+        "text": "(def (poo-flow-strict-mediate state token validation-context expected-root"
+      },
+      {
+        "line": 36,
+        "text": "   ((not (equal? expected-root (.ref state 'execution-root)))"
+      }
+    ]
+  },
+  {
+    "id": "P15",
+    "path": "modules/assurance/effect-host.ss",
+    "matches": [
+      {
+        "line": 5,
+        "text": ";;; Local serialized integration boundary, not a Cedar evaluator or distributed"
+      },
+      {
+        "line": 28,
+        "text": "    (when (vector-ref state 7) (error \"effect Host mutation during runtime handoff\"))"
+      },
+      {
+        "line": 33,
+        "text": "      (error \"effect Host clock must be monotonic and nonnegative\"))"
+      },
+      {
+        "line": 36,
+        "text": "(def (handoff state operation)"
+      },
+      {
+        "line": 45,
+        "text": "(def (assurance-effect-host authorize deliver clock lease)"
+      },
+      {
+        "line": 46,
+        "text": "  (unless (and (procedure? authorize) (procedure? deliver) (procedure? clock)"
+      },
+      {
+        "line": 47,
+        "text": "               (exact-integer? lease) (> lease 0))"
+      },
+      {
+        "line": 50,
+        "text": "    (hash-put! hosts host (vector (current-thread) authorize deliver clock lease 0 0 #f 0))"
+      },
+      {
+        "line": 71,
+        "text": "       ;; otherwise inclusive; an earlier clock sample must not authorize use."
+      },
+      {
+        "line": 87,
+        "text": "         (let (decision (handoff state (lambda () ((vector-ref state 1) request))))"
+      },
+      {
+        "line": 125,
+        "text": "  (.o kind: 'aitia.effect-delivery.v1 outcome: outcome-value handoff-executed?: invoked?"
+      },
+      {
+        "line": 126,
+        "text": "      delivered?: (eq? outcome-value 'delivered) durable?: #f distributed-authority?: #f))"
+      },
+      {
+        "line": 138,
+        "text": "                (handoff state"
+      }
+    ]
+  },
+  {
+    "id": "P17",
+    "path": "modules/ai-agentic-context/features/memory/durable/store-backend.ss",
+    "matches": [
+      {
+        "line": 6,
+        "text": ";;; Boundary: durable runtime store backend negotiation and Marlin handoff ABI."
+      },
+      {
+        "line": 8,
+        "text": ";;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs."
+      },
+      {
+        "line": 16,
+        "text": "        :poo-flow/modules/ai-agentic-context/features/memory/durable/store)"
+      },
+      {
+        "line": 18,
+        "text": "(export +poo-flow-durable-runtime-store-backend-kind+"
+      },
+      {
+        "line": 19,
+        "text": "        +poo-flow-durable-runtime-store-backend-schema+"
+      },
+      {
+        "line": 20,
+        "text": "        +poo-flow-durable-runtime-store-backend-receipt-schema+"
+      },
+      {
+        "line": 21,
+        "text": "        +poo-flow-durable-runtime-store-backend-diagnostic-schema+"
+      },
+      {
+        "line": 22,
+        "text": "        +poo-flow-durable-runtime-store-negotiation-schema+"
+      },
+      {
+        "line": 23,
+        "text": "        +poo-flow-durable-runtime-store-handoff-schema+"
+      },
+      {
+        "line": 24,
+        "text": "        +poo-flow-durable-runtime-store-backend-protocols+"
+      },
+      {
+        "line": 25,
+        "text": "        +poo-flow-durable-runtime-store-handoff-required-fields+"
+      },
+      {
+        "line": 26,
+        "text": "        make-poo-flow-durable-runtime-store-backend-receipt"
+      },
+      {
+        "line": 27,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt?"
+      },
+      {
+        "line": 28,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-backend-id"
+      },
+      {
+        "line": 29,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-backend-kind"
+      },
+      {
+        "line": 30,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-runtime-owner"
+      },
+      {
+        "line": 31,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-executable"
+      },
+      {
+        "line": 32,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-protocol"
+      },
+      {
+        "line": 33,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-supported-ledger-kinds"
+      },
+      {
+        "line": 34,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-supported-capability-flags"
+      },
+      {
+        "line": 35,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-operation-kinds"
+      },
+      {
+        "line": 36,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-valid?"
+      },
+      {
+        "line": 37,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-diagnostics"
+      },
+      {
+        "line": 38,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-metadata"
+      },
+      {
+        "line": 39,
+        "text": "        make-poo-flow-durable-runtime-store-negotiation-receipt"
+      },
+      {
+        "line": 40,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt?"
+      },
+      {
+        "line": 41,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-store-id"
+      },
+      {
+        "line": 42,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-backend-id"
+      },
+      {
+        "line": 43,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-backend-kind"
+      },
+      {
+        "line": 44,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-selected?"
+      },
+      {
+        "line": 45,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-handoff-ready?"
+      },
+      {
+        "line": 46,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-contract-row"
+      },
+      {
+        "line": 47,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-backend-row"
+      },
+      {
+        "line": 48,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-required-ledger-kinds"
+      },
+      {
+        "line": 49,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-supported-ledger-kinds"
+      },
+      {
+        "line": 50,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-missing-ledger-kinds"
+      },
+      {
+        "line": 51,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-required-capability-flags"
+      },
+      {
+        "line": 52,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-supported-capability-flags"
+      },
+      {
+        "line": 53,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-missing-capability-flags"
+      },
+      {
+        "line": 54,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-operation-kinds"
+      },
+      {
+        "line": 55,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-unsupported-operation-kinds"
+      },
+      {
+        "line": 56,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-manifest-operation"
+      },
+      {
+        "line": 57,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-valid?"
+      },
+      {
+        "line": 58,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-diagnostics"
+      },
+      {
+        "line": 59,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-metadata"
+      },
+      {
+        "line": 60,
+        "text": " poo-flow-durable-runtime-store-backend"
+      },
+      {
+        "line": 61,
+        "text": " poo-flow-durable-runtime-store-backend/default"
+      },
+      {
+        "line": 62,
+        "text": " +poo-flow-turso-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 63,
+        "text": " poo-flow-durable-runtime-store-backend/turso"
+      },
+      {
+        "line": 64,
+        "text": " poo-flow-durable-runtime-store-backend?"
+      },
+      {
+        "line": 65,
+        "text": "        poo-flow-durable-runtime-store-backend->receipt"
+      },
+      {
+        "line": 66,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt->alist"
+      },
+      {
+        "line": 67,
+        "text": "        poo-flow-durable-runtime-store-backend-negotiation"
+      },
+      {
+        "line": 68,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt->alist"
+      },
+      {
+        "line": 69,
+        "text": "        poo-flow-durable-runtime-store-negotiation->marlin-handoff"
+      },
+      {
+        "line": 70,
+        "text": "        poo-flow-durable-runtime-store-negotiations->alists)"
+      },
+      {
+        "line": 72,
+        "text": "(def +poo-flow-durable-runtime-store-backend-kind+"
+      },
+      {
+        "line": 73,
+        "text": "  'poo-flow.durable.runtime-store-backend)"
+      },
+      {
+        "line": 75,
+        "text": "(def +poo-flow-durable-runtime-store-backend-schema+"
+      },
+      {
+        "line": 76,
+        "text": "  'poo-flow.module-system.durable-runtime-store-backend.v1)"
+      },
+      {
+        "line": 78,
+        "text": "(def +poo-flow-durable-runtime-store-backend-receipt-schema+"
+      },
+      {
+        "line": 79,
+        "text": "  'poo-flow.module-system.durable-runtime-store-backend.receipt.v1)"
+      },
+      {
+        "line": 81,
+        "text": "(def +poo-flow-durable-runtime-store-backend-diagnostic-schema+"
+      },
+      {
+        "line": 82,
+        "text": "  'poo-flow.module-system.durable-runtime-store-backend.diagnostic.v1)"
+      },
+      {
+        "line": 84,
+        "text": "(def +poo-flow-durable-runtime-store-negotiation-schema+"
+      },
+      {
+        "line": 85,
+        "text": "  'poo-flow.module-system.durable-runtime-store-negotiation.v1)"
+      },
+      {
+        "line": 87,
+        "text": "(def +poo-flow-durable-runtime-store-handoff-schema+"
+      },
+      {
+        "line": 88,
+        "text": "  'poo-flow.module-system.durable-runtime-store.marlin-handoff.v1)"
+      },
+      {
+        "line": 90,
+        "text": "(def +poo-flow-durable-runtime-store-backend-protocols+"
+      },
+      {
+        "line": 93,
+        "text": "(def +poo-flow-durable-runtime-store-handoff-required-fields+"
+      },
+      {
+        "line": 105,
+        "text": "(def (poo-flow-durable-runtime-backend-option options key default-value)"
+      },
+      {
+        "line": 110,
+        "text": "(def (poo-flow-durable-runtime-backend-slot object key default-value)"
+      },
+      {
+        "line": 116,
+        "text": "(def (poo-flow-durable-runtime-backend-alist-ref row key default-value)"
+      },
+      {
+        "line": 123,
+        "text": "(def (poo-flow-durable-runtime-backend-every? predicate values)"
+      },
+      {
+        "line": 127,
+        "text": "    (poo-flow-durable-runtime-backend-every? predicate (cdr values)))"
+      },
+      {
+        "line": 131,
+        "text": "(def (poo-flow-durable-runtime-backend-member? value values)"
+      },
+      {
+        "line": 135,
+        "text": "(def (poo-flow-durable-runtime-backend-symbol-list? values)"
+      },
+      {
+        "line": 137,
+        "text": "       (poo-flow-durable-runtime-backend-every? symbol? values)))"
+      },
+      {
+        "line": 140,
+        "text": "(def (poo-flow-durable-runtime-backend-diagnostic code slot severity payload)"
+      },
+      {
+        "line": 142,
+        "text": "   (cons 'kind +poo-flow-durable-runtime-store-backend-diagnostic-schema+)"
+      },
+      {
+        "line": 143,
+        "text": "   (cons 'schema +poo-flow-durable-runtime-store-backend-diagnostic-schema+)"
+      },
+      {
+        "line": 145,
+        "text": "   (cons 'phase 'durable-runtime-store-backend)"
+      },
+      {
+        "line": 150,
+        "text": "         (poo-flow-durable-runtime-backend-option"
+      },
+      {
+        "line": 157,
+        "text": "(def (poo-flow-durable-runtime-backend-required-symbol-diagnostics code slot value)"
+      },
+      {
+        "line": 161,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 166,
+        "text": "            (cons 'expected 'symbol)"
+      },
+      {
+        "line": 170,
+        "text": "(def (poo-flow-durable-runtime-backend-required-string-diagnostics code slot value)"
+      },
+      {
+        "line": 174,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 179,
+        "text": "            (cons 'expected 'string)"
+      },
+      {
+        "line": 183,
+        "text": "(def (poo-flow-durable-runtime-backend-symbol-list-diagnostics code"
+      },
+      {
+        "line": 189,
+        "text": "   ((not (poo-flow-durable-runtime-backend-symbol-list? values))"
+      },
+      {
+        "line": 191,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 197,
+        "text": "            (cons 'expected 'symbol-list)"
+      },
+      {
+        "line": 200,
+        "text": "   ((poo-flow-durable-runtime-backend-every?"
+      },
+      {
+        "line": 202,
+        "text": "       (poo-flow-durable-runtime-backend-member? value allowed))"
+      },
+      {
+        "line": 207,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 217,
+        "text": "(def (poo-flow-durable-runtime-backend-missing-symbols required supported)"
+      },
+      {
+        "line": 220,
+        "text": "   ((poo-flow-durable-runtime-backend-member? (car required) supported)"
+      },
+      {
+        "line": 221,
+        "text": "    (poo-flow-durable-runtime-backend-missing-symbols (cdr required)"
+      },
+      {
+        "line": 225,
+        "text": "          (poo-flow-durable-runtime-backend-missing-symbols (cdr required)"
+      },
+      {
+        "line": 229,
+        "text": "(def (poo-flow-durable-runtime-store-backend backend-id"
+      },
+      {
+        "line": 239,
+        "text": "          (poo-flow-durable-runtime-backend-option"
+      },
+      {
+        "line": 244,
+        "text": "          (poo-flow-durable-runtime-backend-option options 'metadata '())))"
+      },
+      {
+        "line": 247,
+        "text": "      (cons 'durable-runtime-store-backend-kind"
+      },
+      {
+        "line": 248,
+        "text": "            +poo-flow-durable-runtime-store-backend-kind+)"
+      },
+      {
+        "line": 249,
+        "text": "      (cons 'durable-runtime-store-backend-schema"
+      },
+      {
+        "line": 250,
+        "text": "            +poo-flow-durable-runtime-store-backend-schema+)"
+      },
+      {
+        "line": 262,
+        "text": "(def poo-flow-durable-runtime-store-backend/default"
+      },
+      {
+        "line": 263,
+        "text": "  (poo-flow-durable-runtime-store-backend"
+      },
+      {
+        "line": 268,
+        "text": "   +poo-flow-durable-runtime-store-ledger-kinds+"
+      },
+      {
+        "line": 269,
+        "text": "   +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 270,
+        "text": "   +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 274,
+        "text": "(def +poo-flow-turso-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 275,
+        "text": "  (append +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 282,
+        "text": "(def poo-flow-durable-runtime-store-backend/turso"
+      },
+      {
+        "line": 283,
+        "text": "  (poo-flow-durable-runtime-store-backend"
+      },
+      {
+        "line": 288,
+        "text": "   +poo-flow-durable-runtime-store-ledger-kinds+"
+      },
+      {
+        "line": 289,
+        "text": "   +poo-flow-turso-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 290,
+        "text": "   +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 302,
+        "text": "(def (poo-flow-durable-runtime-store-backend? value)"
+      },
+      {
+        "line": 304,
+        "text": "       (.slot? value 'durable-runtime-store-backend-kind)"
+      },
+      {
+        "line": 305,
+        "text": "       (eq? (.ref value 'durable-runtime-store-backend-kind)"
+      },
+      {
+        "line": 306,
+        "text": "            +poo-flow-durable-runtime-store-backend-kind+)))"
+      },
+      {
+        "line": 308,
+        "text": ";; : (-> PooDurableRuntimeStoreBackend [Alist])"
+      },
+      {
+        "line": 309,
+        "text": "(def (poo-flow-durable-runtime-store-backend-diagnostics backend)"
+      },
+      {
+        "line": 311,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'backend-id #f))"
+      },
+      {
+        "line": 313,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'backend-kind #f))"
+      },
+      {
+        "line": 315,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'executable #f))"
+      },
+      {
+        "line": 317,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'protocol #f))"
+      },
+      {
+        "line": 319,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'runtime-owner #f))"
+      },
+      {
+        "line": 321,
+        "text": "         (poo-flow-durable-runtime-backend-slot"
+      },
+      {
+        "line": 326,
+        "text": "         (poo-flow-durable-runtime-backend-slot"
+      },
+      {
+        "line": 331,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'operation-kinds #f)))"
+      },
+      {
+        "line": 332,
+        "text": "    (if (poo-flow-durable-runtime-store-backend? backend)"
+      },
+      {
+        "line": 334,
+        "text": "       (poo-flow-durable-runtime-backend-required-symbol-diagnostics"
+      },
+      {
+        "line": 338,
+        "text": "       (poo-flow-durable-runtime-backend-required-symbol-diagnostics"
+      },
+      {
+        "line": 342,
+        "text": "       (poo-flow-durable-runtime-backend-required-string-diagnostics"
+      },
+      {
+        "line": 346,
+        "text": "       (poo-flow-durable-runtime-backend-required-symbol-diagnostics"
+      },
+      {
+        "line": 350,
+        "text": "       (if (poo-flow-durable-runtime-backend-member?"
+      },
+      {
+        "line": 352,
+        "text": "            +poo-flow-durable-runtime-store-backend-protocols+)"
+      },
+      {
+        "line": 355,
+        "text": "          (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 362,
+        "text": "                       +poo-flow-durable-runtime-store-backend-protocols+)"
+      },
+      {
+        "line": 367,
+        "text": "          (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 373,
+        "text": "                 (cons 'expected 'string)"
+      },
+      {
+        "line": 375,
+        "text": "       (poo-flow-durable-runtime-backend-symbol-list-diagnostics"
+      },
+      {
+        "line": 378,
+        "text": "        +poo-flow-durable-runtime-store-ledger-kinds+"
+      },
+      {
+        "line": 381,
+        "text": "       (poo-flow-durable-runtime-backend-symbol-list-diagnostics"
+      },
+      {
+        "line": 384,
+        "text": "        +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 387,
+        "text": "       (poo-flow-durable-runtime-backend-symbol-list-diagnostics"
+      },
+      {
+        "line": 390,
+        "text": "        +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 394,
+        "text": "       (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 402,
+        "text": "(defstruct poo-flow-durable-runtime-store-backend-receipt"
+      },
+      {
+        "line": 416,
+        "text": ";; : (-> PooDurableRuntimeStoreBackend PooDurableRuntimeStoreBackendReceipt)"
+      },
+      {
+        "line": 417,
+        "text": "(def (poo-flow-durable-runtime-store-backend->receipt backend)"
+      },
+      {
+        "line": 419,
+        "text": "          (poo-flow-durable-runtime-store-backend-diagnostics backend))"
+      },
+      {
+        "line": 421,
+        "text": "    (make-poo-flow-durable-runtime-store-backend-receipt"
+      },
+      {
+        "line": 422,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'backend-id #f)"
+      },
+      {
+        "line": 423,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'backend-kind #f)"
+      },
+      {
+        "line": 424,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'runtime-owner #f)"
+      },
+      {
+        "line": 425,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'executable #f)"
+      },
+      {
+        "line": 426,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'protocol #f)"
+      },
+      {
+        "line": 427,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend"
+      },
+      {
+        "line": 430,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend"
+      },
+      {
+        "line": 433,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'operation-kinds '())"
+      },
+      {
+        "line": 436,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend"
+      },
+      {
+        "line": 440,
+        "text": ";; : (-> PooDurableRuntimeStoreBackendReceipt Alist)"
+      },
+      {
+        "line": 442,
+        "text": "  poo-flow-durable-runtime-store-backend-receipt->alist (receipt)"
+      },
+      {
+        "line": 444,
+        "text": "              (poo-flow-durable-runtime-store-backend-receipt-diagnostics"
+      },
+      {
+        "line": 446,
+        "text": "  (fields ((kind 'poo-flow.durable.runtime-store-backend-receipt)"
+      },
+      {
+        "line": 447,
+        "text": "           (schema +poo-flow-durable-runtime-store-backend-receipt-schema+)"
+      },
+      {
+        "line": 449,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-backend-id receipt))"
+      },
+      {
+        "line": 451,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-backend-kind"
+      },
+      {
+        "line": 454,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-runtime-owner"
+      },
+      {
+        "line": 457,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-executable"
+      },
+      {
+        "line": 460,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-protocol receipt))"
+      },
+      {
+        "line": 462,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-supported-ledger-kinds"
+      },
+      {
+        "line": 465,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-supported-capability-flags"
+      },
+      {
+        "line": 468,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-operation-kinds"
+      },
+      {
+        "line": 471,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-valid? receipt))"
+      },
+      {
+        "line": 475,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-metadata receipt))"
+      },
+      {
+        "line": 479,
+        "text": "(def (poo-flow-durable-runtime-store-contract-receipt-row receipt)"
+      },
+      {
+        "line": 481,
+        "text": "   ((poo-flow-durable-runtime-store-contract-receipt? receipt)"
+      },
+      {
+        "line": 482,
+        "text": "    (poo-flow-durable-runtime-store-contract-receipt->alist receipt))"
+      },
+      {
+        "line": 487,
+        "text": "(def (poo-flow-durable-runtime-store-backend-receipt-row receipt)"
+      },
+      {
+        "line": 489,
+        "text": "   ((poo-flow-durable-runtime-store-backend-receipt? receipt)"
+      },
+      {
+        "line": 490,
+        "text": "    (poo-flow-durable-runtime-store-backend-receipt->alist receipt))"
+      },
+      {
+        "line": 495,
+        "text": "(def (poo-flow-durable-runtime-store-contract-row-diagnostics row)"
+      },
+      {
+        "line": 499,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 505,
+        "text": "   ((not (eq? (poo-flow-durable-runtime-backend-alist-ref row 'valid? #f)"
+      },
+      {
+        "line": 508,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 513,
+        "text": "                  (poo-flow-durable-runtime-backend-alist-ref row"
+      },
+      {
+        "line": 517,
+        "text": "                  (poo-flow-durable-runtime-backend-alist-ref row"
+      },
+      {
+        "line": 524,
+        "text": "(def (poo-flow-durable-runtime-store-backend-row-diagnostics row)"
+      },
+      {
+        "line": 528,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 534,
+        "text": "   ((not (eq? (poo-flow-durable-runtime-backend-alist-ref row 'valid? #f)"
+      },
+      {
+        "line": 537,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 542,
+        "text": "                  (poo-flow-durable-runtime-backend-alist-ref row"
+      },
+      {
+        "line": 546,
+        "text": "                  (poo-flow-durable-runtime-backend-alist-ref row"
+      },
+      {
+        "line": 553,
+        "text": "(def (poo-flow-durable-runtime-store-missing-diagnostics code values slot)"
+      },
+      {
+        "line": 557,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 564,
+        "text": ";; : PooDurableRuntimeStoreNegotiationReceipt"
+      },
+      {
+        "line": 565,
+        "text": "(defstruct poo-flow-durable-runtime-store-negotiation-receipt"
+      },
+      {
+        "line": 570,
+        "text": "   handoff-ready?"
+      },
+      {
+        "line": 586,
+        "text": "   handoff-required"
+      },
+      {
+        "line": 590,
+        "text": ";; : (-> PooDurableRuntimeStoreContractReceipt PooDurableRuntimeStoreBackendReceipt [Alist] PooDurableRuntimeStoreNegotiationReceipt)"
+      },
+      {
+        "line": 591,
+        "text": "(def (poo-flow-durable-runtime-store-backend-negotiation contract-receipt"
+      },
+      {
+        "line": 596,
+        "text": "          (poo-flow-durable-runtime-store-contract-receipt-row"
+      },
+      {
+        "line": 599,
+        "text": "          (poo-flow-durable-runtime-store-backend-receipt-row backend-receipt))"
+      },
+      {
+        "line": 601,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref"
+      },
+      {
+        "line": 606,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref"
+      },
+      {
+        "line": 611,
+        "text": "          (poo-flow-durable-runtime-backend-missing-symbols"
+      },
+      {
+        "line": 615,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref"
+      },
+      {
+        "line": 620,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref"
+      },
+      {
+        "line": 625,
+        "text": "          (poo-flow-durable-runtime-backend-missing-symbols"
+      },
+      {
+        "line": 629,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref backend-row"
+      },
+      {
+        "line": 633,
+        "text": "          (poo-flow-durable-runtime-backend-missing-symbols"
+      },
+      {
+        "line": 637,
+        "text": "          (poo-flow-durable-runtime-backend-option"
+      },
+      {
+        "line": 640,
+        "text": "           'durable-runtime-store-negotiate))"
+      },
+      {
+        "line": 642,
+        "text": "          (poo-flow-durable-runtime-backend-option options 'metadata '()))"
+      },
+      {
+        "line": 645,
+        "text": "           (poo-flow-durable-runtime-store-contract-row-diagnostics"
+      },
+      {
+        "line": 647,
+        "text": "           (poo-flow-durable-runtime-store-backend-row-diagnostics"
+      },
+      {
+        "line": 649,
+        "text": "           (poo-flow-durable-runtime-store-missing-diagnostics"
+      },
+      {
+        "line": 653,
+        "text": "           (poo-flow-durable-runtime-store-missing-diagnostics"
+      },
+      {
+        "line": 657,
+        "text": "           (poo-flow-durable-runtime-store-missing-diagnostics"
+      },
+      {
+        "line": 662,
+        "text": "    (make-poo-flow-durable-runtime-store-negotiation-receipt"
+      },
+      {
+        "line": 663,
+        "text": "     (poo-flow-durable-runtime-backend-alist-ref contract-row 'store-id #f)"
+      },
+      {
+        "line": 664,
+        "text": "     (poo-flow-durable-runtime-backend-alist-ref backend-row 'backend-id #f)"
+      },
+      {
+        "line": 665,
+        "text": "     (poo-flow-durable-runtime-backend-alist-ref backend-row"
+      },
+      {
+        "line": 684,
+        "text": "     (poo-flow-durable-runtime-backend-alist-ref backend-row"
+      },
+      {
+        "line": 690,
+        "text": ";; : (-> PooDurableRuntimeStoreNegotiationReceipt Alist)"
+      },
+      {
+        "line": 692,
+        "text": "  poo-flow-durable-runtime-store-negotiation-receipt->alist (receipt)"
+      },
+      {
+        "line": 694,
+        "text": "              (poo-flow-durable-runtime-store-negotiation-receipt-diagnostics"
+      },
+      {
+        "line": 696,
+        "text": "  (fields ((kind 'poo-flow.durable.runtime-store-negotiation-receipt)"
+      },
+      {
+        "line": 697,
+        "text": "           (schema +poo-flow-durable-runtime-store-negotiation-schema+)"
+      },
+      {
+        "line": 699,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-store-id"
+      },
+      {
+        "line": 702,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-backend-id"
+      },
+      {
+        "line": 705,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-backend-kind"
+      },
+      {
+        "line": 708,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-selected?"
+      },
+      {
+        "line": 710,
+        "text": "           (handoff-ready?"
+      },
+      {
+        "line": 711,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-handoff-ready?"
+      },
+      {
+        "line": 714,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-contract-row"
+      },
+      {
+        "line": 717,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-backend-row"
+      },
+      {
+        "line": 720,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-required-ledger-kinds"
+      },
+      {
+        "line": 723,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-supported-ledger-kinds"
+      },
+      {
+        "line": 726,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-missing-ledger-kinds"
+      },
+      {
+        "line": 729,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-required-capability-flags"
+      },
+      {
+        "line": 732,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-supported-capability-flags"
+      },
+      {
+        "line": 735,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-missing-capability-flags"
+      },
+      {
+        "line": 738,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-operation-kinds"
+      },
+      {
+        "line": 741,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-unsupported-operation-kinds"
+      },
+      {
+        "line": 744,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-manifest-operation"
+      },
+      {
+        "line": 747,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-valid?"
+      },
+      {
+        "line": 752,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-metadata"
+      },
+      {
+        "line": 755,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner"
+      },
+      {
+        "line": 757,
+        "text": "           (handoff-required"
+      },
+      {
+        "line": 758,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-handoff-required"
+      },
+      {
+        "line": 761,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-runtime-executed"
+      },
+      {
+        "line": 764,
+        "text": ";; : (-> PooDurableRuntimeStoreNegotiationReceipt Alist)"
+      },
+      {
+        "line": 765,
+        "text": "(def (poo-flow-durable-runtime-store-negotiation->marlin-handoff receipt"
+      },
+      {
+        "line": 768,
+        "text": "         (row (poo-flow-durable-runtime-store-negotiation-receipt->alist"
+      },
+      {
+        "line": 771,
+        "text": "          (poo-flow-durable-runtime-store-negotiation-receipt-backend-row"
+      },
+      {
+        "line": 774,
+        "text": "          (poo-flow-durable-runtime-store-negotiation-receipt-manifest-operation"
+      },
+      {
+        "line": 777,
+        "text": "          (poo-flow-durable-runtime-backend-option"
+      },
+      {
+        "line": 780,
+        "text": "           (poo-flow-durable-runtime-backend-alist-ref backend-row"
+      },
+      {
+        "line": 784,
+        "text": "          (poo-flow-durable-runtime-backend-option"
+      },
+      {
+        "line": 787,
+        "text": "           '(\"durable-runtime-store\" \"negotiate\")))"
+      },
+      {
+        "line": 789,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref backend-row"
+      },
+      {
+        "line": 793,
+        "text": "          (list (cons 'source 'poo-flow.durable.runtime-store)"
+      },
+      {
+        "line": 795,
+        "text": "                      (poo-flow-durable-runtime-store-negotiation-receipt-backend-id"
+      },
+      {
+        "line": 798,
+        "text": "                      (poo-flow-durable-runtime-store-negotiation-receipt-store-id"
+      },
+      {
+        "line": 806,
+        "text": "                      (list 'poo-flow.durable.runtime-store"
+      },
+      {
+        "line": 807,
+        "text": "                            (poo-flow-durable-runtime-store-negotiation-receipt-store-id"
+      },
+      {
+        "line": 809,
+        "text": "                            (poo-flow-durable-runtime-store-negotiation-receipt-backend-id"
+      },
+      {
+        "line": 816,
+        "text": "                             (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner"
+      },
+      {
+        "line": 818,
+        "text": "                       (cons 'handoff-required #t)"
+      },
+      {
+        "line": 822,
+        "text": "                      (poo-flow-durable-runtime-store-negotiation-receipt-store-id"
+      },
+      {
+        "line": 834,
+        "text": "     (cons 'kind 'poo-flow.durable.runtime-store.marlin-handoff)"
+      },
+      {
+        "line": 835,
+        "text": "     (cons 'schema +poo-flow-durable-runtime-store-handoff-schema+)"
+      },
+      {
+        "line": 839,
+        "text": "           (poo-flow-durable-runtime-backend-alist-ref"
+      },
+      {
+        "line": 844,
+        "text": "           (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner"
+      },
+      {
+        "line": 846,
+        "text": "     (cons 'handoff-ready?"
+      },
+      {
+        "line": 847,
+        "text": "           (poo-flow-durable-runtime-store-negotiation-receipt-handoff-ready?"
+      },
+      {
+        "line": 850,
+        "text": "           +poo-flow-durable-runtime-store-handoff-required-fields+)"
+      },
+      {
+        "line": 857,
+        "text": ";; : (-> [PooDurableRuntimeStoreNegotiationReceipt] [Alist])"
+      },
+      {
+        "line": 859,
+        "text": "  poo-flow-durable-runtime-store-negotiations->alists (receipts)"
+      },
+      {
+        "line": 860,
+        "text": "  (projector poo-flow-durable-runtime-store-negotiation-receipt->alist)"
+      },
+      {
+        "line": 861,
+        "text": "  (error-message \"durable runtime store negotiation serialization requires a list\"))"
+      }
+    ]
+  },
+  {
+    "id": "P18",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean",
+    "matches": [
+      {
+        "line": 5,
+        "text": "import PooFlowProof.Enterprise.PromotionTransactionAtomicity"
+      },
+      {
+        "line": 9,
+        "text": "open PromotionTransactionAtomicity"
+      },
+      {
+        "line": 51,
+        "text": "    outcomePreservesAtomicState,"
+      },
+      {
+        "line": 105,
+        "text": "    receipt.preStateDigest = request.expectedPreStateDigest \u2227"
+      },
+      {
+        "line": 123,
+        "text": "    outcomePreservesAtomicState commitRequestA orphanDuplicateReceipt \u2227"
+      },
+      {
+        "line": 130,
+        "text": "      outcomePreservesAtomicState,"
+      },
+      {
+        "line": 188,
+        "text": "      outcomePreservesAtomicState,"
+      },
+      {
+        "line": 199,
+        "text": "structure AtomicEffectReceipt where"
+      },
+      {
+        "line": 211,
+        "text": "    receipt.preStateDigest = request.expectedPreStateDigest"
+      },
+      {
+        "line": 217,
+        "text": "    (receipt : AtomicEffectReceipt) : Prop :="
+      },
+      {
+        "line": 241,
+        "text": "def committedAtomicEffectReceipt : AtomicEffectReceipt where"
+      },
+      {
+        "line": 246,
+        "text": "theorem committedAtomicEffectCloses :"
+      },
+      {
+        "line": 251,
+        "text": "      committedAtomicEffectReceipt := by"
+      },
+      {
+        "line": 255,
+        "text": "    committedAtomicEffectReceipt,"
+      },
+      {
+        "line": 266,
+        "text": "    (receipt : AtomicEffectReceipt)"
+      },
+      {
+        "line": 278,
+        "text": "    (receipt : AtomicEffectReceipt)"
+      },
+      {
+        "line": 286,
+        "text": "inductive DurablePhase"
+      },
+      {
+        "line": 294,
+        "text": "def isTerminalPhase : DurablePhase \u2192 Prop"
+      },
+      {
+        "line": 301,
+        "text": "structure DurableTransactionRecord where"
+      },
+      {
+        "line": 303,
+        "text": "  phase : DurablePhase"
+      },
+      {
+        "line": 304,
+        "text": "  fenceToken : Nat"
+      },
+      {
+        "line": 308,
+        "text": "def DurableRecordValid :="
+      },
+      {
+        "line": 309,
+        "text": "  DurableTransactionRecord \u2192 Prop"
+      },
+      {
+        "line": 312,
+        "text": "  durableRecord : Option DurableTransactionRecord"
+      },
+      {
+        "line": 317,
+        "text": "  durableRecord : Option DurableTransactionRecord"
+      },
+      {
+        "line": 324,
+        "text": "  durableRecord := world.durableRecord"
+      },
+      {
+        "line": 328,
+        "text": "  durableRecord := none"
+      },
+      {
+        "line": 333,
+        "text": "  durableRecord := none"
+      },
+      {
+        "line": 337,
+        "text": "theorem missingDurableIntentAndEffectObservationAreAmbiguous :"
+      },
+      {
+        "line": 345,
+        "text": "def applyingRecordA : DurableTransactionRecord where"
+      },
+      {
+        "line": 348,
+        "text": "  fenceToken := 7"
+      },
+      {
+        "line": 351,
+        "text": "def unfencedRecoveryEligible"
+      },
+      {
+        "line": 352,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 356,
+        "text": "theorem unfencedApplyingRecordAllowsConcurrentWorkers :"
+      },
+      {
+        "line": 357,
+        "text": "    unfencedRecoveryEligible applyingRecordA \"worker-a\" \u2227"
+      },
+      {
+        "line": 358,
+        "text": "      unfencedRecoveryEligible applyingRecordA \"worker-b\" \u2227"
+      },
+      {
+        "line": 360,
+        "text": "  simp [unfencedRecoveryEligible, applyingRecordA]"
+      },
+      {
+        "line": 365,
+        "text": "  observedFenceToken : Nat"
+      },
+      {
+        "line": 366,
+        "text": "  acquiredFenceToken : Nat"
+      },
+      {
+        "line": 370,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 373,
+        "text": "    claim.observedFenceToken = record.fenceToken \u2227"
+      },
+      {
+        "line": 374,
+        "text": "    record.fenceToken < claim.acquiredFenceToken"
+      },
+      {
+        "line": 379,
+        "text": "  observedFenceToken := 7"
+      },
+      {
+        "line": 380,
+        "text": "  acquiredFenceToken := 8"
+      },
+      {
+        "line": 385,
+        "text": "  observedFenceToken := 7"
+      },
+      {
+        "line": 386,
+        "text": "  acquiredFenceToken := 8"
+      },
+      {
+        "line": 388,
+        "text": "theorem matchingFenceFieldsDoNotProvideExclusiveOwnership :"
+      },
+      {
+        "line": 401,
+        "text": "  DurableTransactionRecord \u2192 RecoveryClaim \u2192 Prop"
+      },
+      {
+        "line": 411,
+        "text": "    (_record : DurableTransactionRecord)"
+      },
+      {
+        "line": 421,
+        "text": "    (phase : DurablePhase)"
+      },
+      {
+        "line": 432,
+        "text": "  fenceToken : Nat"
+      },
+      {
+        "line": 433,
+        "text": "  recoveredFromPhase : DurablePhase"
+      },
+      {
+        "line": 434,
+        "text": "  terminalPhase : DurablePhase"
+      },
+      {
+        "line": 435,
+        "text": "  effectReceipt : AtomicEffectReceipt"
+      },
+      {
+        "line": 449,
+        "text": "    (recordValid : DurableRecordValid)"
+      },
+      {
+        "line": 454,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 467,
+        "text": "  receiptFenceMatches :"
+      },
+      {
+        "line": 468,
+        "text": "    receipt.fenceToken = claim.acquiredFenceToken"
+      },
+      {
+        "line": 488,
+        "text": "  fenceToken := 8"
+      },
+      {
+        "line": 491,
+        "text": "  effectReceipt := committedAtomicEffectReceipt"
+      },
+      {
+        "line": 533,
+        "text": "      committedAtomicEffectReceipt,"
+      },
+      {
+        "line": 536,
+        "text": "  \u00b7 exact committedAtomicEffectCloses"
+      },
+      {
+        "line": 550,
+        "text": "theorem matchingDurableRecordFieldsDoNotProveRecordAuthority :"
+      },
+      {
+        "line": 552,
+        "text": "      \u00ac (fun _record : DurableTransactionRecord => False)"
+      },
+      {
+        "line": 556,
+        "text": "theorem closedRecoveryProvidesExclusiveFence"
+      },
+      {
+        "line": 559,
+        "text": "    (recordValid : DurableRecordValid)"
+      },
+      {
+        "line": 564,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 591,
+        "text": "    (recordValid : DurableRecordValid)"
+      },
+      {
+        "line": 596,
+        "text": "    (record : DurableTransactionRecord)"
+      }
+    ]
+  },
+  {
+    "id": "P19",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean",
+    "matches": [
+      {
+        "line": 7,
+        "text": "import PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore"
+      },
+      {
+        "line": 13,
+        "text": "open PromotionTransactionAtomicity"
+      },
+      {
+        "line": 19,
+        "text": "open SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore"
+      },
+      {
+        "line": 45,
+        "text": "      DurableTransactionRecord \u2192"
+      },
+      {
+        "line": 81,
+        "text": "    (expectedAuthority expectedCommitment : String)"
+      },
+      {
+        "line": 82,
+        "text": "    (expectedBundle : BundleEvidenceBinding.BundleDigest)"
+      },
+      {
+        "line": 111,
+        "text": "    (recordValid : DurableRecordValid)"
+      },
+      {
+        "line": 115,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 130,
+        "text": "  humanAtomicBridge :"
+      },
+      {
+        "line": 131,
+        "text": "    SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridge"
+      },
+      {
+        "line": 138,
+        "text": "      expectedAuthority"
+      },
+      {
+        "line": 139,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 140,
+        "text": "      expectedBundle"
+      },
+      {
+        "line": 165,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 168,
+        "text": "  recoveryLifecycleFenceMatches :"
+      },
+      {
+        "line": 169,
+        "text": "    recoveryLifecycle.activeFenceToken = expectation.activeFenceToken"
+      },
+      {
+        "line": 170,
+        "text": "  recoveryClaimFenceMatches :"
+      },
+      {
+        "line": 171,
+        "text": "    expectation.activeFenceToken = claim.acquiredFenceToken"
+      },
+      {
+        "line": 182,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 198,
+        "text": "  recordRequestMatchesAtomic :"
+      },
+      {
+        "line": 200,
+        "text": "  recoveryBaseReceiptMatchesAtomic :"
+      },
+      {
+        "line": 215,
+        "text": "theorem closedAuthorizedRecoveryProvidesHumanAtomicBridge"
+      },
+      {
+        "line": 222,
+        "text": "    {expectedAuthority expectedCommitment}"
+      },
+      {
+        "line": 223,
+        "text": "    {expectedBundle}"
+      },
+      {
+        "line": 268,
+        "text": "        expectedAuthority"
+      },
+      {
+        "line": 269,
+        "text": "        expectedCommitment"
+      },
+      {
+        "line": 270,
+        "text": "        expectedBundle"
+      },
+      {
+        "line": 308,
+        "text": "    SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridge"
+      },
+      {
+        "line": 315,
+        "text": "      expectedAuthority"
+      },
+      {
+        "line": 316,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 317,
+        "text": "      expectedBundle"
+      },
+      {
+        "line": 337,
+        "text": "  closed.humanAtomicBridge"
+      },
+      {
+        "line": 346,
+        "text": "    {expectedAuthority expectedCommitment}"
+      },
+      {
+        "line": 347,
+        "text": "    {expectedBundle}"
+      },
+      {
+        "line": 392,
+        "text": "        expectedAuthority"
+      },
+      {
+        "line": 393,
+        "text": "        expectedCommitment"
+      },
+      {
+        "line": 394,
+        "text": "        expectedBundle"
+      },
+      {
+        "line": 452,
+        "text": "    {expectedAuthority expectedCommitment}"
+      },
+      {
+        "line": 453,
+        "text": "    {expectedBundle}"
+      },
+      {
+        "line": 498,
+        "text": "      expectedAuthority"
+      },
+      {
+        "line": 499,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 500,
+        "text": "      expectedBundle"
+      },
+      {
+        "line": 541,
+        "text": "theorem wrongAtomicReceiptRejectsAuthorizedBridge"
+      },
+      {
+        "line": 548,
+        "text": "    {expectedAuthority expectedCommitment}"
+      },
+      {
+        "line": 549,
+        "text": "    {expectedBundle}"
+      },
+      {
+        "line": 594,
+        "text": "      expectedAuthority"
+      },
+      {
+        "line": 595,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 596,
+        "text": "      expectedBundle"
+      },
+      {
+        "line": 635,
+        "text": "  exact wrong closed.recoveryBaseReceiptMatchesAtomic"
+      }
+    ]
+  },
+  {
+    "id": "P20",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean",
+    "matches": [
+      {
+        "line": 27,
+        "text": "    (activeFenceToken : Nat)"
+      },
+      {
+        "line": 41,
+        "text": "      activeFenceToken"
+      },
+      {
+        "line": 57,
+        "text": "  activeFenceToken : Nat"
+      },
+      {
+        "line": 71,
+        "text": "      activeFenceToken"
+      },
+      {
+        "line": 85,
+        "text": "    {activeFenceToken : Nat}"
+      },
+      {
+        "line": 99,
+        "text": "        activeFenceToken"
+      },
+      {
+        "line": 112,
+        "text": "      activeFenceToken"
+      },
+      {
+        "line": 127,
+        "text": "    {activeFenceToken : Nat}"
+      },
+      {
+        "line": 141,
+        "text": "        activeFenceToken"
+      },
+      {
+        "line": 164,
+        "text": "    {activeFenceToken : Nat}"
+      },
+      {
+        "line": 178,
+        "text": "        activeFenceToken"
+      },
+      {
+        "line": 194,
+        "text": "    activeFenceToken"
+      }
+    ]
+  },
+  {
+    "id": "P22",
+    "path": "modules/ai-agentic-context/features/memory/durable/store.ss",
+    "matches": [
+      {
+        "line": 6,
+        "text": ";;; Boundary: durable runtime store contract receipts for Rust/Marlin handoff."
+      },
+      {
+        "line": 8,
+        "text": ";;; owns storage, locking, leases, fsync, backfill, replay, and side effects."
+      },
+      {
+        "line": 11,
+        "text": "        :poo-flow/modules/ai-agentic-context/features/memory/durable/policy"
+      },
+      {
+        "line": 14,
+        "text": "(export +poo-flow-durable-runtime-store-contract-kind+"
+      },
+      {
+        "line": 15,
+        "text": "        +poo-flow-durable-runtime-store-contract-schema+"
+      },
+      {
+        "line": 16,
+        "text": "        +poo-flow-durable-runtime-store-contract-receipt-schema+"
+      },
+      {
+        "line": 17,
+        "text": "        +poo-flow-durable-runtime-store-diagnostic-schema+"
+      },
+      {
+        "line": 18,
+        "text": "        +poo-flow-durable-runtime-store-ledger-kinds+"
+      },
+      {
+        "line": 19,
+        "text": "        +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 20,
+        "text": "        make-poo-flow-durable-runtime-store-contract-receipt"
+      },
+      {
+        "line": 21,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt?"
+      },
+      {
+        "line": 22,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-store-id"
+      },
+      {
+        "line": 23,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-store-owner"
+      },
+      {
+        "line": 24,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-durable-policy-ref"
+      },
+      {
+        "line": 25,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-project-id"
+      },
+      {
+        "line": 26,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-root-session-id"
+      },
+      {
+        "line": 27,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-session-id"
+      },
+      {
+        "line": 28,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-runtime-owner"
+      },
+      {
+        "line": 29,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-schema-version"
+      },
+      {
+        "line": 30,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-fact-log-ref"
+      },
+      {
+        "line": 31,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref"
+      },
+      {
+        "line": 32,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-derived-index-ref"
+      },
+      {
+        "line": 33,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-job-store-ref"
+      },
+      {
+        "line": 34,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-repair-journal-ref"
+      },
+      {
+        "line": 35,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-artifact-store-ref"
+      },
+      {
+        "line": 36,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-communication-ledger-ref"
+      },
+      {
+        "line": 37,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-sandbox-ledger-ref"
+      },
+      {
+        "line": 38,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-ledger-kinds"
+      },
+      {
+        "line": 39,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-capability-flags"
+      },
+      {
+        "line": 40,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-valid?"
+      },
+      {
+        "line": 41,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-diagnostics"
+      },
+      {
+        "line": 42,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-metadata"
+      },
+      {
+        "line": 43,
+        "text": "        poo-flow-durable-runtime-store-contract"
+      },
+      {
+        "line": 44,
+        "text": "        poo-flow-durable-runtime-store-contract/default"
+      },
+      {
+        "line": 45,
+        "text": "        poo-flow-durable-runtime-store-contract?"
+      },
+      {
+        "line": 46,
+        "text": "        poo-flow-durable-runtime-store-contract-name"
+      },
+      {
+        "line": 47,
+        "text": "        poo-flow-durable-runtime-store-contract-diagnostics"
+      },
+      {
+        "line": 48,
+        "text": "        poo-flow-durable-runtime-store-contract-valid?"
+      },
+      {
+        "line": 49,
+        "text": "        poo-flow-durable-runtime-store-contract->receipt"
+      },
+      {
+        "line": 50,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt->alist"
+      },
+      {
+        "line": 51,
+        "text": "        poo-flow-durable-runtime-store-contracts->receipts"
+      },
+      {
+        "line": 52,
+        "text": "        poo-flow-durable-runtime-store-contract-receipts->alists)"
+      },
+      {
+        "line": 54,
+        "text": ";; : PooFlowDurableRuntimeStoreContractKind"
+      },
+      {
+        "line": 55,
+        "text": "(def +poo-flow-durable-runtime-store-contract-kind+"
+      },
+      {
+        "line": 56,
+        "text": "  'poo-flow.durable.runtime-store-contract)"
+      },
+      {
+        "line": 58,
+        "text": ";; : PooFlowDurableRuntimeStoreContractSchemaId"
+      },
+      {
+        "line": 59,
+        "text": "(def +poo-flow-durable-runtime-store-contract-schema+"
+      },
+      {
+        "line": 60,
+        "text": "  'poo-flow.module-system.durable-runtime-store-contract.v1)"
+      },
+      {
+        "line": 62,
+        "text": ";; : PooFlowDurableRuntimeStoreContractReceiptSchemaId"
+      },
+      {
+        "line": 63,
+        "text": "(def +poo-flow-durable-runtime-store-contract-receipt-schema+"
+      },
+      {
+        "line": 64,
+        "text": "  'poo-flow.module-system.durable-runtime-store-contract.receipt.v1)"
+      },
+      {
+        "line": 66,
+        "text": ";; : PooFlowDurableRuntimeStoreDiagnosticSchemaId"
+      },
+      {
+        "line": 67,
+        "text": "(def +poo-flow-durable-runtime-store-diagnostic-schema+"
+      },
+      {
+        "line": 68,
+        "text": "  'poo-flow.module-system.durable-runtime-store-contract.diagnostic.v1)"
+      },
+      {
+        "line": 70,
+        "text": ";; : [PooFlowDurableRuntimeStoreLedgerKind]"
+      },
+      {
+        "line": 71,
+        "text": "(def +poo-flow-durable-runtime-store-ledger-kinds+"
+      },
+      {
+        "line": 74,
+        "text": ";; : [PooFlowDurableRuntimeStoreCapabilityFlag]"
+      },
+      {
+        "line": 75,
+        "text": "(def +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 79,
+        "text": "    claim-job-lease"
+      },
+      {
+        "line": 85,
+        "text": ";; : (forall (a) (-> PooDurableRuntimeStoreOptionRows PooDurableRuntimeStoreOptionKey a a))"
+      },
+      {
+        "line": 86,
+        "text": "(def (poo-flow-durable-runtime-store-option options key default-value)"
+      },
+      {
+        "line": 90,
+        "text": ";; : (forall (a) (-> PooDurableRuntimeStoreSourceObject PooDurableRuntimeStoreSlotKey a a))"
+      },
+      {
+        "line": 91,
+        "text": "(def (poo-flow-durable-runtime-store-slot object key default-value)"
+      },
+      {
+        "line": 96,
+        "text": ";; : (forall (a) (-> PooDurableRuntimeStoreIdentityRows PooDurableRuntimeStoreIdentityKey a a))"
+      },
+      {
+        "line": 97,
+        "text": "(def (poo-flow-durable-runtime-store-identity-ref identity key default-value)"
+      },
+      {
+        "line": 101,
+        "text": ";; : (-> PooDurableRuntimeStorePredicate PooDurableRuntimeStoreValueList Bool)"
+      },
+      {
+        "line": 102,
+        "text": "(def (poo-flow-durable-runtime-store-every? predicate values)"
+      },
+      {
+        "line": 106,
+        "text": "    (poo-flow-durable-runtime-store-every? predicate (cdr values)))"
+      },
+      {
+        "line": 110,
+        "text": "(def (poo-flow-durable-runtime-store-member? value values)"
+      },
+      {
+        "line": 114,
+        "text": "(def (poo-flow-durable-runtime-store-symbol-list? values)"
+      },
+      {
+        "line": 116,
+        "text": "       (poo-flow-durable-runtime-store-every? symbol? values)))"
+      },
+      {
+        "line": 118,
+        "text": ";; : (-> PooDurableRuntimeStoreDiagnosticCode PooDurableRuntimeStoreDiagnosticSlot PooDurableRuntimeStoreDiagnosticSeverity PooDurableRuntimeStoreDiagnosticPayload PooDurableRuntimeStoreDiagnosticRow)"
+      },
+      {
+        "line": 119,
+        "text": "(def (poo-flow-durable-runtime-store-diagnostic code slot severity payload)"
+      },
+      {
+        "line": 121,
+        "text": "   (cons 'kind +poo-flow-durable-runtime-store-diagnostic-schema+)"
+      },
+      {
+        "line": 122,
+        "text": "   (cons 'schema +poo-flow-durable-runtime-store-diagnostic-schema+)"
+      },
+      {
+        "line": 124,
+        "text": "   (cons 'phase 'durable-runtime-store-contract)"
+      },
+      {
+        "line": 129,
+        "text": "         (poo-flow-durable-runtime-store-option"
+      },
+      {
+        "line": 134,
+        "text": ";; : (-> PooDurableRuntimeStoreDiagnosticCode PooDurableRuntimeStoreDiagnosticSlot PooDurableRuntimeStoreDiagnosticValue PooDurableRuntimeStoreDiagnosticRow)"
+      },
+      {
+        "line": 135,
+        "text": "(def (poo-flow-durable-runtime-store-value-diagnostic code slot value)"
+      },
+      {
+        "line": 136,
+        "text": "  (poo-flow-durable-runtime-store-diagnostic"
+      },
+      {
+        "line": 146,
+        "text": ";; : (-> PooDurableRuntimeStoreId PooDurableRuntimeOwner PooDurablePolicy [PooDurableRuntimeStoreOptionRow] PooDurableRuntimeStoreContract)"
+      },
+      {
+        "line": 147,
+        "text": "(def (poo-flow-durable-runtime-store-contract store-id"
+      },
+      {
+        "line": 149,
+        "text": "                                              durable-policy"
+      },
+      {
+        "line": 153,
+        "text": "          (poo-flow-durable-runtime-store-option options 'schema-version 1))"
+      },
+      {
+        "line": 155,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 159,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 163,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 167,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 171,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 175,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 179,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 183,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 187,
+        "text": "          (poo-flow-durable-runtime-store-option"
+      },
+      {
+        "line": 190,
+        "text": "           +poo-flow-durable-runtime-store-ledger-kinds+))"
+      },
+      {
+        "line": 192,
+        "text": "          (poo-flow-durable-runtime-store-option"
+      },
+      {
+        "line": 195,
+        "text": "           +poo-flow-durable-runtime-store-capability-flags+))"
+      },
+      {
+        "line": 197,
+        "text": "          (poo-flow-durable-runtime-store-option options 'metadata '())))"
+      },
+      {
+        "line": 200,
+        "text": "      (cons 'durable-runtime-store-kind"
+      },
+      {
+        "line": 201,
+        "text": "            +poo-flow-durable-runtime-store-contract-kind+)"
+      },
+      {
+        "line": 202,
+        "text": "      (cons 'durable-runtime-store-schema"
+      },
+      {
+        "line": 203,
+        "text": "            +poo-flow-durable-runtime-store-contract-schema+)"
+      },
+      {
+        "line": 206,
+        "text": "      (cons 'runtime-store-durable-policy durable-policy)"
+      },
+      {
+        "line": 221,
+        "text": ";; : PooDurableRuntimeStoreContract"
+      },
+      {
+        "line": 222,
+        "text": "(def poo-flow-durable-runtime-store-contract/default"
+      },
+      {
+        "line": 223,
+        "text": "  (poo-flow-durable-runtime-store-contract"
+      },
+      {
+        "line": 226,
+        "text": "   poo-flow-durable-policy/default"
+      },
+      {
+        "line": 231,
+        "text": "(def (poo-flow-durable-runtime-store-contract? value)"
+      },
+      {
+        "line": 233,
+        "text": "       (.slot? value 'durable-runtime-store-kind)"
+      },
+      {
+        "line": 234,
+        "text": "       (eq? (.ref value 'durable-runtime-store-kind)"
+      },
+      {
+        "line": 235,
+        "text": "            +poo-flow-durable-runtime-store-contract-kind+)))"
+      },
+      {
+        "line": 237,
+        "text": ";; : (-> PooDurableRuntimeStoreContract PooDurableRuntimeStoreContractName)"
+      },
+      {
+        "line": 238,
+        "text": "(def (poo-flow-durable-runtime-store-contract-name contract)"
+      },
+      {
+        "line": 239,
+        "text": "  (poo-flow-durable-runtime-store-slot contract 'runtime-store-id #f))"
+      },
+      {
+        "line": 241,
+        "text": ";; : (-> PooDurableRuntimeStoreContract PooDurableRuntimeStoreRequiredSlot PooDurableRuntimeStoreRequiredValue [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 242,
+        "text": "(def (poo-flow-durable-runtime-store-required-symbol-diagnostics contract"
+      },
+      {
+        "line": 250,
+        "text": "     (poo-flow-durable-runtime-store-diagnostic"
+      },
+      {
+        "line": 255,
+        "text": "                  (poo-flow-durable-runtime-store-contract-name contract))"
+      },
+      {
+        "line": 257,
+        "text": "            (cons 'expected 'symbol)"
+      },
+      {
+        "line": 260,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 261,
+        "text": "(def (poo-flow-durable-runtime-store-ledger-kind-diagnostics contract)"
+      },
+      {
+        "line": 263,
+        "text": "        (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 268,
+        "text": "     ((not (poo-flow-durable-runtime-store-symbol-list? ledger-kinds))"
+      },
+      {
+        "line": 270,
+        "text": "       (poo-flow-durable-runtime-store-value-diagnostic"
+      },
+      {
+        "line": 274,
+        "text": "     ((poo-flow-durable-runtime-store-every?"
+      },
+      {
+        "line": 276,
+        "text": "         (poo-flow-durable-runtime-store-member?"
+      },
+      {
+        "line": 278,
+        "text": "          +poo-flow-durable-runtime-store-ledger-kinds+))"
+      },
+      {
+        "line": 283,
+        "text": "       (poo-flow-durable-runtime-store-diagnostic"
+      },
+      {
+        "line": 288,
+        "text": "                    (poo-flow-durable-runtime-store-contract-name contract))"
+      },
+      {
+        "line": 290,
+        "text": "              (cons 'allowed +poo-flow-durable-runtime-store-ledger-kinds+)"
+      },
+      {
+        "line": 293,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 294,
+        "text": "(def (poo-flow-durable-runtime-store-capability-diagnostics contract)"
+      },
+      {
+        "line": 296,
+        "text": "        (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 301,
+        "text": "     ((not (poo-flow-durable-runtime-store-symbol-list? capability-flags))"
+      },
+      {
+        "line": 303,
+        "text": "       (poo-flow-durable-runtime-store-value-diagnostic"
+      },
+      {
+        "line": 307,
+        "text": "     ((poo-flow-durable-runtime-store-every?"
+      },
+      {
+        "line": 309,
+        "text": "         (poo-flow-durable-runtime-store-member?"
+      },
+      {
+        "line": 311,
+        "text": "          +poo-flow-durable-runtime-store-capability-flags+))"
+      },
+      {
+        "line": 316,
+        "text": "       (poo-flow-durable-runtime-store-diagnostic"
+      },
+      {
+        "line": 321,
+        "text": "                    (poo-flow-durable-runtime-store-contract-name contract))"
+      },
+      {
+        "line": 324,
+        "text": "                    +poo-flow-durable-runtime-store-capability-flags+)"
+      },
+      {
+        "line": 327,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 328,
+        "text": "(def (poo-flow-durable-runtime-store-required-contract-diagnostics contract)"
+      },
+      {
+        "line": 330,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 334,
+        "text": "    (poo-flow-durable-runtime-store-slot contract 'runtime-store-id #f))"
+      },
+      {
+        "line": 335,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 339,
+        "text": "    (poo-flow-durable-runtime-store-slot contract 'runtime-store-owner #f))"
+      },
+      {
+        "line": 340,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 344,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 348,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 352,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 356,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 360,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 364,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 368,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 372,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 376,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 380,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 384,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 388,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 392,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 396,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 400,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 405,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 406,
+        "text": "(def (poo-flow-durable-runtime-store-schema-version-diagnostics contract)"
+      },
+      {
+        "line": 408,
+        "text": "        (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 415,
+        "text": "       (poo-flow-durable-runtime-store-value-diagnostic"
+      },
+      {
+        "line": 420,
+        "text": ";; : (-> PooDurableRuntimeStoreContract PooDurablePolicyValue [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 421,
+        "text": "(def (poo-flow-durable-runtime-store-policy-diagnostics contract durable-policy)"
+      },
+      {
+        "line": 423,
+        "text": "   (if (poo-flow-durable-policy? durable-policy)"
+      },
+      {
+        "line": 426,
+        "text": "      (poo-flow-durable-runtime-store-value-diagnostic"
+      },
+      {
+        "line": 427,
+        "text": "       'invalid-durable-policy"
+      },
+      {
+        "line": 428,
+        "text": "       'durable-policy"
+      },
+      {
+        "line": 429,
+        "text": "       durable-policy)))"
+      },
+      {
+        "line": 430,
+        "text": "   (if (and (poo-flow-durable-policy? durable-policy)"
+      },
+      {
+        "line": 431,
+        "text": "            (poo-flow-durable-policy-valid? durable-policy))"
+      },
+      {
+        "line": 434,
+        "text": "      (poo-flow-durable-runtime-store-diagnostic"
+      },
+      {
+        "line": 435,
+        "text": "       'invalid-durable-policy-receipt"
+      },
+      {
+        "line": 436,
+        "text": "       'durable-policy"
+      },
+      {
+        "line": 439,
+        "text": "                   (poo-flow-durable-runtime-store-contract-name"
+      },
+      {
+        "line": 443,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 444,
+        "text": "(def (poo-flow-durable-runtime-store-contract-diagnostics contract)"
+      },
+      {
+        "line": 445,
+        "text": "  (if (poo-flow-durable-runtime-store-contract? contract)"
+      },
+      {
+        "line": 446,
+        "text": "    (let ((durable-policy"
+      },
+      {
+        "line": 447,
+        "text": "           (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 449,
+        "text": "            'runtime-store-durable-policy"
+      },
+      {
+        "line": 452,
+        "text": "       (poo-flow-durable-runtime-store-required-contract-diagnostics contract)"
+      },
+      {
+        "line": 453,
+        "text": "       (poo-flow-durable-runtime-store-schema-version-diagnostics contract)"
+      },
+      {
+        "line": 454,
+        "text": "       (poo-flow-durable-runtime-store-policy-diagnostics contract"
+      },
+      {
+        "line": 455,
+        "text": "                                                          durable-policy)"
+      },
+      {
+        "line": 456,
+        "text": "       (poo-flow-durable-runtime-store-ledger-kind-diagnostics contract)"
+      },
+      {
+        "line": 457,
+        "text": "       (poo-flow-durable-runtime-store-capability-diagnostics contract)))"
+      },
+      {
+        "line": 459,
+        "text": "     (poo-flow-durable-runtime-store-value-diagnostic"
+      },
+      {
+        "line": 464,
+        "text": ";; : (-> PooDurableRuntimeStoreContract Bool)"
+      },
+      {
+        "line": 465,
+        "text": "(def (poo-flow-durable-runtime-store-contract-valid? contract)"
+      },
+      {
+        "line": 466,
+        "text": "  (null? (poo-flow-durable-runtime-store-contract-diagnostics contract)))"
+      },
+      {
+        "line": 468,
+        "text": ";; poo-flow-durable-runtime-store-contract-receipt"
+      },
+      {
+        "line": 469,
+        "text": ";;   : PooDurableRuntimeStoreContractReceiptStruct"
+      },
+      {
+        "line": 474,
+        "text": "(defstruct poo-flow-durable-runtime-store-contract-receipt"
+      },
+      {
+        "line": 477,
+        "text": "   durable-policy-ref"
+      },
+      {
+        "line": 498,
+        "text": ";; : (forall (a) (-> a PooDurableRuntimeStoreIdentityRows (U #f PooDurablePolicyReceipt)))"
+      },
+      {
+        "line": 499,
+        "text": "(def (poo-flow-durable-runtime-store-policy->receipt durable-policy identity)"
+      },
+      {
+        "line": 500,
+        "text": "  (and (poo-flow-durable-policy? durable-policy)"
+      },
+      {
+        "line": 501,
+        "text": "       (poo-flow-durable-policy->receipt durable-policy identity)))"
+      },
+      {
+        "line": 503,
+        "text": ";; : (-> (U #f PooDurablePolicyReceipt) (U #f PooDurablePolicyId))"
+      },
+      {
+        "line": 504,
+        "text": "(def (poo-flow-durable-runtime-store-policy-receipt-policy-id receipt)"
+      },
+      {
+        "line": 506,
+        "text": "       (poo-flow-durable-policy-receipt-policy-id receipt)))"
+      },
+      {
+        "line": 508,
+        "text": ";; : (-> (U #f PooDurablePolicyReceipt) (U #f PooDurableRuntimeOwner))"
+      },
+      {
+        "line": 509,
+        "text": "(def (poo-flow-durable-runtime-store-policy-receipt-runtime-owner receipt)"
+      },
+      {
+        "line": 511,
+        "text": "       (poo-flow-durable-policy-receipt-runtime-owner receipt)))"
+      },
+      {
+        "line": 513,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreIdentityRow] PooDurableRuntimeStoreContractReceipt)"
+      },
+      {
+        "line": 514,
+        "text": "(def (poo-flow-durable-runtime-store-contract->receipt contract"
+      },
+      {
+        "line": 517,
+        "text": "         (durable-policy"
+      },
+      {
+        "line": 518,
+        "text": "          (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 520,
+        "text": "           'runtime-store-durable-policy"
+      },
+      {
+        "line": 522,
+        "text": "         (durable-policy-receipt"
+      },
+      {
+        "line": 523,
+        "text": "          (poo-flow-durable-runtime-store-policy->receipt durable-policy"
+      },
+      {
+        "line": 526,
+        "text": "          (poo-flow-durable-runtime-store-contract-diagnostics contract))"
+      },
+      {
+        "line": 528,
+        "text": "    (make-poo-flow-durable-runtime-store-contract-receipt"
+      },
+      {
+        "line": 529,
+        "text": "     (poo-flow-durable-runtime-store-slot contract 'runtime-store-id #f)"
+      },
+      {
+        "line": 530,
+        "text": "     (poo-flow-durable-runtime-store-slot contract 'runtime-store-owner #f)"
+      },
+      {
+        "line": 531,
+        "text": "     (poo-flow-durable-runtime-store-policy-receipt-policy-id"
+      },
+      {
+        "line": 532,
+        "text": "      durable-policy-receipt)"
+      },
+      {
+        "line": 533,
+        "text": "     (poo-flow-durable-runtime-store-identity-ref identity 'project-id #f)"
+      },
+      {
+        "line": 534,
+        "text": "     (poo-flow-durable-runtime-store-identity-ref identity"
+      },
+      {
+        "line": 537,
+        "text": "     (poo-flow-durable-runtime-store-identity-ref identity 'session-id #f)"
+      },
+      {
+        "line": 538,
+        "text": "     (poo-flow-durable-runtime-store-policy-receipt-runtime-owner"
+      },
+      {
+        "line": 539,
+        "text": "      durable-policy-receipt)"
+      },
+      {
+        "line": 540,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 544,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 548,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 552,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 556,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 560,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 564,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 568,
+        "text": "     (poo-flow-durable-runtime-store-slot contract"
+      },
+      {
+        "line": 571,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 575,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 579,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 585,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 590,
+        "text": ";; : (-> PooDurableRuntimeStoreContractReceipt PooDurableRuntimeStoreContractReceiptRow)"
+      },
+      {
+        "line": 592,
+        "text": "  poo-flow-durable-runtime-store-contract-receipt->alist (receipt)"
+      },
+      {
+        "line": 594,
+        "text": "              (poo-flow-durable-runtime-store-contract-receipt-diagnostics"
+      },
+      {
+        "line": 596,
+        "text": "  (fields ((kind 'poo-flow.durable.runtime-store-contract-receipt)"
+      },
+      {
+        "line": 597,
+        "text": "           (schema +poo-flow-durable-runtime-store-contract-receipt-schema+)"
+      },
+      {
+        "line": 599,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-store-id receipt))"
+      },
+      {
+        "line": 601,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-store-owner"
+      },
+      {
+        "line": 603,
+        "text": "           (durable-policy-ref"
+      },
+      {
+        "line": 604,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-durable-policy-ref"
+      },
+      {
+        "line": 607,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-project-id receipt))"
+      },
+      {
+        "line": 609,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-root-session-id"
+      },
+      {
+        "line": 612,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-session-id"
+      },
+      {
+        "line": 615,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-runtime-owner"
+      },
+      {
+        "line": 618,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-schema-version"
+      },
+      {
+        "line": 621,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-fact-log-ref"
+      },
+      {
+        "line": 624,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref"
+      },
+      {
+        "line": 627,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-derived-index-ref"
+      },
+      {
+        "line": 630,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-job-store-ref"
+      },
+      {
+        "line": 633,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-repair-journal-ref"
+      },
+      {
+        "line": 636,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-artifact-store-ref"
+      },
+      {
+        "line": 639,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-communication-ledger-ref"
+      },
+      {
+        "line": 642,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-sandbox-ledger-ref"
+      },
+      {
+        "line": 645,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-ledger-kinds"
+      },
+      {
+        "line": 648,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-capability-flags"
+      },
+      {
+        "line": 651,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-valid? receipt))"
+      },
+      {
+        "line": 655,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-metadata receipt))"
+      },
+      {
+        "line": 658,
+        "text": ";; : (-> [PooDurableRuntimeStoreContract] [PooDurableRuntimeStoreContractReceipt])"
+      },
+      {
+        "line": 659,
+        "text": "(def (poo-flow-durable-runtime-store-contracts->receipts contracts)"
+      },
+      {
+        "line": 663,
+        "text": "    (cons (poo-flow-durable-runtime-store-contract->receipt (car contracts))"
+      },
+      {
+        "line": 664,
+        "text": "          (poo-flow-durable-runtime-store-contracts->receipts"
+      },
+      {
+        "line": 667,
+        "text": "    (error \"durable runtime store contract batch projection requires a list\""
+      },
+      {
+        "line": 670,
+        "text": ";; : (-> [PooDurableRuntimeStoreContractReceipt] [PooDurableRuntimeStoreContractReceiptRow])"
+      },
+      {
+        "line": 672,
+        "text": "  poo-flow-durable-runtime-store-contract-receipts->alists (receipts)"
+      },
+      {
+        "line": 673,
+        "text": "  (projector poo-flow-durable-runtime-store-contract-receipt->alist)"
+      },
+      {
+        "line": 675,
+        "text": "   \"durable runtime store contract receipt serialization requires a list\"))"
+      }
+    ]
+  },
+  {
+    "id": "P31",
+    "path": "packages/proofs/lean-poo/SessionAttempt.lean",
+    "matches": [
+      {
+        "line": 10,
+        "text": "  revision : Nat"
+      },
+      {
+        "line": 11,
+        "text": "  generation : Nat"
+      },
+      {
+        "line": 14,
+        "text": "  pending : List (Nat \u00d7 \u03b1)"
+      },
+      {
+        "line": 18,
+        "text": "    some { s with revision := s.revision + 1, generation := s.generation + 1,"
+      },
+      {
+        "line": 19,
+        "text": "                  active := none, pending := s.active.toList ++ s.pending }"
+      },
+      {
+        "line": 21,
+        "text": "def complete [DecidableEq \u03b1] (s : Schedule \u03b1) (expectedRevision : Nat)"
+      },
+      {
+        "line": 23,
+        "text": "  if s.revision = expectedRevision \u2227 s.closed = false \u2227 s.active = some request"
+      },
+      {
+        "line": 24,
+        "text": "  then some { s with revision := s.revision + 1, active := none }"
+      },
+      {
+        "line": 29,
+        "text": "theorem recovery_generation_advances (s : Schedule \u03b1) (openState : s.closed = false) :"
+      },
+      {
+        "line": 30,
+        "text": "    (recover s).map Schedule.generation = some (s.generation + 1) := by"
+      },
+      {
+        "line": 32,
+        "text": "theorem recovery_revision_advances (s : Schedule \u03b1) (openState : s.closed = false) :"
+      },
+      {
+        "line": 33,
+        "text": "    (recover s).map Schedule.revision = some (s.revision + 1) := by"
+      },
+      {
+        "line": 36,
+        "text": "    (recover s).map Schedule.pending = some (s.active.toList ++ s.pending) := by"
+      },
+      {
+        "line": 38,
+        "text": "theorem recovery_fences_active (s : Schedule \u03b1) (openState : s.closed = false) :"
+      },
+      {
+        "line": 40,
+        "text": "theorem wrong_revision_refused [DecidableEq \u03b1] (s : Schedule \u03b1) (r : Nat)"
+      },
+      {
+        "line": 41,
+        "text": "    (request : Nat \u00d7 \u03b1) (wrong : s.revision \u2260 r) : complete s r request = none := by"
+      },
+      {
+        "line": 48,
+        "text": "    s.revision = r \u2227 s.closed = false \u2227 s.active = some request := by"
+      },
+      {
+        "line": 67,
+        "text": "      `PooFlowSessionAttemptProof.recovery_generation_advances,"
+      },
+      {
+        "line": 68,
+        "text": "      `PooFlowSessionAttemptProof.recovery_revision_advances,"
+      },
+      {
+        "line": 70,
+        "text": "      `PooFlowSessionAttemptProof.recovery_fences_active,"
+      },
+      {
+        "line": 71,
+        "text": "      `PooFlowSessionAttemptProof.wrong_revision_refused,"
+      }
+    ]
+  },
+  {
+    "id": "P31",
+    "path": "packages/proofs/quint/SessionAttempt.qnt",
+    "matches": [
+      {
+        "line": 5,
+        "text": "  var generation: int"
+      },
+      {
+        "line": 7,
+        "text": "  var pending: int"
+      },
+      {
+        "line": 12,
+        "text": "  action init = all { generation' = 0, active' = -1, pending' = -1,"
+      },
+      {
+        "line": 15,
+        "text": "    not(closed), active == -1, pending == -1, generation < 3,"
+      },
+      {
+        "line": 16,
+        "text": "    generation' = generation + 1, active' = generation + 1,"
+      },
+      {
+        "line": 17,
+        "text": "    pending' = pending, closed' = closed, everClosed' = everClosed, routed' = routed, recoveries' = recoveries"
+      },
+      {
+        "line": 19,
+        "text": "  action complete(requestGeneration: int): bool = all {"
+      },
+      {
+        "line": 21,
+        "text": "    (requestGeneration == active or BUG == \"ignoreGeneration\"),"
+      },
+      {
+        "line": 22,
+        "text": "    routed' = routed.append((requestGeneration,active)), active' = -1,"
+      },
+      {
+        "line": 23,
+        "text": "    generation' = generation, pending' = pending, closed' = closed, everClosed' = everClosed, recoveries' = recoveries"
+      },
+      {
+        "line": 26,
+        "text": "    (not(closed) or BUG == \"resumeClosed\"), generation < 3, recoveries.length() < 2,"
+      },
+      {
+        "line": 27,
+        "text": "    generation' = generation + 1, active' = -1, closed' = false, everClosed' = everClosed,"
+      },
+      {
+        "line": 28,
+        "text": "    pending' = if (BUG == \"dropObligation\") -1 else if (active >= 0) active else pending,"
+      },
+      {
+        "line": 29,
+        "text": "    recoveries' = recoveries.append((if (active >= 0) active else pending,"
+      },
+      {
+        "line": 30,
+        "text": "      if (BUG == \"dropObligation\") -1 else if (active >= 0) active else pending)),"
+      },
+      {
+        "line": 33,
+        "text": "  action reconcile = all {"
+      },
+      {
+        "line": 34,
+        "text": "    pending >= 0, pending' = -1, active' = active, generation' = generation,"
+      },
+      {
+        "line": 38,
+        "text": "    not(closed), active == -1, pending == -1, closed' = true, everClosed' = true,"
+      },
+      {
+        "line": 39,
+        "text": "    generation' = generation, active' = active, pending' = pending,"
+      },
+      {
+        "line": 43,
+        "text": "    nondet requestGeneration = Set(0,1,2,3).oneOf()"
+      },
+      {
+        "line": 44,
+        "text": "    any { claim, complete(requestGeneration), recover, reconcile, close }"
+      }
+    ]
+  },
+  {
+    "id": "P33",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean",
+    "matches": [
+      {
+        "line": 25,
+        "text": "maximum generation.  Runtime watchdog metrics are deliberately absent."
+      },
+      {
+        "line": 31,
+        "text": "  maxGeneration : Nat"
+      },
+      {
+        "line": 48,
+        "text": "  generation : Nat"
+      },
+      {
+        "line": 112,
+        "text": "  planGenerationMatches : plan.maxGeneration = fixedPoint.generation"
+      },
+      {
+        "line": 116,
+        "text": "  receiptGenerationMatches : receipt.generation = progress.generation"
+      },
+      {
+        "line": 117,
+        "text": "  receiptGenerationBound : receipt.generation \u2264 plan.maxGeneration"
+      },
+      {
+        "line": 232,
+        "text": "    maxGeneration := fixedPoint.generation"
+      },
+      {
+        "line": 244,
+        "text": "    maxGeneration := fixedPoint.generation"
+      }
+    ]
+  },
+  {
+    "id": "P33",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean",
+    "matches": [
+      {
+        "line": 21,
+        "text": "    watchdog.generation = budget.generation \u2227"
+      },
+      {
+        "line": 32,
+        "text": "    generation := watchdog.generation"
+      },
+      {
+        "line": 71,
+        "text": "    generation := watchdog.generation"
+      }
+    ]
+  },
+  {
+    "id": "P35",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean",
+    "matches": [
+      {
+        "line": 13,
+        "text": "and strictly advance the authority generation.  Strict advancement makes the"
+      },
+      {
+        "line": 14,
+        "text": "generation an anti-ABA fence rather than a mutable version label."
+      },
+      {
+        "line": 19,
+        "text": "    before.authorityGeneration < after.authorityGeneration"
+      },
+      {
+        "line": 26,
+        "text": "  have generationsEqual :"
+      },
+      {
+        "line": 27,
+        "text": "      before.authorityGeneration = after.authorityGeneration :="
+      },
+      {
+        "line": 28,
+        "text": "    congrArg ReceiptValidationContext.authorityGeneration contextsEqual"
+      },
+      {
+        "line": 29,
+        "text": "  exact (Nat.ne_of_lt transitionValid.2) generationsEqual"
+      },
+      {
+        "line": 58,
+        "text": "      authorityGeneration := 5"
+      },
+      {
+        "line": 66,
+        "text": "      authorityGeneration := 6"
+      },
+      {
+        "line": 91,
+        "text": "needed by receipt validation; it does not derive freshness from wall-clock"
+      },
+      {
+        "line": 100,
+        "text": "  generationStrict :"
+      },
+      {
+        "line": 103,
+        "text": "        (contextAt earlier).authorityGeneration <"
+      },
+      {
+        "line": 104,
+        "text": "          (contextAt later).authorityGeneration"
+      },
+      {
+        "line": 112,
+        "text": "  have generationsEqual :"
+      },
+      {
+        "line": 113,
+        "text": "      (lineage.contextAt earlier).authorityGeneration ="
+      },
+      {
+        "line": 114,
+        "text": "        (lineage.contextAt later).authorityGeneration :="
+      },
+      {
+        "line": 115,
+        "text": "    congrArg ReceiptValidationContext.authorityGeneration contextsEqual"
+      },
+      {
+        "line": 117,
+        "text": "    (Nat.ne_of_lt (lineage.generationStrict positionAdvanced))"
+      },
+      {
+        "line": 118,
+        "text": "      generationsEqual"
+      },
+      {
+        "line": 144,
+        "text": "same context while reusing the same next generation."
+      },
+      {
+        "line": 146,
+        "text": "theorem validTransitionsAlonePermitSameGenerationFork :"
+      },
+      {
+        "line": 152,
+        "text": "        left.authorityGeneration = right.authorityGeneration := by"
+      },
+      {
+        "line": 156,
+        "text": "      authorityGeneration := 10"
+      },
+      {
+        "line": 164,
+        "text": "      authorityGeneration := 11"
+      },
+      {
+        "line": 172,
+        "text": "      authorityGeneration := 11"
+      },
+      {
+        "line": 197,
+        "text": "          left.authorityGeneration = right.authorityGeneration \u2192"
+      },
+      {
+        "line": 208,
+        "text": "  intro left right leftPublished rightPublished _ generationsEqual"
+      },
+      {
+        "line": 216,
+        "text": "    \u00b7 have generationBefore :="
+      },
+      {
+        "line": 217,
+        "text": "        lineage.generationStrict positionBefore"
+      },
+      {
+        "line": 218,
+        "text": "      exact False.elim ((Nat.ne_of_lt generationBefore) generationsEqual)"
+      },
+      {
+        "line": 220,
+        "text": "    \u00b7 have generationAfter :="
+      },
+      {
+        "line": 221,
+        "text": "        lineage.generationStrict positionAfter"
+      },
+      {
+        "line": 224,
+        "text": "          ((Nat.ne_of_lt generationAfter) generationsEqual.symm)"
+      },
+      {
+        "line": 228,
+        "text": "theorem forkFreePublicationMakesGenerationUnique"
+      },
+      {
+        "line": 236,
+        "text": "    (sameGeneration :"
+      },
+      {
+        "line": 237,
+        "text": "      left.authorityGeneration = right.authorityGeneration) :"
+      },
+      {
+        "line": 243,
+        "text": "    sameGeneration"
+      },
+      {
+        "line": 247,
+        "text": "context published by one authority at the same generation.  Local monotonicity"
+      },
+      {
+        "line": 250,
+        "text": "theorem individuallyValidLineagesCanDisagreeAtSameGeneration :"
+      },
+      {
+        "line": 254,
+        "text": "        (left.contextAt 1).authorityGeneration ="
+      },
+      {
+        "line": 255,
+        "text": "          (right.contextAt 1).authorityGeneration \u2227"
+      },
+      {
+        "line": 263,
+        "text": "          authorityGeneration := position"
+      },
+      {
+        "line": 271,
+        "text": "      generationStrict := by"
+      },
+      {
+        "line": 281,
+        "text": "          authorityGeneration := position"
+      },
+      {
+        "line": 289,
+        "text": "      generationStrict := by"
+      },
+      {
+        "line": 321,
+        "text": "    (sameGeneration :"
+      },
+      {
+        "line": 322,
+        "text": "      left.context.authorityGeneration ="
+      },
+      {
+        "line": 323,
+        "text": "        right.context.authorityGeneration) :"
+      },
+      {
+        "line": 335,
+        "text": "      sameGeneration"
+      }
+    ]
+  },
+  {
+    "id": "P35",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean",
+    "matches": [
+      {
+        "line": 63,
+        "text": "  intro left right leftPublished rightPublished sameAuthority sameGeneration"
+      },
+      {
+        "line": 70,
+        "text": "  \u00b7 exact sameGeneration"
+      }
+    ]
+  },
+  {
+    "id": "P43",
+    "path": "modules/session/funs-attempt.ss",
+    "matches": [
+      {
+        "line": 5,
+        "text": ";;; Recovery reconciliation cannot be inferred from a provider completion."
+      },
+      {
+        "line": 9,
+        "text": "        poo-flow-session-recover poo-flow-session-reconcile poo-flow-session-close)"
+      },
+      {
+        "line": 25,
+        "text": "      schedule: state-value runtime-published?: #f action-authorized?: #f durable?: #f))"
+      },
+      {
+        "line": 26,
+        "text": "(def (guard state expected operation)"
+      },
+      {
+        "line": 28,
+        "text": "        ((not (equal? expected (.ref state 'revision))) (receipt #f 'stale-revision state))"
+      },
+      {
+        "line": 30,
+        "text": "        ((or (= (.ref state 'revision) 65535) (= (.ref state 'generation) 65535))"
+      },
+      {
+        "line": 33,
+        "text": "(def (next-state state status-value active-value obligations-value completed-value generation-value)"
+      },
+      {
+        "line": 34,
+        "text": "  (let ((id-value (string-copy (.ref state 'identity))) (revision-value (+ 1 (.ref state 'revision))))"
+      },
+      {
+        "line": 35,
+        "text": "    (.o (:: @ SessionSchedule.) identity: id-value revision: revision-value"
+      },
+      {
+        "line": 36,
+        "text": "        generation: generation-value status: status-value active: active-value"
+      },
+      {
+        "line": 41,
+        "text": "(def (poo-flow-session-claim state expected task-value attempt-id request-id turn-value)"
+      },
+      {
+        "line": 42,
+        "text": "  (guard state expected (lambda ()"
+      },
+      {
+        "line": 54,
+        "text": "                   (task-revision-value (.ref task-value 'revision))"
+      },
+      {
+        "line": 58,
+        "text": "                   (generation-value (+ 1 (.ref state 'generation)))"
+      },
+      {
+        "line": 60,
+        "text": "                     task-revision: task-revision-value identity: id-value request: request-value"
+      },
+      {
+        "line": 61,
+        "text": "                     turn: turn-value generation: generation-value input: input-value anchor-refs: anchors-value)))"
+      },
+      {
+        "line": 63,
+        "text": "                 (.ref state 'completed) generation-value))))))))"
+      },
+      {
+        "line": 67,
+        "text": "              '(kind session task task-revision identity generation turn request anchor-refs))"
+      },
+      {
+        "line": 72,
+        "text": "(def (poo-flow-session-complete state expected attempt-value)"
+      },
+      {
+        "line": 73,
+        "text": "  (guard state expected (lambda ()"
+      },
+      {
+        "line": 76,
+        "text": "        (cons (string-copy (.ref attempt-value 'identity)) (.ref state 'completed)) (.ref state 'generation)))"
+      },
+      {
+        "line": 78,
+        "text": "(def (poo-flow-session-recover state expected)"
+      },
+      {
+        "line": 79,
+        "text": "  (guard state expected (lambda ()"
+      },
+      {
+        "line": 80,
+        "text": "    (let ((pending (if (.ref state 'active) (cons (.ref state 'active) (.ref state 'obligations))"
+      },
+      {
+        "line": 82,
+        "text": "          (generation-value (+ 1 (.ref state 'generation))))"
+      },
+      {
+        "line": 83,
+        "text": "      (receipt #t 'recovery-proposed (next-state state (if (null? pending) 'idle 'recovering)"
+      },
+      {
+        "line": 84,
+        "text": "        #f pending (.ref state 'completed) generation-value))))))"
+      },
+      {
+        "line": 85,
+        "text": "(def (poo-flow-session-reconcile state expected attempt-value)"
+      },
+      {
+        "line": 87,
+        "text": "  (guard state expected (lambda ()"
+      },
+      {
+        "line": 91,
+        "text": "      (receipt #t 'reconciliation-proposed (next-state state 'idle #f '()"
+      },
+      {
+        "line": 92,
+        "text": "        (cons (string-copy (.ref attempt-value 'identity)) (.ref state 'completed)) (.ref state 'generation)))"
+      },
+      {
+        "line": 94,
+        "text": "(def (poo-flow-session-close state expected)"
+      },
+      {
+        "line": 95,
+        "text": "  (guard state expected (lambda ()"
+      },
+      {
+        "line": 97,
+        "text": "      (receipt #t 'close-proposed (next-state state 'closed #f '() (.ref state 'completed) (.ref state 'generation)))"
+      },
+      {
+        "line": 98,
+        "text": "      (receipt #f 'pending-obligation state)))))"
+      }
+    ]
+  },
+  {
+    "id": "C8",
+    "path": "CedarPooSpec/Admission/BoundOperation.lean",
+    "matches": [
+      {
+        "line": 6,
+        "text": "must still authenticate the actual effect and state before execution."
+      },
+      {
+        "line": 24,
+        "text": "    by the caller. This equality check does not authenticate either input. -/"
+      },
+      {
+        "line": 41,
+        "text": "    authenticate those values and bind any eventual execution to them. -/"
+      }
+    ]
+  },
+  {
+    "id": "C10",
+    "path": "CedarPooSpec/CompoundAuthorization.lean",
+    "matches": [
+      {
+        "line": 7,
+        "text": "responsible for atomic business execution and authentic input facts."
+      }
+    ]
+  },
+  {
+    "id": "C11",
+    "path": "CedarPooSpec/Composition.lean",
+    "matches": []
+  },
+  {
+    "id": "P44",
+    "path": "modules/session/objects-attempt.ss",
+    "matches": [
+      {
+        "line": 13,
+        "text": "  (.o kind: 'poo-flow.session.task.v1 identity: #f revision: 0"
+      },
+      {
+        "line": 16,
+        "text": "  (.o kind: 'poo-flow.session.attempt.v1 session: #f task: #f task-revision: 0"
+      },
+      {
+        "line": 17,
+        "text": "      identity: #f generation: 0 turn: 0 request: #f input: #f anchor-refs: '()))"
+      },
+      {
+        "line": 19,
+        "text": "  (.o kind: 'poo-flow.session.schedule.v1 identity: #f revision: 0"
+      },
+      {
+        "line": 20,
+        "text": "      generation: 0 status: 'idle active: #f obligations: '() completed: '()))"
+      }
+    ]
+  }
+]

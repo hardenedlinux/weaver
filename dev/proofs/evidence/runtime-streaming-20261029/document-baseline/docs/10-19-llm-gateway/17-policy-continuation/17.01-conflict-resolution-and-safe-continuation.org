@@ -1,0 +1,143 @@
+#+title: Weaver Concurrent Policy Conflicts and Safe Intent Continuation
+#+language: en
+#+options: toc:3
+
+* Core decision
+
+A stale parent is not permission to rewrite the original pending intent. A lost
+publication response is not evidence of a conflict or absence. First reconcile
+the entire canonical intent family against the current authority prefix; then,
+if unresolved, explicitly authorize a new linked attempt under the current parent.
+The original remains durable history and the family can publish at most once.
+
+Final publication commits the exact source publication and the family winner in
+one logical serialization domain. An acknowledgement cannot change that winner.
+A different MCP session, A2A task, ACP session, nonce or worker does not create a
+new canonical intent family. See [[file:17.04-protocol-admission-and-identity.org][the protocol admission contract]].
+
+This is an AI Agent Gateway logical authority design. Qualified non-rollback
+storage, authenticated source classification and durable commits remain explicit
+native contracts; this model does not require physical isolation.
+
+* Distinguish uncertainty, conflict and completion
+
+| State | Authority evidence | Allowed next action |
+|-------+--------------------+---------------------|
+| Original response unknown | No qualified result yet | Query the same stable family and operation; preserve pending and holds |
+| Family already committed | Exact original or continuation publication in current qualified prefix | Return the same durable winner; never create another attempt to repeat it |
+| Original parent stale, family unresolved | Current prefix proves family absence and a newer committed parent | Prepare a linked candidate and obtain fresh reauthorization |
+| Candidate approved, source cut changes | Ledger, generation, prefix or fence differs | Reject old approval; inspect and authorize again if still unresolved |
+| Multiple candidates compete | All preserve the original semantic intent | At most one wins the final family CAS; losers retain attributable history |
+| Reauthorization denied or unavailable | Actual Policy/source owner does not admit the continuation | Remain unresolved; do not silently relax the current restriction |
+
+A continuation can restore an originally requested Allow only if the actual
+current publication Policy authorizes that effect under the newer context. A
+newer Deny is not automatically overridden because the old intent asked for
+Allow. Scheme's conflict rules and the actual Cedar layers determine whether
+that change is now permitted; denied approval leaves the intent unresolved.
+
+* Immutable root, attempts and canonical family classification
+
+The canonical root is the producer's original stable change identity. Every
+continuation uses a fresh attempt ID and records the original root, exact domain,
+source vector, original task/claim/profile binding, content commitment and desired
+semantic effect. Only predecessor coordinates and attempt ID may change. A
+semantic edit is a separately approved new intent, not a continuation.
+
+Canonical family identity is authenticated by the source owner before a staged
+object can take any publication path. In Lean, =owner.familyOf= is that fixed
+classification. A gateway cannot classify an unresolved family candidate as an
+unrelated external change just because it lacks a local continuation link.
+Other-family publication requires the classification to differ from the original
+root. Interface IDs, payload similarity and adapter-selected labels cannot define
+this classification. Native registration must bind tenant/principal, source issuer,
+original operation and the durable intent identity.
+
+The model fixes one original family and permits arbitrary finite other-family
+publications. The source family's immutable original is an admitted parameter,
+not a client-selected string. Native canonical registration and its non-rollback
+identity contract remain premises. The model does not prove global identity
+allocation across every tenant or protocol implementation.
+
+* Ordered continuation protocol
+
+1. Persist any candidate as source-owned staged data using category 16. An orphan
+   staged row is not publishable as this family before linked admission.
+2. Read the current qualified owner state. Prove absence of every committed member
+   of the canonical family, not merely absence of the original attempt ID. Record
+   the full current authority cut and exact parent tip as an inspection receipt.
+3. Verify the original is still staged, the family is unresolved and the original
+   parent is strictly older. Match candidate semantics to the original and bind
+   candidate predecessor to the actual current generation/tip.
+4. Reauthorize the actual continuation with the original intent, candidate and
+   current source state. Persist the exact candidate/inspection approval. The cut
+   includes original binding, execution revision, publication position, current
+   Policy generation and owner fence.
+5. At publication, recheck exact candidate membership, fresh approval cut, current
+   parent, publisher fence and actual publication Policy. Atomically append the
+   source publication and install the family's durable winner if still empty.
+6. Deliver/query the winner as historical evidence. Retain original pending intent,
+   approved candidates and loser/conflict evidence; do not republish on reply loss.
+
+Inspection is not a lease or execution grant. A concurrent publication, source
+ledger mutation or fence change can invalidate it. Reauthorization is not a
+publication grant with unlimited lifetime: final publication compares the full
+approval cut again, and category 16 checks current actual-operation authorization.
+Even a different family advancing the global head invalidates the old candidate's
+parent and approval cut.
+
+The source and winner logs are presented as one logical commit. A native design
+must put the winner slot and publication into the same authority transaction or
+qualify an equivalent fenced commit protocol. Writing one store, acknowledging
+success and later writing the other would not refine this model. Durable linked
+approval similarly needs exact source identity and recovery membership; it is not
+inferred from a staging reply or a provider callback.
+
+* Concurrency, lost replies and recovery
+
+| Interleaving | Required handling |
+|--------------+-------------------|
+| Original commits, response lost, another family advances head | Inspect the entire family; original commit still resolves it despite stale parent |
+| Original did not commit and another family wins the old parent | Qualified family absence plus current prefix permits explicit reauthorization |
+| Two continuations approved at one cut | First publication installs the family winner; second cannot publish or silently rebase |
+| Winner installed but reply lost | Query the existing family decision; local missing visibility does not mean empty winner |
+| Ledger/history change after approval | Full approval cut or current Policy rejects the stale candidate |
+| Owner restart after approval | Current fence and source recovery retire old approval/worker eligibility |
+| Late successful confirmation of an old winner | Preserve historical evidence; never replace winner or current effective generation |
+| Missing original intent projection after restart | Recover the exact durable original and links or stay unavailable |
+| Protocol switch/reconnect | Resolve alias to the same canonical root; preserve spent-state and unknown holds |
+
+A negative family lookup must be qualified at the current owner prefix and exact
+source namespace. Older local absence, transport timeout, A2A message history or
+MCP session state cannot supply this proof. If an original operation remains
+possibly committing, no absence certificate may be issued until the owner ordering
+and fence exclude a conflicting late acceptance.
+
+Approval records are append-only data. Failed candidates do not replace the
+original, and a winner is never cleared or reassigned. No timeout GC or automatic
+pending cancellation is modeled. Repeated conflicts may keep the family pending;
+recovery progress is conditional on available qualified reads, a stable cut and
+fresh authorization. Fairness, bounded completion and starvation freedom are not
+proved by the safety model.
+
+* Responsibilities and original obligations
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme / POO Flow | Canonical intent meaning, same-intent relation and conflict/reauthorization semantics; original claim/profile/account domains |
+| Go adapters | MCP/A2A/client/UI lifecycle and cloud reconciliation; preserve canonical root, pending/unknown/conflict statuses and attributable observations |
+| Rust authority owner | Qualified family inspection, source-classified links, durable approval membership and atomic family-winner/source publication CAS |
+| Rust final broker | Current effective generation, exact actual effect and original consumption/range gates; never execute from an alias or acknowledgement |
+| Cedar | Actual continuation and publication authorization against current authenticated context; no cached-stage approval substitution |
+| Quint / Lean | Fault traces, one family winner, immutable semantics and actual prior source-step composition under explicit owner contracts |
+
+The composition preserves original claim uniqueness, profile interpretation,
+budget/history domains and allowance. Continuation and alias admission do not
+consume. Unknown usage retains the original hold; no conflict status or protocol
+completion implies refund. New messages, SDK retries and streamed ranges remain
+subject to the earlier final execution gates.
+
+Keep immutable profiles and canonical alias records cacheable. Final owner
+currentness and family CAS remain mandatory. Measure conflict frequency,
+reauthorization latency, pending age, winner lookup and publication contention.
+This design includes no Gateway implementation or performance result.

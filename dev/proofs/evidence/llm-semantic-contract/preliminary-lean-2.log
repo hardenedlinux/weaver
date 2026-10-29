@@ -1,0 +1,13 @@
+'Weaver.LlmSemanticContract.initialized_audit' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.sealed_wire_preserves_projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.sealed_wire_cannot_be_replaced' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.consumed_child_cannot_reopen' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.semantic_outputs_keep_original_source' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.tool_proposal_requires_finished_valid_arguments' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.tool_fragments_do_not_execute' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.argument_buffers_are_bounded' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.release_requires_current_winner_and_policy' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.complete_document_release_is_not_partial' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.refines_actual_child_invocation' does not depend on any axioms
+'Weaver.LlmSemanticContract.qualified_child_retains_budget' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.qualified_child_uses_actual_target' does not depend on any axioms

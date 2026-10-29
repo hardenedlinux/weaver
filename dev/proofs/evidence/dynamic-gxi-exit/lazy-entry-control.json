@@ -1,0 +1,119 @@
+{
+  "commands": [
+    {
+      "args": [
+        "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/bin/gsc",
+        "-c",
+        "-linker-name",
+        "a.o1",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/a.c",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/a.scm"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "/opt/homebrew/bin/gcc-16",
+        "-O1",
+        "-fPIC",
+        "-foptimize-sibling-calls",
+        "-D___SINGLE_HOST",
+        "-D___INLINE_JUMPS",
+        "-D___TRUST_C_TCO",
+        "-D___CAN_IMPORT_CLIB_DYNAMICALLY",
+        "-D___CAN_IMPORT_SETJMP_DYNAMICALLY",
+        "-D___DYNAMIC",
+        "-I/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/include",
+        "-c",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/a.c",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/a.o"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/bin/gsc",
+        "-c",
+        "-linker-name",
+        "b.o1",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/b.c",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/b.scm"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "/opt/homebrew/bin/gcc-16",
+        "-O1",
+        "-fPIC",
+        "-foptimize-sibling-calls",
+        "-D___SINGLE_HOST",
+        "-D___INLINE_JUMPS",
+        "-D___TRUST_C_TCO",
+        "-D___CAN_IMPORT_CLIB_DYNAMICALLY",
+        "-D___CAN_IMPORT_SETJMP_DYNAMICALLY",
+        "-D___DYNAMIC",
+        "-I/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/include",
+        "-c",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/b.c",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/b.o"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "/opt/homebrew/bin/gcc-16",
+        "-bundle",
+        "-undefined",
+        "dynamic_lookup",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/a.o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/b.o",
+        "-isysroot",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk",
+        "-lSystem",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/two-entries.image"
+      ],
+      "exit": 0
+    }
+  ],
+  "args": [
+    "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/bin/gxi",
+    "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lazy-control/entry.ss"
+  ],
+  "exit": 0,
+  "seconds": 1.652,
+  "gateSeconds": 15,
+  "qualified": true,
+  "lines": [
+    "INIT A",
+    "AFTER A",
+    "INIT B",
+    "AFTER B",
+    "NATIVE-DYNAMIC-CANARY-LOADED",
+    "LAZY-RETURN"
+  ],
+  "expected": [
+    "INIT A",
+    "AFTER A",
+    "INIT B",
+    "AFTER B",
+    "NATIVE-DYNAMIC-CANARY-LOADED",
+    "LAZY-RETURN"
+  ],
+  "cleanup": "LU",
+  "moduleCounts": {
+    "moduleOpens": 38,
+    "moduleCloses": 38,
+    "outstandingModuleRefs": 0,
+    "closeErrors": 0,
+    "overflow": 0,
+    "peakDyldImages": 50
+  },
+  "sharedInode": true,
+  "forcedExit": false
+}

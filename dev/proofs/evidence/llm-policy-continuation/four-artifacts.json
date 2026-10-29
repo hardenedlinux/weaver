@@ -1,0 +1,86 @@
+[
+  {
+    "id": "PC1",
+    "design": "Keep original pending intent through continuation",
+    "quint": "originalPendingIntentIsRetainedTest",
+    "lean": "original_staged_intent_is_retained",
+    "d2": "intent.original"
+  },
+  {
+    "id": "PC2",
+    "design": "Resolve uncertainty before declaring conflict",
+    "quint": "unknownOriginalCommitCannotBecomeConflictTest",
+    "lean": "committed_family_prevents_absence",
+    "d2": "owner.inspect"
+  },
+  {
+    "id": "PC3",
+    "design": "Preserve exact original semantics",
+    "quint": "changedProfileCannotContinueTest",
+    "lean": "approvals_keep_original_semantics",
+    "d2": "intent.candidate"
+  },
+  {
+    "id": "PC4",
+    "design": "Inspection is data, not execution authority",
+    "quint": "freshInspectionDoesNotGrantUseTest",
+    "lean": "inspection_cannot_authorize_consumption",
+    "d2": "owner.inspect"
+  },
+  {
+    "id": "PC5",
+    "design": "Approval must match full current cut",
+    "quint": "staleApprovalAfterLedgerWriteTest",
+    "lean": "stale_approval_cut_is_rejected",
+    "d2": "owner.approval"
+  },
+  {
+    "id": "PC6",
+    "design": "Owner change retires old approval",
+    "quint": "staleApprovalAfterFenceChangeTest",
+    "lean": "stale_approval_fence_is_rejected",
+    "d2": "owner.approval"
+  },
+  {
+    "id": "PC7",
+    "design": "At most one publication for the original family",
+    "quint": "twoApprovalsStillHaveOneWinnerTest",
+    "lean": "family_has_one_winner",
+    "d2": "result.winner"
+  },
+  {
+    "id": "PC8",
+    "design": "Lost winner reply cannot reopen the family",
+    "quint": "lostWinnerReplyQueriesSameDecisionTest",
+    "lean": "winner_is_never_replaced",
+    "d2": "result.query"
+  },
+  {
+    "id": "PC9",
+    "design": "Late acknowledgement cannot alter winner",
+    "quint": "lateAcknowledgementIsOnlyHistoryTest",
+    "lean": "current_publication_prefix_is_inherited",
+    "d2": "result.ack"
+  },
+  {
+    "id": "PC10",
+    "design": "Cross-protocol aliases retain canonical family",
+    "quint": "newProtocolAliasPreservesPendingTest",
+    "lean": "aliases_keep_canonical_family",
+    "d2": "intent.protocol"
+  },
+  {
+    "id": "PC11",
+    "design": "Interface change is not a consumption grant",
+    "quint": "unknownCostSurvivesProtocolSwitchTest",
+    "lean": "protocol_alias_is_only_data",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "PC12",
+    "design": "Original unknown usage continues to block settlement",
+    "quint": "unknownCostSurvivesProtocolSwitchTest",
+    "lean": "unknown_usage_retains_hold",
+    "d2": "broker.hold"
+  }
+]

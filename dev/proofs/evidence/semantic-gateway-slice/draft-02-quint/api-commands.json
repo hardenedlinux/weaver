@@ -1,0 +1,135 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 3,
+    "sourceSha256": "6acfbc7d1b3368e0c0019e5eb703c642e7a2f5d057ed1c89b96a17edda930a0b",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.536
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "9150202515192d2bc17a34a39e54b26c382fe64dce30de1d00d8e0155080fb05",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 2.657
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "queueHasNoExternalSendTest",
+      "actualDispatchUsesOriginalRouterTest",
+      "forgedProfileCannotQueueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.048
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "forgedOriginCannotQueueTest",
+      "changedResponseCannotQueueTest",
+      "generationChangeRejectsOldPermitTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.117
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "rejoinPreservesIdentityTest",
+      "policyAfterQueueRejectsSendTest",
+      "historyAfterQueueRejectsSendTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.013
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "artifactCurrentnessRequiredTest",
+      "actualPolicyRequiredTest",
+      "crashBeforeDispatchKeepsQueueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.247
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "oldWorkerAfterRecoveryRejectedTest",
+      "recoveryRejoinCanProgressTest",
+      "lostReplyCannotRetryTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.117
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "crashAfterDispatchCannotRetryTest",
+      "partialWriteRetainsUnknownHoldTest",
+      "policyChangeStopsNextWriteTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.253
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "historyChangeStopsNextWriteTest",
+      "newGenerationStopsNextWriteTest",
+      "oldWriterCannotReleaseAfterRestartTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.195
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "lateReceiptIsNotFreshSendTest",
+      "timeoutDoesNotReleaseBudgetTest",
+      "foreignUsageReceiptRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.059
+  },
+  {
+    "label": "api-controls-8",
+    "exit": 1,
+    "watchdogSeconds": 20,
+    "seconds": 0.203
+  }
+]

@@ -1,0 +1,299 @@
+[
+  {
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/RoutineRoutingConfig.olean",
+      "proofs/lean/RoutineRoutingConfig.lean"
+    ],
+    "exit": 0,
+    "seconds": 6.684,
+    "watchdogSeconds": 20,
+    "sourceSha256": {
+      "proofs/lean/RoutineRoutingConfig.lean": "bda1312b57e0d1e6c234d48fddc4741619a8b7a34ed0d4d49e96cf5fe93b129b"
+    },
+    "compiledSha256": "134e216ada888e15e4992e1ff659c06575df255afac336a9e328ce145071299a",
+    "label": "RoutineRoutingConfig"
+  },
+  {
+    "label": "prepare-bundle",
+    "args": [
+      "python3",
+      "proofs/prepare_routine_config.py"
+    ],
+    "exit": 0,
+    "seconds": 0.153,
+    "watchdogSeconds": 20,
+    "sourceSha256": {
+      "proofs/prepare_routine_config.py": "947c0f1bd7601b51913ab5c0ffea1382ddba6a0b11615ed7f163be7eba6f3ba1"
+    }
+  },
+  {
+    "label": "parse-parent",
+    "args": [
+      "quint",
+      "parse",
+      "proofs/qunit/LlmRouting.qnt",
+      "--out",
+      "proofs/evidence/routine-routing-config/parent-parsed.json"
+    ],
+    "exit": 0,
+    "seconds": 1.978,
+    "watchdogSeconds": 20,
+    "sourceSha256": {
+      "proofs/qunit/LlmRouting.qnt": "780999248c4d84142801197231c561d9f8b03dbd933012a39fa962d318a4cfb7"
+    }
+  },
+  {
+    "label": "parse-raw-leaf",
+    "args": [
+      "node",
+      "proofs/evidence/routine-routing-config/parse-raw-leaf.cjs"
+    ],
+    "exit": 0,
+    "seconds": 1.479,
+    "watchdogSeconds": 20,
+    "sourceSha256": {
+      "proofs/evidence/routine-routing-config/parse-raw-leaf.cjs": "129b27608becdcdce203af7132ee78c30aceb3bd94be1e592e568cb4c52ca581"
+    }
+  },
+  {
+    "label": "parse-bundle",
+    "args": [
+      "quint",
+      "parse",
+      "proofs/evidence/routine-routing-config/bundle/RoutineRoutingConfig.qnt",
+      "--out",
+      "proofs/evidence/routine-routing-config/bundle-parsed.json"
+    ],
+    "exit": 0,
+    "seconds": 2.179,
+    "watchdogSeconds": 20,
+    "sourceSha256": {
+      "proofs/evidence/routine-routing-config/bundle/RoutineRoutingConfig.qnt": "ca542a7130cc462612500657dc6d2b898467e759726b2ff733b72dca8a8dc18f"
+    }
+  },
+  {
+    "label": "verify-bundle",
+    "args": [
+      "python3",
+      "proofs/evidence/routine-routing-config/check-bundle.py"
+    ],
+    "exit": 0,
+    "seconds": 0.177,
+    "watchdogSeconds": 20,
+    "sourceSha256": {
+      "proofs/evidence/routine-routing-config/check-bundle.py": "c3a6f939d8de99778e10fd842a4eb241f0015ea53abd4d0ae9dae37ea2e5d188"
+    }
+  },
+  {
+    "label": "api-parse",
+    "modules": 2,
+    "sourceSha256": "ca542a7130cc462612500657dc6d2b898467e759726b2ff733b72dca8a8dc18f",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.379
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "4892899477a078aa7250d23b736a504f3a974feabd385886064b123b5c4935b4",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 0.342
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "schemeSurfaceUsesSameNormalTest",
+      "jsonSurfaceUsesSameNormalTest",
+      "yamlSurfaceUsesSameNormalTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.028
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "typedConfigRequiredTest",
+      "fullSourceClosureRequiredTest",
+      "publisherAdmissionRequiredTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.007
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "droppedCapabilityRejectedTest",
+      "largerBudgetRejectedTest",
+      "forgedProfileRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.018
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "changedResponseModeRejectedTest",
+      "forgedRootRejectedTest",
+      "unsupportedCheapRouteRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.021
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "configuredTargetIsNotPermissionTest",
+      "emptyCandidateSetFailsClosedTest",
+      "narrowedAllowanceConstrainsRouteTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.017
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "allowedAlternativeKeepsOriginalRootTest",
+      "newDefaultDoesNotRewritePinnedRoutineTest",
+      "hardWithdrawalInvalidatesOldSelectionTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.009
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "softTelemetryPreservesHardAuthorityTest",
+      "newSelectionUsesCurrentRankingTest",
+      "historyRestrictionRecheckedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.021
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "currentCompilerArtifactRequiredTest",
+      "finalPolicyRequiredTest",
+      "configCannotRewriteWireTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.02
+  },
+  {
+    "label": "api-controls-8",
+    "passed": [
+      "unknownOutcomeKeepsOriginalAdmissionTest",
+      "routineCannotSpliceResponseSourcesTest",
+      "strengthenedContractFiltersPrimaryTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.0
+  },
+  {
+    "label": "api-controls-9",
+    "passed": [
+      "strengthenedContractChoosesCapableBackupTest",
+      "weakenedConfigCounterexampleTest",
+      "replacedRoutineCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.012
+  },
+  {
+    "label": "api-controls-10",
+    "passed": [
+      "rewrittenRootCounterexampleTest",
+      "hiddenRetryCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.0
+  },
+  {
+    "label": "source-check",
+    "args": [
+      "python3",
+      "proofs/evidence/routine-routing-config/check-source-review.py"
+    ],
+    "exit": 0,
+    "seconds": 1.083,
+    "watchdogSeconds": 20,
+    "sourceSha256": {
+      "proofs/evidence/routine-routing-config/check-source-review.py": "ba73a4d29d0ce327063ebaa051cf19f7c29beeb9b55ebc4af248d6b51b09ab65"
+    }
+  },
+  {
+    "label": "examples",
+    "args": [
+      "python3",
+      "proofs/evidence/routine-routing-config/check-examples.py"
+    ],
+    "exit": 0,
+    "seconds": 0.139,
+    "watchdogSeconds": 20,
+    "sourceSha256": {
+      "proofs/evidence/routine-routing-config/check-examples.py": "eac8a1e2f125a4a2bd460c78f66931505061b8fa1e1e5a325e7cc7a2f778dc49"
+    }
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "python3",
+      "proofs/evidence/routine-routing-config/check-counterexamples.py"
+    ],
+    "exit": 0,
+    "seconds": 0.103,
+    "watchdogSeconds": 20,
+    "sourceSha256": {
+      "proofs/evidence/routine-routing-config/check-counterexamples.py": "683c47340cd9905c26f631f0eccf3ebafcde355ba118eda37d9d9d9c9551345a"
+    }
+  }
+]

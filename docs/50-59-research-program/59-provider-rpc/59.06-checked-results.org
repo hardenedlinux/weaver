@@ -1,0 +1,104 @@
+#+TITLE: 59.06 Checked Provider Gateway and Benchmark Results
+#+LANGUAGE: en
+
+* Provider and performance baseline receipts
+
+These receipts describe the provider-routing baseline before independent native
+admission lanes. They are retained under their original hashes. See
+[[file:59.07-reserved-authority-admission.org][the reserved-authority admission increment]] for the subsequent sources and
+verification. Baseline timing samples are not silently reassigned to newer code.
+
+- [[file:../../../dev/proofs/evidence/provider-routing-20261030/verification-current/receipt.json][Verification receipt]]: PASS for 24 stages, including source currentness.
+- [[file:../../../dev/proofs/evidence/provider-routing-20261030/benchmark-current/receipt.json][Benchmark receipt]]: PASS for compiler environment, Go environment, Rust measurements, gRPC measurements and source currentness.
+- [[file:../../../dev/proofs/evidence/provider-routing-20261030/benchmark-current/benchmark-summary.org][Full Criterion estimates and confidence intervals]]: fourteen measured cases across all five Rust packages.
+- [[file:../../../dev/proofs/evidence/provider-routing-20261030/benchmark-current/grpc-benchmark.log][Actual warm mTLS gRPC benchmark]]: three measured runs, with Go client allocation counters.
+
+Verification and benchmark receipts bind the same 130 input hashes. The nineteen
+SysML requirements map to native/formal witnesses. Rust reports 39 passing tests,
+including all five ASP deny gates and the new provider/SSE property tests.
+ProviderRpc contributes sixteen executable Quint controls and nine checked Lean
+declarations. The latter print their axioms; no sorryAx occurs. Prior streaming,
+admission, lifecycle and imported Cedar bridge gates also pass. Sampled Quint
+safety uses 1000 traces and 60-step bounds; it is not exhaustive native assurance.
+
+* Native transport evidence
+
+Go communicates with the actual Rust daemon over mTLS gRPC. A local HTTPS
+Chat-Completions-compatible provider exercises real request bytes, TLS, incremental
+SSE and returned Protobuf/Arrow IPC. The tests cover:
+
+- Missing local configuration and Cedar-forbidden candidates skipped before consumption.
+- Successful Protobuf and Arrow streams, with exact sequence and canonical receipt checks.
+- 307, 503, truncated SSE and tool proposals without retry, redirect follow or provider fallback.
+- A peer reading only a prefix of a large request before closing, followed by restart and same-key retry rejection.
+- Concurrent duplicate RPCs producing one provider invocation and one hold.
+- Authority publication after a first event preventing the delayed tail and preserving the hold.
+- Arrow denial when a later row in the same batch is forbidden.
+- Operation credentials failing to publish source authority.
+- Another certificate with the same subject and issuer failing the pinned-caller check.
+- Wrong-token authentication rejecting an RPC before its absent body can be decoded.
+- Callback cancellation retaining the original consumed key and budget.
+
+The partial-request test establishes uncertainty after a peer-observed prefix;
+it does not claim an exact kernel byte count. Existing native socket partial-write
+and TLS-buffer tests remain in the Rust suite. These are real transport tests
+with a deterministic local provider, not paid external model inference or a live
+provider-account qualification.
+
+* First performance baseline
+
+Host: Apple M2 Pro, Darwin arm64. Rust: 1.95.0 with LLVM 22.1.2. Go: 1.25.0.
+The optimized Rust profile uses thirty samples per case. The following are
+Criterion mean estimates, rounded from the retained structured data:
+
+| Package and operation | Mean per measured iteration |
+|-----------------------+-----------------------------|
+| contracts: 128-byte source payload commitment | 13.032 us |
+| contracts: 16-KiB source payload commitment | 131.097 us |
+| contracts: 512-KiB source payload commitment | 3.137 ms |
+| policy: typed validation | 187.356 us |
+| policy: warmed compilation with current decision | 54.649 us |
+| policy: compilation-cache churn | 96.092 us |
+| ledger: fresh admission | 394.133 us |
+| ledger: consume plus dispatch burn | 496.290 us |
+| ledger: idempotent admission | 106.093 us |
+| execution: guarded HTTPS/SSE, three events | 5.854 ms |
+| server: one Protobuf event frame | 0.304 us |
+| server: one-row Arrow IPC frame | 13.022 us |
+| server: thirty-two Protobuf event frames | 9.649 us |
+| server: one thirty-two-row Arrow IPC frame | 6.093 us |
+
+Warm mTLS gRPC Inspect reports 4.667-5.287 ms/op across its three runs,
+6587-6610 Go-client B/op and 115 Go-client allocations/op. This includes the current
+Rust handler's Ledger open/schema checks and principal/receipt join; it is not
+isolated transport overhead. No matched HTTP baseline was collected.
+
+The one-row Arrow cost and batch-size sensitivity support keeping Arrow optional.
+Case ordering, host variation and broad confidence intervals prevent a general
+throughput claim. Read the full intervals before interpreting point estimates.
+Future optimization should distinguish schema/open overhead, current decision
+cost, sync/commit cost, cold upstream TLS and bounded response serialization.
+
+* Retained failures and corrections
+
+Failed attempts remain under the evidence directory, including ambiguous Rustls
+provider selection at gRPC startup, initial SysML reserved identifiers, an initial
+Quint list/set quantifier mismatch, the new property-test borrow lint, and ASP
+ownership/algorithm-shape findings. The fixes select a TLS provider explicitly,
+use valid model identifiers, quantify actual release records, and refactor owned
+runtime/configuration/module phases. No ASP rule is disabled, sample bound
+weakened or timeout widened to turn these failures into passes.
+
+The optimized benchmark build and actual sampling are separately recorded. Older
+CLI/HTTP and Python/shell sources remain retired evidence; current operation
+traffic and assurance do not use those request bridges.
+
+* Remaining gates
+
+This increment is a single-principal local-owner profile, not a production-wide
+Gateway qualification. Live provider accounts, model-alias translation, multi-model
+fallback contracts, distributed issuer/credential recovery, independent rollback
+anchors, external history ingestion, general Arrow table/vector schemas and Flight
+remain separate work. Budget credits retain the declared source cost bound;
+pricing/tokenization correctness and final usage settlement are not established
+by a provider usage event or these benchmarks.

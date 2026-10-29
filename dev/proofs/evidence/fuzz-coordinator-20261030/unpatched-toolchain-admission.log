@@ -1,0 +1,6 @@
+=== RUN   TestGoFuzzCoordinatorParentDeadlineAdmission
+    toolchain_test.go:22: Go fuzz coordinator lacks the upstream parent-deadline fix; use the configured devenv Go package
+--- FAIL: TestGoFuzzCoordinatorParentDeadlineAdmission (0.00s)
+FAIL
+FAIL	github.com/HardenedLinux/weaver/go/internal/devrunner	0.781s
+FAIL

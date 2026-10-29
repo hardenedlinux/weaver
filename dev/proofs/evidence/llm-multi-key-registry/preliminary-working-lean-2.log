@@ -1,0 +1,136 @@
+proofs/lean/LlmMultiKeyRegistry.lean:177:2: error: Too many variable names provided at alternative `register`: 11 provided, but 10 expected
+proofs/lean/LlmMultiKeyRegistry.lean:178:26: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  entry
+has type `S✝` which does not have the necessary form.
+proofs/lean/LlmMultiKeyRegistry.lean:180:6: error: Tactic `subst` failed: did not find equation for eliminating 'old'
+
+case pos
+S✝ : Type
+R : Request → S✝ → S✝ → Prop
+A : Entry → Prop
+limit : Nat
+s : State S✝
+safe : Coherent s
+key : LlmCanonicalRegistry.OriginKey
+old : Entry
+before : Request
+req : Entry
+entry : S✝
+next : Current s before
+current : before.operation = Operation.register req
+command : A req
+authentic : s.origins req.registration.origin = none
+originFresh : s.families req.family = none
+familyFresh : s.claims req.claim = none
+claimFresh : R before s.source entry
+same : key = sorry
+known : (if sorry () = req.registration.origin then some req else s.origins (sorry ())) = some old
+⊢ old.registration.origin = key ∧
+    (let __src := finish s before entry;
+            { source := __src.source, origins := put s.origins req.registration.origin (some req),
+              families := put s.families req.family (some req.registration.origin),
+              claims := put s.claims req.claim (some req.registration.origin), aliases := __src.aliases,
+              decisions := __src.decisions, pending := __src.pending, spent := __src.spent, charged := __src.charged,
+              revision := __src.revision, fence := __src.fence, readable := __src.readable }).families
+          old.family =
+        some key ∧
+      (let __src := finish s before entry;
+            { source := __src.source, origins := put s.origins req.registration.origin (some req),
+              families := put s.families req.family (some req.registration.origin),
+              claims := put s.claims req.claim (some req.registration.origin), aliases := __src.aliases,
+              decisions := __src.decisions, pending := __src.pending, spent := __src.spent, charged := __src.charged,
+              revision := __src.revision, fence := __src.fence, readable := __src.readable }).claims
+          old.claim =
+        some key
+proofs/lean/LlmMultiKeyRegistry.lean:182:26: error(lean.invalidField): Invalid field `origins`: The environment does not contain `Weaver.LlmMultiKeyRegistry.Request.origins`, so it is not possible to project the field `origins` from an expression
+  before
+of type `Request`
+proofs/lean/LlmMultiKeyRegistry.lean:184:41: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  entry
+has type `S✝` which does not have the necessary form.
+proofs/lean/LlmMultiKeyRegistry.lean:186:39: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  entry
+has type `S✝` which does not have the necessary form.
+proofs/lean/LlmMultiKeyRegistry.lean:182:4: error: unsolved goals
+case neg
+S✝ : Type
+R : Request → S✝ → S✝ → Prop
+A : Entry → Prop
+limit : Nat
+s : State S✝
+safe : Coherent s
+key : LlmCanonicalRegistry.OriginKey
+old : Entry
+before : Request
+req : Entry
+entry : S✝
+next : Current s before
+current : before.operation = Operation.register req
+command : A req
+authentic : s.origins req.registration.origin = none
+originFresh : s.families req.family = none
+familyFresh : s.claims req.claim = none
+claimFresh : R before s.source entry
+known :
+  (let __src := finish s before entry;
+        { source := __src.source, origins := put s.origins req.registration.origin (some req),
+          families := put s.families req.family (some req.registration.origin),
+          claims := put s.claims req.claim (some req.registration.origin), aliases := __src.aliases,
+          decisions := __src.decisions, pending := __src.pending, spent := __src.spent, charged := __src.charged,
+          revision := __src.revision, fence := __src.fence, readable := __src.readable }).origins
+      key =
+    some old
+same : ¬key = sorry
+prior : sorry = some old
+binding : old.registration.origin = key
+family : s.families old.family = some key
+claim : s.claims old.claim = some key
+distinctFamily : old.family ≠ sorry
+distinctClaim : old.claim ≠ sorry
+⊢ (old.family = req.family → req.registration.origin = key) ∧ (old.claim = req.claim → req.registration.origin = key)
+proofs/lean/LlmMultiKeyRegistry.lean:179:12: warning: This simp argument is unused:
+  finish
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [put, same] at known
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+proofs/lean/LlmMultiKeyRegistry.lean:188:12: warning: This simp argument is unused:
+  finish
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [put, distinctFamily, distinctClaim, binding, family, claim]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+proofs/lean/LlmMultiKeyRegistry.lean:188:23: warning: This simp argument is unused:
+  distinctFamily
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [finish, put, distinctClaim, binding, family, claim]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+proofs/lean/LlmMultiKeyRegistry.lean:188:38: warning: This simp argument is unused:
+  distinctClaim
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [finish, put, distinctFamily, binding, family, claim]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Weaver.LlmMultiKeyRegistry.source_projection' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.origin_immutable' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.alias_immutable' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.family_step_immutable' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.claim_step_immutable' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.decision_step_immutable' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.spent_step_retained' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.unknown_hold_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmMultiKeyRegistry.shared_budget_bound' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.pending_intent_retained' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.stale_owner_blocks_commit' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.stale_parent_blocks_commit' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.lost_reply_blocks_reapply' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.recovery_cannot_replace_source' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.composition' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.initialized_coherence' depends on axioms: [propext, sorryAx]
+'Weaver.LlmMultiKeyRegistry.same_family_same_origin' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.same_claim_same_origin' does not depend on any axioms

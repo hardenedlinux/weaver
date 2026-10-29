@@ -1,0 +1,3495 @@
+An example execution:
+
+[State 0]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 1]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 2]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 3]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 4]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 5]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: false,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 6]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: false,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 7]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 8]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 9]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 10]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 1,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 11]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 1,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 12]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 13]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 14]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[State 15]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 2,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(1),
+      n: 3,
+      ranges:
+        Map(
+          (0, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1000, length: 4, quota: 1, route: 500, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1001, length: 4, quota: 2, route: 500, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (0, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1002, length: 4, quota: 3, route: 500, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1100, length: 4, quota: 1, route: 501, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1101, length: 4, quota: 2, route: 501, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (1, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1102, length: 4, quota: 3, route: 501, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1200, length: 4, quota: 1, route: 502, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1201, length: 4, quota: 2, route: 502, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (2, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1202, length: 4, quota: 3, route: 502, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 0) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1300, length: 4, quota: 1, route: 503, start: 0 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 1) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1301, length: 4, quota: 2, route: 503, start: 4 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            },
+          (3, 2) ->
+            {
+              accepts: 0,
+              active: false,
+              cursor: 0,
+              descriptor:
+                { content: 1302, length: 4, quota: 3, route: 503, start: 8 },
+              holderEpoch: 0,
+              holderInc: 0,
+              issued: false,
+              offers: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0)
+            }
+        ),
+      violations: 0
+    }
+}
+
+[ok] No violation found (143ms at 7 traces/second).
+Trace length statistics: max=16, min=16, average=16.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0x135289b --backend=typescript to reproduce.

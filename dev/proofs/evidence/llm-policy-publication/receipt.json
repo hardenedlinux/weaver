@@ -1,0 +1,38 @@
+{
+  "status": "pass",
+  "commandRoutes": 24,
+  "leanModules": 13,
+  "newPrintedDeclarations": 19,
+  "quintControls": 45,
+  "deterministicControls": 37,
+  "counterexamples": 8,
+  "parentRegressionControls": 40,
+  "boundedSamples": 70,
+  "maxPostInitializerSteps": 30,
+  "seed": 179,
+  "fourArtifactRows": 12,
+  "englishOrgDocuments": 92,
+  "d2Pairs": 44,
+  "historicalManifestsUnchanged": 21,
+  "sourceBlobs": 19,
+  "agentgatewaySourceBlobs": 12,
+  "dependencyPinsChanged": false,
+  "gatewayImplementationChanged": false,
+  "scope": "Conditional staged Policy/history publication, exact parent chain, historical acknowledgement and actual final-CAS source projection; bounded simulation",
+  "limitations": [
+    "Durable source approval, current publication authorization, owner recovery and non-rollback publication/ledger state are explicit contracts",
+    "Native producer/authority persistence, source authentication and final conditional owner commit remain unimplemented",
+    "No backend consensus/fsync proof, remote exactly-once, full asynchronous range/account product, liveness or performance claim"
+  ],
+  "preliminaryDiagnostics": [
+    "preliminary-before-publication-authorization-LlmPolicyPublication.log",
+    "preliminary-before-publication-authorization-commands.json",
+    "preliminary-before-publication-authorization-tests.log",
+    "preliminary-commands-2.json",
+    "preliminary-commands-3.json",
+    "preliminary-commands.json",
+    "preliminary-lean-2.log",
+    "preliminary-lean-3.log",
+    "preliminary-lean.log"
+  ]
+}

@@ -1,0 +1,465 @@
+#+title: Weaver FM1 Baseline Selection and Native Qualification
+#+language: en
+#+date: 2026-10-18
+#+property: STATUS isolated-review-complete-native-gates-partial-no-pin-or-implementation-change
+#+options: toc:3
+
+* Decision: greenfield consistency, not backward compatibility
+
+Weaver is a new framework. It does not require compatibility with old Gateway
+APIs, old Policy encodings, old process layouts, or existing native object
+files. Do not introduce a compatibility shim, dual semantics, legacy parser,
+version adapter or automatic downgrade merely to preserve reference pins.
+
+FM1 asks a different question: can the selected components constitute one
+reproducible semantic and execution baseline? Cedar meaning, compiled proofs,
+serializers, supported features and native calling conventions must agree
+within that baseline. New software still needs its own components to agree.
+Interoperability with selected HTTP, agent and Kubernetes protocol standards
+remains required; that is separate from preserving an old Weaver API.
+Calling baseline consistency backward compatibility obscures the design decision.
+The preferred term is =baseline consistency and native qualification=.
+
+Research pins identify evidence; they do not dictate Weaver's future dependency
+manifest. This review leaves all pins unchanged and tests the exact referenced
+owners separately. A future direct migration can deliberately select one
+semantic revision and rebuild/port its consumers, with fresh evidence. It need
+not run old and new semantics together or import old authority.
+
+[[file:11-source-to-execution-assurance-review.org][The preceding source review]] retains the historical observations. This document
+records the isolated dependency/native investigation using C7/C12/C13,
+P9/P11/P36-P41 and T1-T7 in [[file:01-reference-comparison.org][the source register]], and the resulting target
+selection. No new gateway code, theorem, model, ABI shim or dependency override
+is introduced.
+
+* Isolation and source identities
+
+The qualification directory is
+=/private/tmp/weaver-fm1-isolation-22pv4_2d=. Owner repositories and exact
+manifest dependencies were cloned into it at detached commits using local Git
+objects. No inherited .lake build outputs were copied. Cargo input caches were
+copied into a separate CARGO_HOME; build targets and logs also remain isolated.
+The cache-copy staging area and Cargo input home both live under that directory;
+no shared owner cache or global package installation was changed. Input cache
+identity does not establish build or semantic correctness.
+
+- cedar-poo-spec: c8d1a0641120cf65e299e8a98f9fe7666ca96ab5.
+- POO Flow: a74fc2fd63437252175b5a67649ee54b886d3bf4.
+- POO Core for the isolated POO parent build:
+  377761072f2e8e39ae03ee26027d1fa5ad80b018, the parent's actual gitlink.
+  The separately reviewed Core 80e2e740 remains a different research snapshot.
+- Exact Cedar, LeanPoo and batteries commits come from each owner's original
+  manifest, with no replacement by the active adjacent cache checkout.
+
+The build environment removes inherited LEAN_PATH/LEAN_SYSROOT and runtime
+artifact overrides, fixes the selected installed compiler and uses local builds
+without downloaded Lake build caches. Stage receipts distinguish natural exit,
+nonzero failure and watchdog timeout. A failed or incomplete stage never becomes
+an accepted closure because another stage passed.
+
+* Complete declared dependency boundary
+
+| Owner | Exact selected direct/transitive dependency facts | Scope |
+|-------+--------------------------------------------------+-------|
+| cedar-poo-spec Lean | Lean 4.34.1; Cedar 017c35c3d1f856a0f8b62a66660ee6628870bbcf; LeanPoo ccb94dc44d874050dc8a8ede692bb2afac55ea37; batteries f2effa3d803fda822b1f97b806c47cf2adfbcbc2 | Build CedarPooSpec, Examples and Tests against original manifest |
+| POO Lean | Lean 4.31.0; Cedar e9fa9c1e6b636f29b0897d8706bd7aa5eaf06f9a; batteries fa08db58b30eb033edcdab331bba000827f9f785; PooFlowCoreProof path at parent gitlink | Build PooFlowProof and selected native targets; no use of drifting local cache |
+| Core proof package | Lean 4.31.0; empty external package list at selected Core commit | Path identity is part of the POO proof closure |
+| cedar-poo-spec Rust | Original Cargo.lock contains 203 package records; Cedar Rust 4.12.0; runtime features ipaddr/decimal/datetime | Dev/test closure also includes ASP Rust 9b95fd6744a89f3f38e87f9bda33ea762f1f65e1; count is not feature activation evidence |
+| POO Cedar Rust workspace | Original Cargo.lock contains 265 package records; Cedar Rust 4.12.0; prost 0.14.4; cedar-poo-spec c8d1a06; Gerbil bridge b3eb5dce9bfb1e57c3ce618de46798e360213f6a | Workspace selection/features determine actual graph; its lock is distinct from cedar-poo-spec's own dev/test lock |
+
+The isolated all-features metadata commands resolved all 203 and 265 package
+records respectively, offline and locked. The Cedar policy feature sets were
+ipaddr/decimal/datetime in the standalone bridge graph and those same features
+plus protobufs in the POO workspace graph. Gerbil external-program/native
+features in the metadata graph do not establish Gerbil fixture execution. A
+separate selected-authority cargo tree confirms the protobufs wrapper feature
+and the core default/decimal/datetime/ipaddr feature edges. Treat all-workspace
+metadata as a superset; qualify the actual selected consumer graph separately.
+
+A transitive crate's standalone Cargo.lock is not imported into its consumer's
+resolution. Consequently POO's Rust graph need not include cedar-poo-spec's
+ASP dev dependency. Equal Cedar Rust version strings do not prove equal enabled
+features, protobuf support or Lean evaluator semantics. Record resolved package
+IDs, feature graph, compiler/target and checksums for each tested consumer.
+
+** Gerbil package graph is a separate dependency owner
+
+The pinned POO gerbil.pkg declares gerbil-poo 099b381, ASP Gerbil Scheme
+v0.1.2.2, gerbil-parser 78507e6, orgize 8f04aa2 and gerbil-ascent 86ad9ae.
+All five source references were resolved in isolated checkouts. The ASP tag
+resolved to f5b7c009d2cab61144a8af18008a0bfba3056584. Parser and Ascent also
+declare poo-flow-core e85fd45303b208b23e5957fd316e7004994109a4; that exact
+transitive source was resolved separately. Its only declared package dependency,
+like ASP's, is gerbil-poo 099b381. Orgize depends on the same pinned parser;
+gerbil-poo declares no further package dependencies.
+
+Do not silently substitute the Lean path Core 3777610, the research Core
+80e2e740 or the Gerbil transitive Core e85fd453 for one another. Different
+source identities are not themselves proof of incompatibility: the path,
+package namespace and consumer obligations determine the actual boundary.
+The Rust Gerbil bridge b3eb5dc is another source owner, not that Gerbil package
+graph. Installed Gambit/Gerbil artifacts and any existing global load path are
+not automatically receipts for these isolated sources. Gerbil-native fixture
+qualification remains distinct from the C/Lean probe and AOT Host evidence.
+
+* Native ABI boundaries to qualify
+
+** Existing POO native path
+
+The existing Runtime.CedarNative owner decodes Cedar protobuf, calls
+Cedar.Spec.isAuthorized and exports =poo_flow_cedar_authorize_native=. Its
+outcome explicitly identifies semantic revision e9fa9c1; Rust wire validation
+expects that revision. Linking a different evaluator under the old identity
+would be false provenance, even if several allow/deny examples agreed.
+
+The native probe and Runtime Host C sources declare generated initializer
+symbols taking one uint8_t argument for the pinned Lean 4.31 owner. They consume
+an owned ByteArray and receive an Except that owns its String. The Host copies
+String bytes before releasing the Lean result; Rust frees the copied allocation
+through the same C allocation owner. Initialization and calls have a declared
+thread/process lifetime. These are private implementation obligations, not a
+stable cross-version ABI promise.
+
+The probe checks inherited SIGCHLD state, repeated calls, output identity and
+malformed-input rejection. The AOT Host additionally needs the Rust static
+archive, actual linked component identities, independent worker execution,
+deadlines, typed failures and the existing authority tests. Symbol presence or
+a successful link is insufficient to establish those properties.
+
+** cedar-poo-spec foundation and new Weaver target
+
+The pinned cedar-poo-spec Rust bridge exposes Rust library/CLI policy artifact
+and replay APIs. Its own build is not the POO Lean/C initialization ABI or an
+already implemented Weaver final broker. Its Lean library is a semantic/proof
+foundation, not an emitted execution capability.
+
+The inspected generated C in both the old native owner and the new
+CompoundAuthorization library uses a one-byte initializer argument. No
+initializer-arity incompatibility was established by this comparison. Matching
+that shape is also not proof of heap layout, runtime, linkage or ownership
+compatibility; Weaver has no need to share old native objects.
+
+A new Weaver native component must generate/inspect its own C exports and
+initializers with the selected compiler, link objects from that same dependency
+closure, and qualify ownership, thread/signal behavior, panic/malformed input
+and shutdown. No requirement exists to accept the POO 4.31 .olean/.o/.a files
+in a Lean 4.34.1 process. The reference service protocol can inform a new contract,
+but old message IDs or accepted payloads are not automatically retained.
+
+A process boundary avoids sharing Lean heap objects across services; it still
+requires exact schema, feature, diagnostics, artifact and semantic admission.
+Neither process separation nor an adapter translates away mismatched semantics.
+In the reference topology Go has no required Lean heap/C ABI edge: cloud-native
+coordination uses admitted messages and explicit observed state. Scheme owns
+source/lifecycle semantics; its exact callback/bridge must be qualified with
+the selected Gerbil/Rust artifacts. Rust owns its private native evaluator glue
+and physical coordinator/broker guards. Do not create a Go-to-Lean C ABI merely
+to imitate an upstream language split.
+
+** Fresh malformed-input finding and target consequence
+
+The isolated old native probe exits 1 with an out-of-bounds panic on the
+single-byte truncated varint ff; typed rejection requires exit 2. The stack
+identifies Proto.find_end_of_varint_helper. Empty protobuf produces default
+deny across 128 calls with SIGCHLD preserved. These are actual executions,
+not a source-only inference, and the successful input does not cancel the
+failed malformed-input gate.
+
+Protobuf/Varint.lean is byte-identical in the two Cedar pins, with SHA-256
+438f742e802a98c8f0bd099bee6d61c490960de3d7d38f01dfe7c8e908f3527c.
+Its check observes the original cursor while indexing pos+n. The selected
+new native entry has not been implemented or exercised, so this is a shared
+source risk rather than a newly reproduced 4.34.1 binary failure. Merely
+selecting the newer semantic tuple cannot be presented as repairing the parser.
+
+Do not inherit raw protobuf decoding merely to retain the old boundary.
+The new entry must qualify an owner-repaired decoder or a deliberately selected,
+bounded input contract with a proved projection into the actual Cedar inputs.
+A Rust preliminary check is insufficient unless its acceptance contract makes
+the remaining unsafe input unreachable and that relation is validated. Worker
+isolation contains a panic; it does not turn panic into successful evaluation
+or satisfy the strict typed native-parser gate. No owner parser is patched here.
+
+* Recommended selection and direct migration boundary
+
+Core design is shown in [[file:09-code-as-policy.org][Cedar inside the Zero Trust gateway]]. Version pins,
+build counts, failed probes and qualification receipts remain in this document;
+they are not architecture components or diagram labels. This is a design
+recommendation, not a pin change or a completed Weaver build.
+
+Recommend cedar-poo-spec c8d1a06 with its declared Cedar 017c35c, Lean 4.34.1,
+LeanPoo ccb94dc and batteries f2effa3 as the semantic foundation candidate for
+Weaver. Evaluate Cedar Rust 4.12.0 using the exact enabled feature intersection
+and independent semantic/protobuf vectors. This favors the required owner
+foundation over freezing a new framework to POO's older native evaluator.
+It does not claim that Cedar Rust and the selected Lean revision have already
+passed complete equivalence or native qualification.
+
+Reuse POO's public semantic contracts, lifecycle/recovery laws and tested
+ownership patterns at source level. Port the affected consumer definitions,
+request projection, full diagnostic identity and generated native glue to the
+single chosen baseline as later owner-scoped implementation work. Do not import
+a second Cedar semantic owner into the same Lean package to avoid that work.
+The unchanged POO 4.31 tuple remains reference evidence for its own old native
+path; it is not a required compatibility target for Weaver.
+
+The direct migration boundary includes policies/schema/entities, required
+layers, canonical subject/handoff representation, source admission, runtime
+witnesses, generated ABI, Host identity and every receipt consumer. New
+identities must honestly denote new semantics; do not relabel old binaries.
+Old serialized grants, local reservations, affine handles or receipt signatures
+cannot be promoted to authority in the new incarnation.
+
+For a genuinely empty deployment, initialize a new admitted lineage. If an
+operational cutover carries existing obligations, stop/drain or retain the old
+emission conflict domain, resolve authoritative commands, and carry restrictive
+history and unsettled exposure through an explicit admitted migration record.
+Greenfield API freedom does not permit discarding liabilities or forgetting a
+possibly live old worker. Imported history is data/evidence, never a revived
+execution capability. An unresolved cutover remains quarantined.
+
+* FM2-FM12 invalidation and acceptance impact
+
+| Obligation | What baseline selection invalidates or adds | Required evidence before protected admission |
+|------------+--------------------------------------------+---------------------------------------------|
+| Impact on FM2 | New evaluator/feature/schema/projection and diagnostic identities | Recheck all required roots/layers, deny/error/empty/incomplete checks, nested attributes, datetime and protobuf vectors against independent expectations |
+| Impact on FM3 | New owner process and callback/serialization boundary | Reprove reserve/pending/deliver order; new incarnation cannot reconstruct old local grant/reservation identity |
+| Impact on FM4 | New issuer artifact/epoch and consume protocol identity | Lost-reply/restart/abort/claim schedules for exact new issuer; no translating old consume uncertainty into positive consumption |
+| Impact on FM5 | New generated broker/runtime and retry behavior | Unique durable claim, affine handle, no hidden retry and recording receiver evidence; old handles stay spent |
+| Impact on FM6 | Compiler/runtime/thread/clock/identity changes | ABI ownership, strict deadline, pause-after-check, stop/drain and stale worker rejection controls |
+| Impact on FM7 | Unit/hold/accounting projection or capacity changes | Conservation and conversion/rounding proof, retained unknown exposure and deduplicated settlement; no reset from a new framework identity |
+| Impact on FM8 | History/label/conflict-scope and stream-release changes | Restriction-preserving history migration or an independently empty domain; exact peer/range tests and old-emitter containment |
+| Impact on FM9 | Receipt schema, evidence producer or cleanup authority changes | Requalify provenance and orthogonal facts; data migration cannot authorize settlement, refund or resend by itself |
+| Impact on FM10 | New lineage, publication root and compaction/tombstone format | External high-water and replay/restore tests; old snapshots and messages cannot enter the new authority domain |
+| Impact on FM11 | Policy/source/canonicalization closure and generated ABI changes | Recheck exact source cuts, own-transition derivation, audit/history/budget atomic joins and callback lease assumptions |
+| Impact on FM12 | New model/proof/implementation tuple and cross-layer mapping | Rebind all sources/tools/axioms, init/step/property relations and successful/negative traces; preserve historical failed receipts |
+
+Pure owner theorem statements may survive a port unchanged, but evidence must
+identify the actual checked imports and definitions. Structural invariants do
+not become false merely because a compiler changes; the mapping to the new
+implementation still requires qualification. Reuse unaffected results only
+with an explicit dependency/invalidation argument.
+
+* Isolated qualification receipts
+
+Build success, native link success, execution conformance and complete Zero
+Trust admission are separate exit conditions. No one row can close FM1-FM12.
+All results are for arm64 Darwin and these exact isolated sources, not Linux,
+Kubernetes, a deployed gateway or a universal semantic equivalence claim.
+
+| Check | Actual result | Claim boundary |
+|-------+---------------+----------------|
+| Locked dependency metadata | Offline all-features Cargo metadata: 203 standalone and 265 POO nodes; both exit 0 | Complete declared Rust graphs, not execution of every feature combination |
+| New semantic foundation | Lean 4.34.1: lake --no-cache build CedarPooSpec Examples Tests; exit 0, 348 jobs | Parent 4.34.1 successfully builds its pinned LeanPoo 4.34.0 source; no mixed .olean cache or upgraded pin |
+| Old reference proof/native closure | Lean 4.31.0: lake --no-cache build PooFlowProof cedarNativeProbe; exit 0, 723 jobs | Actual parent Core gitlink and old evaluator graph compile/link; not new-target native acceptance |
+| Standalone bridge Rust | cargo test --offline --locked --manifest-path rust/Cargo.toml --features cedar-runtime --all-targets; exit 0, 28 unit + 3 crypto integration tests | No benchmark execution or Gerbil/Lean co-hosting result |
+| Schema-bound cross-engine slice | Export agent-payment-validated with original 120-second/2048-MiB/10000000-heartbeat recipe limits; replay 32 cases, exit 0, 23 allow / 9 deny | Decision, determining IDs and error IDs match Lean-exported expectations; all errors empty; not independent-oracle or full-feature coverage |
+| Old probe ABI execution | Mach-O arm64, expected native/initializer/Lean runtime symbols present; empty protobuf returns default deny over 128 calls with SIGCHLD preserved | Observed ownership/initialization smoke check, not leak/unload/reinit or generic heap ABI proof |
+| Old probe malformed input | ff exits 1 with out-of-bounds panic; required typed refusal is exit 2 | Native parser gate failed; retain as an actual negative result |
+| Gerbil dependency source graph | All five direct references and transitive Core resolved separately; ASP tag bound to exact commit | Source resolution does not run the Gerbil-native fixture or qualify installed runtime artifacts |
+
+Lean stages had fixed 600-second watchdogs and completed naturally. Rust test
+and archive stages also use a fixed 600-second limit; metadata and replay use
+60 seconds; individual native probe invocations use 15 seconds. Limits are not
+widened to turn a timeout into a pass. Builds ran concurrently, so their elapsed
+times support no performance comparison.
+
+The first replay attempt started before manifest export completed and consumed
+an empty file: EOF, exit 1, input SHA-256
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.
+This is a retained audit-orchestration failure, not a source-semantic finding.
+The producer subsequently completed successfully; its 32-case output was parsed,
+frozen and replayed with SHA-256
+21d294f2f46ebe089178eda5d34bf49fb90d4de371ab13b64ababee247acfa4d.
+That replay exited 0. Its output SHA-256 is
+c89eed27a3945422f348e87b8417e7c5c41f74aafcb38ca26bfd467c403b12cd.
+Do not replay a still-growing artifact or label an empty successful pipeline as
+a semantic pass.
+
+Stage command arrays, source/output hashes, start/end times, natural-exit or
+watchdog status and raw diagnostics are retained in the isolated logs directory.
+The successful complete Lean log hashes are:
+
+- cedar-poo-spec: dc9de463b1435b8c01f74629bf2cf7f5016d31baa8b729964c0d38dd734e63bf.
+- POO Flow: 8cdfb4299bc4ef555dcc83e5bedaa36b6c12889d3db1b5ac06ef0dc8d271ea02.
+- Standalone Rust tests: 61d4e23b948cd00f0964e497606179c1f34de3963f4959ed0d616db357a311bc.
+
+These successful owner builds supersede the earlier lack of integrated owner
+build evidence for their own tuples only. No universal cross-tuple theorem,
+complete transitive axiom audit, Weaver native implementation, Quint/refinement
+campaign or physical final-dispatch gate follows. Native/parser and Gerbil
+qualification retain their own explicit disposition.
+
+
+** Compiled artifact identity receipts
+
+| Actual produced artifact | SHA-256 |
+|--------------------------+---------|
+| Old native probe | bd67b1daae7a51e01d76d60c0e1870268e9b42bcb65f2d1e2e66c12defaf2cb2 |
+| Generated old native owner C | cc3ffdd19c9d1b7e1b7b60879405320d33dbf48ebb2c46df79d325de20d747f5 |
+| Generated new compound library C | e9fb9dae55b06c05df3b1c2e9ab2494e35ee8c0a3ddf4ac5e5cc707c69fe14c3 |
+
+The native probe imports only system libc++ and libSystem dynamically; its
+expected Lean initialization/export symbols are present in the arm64 executable.
+Generated C initializers were inspected rather than inferred from toolchain
+numbers. These identities bind the actual tested artifacts; they do not make
+those artifacts approved for new Weaver deployment.
+
+** Rust archive and linked Host follow-up
+
+The exact POO Rust authority static archive completed naturally within its
+original 600-second budget (exit 0). Lake then linked cedarRuntimeHost using
+that explicit archive and the same old Lean 4.31 graph (exit 0, 197 jobs).
+This confirms actual same-tuple linking, not cross-version ABI compatibility.
+The tested archive SHA-256 is
+d9c4d7e3e649505e609b69c98680499c6a01cb333bc28f254042ee3633d980fe.
+The archive and Host are retained as fixed artifact inputs for qualification.
+
+Linking reports libuv object minimum macOS 15.0 against a target minimum 14.0.
+The warning is retained. Execution on the current machine cannot establish
+macOS 14 support; a selected supported deployment minimum and consistent
+runtime/toolchain build must resolve that platform contract. Weaver need not
+add a legacy-platform compatibility shim or promise support for macOS 14.
+Linux/Kubernetes qualification is a separate target, not implied by Darwin.
+
+** Native positive comparison and retained failure
+
+The existing native_lean_matches_rust_allow_default_deny_and_forbid test was
+run against the exact compiled probe: exit 0, one test passed. Allow, default
+deny and explicit forbid each matched Rust's full determining/error outcome;
+each native vector ran 128 calls with SIGCHLD preserved. The malformed-input
+test was not redundantly rerun after its direct ff failure above. Its filtered
+status does not mean that the complete native FFI gate passed. No timing or
+leak claim follows from these repetitions.
+
+The frozen AOT Host SHA-256 is
+cf2094fa2c5b1215fcbb8f85fc238e8fa0dd4ad0998de5dc8e3caaf0b712ca18.
+Its artifact identity and exact linked components, not a discovered developer
+cache path, are the inputs to the Runtime Host qualification stage.
+
+** Compile-time scenario dependency discovered by native qualification
+
+The first Runtime Host test build failed before execution because authorization.rs
+uses include_str! for three Lambda Episteme healthcare schema/policy fixtures.
+They are outside the Cargo package graph. The isolated parent initially had that
+submodule unpopulated. Its exact parent gitlink is
+6e4c7a0dab379615bfe7f339880e052c815795ac; that source was then checked out in
+isolation and the stage was rerun with a new receipt. The original compilation
+failure is retained as a dependency-completeness finding, not an ABI failure.
+
+FM1's evidence lock must cover compile-time fixtures and their owning Git links
+in addition to Cargo/Lake manifests. No fixture was fabricated, copied from a
+newer working tree, removed, or given different expected outcomes to pass a gate.
+
+** AOT Host execution with complete fixtures and local socket permission
+
+After the exact scenario submodule was populated, the sandboxed stage failed
+because UnixListener bind returned Operation not permitted. That failure is
+retained separately from the earlier missing-fixture build and from parser
+failure. The same frozen Host, source/config/lock tuple and 180-second budget
+were then exercised with local Unix socket permission. That stage exited 0:
+5 library, 11 authorization, 1 case-check and 2 Runtime Host tests passed.
+
+The selected existing unit/authorization/case-check/Runtime Host tests cover
+exact subject/signature/handoff binding, revoke/recreate/expiry refusal,
+preflight/source-admission rejection, aligned-error case rejection, component
+identity checks and a long-lived Host surviving a bad-input worker before a
+valid dual evaluation. Its successful log SHA-256 is
+85cee962ef6dc8d97d930db0f39c8b420cb411d14c99f483c7849fbbaae4e8d6.
+
+This supports the old tuple's actual Host ABI/isolation slice on this machine.
+It does not cancel the direct native parser failure: worker containment and
+typed Host failure are different requirements from a decoder's typed rejection.
+It also does not install the missing source-admitted execution path or implement
+Weaver's ledger, final broker or FM2-FM12 integration obligations.
+
+* FM1 disposition for the new framework
+
+The investigation establishes two independently buildable owner tuples and
+actual old-tuple native/Host evidence. It does not establish that a backward
+compatibility layer is necessary. The recommended new semantic foundation has
+successful full owner builds, Rust tests and a bounded cross-engine schema
+slice. The new gateway consumer/native entry has not been implemented, so its
+full FM1 admission cannot yet be claimed. The shared parser risk is a concrete
+qualification obligation, not a reason to retain two semantic engines or hide
+a failure behind an adapter.
+
+A profile enabling the new source-admission bridge must also bind the selected
+Lambda Aitia/Scheme owner, its evaluated issued-family extension, private runtime
+artifacts and complete P15 callback/lease evidence. The old Cedar primitive
+checks do not exercise that currently absent protected path. Neither a passed
+Cedar package suite nor a passed old authority fixture closes FM3-FM12.
+
+No source patch, dependency pin/manifest update, new implementation or production
+release is authorized by these qualification results. Later implementation
+should adopt the chosen baseline directly, with owner-scoped migration and the
+explicit invalidation/acceptance obligations above. Preserve every failed,
+environment-restricted and successful receipt at its actual scope.
+
+** Gerbil native fixture toolchain setup receipts
+
+The first fixture attempt selected /opt/homebrew/bin/gsc, which is Ghostscript,
+not Gambit. Its failure is an audit tool-identification error, not a Scheme ABI
+result. The installed Gerbil distribution's actual Gambit compiler reports
+ea114fc, aarch64-apple-darwin25.6.0. With that compiler selected, the next attempt
+failed to locate its relocated ~~bin directory. The installation wrapper's
+GERBIL_HOME/GAMBOPT relocation settings were then applied explicitly.
+
+That attempt compiled the Rust/Gambit lifecycle archive but failed while gxi
+compiled the Cargo-resolved scheme/native.ss: inherited Nix SDK 14.4 include
+paths entered the Homebrew GCC/Gambit compilation and produced unknown FILE
+type errors. This is an observed mixed-SDK build environment, not proof of a
+source-version ABI mismatch. The complete fixture needs one explicitly selected
+compiler/SDK/runtime environment; matching a binary name or Cargo lock is not
+sufficient. No generated source or expected test output was changed.
+
+Each environment-specific failure has its own stage receipt. Only a later
+successful stage in the corrected environment can qualify this native fixture;
+source resolution, the earlier C/Lean Host tests and these setup failures cannot
+substitute for its actual execution.
+
+After relocation and SDK isolation, Cargo's bridge Scheme modules compiled.
+The canonical POO fixture then failed to resolve :core/object-family/syntax
+because the isolated source load path had repository name poo-flow-core, not
+the declared module namespace core. The fixture declares the parent's
+core/object-family/syntax.ss as a source, so its private namespace mapping must
+refer to parent Core 3777610. The parser/Ascent transitive Core e85fd453 remains
+a distinct resolved source and was not silently substituted into this fixture.
+This narrow fixture does not qualify simultaneous activation of both Core
+source identities in one module namespace. A new framework should select one
+owner baseline and port consumers, rather than create namespace shims to hide
+that selection.
+
+With the parent Core namespace mapped, the canonical fixture's Core syntax,
+Cedar objects and conformance Scheme modules compiled. Static executable
+materialization then required clan/poo/support/base's compiled SCM, which source
+resolution alone does not supply. Its existing owner build must precede the
+consumer fixture in the private prefix. These are concrete prerequisite stages,
+not evidence that an ABI adapter or dependency-version shim is necessary.
+
+
+** Gerbil native fixture execution disposition
+
+The pinned gerbil-poo owner's existing =gxi build.ss= completed naturally in
+its private prefix, without source changes. Its log SHA-256 is
+e1f72fda995074c69f1d408dbe222fa7021197884297602f336171c47a7b3281.
+With those compiled owner artifacts available, the unchanged native fixture
+completed naturally within its original 600-second watchdog:
+
+#+begin_example
+cargo test --offline --locked -p poo-flow-cedar-gerbil --features conformance --test native_authorization -- --nocapture
+#+end_example
+
+The fixture passed its existing POO projection, Rust/Lean decision agreement,
+original-grant consumption and replay rejection assertions. The stage is
+=poo-gerbil-native-fixture-built-owners=; exit 0; log SHA-256
+fb10ed9c9eaa8cd51958cab208261b617b6ca9d799db7e36b2e630a9ce5c2549.
+The exact environment and command array remain in its JSON receipt. This
+qualifies that existing native slice on the selected host. It does not qualify
+source-admission callbacks, durable history/budget coordination, stale-worker
+fencing or final credentialed dispatch. It also does not cancel the separately
+failed malformed-input gate or establish a new-target native ABI.
+
+The isolated review is complete at this scope. Full FM1 acceptance and the
+new framework's FM2-FM12 integration remain open; no implementation or pin was
+changed to force a pass. Earlier setup failures retain their actual disposition.

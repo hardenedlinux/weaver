@@ -1,0 +1,119 @@
+P12 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/authorized-effect-token.ss ef9abd5335f478d15b5b5a782be5ece07380995b009f504c3d5ae41a618281fb
+P13 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/strict-mediation.ss fbb3bfbb16964b382352d1f3afe6aa319caea25adfc92d06c094942b26864916
+P15 cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc modules/assurance/effect-host.ss 0972fd28c7e66c0c4173f8b4116cec29e6c6608a348e7b694ed8f7ead9162de1
+P17 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store-backend.ss 6d15089fbe7e6101b478869db230fdec3282a60d781c551483849ec29a15ed8b
+5: 
+6: ;;; Boundary: durable runtime store backend negotiation and Marlin handoff ABI.
+7: ;;; Invariant: Scheme selects and projects backend contracts only; the runtime
+8: ;;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs.
+9: 
+10: (import (only-in :clan/poo/object .ref .slot? object? object<-alist)
+11:         (only-in :poo-flow/modules/workflow/control-plane/runtime-protocol
+12:                  +runtime-request-schema+)
+13:         (only-in :poo-flow/modules/workflow/control-plane/runtime-command-descriptor
+14:                  runtime-command-fields->manifest)
+15:         :core/utilities/final-projection-syntax
+16:         :poo-flow/modules/ai-agentic-context/features/memory/durable/store)
+17: 
+18: (export +poo-flow-durable-runtime-store-backend-kind+
+19:         +poo-flow-durable-runtime-store-backend-schema+
+20:         +poo-flow-durable-runtime-store-backend-receipt-schema+
+21:         +poo-flow-durable-runtime-store-backend-diagnostic-schema+
+22:         +poo-flow-durable-runtime-store-negotiation-schema+
+23:         +poo-flow-durable-runtime-store-handoff-schema+
+24:         +poo-flow-durable-runtime-store-backend-protocols+
+P18 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean 3b6df2df1bdafe0f90445f46a99a94aed4ef9d79552b5435b257f83880529822
+P19 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean 0c28396b16e390a97a1a8491fb29f7d88e4a84b49e11a740a2610ec04bfb459e
+P20 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean 3b1b645f0f9cbdd4b698d19a6a9852c251b60ee1c5194d10af276f8a8a02d629
+P22 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store.ss ce4fb7cc049d3a5f6395deec31db3130cd87796241506d252a07bcfc73391f1f
+5: 
+6: ;;; Boundary: durable runtime store contract receipts for Rust/Marlin handoff.
+7: ;;; Invariant: Scheme validates and projects store contracts only; the runtime
+8: ;;; owns storage, locking, leases, fsync, backfill, replay, and side effects.
+9: 
+10: (import (only-in :clan/poo/object .o .ref .slot? object? object<-alist)
+13: 
+14: (export +poo-flow-durable-runtime-store-contract-kind+
+15:         +poo-flow-durable-runtime-store-contract-schema+
+16:         +poo-flow-durable-runtime-store-contract-receipt-schema+
+17:         +poo-flow-durable-runtime-store-diagnostic-schema+
+18:         +poo-flow-durable-runtime-store-ledger-kinds+
+19:         +poo-flow-durable-runtime-store-capability-flags+
+20:         make-poo-flow-durable-runtime-store-contract-receipt
+21:         poo-flow-durable-runtime-store-contract-receipt?
+22:         poo-flow-durable-runtime-store-contract-receipt-store-id
+23:         poo-flow-durable-runtime-store-contract-receipt-store-owner
+24:         poo-flow-durable-runtime-store-contract-receipt-durable-policy-ref
+25:         poo-flow-durable-runtime-store-contract-receipt-project-id
+26:         poo-flow-durable-runtime-store-contract-receipt-root-session-id
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean-poo/SessionAttempt.lean af885ce7b6f3a91f8ab4079a56a7ba439b16a1fc853c3432adfd1b2391b12543
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/quint/SessionAttempt.qnt 2857ad1bc556179f034255a93537a136f08dcc21cd46458a6af18fef206f58b4
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean 560be0ea351e03ab3907f62248c37f9957a02e150ee6ebb32856440a9f2b8a46
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean 4e311cd509f144e842e4bd20293c91da2b4d70534592e9e1b986290692cb9810
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean 47aea64e5a90812311f08aab30ebdbd36b9165a97837ffde373796d5adfb73a0
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean 11178fd01214c99ec7f9863169dc264cc68241a70398645fe026cba28b3e299c
+P43 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/session/funs-attempt.ss 2e7f2282ae2bb987a7122eb466b70fbf11c9fbfb5aa0bc52c0d42a01dac9de95
+4: ;;; Pure scheduling intents. A Host must resolve producer receipts and publish by CAS.
+5: ;;; Recovery reconciliation cannot be inferred from a provider completion.
+6: (import (only-in :clan/poo/object .o .ref .slot? object?)
+7:         (only-in :std/list/list every) "types.ss" "objects-attempt.ss")
+8: (export poo-flow-session-schedule poo-flow-session-claim poo-flow-session-complete
+9:         poo-flow-session-recover poo-flow-session-reconcile poo-flow-session-close)
+10: (def (name? value) (and (string? value) (< 0 (string-length value) 257)))
+11: (def (freeze-input value)
+12:   (let* ((consumer-value (string-copy (.ref value 'consumer-session)))
+13:          (turn-value (.ref value 'consumer-turn))
+14:          (fields (map (lambda (key) (string-copy (.ref value key)))
+15:       '(producer contract identity digest scope-digest source-vector-digest query-digest
+20:         restriction-digest: (list-ref fields 7) profile-digest: (list-ref fields 8)
+21:         receipt-ref: (list-ref fields 9) consumer-session: consumer-value
+22:         consumer-turn: turn-value complete?: #t)))
+23: (def (receipt accepted-value reason-value state-value)
+24:   (.o kind: 'poo-flow.session.transition-intent.v1 accepted?: accepted-value reason: reason-value
+25:       schedule: state-value runtime-published?: #f action-authorized?: #f durable?: #f))
+26: (def (guard state expected operation)
+27:   (cond ((not (poo-flow-session-schedule-shape? state)) (receipt #f 'invalid-schedule #f))
+C8 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Admission/BoundOperation.lean 6105f4f0651886ee413f5edcea44df32323543de8825ca8f0e9f098205cf2afa
+5: model. The projection is fixed when the operation is constructed; a later Host
+6: must still authenticate the actual effect and state before execution.
+7: -/
+8: 
+22: 
+23: /-- Check a concrete operation against the actual effect and state supplied
+24:     by the caller. This equality check does not authenticate either input. -/
+25: def BoundOperation.matches {Effect State : Type}
+39: /-- Compare the values supplied at admission with the bound operation before
+40:     reusing the proof-bearing Cedar evaluation of its request. The Host must
+41:     authenticate those values and bind any eventual execution to them. -/
+42: def BoundOperation.authorize {Effect State : Type}
+43:     {project : Effect → State → Request}
+44:     [DecidableEq Effect] [DecidableEq State]
+45:     (operation : BoundOperation Effect State project)
+46:     (effect : Effect) (state : State)
+47:     (model : Model) (root : String) (entities : Entities) :
+48:     Except Error
+49:       (CompoundAuthorization.Receipt model root [operation.request] entities) :=
+50:   if !decide (operation.effect = effect) then
+C10 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/CompoundAuthorization.lean bd9c938f6986d6f01051d4fda067ffe1d7d106e5deae6956e88e5e9aa4ec3708
+C11 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Composition.lean 3a6bd1ae53c74d9a6eebdcf56964e0f886b91ae82bb1af2c885b76ca15530be1
+P44 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/session/objects-attempt.ss 0ccd844252a98d4656112afd11fd91627ecfdcfe2b0dbd92c01abe1c10476aa5
+1: ;;; -*- Gerbil -*-
+2: ;;; SPDX-FileCopyrightText: 2026 tao3k team and Contributors
+3: ;;; SPDX-License-Identifier: Apache-2.0 AND LGPL-2.1-or-later
+4: ;;; Inert scheduling proposals. Runtime ownership and producer admission are separate.
+5: (import (only-in :clan/poo/object .o))
+6: (export SessionInputRef. SessionTask. SessionAttempt. SessionSchedule.)
+7: (def SessionInputRef.
+8:   (.o kind: 'poo-flow.session.input-ref.v1 producer: #f contract: #f
+9:       identity: #f digest: #f scope-digest: #f source-vector-digest: #f
+10:       query-digest: #f restriction-digest: #f profile-digest: #f
+11:       receipt-ref: #f consumer-session: #f consumer-turn: 0 complete?: #f))
+12: (def SessionTask.
+13:   (.o kind: 'poo-flow.session.task.v1 identity: #f revision: 0
+14:       input: #f anchor-refs: '()))
+15: (def SessionAttempt.
+16:   (.o kind: 'poo-flow.session.attempt.v1 session: #f task: #f task-revision: 0
+17:       identity: #f generation: 0 turn: 0 request: #f input: #f anchor-refs: '()))
+18: (def SessionSchedule.
+19:   (.o kind: 'poo-flow.session.schedule.v1 identity: #f revision: 0
+20:       generation: 0 status: 'idle active: #f obligations: '() completed: '()))

@@ -1,0 +1,15 @@
+
+ Error [QNT404]: Name 'toSet' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmResultProjection.qnt:66:61
+  66:     nondet pending=s.pending.union(Set(r)).oneOf() nondet d=s.log.toSet().union(Set(d0)).oneOf()
+                                                                  ^^^^^^^^^^^^^
+
+
+ Error [QNT404]: Name 'toSet' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmResultProjection.qnt:67:14
+  67:     nondet p=s.log.toSet().map(d=>{position:d.position,body:d.after}).union(Set(zero)).oneOf()
+                   ^^^^^^^^^^^^^
+
+error: parsing failed

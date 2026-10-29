@@ -1,0 +1,151 @@
+[
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmBootstrapInvitation.qnt",
+    "tests": [
+      "independentAssignmentRequiredTest",
+      "selfSelectedKeyRejectedTest",
+      "registrationDoesNotIssueTest",
+      "duplicateCanonicalLaunchRejectedTest"
+    ],
+    "identicalRetainedIR": true,
+    "files": {
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmCheckpointTruncation.qnt": "22b72ef80bc4e14b9db66ff20b02b15c660819691b1c61c9b2f3be5490054d37",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmExecutionReconciliation.qnt": "0d82f735512b2a49da2ae43a02e36c6feecbdd3a50dfa1fafb7ecacf42e19aa1",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmAccountCommit.qnt": "f8eda624de39e8ab8e7b89b85877394e3777804d16f419a34098e584c9cdee6d",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmSourceCustody.qnt": "113d70c4d509fd9a3df0170177b36945d1262ef4e19dfeb966cfc6f57d71514a",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmExecutorOffer.qnt": "2a18eb108dfb2363bbf6f9f6ac7cd8faba29a5507df6a41f6cb79ed5afceda78",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmSourceJoin.qnt": "5ad46f0dab28546656b293001b6850eedcb81f51175042e1958f88e3a2287ce7",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmWalActivation.qnt": "fa311d99684df6d157102f5796ee45a3d4942a69ed762d601d65c64e35fe8ecb",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmAdmissionFloor.qnt": "88bf8ce53284cc74374ff60cd15599523cae96f7ed93ac33428879d8a6ec0581",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmBootstrapInvitation.qnt": "7bcda12be2d76d488547368f7c8d4229ff43446ef000674567e63b5e706a2e95",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmAppendHandoff.qnt": "57e8931ff2139a83fbfef9bf857e55df0861a0bf7f44d22c0a77727757d19c51",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmCustodyPublication.qnt": "23e8106198b256bd91d8595e4e61a55f04d9e71817ef0d2eeb0d45743ab268e4",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmCallerCustody.qnt": "9bfae57304a3f08662de09fd7cdcfc5e497f9d038b8ff532abf106d3f5659ff0"
+    }
+  },
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmBootstrapInvitation.qnt",
+    "tests": [
+      "unregisteredInvitationRejectedTest",
+      "splitCommitInvitationCounterexampleTest",
+      "sharedKubernetesIdentityRejectedTest",
+      "forwardedInvitationNoKeyRejectedTest"
+    ],
+    "identicalRetainedIR": true,
+    "files": {
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmCheckpointTruncation.qnt": "22b72ef80bc4e14b9db66ff20b02b15c660819691b1c61c9b2f3be5490054d37",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmExecutionReconciliation.qnt": "0d82f735512b2a49da2ae43a02e36c6feecbdd3a50dfa1fafb7ecacf42e19aa1",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmAccountCommit.qnt": "f8eda624de39e8ab8e7b89b85877394e3777804d16f419a34098e584c9cdee6d",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmSourceCustody.qnt": "113d70c4d509fd9a3df0170177b36945d1262ef4e19dfeb966cfc6f57d71514a",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmExecutorOffer.qnt": "2a18eb108dfb2363bbf6f9f6ac7cd8faba29a5507df6a41f6cb79ed5afceda78",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmSourceJoin.qnt": "5ad46f0dab28546656b293001b6850eedcb81f51175042e1958f88e3a2287ce7",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmWalActivation.qnt": "fa311d99684df6d157102f5796ee45a3d4942a69ed762d601d65c64e35fe8ecb",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmAdmissionFloor.qnt": "88bf8ce53284cc74374ff60cd15599523cae96f7ed93ac33428879d8a6ec0581",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmBootstrapInvitation.qnt": "64b106cbaad510fa73037d88f0bc0d0f7b478405b01f698220ed6932b4dbf483",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmAppendHandoff.qnt": "57e8931ff2139a83fbfef9bf857e55df0861a0bf7f44d22c0a77727757d19c51",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmCustodyPublication.qnt": "23e8106198b256bd91d8595e4e61a55f04d9e71817ef0d2eeb0d45743ab268e4",
+      "proofs/evidence/llm-bootstrap-invitation/controls-1/LlmCallerCustody.qnt": "9bfae57304a3f08662de09fd7cdcfc5e497f9d038b8ff532abf106d3f5659ff0"
+    }
+  },
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmBootstrapInvitation.qnt",
+    "tests": [
+      "invalidPossessionRejectedTest",
+      "substitutedSessionRejectedTest",
+      "exactBindingRequiredTest",
+      "concurrentReadInvalidatedTest"
+    ],
+    "identicalRetainedIR": true,
+    "files": {
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmCheckpointTruncation.qnt": "22b72ef80bc4e14b9db66ff20b02b15c660819691b1c61c9b2f3be5490054d37",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmExecutionReconciliation.qnt": "0d82f735512b2a49da2ae43a02e36c6feecbdd3a50dfa1fafb7ecacf42e19aa1",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmAccountCommit.qnt": "f8eda624de39e8ab8e7b89b85877394e3777804d16f419a34098e584c9cdee6d",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmSourceCustody.qnt": "113d70c4d509fd9a3df0170177b36945d1262ef4e19dfeb966cfc6f57d71514a",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmExecutorOffer.qnt": "2a18eb108dfb2363bbf6f9f6ac7cd8faba29a5507df6a41f6cb79ed5afceda78",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmSourceJoin.qnt": "5ad46f0dab28546656b293001b6850eedcb81f51175042e1958f88e3a2287ce7",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmWalActivation.qnt": "fa311d99684df6d157102f5796ee45a3d4942a69ed762d601d65c64e35fe8ecb",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmAdmissionFloor.qnt": "88bf8ce53284cc74374ff60cd15599523cae96f7ed93ac33428879d8a6ec0581",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmBootstrapInvitation.qnt": "ba4e2323f7dd30e89b78a9188480084d8e82a5f04937849c54dbe0b0c7c4921b",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmAppendHandoff.qnt": "57e8931ff2139a83fbfef9bf857e55df0861a0bf7f44d22c0a77727757d19c51",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmCustodyPublication.qnt": "23e8106198b256bd91d8595e4e61a55f04d9e71817ef0d2eeb0d45743ab268e4",
+      "proofs/evidence/llm-bootstrap-invitation/controls-2/LlmCallerCustody.qnt": "9bfae57304a3f08662de09fd7cdcfc5e497f9d038b8ff532abf106d3f5659ff0"
+    }
+  },
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmBootstrapInvitation.qnt",
+    "tests": [
+      "revokedEpochRejectedTest",
+      "bearerOnlyInvitationCounterexampleTest",
+      "consumptionCommitsExactResultTest",
+      "lostReplyCannotConsumeTwiceTest"
+    ],
+    "identicalRetainedIR": true,
+    "files": {
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmCheckpointTruncation.qnt": "22b72ef80bc4e14b9db66ff20b02b15c660819691b1c61c9b2f3be5490054d37",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmExecutionReconciliation.qnt": "0d82f735512b2a49da2ae43a02e36c6feecbdd3a50dfa1fafb7ecacf42e19aa1",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmAccountCommit.qnt": "f8eda624de39e8ab8e7b89b85877394e3777804d16f419a34098e584c9cdee6d",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmSourceCustody.qnt": "113d70c4d509fd9a3df0170177b36945d1262ef4e19dfeb966cfc6f57d71514a",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmExecutorOffer.qnt": "2a18eb108dfb2363bbf6f9f6ac7cd8faba29a5507df6a41f6cb79ed5afceda78",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmSourceJoin.qnt": "5ad46f0dab28546656b293001b6850eedcb81f51175042e1958f88e3a2287ce7",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmWalActivation.qnt": "fa311d99684df6d157102f5796ee45a3d4942a69ed762d601d65c64e35fe8ecb",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmAdmissionFloor.qnt": "88bf8ce53284cc74374ff60cd15599523cae96f7ed93ac33428879d8a6ec0581",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmBootstrapInvitation.qnt": "a29d8f3de2a00a4600a7d508b6921b9b5991a3f8af6c7b2b7521957cd10220b9",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmAppendHandoff.qnt": "57e8931ff2139a83fbfef9bf857e55df0861a0bf7f44d22c0a77727757d19c51",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmCustodyPublication.qnt": "23e8106198b256bd91d8595e4e61a55f04d9e71817ef0d2eeb0d45743ab268e4",
+      "proofs/evidence/llm-bootstrap-invitation/controls-3/LlmCallerCustody.qnt": "9bfae57304a3f08662de09fd7cdcfc5e497f9d038b8ff532abf106d3f5659ff0"
+    }
+  },
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmBootstrapInvitation.qnt",
+    "tests": [
+      "lostReplyRecoversSameResultTest",
+      "oldWorkerCannotRecoverTest",
+      "recoveryReadPolicyRequiredTest",
+      "lostConsumptionRecordInvitationCounterexampleTest"
+    ],
+    "identicalRetainedIR": true,
+    "files": {
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmCheckpointTruncation.qnt": "22b72ef80bc4e14b9db66ff20b02b15c660819691b1c61c9b2f3be5490054d37",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmExecutionReconciliation.qnt": "0d82f735512b2a49da2ae43a02e36c6feecbdd3a50dfa1fafb7ecacf42e19aa1",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmAccountCommit.qnt": "f8eda624de39e8ab8e7b89b85877394e3777804d16f419a34098e584c9cdee6d",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmSourceCustody.qnt": "113d70c4d509fd9a3df0170177b36945d1262ef4e19dfeb966cfc6f57d71514a",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmExecutorOffer.qnt": "2a18eb108dfb2363bbf6f9f6ac7cd8faba29a5507df6a41f6cb79ed5afceda78",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmSourceJoin.qnt": "5ad46f0dab28546656b293001b6850eedcb81f51175042e1958f88e3a2287ce7",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmWalActivation.qnt": "fa311d99684df6d157102f5796ee45a3d4942a69ed762d601d65c64e35fe8ecb",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmAdmissionFloor.qnt": "88bf8ce53284cc74374ff60cd15599523cae96f7ed93ac33428879d8a6ec0581",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmBootstrapInvitation.qnt": "9113ce076ae6b68c326e041f5441f9470510edec0c183a9423e10de061a993ea",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmAppendHandoff.qnt": "57e8931ff2139a83fbfef9bf857e55df0861a0bf7f44d22c0a77727757d19c51",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmCustodyPublication.qnt": "23e8106198b256bd91d8595e4e61a55f04d9e71817ef0d2eeb0d45743ab268e4",
+      "proofs/evidence/llm-bootstrap-invitation/controls-4/LlmCallerCustody.qnt": "9bfae57304a3f08662de09fd7cdcfc5e497f9d038b8ff532abf106d3f5659ff0"
+    }
+  },
+  {
+    "source": "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmBootstrapInvitation.qnt",
+    "tests": [
+      "replacedKeyBindingInvitationCounterexampleTest",
+      "recoveryDoesNotReactivateTest",
+      "originalUnknownBudgetRetainedTest"
+    ],
+    "identicalRetainedIR": true,
+    "files": {
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmCheckpointTruncation.qnt": "22b72ef80bc4e14b9db66ff20b02b15c660819691b1c61c9b2f3be5490054d37",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmExecutionReconciliation.qnt": "0d82f735512b2a49da2ae43a02e36c6feecbdd3a50dfa1fafb7ecacf42e19aa1",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmAccountCommit.qnt": "f8eda624de39e8ab8e7b89b85877394e3777804d16f419a34098e584c9cdee6d",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmSourceCustody.qnt": "113d70c4d509fd9a3df0170177b36945d1262ef4e19dfeb966cfc6f57d71514a",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmExecutorOffer.qnt": "2a18eb108dfb2363bbf6f9f6ac7cd8faba29a5507df6a41f6cb79ed5afceda78",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmSourceJoin.qnt": "5ad46f0dab28546656b293001b6850eedcb81f51175042e1958f88e3a2287ce7",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmWalActivation.qnt": "fa311d99684df6d157102f5796ee45a3d4942a69ed762d601d65c64e35fe8ecb",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmAdmissionFloor.qnt": "88bf8ce53284cc74374ff60cd15599523cae96f7ed93ac33428879d8a6ec0581",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmBootstrapInvitation.qnt": "a4824f8c2d10a9d64aa076c5b7052e85c47999975cecde176fe94c2715a474e0",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmAppendHandoff.qnt": "57e8931ff2139a83fbfef9bf857e55df0861a0bf7f44d22c0a77727757d19c51",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmCustodyPublication.qnt": "23e8106198b256bd91d8595e4e61a55f04d9e71817ef0d2eeb0d45743ab268e4",
+      "proofs/evidence/llm-bootstrap-invitation/controls-5/LlmCallerCustody.qnt": "9bfae57304a3f08662de09fd7cdcfc5e497f9d038b8ff532abf106d3f5659ff0"
+    }
+  }
+]

@@ -1,0 +1,181 @@
+#+title: Weaver Caller Custody Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Source comparison and reuse boundary
+
+[[file:43.01-caller-custody.org][43.01]] states the protocol. The executable [[file:../../../proofs/lean/LlmCallerCustody.lean][Lean model]] and
+[[file:../../../proofs/qunit/LlmCallerCustody.qnt][Quint model]] extend category 42 without modifying its sealed files.
+[[file:../../../proofs/evidence/llm-caller-custody/source-review.json][Nineteen source receipts]] are freshly verified against exact pinned Git blobs;
+[[file:../../../proofs/evidence/llm-caller-custody/working-source-check.json][working source identities]] are independently checked. Eighteen match the reviewed
+bytes; P17 differs only in the two recorded control-plane import paths. No native
+ABI compatibility or changed pin is inferred from these checks.
+
+| Source | Reused mechanism | Required extension or premise |
+|--------+------------------+------------------------------|
+| P12 authorized-effect-token | Nonce, digest, arena/generation, validity and revocation context | Bind native incarnation/key and exact current custody capability at append; fields do not authenticate a caller |
+| P13 strict-mediation | Consume nonce before observation; unknown observation remains consumed | Persist the authoritative original outcome; token reissue cannot erase original spent-state |
+| P15 effect-host | Private issued-grant provenance, current-thread ownership, epoch/deadline checks | Replace process-local provenance with authenticated cross-process context and protected grant publication; receipts explicitly deny durability/distributed authority |
+| P17 store-backend | Typed runtime/storage negotiation and ownership contracts | Whole envelope including capability association must be a native protected append; contracts do not prove it implemented |
+| P18 PromotionTransactionRecovery | Request/pre/post/effect observation binding | Recover the original event after lost acknowledgement, with current peer authentication |
+| P19 authorized recovery bridge | Source-bound claim/authority recovery | Worker enrollment cannot replace the original claim or authorize itself as recovery principal |
+| P20 CommittedEffectApplicationExactlyOnce | Conditional application uniqueness | No implication of native identity, IO durability or exactly-once provider delivery |
+| P22 durable-store | Replay/fsync/locking handoff contract receipts | No independent grant-store write may determine publication |
+| P31 SessionAttempt Lean | Revision/generation and pending recovery | Enrolled process incarnation is distinct from logical attempt generation |
+| P31 SessionAttempt Quint | Scheduling and recovery controls | Add shared-identity and grant/redelivery/expiry races |
+| P33 semantic budget | Original deterministic budget bound | Grant renewal/reconnection cannot create another budget domain |
+| P33 watchdog | Timeout/capacity observations | Timeout and missing replies cannot release unknown usage |
+| P35 context invalidation | Reject stale authority generation | Recheck native peer and capability alongside final generation CAS |
+| P35 lineage prefix closure | Committed context prefix | Authenticate the current grant envelope, not merely an equal restored projection |
+| P43 session/funs-attempt | Consumer session/turn binding, pending reconciliation and coordinate exhaustion rejection | Receipt explicitly denies runtime-published/action-authorized/durable; add authenticated native publication |
+| P44 session/objects-attempt | Task revision, generation and anchors | Client session metadata is never trusted process incarnation |
+| C8 BoundOperation | Typed operation/effect/state equality | Source explicitly says equality does not authenticate inputs; verify peer and original facts separately |
+| C10 CompoundAuthorization | Required nonempty error-free decision layers | Source leaves authentic facts and atomic execution to runtime; Cedar allow is one necessary gate |
+| C11 Composition | Validation/evaluation dependency preservation | Add native peer/grant refinement and protected publication; no cryptographic or storage proof is inherited |
+
+The exact matching code and excerpts are preserved in the source receipts. The
+review uses existing POO Flow mechanisms rather than introducing an unrelated
+protocol or ASP dependency. Existing local grants and session bindings are semantic
+reuse, not a claim that cross-process custody already exists upstream.
+
+* Four-artifact correspondence
+
+| ID | Lean declaration | Quint control | Core D2 node | Property and premise |
+|----+------------------+---------------+--------------+----------------------|
+| CC1 | projection | redeliveryCannotRefreshReadTest | recovery.join | Every authoritative transition refines the actual publication machine |
+| CC2 | composition | currentIncarnationCanFinishOriginalTest | broker.cas | Arbitrary finite caller runs extend the actual initialized publication prefix |
+| CC3 | workload_is_insufficient | sharedWorkloadCannotUseNewGrantTest | protocols.mcp | Same workload with a different incarnation cannot authenticate |
+| CC4 | old_key_rejected | oldKeyAfterRotationRejectedTest | recovery.projection | A different native peer key cannot use the current capability |
+| CC5 | old_capability_rejected | oldSerialAfterRotationRejectedTest | broker.alias | Exact current capability equality is required |
+| CC6 | expired_rejected | expiryBetweenStageAndCommitRejectedTest | broker.cas | Expiry is rechecked at determining append |
+| CC7 | scope_retained | newKeyGetsSameScopeTest | registry.origin | Each permit preserves domain/workload/original/purpose/deadline |
+| CC8 | serial_monotone | lostHandoffReplyRetainsGrantTest | recovery.join | Published rotation and handoff cannot lower the grant serial |
+| CC9 | incarnation_change_requires_recovery | workerCannotMintRecoveryGrantTest | protocols.acp | Changed incarnation requires independent recovery authorization and non-reuse |
+| CC10 | final_append_requires_permit | claimedFenceCannotAuthenticateTest | broker.cas | Final actual append requires a native permit and the same grant envelope |
+| CC11 | no_detached_mint | splitGrantCallerCounterexampleTest | recovery.join | Grant replacement cannot occur as a local/cache-only event |
+| CC12 | used_incarnations_retained | incarnationReuseRejectedTest | recovery.fence | Issued incarnation history survives a step |
+| CC13 | floor_publication_has_caller_and_join | currentIncarnationCanFinishOriginalTest | broker.cas | Actual floor publication requires caller permit, whole envelope and inherited Ready/join checks |
+| CC14 | scope_run | reconnectPreservesOriginalGrantTest | registry.origin | Every finite run preserves immutable scope and deadline |
+| CC15 | serial_run | oldSerialAfterRotationRejectedTest | recovery.join | Every finite run has a nondecreasing serial |
+| CC16 | time_run | expiryBetweenStageAndCommitRejectedTest | broker.cas | Modeled trusted time cannot roll back |
+| CC17 | used_run | oldWorkerAfterRestartRejectedTest | recovery.fence | Every finite run retains prior issued incarnations |
+| CC18 | original_result_unique | originalCannotReadmitAfterLostReplyTest | broker.alias | Actual initialized floor prefix retains unique original outcomes |
+| CC19 | original_reservation_once | lostHandoffReplyRetainsGrantTest | registry.query | Safe initialized account prefix applies each original reservation at most once |
+| CC20 | unknown_original_hold_retained | redeliveryCannotRefreshReadTest | broker.hold | Unmetered original source with authentic account binding retains its hold |
+
+| CC21 | fits_run | lostHandoffReplyRetainsGrantTest | recovery.join | Every finite run preserves grant-to-current-custody alignment from an aligned initial state |
+| CC22 | final_floor_requires_worker_proof | claimedFenceCannotAuthenticateTest | broker.cas | From aligned current custody, actual floor admission requires the native worker proof; a recovery role alone cannot admit a tail |
+
+The Lean relation wraps actual category-42 publication events. Metadata events may
+only preserve its journal. Determining events require a native Permit and append
+the capability projection in the same transition. Worker permits preserve the
+current grant; rotation requires old-key proof and new-key enrollment, clears the
+actual inherited join/resolution, and retains original scope; handoff requires an
+authenticated independent recovery principal, fresh incarnation and increased
+fence/serial. The modeled issued-incarnation list is protected state, not a cache.
+
+Twenty-two printed declarations are checked without sorryAx. Scope, serial, trusted
+time, issued identities and publication refinement cover arbitrary finite runs.
+The final-floor worker theorem requires aligned current custody, established by fits_run; the
+original-result and account theorems explicitly require initialized publication,
+custody and account prefixes. Budget results retain Safe handoff and authentic
+original reservation/source binding premises; they do not follow from identity
+checks alone. An unknown source remains unmetered under that binding.
+
+Quint uses the actual predecessor armed fixture and actual inherited floor/account
+transitions. It has two staged command slots, two worker incarnations sharing one
+workload principal, old/new keys and a distinct recovery context. Reconnect channel
+identity differs from incarnation identity. Rotation adds an explicit protected
+custody restart event because the predecessor Quint command table has no restart
+command. It uses actual C.restart, current P.ready/parent checks and P.noted; it
+does not call resolve or fabricate a new floor outcome. Lean expresses the same
+restart through an actual P.Step. The two representations have separately checked
+properties; no automatic Quint-to-Lean refinement theorem is claimed.
+
+The final leaf-only Lean refresh strengthens the caller/join theorem to expose
+the actual current custody, joined source proposal and exact original outcome
+in its statement. It changes no transition or Quint input; 29 unchanged compiled
+ancestor receipts are hash-checked before retaining them, and the leaf source,
+compiler log and command receipt are refreshed.
+
+The original semantic commitment is carried by the inherited publication envelope;
+the focused Quint grant has a fixed canonical domain and inherits the original
+proposal fixture. Lean stores the full original proposal in the grant. Arbitrary
+protocol/domain namespace integrity and cryptographic commitment collision
+resistance remain native/semantic-owner premises, not conclusions of this finite
+fixture.
+
+* Counterexamples and interpretation
+
+| Mutation control | Actual failure observed | Evidence boundary |
+|------------------+-------------------------+-------------------|
+| sharedIdentityCallerCounterexampleTest | A command naming the new holder/fence commits an actual floor record when peer binding is bypassed | Qualification monitor is false; original source provider-call count stays zero |
+| expiryCallerCounterexampleTest | A staged request commits after its grant deadline if final peer/deadline binding is bypassed | Actual floor append, not an external provider send |
+| splitGrantCallerCounterexampleTest | Actual custody/log handoff advances fence while the grant projection remains old | Alignment fails; no claim of a second floor append |
+| workloadMintCallerCounterexampleTest | A restored old worker substitutes its incarnation/key in the capability without a protected event | Exact last-envelope capability alignment fails |
+| redeliveryRenewCallerCounterexampleTest | Redelivery silently extends the deadline | Immutable scope/envelope check fails; no account refund is performed |
+| restartReuseCallerCounterexampleTest | Recovery forgets issued incarnations | Non-reuse state fails; does not claim an actual duplicated floor record |
+| rotationOldKeyCallerCounterexampleTest | Old native key can publish a custody resolution event if key binding is skipped | Deliberate authentication-monitor violation; floor count remains unchanged |
+
+The bypassCaller fault deliberately omits a peer argument and authentication
+check, representing an unmediated endpoint callable by the fixed old peer. The
+decoder independently confirms that the current incarnation/key or deadline
+would reject that peer. Its ghost flag marks the omitted check; it does not
+authenticate an attacker from native transport evidence.
+
+All seven fault actions are outside the guarded step relation. Their exported ITFs
+are independently decoded, including actual custody/floor changes, grant/log
+alignment, original reservation hold and unchanged provider execution. Ghost
+qualification failures are distinguished from real inherited floor appends.
+
+* Reproduction and evidence limits
+
+Run [[file:../../../proofs/check_llm_caller_custody.py][the focused checker]]. It compiles thirty Lean modules, checks twenty-two new
+printed declarations, typechecks Quint, runs twenty-seven new controls and seven
+exported mutations, samples eight initializers with ten samples and up to thirty
+post-initialization steps each, and regresses the predecessor's twenty-five
+publication controls. This is finite randomized exploration, not exhaustive model
+checking or runtime fault injection.
+
+The final receipt distinguishes semantic verification from the standalone resource
+gate. A standalone typecheck timeout is never reported as a passing command, even
+when the official test pipeline successfully typechecks the same executed source.
+After a retained timeout, =--resume-models --reuse-typecheck-timeout= validates all
+unchanged compiled-module hashes and the exact timed-out Quint input before
+continuing with fresh tests. It does not reuse a successful typing verdict from
+a failed command or increase any watchdog.
+
+The first full-import parse reached its unchanged twenty-second watchdog. Five
+later compact typechecks also reached that fixed watchdog; all failed receipts
+are retained. An Org export overlap did not explain the later failures. Selective
+imports remove a redundant whole custody namespace. The accepted execution plan
+uses explicit helper types and keeps the negative-control qualification flag as
+a ghost monitor rather than embedding another full authorization expression in
+its state update. The independent decoder checks the concrete incarnation/key
+or deadline mismatch for the fixed old peer used by those fault injections. It
+also separates current controls from predecessor controls instead of typechecking
+both sets on every focused run. No watchdog is enlarged. The standalone twenty-second typecheck remains a
+failed resource gate. The installed official CLI test pipeline performs load,
+parse and typecheck before running tests; its source hash and exact pipeline
+line are recorded separately. A passing test route supplies semantic typing
+evidence, not a retroactive pass for the timed-out standalone route.
+
+The current closure omits only 356 ancestor run declarations using freshly
+hash-checked predecessor parser/source-map receipts. All retained ancestor
+transition/type/helper declaration IR is independently rechecked, including effect
+qualifiers; only parser IDs and declaration ordering are normalized. The new leaf
+source is byte-identical to its executed copy and retains all 27 controls. The 25
+predecessor publication controls run separately against their existing sealed
+closure; its source/core hashes are freshly checked, and its publication source
+is byte-identical to the raw predecessor. These are two qualified execution
+closures, not a claim that all ancestor tests execute in the new leaf. No other
+omitted ancestor tests are claimed rerun.
+
+See [[file:../../../proofs/evidence/llm-caller-custody/commands.json][command receipts]], [[file:../../../proofs/evidence/llm-caller-custody/closure-certificate.json][closure certificate]],
+[[file:../../../proofs/evidence/llm-caller-custody/counterexample-observations.json][decoded counterexamples]], [[file:../../../proofs/evidence/llm-caller-custody/receipt.json][acceptance receipt]] and
+[[file:../../../proofs/evidence/llm-caller-custody/SHA256SUMS][sealed byte manifest]]. Receipt acceptance separately checks source identities,
+dependency identity, historical manifests, four-artifact links, English Org export
+and rendered core D2. Native authentication/enrollment, monotonic time, protected
+whole-event durability and anti-rollback recovery are explicit unqualified owner
+contracts. Recovery liveness, key theft and actual provider IO remain outside the
+proved boundary. No Gateway implementation or dependency pin is changed.

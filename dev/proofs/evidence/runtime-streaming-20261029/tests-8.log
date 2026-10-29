@@ -1,0 +1,86 @@
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+warning: field `next_sequence` is never read
+  --> crates/weaver-ledger/src/stream_state.rs:16:9
+   |
+ 9 | pub(crate) struct MessageRecord {
+   |                   ------------- field in this struct
+...
+16 |     pub next_sequence:u64,
+   |         ^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+   Compiling weaver-broker v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-broker)
+warning: `weaver-ledger` (lib) generated 1 warning
+   Compiling weaver-cli v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-cli)
+warning: `weaver-ledger` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.83s
+     Running unittests src/lib.rs (target/debug/deps/weaver_broker-33104d5c17e1cfa5)
+
+running 10 tests
+test https::tests::destination_aliases_credentials_and_http_are_rejected ... ok
+test stream_session::tests::effective_revocation_stops_actual_next_range_and_prefix_reconnect ... ok
+test stream_session::tests::recovered_old_worker_socket_cannot_use_new_custody ... ok
+test stream_session::tests::actual_tcp_ranges_preserve_one_message_and_one_hold ... ok
+test stream_session::tests::tls_flush_cannot_release_a_tail_after_effective_revocation ... ok
+test stream_session::tests::revoke_after_range_consumption_proves_zero_call_and_recovers_original_message ... ok
+test enforce_asp_rust_gate ... ok
+test https::tests::redirect_is_observed_without_following_or_refunding ... ok
+test https::tests::partial_transport_failure_is_unknown_and_never_retried ... ok
+test stream_session::tests::native_partial_write_freezes_tail_and_never_refunds ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.32s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_cli-f83d05dd2e075719)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/main.rs (target/debug/deps/weaver_cli-b2e202be7cec516b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-47845845d2fbd85a)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-a9733b9ead0b9f2e)
+
+running 1 test
+test decoder::duplicate_keys_unknown_fields_and_streams_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_ledger-8ada819d593979a6)
+
+running 1 test
+test enforce_asp_rust_gate ... FAILED
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (19327794) panicked at crates/weaver-ledger/src/lib.rs:14:1:
+[RUST-AGENT-CFG-PUBLIC-016] Info: Public function owns a broad linear algorithm surface
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger/src/stream_custody.rs:36:1
+fix: split this broad function into named algorithm steps
+line: 36 |     pub fn claim_stream(&mut self, request: StreamClaim<'_>) -> Result<StreamOwner> {
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger/src/stream_custody.rs public function `claim_stream` spans 63 lines with 16 statements and a 14-statement block. Criteria: software-criterion/control-flow.broad-linear-phase.
+Contract: Split broad public Rust functions into small named helpers or pipeline steps so agents can edit one algorithm responsibility at a time.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+error: test failed, to rerun pass `-p weaver-ledger --lib`

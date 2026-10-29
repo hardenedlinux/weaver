@@ -1,0 +1,15 @@
+'Weaver.DeviceIsolationRecovery.protected_floor_never_rolls_back' depends on axioms: [propext, Quot.sound]
+'Weaver.DeviceIsolationRecovery.committed_floor_log_never_shrinks' depends on axioms: [propext]
+'Weaver.DeviceIsolationRecovery.journal_tracks_every_floor_commit' depends on axioms: [propext]
+'Weaver.DeviceIsolationRecovery.every_new_export_requires_current_hardware' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.validated_callback_has_original_current_envelope' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.initialized_product_refines_key_boundary' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.initialized_floor_log_is_complete' depends on axioms: [propext]
+'Weaver.DeviceIsolationRecovery.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.DeviceIsolationRecovery.original_budget_remains_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.DeviceIsolationRecovery.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

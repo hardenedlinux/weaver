@@ -1,0 +1,36 @@
+
+ Error [QNT101]: Built-in name 'length' is redefined in module 'BrokerConsumptionQueue'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/BrokerConsumptionQueue.qnt:9:12
+  9:   pure val length = 4
+                ^^^^^^
+
+
+ Error [QNT404]: Name 'H::P::resumeOldWorker' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/BrokerConsumptionQueue.qnt:15:28
+  15:   action holdParent = all {H::P::resumeOldWorker,H::g' = H::g}
+                                 ^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT404]: Name 'values' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/BrokerConsumptionQueue.qnt:42:18
+  42:   val callOnce = q.calls.values().forall(n => n<=1)
+                       ^^^^^^^^^^^^^^^^
+
+
+ Error [QNT404]: Name 'H::P::s' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/BrokerConsumptionQueue.qnt:48:40
+  48:   val authorityBound = q.spent implies H::P::s.messages.get(0).sends == 1 and H::P::s.messages.get(0).reserved
+                                             ^^^^^^^
+
+
+ Error [QNT404]: Name 'H::P::s' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/BrokerConsumptionQueue.qnt:48:79
+  48:   val authorityBound = q.spent implies H::P::s.messages.get(0).sends == 1 and H::P::s.messages.get(0).reserved
+                                                                                    ^^^^^^^
+
+error: parsing failed

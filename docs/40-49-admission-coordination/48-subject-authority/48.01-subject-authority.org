@@ -1,0 +1,194 @@
+#+title: Subject Authority, Producer Assignment and Enrollment Plan Publication
+#+language: en
+#+startup: overview
+
+* Finding and chosen authority boundary
+An independent subject must have a configured authoritative source. A shared
+Kubernetes service account, a caller-selected OIDC issuer, a forwarded bearer token
+or a public key with a self-signature cannot assign an enterprise agent subject.
+The Gateway accepts identity facts from a tenant-controlled authority configured
+outside the workload's request path. Its issuer/tenant/purpose trust policy and
+stable subject mapping are administrative inputs, not request parameters.
+
+The authority can be an existing enterprise identity directory or agent identity
+service. It must authenticate its own enrollment administrators and enforce who may
+create, renew, rotate or revoke a subject credential. This design does not assert
+that such a service is implemented in POO Flow or cedar-poo-spec. Initial identity
+provisioning, trust-anchor administration and native authentication remain explicit
+trust-root premises. Repeating a Gateway enrollment request is not a provisioning
+ceremony and cannot allocate a new independent subject.
+
+Stable subject identity is the canonical tuple of authority namespace, tenant and
+an immutable issuer object identifier. Display names, email addresses, Kubernetes
+service-account names, pod names and reusable account names are not canonical IDs.
+Native encoding must be injective and distinguish deleted/recreated issuer objects.
+The formal Nat index abstracts that canonical tuple; Principal also carries authority
+and tenant fields checked against the original task. Source import is authenticated,
+audience/purpose constrained and bound to the configured namespace. TLS termination
+metadata is trustworthy only when supplied by the authentic trusted peer boundary.
+
+* Separate identities and authorities
+| Identity | Authoritative owner | Permitted change |
+|----------+---------------------+------------------|
+| Stable subject | Configured identity authority | Never renamed by token refresh, session reconnection or worker restart |
+| Subject authentication credential | Identity authority under an independently authorized renewal/rotation policy | Current generation advances; a verification key may remain the same or change |
+| Producer principal and credential | Configured producer authority | Credential generation/key may rotate while retaining producer identity and delegated scope |
+| Original task and allowed producer | Trusted POO task producer/coordinator | Immutable canonical task-to-subject and task-to-producer assignment; no client-selected alias or new budget/history domain |
+| Enrollment public key | Original task commitment, then immutable assignment | Cannot be replaced by subject-token or producer-key rotation |
+| First beneficiary key and bootstrap session | Existing beneficiary-registration protocol | Remain frozen after first binding; credential recovery grants no rebind |
+
+The producer is separately authenticated and authorized for the exact original task.
+An authentic producer credential for another tenant, another principal or a broader
+unrelated task is insufficient. The subject must also authenticate its current
+credential, and enrollment-key possession must cover the same exact assignment
+transcript. A producer cannot use a shared workload credential to nominate a new
+subject or enrollment key. The original task source fixes both the intended subject
+and allowed producer before this protocol accepts an assignment.
+
+A public source record containing a new generation is not a usable credential.
+Native verify must authenticate an actually valid credential for that generation,
+plus subject/producer/enrollment proofs over the complete transcript. Merely copying
+a new fence or proving possession of an unchanged public-key pair is insufficient
+when the credential has been retired. Credentials shared with the same private keys
+remain the same logical principal; the Gateway cannot distinguish physical processes
+holding identical authorized material. No physical isolation or process-uniqueness
+claim is introduced.
+
+* Original task and immutable producer assignment
+The authoritative Task contains the original Plan template with subjectKey erased,
+canonical launch, stable subject, tenant/authority, allowed producer, original Root,
+enrollment key, issuance session/challenge, audience and enrollment-only purpose.
+Erasing the subject authentication key permits selection of the current subject key
+before the assignment; it does not erase the enrollment key or original task semantics.
+
+Assignment binds that Task to one exact Plan, including the selected subject
+authentication key. Its final CAS checks the exact original Task, empty canonical
+assignment slot, current subject and producer source records, full joint proof,
+current policy and observed outer revision. The native log retains the command,
+proof references and authentic source snapshots as well as the determining outcome.
+Model maps are projections; inductive transition witnesses retain the guarded event.
+No credential, invitation, custody capability, LLM request or budget refund is created.
+
+The assignment slot is immutable. Lost response, new token, new credential ID,
+new nonce, new worker, MCP/A2A/Client ACP reconnect or new session cannot reopen it.
+Recovery locates the same original canonical launch and returns the exact recorded
+assignment or unresolved status. A restored absence is not a new first-writer right.
+
+* Credential rotation and safe reauthorization
+Historical provenance and current approval are separate. Subject and producer source
+records carry immutable identity coordinates and a strictly increasing credential
+generation. Rotation compares the exact current parent, preserves the stable identity,
+requires authenticated authority evidence and advances the generation. Old-parent
+writes, generation reset and cross-tenant/issuer replacement are rejected.
+
+| Change | Required treatment | Forbidden shortcut |
+|--------+--------------------+--------------------|
+| Subject credential renewed with the same authentication key | Retain the original assignment; obtain fresh current subject/producer/enrollment proof and append approval for that exact assignment | Reuse old approval after only refreshing a read or copying the new generation |
+| Producer credential/key rotated | Authenticate the current producer in the original delegated scope; reapprove the identical assignment | Treat a different producer principal as the original producer |
+| Subject authentication key changed after assignment | Preserve the assignment and enrollment key; frozen Plan fails closed | Rewrite subjectKey or enrollment key in the pending assignment |
+| Subject authentication key changed before assignment | A new assignment may select the authentic current subject key while preserving the exact Task template | Derive a different canonical subject or enrollment key from the key change |
+| Identity credential revoked | Reject new assignment/publication/issuance that lacks current authentic identity evidence | Consider an authentic historical signature to be current approval |
+
+This category provides same-key subject renewal and producer-key rotation continuity.
+Automatic migration of a frozen Plan's subject authentication key is deliberately
+not provided. Such migration requires a separately authorized protocol preserving
+the original task, enrollment key, first beneficiary binding, unknown reservation
+and history obligations. Availability after key loss is not proved here.
+
+Source rotation invalidates the outer observed revision and old approval snapshots.
+Fresh approval may replace an old approval for the same immutable assignment, but
+cannot replace that assignment or erase its pending intent. Historical published
+Plans remain evidence after rotation. Pure historical joins do not require their
+old credentials to remain currently valid.
+
+* Plan publication and subsequent issuance
+Plan publication joins the exact assignment and fresh approval with current subject
+and producer rows, native proof, current Cedar/source approval, predecessor epoch,
+original Blueprint and expected outer revision. The actual predecessor Plan append
+and determining publication outcome are one logical authoritative event. The entire
+predecessor successor is fixed to a Plan/revision update; enrollment credentials,
+ID index, signing requests, enrollment roots, beneficiary bindings and execution
+state cannot change as hidden publication side effects.
+
+Checking only Plan publication leaves a gap: identity credentials can rotate between
+publication and credential issuance. Every newly created enrollment credential must
+therefore pass an additional current assignment/source/approval gate at the final
+outer CAS, as well as the actual predecessor issuance guards. It must also authenticate
+this issuance caller with a current subject credential, bound to the exact credential
+body/ID, current source generations, outer revision and fresh channel/challenge. A
+stored current approval is not a bearer credential for a caller that lacks this proof. NewIssues exposes this
+obligation in Lean; the Quint issuance wrapper checks it explicitly. A refreshed raw
+predecessor read cannot substitute for a complete joined outer image or live approval.
+
+An already issued enrollment credential is a separate authority object. A routine
+identity-token rotation does not erase its historical authority or automatically
+revoke every existing enrollment capability. If Policy requires revoking those
+capabilities, the coordinator must execute the existing actual enrollment/issuer
+revocation transition and downstream fences. It must not claim that source-record
+rotation alone recalls already released credentials or transmitted bytes. Historical
+account reconciliation remains allowed through the original evidence chain; the
+new-issuance identity gate does not impose a fresh login requirement on old unknown
+budget settlement.
+
+* Publication, recovery and cross-store loss of response
+| Event | Durable authority result | Recovery and concurrency rule |
+|-------+--------------------------+-------------------------------|
+| Subject/producer import | Canonical source row with authenticated authority evidence | No caller-selected issuer; exact-parent rotation under the accepted prefix |
+| Original Task publication | Canonical task-to-subject/producer and original enrollment commitment | Reuse the original task family, claim, profile, budget and history domain |
+| Assignment commit | Exact original Task plus frozen Plan and outcome | Query the original launch after lost reply; concurrent loser cannot replace the winner |
+| Approval commit | Authenticated current source snapshots for the same assignment | New source generation invalidates it; reauthorization appends rather than discards pending intent |
+| Plan/outcome commit | Actual predecessor Plan and outer publication outcome | Partial projections and one-sided recovery are quarantined before reads authorize mutation |
+| Enrollment issue | Exact original Plan plus current subject/producer approval | Recheck at this later CAS, not just at Plan publication |
+| Recovery query | Current subject authentication and read policy | Return original outcome; add no mutation authority, currentness, key replacement or reservation release |
+
+Source, task, assignment, approval and Plan/outcome records share one logical accepted
+commit history. Physical tables may be projections in separate stores; independent
+successful writes are not independent authority decisions. The final owner compares
+all relevant source/assignment/approval revisions under its determining CAS. A signed
+identity snapshot obtained before that CAS is not proof that it remains current.
+Resolve unknown commits by original command and body against that same authoritative
+history. A late response may report an old outcome, but cannot mark it current or
+activate a new assignment.
+
+The independent recovery floor must cover these outer source and assignment commits.
+The account/source execution floor may remain unchanged during all of them. Restore
+complete projection joins against the accepted outer prefix before issuing any absence
+or mutation certificate. An old worker cannot refresh its authority by presenting the
+current public generation or a locally restored source row. If the accepted prefix or
+a determining row is unavailable, quarantine new enrollment work and retain the original
+unknown hold. No pure image invariant detects coherent rollback of the entire history.
+
+* Scheme, Go and Rust responsibilities
+| Owner | Responsibility | Interface boundary |
+|-------+----------------+--------------------|
+| Scheme / POO Governance | Original Task semantics, canonical subject/producer scope, profile/claim/history/reservation binding, Cedar policy over authentic facts, explicit migration rules | Supplies exact original commitment and current policy/source approval; cannot manufacture identity from caller headers |
+| Go / cloud-native adapters | Kubernetes eligibility, configured enterprise identity connector, protocol termination, credential validation/evidence collection and retry/status transport | Passes immutable typed commands and authentic channel/authority evidence; shared SA never nominates an independent subject or changes a canonical assignment |
+| Rust / final authoritative owner | Source namespace/index ownership, exact-parent generation CAS, immutable Task/assignment, current approval join, Plan/outcome commit, later issuance gate and accepted-prefix recovery | Verifies actual native proof and live fact association at the deciding CAS; no adapter or callback can bypass it |
+| Quint / Lean | Concrete races, rollback/projection faults and stale-worker controls / arbitrary finite preservation and actual predecessor composition | Neither replaces native identity provisioning, cryptographic verification, authoritative storage or transport qualification |
+
+Native commands carry a canonical task/subject/producer reference, exact original
+commitment, source credential generations and proof references, expected outer and
+predecessor revisions, complete immutable body and outcome query identity. Proofs
+cover domain separation, issuer/tenant/audience/purpose, task, subject, producer,
+enrollment key, selected authentication key, both credential generations, challenge
+and authenticated channel. They must not be reduced to independent valid JWTs over
+unrelated statements. Native encoding, trust-chain administration, credential issuance
+and rotation policy, counter exhaustion and accepted-prefix storage are acceptance
+obligations. They do not require new dependency pins.
+
+This is enrollment/control-plane work. Cache authenticated parsing/signature results
+only with exact identity and credential-generation dependencies; do not cache a live
+approval across rotation. Use a bounded per-task join certificate tied to the accepted
+prefix and determining CAS rather than a registry-wide scan on the streaming path.
+Existing final Rust broker checks still constrain routing, SDK retries, partial writes,
+unknown execution and budget settlement. No performance claim is established here.
+
+* Verification boundary
+The [[file:48.03-proof-and-source-evidence.org][evidence register]] distinguishes directly composed Weaver proofs from
+inspected POO Flow/Cedar contracts. Native acceptance must test issuer/tenant confusion,
+forwarded tokens and proof mixing, old credentials copying a new public generation,
+concurrent source rotation and assignment/publication/issue CAS, lost commit responses,
+mixed snapshots, coherent rollback below the accepted prefix, old-worker recovery,
+first-key replacement and retained unknown budget. Safety is conditional on the explicit
+trust roots and complete recovery prefix; native validation and recovery liveness remain
+unqualified. No Gateway implementation or dependency pin changes are included.

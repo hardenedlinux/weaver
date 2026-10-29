@@ -1,0 +1,75 @@
+{
+  "faults": [
+    {
+      "name": "erasedAssignmentCounterexampleTest",
+      "path": "proofs/evidence/llm-subject-authority/itf/erasedAssignmentCounterexampleTest-2.itf.json",
+      "states": 11,
+      "assignmentPresent": false,
+      "publicationOutcome": true,
+      "actualPlans": [
+        0
+      ],
+      "providerCalls": 0,
+      "unknownHold12": 2,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "forgedAuthorityCounterexampleTest",
+      "path": "proofs/evidence/llm-subject-authority/itf/forgedAuthorityCounterexampleTest-0.itf.json",
+      "states": 7,
+      "assignmentPresent": true,
+      "publicationOutcome": false,
+      "actualPlans": [],
+      "providerCalls": 0,
+      "unknownHold12": 2,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "missingPlanOutcomeCounterexampleTest",
+      "path": "proofs/evidence/llm-subject-authority/itf/missingPlanOutcomeCounterexampleTest-0.itf.json",
+      "states": 9,
+      "assignmentPresent": true,
+      "publicationOutcome": false,
+      "actualPlans": [
+        0
+      ],
+      "providerCalls": 0,
+      "unknownHold12": 2,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "phantomPlanOutcomeCounterexampleTest",
+      "path": "proofs/evidence/llm-subject-authority/itf/phantomPlanOutcomeCounterexampleTest-1.itf.json",
+      "states": 9,
+      "assignmentPresent": true,
+      "publicationOutcome": true,
+      "actualPlans": [],
+      "providerCalls": 0,
+      "unknownHold12": 2,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "replacedEnrollmentCounterexampleTest",
+      "path": "proofs/evidence/llm-subject-authority/itf/replacedEnrollmentCounterexampleTest-1.itf.json",
+      "states": 11,
+      "assignmentPresent": true,
+      "publicationOutcome": true,
+      "actualPlans": [
+        0
+      ],
+      "providerCalls": 0,
+      "unknownHold12": 2,
+      "activeIncarnation": 0
+    }
+  ],
+  "quarantineProbe": {
+    "path": "proofs/evidence/llm-subject-authority/itf/splitRecoveryCannotIssueTest-2.itf.json",
+    "classification": "Fully defined pre-rejection state; terminal fail has no admitted successor",
+    "childReadCurrent": true,
+    "outerReadCurrent": true,
+    "planOutcomeJoined": false,
+    "newCredentialIssuanceRejected": true,
+    "unknownHold12": 2,
+    "providerCalls": 0
+  }
+}

@@ -1,0 +1,163 @@
+[
+  {
+    "id": "AT1",
+    "design": "Atomic commit preserves the account invariant",
+    "quint": "atomicCommitPairsRecordAndBalanceTest",
+    "lean": "initialized_safe",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "AT2",
+    "design": "Available, held and charged remain conserved",
+    "quint": "rebaseOtherReservationPreservesBothChargesTest",
+    "lean": "balance_conserved",
+    "d2": "registry.query"
+  },
+  {
+    "id": "AT3",
+    "design": "New application ID cannot consume an original reservation twice",
+    "quint": "sameReservationNewApplicationIdRejectedTest",
+    "lean": "original_reservation_at_most_once",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "AT4",
+    "design": "Application and original reservation consumption remain linked",
+    "quint": "atomicCommitPairsRecordAndBalanceTest",
+    "lean": "application_and_reservation_join",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "AT5",
+    "design": "Existing application body cannot be replaced",
+    "quint": "sameApplicationChangedUsageRejectedTest",
+    "lean": "applications_immutable",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "AT6",
+    "design": "Original reservation key cannot be reassigned",
+    "quint": "sameApplicationOtherReservationRejectedTest",
+    "lean": "original_reservation_immutable",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "AT7",
+    "design": "Financial commit writes the complete application and after-image",
+    "quint": "commitClosesBalanceVisibilityTest",
+    "lean": "commit_is_atomic",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "AT8",
+    "design": "Final commit requires actual qualified source evidence",
+    "quint": "sourceTerminalWithoutUsageCannotPrepareTest",
+    "lean": "new_commit_requires_final_source",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "AT9",
+    "design": "Competing shared-account proposal must revalidate the current image",
+    "quint": "twoPreparedOneSharedAccountRevisionTest",
+    "lean": "stale_before_image_blocks_commit",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "AT10",
+    "design": "Old worker cannot commit against a fresh image",
+    "quint": "oldWorkerCannotUseFreshImageTest",
+    "lean": "old_worker_blocks_commit",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "AT11",
+    "design": "Public balance requires a complete current image",
+    "quint": "revisionOnlyCannotRecoverTest",
+    "lean": "complete_image_before_visibility",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "AT12",
+    "design": "Restoring an account image cannot restore authority backwards",
+    "quint": "fullOldSnapshotCannotRecoverTest",
+    "lean": "restore_cannot_rollback_authority",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "AT13",
+    "design": "Lost acknowledgment preserves the original outcome",
+    "quint": "lostCommitResponseQueriesOriginalTest",
+    "lean": "commit_response_loss_preserves_result",
+    "d2": "protocols.mcp"
+  },
+  {
+    "id": "AT14",
+    "design": "Zero remainder still consumes original keys",
+    "quint": "zeroRemainderStillConsumesReservationTest",
+    "lean": "account_zero_delta_is_still_consumed",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "AT15",
+    "design": "Actual reconciliation supplies terminal and bounded usage",
+    "quint": "wrongUsageApplicationCannotPrepareTest",
+    "lean": "actual_reconciliation_has_terminal_and_bound",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "AT16",
+    "design": "Unknown usage has no selected account authority",
+    "quint": "unknownUsageCannotPrepareTest",
+    "lean": "unknown_reconciliation_has_no_account_authority",
+    "d2": "protocols.a2a"
+  },
+  {
+    "id": "AT17",
+    "design": "Unapplied reservation keeps its original hold",
+    "quint": "unknownOriginalCanCoexistWithOtherSettlementTest",
+    "lean": "unknown_reservation_hold_is_unchanged",
+    "d2": "registry.query"
+  },
+  {
+    "id": "AT18",
+    "design": "Account revision counts actual committed records",
+    "quint": "atomicCommitPairsRecordAndBalanceTest",
+    "lean": "journal_revision",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "AT19",
+    "design": "Recovery retains every committed financial prefix",
+    "quint": "restoredCommitCannotReleaseAgainTest",
+    "lean": "journal_prefix_retained",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "AT20",
+    "design": "Account commit composes with the actual preceding source run",
+    "quint": "accountAheadCanReplayOriginalSourceEvidenceTest",
+    "lean": "commit_joins_actual_reconciliation",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "AT21",
+    "design": "Source generation change invalidates a prepared proposal",
+    "quint": "sourceConflictAfterPrepareBlocksCommitTest",
+    "lean": "changed_source_generation_blocks_commit",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "AT22",
+    "design": "A blocked original source cannot consume its reservation",
+    "quint": "sourceTerminalWithoutUsageCannotPrepareTest",
+    "lean": "blocked_reservation_unapplied",
+    "d2": "registry.query"
+  },
+  {
+    "id": "AT23",
+    "design": "Unknown original budget survives other account settlements",
+    "quint": "unknownOriginalCanCoexistWithOtherSettlementTest",
+    "lean": "unknown_source_retains_original_hold",
+    "d2": "broker.hold"
+  }
+]

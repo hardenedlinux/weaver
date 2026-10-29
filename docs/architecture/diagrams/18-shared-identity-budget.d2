@@ -1,0 +1,136 @@
+# Core ownership and shared-domain design. Qualification stays in Org.
+...@lib/theme
+title: CANONICAL INTENT / SHARED BUDGET AND HISTORY {
+  class: title
+  near: top-center
+}
+input: SEMANTICS AND INTEGRATION {
+  top: 0
+  left: 0
+  width: 350
+  height: 730
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  aliases: Go / inert correlation inputs\nNew nonce / Authority / reconnect {
+    top: 90
+    left: 25
+    width: 300
+    height: 100
+    class: cloud
+  }
+  semantic: Scheme / admitted intent\nImmutable effect / actual recipient {
+    top: 300
+    left: 25
+    width: 300
+    height: 100
+    class: semantic
+  }
+  domain: Scheme / shared domain meaning\nParent account / history conflict scope {
+    top: 510
+    left: 25
+    width: 300
+    height: 100
+    class: policy
+  }
+}
+ledger: RUST / CANONICAL SHARED LEDGER {
+  top: 0
+  left: 480
+  width: 530
+  height: 730
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  index: Alias index / owner-bound intent\nNew alias does not allocate a message {
+    top: 90
+    left: 40
+    width: 450
+    height: 100
+    class: ledger
+  }
+  first: Canonical message\nOriginal claim / hold / history {
+    top: 300
+    left: 25
+    width: 230
+    height: 100
+    class: ledger
+  }
+  next: Distinct admitted message\nOwn claim / shared constraints {
+    top: 300
+    left: 275
+    width: 230
+    height: 100
+    class: ledger
+  }
+  pool: One budget and history authority domain\nFree / held / charged\nCurrent revision / atomic cost allocation {
+    top: 510
+    left: 40
+    width: 450
+    height: 125
+    class: runtime
+  }
+}
+broker: RUST / FINAL BROKER {
+  top: 0
+  left: 1140
+  width: 370
+  height: 730
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  history: Shared restrictive history\nCurrent source / Cedar permission {
+    top: 90
+    left: 30
+    width: 310
+    height: 100
+    class: policy
+  }
+  guard: Exact canonical claim\nOriginal live stream / bounded offer {
+    top: 300
+    left: 30
+    width: 310
+    height: 100
+    class: runtime
+  }
+  evidence: Outcome / retirement / final cost\nKeep unknown holds / retain charges {
+    top: 510
+    left: 30
+    width: 310
+    height: 125
+    class: unknown
+  }
+}
+quint: QUINT\nAlias bypass / concurrent allocation\nIndependent semantic effect counters {
+  top: 850
+  left: 270
+  width: 420
+  height: 110
+  class: policy
+}
+lean: LEAN\nProduct safety / shared conservation\nImported per-message owner laws {
+  top: 850
+  left: 870
+  width: 420
+  height: 110
+  class: semantic
+}
+input.aliases -> input.semantic: propose input
+input.semantic -> ledger.index: authenticated projection
+input.domain -> ledger.pool: stable shared scope
+ledger.index -> ledger.first
+ledger.index -> ledger.next
+ledger.first -> ledger.pool
+ledger.next -> ledger.pool
+broker.history -> broker.guard: every message
+ledger.pool -> broker.guard: current shared snapshot
+broker.guard -> broker.evidence
+quint -> ledger.index: model identity {
+  style.stroke-dash: 5
+}
+lean -> ledger.pool: preserve capacity {
+  style.stroke-dash: 5
+}

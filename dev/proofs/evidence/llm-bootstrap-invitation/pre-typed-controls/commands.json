@@ -1,0 +1,55 @@
+[
+  {
+    "label": "LlmBootstrapInvitation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmBootstrapInvitation.olean",
+      "proofs/lean/LlmBootstrapInvitation.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmBootstrapInvitation.lean": "80baeb073fc1c410daa5e6c6510834fce29eb21b25df5ccf923a6770f8e31244"
+    },
+    "exit": 0,
+    "seconds": 7.477,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "verify-closure",
+    "args": [
+      "python3",
+      "proofs/evidence/llm-bootstrap-invitation/check-closure.py"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-bootstrap-invitation/check-closure.py": "6f39a3d7f911c95624e9afbc5e6ff5c67b663f49b3badb918e6ec5f74f02dba5"
+    },
+    "exit": 0,
+    "seconds": 0.165,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "controls-0",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmBootstrapInvitation.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(independentAssignmentRequiredTest|selfSelectedKeyRejectedTest|registrationDoesNotIssueTest|duplicateCanonicalLaunchRejectedTest)$",
+      "--out-itf",
+      "proofs/evidence/llm-bootstrap-invitation/itf/{test}-{seq}.itf.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-bootstrap-invitation/controls-0/LlmBootstrapInvitation.qnt": "7bcda12be2d76d488547368f7c8d4229ff43446ef000674567e63b5e706a2e95"
+    },
+    "exit": 124,
+    "seconds": 55.063,
+    "watchdogSeconds": 55
+  }
+]

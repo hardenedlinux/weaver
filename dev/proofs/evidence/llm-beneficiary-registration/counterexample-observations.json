@@ -1,0 +1,94 @@
+{
+  "faults": [
+    {
+      "name": "missingOutcome",
+      "path": "proofs/evidence/llm-beneficiary-registration/itf/missingOutcomeRegistrationCounterexampleTest-1.itf.json",
+      "states": 5,
+      "firstBindings": [
+        0
+      ],
+      "published": [],
+      "actualRegistered": [
+        0
+      ],
+      "pendingIssued": [],
+      "unknownHold12": 2,
+      "providerCalls": 0,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "replacedKey",
+      "path": "proofs/evidence/llm-beneficiary-registration/itf/replacedKeyRegistrationCounterexampleTest-0.itf.json",
+      "states": 7,
+      "firstBindings": [
+        0
+      ],
+      "published": [
+        0
+      ],
+      "actualRegistered": [
+        0
+      ],
+      "pendingIssued": [],
+      "unknownHold12": 2,
+      "providerCalls": 0,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "rollbackFirstBinding",
+      "path": "proofs/evidence/llm-beneficiary-registration/itf/rollbackFirstBindingRegistrationCounterexampleTest-0.itf.json",
+      "states": 7,
+      "firstBindings": [],
+      "published": [
+        0
+      ],
+      "actualRegistered": [
+        0
+      ],
+      "pendingIssued": [],
+      "unknownHold12": 2,
+      "providerCalls": 0,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "sharedIdentity",
+      "path": "proofs/evidence/llm-beneficiary-registration/itf/sharedIdentityRegistrationCounterexampleTest-2.itf.json",
+      "states": 4,
+      "firstBindings": [
+        0
+      ],
+      "published": [],
+      "actualRegistered": [],
+      "pendingIssued": [],
+      "unknownHold12": 2,
+      "providerCalls": 0,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "splitPublication",
+      "path": "proofs/evidence/llm-beneficiary-registration/itf/splitPublicationRegistrationCounterexampleTest-2.itf.json",
+      "states": 5,
+      "firstBindings": [
+        0
+      ],
+      "published": [
+        0
+      ],
+      "actualRegistered": [],
+      "pendingIssued": [],
+      "unknownHold12": 2,
+      "providerCalls": 0,
+      "activeIncarnation": 0
+    }
+  ],
+  "quarantineProbe": {
+    "path": "proofs/evidence/llm-beneficiary-registration/itf/unjoinedImageCannotConsumeTest-1.itf.json",
+    "classification": "Fully defined pre-rejection state; terminal fail has no admitted successor",
+    "parentReadCurrent": true,
+    "publicationJoined": false,
+    "pendingIssued": [],
+    "unknownHold12": 2,
+    "providerCalls": 0,
+    "guardedConsumptionRejected": true
+  }
+}

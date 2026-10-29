@@ -1,0 +1,11 @@
+
+ Error [QNT000]: Couldn't unify set and list
+Trying to unify Set[_t29] and List[Receipt]
+Trying to unify (Set[_t29], (_t29) => bool) => bool and (List[Receipt], ({ id: int | tail__t25 }) => bool) => _t30
+
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/DynamicPairedEvidence.qnt:9:45
+  9:   action appendReceipt(r:Receipt):bool=all {records.forall(old=>old.id!=r.id),records'=records.append(r)}
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

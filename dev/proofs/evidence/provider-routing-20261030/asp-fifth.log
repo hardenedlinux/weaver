@@ -1,0 +1,111 @@
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+warning: method `cancelled` is never used
+  --> crates/server/src/runtime.rs:29:25
+   |
+16 | impl RuntimeOwner {
+   | ----------------- method in this implementation
+...
+29 |     pub(crate) async fn cancelled(&self) {
+   |                         ^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `weaver-server` (lib) generated 1 warning
+warning: `weaver-server` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.54s
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-249f78b1f067a4f2)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-b02c9aab2e06f3ec)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_execution-421d5a33e6f762ee)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.09s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_ledger-a4537a23b17a4ebc)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-055a98cc8f07d28d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_policy-c57516304796a3c3)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.03s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-7dd041c1bd5c2073)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_server-93fa33fbdf194d3e)
+
+running 1 test
+test enforce_asp_rust_gate ... FAILED
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (20658944) panicked at crates/server/src/lib.rs:13:1:
+[RUST-MOD-R008] Warning: Source module is inline
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc.rs:23:1
+fix: move this inline module into its own source file
+line: 23 | /// Generated shared protocol; it carries proposals and observations, never native permits.
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc.rs contains inline module `pb`.
+Contract: Keep reasoning-tree branches file-backed; move inline source modules into external module files.
+
+[RUST-AGENT-CFG-PUBLIC-016] Info: Public function owns a broad linear algorithm surface
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc_config.rs:30:1
+fix: split this broad function into named algorithm steps
+line: 30 | pub async fn run_from_env() -> Result<()> {
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc_config.rs public function `run_from_env` spans 55 lines with 19 statements and a 15-statement block. Criteria: software-criterion/control-flow.broad-linear-phase.
+Contract: Split broad public Rust functions into small named helpers or pipeline steps so agents can edit one algorithm responsibility at a time.
+
+[RUST-AGENT-ASYNC-BLOCKING-030] Info: Async task performs blocking work on the runtime
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc_config.rs:30:1
+fix: move blocking work behind spawn_blocking, block_in_place, or a dedicated synchronous boundary
+line: 30 | pub async fn run_from_env() -> Result<()> {
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc_config.rs async function `run_from_env` performs 1 blocking call(s) without an explicit runtime boundary. Criteria: software-criterion/async.blocking-boundary.
+Contract: Move blocking I/O, sleeps, or CPU-heavy loops behind `spawn_blocking`, a dedicated worker, or an explicit sync boundary so agents preserve Tokio runtime responsiveness.
+
+[RUST-AGENT-OWNER-GRAPH-009] Info: Owner dependency cycle crosses branches
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc.rs:2:1
+fix: break the cycle by moving the shared contract behind one owner boundary
+line: 2 | use crate::{ServerConfig, grpc_output::Output, runtime::RuntimeOwner};
+Help: Owner dependency cycle crosses src/grpc.rs -> src/grpc_output.rs -> src/grpc.rs.
+Contract: Keep owner dependency edges acyclic so agents can follow the reasoning tree without circular repair ownership.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.07s
+
+error: test failed, to rerun pass `-p weaver-server --lib`

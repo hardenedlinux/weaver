@@ -1,0 +1,82 @@
+proofs/lean/LlmSemanticContract.lean:118:3: error: unexpected token 'seal'; expected '_' or identifier
+proofs/lean/LlmSemanticContract.lean:118:2: error: Missing alternative name: Expected `seal`, `admit`, `release`, `appendArguments`, `propose`, `endStream`, `updatePolicyOrHistory`, `restart`, or `lostReplyOrTimeout`
+proofs/lean/LlmSemanticContract.lean:117:2: error: Alternative `seal` has not been provided
+proofs/lean/LlmSemanticContract.lean:117:2: error: Alternative `admit` has not been provided
+proofs/lean/LlmSemanticContract.lean:117:2: error: Alternative `release` has not been provided
+proofs/lean/LlmSemanticContract.lean:117:2: error: Alternative `appendArguments` has not been provided
+proofs/lean/LlmSemanticContract.lean:117:2: error: Alternative `propose` has not been provided
+proofs/lean/LlmSemanticContract.lean:117:2: error: Alternative `endStream` has not been provided
+proofs/lean/LlmSemanticContract.lean:117:2: error: Alternative `updatePolicyOrHistory` has not been provided
+proofs/lean/LlmSemanticContract.lean:117:2: error: Alternative `restart` has not been provided
+proofs/lean/LlmSemanticContract.lean:117:2: error: Alternative `lostReplyOrTimeout` has not been provided
+proofs/lean/LlmSemanticContract.lean:118:9: error(lean.unknownIdentifier): Unknown constant `w`
+proofs/lean/LlmSemanticContract.lean:118:30: error: unexpected token '=>'; expected command
+proofs/lean/LlmSemanticContract.lean:148:3: error: unexpected token 'seal'; expected '_' or identifier
+proofs/lean/LlmSemanticContract.lean:148:2: error: Missing alternative name: Expected `seal`, `admit`, `release`, `appendArguments`, `propose`, `endStream`, `updatePolicyOrHistory`, `restart`, or `lostReplyOrTimeout`
+proofs/lean/LlmSemanticContract.lean:147:2: error: Alternative `seal` has not been provided
+proofs/lean/LlmSemanticContract.lean:147:2: error: Alternative `admit` has not been provided
+proofs/lean/LlmSemanticContract.lean:147:2: error: Alternative `release` has not been provided
+proofs/lean/LlmSemanticContract.lean:147:2: error: Alternative `appendArguments` has not been provided
+proofs/lean/LlmSemanticContract.lean:147:2: error: Alternative `propose` has not been provided
+proofs/lean/LlmSemanticContract.lean:147:2: error: Alternative `endStream` has not been provided
+proofs/lean/LlmSemanticContract.lean:147:2: error: Alternative `updatePolicyOrHistory` has not been provided
+proofs/lean/LlmSemanticContract.lean:147:2: error: Alternative `restart` has not been provided
+proofs/lean/LlmSemanticContract.lean:147:2: error: Alternative `lostReplyOrTimeout` has not been provided
+proofs/lean/LlmSemanticContract.lean:148:9: error(lean.unknownIdentifier): Unknown constant `other`
+proofs/lean/LlmSemanticContract.lean:148:34: error: unexpected token '=>'; expected command
+proofs/lean/LlmSemanticContract.lean:170:103: error: Application type mismatch: The argument
+  winner
+has type
+  used = s.epoch
+but is expected to have type
+  o.winnerCurrent c.root c.attempt
+in the application
+  And.intro winner
+proofs/lean/LlmSemanticContract.lean:170:110: error: Application type mismatch: The argument
+  bound
+has type
+  o.winnerCurrent c.root c.attempt
+but is expected to have type
+  OutputBound c e
+in the application
+  And.intro bound
+proofs/lean/LlmSemanticContract.lean:170:116: error: Application type mismatch: The argument
+  policy
+has type
+  o.outputValid c.semantics e
+but is expected to have type
+  o.releaseValid e s.epoch s.view
+in the application
+  And.intro policy
+proofs/lean/LlmSemanticContract.lean:170:95: error: Application type mismatch: The argument
+  current
+has type
+  s.consumed = true
+but is expected to have type
+  ?m.70 = s.epoch
+in the application
+  And.intro current
+proofs/lean/LlmSemanticContract.lean:178:19: error: Function expected at
+  schema
+but this term has type
+  event.kind ≤ 2
+
+Note: Expected a function because this term is being applied to the argument
+  structured
+'Weaver.LlmSemanticContract.initialized_audit' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmSemanticContract.sealed_wire_preserves_projection' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmSemanticContract.sealed_wire_cannot_be_replaced' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmSemanticContract.consumed_child_cannot_reopen' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.semantic_outputs_keep_original_source' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmSemanticContract.tool_proposal_requires_finished_valid_arguments' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.LlmSemanticContract.tool_fragments_do_not_execute' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmSemanticContract.argument_buffers_are_bounded' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmSemanticContract.release_requires_current_winner_and_policy' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.LlmSemanticContract.complete_document_release_is_not_partial' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmSemanticContract.refines_actual_child_invocation' does not depend on any axioms
+'Weaver.LlmSemanticContract.qualified_child_retains_budget' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSemanticContract.qualified_child_uses_actual_target' does not depend on any axioms

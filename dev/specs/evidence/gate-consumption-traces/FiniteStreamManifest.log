@@ -1,0 +1,23 @@
+'Weaver.FiniteStreamManifest.reachable_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteStreamManifest.shared_budget_covered' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteStreamManifest.admitted_range_has_exact_peer' does not depend on any axioms
+'Weaver.FiniteStreamManifest.retired_message_has_no_live_tail' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteStreamManifest.one_unfinished_message_per_stream' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FiniteStreamManifest.advancing_frontier_retains_slot' does not depend on any axioms
+'Weaver.FiniteStreamManifest.occupied_range_blocks_new_delegation' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.byte_offered_at_most_once' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteStreamManifest.manifest_exact_partition' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteStreamManifest.original_manifest_is_immutable' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.range_admission_is_immutable' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.cursor_never_rewinds' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteStreamManifest.quarantine_is_monotone' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.live_stream_has_one_tail' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteStreamManifest.delegated_range_has_original_admission' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FiniteStreamManifest.original_claim_and_history_survive_trace' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.account_history_survives_trace' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.message_quota_never_released' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteStreamManifest.canonical_body_byte_affinity' depends on axioms: [propext, Classical.choice, Quot.sound]

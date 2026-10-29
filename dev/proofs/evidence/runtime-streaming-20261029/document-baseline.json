@@ -1,0 +1,982 @@
+[
+  {
+    "original": "README.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/README.org",
+    "sha256": "1c0dfd89527ad947012f0eecbed0f726aacaa352ef86698fe988195cabea597b"
+  },
+  {
+    "original": "docs/architecture/07-source-admission-ledger-fencing.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/07-source-admission-ledger-fencing.org",
+    "sha256": "79fbd01d957c61a224a2529b6ac887d1da8dafa532d7b1562a684d6439061b2f"
+  },
+  {
+    "original": "docs/architecture/09-code-as-policy.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/09-code-as-policy.org",
+    "sha256": "40c9d5a5e0f558da52dad9beaa191072b47d45c05b331b0d73ee372f70649400"
+  },
+  {
+    "original": "docs/architecture/23-writer-isolation-settlement-closure.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/23-writer-isolation-settlement-closure.org",
+    "sha256": "b4a7aa8a54a126598695189a5b5747e6693ed004f03e551da6f44bbd3ab27f97"
+  },
+  {
+    "original": "docs/architecture/19-anchor-recovery-and-egress-contract.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/19-anchor-recovery-and-egress-contract.org",
+    "sha256": "cb3c4ad2d81b03227b0e58fa7d3773f83797b381ad4b835204351ab2ec77715a"
+  },
+  {
+    "original": "docs/architecture/16-differentiation-and-reuse.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/16-differentiation-and-reuse.org",
+    "sha256": "df5516732099604c99dff6f8d0c7fe7e911e035cc358c40eeac30bac3113a38e"
+  },
+  {
+    "original": "docs/architecture/02-interfaces-and-policy.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/02-interfaces-and-policy.org",
+    "sha256": "c8801c22839a262410281018eaddb8a9faee101740550b576bb534da34b79005"
+  },
+  {
+    "original": "docs/architecture/18-finite-domains-and-migration.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/18-finite-domains-and-migration.org",
+    "sha256": "6a3adfef0c60e2735a8aa6986e7d223674b340d55653384abbb043d0e313d719"
+  },
+  {
+    "original": "docs/architecture/01-reference-comparison.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/01-reference-comparison.org",
+    "sha256": "19c512756dadc1d5436b3f7b0dea655781df019cfcf598cfbb3c264192f28296"
+  },
+  {
+    "original": "docs/architecture/04-zero-trust-and-review.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/04-zero-trust-and-review.org",
+    "sha256": "32d9dadc1147b9ed3084bb74dda27f5b51f948ee363137ff96f95dc05dfc4ea6"
+  },
+  {
+    "original": "docs/architecture/28-quorum-durable-promises-prefix-recovery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/28-quorum-durable-promises-prefix-recovery.org",
+    "sha256": "6a89f2cc19c9b6408be83242a4aa71a8892abf300275d85b16110a9fb5201235"
+  },
+  {
+    "original": "docs/architecture/20-composed-journal-transport-lifecycle.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/20-composed-journal-transport-lifecycle.org",
+    "sha256": "7fe72814e60273e737c72a1d2249fe8e046fba6965125ace0b01d66a5f591744"
+  },
+  {
+    "original": "docs/architecture/06-go-cloud-native-role.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/06-go-cloud-native-role.org",
+    "sha256": "2aabc040eb3ec079fce2e9e4ce9ce4d130c5d22333dece30857628b0087c6199"
+  },
+  {
+    "original": "docs/architecture/26-anchor-commit-broker-fencing.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/26-anchor-commit-broker-fencing.org",
+    "sha256": "7f56efcf63d07b81d4188802127979eaafbdb35112659c5a85bf8bc98924a6b9"
+  },
+  {
+    "original": "docs/architecture/11-source-to-execution-assurance-review.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/11-source-to-execution-assurance-review.org",
+    "sha256": "c3a03e9e5d3c6bbbb13af75e8b3bc1ab759de6e2ed4a8b907ba2b933d2eae131"
+  },
+  {
+    "original": "docs/architecture/10-zero-trust-assurance.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/10-zero-trust-assurance.org",
+    "sha256": "be3a41d4a55d7c14e954b03a00acf463e20ae62619fcc13b961d0085ef43e6e9"
+  },
+  {
+    "original": "docs/architecture/08-diagram-catalog.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/08-diagram-catalog.org",
+    "sha256": "7600d70e4d3c8c97f11dd38af25a2e116a41588fca1b4e95349dedde93b966b3"
+  },
+  {
+    "original": "docs/architecture/15-authoritative-spent-state.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/15-authoritative-spent-state.org",
+    "sha256": "aba9a895e7ac3076a39516891df2f7ccc08ace78e4bfcf6abb0f97aa21dafbd4"
+  },
+  {
+    "original": "docs/architecture/24-settlement-anchor-recovery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/24-settlement-anchor-recovery.org",
+    "sha256": "efc65ca77bd544de0354bee6e5984161efc14669628c6f598d3fa560308c0eb7"
+  },
+  {
+    "original": "docs/architecture/22-driver-completion-recovery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/22-driver-completion-recovery.org",
+    "sha256": "2b6e331f969fc27109fc5a3b7dac9e71a038467f6d672e2f775ea327d35ea0c7"
+  },
+  {
+    "original": "docs/architecture/13-go-adapter-broker-boundary.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/13-go-adapter-broker-boundary.org",
+    "sha256": "a9a649499f80534629e0509444985aa158cfaf9c20de31d933aebc5189a52268"
+  },
+  {
+    "original": "docs/architecture/25-gate-consumption-persistence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/25-gate-consumption-persistence.org",
+    "sha256": "9be33f85375c1d23886b6622d1f306d9d43fb64cb18939a7f638ec692c7a4e0a"
+  },
+  {
+    "original": "docs/architecture/12-fm1-baseline-and-native-qualification.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/12-fm1-baseline-and-native-qualification.org",
+    "sha256": "0a7bcac1735d2ec27608333554534aa04688bc0d00e3cc935de31051c2d299e2"
+  },
+  {
+    "original": "docs/architecture/27-anchor-configuration-prefix-inheritance.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/27-anchor-configuration-prefix-inheritance.org",
+    "sha256": "92d856ae0e187ac8f0ce8f8daf613744560ebea9251d6a885c807bd0bd6604da"
+  },
+  {
+    "original": "docs/architecture/03-performance-and-validation.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/03-performance-and-validation.org",
+    "sha256": "c57031effeabb6b26ccaf2abe92e55fd5922f5d7c0dbfe3bfd3389c3cad62049"
+  },
+  {
+    "original": "docs/architecture/14-stream-message-authorization.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/14-stream-message-authorization.org",
+    "sha256": "a5b504688ccb0728bd55097f264c836df1a626d25936133e06a2d74c74566ca2"
+  },
+  {
+    "original": "docs/architecture/00-system-design.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/00-system-design.org",
+    "sha256": "6d4a22f0c8cc53abde8ec87261efac817e5c46034d7bf00cea7c3d9c3e537b20"
+  },
+  {
+    "original": "docs/architecture/17-shared-identity-budget-proof.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/17-shared-identity-budget-proof.org",
+    "sha256": "918644dbfc7205e63ee916f821787c312c0d760834d64e233149d439c3148445"
+  },
+  {
+    "original": "docs/architecture/21-finite-stream-manifest-proof.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/21-finite-stream-manifest-proof.org",
+    "sha256": "1e9906f09e3a080b9bdb4b92a35771fc2534e1685ab765f6fcf17c19b8298208"
+  },
+  {
+    "original": "docs/architecture/05-authorization-execution-protocol.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/05-authorization-execution-protocol.org",
+    "sha256": "eff589dd942580dc920bbb3e35c277a1aa423205f39d98d6ea7dccb50d4164d6"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/16-policy-publication/16.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/16-policy-publication/16.03-validation-evidence.org",
+    "sha256": "0257d2a02a14abbb8f56e7706e7ff0dc35b0bfd19b919c7215f7e778bad1fcc3"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/16-policy-publication/16.01-pending-publication-and-effectiveness.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/16-policy-publication/16.01-pending-publication-and-effectiveness.org",
+    "sha256": "9dd24506fbb403d64ba4cae4b4b28a450af3d6d092251d2376861fb0fc16f422"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/16-policy-publication/16.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/16-policy-publication/16.00-index.org",
+    "sha256": "104f1e284bbf53731094e1b790dd1d689b1d759a1d76d8938865b9662fb5bc35"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/10-routing-and-inference/10.01-llm-gateway-and-routing.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/10-routing-and-inference/10.01-llm-gateway-and-routing.org",
+    "sha256": "089fe34ef3c825a635bb27ae672fe7c7d0233cd6954758b12b6498f5f67ca784"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/10-routing-and-inference/10.04-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/10-routing-and-inference/10.04-validation-evidence.org",
+    "sha256": "8be44bc104b08d85079df7897078688fa875dec747a6a74949a8ccf9b1122ffd"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/10-routing-and-inference/10.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/10-routing-and-inference/10.00-index.org",
+    "sha256": "7061f9000408fc8f08d75ff26d54ee14a7d313f1675dd351f91f54de97ef7a64"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/10-routing-and-inference/10.03-differentiation-and-delivery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/10-routing-and-inference/10.03-differentiation-and-delivery.org",
+    "sha256": "b6579d3f82c3c1a15a98a0680745d2476a1a69dde8ccf34f20425efe9640d0e1"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/14-registry-publication/14.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/14-registry-publication/14.00-index.org",
+    "sha256": "a0f36c491f9e1b4e1eb92ad8f98c3fcfa0ac9fdb439aa68ff0da276bb6023d72"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/14-registry-publication/14.01-publication-claim-and-recovery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/14-registry-publication/14.01-publication-claim-and-recovery.org",
+    "sha256": "a012c9e754a57b2e263e2425368d44faf3a6b127a512e71825709d67d3987d46"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/14-registry-publication/14.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/14-registry-publication/14.03-validation-evidence.org",
+    "sha256": "147e97c0842154b7a964c5810c169967530527e31dddf2fccecaec09308503bf"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/13-authoritative-scope/13.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/13-authoritative-scope/13.00-index.org",
+    "sha256": "8f0a0539451a772d3ceeeab66c11709722a9908133a706da037c097150b8c325"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/13-authoritative-scope/13.01-original-task-and-authoritative-scope.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/13-authoritative-scope/13.01-original-task-and-authoritative-scope.org",
+    "sha256": "7a82328bd8dcd5b9efe39bc82ffd8aabec1cc0c3b360e2c74041e5179260ab76"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/13-authoritative-scope/13.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/13-authoritative-scope/13.03-validation-evidence.org",
+    "sha256": "ab2e6618bf8b1866c215fe171cd9e6986e00d51b4884e6ac32b3dfb2b6e3a581"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/19-multi-key-registry/19.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/19-multi-key-registry/19.00-index.org",
+    "sha256": "fac4873c7bb4aadebe2ff7bd8a212b5567d0b43c3d99ece83653b4bc9d8d5e10"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/19-multi-key-registry/19.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/19-multi-key-registry/19.03-proof-and-source-evidence.org",
+    "sha256": "5352333f4cf09ce262e7a51a3e5de1951181de1b053739ebafed6d4b381eb45f"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/19-multi-key-registry/19.01-multi-key-serialization.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/19-multi-key-registry/19.01-multi-key-serialization.org",
+    "sha256": "4d43deef61b05b238897d5301bf216e6da1ce747c74743223c51b398a4eda93f"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/15-recovery-cas/15.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/15-recovery-cas/15.00-index.org",
+    "sha256": "f9e968169a44923c7933468b5caf5a4ba4d4e56e57f82a1cce74e1e3e6fe18d2"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/15-recovery-cas/15.01-authority-read-and-final-cas.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/15-recovery-cas/15.01-authority-read-and-final-cas.org",
+    "sha256": "d3db32e0f239208bd362a6c870b3fc1bd1a41ee2fa93c08c9d30452ab2874005"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/15-recovery-cas/15.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/15-recovery-cas/15.03-validation-evidence.org",
+    "sha256": "ff72041df49eb081c65826c9f11ff8ee2e18e0de62e11a0f62c86d71fc140419"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/18-canonical-registry/18.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/18-canonical-registry/18.00-index.org",
+    "sha256": "27aabfa5871d9883e050045196ab37c4f54f6d9b8b73a741a6fde27821998f63"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/18-canonical-registry/18.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/18-canonical-registry/18.03-validation-evidence.org",
+    "sha256": "bf3b8cf229309813e0d90a2b14c0ff11b9bdb9a25ecb4367faaf260e0ccd82e9"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/18-canonical-registry/18.01-authoritative-registration-and-recovery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/18-canonical-registry/18.01-authoritative-registration-and-recovery.org",
+    "sha256": "ab2037df772286a64f33b29a2e8a416b881c579aabd5c9059fd6d0b541059528"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/12-semantic-contracts/12.01-request-response-and-tool-semantics.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/12-semantic-contracts/12.01-request-response-and-tool-semantics.org",
+    "sha256": "7a4a3cd9d1444dc3e1a817e4e72420e3529196c4b769f418d53d4b8a4d66ba36"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/12-semantic-contracts/12.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/12-semantic-contracts/12.00-index.org",
+    "sha256": "0c38b0c4c0caa8e3d374cb5e4fd7e346a8dfb0d6331bee3c6d5e3a1641e3ce73"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/12-semantic-contracts/12.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/12-semantic-contracts/12.03-validation-evidence.org",
+    "sha256": "e85cc848e4295036d1f0dbb4326b979dac50d46231675e54eccc17fceb12780f"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/17-policy-continuation/17.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/17-policy-continuation/17.03-validation-evidence.org",
+    "sha256": "675683550f2612fa9121121de0b2609884cb2655a516a6b0261e162ceb1e97b4"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/17-policy-continuation/17.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/17-policy-continuation/17.00-index.org",
+    "sha256": "7e24e4f260ca87f788df5c2507c063e33431585bb657731d0a4a97a86203b90e"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/17-policy-continuation/17.01-conflict-resolution-and-safe-continuation.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/17-policy-continuation/17.01-conflict-resolution-and-safe-continuation.org",
+    "sha256": "05a9930695832a8b13b1abc5a27c2125bd75f83e05390bca7df07a7e0eab1145"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/17-policy-continuation/17.04-protocol-admission-and-identity.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/17-policy-continuation/17.04-protocol-admission-and-identity.org",
+    "sha256": "4452195d2fab9efb1e3000f247963125d74821e98ea89bcf447cb2f3a87b4c5e"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/11-attempts-and-failover/11.01-attempts-budget-and-stream-winner.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/11-attempts-and-failover/11.01-attempts-budget-and-stream-winner.org",
+    "sha256": "78be097a1345f748bd3c5cc7f7d2e26ae18911633867d1539750f9f5efedf6d9"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/11-attempts-and-failover/11.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/11-attempts-and-failover/11.03-validation-evidence.org",
+    "sha256": "fe6f5bd676e1ae0c8e0afc346709c1f97d178238a18082aac1d718bccf900fdb"
+  },
+  {
+    "original": "docs/10-19-llm-gateway/11-attempts-and-failover/11.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/10-19-llm-gateway/11-attempts-and-failover/11.00-index.org",
+    "sha256": "f87f7475219f1f0bc0d47c282774a4124c7c4b4e5b95f59778438dd4b179f6e2"
+  },
+  {
+    "original": "docs/architecture/diagrams/assets/icon-sources.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/architecture/diagrams/assets/icon-sources.org",
+    "sha256": "885053846ceacf3b585574a4fa773676d655bfda23545ef5702a6c5175e2cbc8"
+  },
+  {
+    "original": "docs/50-59-research-program/53-native-gerbil-exit/53.03-evidence-and-limits.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/53-native-gerbil-exit/53.03-evidence-and-limits.org",
+    "sha256": "5cbcaf7124545f0840fb8aa1109e31379cfe689e93b6fdf45690d81ee4a8ab06"
+  },
+  {
+    "original": "docs/50-59-research-program/53-native-gerbil-exit/53.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/53-native-gerbil-exit/53.00-index.org",
+    "sha256": "f29e15b28b8da84e033d38c9ac7db50b0ec47ad7e80c281531b8869ada409254"
+  },
+  {
+    "original": "docs/50-59-research-program/53-native-gerbil-exit/53.02-isolated-verifier.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/53-native-gerbil-exit/53.02-isolated-verifier.org",
+    "sha256": "948e1e23ff326f26bd6df390a5fc085bc903229fd15df996620189da14efbd52"
+  },
+  {
+    "original": "docs/50-59-research-program/53-native-gerbil-exit/53.01-diagnosis.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/53-native-gerbil-exit/53.01-diagnosis.org",
+    "sha256": "1ed8e94dc6bbe5bc2f56a5ae412506d940cf812cfb5dd4fe09a96d2b1f8b3776"
+  },
+  {
+    "original": "docs/50-59-research-program/52-committed-profile-binding/52.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/52-committed-profile-binding/52.00-index.org",
+    "sha256": "c41ef18366c2f4cc7c0cb43e95e0112efa30c35738f0af54807c0605ac45d164"
+  },
+  {
+    "original": "docs/50-59-research-program/52-committed-profile-binding/52.02-native-authoring-results.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/52-committed-profile-binding/52.02-native-authoring-results.org",
+    "sha256": "a5328481286ebd401c9a3c5d8e491fa8789b297c10cedbd064bd469a24779655"
+  },
+  {
+    "original": "docs/50-59-research-program/52-committed-profile-binding/52.01-profile-and-node-binding.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/52-committed-profile-binding/52.01-profile-and-node-binding.org",
+    "sha256": "e9544f2f386f1dfd554aba3aa0373dab3820c46496f3822052b5a15c0b8bceae"
+  },
+  {
+    "original": "docs/50-59-research-program/52-committed-profile-binding/52.03-proof-and-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/52-committed-profile-binding/52.03-proof-and-evidence.org",
+    "sha256": "1ee6e44a0eb4a5bd46a4569651730420cd40aec8deff7804356334d03c5e8b1d"
+  },
+  {
+    "original": "docs/50-59-research-program/57-runtime-implementation/57.04-qualified-results.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/57-runtime-implementation/57.04-qualified-results.org",
+    "sha256": "252626406d8e101065894bd2dd9e48bdc179eccaafada617f13dd1c816e3d589"
+  },
+  {
+    "original": "docs/50-59-research-program/57-runtime-implementation/57.02-verification-and-delivery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/57-runtime-implementation/57.02-verification-and-delivery.org",
+    "sha256": "63b32bed782a9cc799a9ceeb31440c07e901b15d4f2fbcb3d9d115f900b9d526"
+  },
+  {
+    "original": "docs/50-59-research-program/57-runtime-implementation/57.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/57-runtime-implementation/57.00-index.org",
+    "sha256": "f2adae98c7474321a347c04d1c086a5d975058074f9a7a80938ed21762dabc4b"
+  },
+  {
+    "original": "docs/50-59-research-program/57-runtime-implementation/57.01-module-and-authority-contract.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/57-runtime-implementation/57.01-module-and-authority-contract.org",
+    "sha256": "f880a12b1694d392514ed6518c2aa3882dcaee3b28a7ccd22fa46c01f6bb2344"
+  },
+  {
+    "original": "docs/50-59-research-program/56-native-image-closure/56.01-symbol-locality-and-native-path.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/56-native-image-closure/56.01-symbol-locality-and-native-path.org",
+    "sha256": "ff2db3365e069ae802da4fb55f489866e1179e36cd28df4caf8721fc68a00139"
+  },
+  {
+    "original": "docs/50-59-research-program/56-native-image-closure/56.03-results-and-reproduction.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/56-native-image-closure/56.03-results-and-reproduction.org",
+    "sha256": "21776db1cbc70b873f0ee44bf72b8f099132ec2297b3f54d24679dbf05cb1f20"
+  },
+  {
+    "original": "docs/50-59-research-program/56-native-image-closure/56.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/56-native-image-closure/56.00-index.org",
+    "sha256": "20b5db3391e0810ee4cdca23a42c0bcbd604ddbb86ed4d71853feb0ca147cf9c"
+  },
+  {
+    "original": "docs/50-59-research-program/56-native-image-closure/56.02-proof-and-source-contract.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/56-native-image-closure/56.02-proof-and-source-contract.org",
+    "sha256": "49aba2dab678eb57ae03c9b2e1eb772e3c0c013095797fab521ace0e77bd82c8"
+  },
+  {
+    "original": "docs/50-59-research-program/54-dynamic-gxi-exit/54.03-evidence-and-limits.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/54-dynamic-gxi-exit/54.03-evidence-and-limits.org",
+    "sha256": "599617bc494446f8e2ba2b54077b2cff5483660d4c1bd9c088add254f4efc3a2"
+  },
+  {
+    "original": "docs/50-59-research-program/54-dynamic-gxi-exit/54.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/54-dynamic-gxi-exit/54.00-index.org",
+    "sha256": "b71776fda25eb4b666c845eac6e2784c3c68e493c6973608ca21bca4be30c2ec"
+  },
+  {
+    "original": "docs/50-59-research-program/54-dynamic-gxi-exit/54.02-runtime-and-proof-contract.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/54-dynamic-gxi-exit/54.02-runtime-and-proof-contract.org",
+    "sha256": "2dc87d6e95bc35aad639109d10572a0cec6b6547e8006fd5381a6a161907957e"
+  },
+  {
+    "original": "docs/50-59-research-program/54-dynamic-gxi-exit/54.01-import-and-image-publication.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/54-dynamic-gxi-exit/54.01-import-and-image-publication.org",
+    "sha256": "41971d50cb05cd69f174498794eeffed39793df63d67fc691f9a9e47125a1365"
+  },
+  {
+    "original": "docs/50-59-research-program/55-dynamic-gxi-paired/55.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/55-dynamic-gxi-paired/55.00-index.org",
+    "sha256": "17b49a48870b0b1deb53bc73dff551b393c060c2a383c1166302a4b17707862a"
+  },
+  {
+    "original": "docs/50-59-research-program/55-dynamic-gxi-paired/55.02-proof-and-execution-contract.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/55-dynamic-gxi-paired/55.02-proof-and-execution-contract.org",
+    "sha256": "ccd36eba504b961841314dbbbfc8c2ca36ed7d1650fabfa1daa812f4928cc708"
+  },
+  {
+    "original": "docs/50-59-research-program/55-dynamic-gxi-paired/55.01-experiment-and-root-cause.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/55-dynamic-gxi-paired/55.01-experiment-and-root-cause.org",
+    "sha256": "9396a2d70f16114f18362c57e8c66cd70ab6afe2f020a104562e9ae054b8faab"
+  },
+  {
+    "original": "docs/50-59-research-program/55-dynamic-gxi-paired/55.03-results-and-reproduction.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/55-dynamic-gxi-paired/55.03-results-and-reproduction.org",
+    "sha256": "6f0bf7c17a213ec4ed42ca9453e6ba4ede1c2df73d5ad605b435c3bc93b8802e"
+  },
+  {
+    "original": "docs/50-59-research-program/50-integrated-audit/50.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/50-integrated-audit/50.00-index.org",
+    "sha256": "1051c518ae21ba5e8439638abfdfd82d7bb4648123a03812190b62ce1092b7b9"
+  },
+  {
+    "original": "docs/50-59-research-program/50-integrated-audit/50.02-research-plan.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/50-integrated-audit/50.02-research-plan.org",
+    "sha256": "daa8bbd74ae945b9d5d3badc41250da0e5ab2fb1e864d1b99aa9be367e3f9f15"
+  },
+  {
+    "original": "docs/50-59-research-program/50-integrated-audit/50.01-integrated-audit.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/50-integrated-audit/50.01-integrated-audit.org",
+    "sha256": "a48ce3df7986d25c7991b5a193e74ecfc5ed01c84bbf792f352cc398895a38d0"
+  },
+  {
+    "original": "docs/50-59-research-program/50-integrated-audit/50.03-audit-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/50-integrated-audit/50.03-audit-evidence.org",
+    "sha256": "7d84f2c0d0d7fb2131e5892ee60c796d05ea986146398657193b6f41117b3405"
+  },
+  {
+    "original": "docs/50-59-research-program/51-qualified-semantic-slice/51.02-configuration-and-authority.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/51-qualified-semantic-slice/51.02-configuration-and-authority.org",
+    "sha256": "61c797f3869a6b5af34e39bfde47285e5c988b15fa3d97d90e563a9ba93294e9"
+  },
+  {
+    "original": "docs/50-59-research-program/51-qualified-semantic-slice/51.01-task-and-capability-profile.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/51-qualified-semantic-slice/51.01-task-and-capability-profile.org",
+    "sha256": "f4b6e5538b57063a6301b53a61af34f3502cc55041829c66738029d4c46d75b1"
+  },
+  {
+    "original": "docs/50-59-research-program/51-qualified-semantic-slice/51.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/51-qualified-semantic-slice/51.00-index.org",
+    "sha256": "9db60eff4929d7c442da276f1a49515ecd7b5bff6fd22dfc336545e2a61556ff"
+  },
+  {
+    "original": "docs/50-59-research-program/51-qualified-semantic-slice/51.03-final-send-and-recovery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/51-qualified-semantic-slice/51.03-final-send-and-recovery.org",
+    "sha256": "4ccc0d3197ca8448095fed670b138358413bc43d81a220bde2647288c43dbc55"
+  },
+  {
+    "original": "docs/50-59-research-program/51-qualified-semantic-slice/51.04-qualification-program.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/51-qualified-semantic-slice/51.04-qualification-program.org",
+    "sha256": "0e24afcaf6589b8333e0dd4ce3e3f18cd984673892fc8e1229027a7959bd3bfd"
+  },
+  {
+    "original": "docs/50-59-research-program/51-qualified-semantic-slice/51.05-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/50-59-research-program/51-qualified-semantic-slice/51.05-proof-and-source-evidence.org",
+    "sha256": "439d4921ba353ded06ec70bbec002098b44e931dd7ba468d93b20231cce8c77d"
+  },
+  {
+    "original": "docs/30-39-assurance/37-broker-consumption-queue/37.01-consumption-to-final-queue.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/37-broker-consumption-queue/37.01-consumption-to-final-queue.org",
+    "sha256": "60295da1b9e9018241ae0162178975bb03dcb610fc57acc4ebcd34bb0026d9f9"
+  },
+  {
+    "original": "docs/30-39-assurance/37-broker-consumption-queue/37.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/37-broker-consumption-queue/37.00-index.org",
+    "sha256": "617490f810c1b477f252d38dc22f11c7233c2d156aad3a05e2a11f93d32a61c8"
+  },
+  {
+    "original": "docs/30-39-assurance/37-broker-consumption-queue/37.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/37-broker-consumption-queue/37.03-validation-evidence.org",
+    "sha256": "3583ecb65ae684cd25959a00a4ffd21fb47030046b987cd498cee53ad18396c9"
+  },
+  {
+    "original": "docs/30-39-assurance/34-floor-decision/34.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/34-floor-decision/34.03-validation-evidence.org",
+    "sha256": "a7290f030d625fa8aafefddf3b3317b982a2f87fce9658455290fd9ecdf1bb0f"
+  },
+  {
+    "original": "docs/30-39-assurance/34-floor-decision/34.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/34-floor-decision/34.00-index.org",
+    "sha256": "8fc6e48262e0d0d2fa71e595f6f650ec82181898ce58547272816398dd338b64"
+  },
+  {
+    "original": "docs/30-39-assurance/34-floor-decision/34.01-intent-decision-context-fence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/34-floor-decision/34.01-intent-decision-context-fence.org",
+    "sha256": "ccd5925d35518864e6ea2d9bda8e5a1c2aaf3331d1893a4f02b4648fe467423b"
+  },
+  {
+    "original": "docs/30-39-assurance/31-protected-signer/31.01-durable-commit-release-recovery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/31-protected-signer/31.01-durable-commit-release-recovery.org",
+    "sha256": "e39eef8bec0994038ddf992a14e839bb04f080f17125553aad997a601263de0e"
+  },
+  {
+    "original": "docs/30-39-assurance/31-protected-signer/31.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/31-protected-signer/31.03-validation-evidence.org",
+    "sha256": "805605c29f5173d6d6790e08dc270faf76b5b8c5a566aa7f471aa3bd5b6cc922"
+  },
+  {
+    "original": "docs/30-39-assurance/33-device-isolation/33.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/33-device-isolation/33.03-validation-evidence.org",
+    "sha256": "8a83a3ec839bae6839f2ef812b8f193c02171ae6dae0f554aa85d3584ad412ff"
+  },
+  {
+    "original": "docs/30-39-assurance/33-device-isolation/33.01-isolation-evidence-floor-recovery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/33-device-isolation/33.01-isolation-evidence-floor-recovery.org",
+    "sha256": "cd06285903563a6e90b29fee3fb3f92d65a8788e167ef749867a21d152bdb78e"
+  },
+  {
+    "original": "docs/30-39-assurance/33-device-isolation/33.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/33-device-isolation/33.00-index.org",
+    "sha256": "92bce28bd134692044f8697b86a07b6629bf88c9737cb10669c0771faec53257"
+  },
+  {
+    "original": "docs/30-39-assurance/36-gateway-head-cas/36.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/36-gateway-head-cas/36.00-index.org",
+    "sha256": "7274915f7128dee756f84bf4ec8f268a67879e2c1d1a560ae327b263bf3859e3"
+  },
+  {
+    "original": "docs/30-39-assurance/36-gateway-head-cas/36.01-authoritative-head-root-cas.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/36-gateway-head-cas/36.01-authoritative-head-root-cas.org",
+    "sha256": "04e7a982a658cf16276254af54c59b9bbc234b59f6962637fc1a39b8e4e04f0c"
+  },
+  {
+    "original": "docs/30-39-assurance/36-gateway-head-cas/36.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/36-gateway-head-cas/36.03-validation-evidence.org",
+    "sha256": "97fc67a33992f7b6e73fc4078ee3b76fc721db53fd652284ae60af322d2cddaa"
+  },
+  {
+    "original": "docs/30-39-assurance/35-intent-continuation/35.01-safe-continuation-recovery-progress.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/35-intent-continuation/35.01-safe-continuation-recovery-progress.org",
+    "sha256": "ade249378bd59151f1292e50e05a5df6743314237e94cc3b3aa534a625be9424"
+  },
+  {
+    "original": "docs/30-39-assurance/35-intent-continuation/35.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/35-intent-continuation/35.03-validation-evidence.org",
+    "sha256": "a40a92f5fd8d7989c635dd765dfa64ecbfa121453db75850fd730b060bbcac00"
+  },
+  {
+    "original": "docs/30-39-assurance/35-intent-continuation/35.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/35-intent-continuation/35.00-index.org",
+    "sha256": "9ab4f2c2445e9df9a90191302993d045e246cc5bdaa03c647481687cfec02071"
+  },
+  {
+    "original": "docs/30-39-assurance/38-logical-range-recovery/38.01-same-range-continuation.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/38-logical-range-recovery/38.01-same-range-continuation.org",
+    "sha256": "620819d30438522d782460c625a369a7dbf184d08e8b50f7009d01b374029d7c"
+  },
+  {
+    "original": "docs/30-39-assurance/38-logical-range-recovery/38.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/38-logical-range-recovery/38.03-validation-evidence.org",
+    "sha256": "f89a81487f401effa238e4f06e1a63577dc45f7cadccd2e4b5694b601cb69e8b"
+  },
+  {
+    "original": "docs/30-39-assurance/38-logical-range-recovery/38.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/38-logical-range-recovery/38.00-index.org",
+    "sha256": "3c465479b7eac63e85f0369a4545ae7183f0de16ca4110a31f5c78693504bf50"
+  },
+  {
+    "original": "docs/30-39-assurance/32-key-boundary/32.03-validation-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/32-key-boundary/32.03-validation-evidence.org",
+    "sha256": "fa2d5710ca5b8019e5e28b3a4f47c8cbdfa51bfb43f7d5f3679d42d1fe951c7c"
+  },
+  {
+    "original": "docs/30-39-assurance/32-key-boundary/32.01-session-revocation-queued-signing.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/32-key-boundary/32.01-session-revocation-queued-signing.org",
+    "sha256": "4993efd28568da1014b1064f060e410b732f9e6412ef255646783fa6a5639ffc"
+  },
+  {
+    "original": "docs/30-39-assurance/32-key-boundary/32.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/30-39-assurance/32-key-boundary/32.00-index.org",
+    "sha256": "ab3c4982f35e4b8d2abcbe3545a178b86848f82f7d4a05cc8bca547d6119374f"
+  },
+  {
+    "original": "docs/20-29-execution-authority/20-result-projection/20.01-committed-result-recovery.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/20-result-projection/20.01-committed-result-recovery.org",
+    "sha256": "5be9c540f3d3eb9b4d6bd74a775ac8e75916366d77982304b90a85d194c6f109"
+  },
+  {
+    "original": "docs/20-29-execution-authority/20-result-projection/20.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/20-result-projection/20.00-index.org",
+    "sha256": "f63192fc3c2286a2cfc5fec970bfed297e33935a42abd21f662d9e61cc046769"
+  },
+  {
+    "original": "docs/20-29-execution-authority/20-result-projection/20.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/20-result-projection/20.03-proof-and-source-evidence.org",
+    "sha256": "b209fee456f4d7527f5982c16a742cc7fd7c4f238427b0515f1e38d422b48a0c"
+  },
+  {
+    "original": "docs/20-29-execution-authority/22-executor-offer/22.01-current-executor-offer.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/22-executor-offer/22.01-current-executor-offer.org",
+    "sha256": "5d841a97ea5e2cf4ae1d41eb461ac1f2190dada56560671e4649b82f87a8151f"
+  },
+  {
+    "original": "docs/20-29-execution-authority/22-executor-offer/22.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/22-executor-offer/22.00-index.org",
+    "sha256": "f5218920f077ff6823e13008ce2288f4cb864b6b3ea88026e427247206b1beb4"
+  },
+  {
+    "original": "docs/20-29-execution-authority/22-executor-offer/22.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/22-executor-offer/22.03-proof-and-source-evidence.org",
+    "sha256": "2fddd96c8fb2f3c24cba3e807959392879b5b9bb4a4b9d3667716142eca0f57e"
+  },
+  {
+    "original": "docs/20-29-execution-authority/27-manifest-switch/27.01-manifest-switch.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/27-manifest-switch/27.01-manifest-switch.org",
+    "sha256": "e8bc25d6d809a224657e824e18ec69dd1981b6f23b946e8f7e53f3ac2ac2a5e3"
+  },
+  {
+    "original": "docs/20-29-execution-authority/27-manifest-switch/27.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/27-manifest-switch/27.00-index.org",
+    "sha256": "e4d17805b6c1cfaeaa624a822ff956fa3cb492038b9d1444ae6e27382c2da2ed"
+  },
+  {
+    "original": "docs/20-29-execution-authority/27-manifest-switch/27.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/27-manifest-switch/27.03-proof-and-source-evidence.org",
+    "sha256": "a24883354254ba84a742523c67ddf3e70b408de7bcdd164084135ac8dd72ea2f"
+  },
+  {
+    "original": "docs/20-29-execution-authority/25-wal-activation/25.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/25-wal-activation/25.03-proof-and-source-evidence.org",
+    "sha256": "c28cf2c778e31a29a03278ebd9fe3c3f15dca1e5be0bfb4d87d3b05fc580b70d"
+  },
+  {
+    "original": "docs/20-29-execution-authority/25-wal-activation/25.01-wal-anchor-activation.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/25-wal-activation/25.01-wal-anchor-activation.org",
+    "sha256": "33ee0b084728b11826667549fbe64546fb4309d2a8c462dfce462e09076c00f2"
+  },
+  {
+    "original": "docs/20-29-execution-authority/25-wal-activation/25.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/25-wal-activation/25.00-index.org",
+    "sha256": "5984dbe82e7f7e15cca50c182327185d1aa9fe8ecc5da0008d9cf20abcc37fa2"
+  },
+  {
+    "original": "docs/20-29-execution-authority/26-checkpoint-truncation/26.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/26-checkpoint-truncation/26.03-proof-and-source-evidence.org",
+    "sha256": "4676f0eadb66fe322254f0e0436aafafcafc7e27d4f1cd8b9a2f8dd540778ceb"
+  },
+  {
+    "original": "docs/20-29-execution-authority/26-checkpoint-truncation/26.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/26-checkpoint-truncation/26.00-index.org",
+    "sha256": "154ccd2948229a298b8df8eaf7bde7857f2c8b12d0dae5dd1ef8ea01321e1b71"
+  },
+  {
+    "original": "docs/20-29-execution-authority/26-checkpoint-truncation/26.01-checkpoint-publication.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/26-checkpoint-truncation/26.01-checkpoint-publication.org",
+    "sha256": "967fed6126a6512cfad477f4752366bd172bf89c55fec1ade7236002e49ae895"
+  },
+  {
+    "original": "docs/20-29-execution-authority/21-join-enqueue/21.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/21-join-enqueue/21.03-proof-and-source-evidence.org",
+    "sha256": "82e8c00f0d3711b613e7f4ff8ee6126ae699172de1d671afada95b7122c4b92b"
+  },
+  {
+    "original": "docs/20-29-execution-authority/21-join-enqueue/21.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/21-join-enqueue/21.00-index.org",
+    "sha256": "97ec1b0283334a377e83b2ce8a88ae01f24699931c335964c77ac7d2a4593f89"
+  },
+  {
+    "original": "docs/20-29-execution-authority/21-join-enqueue/21.01-atomic-join-enqueue.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/21-join-enqueue/21.01-atomic-join-enqueue.org",
+    "sha256": "013a72daf0d5152b230216090e9e2f1fd127fc2266241086736458d3213ddf9f"
+  },
+  {
+    "original": "docs/20-29-execution-authority/28-append-handoff/28.01-append-handoff.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/28-append-handoff/28.01-append-handoff.org",
+    "sha256": "514c3146490dc48f1685261cf07e078c87f0f91e96da2e09a6235302e57159a7"
+  },
+  {
+    "original": "docs/20-29-execution-authority/28-append-handoff/28.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/28-append-handoff/28.00-index.org",
+    "sha256": "488bead479bd3c54200b4c4fe735f4023033fbcfc49eae8aaf2ef1fa36e624df"
+  },
+  {
+    "original": "docs/20-29-execution-authority/28-append-handoff/28.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/28-append-handoff/28.03-proof-and-source-evidence.org",
+    "sha256": "fcc40aff9aa5bd7db78df7715b68953ff112a8cff8123f55197a9922ae050f7f"
+  },
+  {
+    "original": "docs/20-29-execution-authority/29-admission-floor/29.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/29-admission-floor/29.00-index.org",
+    "sha256": "b8019808608674898375c6d69a7645d01ad6b6bd940052b51de279ac6f6e4603"
+  },
+  {
+    "original": "docs/20-29-execution-authority/29-admission-floor/29.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/29-admission-floor/29.03-proof-and-source-evidence.org",
+    "sha256": "3ef16df8f146931f6064e48fd5bc9870d13034ec52fd9c710cbba6e3b60c8bd7"
+  },
+  {
+    "original": "docs/20-29-execution-authority/29-admission-floor/29.01-admission-floor.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/29-admission-floor/29.01-admission-floor.org",
+    "sha256": "4f2bd84c53fa45b9b257fa948bc1a7aa273ba749eb97323c3fc8e6d0482cf728"
+  },
+  {
+    "original": "docs/20-29-execution-authority/24-account-commit/24.01-atomic-account-commit.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/24-account-commit/24.01-atomic-account-commit.org",
+    "sha256": "9948551affeb007055d437deaac12e3814f746a21abd83eb9d0e1b1814dae054"
+  },
+  {
+    "original": "docs/20-29-execution-authority/24-account-commit/24.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/24-account-commit/24.00-index.org",
+    "sha256": "e64fcba883af030ad3560b569db1aa742d670632188815acf527a0ee271b0a28"
+  },
+  {
+    "original": "docs/20-29-execution-authority/24-account-commit/24.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/24-account-commit/24.03-proof-and-source-evidence.org",
+    "sha256": "0de68687a7d25ef833514e0955274a71d5c1a23ae11480d4ac4d387829fbee8d"
+  },
+  {
+    "original": "docs/20-29-execution-authority/23-execution-reconciliation/23.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/23-execution-reconciliation/23.00-index.org",
+    "sha256": "73878f21ba441805abfe48fd335317613da2427c65766d21ce4f1426a4ffcec6"
+  },
+  {
+    "original": "docs/20-29-execution-authority/23-execution-reconciliation/23.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/23-execution-reconciliation/23.03-proof-and-source-evidence.org",
+    "sha256": "26165df8c2aa95a7edfd4f15fe11550ae890497c5bb9b081f73d7c7e2b07fa43"
+  },
+  {
+    "original": "docs/20-29-execution-authority/23-execution-reconciliation/23.01-execution-evidence-chain.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/20-29-execution-authority/23-execution-reconciliation/23.01-execution-evidence-chain.org",
+    "sha256": "c302575eebf238d5a9eafb1c3329d97dc9a139daa917c7b58b234cdb4a8db821"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/44-incarnation-issuance/44.01-incarnation-issuance.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/44-incarnation-issuance/44.01-incarnation-issuance.org",
+    "sha256": "4be1617fed0fa243ca677c4f58df11f3ae1a254155af22e0b9aa8eb64c4711e7"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/44-incarnation-issuance/44.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/44-incarnation-issuance/44.03-proof-and-source-evidence.org",
+    "sha256": "52a13404e86859815ec4b036a81709c150602cd566f53c1aa51cc9e34f8fb88a"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/44-incarnation-issuance/44.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/44-incarnation-issuance/44.00-index.org",
+    "sha256": "5b73b33f19b6f74752a524931ac87e206a47398ab2b3ec04144f6e62ce5f6f04"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/47-enrollment-credential/47.01-enrollment-credential.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/47-enrollment-credential/47.01-enrollment-credential.org",
+    "sha256": "523f6e0f043a34682c34917124424cc385dd65bba572e813e5831fceca4d565a"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/47-enrollment-credential/47.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/47-enrollment-credential/47.03-proof-and-source-evidence.org",
+    "sha256": "ce39b5e87c98a1ab839425739f551f03bd143fe35ea2325ec551a7b386274468"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/47-enrollment-credential/47.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/47-enrollment-credential/47.00-index.org",
+    "sha256": "420843f4dbfa3de75252ef436b2c71882255717689fc303606f8b636b53770c7"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/49-routine-routing-config/49.01-routine-routing-config.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/49-routine-routing-config/49.01-routine-routing-config.org",
+    "sha256": "e688a9b439a54e7e7b32a985fd471ace64b24ffa0f7f606aefec31c07a43b58f"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/49-routine-routing-config/49.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/49-routine-routing-config/49.03-proof-and-source-evidence.org",
+    "sha256": "72aa5e496536a1918fffadfdff5cb79eb72b1ecf0cd272472456ae99b3a4f6a1"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/49-routine-routing-config/49.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/49-routine-routing-config/49.00-index.org",
+    "sha256": "ea2134ab2a42bd8d6ac97d7ebf18c31945eafdef9e634dfe2411945ef156ac44"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/42-custody-publication/42.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/42-custody-publication/42.00-index.org",
+    "sha256": "e737fab279754503ddc047711b8fcd6f840231cb5530802028905809dbb9222a"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/42-custody-publication/42.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/42-custody-publication/42.03-proof-and-source-evidence.org",
+    "sha256": "81086f20cb668dc2d43986367e6b5e2c3616ad5683f66b2fa40e6d0baeb53f03"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/42-custody-publication/42.01-custody-publication.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/42-custody-publication/42.01-custody-publication.org",
+    "sha256": "2f374ee6b73ab3ac85b3cef9a49633db8ff2d443ab2b8f622967c52a9e3b9f66"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/40-source-join/40.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/40-source-join/40.03-proof-and-source-evidence.org",
+    "sha256": "3aafb904c18bf98dabeb79d4941d76dd033fd4102e25a16c2624820ebd129678"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/40-source-join/40.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/40-source-join/40.00-index.org",
+    "sha256": "e360765a55e8bf2a5032716b5080653f38566a78629e0f48f218b3d2bc10152e"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/40-source-join/40.01-source-join.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/40-source-join/40.01-source-join.org",
+    "sha256": "b786648aeb14029b7b294445d601ef3d1dbcae04b85feaa38c17a7bc046994d0"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/43-caller-custody/43.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/43-caller-custody/43.03-proof-and-source-evidence.org",
+    "sha256": "a8160b0bd076998e7537709a75199277784736f197fe5ac35dee70527ede7e88"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/43-caller-custody/43.01-caller-custody.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/43-caller-custody/43.01-caller-custody.org",
+    "sha256": "5ee698228d0aec4b82e9314934afc02ba1b3d2f5c51c68edbbba4ce94ddf40ce"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/43-caller-custody/43.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/43-caller-custody/43.00-index.org",
+    "sha256": "658a7367ad881759d9e70ebbcd1c823895854d745d3e56f98ef142515beabeda"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/41-source-custody/41.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/41-source-custody/41.00-index.org",
+    "sha256": "702538c74ee78f11db40da7bdd31f8e8a0c4be5efe9743e28e562221ef030099"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/41-source-custody/41.01-source-custody.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/41-source-custody/41.01-source-custody.org",
+    "sha256": "591417473de9e09ffa8ecfdcada34016a2114af957793f1dfca194125004c18a"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/41-source-custody/41.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/41-source-custody/41.03-proof-and-source-evidence.org",
+    "sha256": "2a482dd5407b4ede78168fd4b7b15804788ce1a5dc56a70ce8c3715d31640cf6"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/46-beneficiary-registration/46.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/46-beneficiary-registration/46.00-index.org",
+    "sha256": "4991bb234cb25d04152e6e86120b88023ca883f2dfb67d487c154d2cc443b9b4"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/46-beneficiary-registration/46.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/46-beneficiary-registration/46.03-proof-and-source-evidence.org",
+    "sha256": "45968c0dc9b06b5c4e80223c0899723c0ecc3312626cb31cad9b4d9759baf61b"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/46-beneficiary-registration/46.01-beneficiary-registration.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/46-beneficiary-registration/46.01-beneficiary-registration.org",
+    "sha256": "8040a02428d791f2dea5d14fbe9aa8a8734b8bd4b7941c4b902354b151143881"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/45-bootstrap-invitation/45.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/45-bootstrap-invitation/45.00-index.org",
+    "sha256": "bf32a455972416673a582a7ab19cef0206ccebf96e063c1730128340e08137f4"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/45-bootstrap-invitation/45.01-bootstrap-invitation.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/45-bootstrap-invitation/45.01-bootstrap-invitation.org",
+    "sha256": "8895aab9984ed7b9ca152bdf2f3f48261e8c856efe4f94e3f1860fe8d8bde602"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/45-bootstrap-invitation/45.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/45-bootstrap-invitation/45.03-proof-and-source-evidence.org",
+    "sha256": "0157ef47169a5cb69534153f17c94b6ec9f0a8294b4b63443a2f0c9754942956"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/48-subject-authority/48.03-proof-and-source-evidence.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/48-subject-authority/48.03-proof-and-source-evidence.org",
+    "sha256": "487e7aa6671a182132f72cda6112874962184c4e090244fe950f6100267b7b07"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/48-subject-authority/48.01-subject-authority.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/48-subject-authority/48.01-subject-authority.org",
+    "sha256": "c9408a4a9e67efdf41e9f5908ac37281e4d7f80e1c8d792a6e3d178575db0bc1"
+  },
+  {
+    "original": "docs/40-49-admission-coordination/48-subject-authority/48.00-index.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/40-49-admission-coordination/48-subject-authority/48.00-index.org",
+    "sha256": "7586b72d3fdfce5bdebb85192e063ade01c4a6442a0037574e26d3952450bbb1"
+  },
+  {
+    "original": "docs/00-09-navigation/00-index/00.01-document-map.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/00-09-navigation/00-index/00.01-document-map.org",
+    "sha256": "5bfc7b94557b7980cac83000a3ae37384b13f1b5d5539564b1a70277b2e56505"
+  },
+  {
+    "original": "docs/00-09-navigation/00-index/00.02-current-design.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/docs/00-09-navigation/00-index/00.02-current-design.org",
+    "sha256": "4635d280067c5aecadc54b0e97374c9d2b828615a7a96470948243b9fd320451"
+  },
+  {
+    "original": "specs/README.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/README.org",
+    "sha256": "0c4605676c77fac37ef060bbfffbcdd1565229ea4e9b3e0926cb99cc9cce9bf1"
+  },
+  {
+    "original": "specs/evidence/writer-settlement-closure-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/writer-settlement-closure-2026-10-19.org",
+    "sha256": "07167b00ed427dba0f73dad86caca6e14e629c9f4f595d2ef0c640df3747f4c2"
+  },
+  {
+    "original": "specs/evidence/2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/2026-10-19.org",
+    "sha256": "48ae782e667176727f8caa75500fc24033305cd2c210d8253fe6fdddb0746a4a"
+  },
+  {
+    "original": "specs/evidence/finite-domains-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/finite-domains-2026-10-19.org",
+    "sha256": "7057d2e2027cd0ad9badd638b287b1b7d049b377098f4d8bd7c9fd533da8427e"
+  },
+  {
+    "original": "specs/evidence/shared-identity-budget-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/shared-identity-budget-2026-10-19.org",
+    "sha256": "9b2725d15528b8a91716fd6351f14a142906e9c8aa10f0980221c46f8a1a7dd9"
+  },
+  {
+    "original": "specs/evidence/finite-stream-manifest-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/finite-stream-manifest-2026-10-19.org",
+    "sha256": "54fd68867d367cee38cd89aa81b59684c55d842ca2dad076755a2e2560e09c08"
+  },
+  {
+    "original": "specs/evidence/gate-consumption-persistence-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/gate-consumption-persistence-2026-10-19.org",
+    "sha256": "5cb519e7097e3a0dcd76d6b03126a6ff61ee9bb3ddcd5a2951f4324f5c738c2f"
+  },
+  {
+    "original": "specs/evidence/composed-lifecycle-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/composed-lifecycle-2026-10-19.org",
+    "sha256": "142cccd805b9e619c5e041361ca6d3f1e77b595020fecd67614a86d6ad145a53"
+  },
+  {
+    "original": "specs/evidence/driver-completion-recovery-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/driver-completion-recovery-2026-10-19.org",
+    "sha256": "c0259b2bc8cbd67b40520982eb4bc0f88c6aed9c2da6eeeb3cc18d6c617573e4"
+  },
+  {
+    "original": "specs/evidence/anchor-recovery-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/anchor-recovery-2026-10-19.org",
+    "sha256": "bf6f05299b5e6d5c747a88a24d232eb01094b6331038d44c57687ed371ddb71a"
+  },
+  {
+    "original": "specs/evidence/settlement-anchor-recovery-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/settlement-anchor-recovery-2026-10-19.org",
+    "sha256": "26289ccfd78fe19b941b9a679937ab1e66a2541a1fbc2f8dada3f9b2f3ce1d59"
+  },
+  {
+    "original": "specs/evidence/anchor-broker-commit-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/anchor-broker-commit-2026-10-19.org",
+    "sha256": "7e87fc14345f27c3e5b95f2555dad56e55139f195d044b5528b049d999f36a35"
+  },
+  {
+    "original": "specs/evidence/anchor-reconfiguration-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/anchor-reconfiguration-2026-10-19.org",
+    "sha256": "84e48c0ba61cfb7dfbb6eea9366a2749bc15a39f70581f92cf067b158859169d"
+  },
+  {
+    "original": "specs/evidence/quorum-durable-promises-2026-10-19.org",
+    "archived": "dev/proofs/evidence/runtime-streaming-20261029/document-baseline/specs/evidence/quorum-durable-promises-2026-10-19.org",
+    "sha256": "242355a1b4f02151ff184537af6788b5c630fba277147ca7f87cd3b2da88a374"
+  }
+]

@@ -1,0 +1,114 @@
+[
+  {
+    "id": "JE1",
+    "design": "Source commit cannot change execution channels",
+    "quint": "noSendDuringCommitTest",
+    "lean": "admission_source_has_no_send",
+    "d2": "registry.query"
+  },
+  {
+    "id": "JE2",
+    "design": "Queue acceptance has zero provider invocations",
+    "quint": "admissionHasNoProviderInvocationTest",
+    "lean": "enqueue_has_zero_transport_calls",
+    "d2": "broker.claim"
+  },
+  {
+    "id": "JE3",
+    "design": "A newer commit invalidates the earlier join permit",
+    "quint": "caughtUpProjectionStillRejectsOldReceiptTest",
+    "lean": "old_prefix_blocks_enqueue",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "JE4",
+    "design": "New owner cannot use an old generation permit",
+    "quint": "ownerSwitchInvalidatesOldReceiptTest",
+    "lean": "old_owner_blocks_enqueue",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "JE5",
+    "design": "Policy/history change retires an old observation",
+    "quint": "policyChangeInvalidatesReceiptTest",
+    "lean": "old_policy_blocks_enqueue",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "JE6",
+    "design": "Partial join closes actual admission",
+    "quint": "newCommitInvalidatesJoinReceiptTest",
+    "lean": "incomplete_join_blocks_enqueue",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "JE7",
+    "design": "Original canonical slot cannot be replaced",
+    "quint": "restartPreservesQueueSlotTest",
+    "lean": "original_slot_never_replaced",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "JE8",
+    "design": "Fresh key/current permit cannot clone a claimed slot",
+    "quint": "sdkFreshKeyCannotCloneSlotTest",
+    "lean": "occupied_slot_blocks_retry",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "JE9",
+    "design": "Persisted admission has current join and actual Policy",
+    "quint": "finalEnqueueChecksFullCurrentImageTest",
+    "lean": "new_admission_has_current_gate",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "JE10",
+    "design": "Concurrent queue change retires the earlier queue cut",
+    "quint": "oldQueueRevisionCannotReplayTest",
+    "lean": "old_queue_revision_blocks_enqueue",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "JE11",
+    "design": "Enqueue cannot consume the source again",
+    "quint": "finalEnqueueChecksFullCurrentImageTest",
+    "lean": "enqueue_has_no_source_effect",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "JE12",
+    "design": "Original admission projects into initialized broker semantics",
+    "quint": "finalEnqueueChecksFullCurrentImageTest",
+    "lean": "queue_broker_initialized",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "JE13",
+    "design": "Actual broker suffix retains one local invocation per offset",
+    "quint": "sdkRetryCannotRepeatOfferTest",
+    "lean": "actual_broker_suffix_once",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "JE14",
+    "design": "Unknown broker outcome retains its original hold",
+    "quint": "finalQueueDoesNotRefundUnknownTest",
+    "lean": "actual_broker_unknown_stays_held",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "JE15",
+    "design": "Historical lookup cannot replace original operation",
+    "quint": "lostQueueReplyQueriesOriginalTest",
+    "lean": "original_operation_never_replaced",
+    "d2": "protocols.a2a"
+  },
+  {
+    "id": "JE16",
+    "design": "Final admission retains original source spent-state",
+    "quint": "finalQueueDoesNotRefundUnknownTest",
+    "lean": "original_spent_retained",
+    "d2": "registry.origin"
+  }
+]

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-source-custody/check-document-qa.py", line 13, in <module>
+    (out/'document-check.log').write_text(r.stdout+r.stderr);assert r.returncode==0,r.stdout+r.stderr
+                                                                    ^^^^^^^^^^^^^^^
+AssertionError: Traceback (most recent call last):
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-source-custody/check-document-inventory.py", line 9, in <module>
+    target=target.split('::')[0];assert (p.parent/target).exists(),(p,target);nlinks+=1
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~^^
+AssertionError: (PosixPath('/Users/guangtao/ghq/github.com/tao3k/weaver/docs/40-49-admission-coordination/41-source-custody/41.03-proof-and-source-evidence.org'), '../../../proofs/evidence/llm-source-custody/commands.json')
+

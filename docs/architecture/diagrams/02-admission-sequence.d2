@@ -1,0 +1,33 @@
+...@lib/theme
+# W02: selected success schedule; failure and evidence axes are separate views.
+shape: sequence_diagram
+adapter: Protocol adapter
+coord: Rust coordination service
+scheme: Serialized Scheme owner
+issuer: Rust grant authority
+ledger: Durable ledger
+adapter -> coord: Frozen authenticated operation
+coord -> ledger: S1 Prepare holds and pending flow
+ledger -> coord: Durable Prepared and cut V
+coord -> scheme: S2 Authorize exact admitted request
+scheme -> issuer: Trusted source-bound evaluation
+issuer -> issuer: Complete matching witnesses\nError-free execution gate required
+issuer -> scheme: Signed receipt and grant
+scheme -> coord: Bound local lifecycle grant
+coord -> scheme: S3 Reserve local grant once
+scheme -> coord: Local reservation / no effect
+coord -> ledger: Persist exact ConsumePending command
+ledger -> coord: Durable pending acknowledgment
+coord -> scheme: Deliver reservation once
+scheme -> scheme: Validate qualified finite source lease
+scheme -> coord: Configured synchronous delivery callback\nSeparate bounded coordinator task
+coord -> issuer: Consume original grant and exact subject
+issuer -> coord: Authenticated positive consumption
+coord.caveat: "S1-S3 ends with positive consume knowledge, not permission to send.\nContinue at W10. Qualified finite lease; no callback into the blocked Scheme owner."
+# Shared role accents; brand marks are confined to architecture headers.
+adapter.class: cloud
+coord.class: runtime
+scheme.class: semantic
+issuer.class: policy
+ledger.class: ledger
+coord.caveat.class: note

@@ -1,0 +1,18 @@
+CHECK scheme-object-contract PASS
+CHECK native-json-contract PASS
+CHECK native-negative-ceiling PASS
+CHECK native-boolean-ceiling PASS
+CHECK native-string-ceiling PASS
+CHECK native-null-ceiling PASS
+CHECK native-unknown-authority-field PASS
+CHECK native-changed-node PASS
+CHECK native-overflow-ceiling PASS
+CHECK native-empty-targets PASS
+CHECK native-duplicate-targets PASS
+OBSERVATION duplicate-json-contract-accepted decoder-rejected
+NATIVE-AUTHORING-CHECKS-COMPLETE
+*** ERROR IN weaver-native/entry#main -- Wrong number of arguments passed to procedure
+(##load "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.o1")
+--- continuation backtrace:
+[0] ##primordial-exception-handler-hook                                                                                                                                     
+[1] weaver-native/entry#main                                                                                                                                                

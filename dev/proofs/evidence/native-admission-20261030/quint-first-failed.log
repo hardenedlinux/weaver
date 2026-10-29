@@ -1,0 +1,45 @@
+
+  NativeAdmission
+    ok saturatedExecutionStillPublishesTest passed 1 test(s)
+    ok saturatedExecutionStillObservesTest passed 1 test(s)
+    1) disconnectKeepsExecutionCapacityTest failed after 1 test(s)
+    2) agentCannotUsePublicationLaneTest failed after 1 test(s)
+    3) publicationCapacityIsBoundedTest failed after 1 test(s)
+    4) shutdownClosesAllAdmissionTest failed after 1 test(s)
+    ok completedWorkerReturnsCapacityTest passed 1 test(s)
+    ok sharedLaneStarvationCounterexampleTest passed 1 test(s)
+
+  4 passing (58ms)
+  4 failed
+
+  1) disconnectKeepsExecutionCapacityTest:
+       Error [QNT502]: Variable lanes not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/quint/NativeAdmission.qnt:8:17
+        8:   val bounded = lanes.execution.size()<=2 and lanes.publication.size()<=1 and lanes.observation.size()<=2
+                           ^^^^^
+    Use --seed=0x125 --match=disconnectKeepsExecutionCapacityTest to repeat.
+error: Tests failed
+  2) agentCannotUsePublicationLaneTest:
+       Error [QNT502]: Variable lanes not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/quint/NativeAdmission.qnt:8:17
+        8:   val bounded = lanes.execution.size()<=2 and lanes.publication.size()<=1 and lanes.observation.size()<=2
+                           ^^^^^
+    Use --seed=0x125 --match=agentCannotUsePublicationLaneTest to repeat.
+  3) publicationCapacityIsBoundedTest:
+       Error [QNT502]: Variable lanes not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/quint/NativeAdmission.qnt:8:17
+        8:   val bounded = lanes.execution.size()<=2 and lanes.publication.size()<=1 and lanes.observation.size()<=2
+                           ^^^^^
+    Use --seed=0x125 --match=publicationCapacityIsBoundedTest to repeat.
+  4) shutdownClosesAllAdmissionTest:
+       Error [QNT502]: Variable lanes not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/quint/NativeAdmission.qnt:16:41
+        16:   action observe(w:int):bool = all {not(lanes.closing),lanes.observation.size()<2,not(lanes.observation.contains(w)),
+                                                    ^^^^^
+          at observe(2) (/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/quint/NativeAdmission.qnt:32:91)
+    Use --seed=0x125 --match=shutdownClosesAllAdmissionTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 dev/proofs/quint/NativeAdmission.qnt
+

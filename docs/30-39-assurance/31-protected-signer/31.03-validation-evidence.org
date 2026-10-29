@@ -1,0 +1,155 @@
+#+title: Protected Signer Validation Evidence
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS conditional-abstract-checks-passed-native-custody-pending
+
+* Identity, layout and scope
+
+Workspace /Users/guangtao/ghq/github.com/tao3k/weaver, branch main, tracked HEAD
+=4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Documents/formal artifacts remain
+untracked working-tree artifacts. No gateway implementation, dependency-pin
+change, upstream edit, native consensus/signer implementation, commit or push.
+
+[[file:31.01-durable-commit-release-recovery.org][31.01 Design]], [[file:31.02-protected-signer.d2][31.02 D2]] and this receipt use the Johnny Decimal area/category
+layout. [[file:../../00-09-navigation/00-index/00.01-document-map.org][The document map]] identifies both the new locations and historical
+source/evidence paths. Historical files are retained byte-for-byte; this is not
+an unreported migration of the earlier archive. New executable sources are
+[[file:../../../dev/proofs/quint/ProtectedSignerRelease.qnt][dev/proofs/quint/ProtectedSignerRelease.qnt]] and
+[[file:../../../dev/proofs/lean/ProtectedSignerRelease.lean][dev/proofs/lean/ProtectedSignerRelease.lean]]. The requested directory name is
+=qunit=; the actual tool/language is Quint.
+
+[[file:../../../dev/proofs/evidence/protected-signer/source-review.json][Eighteen source blobs]] were rehashed against POO Flow
+=a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. Exact hashes and numbered excerpts
+match the registered source identities. [[file:../../../dev/proofs/evidence/protected-signer/source-boundary-review.log][The bounded source audit]] distinguishes
+pure consumed-state, runtime fsync/lease ownership and assumed fork-free
+publication. It does not qualify a native protected signer or establish
+repository-wide absence of such an implementation.
+
+* Reproduction and completed checks
+
+Run from the workspace root:
+
+#+begin_src sh :eval never
+python3 dev/proofs/check_protected_signer.py
+#+end_src
+
+[[file:../../../dev/proofs/evidence/protected-signer/versions.log][Recorded tools]]: Lean =4.34.1=, arm64 Darwin, Std only; Quint =0.33.0=,
+TypeScript backend. The runner creates a fresh isolated proof directory and
+compiles all thirteen unchanged dependency modules plus the new signer module.
+No dependency toolchain pin is edited. [[file:../../../dev/proofs/evidence/protected-signer/commands.json][Twenty-two command records]] retain exact
+arguments, proof output directory, timings, watchdogs and exits. Compilation and
+typecheck watchdogs are 20 seconds; deterministic routes 55 seconds; sampled
+routes 30 seconds. No limit was widened. Timing is not gateway performance.
+
+| Command | Exit | Seconds | Raw output |
+|---------+------+---------+------------|
+| LogicalMessageAuthority | 0 | 4.526 | [[file:../../../dev/proofs/evidence/protected-signer/LogicalMessageAuthority.log][log]] |
+| SharedMessageBudget | 0 | 0.897 | [[file:../../../dev/proofs/evidence/protected-signer/SharedMessageBudget.log][log]] |
+| FiniteDomainMigration | 0 | 0.787 | [[file:../../../dev/proofs/evidence/protected-signer/FiniteDomainMigration.log][log]] |
+| AnchoredRecoveryAndEgress | 0 | 0.895 | [[file:../../../dev/proofs/evidence/protected-signer/AnchoredRecoveryAndEgress.log][log]] |
+| ComposedGatewayLifecycle | 0 | 0.722 | [[file:../../../dev/proofs/evidence/protected-signer/ComposedGatewayLifecycle.log][log]] |
+| FiniteStreamManifest | 0 | 0.991 | [[file:../../../dev/proofs/evidence/protected-signer/FiniteStreamManifest.log][log]] |
+| DriverCompletionRecovery | 0 | 0.666 | [[file:../../../dev/proofs/evidence/protected-signer/DriverCompletionRecovery.log][log]] |
+| WriterSettlementClosure | 0 | 0.778 | [[file:../../../dev/proofs/evidence/protected-signer/WriterSettlementClosure.log][log]] |
+| SettlementAnchorRecovery | 0 | 0.61 | [[file:../../../dev/proofs/evidence/protected-signer/SettlementAnchorRecovery.log][log]] |
+| GateConsumptionPersistence | 0 | 0.608 | [[file:../../../dev/proofs/evidence/protected-signer/GateConsumptionPersistence.log][log]] |
+| AnchorBrokerCommit | 0 | 0.77 | [[file:../../../dev/proofs/evidence/protected-signer/AnchorBrokerCommit.log][log]] |
+| AnchorReconfiguration | 0 | 0.647 | [[file:../../../dev/proofs/evidence/protected-signer/AnchorReconfiguration.log][log]] |
+| QuorumDurablePromises | 0 | 0.552 | [[file:../../../dev/proofs/evidence/protected-signer/QuorumDurablePromises.log][log]] |
+| ProtectedSignerRelease | 0 | 0.7 | [[file:../../../dev/proofs/evidence/protected-signer/ProtectedSignerRelease.log][log]] |
+| typecheck | 0 | 0.986 | [[file:../../../dev/proofs/evidence/protected-signer/typecheck.log][log]] |
+| tests | 0 | 0.88 | [[file:../../../dev/proofs/evidence/protected-signer/tests.log][log]] |
+| counterexamples | 0 | 0.763 | [[file:../../../dev/proofs/evidence/protected-signer/counterexamples.log][log]] |
+| init | 0 | 0.948 | [[file:../../../dev/proofs/evidence/protected-signer/init.log][log]] |
+| ready | 0 | 0.981 | [[file:../../../dev/proofs/evidence/protected-signer/ready.log][log]] |
+| durable | 0 | 0.897 | [[file:../../../dev/proofs/evidence/protected-signer/durable.log][log]] |
+| signed | 0 | 1.16 | [[file:../../../dev/proofs/evidence/protected-signer/signed.log][log]] |
+| inherited-account-replay | 0 | 5.42 | [[file:../../../dev/proofs/evidence/protected-signer/inherited-account-replay.log][log]] |
+
+Thirty deterministic Quint controls passed: 25 positive/rejection controls and
+five intentional counterexamples. Four initializers (=init=, =ready=, =durable=,
+=signed=) each ran 10 traces of at most 25 steps with seed 73: 40 bounded samples,
+not exhaustive or liveness evidence. The prior forked-root actual duplicate
+account-application counterexample was rerun separately. The new signer model
+does not itself simulate the full account pipeline.
+
+* Counterexample observations
+
+[[file:../../../dev/proofs/evidence/protected-signer/counterexample-observations.json][Decoded observations]] were checked against all five final ITF artifacts.
+Detached CAS, restored raw-key use and checkpoint-based service recovery each
+produce two actually released conflicting equal-length prefixes for signer 0:
+first choice 1 and then choice 2, at the same original root term/revision.
+The early-sign trace emits a statement with no committed row. The cached-read
+trace makes a new epoch qualified without a current qualification epoch; that
+trace proves an eligibility violation, not duplicate account application.
+
+| Excluded rule / artifact | States | Trace |
+|--------------------------+--------+-------|
+| cachedRecoveryQualificationCounterexampleTest-4.itf | 5 | [[file:../../../dev/proofs/evidence/protected-signer/itf/cachedRecoveryQualificationCounterexampleTest-4.itf.json][ITF]] |
+| checkpointRestoresSigningAuthorityCounterexampleTest-3.itf | 12 | [[file:../../../dev/proofs/evidence/protected-signer/itf/checkpointRestoresSigningAuthorityCounterexampleTest-3.itf.json][ITF]] |
+| concurrentDetachedCASCounterexampleTest-0.itf | 11 | [[file:../../../dev/proofs/evidence/protected-signer/itf/concurrentDetachedCASCounterexampleTest-0.itf.json][ITF]] |
+| oldRawKeyAfterRestartCounterexampleTest-2.itf | 9 | [[file:../../../dev/proofs/evidence/protected-signer/itf/oldRawKeyAfterRestartCounterexampleTest-2.itf.json][ITF]] |
+| signBeforeDurableCommitCounterexampleTest-1.itf | 5 | [[file:../../../dev/proofs/evidence/protected-signer/itf/signBeforeDurableCommitCounterexampleTest-1.itf.json][ITF]] |
+
+Unsafe actions are excluded from =step=. Released/delivered observations are a
+test oracle, not a surviving service database from which erased authorization
+can be reconstructed. The safety model excludes rollback of the complete
+protected trust domain and use of accepted raw keys outside the mediated gate.
+Those exclusions are essential deployment premises, with explicit failure traces.
+
+* Lean result and exact abstraction boundary
+
+[[file:../../../dev/proofs/evidence/protected-signer/ProtectedSignerRelease.log][Twelve printed theorem dependency reports]] contain no =sorryAx=, new axioms or
+final compilation errors. Results use no axioms or standard =propext=,
+=Quot.sound= and inherited =Classical.choice=. Checked statements include:
+
+- Every released statement retains a matching immutable protected commit row
+  and a prefix covered by the nonrollback promise history.
+- Equal-position statements released by the same signer cannot conflict.
+- Lost responses and service restart cannot erase committed rows; a new service
+  epoch does not make an old key-service handle current.
+- Delivered statements must have been released already; late delivery creates
+  no new statement. Root publication requires matching delivered quorum evidence.
+- The initialized product refines the earlier promise/configuration/execution
+  product, preserving original burn, dispatch and account-application uniqueness,
+  shared capacity and unknown original reservation retention.
+
+The product models an atomic promise-plus-row decision as an event with exact
+prior/next protected histories. Native CAS, crash durability and cryptographic
+response authenticity are owner contracts, not derived machine-code facts.
+SignerOwner receipt/recovery predicates are distinct from root Store predicates;
+a valid root image alone cannot qualify a signing service. Full source-image
+encoding/signature binding, immutable membership authentication, key custody and
+physical queue/session revocation remain unproved native obligations.
+
+Quint bounds three voters, six IDs and three prefix positions, with term/revision
+inside each candidate cell. Lean uses arbitrary finite structural record
+histories and Nat-indexed requests/voters over the initialized prior model.
+There is no generated equivalence proof between Quint, Lean and a native signer.
+Repeated signatures for the identical prefix are deliberately allowed; no
+exactly-once cryptographic computation is claimed. Sticky unresolved promises
+may block forever. Existing native account/transport assumptions are inherited,
+not discharged by the additional list-prefix proof.
+
+* Diagnostics and documentation verification
+
+Preliminary logs remain under =dev/proofs/evidence/protected-signer/preliminary-*=.
+Draft Lean diagnostics concerned missing implicit root binding, a reserved =id=
+name and constructor-case proof scope. They were corrected before the fresh
+final build. Final passed evidence uses the current final sources, not those
+failed drafts. Previous timeout/failure receipts remain unchanged.
+
+[[file:../../../dev/proofs/evidence/protected-signer/document-check.log][English Org/link and source-register checks]],
+[[file:../../../dev/proofs/evidence/protected-signer/org-export.log][Org export with Babel disabled]],
+[[file:../../../dev/proofs/evidence/protected-signer/diagram-validation.json][all core D2 validations]],
+[[file:../../../dev/proofs/evidence/protected-signer/visual-check.log][rendered SVG inspection]] and
+[[file:../../../dev/proofs/evidence/protected-signer/historical-manifests.log][seven unchanged historical manifests]] are recorded independently. The core
+SVG uses bundled Go/Kubernetes/Rust icons and contains no versions or acceptance
+details. Optional missing htmlize syntax-highlighting diagnostics remain in the
+export log; they do not affect structural export or imply runtime execution.
+
+[[file:../../../dev/proofs/evidence/protected-signer/SHA256SUMS][The byte manifest]] binds the new formal sources, checking runner, unchanged
+formal dependency sources, Johnny Decimal documents/diagram and retained raw
+evidence. Native protected-storage, key/session queue isolation and final broker
+FD acceptance remain pending. No implementation or pin change is claimed.

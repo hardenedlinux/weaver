@@ -1,0 +1,216 @@
+proofs/lean/LlmAdmissionFloor.lean:33:7: error: unexpected token ':'; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+proofs/lean/LlmAdmissionFloor.lean:54:38: error(lean.invalidField): Invalid field `observed`: The environment does not contain `Weaver.LlmAdmissionFloor.State.observed`, so it is not possible to project the field `observed` from an expression
+  s
+of type `State`
+proofs/lean/LlmAdmissionFloor.lean:59:59: error(lean.invalidField): Invalid field `objects`: The environment does not contain `Weaver.LlmAdmissionFloor.State.objects`, so it is not possible to project the field `objects` from an expression
+  s
+of type `State`
+proofs/lean/LlmAdmissionFloor.lean:60:40: error(lean.invalidField): Invalid field `checkpoints`: The environment does not contain `Weaver.LlmAdmissionFloor.State.checkpoints`, so it is not possible to project the field `checkpoints` from an expression
+  s
+of type `State`
+proofs/lean/LlmAdmissionFloor.lean:61:52: error(lean.invalidField): Invalid field `local`: The environment does not contain `Weaver.LlmAdmissionFloor.State.local`, so it is not possible to project the field `local` from an expression
+  s
+of type `State`
+proofs/lean/LlmAdmissionFloor.lean:64:59: error: Invalid `⟨...⟩` notation: The expected type `List Proposal` has more than one constructor
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+proofs/lean/LlmAdmissionFloor.lean:67:5: error(lean.invalidField): Invalid field `active`: The environment does not contain `Weaver.LlmAdmissionFloor.State.active`, so it is not possible to project the field `active` from an expression
+  s
+of type `State`
+proofs/lean/LlmAdmissionFloor.lean:92:42: error: unexpected token 'local'; expected '}'
+proofs/lean/LlmAdmissionFloor.lean:92:48: error: unexpected token ':='; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+proofs/lean/LlmAdmissionFloor.lean:95:48: error: unexpected token ':='; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+proofs/lean/LlmAdmissionFloor.lean:104:43: error: Function expected at
+  Step
+but this term has type
+  ?m.4
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:111:43: error: Function expected at
+  Step
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:128:32: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:133:118: error(lean.unknownIdentifier): Unknown identifier `s.logical`
+proofs/lean/LlmAdmissionFloor.lean:133:128: error(lean.unknownIdentifier): Unknown identifier `t.logical`
+proofs/lean/LlmAdmissionFloor.lean:133:36: error: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:146:66: error(lean.unknownIdentifier): Unknown identifier `s.logical`
+proofs/lean/LlmAdmissionFloor.lean:146:129: error(lean.unknownIdentifier): Unknown identifier `t.logical`
+proofs/lean/LlmAdmissionFloor.lean:145:42: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:154:4: error(lean.unknownIdentifier): Unknown identifier `s.logical.logical.logical.core.authority.writes`
+proofs/lean/LlmAdmissionFloor.lean:152:11: error: Function expected at
+  Run
+but this term has type
+  ?m.3
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:162:4: error(lean.unknownIdentifier): Unknown identifier `s.logical.logical.logical.core.authority.reservations`
+proofs/lean/LlmAdmissionFloor.lean:162:79: error(lean.unknownIdentifier): Unknown identifier `s.logical.logical.logical.core.authority.holds`
+proofs/lean/LlmAdmissionFloor.lean:158:11: error: Function expected at
+  Run
+but this term has type
+  ?m.3
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:165:86: error(lean.unknownIdentifier): Unknown identifier `t.committed`
+proofs/lean/LlmAdmissionFloor.lean:165:100: error(lean.unknownIdentifier): Unknown identifier `s.committed`
+proofs/lean/LlmAdmissionFloor.lean:165:43: error: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:170:87: error(lean.unknownIdentifier): Unknown identifier `s.pending`
+proofs/lean/LlmAdmissionFloor.lean:170:104: error(lean.unknownIdentifier): Unknown identifier `t.pending`
+proofs/lean/LlmAdmissionFloor.lean:170:41: error: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:175:98: error(lean.invalidField): Invalid field `active`: The environment does not contain `Weaver.LlmAdmissionFloor.State.active`, so it is not possible to project the field `active` from an expression
+  s
+of type `State`
+proofs/lean/LlmAdmissionFloor.lean:175:45: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:179:15: error(lean.unknownIdentifier): Unknown identifier `t.committed.length`
+proofs/lean/LlmAdmissionFloor.lean:179:36: error(lean.unknownIdentifier): Unknown identifier `s.committed.length`
+proofs/lean/LlmAdmissionFloor.lean:180:4: error(lean.unknownIdentifier): Unknown identifier `t.logical.logical.logical.core.authority`
+proofs/lean/LlmAdmissionFloor.lean:180:47: error(lean.unknownIdentifier): Unknown identifier `s.logical.logical.logical.core.authority`
+proofs/lean/LlmAdmissionFloor.lean:181:4: error(lean.unknownIdentifier): Unknown identifier `t.logical.logical.logical.core.journal`
+proofs/lean/LlmAdmissionFloor.lean:181:45: error(lean.unknownIdentifier): Unknown identifier `s.logical.logical.logical.core.journal`
+proofs/lean/LlmAdmissionFloor.lean:181:86: error(lean.unknownIdentifier): Unknown identifier `t.active`
+proofs/lean/LlmAdmissionFloor.lean:178:53: error: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:187:15: error(lean.unknownIdentifier): Unknown identifier `t.committed.length`
+proofs/lean/LlmAdmissionFloor.lean:188:57: error(lean.unknownIdentifier): Unknown identifier `o.bodyDurable`
+proofs/lean/LlmAdmissionFloor.lean:188:81: error(lean.unknownIdentifier): Unknown identifier `o.publicationDurable`
+proofs/lean/LlmAdmissionFloor.lean:186:51: error: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:193:79: error(lean.unknownIdentifier): Unknown identifier `s.logical.appendGeneration`
+proofs/lean/LlmAdmissionFloor.lean:193:108: error(lean.unknownIdentifier): Unknown identifier `t.logical.appendGeneration`
+proofs/lean/LlmAdmissionFloor.lean:193:45: error: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:200:86: error(lean.unknownIdentifier): Unknown identifier `s.logical`
+proofs/lean/LlmAdmissionFloor.lean:200:11: error: Function expected at
+  Run
+but this term has type
+  ?m.3
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:204:10: error(lean.unknownIdentifier): Unknown identifier `s.committed`
+proofs/lean/LlmAdmissionFloor.lean:204:33: error(lean.unknownIdentifier): Unknown identifier `s.committed`
+proofs/lean/LlmAdmissionFloor.lean:203:42: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ao
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAdmissionFloor.lean:204:46: error(lean.invalidField): Invalid field notation: Type of
+  r
+is not known; cannot resolve field `proposal`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `LlmAccountCommit.Record.proposal`
+  • `Record.proposal`
+proofs/lean/LlmAdmissionFloor.lean:204:62: error(lean.invalidField): Invalid field notation: Type of
+  other
+is not known; cannot resolve field `proposal`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `LlmAccountCommit.Record.proposal`
+  • `Record.proposal`
+proofs/lean/LlmAdmissionFloor.lean:225:12: error: unexpected token 'local'; expected '}'
+proofs/lean/LlmAdmissionFloor.lean:225:18: error: unexpected token ':='; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+proofs/lean/LlmAdmissionFloor.lean:227:14: error(lean.unknownIdentifier): Unknown constant `committed_operation_unique`
+proofs/lean/LlmAdmissionFloor.lean:228:14: error(lean.unknownIdentifier): Unknown constant `local_restore_preserves_authority`
+'Weaver.LlmAdmissionFloor.initialized_safe' depends on axioms: [sorryAx]
+'Weaver.LlmAdmissionFloor.logical_projection' depends on axioms: [sorryAx]
+'Weaver.LlmAdmissionFloor.actual_handoff_composition' depends on axioms: [sorryAx]
+proofs/lean/LlmAdmissionFloor.lean:232:14: error(lean.unknownIdentifier): Unknown constant `original_reservation_once`
+proofs/lean/LlmAdmissionFloor.lean:233:14: error(lean.unknownIdentifier): Unknown constant `unknown_original_hold_retained`
+proofs/lean/LlmAdmissionFloor.lean:234:14: error(lean.unknownIdentifier): Unknown constant `committed_prefix_retained`
+proofs/lean/LlmAdmissionFloor.lean:235:14: error(lean.unknownIdentifier): Unknown constant `pending_intent_retained`
+'Weaver.LlmAdmissionFloor.active_requires_current_floor' depends on axioms: [sorryAx]
+proofs/lean/LlmAdmissionFloor.lean:237:14: error(lean.unknownIdentifier): Unknown constant `publication_has_no_financial_effect`
+'Weaver.LlmAdmissionFloor.publication_requires_durable_body' depends on axioms: [sorryAx]
+proofs/lean/LlmAdmissionFloor.lean:239:14: error(lean.unknownIdentifier): Unknown constant `guarded_generation_monotone`
+'Weaver.LlmAdmissionFloor.reference_copy_retained' depends on axioms: [sorryAx]

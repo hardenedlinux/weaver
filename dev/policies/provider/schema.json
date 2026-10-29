@@ -1,0 +1,15 @@
+{
+  "Weaver": {
+    "entityTypes": {"Principal":{"shape":{"type":"Record","attributes":{}}},"Target":{"shape":{"type":"Record","attributes":{}}}},
+    "commonTypes": {"ProviderContext":{"type":"Record","attributes":{
+      "family":{"type":"String"},"node":{"type":"String"},"profile":{"type":"String"},"model":{"type":"String"},
+      "endpoint":{"type":"String"},"body_digest":{"type":"String"},"plan_digest":{"type":"String"},
+      "ceiling":{"type":"Long"},"revision":{"type":"Long"},"fence":{"type":"Long"},"sequence":{"type":"Long"},"format":{"type":"String"}
+    }}},
+    "actions": {
+      "admitProvider":{"appliesTo":{"principalTypes":["Principal"],"resourceTypes":["Target"],"context":{"type":"ProviderContext"}}},
+      "invokeProvider":{"appliesTo":{"principalTypes":["Principal"],"resourceTypes":["Target"],"context":{"type":"ProviderContext"}}},
+      "emitProvider":{"appliesTo":{"principalTypes":["Principal"],"resourceTypes":["Target"],"context":{"type":"ProviderContext"}}}
+    }
+  }
+}

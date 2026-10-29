@@ -1,0 +1,128 @@
+#+title: Weaver Custody Publication Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Evidence scope and source correction
+
+The design is recorded in [[file:42.01-custody-publication.org][42.01]]. Actual [[file:../../../proofs/lean/LlmCustodyPublication.lean][Lean]] and [[file:../../../proofs/qunit/LlmCustodyPublication.qnt][Quint]] artifacts extend category 41.
+The [[file:../../../proofs/evidence/llm-custody-publication/source-review.json][source receipts]] and [[file:../../../proofs/evidence/llm-custody-publication/publication-source-audit.json][focused source audit]] are freshly checked against pinned blobs;
+working source identities are checked separately.
+
+A source classification is tightened here: P17 and P22 describe Rust/Marlin runtime
+ownership of append, locking, fsync, leases and replay. The inspected Scheme files
+provide contract/negotiation receipts. They do not themselves demonstrate that a
+native runtime already implements the atomic fence/outcome association. Category
+41 remains a historical sealed artifact; this review supplies the narrower claim.
+
+| Source | Direct reuse | Extension or unproved native boundary |
+|--------+--------------+----------------------------------------|
+| P12 authorized-effect-token | Exact operation/root/context binding | Include canonical original event and current authority parent at actual publication |
+| P13 strict-mediation | Pure spent-nonce/root transition and unknown-observation consumption | Persist authoritative original result; pure returned state is not a publication acknowledgement |
+| P15 effect-host | Local serialized owner/epoch checks and inert reservation boundary | Receipt explicitly says durable? and distributed-authority? are false; add protected publication |
+| P17 store-backend | Typed backend negotiation and runtime handoff ABI contracts | Qualify whole-event persistent append and authenticated prefix recovery in the actual storage runtime |
+| P18 PromotionTransactionRecovery | Atomic request/pre/post and effect observation binding | Bind original floor outcome to its determining journal event |
+| P19 authorized recovery bridge | Source-bound original authority/claim recovery | Recover original outcome through the current authority, not a replacement operation |
+| P20 CommittedEffectApplicationExactlyOnce | Application uniqueness under its trace/runtime-universe premises | No implication of native IO atomicity, storage durability or provider delivery |
+| P22 durable store | Contract receipts for locking, fsync, backfill and replay ownership | Do not mistake runtime capability declarations for a two-store atomic protocol |
+| P31 SessionAttempt Lean | Revision/generation and active-to-pending recovery | Supply protected original checkpoint and persistent publication of custody transitions |
+| P31 SessionAttempt Quint | Existing executable scheduling/recovery controls | Add two staged publication candidates and final-parent races |
+| P33 semantic budget | Deterministic original budget bound | Preserve unknown reservation through original outcome/projection recovery |
+| P33 watchdog | Operational timeout/capacity evidence | Timeout cannot establish no-execution or authorize financial release |
+| P35 context invalidation | Strict authority generation rejects older contexts | Requalify current protected head and actual source/account context at determining CAS |
+| P35 lineage prefix closure | Published context belongs to a committed prefix | Authenticate the current prefix independently of restored projections |
+| P43 session/funs-attempt | Expected-revision transitions, pending reconciliation, exhaustion rejection | Receipt explicitly denies runtime-published?, action-authorized? and durable?; add native atomic publication |
+| P44 session/objects-attempt | Task revision, attempt generation and anchor references | Keep original semantic/recovery binding in journal and replayed projections |
+| C8 BoundOperation | Exact typed operation and effect/state matching | Input equality does not authenticate provenance or currentness |
+| C10 CompoundAuthorization | Required nonempty error-free layer decisions | Runtime still owns atomic execution and authentic input facts |
+| C11 Composition | Evaluation/validation dependency preservation and invalidation | Native codec, current-head read and protected publication refinement remain required |
+
+Nineteen source files are reviewed. Eighteen working copies match pinned reviewed
+bytes; P17 differs only in the two previously recorded import paths. This is not a
+new native ABI qualification. POO Flow and cedar-poo-spec proofs are source reuse
+evidence; the compiled local dependency chain is Weaver's actual model chain.
+
+* Four-artifact mapping
+
+| ID | Lean declaration | Quint control | D2 node | Property and premise |
+|----+------------------+---------------+---------+----------------------|
+| CP1 | custody_projection | stagedIntentHasNoFloorEffectTest | recovery.projection | Only protected publication advances the actual custody machine |
+| CP2 | actual_custody_composition | newWorkerOriginalAppendTest | broker.cas | Finite publication runs extend the initialized actual custody prefix |
+| CP3 | journal_prefix_step | transferPreservesCommittedOutcomeTest | recovery.join | One protected event extends the prior journal |
+| CP4 | journal_prefix_run | lostFloorReplyRetainsOutcomeTest | recovery.join | Arbitrary finite runs retain the committed prefix |
+| CP5 | journal_alignment | restoreCannotEraseOutcomeTest | recovery.fence | Last protected record and authority stay aligned despite arbitrary cache restoration |
+| CP6 | fence_monotone | oldWorkerRejectedAtFreshParentTest | broker.alias | Protected transitions cannot lower the current custody fence |
+| CP7 | outcome_retained | restartRetainsOriginalOutcomeTest | broker.hold | A known original outcome survives later transitions and crashes |
+| CP8 | staging_has_no_authoritative_effect | stagedIntentHasNoFloorEffectTest | recovery.projection | Stage/cache-only events cannot mutate authority or admit a tail |
+| CP9 | publication_checks_current_parent | oldParentRejectedAfterTransferTest | broker.cas | Determining publication repeats current parent and actual custody transition checks |
+| CP10 | unqualified_cannot_publish | exactUntrustedCopyCannotPublishTest | recovery.fence | Restored equal bytes without an authentic current read cannot publish |
+| CP11 | late_ack_cannot_refresh | lateAckCannotRefreshOldCopyTest | protocols.mcp | Historical acknowledgement does not qualify a current permit |
+| CP12 | original_result_unique | committedOperationCannotReadmitTest | broker.alias | Actual floor original-operation uniqueness prevents duplicate admission |
+| CP13 | original_reservation_once | closeAfterOutcomeResolutionTest | registry.query | Safe initialized account prefix preserves at-most-once original reservation application |
+| CP14 | unknown_original_hold_retained | lostTransferReplyRecoveredTest | broker.hold | Unmetered source and authentic original-key binding retain the original unknown hold |
+| CP15 | floor_outcome_atomic | lostFloorReplyRetainsOutcomeTest | broker.cas | Actual floor admission jointly requires current parent/custody/join and publishes its original outcome in that same journal record |
+
+The native publisher is an explicit owner contract. The proof replaces separate
+per-component persistence predicates with one whole-event publication transition;
+it does not prove a disk/consensus implementation of that transition. Protected
+journal rollback is excluded from the model and remains native qualification.
+
+The account theorems require the actual initialized checkpoint/account prefix and
+Safe handoff premise. Unknown-hold preservation additionally quantifies the
+original source/reservation binding for every account-ready path. The finite
+Quint fixture retains its actual pending hold; it does not fabricate a provider
+unknown-usage observation. Local account balances are not substituted by counters.
+
+* Executable negative controls
+
+| Mutation | Checked failure | Evidence boundary |
+|----------+-----------------+-------------------|
+| splitFencePublicationCounterexampleTest | Actual custody transfer changes the fence but no protected record is appended; an early reply points beyond the committed prefix | Demonstrates split acknowledgement/persistence mismatch |
+| splitOutcomePublicationCounterexampleTest | Actual inherited floor append commits but its outcome is absent from the protected journal | Demonstrates the independent floor-writer design being rejected |
+| lostOutcomePublicationCounterexampleTest | Recovery overwrites custody outcome from an older projection while floor/journal retain the result | Does not claim a second floor append occurred |
+| droppedOriginalPublicationCounterexampleTest | Recovered custody loses original intent even though journal retains it | Original binding/recovery violation; no budget refund is applied |
+| untrustedCopyPublicationCounterexampleTest | Restored equal bytes are treated as authenticated current authority without a protected read | Uses a ghost qualification monitor; equality alone is not authenticity |
+| lateAckPublicationCounterexampleTest | Historical acknowledgement is converted into current read qualification | Descriptor/qualification violation, not proof of an external send |
+| oldWorkerPublicationCounterexampleTest | Disabling parent/current custody enforcement permits the inherited actual append under an old worker descriptor | Invokes actual inherited append; protected alignment can still look correct while custody mediation is violated |
+
+The independent ITF decoder checks authority/log differences, actual floor records,
+actual custody fence, retained original hold, and unchanged provider execution.
+The last two qualification mutations use a ghost monitor; no co-rollback detector
+is claimed. All deliberate mutations are excluded from the guarded random step.
+
+* Acceptance and limitations
+
+Run [[file:../../../proofs/check_llm_custody_publication.py][the checker]]; inspect [[file:../../../proofs/evidence/llm-custody-publication/commands.json][command receipts]] and [[file:../../../proofs/evidence/llm-custody-publication/receipt.json][final acceptance receipt]].
+It compiles the local Lean import closure, prints fifteen new declarations,
+typechecks Quint, runs twenty-five new controls and seven exported mutations,
+samples nine recovery initializers and regresses the twenty-three preceding
+custody controls. The raw full-import typecheck exceeded its unchanged watchdog and is retained as
+a timeout. Executed Quint routes use [[file:../../../proofs/evidence/llm-custody-publication/closure-certificate.json][a checked source closure]]: only 308 transitive
+=run= declarations are blanked using official parser source spans. All types,
+actions and helpers retain identical normalized declaration IR; the current
+model and its preceding custody model remain byte-identical, including all
+25 + 23 controls. An independent checker verifies all ten source/core hashes
+and declaration IRs. Those 308 older tests are not claimed rerun here.
+
+The first closure-printing diagnostic did not preserve all declaration IR and
+was rejected. The accepted transformation preserves source bytes outside omitted
+run spans; it ignores only parser node IDs and top-level declaration ordering
+in its comparison. Effect qualifiers remain part of that comparison. Preliminary
+diagnostics are retained separately from acceptance results.
+
+The final leaf-only Lean recheck adds =floor_outcome_atomic= after the complete
+import closure compiled; unchanged dependency receipts are retained and the leaf
+source hash, compiler log and object are refreshed. It changes no transition or
+Quint input.
+
+The Quint boundary begins at the actual prior armed initializer; earlier admission
+is reused. Lean explicitly takes an initialized custody prefix before composing
+original result and budget properties. The compact Quint event projection and
+Lean full-state journal have separate checked properties; no automatic formal
+Quint-to-Lean or model-to-native refinement proof is claimed.
+
+Acceptance also requires independently decoded ITFs, fifteen four-artifact rows,
+English Org links/export, core D2 validation/render inspection, unchanged historical
+byte manifests, unchanged source identities and unchanged dependency pins. Finite
+random exploration is not exhaustive model checking. Availability, recovery
+liveness, source namespace coverage, native anti-rollback, canonical codecs and
+actual IO fault injection remain implementation qualification obligations.

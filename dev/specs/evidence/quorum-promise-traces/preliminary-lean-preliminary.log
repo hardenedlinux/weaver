@@ -1,0 +1,116 @@
+specs/lean/QuorumDurablePromises.lean:75:24: error: Type mismatch
+  voter
+has type
+  List AnchorReconfiguration.Record
+but is expected to have type
+  Nat
+specs/lean/QuorumDurablePromises.lean:76:6: error: Tactic `subst` failed: did not find equation for eliminating 'v'
+
+case pos
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+v before : Nat
+voter : List AnchorReconfiguration.Record
+candidate : Nat
+scope✝ : AnchorReconfiguration.Scope
+revision✝ term✝ : Nat
+current✝ :
+  candidate = s.incarnation before ∧ scope✝ = s.base.scope ∧ revision✝ = s.base.revision ∧ term✝ = s.base.base.term
+member✝ : eligible scope✝ before
+live✝ : s.ready before = true
+notRetired✝ : s.retired before = false
+caughtUp✝ : s.replica before = s.protectedHistory before
+prior : s.protectedHistory before <+: voter
+basePrefix✝ : s.base.history <+: voter
+same : sorry
+⊢ s.protectedHistory v <+:
+    { base := s.base, protectedHistory := update s.protectedHistory before voter,
+          replica := update s.replica before voter, incarnation := s.incarnation, ready := s.ready,
+          retired := s.retired }.protectedHistory
+      v
+specs/lean/QuorumDurablePromises.lean:77:26: error(lean.unknownIdentifier): Unknown constant `List.IsPrefix.refl`
+specs/lean/QuorumDurablePromises.lean:77:4: error: unsolved goals
+case neg
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+v before : Nat
+voter : List AnchorReconfiguration.Record
+candidate : Nat
+scope✝ : AnchorReconfiguration.Scope
+revision✝ term✝ : Nat
+current✝ :
+  candidate = s.incarnation before ∧ scope✝ = s.base.scope ∧ revision✝ = s.base.revision ∧ term✝ = s.base.base.term
+member✝ : eligible scope✝ before
+live✝ : s.ready before = true
+notRetired✝ : s.retired before = false
+caughtUp✝ : s.replica before = s.protectedHistory before
+prior : s.protectedHistory before <+: voter
+basePrefix✝ : s.base.history <+: voter
+same : ¬sorry
+⊢ s.protectedHistory v <+: if v = before then voter else s.protectedHistory v
+specs/lean/QuorumDurablePromises.lean:78:15: error(lean.unknownIdentifier): Unknown constant `List.IsPrefix.refl`
+specs/lean/QuorumDurablePromises.lean:78:15: error(lean.unknownIdentifier): Unknown constant `List.IsPrefix.refl`
+specs/lean/QuorumDurablePromises.lean:78:15: error(lean.unknownIdentifier): Unknown constant `List.IsPrefix.refl`
+specs/lean/QuorumDurablePromises.lean:78:15: error(lean.unknownIdentifier): Unknown constant `List.IsPrefix.refl`
+specs/lean/QuorumDurablePromises.lean:78:15: error(lean.unknownIdentifier): Unknown constant `List.IsPrefix.refl`
+specs/lean/QuorumDurablePromises.lean:77:20: warning: This simp argument is unused:
+  same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [update, List.IsPrefix.refl]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+specs/lean/QuorumDurablePromises.lean:83:27: error(lean.unknownIdentifier): Unknown constant `List.IsPrefix.refl`
+specs/lean/QuorumDurablePromises.lean:115:2: error: Too many variable names provided at alternative `publish`: 4 provided, but 3 expected
+specs/lean/QuorumDurablePromises.lean:116:11: error(lean.unknownIdentifier): Unknown identifier `witness`
+specs/lean/QuorumDurablePromises.lean:116:24: error: Tactic `rcases` failed: `x✝ : ?m.97` is not an inductive datatype
+specs/lean/QuorumDurablePromises.lean:128:38: error: Application type mismatch: The argument
+  event
+has type
+  Publication s next✝
+but is expected to have type
+  AnchorReconfiguration.Step c m p lineage root namespaceId owner projectionStore family store s.base
+    { base := next✝, protectedHistory := s.protectedHistory, replica := s.replica, incarnation := s.incarnation,
+        ready := s.ready, retired := s.retired }.base
+in the application
+  Or.inr event
+'Weaver.QuorumDurablePromises.protected_promises_grow' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.QuorumDurablePromises.run_preserves_promises' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.QuorumDurablePromises.historical_acknowledgement_survives_recovery' depends on axioms: [propext]
+'Weaver.QuorumDurablePromises.same_position_cannot_confirm_conflicting_prefixes' does not depend on any axioms
+'Weaver.QuorumDurablePromises.old_joint_bridge_cannot_fork' does not depend on any axioms
+'Weaver.QuorumDurablePromises.joint_new_bridge_cannot_fork' does not depend on any axioms
+'Weaver.QuorumDurablePromises.published_extension_has_protected_witnesses' depends on axioms: [sorryAx]
+'Weaver.QuorumDurablePromises.restored_old_handle_is_not_current' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.QuorumDurablePromises.initialized_product_refines_execution' depends on axioms: [sorryAx]
+'Weaver.QuorumDurablePromises.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.QuorumDurablePromises.original_budget_remains_conserved' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

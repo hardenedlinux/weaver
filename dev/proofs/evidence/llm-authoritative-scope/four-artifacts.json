@@ -1,0 +1,86 @@
+[
+  {
+    "id": "AS1",
+    "design": "Create-only original authority record",
+    "quint": "originalRecordCannotReplaceTest",
+    "lean": "record_cannot_be_replaced",
+    "d2": "original.claim"
+  },
+  {
+    "id": "AS2",
+    "design": "Same input does not identify a response contract",
+    "quint": "sameInputForeignTaskRejectedTest",
+    "lean": "equal_input_does_not_identify_response_contract",
+    "d2": "original.profile"
+  },
+  {
+    "id": "AS3",
+    "design": "Every scope derives original account identities",
+    "quint": "selfConsistentForgedBudgetRejectedTest",
+    "lean": "all_uses_keep_original_domains",
+    "d2": "scope.derive"
+  },
+  {
+    "id": "AS4",
+    "design": "Check the history account, not execution domain",
+    "quint": "restrictedOriginalHistoryBlocksNewScopeTest",
+    "lean": "restricted_original_history_blocks_use",
+    "d2": "original.domains"
+  },
+  {
+    "id": "AS5",
+    "design": "Preserve admitted response mode",
+    "quint": "downgradedResponseModeRejectedTest",
+    "lean": "all_uses_keep_response_mode",
+    "d2": "output.document"
+  },
+  {
+    "id": "AS6",
+    "design": "Bind actual wire metadata to authoritative task",
+    "quint": "providerConversionNeedsBodyCheckTest",
+    "lean": "actual_wire_keeps_source_context",
+    "d2": "broker.wire"
+  },
+  {
+    "id": "AS7",
+    "design": "Tool proposal obeys original tool/argument contract",
+    "quint": "toolProposalUsesCanonicalSetTest",
+    "lean": "proposal_keeps_source_contract",
+    "d2": "output.proposal"
+  },
+  {
+    "id": "AS8",
+    "design": "Preserve the existing claim",
+    "quint": "forgedOriginalClaimRejectedTest",
+    "lean": "original_claim_stays_unique",
+    "d2": "broker.gate"
+  },
+  {
+    "id": "AS9",
+    "design": "Child maxima fit original source allowance",
+    "quint": "qualifiedNoExecutionKeepsAllowanceTest",
+    "lean": "allocations_fit_source_allowance",
+    "d2": "scope.child"
+  },
+  {
+    "id": "AS10",
+    "design": "Old observation cannot authorize current use",
+    "quint": "rootRepublicationInvalidatesTicketTest",
+    "lean": "stale_image_cannot_be_used",
+    "d2": "scope.snapshot"
+  },
+  {
+    "id": "AS11",
+    "design": "Recovered authority retains original record",
+    "quint": "recoveryCannotReplaceProfileTest",
+    "lean": "uses_keep_registered_record",
+    "d2": "broker.recovery"
+  },
+  {
+    "id": "AS12",
+    "design": "Unknown usage prevents original-root settlement",
+    "quint": "unknownUsageCannotSettleRootTest",
+    "lean": "unknown_usage_blocks_root_settlement",
+    "d2": "output.settlement"
+  }
+]

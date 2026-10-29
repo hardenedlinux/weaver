@@ -1,0 +1,99 @@
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:149:101
+  149:   run fenceCommitReplyLostCanResolveTest = sealed.then(changeLeader).then(fenceRoot).then(dropReply(n.log.filter(e => e.phase == 4).oneOf()))
+                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:116:47
+  116:   action held = granted.then(acknowledgeGrant(n.log.filter(e => e.phase == 1).oneOf()))
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:127:72
+  127:   run lostGrantReplyCannotBeReadBackAsCapTest = granted.then(dropReply(n.log.filter(e => e.phase == 1).oneOf()))
+                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:128:76
+  128:     .then(readCurrent(n.term,n.head,G::g.root,true)).then(acknowledgeGrant(n.log.filter(e => e.phase == 1).oneOf()).fail())
+                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:138:28
+  138:     .then(acknowledgeGrant(n.log.filter(e => e.phase == 1).oneOf()).fail())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:135:18
+  135:     .then(commit(n.proposals.filter(e => e.phase == 2).oneOf(),true,true).fail())
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:118:53
+  118:   action acknowledged = burned.then(acknowledgeBurn(n.log.filter(e => e.phase == 2).oneOf()))
+                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:129:63
+  129:   run lostBurnReplyCannotDispatchTest = burned.then(dropReply(n.log.filter(e => e.phase == 2).oneOf()))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:140:118
+  140:   run lateBurnAckAfterBarrierRejectedTest = burned.then(changeLeader).then(isolateWriter(true)).then(acknowledgeBurn(n.log.filter(e => e.phase == 2).oneOf()).fail())
+                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:159:98
+  159:   run lateOriginalAckMayArriveBeforeBarrierTest = burned.then(changeLeader).then(acknowledgeBurn(n.log.filter(e => e.phase == 2).oneOf()))
+                                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:173:76
+  173:   run twoCertifiedBranchesCounterexampleTest = burned.then(forkCertificate(n.log.filter(e => e.phase == 2).oneOf())).expect(not(prefixSafety))
+                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:177:28
+  177:     .then(acknowledgeGrant(n.log.filter(e => e.phase == 1).oneOf())).then(burn)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:178:27
+  178:     .then(acknowledgeBurn(n.log.filter(e => e.phase == 2).oneOf())).then(dispatch(0)).then(complete(0)).expect(not(G::safety))
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:145:76
+  145:   run committedResultReplyLossDoesNotReapplyTest = archived.then(dropReply(n.log.filter(e => e.phase == 3).oneOf()))
+                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

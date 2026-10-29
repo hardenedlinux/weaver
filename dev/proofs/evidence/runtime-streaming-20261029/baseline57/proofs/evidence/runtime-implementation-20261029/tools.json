@@ -1,0 +1,53 @@
+{
+  "cargo": {
+    "args": [
+      "cargo",
+      "--version"
+    ],
+    "identity": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)",
+    "resolved": "/nix/store/0c2l0fzqh62giv3h1k8za5d6mx3k2va6-rust-stable-1.95.0-1.95.0/bin/cargo"
+  },
+  "rustc": {
+    "args": [
+      "rustc",
+      "--version"
+    ],
+    "identity": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "resolved": "/nix/store/0c2l0fzqh62giv3h1k8za5d6mx3k2va6-rust-stable-1.95.0-1.95.0/bin/rustc"
+  },
+  "go": {
+    "args": [
+      "/nix/store/cr196bvbbai01r0w11p1inkzkdrqdx6y-go-1.25.0/bin/go",
+      "version"
+    ],
+    "identity": "go version go1.25.0 darwin/arm64",
+    "resolved": "/nix/store/cr196bvbbai01r0w11p1inkzkdrqdx6y-go-1.25.0/bin/go"
+  },
+  "sysml": {
+    "args": [
+      "sysml",
+      "-version"
+    ],
+    "identity": "sysml v0.10.1\n  Commit:     1c45b6e1749fc8adc9b82d4af22fbe180b56a0e2\n  Build time: 2026-10-16_02:34:21\n  Go version: go1.25.14",
+    "resolved": "/opt/homebrew/bin/sysml"
+  },
+  "quint": {
+    "args": [
+      "quint",
+      "--version"
+    ],
+    "identity": "0.33.0",
+    "resolved": "/opt/homebrew/bin/quint"
+  },
+  "lean": {
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "--version"
+    ],
+    "identity": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+    "resolved": "/opt/homebrew/bin/elan"
+  }
+}

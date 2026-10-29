@@ -1,0 +1,209 @@
+proofs/lean/LlmMultiKeyRegistry.lean:91:4: error: Too many variable names provided at alternative `register`: 11 provided, but 10 expected
+proofs/lean/LlmMultiKeyRegistry.lean:91:60: error(lean.unknownIdentifier): Unknown identifier `actual`
+proofs/lean/LlmMultiKeyRegistry.lean:92:4: error: Too many variable names provided at alternative `bind`: 11 provided, but 10 expected
+proofs/lean/LlmMultiKeyRegistry.lean:92:56: error(lean.unknownIdentifier): Unknown identifier `actual`
+proofs/lean/LlmMultiKeyRegistry.lean:93:4: error: Too many variable names provided at alternative `consume`: 13 provided, but 12 expected
+proofs/lean/LlmMultiKeyRegistry.lean:93:63: error(lean.unknownIdentifier): Unknown identifier `actual`
+proofs/lean/LlmMultiKeyRegistry.lean:101:2: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case register
+S✝ : Type
+R : Operation → S✝ → S✝ → Prop
+A : Entry → Prop
+limit : Nat
+s : State S✝
+k : LlmCanonicalRegistry.OriginKey
+e : Entry
+known : s.origins k = some e
+r✝ : Request
+e✝ : Entry
+next✝ : S✝
+current✝ : Current s r✝
+command✝ : r✝.operation = Operation.register e✝
+authentic✝ : A e✝
+originFresh✝ : s.origins e✝.registration.origin = none
+familyFresh✝ : s.families e✝.family = none
+claimFresh✝ : s.claims e✝.claim = none
+actual✝ : R (Operation.register e✝) s.source next✝
+⊢ k = e✝.registration.origin → e✝ = e
+proofs/lean/LlmMultiKeyRegistry.lean:110:2: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case bind
+S✝ : Type
+R : Operation → S✝ → S✝ → Prop
+A : Entry → Prop
+limit : Nat
+s : State S✝
+k : LlmCanonicalRegistry.AliasKey
+origin : LlmCanonicalRegistry.OriginKey
+known : s.aliases k = some origin
+r✝ : Request
+a✝ : Alias
+e✝ : Entry
+next✝ : S✝
+current✝ : Current s r✝
+command✝ : r✝.operation = Operation.bind a✝
+registered✝ : s.origins a✝.origin = some e✝
+fresh✝ : s.aliases a✝.key = none
+subject✝ : a✝.key.tenant = a✝.origin.tenant ∧ a✝.key.principal = a✝.origin.principal ∧ a✝.key.issuer = a✝.origin.issuer
+actual✝ : R (Operation.bind a✝) s.source next✝
+⊢ k = a✝.key → a✝.origin = origin
+proofs/lean/LlmMultiKeyRegistry.lean:119:2: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case register
+S✝ : Type
+R : Operation → S✝ → S✝ → Prop
+A : Entry → Prop
+limit : Nat
+s : State S✝
+k : Nat
+origin : LlmCanonicalRegistry.OriginKey
+known : s.families k = some origin
+r✝ : Request
+e✝ : Entry
+next✝ : S✝
+current✝ : Current s r✝
+command✝ : r✝.operation = Operation.register e✝
+authentic✝ : A e✝
+originFresh✝ : s.origins e✝.registration.origin = none
+familyFresh✝ : s.families e✝.family = none
+claimFresh✝ : s.claims e✝.claim = none
+actual✝ : R (Operation.register e✝) s.source next✝
+⊢ k = e✝.family → e✝.registration.origin = origin
+proofs/lean/LlmMultiKeyRegistry.lean:123:2: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case register
+S✝ : Type
+R : Operation → S✝ → S✝ → Prop
+A : Entry → Prop
+limit : Nat
+s : State S✝
+k : Nat
+origin : LlmCanonicalRegistry.OriginKey
+known : s.claims k = some origin
+r✝ : Request
+e✝ : Entry
+next✝ : S✝
+current✝ : Current s r✝
+command✝ : r✝.operation = Operation.register e✝
+authentic✝ : A e✝
+originFresh✝ : s.origins e✝.registration.origin = none
+familyFresh✝ : s.families e✝.family = none
+claimFresh✝ : s.claims e✝.claim = none
+actual✝ : R (Operation.register e✝) s.source next✝
+⊢ k = e✝.claim → e✝.registration.origin = origin
+proofs/lean/LlmMultiKeyRegistry.lean:125:82: error: Application type mismatch: The argument
+  id
+has type
+  ?m.11 → ?m.11
+but is expected to have type
+  Nat
+in the application
+  s.decisions id
+proofs/lean/LlmMultiKeyRegistry.lean:125:109: error: Application type mismatch: The argument
+  id
+has type
+  ?m.16 → ?m.16
+but is expected to have type
+  Nat
+in the application
+  t.decisions id
+proofs/lean/LlmMultiKeyRegistry.lean:127:12: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case register
+S✝ : Type
+R : Operation → S✝ → S✝ → Prop
+A : Entry → Prop
+limit : Nat
+s : State S✝
+r r✝ : Request
+e✝ : Entry
+next✝ : S✝
+known : s.decisions (sorry ()) = some r
+current✝ : r✝ ∈ s.pending ∧ s.decisions r✝.id = none ∧ r✝.parent = s.revision ∧ r✝.fence = s.fence ∧ s.readable = true
+command✝ : r✝.operation = Operation.register e✝
+authentic✝ : A e✝
+originFresh✝ : s.origins e✝.registration.origin = none
+familyFresh✝ : s.families e✝.family = none
+claimFresh✝ : s.claims e✝.claim = none
+actual✝ : R (Operation.register e✝) s.source next✝
+⊢ sorry () = r✝.id → r✝ = r
+proofs/lean/LlmMultiKeyRegistry.lean:127:12: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case bind
+S✝ : Type
+R : Operation → S✝ → S✝ → Prop
+A : Entry → Prop
+limit : Nat
+s : State S✝
+r r✝ : Request
+a✝ : Alias
+e✝ : Entry
+next✝ : S✝
+known : s.decisions (sorry ()) = some r
+current✝ : r✝ ∈ s.pending ∧ s.decisions r✝.id = none ∧ r✝.parent = s.revision ∧ r✝.fence = s.fence ∧ s.readable = true
+command✝ : r✝.operation = Operation.bind a✝
+registered✝ : s.origins a✝.origin = some e✝
+fresh✝ : s.aliases a✝.key = none
+subject✝ : a✝.key.tenant = a✝.origin.tenant ∧ a✝.key.principal = a✝.origin.principal ∧ a✝.key.issuer = a✝.origin.issuer
+actual✝ : R (Operation.bind a✝) s.source next✝
+⊢ sorry () = r✝.id → r✝ = r
+proofs/lean/LlmMultiKeyRegistry.lean:127:12: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case consume
+S✝ : Type
+R : Operation → S✝ → S✝ → Prop
+A : Entry → Prop
+limit : Nat
+s : State S✝
+r r✝ : Request
+a✝ : Alias
+e✝ : Entry
+amount✝ : Nat
+next✝ : S✝
+known : s.decisions (sorry ()) = some r
+current✝ : r✝ ∈ s.pending ∧ s.decisions r✝.id = none ∧ r✝.parent = s.revision ∧ r✝.fence = s.fence ∧ s.readable = true
+command✝ : r✝.operation = Operation.consume a✝ amount✝
+aliasBound✝ : s.aliases a✝.key = some a✝.origin
+registered✝ : s.origins a✝.origin = some e✝
+unspent✝ : s.spent e✝.claim = false
+budget✝ : s.charged + amount✝ ≤ limit
+actual✝ : R (Operation.consume a✝ amount✝) s.source next✝
+⊢ sorry () = r✝.id → r✝ = r
+proofs/lean/LlmMultiKeyRegistry.lean:164:53: error: Application type mismatch: The argument
+  t
+has type
+  ?m.14
+but is expected to have type
+  S
+in the application
+  P t
+'Weaver.LlmMultiKeyRegistry.source_projection' depends on axioms: [sorryAx]
+'Weaver.LlmMultiKeyRegistry.origin_immutable' depends on axioms: [sorryAx]
+'Weaver.LlmMultiKeyRegistry.alias_immutable' depends on axioms: [sorryAx]
+'Weaver.LlmMultiKeyRegistry.family_step_immutable' depends on axioms: [sorryAx]
+'Weaver.LlmMultiKeyRegistry.claim_step_immutable' depends on axioms: [sorryAx]
+'Weaver.LlmMultiKeyRegistry.decision_step_immutable' depends on axioms: [propext, sorryAx]
+'Weaver.LlmMultiKeyRegistry.spent_step_retained' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.unknown_hold_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmMultiKeyRegistry.shared_budget_bound' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.pending_intent_retained' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.stale_owner_blocks_commit' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.stale_parent_blocks_commit' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.lost_reply_blocks_reapply' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.recovery_cannot_replace_source' does not depend on any axioms
+proofs/lean/LlmMultiKeyRegistry.lean:183:14: error(lean.unknownIdentifier): Unknown constant `composition`

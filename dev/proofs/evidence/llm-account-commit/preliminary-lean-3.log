@@ -1,0 +1,42 @@
+proofs/lean/LlmAccountCommit.lean:221:10: error(lean.invalidField): Invalid field notation: Type of
+  tx
+is not known; cannot resolve field `reservation`
+
+Hint: Consider replacing the field projection `.reservation` with a call to the function `Transaction.reservation`.
+proofs/lean/LlmAccountCommit.lean:221:41: error(lean.invalidField): Invalid field notation: Type of
+  tx
+is not known; cannot resolve field `usage`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `BrokerConsumptionQueue.State.usage`
+  • `Transaction.usage`
+  • `LlmAttemptLedger.State.usage`
+  • `LlmExecutionReconciliation.Owner.usage`
+proofs/lean/LlmAccountCommit.lean:221:52: error(lean.invalidField): Invalid field notation: Type of
+  tx
+is not known; cannot resolve field `bound`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Owner.bound`
+  • `Transaction.bound`
+  • `LlmAttemptLedger.Attempt.bound`
+'Weaver.LlmAccountCommit.initialized_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.balance_conserved' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.original_reservation_at_most_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.application_and_reservation_join' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.applications_immutable' depends on axioms: [propext]
+'Weaver.LlmAccountCommit.original_reservation_immutable' depends on axioms: [propext]
+'Weaver.LlmAccountCommit.commit_is_atomic' does not depend on any axioms
+'Weaver.LlmAccountCommit.new_commit_requires_final_source' does not depend on any axioms
+'Weaver.LlmAccountCommit.stale_before_image_blocks_commit' does not depend on any axioms
+'Weaver.LlmAccountCommit.old_worker_blocks_commit' does not depend on any axioms
+'Weaver.LlmAccountCommit.complete_image_before_visibility' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.restore_cannot_rollback_authority' does not depend on any axioms
+'Weaver.LlmAccountCommit.commit_response_loss_preserves_result' does not depend on any axioms
+'Weaver.LlmAccountCommit.account_zero_delta_is_still_consumed' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.actual_reconciliation_has_terminal_and_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.unknown_reconciliation_has_no_account_authority' depends on axioms: [propext]
+'Weaver.LlmAccountCommit.unknown_reservation_hold_is_unchanged' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.journal_revision' depends on axioms: [propext]
+'Weaver.LlmAccountCommit.journal_prefix_retained' depends on axioms: [propext]
+proofs/lean/LlmAccountCommit.lean:248:14: error(lean.unknownIdentifier): Unknown constant `Weaver.LlmAccountCommit.commit_joins_actual_reconciliation`

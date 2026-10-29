@@ -1,0 +1,32 @@
+#+title: Logical Range Recovery Index
+#+language: en
+#+options: toc:2
+
+* Johnny Decimal category
+
+Area =30-39 Assurance=; category =38 Logical range recovery=. This extends
+[[file:../37-broker-consumption-queue/37.00-index.org][37 Broker consumption queue]] by separating immutable logical range identity
+from mutable execution permits. The scope is an AI Agent Gateway software
+execution owner. Hardware isolation is not required.
+
+| ID | Artifact |
+|----+----------|
+| 38.00 | This index |
+| 38.01 | [[file:38.01-same-range-continuation.org][Same-range continuation and evidence contract]] |
+| 38.02 | [[file:38.02-logical-range-recovery.d2][Core D2]] / [[file:38.02-logical-range-recovery.svg][SVG]] |
+| 38.03 | [[file:38.03-validation-evidence.org][Validation evidence and limits]] |
+
+[[file:../../../proofs/lean/LogicalRangeRecovery.lean][Lean]] provides recovery invariants, an initialized data-path projection to
+the preceding queue model, original-obligation composition and a constructive
+conditional progress path. [[file:../../../proofs/qunit/LogicalRangeRecovery.qnt][Quint]] drives actual parent queue invocation and
+receipt transitions under the added logical recovery controls. The design table
+links these declarations to the Org rules and core D2 nodes.
+
+#+begin_src sh :eval never
+python3 proofs/check_logical_range_recovery.py
+python3 proofs/evidence/logical-range-recovery/check-four-artifacts.py
+python3 proofs/evidence/logical-range-recovery/check-counterexample-observations.py
+#+end_src
+
+No Gateway implementation or dependency pin is changed. Earlier sealed categories
+remain historical evidence; the design delta is maintained here.

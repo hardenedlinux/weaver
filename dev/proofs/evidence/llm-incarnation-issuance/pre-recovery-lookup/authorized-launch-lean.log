@@ -1,0 +1,23 @@
+'Weaver.LlmIncarnationIssuance.projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.composition' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.issued_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.issued_was_authorized' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.launch_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.outcome_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.issued_run' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.outcome_run' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.reserved_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.launch_run' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.reserved_run' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.challenge_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.wrong_key_not_possession' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.wrong_session_not_possession' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.stale_epoch_rejected' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.stale_parent_rejected' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.known_outcome_cannot_activate' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.activation_requires_issued_proof' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.activation_from_authorized_launch' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.scope_run' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.original_result_unique' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.original_reservation_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]

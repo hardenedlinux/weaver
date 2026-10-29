@@ -1,0 +1,128 @@
+proofs/lean/LlmIncarnationIssuance.lean:124:31: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case issue
+ao : LlmAccountCommit.Owner
+wo : LlmWalActivation.Owner
+co : LlmCheckpointTruncation.Owner
+ho : LlmAppendHandoff.Owner
+fo : LlmAdmissionFloor.Owner
+jo : LlmSourceJoin.Owner
+semantic : LlmAdmissionFloor.Proposal → LlmAdmissionFloor.Proposal → Prop
+po : LlmCustodyPublication.Owner
+o : Owner
+genesis : LlmAccountCommit.Image
+s : State
+key : Nat
+ticket : Ticket
+known : s.issued key = some ticket
+t✝ : Ticket
+issuer✝ : LlmCallerCustody.Context
+authentic✝ : o.base.authentic issuer✝
+role✝ : issuer✝.recovery = true
+allowed✝ : o.launchAuthorized issuer✝ s.current t✝
+fresh✝ : s.issued t✝.id = none
+launchFresh✝ : s.launches t✝.launch = none
+incFresh✝ : ¬t✝.target.incarnation ∈ s.reserved
+unused✝ : ¬t✝.target.incarnation ∈ s.current.used
+parent✝ : t✝.parent = s.current.logical.journal.length
+previous✝ : t✝.previous = s.current.grant
+scope✝ : LlmCallerCustody.Scope s.current.grant t✝.target
+serial✝ : t✝.target.serial = s.current.grant.serial + 1
+fence✝ : t✝.target.fence = s.current.grant.fence + 1
+challenge✝ : t✝.challenge = s.challenge
+epoch✝ : t✝.epoch = s.epoch
+audience✝ : t✝.audience = t✝.target.domain
+purpose✝ : t✝.purpose = 1
+valid✝ : s.current.now < t✝.target.expires
+durable✝ : o.durable s
+⊢ key = t✝.id → t✝ = ticket
+proofs/lean/LlmIncarnationIssuance.lean:127:31: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case issue
+ao : LlmAccountCommit.Owner
+wo : LlmWalActivation.Owner
+co : LlmCheckpointTruncation.Owner
+ho : LlmAppendHandoff.Owner
+fo : LlmAdmissionFloor.Owner
+jo : LlmSourceJoin.Owner
+semantic : LlmAdmissionFloor.Proposal → LlmAdmissionFloor.Proposal → Prop
+po : LlmCustodyPublication.Owner
+o : Owner
+genesis : LlmAccountCommit.Image
+s : State
+launch key : Nat
+known : s.launches launch = some key
+t✝ : Ticket
+issuer✝ : LlmCallerCustody.Context
+authentic✝ : o.base.authentic issuer✝
+role✝ : issuer✝.recovery = true
+allowed✝ : o.launchAuthorized issuer✝ s.current t✝
+fresh✝ : s.issued t✝.id = none
+launchFresh✝ : s.launches t✝.launch = none
+incFresh✝ : ¬t✝.target.incarnation ∈ s.reserved
+unused✝ : ¬t✝.target.incarnation ∈ s.current.used
+parent✝ : t✝.parent = s.current.logical.journal.length
+previous✝ : t✝.previous = s.current.grant
+scope✝ : LlmCallerCustody.Scope s.current.grant t✝.target
+serial✝ : t✝.target.serial = s.current.grant.serial + 1
+fence✝ : t✝.target.fence = s.current.grant.fence + 1
+challenge✝ : t✝.challenge = s.challenge
+epoch✝ : t✝.epoch = s.epoch
+audience✝ : t✝.audience = t✝.target.domain
+purpose✝ : t✝.purpose = 1
+valid✝ : s.current.now < t✝.target.expires
+durable✝ : o.durable s
+⊢ launch = t✝.launch → t✝.id = key
+proofs/lean/LlmIncarnationIssuance.lean:130:45: error: Tactic `split` failed: Could not split an `if` or `match` expression in the goal
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case activate
+ao : LlmAccountCommit.Owner
+wo : LlmWalActivation.Owner
+co : LlmCheckpointTruncation.Owner
+ho : LlmAppendHandoff.Owner
+fo : LlmAdmissionFloor.Owner
+jo : LlmSourceJoin.Owner
+semantic : LlmAdmissionFloor.Proposal → LlmAdmissionFloor.Proposal → Prop
+po : LlmCustodyPublication.Owner
+o : Owner
+genesis : LlmAccountCommit.Image
+s : State
+key : Nat
+grant : LlmCallerCustody.Capability
+known : s.outcomes key = some grant
+next✝ : LlmCallerCustody.State
+t✝ : Ticket
+c✝ : Bootstrap
+ready✝ :
+  Current s t✝ ∧
+    Possession o t✝ c✝ ∧
+      s.proofs t✝.id = some { ticket := t✝, peer := c✝ } ∧ s.outcomes t✝.id = none ∧ s.seen = some s.revision
+actual✝ : LlmCallerCustody.Step ao wo co ho fo jo semantic po (logicalOwner o.base) genesis s.current next✝
+target✝ : next✝.grant = t✝.target
+changed✝ : ¬t✝.target.incarnation = s.current.grant.incarnation
+durable✝ : o.durable s
+⊢ key = t✝.id → t✝.target = grant
+'Weaver.LlmIncarnationIssuance.projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.composition' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.issued_retained' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmIncarnationIssuance.launch_retained' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmIncarnationIssuance.outcome_retained' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmIncarnationIssuance.issued_run' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmIncarnationIssuance.outcome_run' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmIncarnationIssuance.reserved_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.challenge_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.wrong_key_not_possession' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.wrong_session_not_possession' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.stale_epoch_rejected' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.stale_parent_rejected' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.known_outcome_cannot_activate' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.activation_requires_issued_proof' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.scope_run' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.original_result_unique' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]

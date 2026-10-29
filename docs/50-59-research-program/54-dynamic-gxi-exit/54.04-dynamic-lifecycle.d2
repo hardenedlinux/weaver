@@ -1,0 +1,146 @@
+# Core lifecycle only. Commands, timings and receipts belong to Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / DYNAMIC INTERPRETER / IMPORT BOUNDARY {
+  class: title
+  near: top-center
+}
+source: SCHEME / DEFINING OWNERS {
+  left: 0
+  top: 0
+  width: 370
+  height: 650
+  label.near: top-center
+  style.font-size: 16
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  contract: JSON and parser semantic Contract\nOriginal binding owners and ABI\nRequired initializer closure {
+    left: 20
+    top: 85
+    width: 330
+    height: 115
+    label.near: center-center
+    class: semantic
+  }
+  closure: Narrow I/O to defining owners\nPack admitted pure dynamic bodies\nPreserve independent linker entries {
+    left: 20
+    top: 270
+    width: 330
+    height: 115
+    label.near: center-center
+    class: cloud
+  }
+  image: Coherent native source rebuild\nShared images / distinct lazy modules\nInstalled ordinary gxi {
+    left: 20
+    top: 455
+    width: 330
+    height: 115
+    label.near: center-center
+    class: runtime
+  }
+}
+lifecycle: GXI / DYNAMIC EXECUTION {
+  left: 460
+  top: 0
+  width: 370
+  height: 650
+  label.near: top-center
+  style.font-size: 16
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  checks: Original expander and module registry\nResolve admitted defining owners\nDynamically load native bodies {
+    left: 20
+    top: 85
+    width: 330
+    height: 115
+    label.near: center-center
+    class: semantic
+  }
+  return: Original Contract assertions\nDecode JSON / observe modules\nAcquire owned dynamic canary {
+    left: 20
+    top: 270
+    width: 330
+    height: 115
+    label.near: center-center
+    class: runtime
+  }
+  exit: Normal return / reject late initialization\nClose every reference / run destructors\nRelease image after its final close {
+    left: 20
+    top: 455
+    width: 330
+    height: 115
+    label.near: center-center
+    class: policy
+  }
+}
+authority: GATEWAY / EFFECT AUTHORITY {
+  left: 920
+  top: 0
+  width: 370
+  height: 650
+  label.near: top-center
+  style.font-size: 16
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  evidence: Native bodies / required initializers\nSource-bound lifecycle evidence\nNo execution permission minted {
+    left: 20
+    top: 85
+    width: 330
+    height: 115
+    label.near: center-center
+    class: ledger
+  }
+  go: Go cloud native control\nPublish typed proposals\nPreserve task and reservation {
+    left: 20
+    top: 270
+    width: 330
+    height: 115
+    label.near: center-center
+    class: cloud
+  }
+  broker: Rust final broker and executor\nCurrent Cedar Policy / history join\nFenced actual provider dispatch {
+    left: 20
+    top: 455
+    width: 330
+    height: 115
+    label.near: center-center
+    class: runtime
+  }
+}
+quint: QUINT / EXECUTABLE COUNTEREXAMPLES\nBindings / late initialization / shared references {
+  left: 50
+  top: 740
+  width: 575
+  height: 90
+  class: policy
+}
+lean: LEAN / COMPOSITION\nPreserved bindings / image custody / actual Policy guard {
+  left: 740
+  top: 740
+  width: 575
+  height: 90
+  class: semantic
+}
+authority.goBrand: "" {
+  shape: image
+  icon: ../../architecture/diagrams/assets/go.svg
+  top: 246
+  left: 310
+  width: 35
+  height: 20
+}
+authority.rustBrand: "" {
+  shape: image
+  icon: ../../architecture/diagrams/assets/rust.svg
+  top: 418
+  left: 312
+  width: 28
+  height: 28
+}
+source.contract -> source.closure
+source.closure -> source.image
+source.image -> lifecycle.checks
+lifecycle.checks -> lifecycle.return
+lifecycle.return -> lifecycle.exit
+lifecycle.exit -> authority.evidence: Assurance only
+authority.go -> authority.broker: Canonical proposal
+authority.evidence -> authority.broker: Evidence / never a grant { style.stroke-dash: 4 }

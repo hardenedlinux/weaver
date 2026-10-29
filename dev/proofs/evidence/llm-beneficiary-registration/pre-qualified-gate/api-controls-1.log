@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-1","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok sharedIdentityCannotRegisterKeyTest passed 1 test(s)
+    ok forwardedBearerWithOwnKeyRejectedTest passed 1 test(s)
+    ok entitlementProofRequiredTest passed 1 test(s)
+
+  3 passing (896ms)
+@@DONE {"label":"api-controls-1","passed":["sharedIdentityCannotRegisterKeyTest","forwardedBearerWithOwnKeyRejectedTest","entitlementProofRequiredTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

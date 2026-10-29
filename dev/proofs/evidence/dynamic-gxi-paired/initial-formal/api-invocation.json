@@ -1,0 +1,14 @@
+{
+  "args": [
+    "/opt/homebrew/opt/node/bin/node",
+    "proofs/evidence/dynamic-gxi-paired/run-quint.cjs"
+  ],
+  "exit": 0,
+  "inputs": {
+    "proofs/qunit/DynamicPairedEvidence.qnt": "a4ccc2118b5053eb461dc22ff88570f55ac1593e1566bef00488d4c0a554b9fe",
+    "proofs/evidence/dynamic-gxi-paired/run-quint.cjs": "67d3bf230fc5e6842a1f855366e4db42fdcf4ea89be5aaa0548721616d5bc43e",
+    "proofs/check_routine_config_api.py": "d61834946240f0d37a7daafc66fbbd2a31a9387e255dcb13d227d9a14295022d"
+  },
+  "officialPipeline": "load -> parse -> typecheck -> runTests; new Evaluator per group",
+  "expectedControls": 12
+}

@@ -1,0 +1,40 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":1,"sourceSha256":"a4ccc2118b5053eb461dc22ff88570f55ac1593e1566bef00488d4c0a554b9fe"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"f0a660aa7592c56e0396fb620fdc69a29aa8c79e9c158a834589343b39b809ee"}
+@@START {"label":"api-controls-0","limit":20}
+
+  DynamicPairedEvidence
+    ok failedFirstIsRetainedTest passed 1 test(s)
+    ok originalDeadlineTest passed 1 test(s)
+    ok exactlyAtDeadlineTest passed 1 test(s)
+
+  3 passing (16ms)
+@@DONE {"label":"api-controls-0","passed":["failedFirstIsRetainedTest","originalDeadlineTest","exactlyAtDeadlineTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  DynamicPairedEvidence
+    ok liveResourceBlocksPassTest passed 1 test(s)
+    ok markerAloneBlocksPassTest passed 1 test(s)
+    ok duplicateSampleRejectedTest passed 1 test(s)
+
+  3 passing (4ms)
+@@DONE {"label":"api-controls-1","passed":["liveResourceBlocksPassTest","markerAloneBlocksPassTest","duplicateSampleRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  DynamicPairedEvidence
+    ok freshInodeIsNotHostColdTest passed 1 test(s)
+    ok changedObjectsRejectPairTest passed 1 test(s)
+    ok changedCompilerRejectPairTest passed 1 test(s)
+
+  3 passing (3ms)
+@@DONE {"label":"api-controls-2","passed":["freshInodeIsNotHostColdTest","changedObjectsRejectPairTest","changedCompilerRejectPairTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  DynamicPairedEvidence
+    ok overwriteFailureCounterexampleTest passed 1 test(s)
+    ok discardColdFailureCounterexampleTest passed 1 test(s)
+    ok fewerImagesCanStillBeLateTest passed 1 test(s)
+
+  3 passing (4ms)
+@@DONE {"label":"api-controls-3","passed":["overwriteFailureCounterexampleTest","discardColdFailureCounterexampleTest","fewerImagesCanStillBeLateTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

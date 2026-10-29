@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-6","limit":20}
+
+  SemanticGatewaySlice
+    ok historyChangeStopsNextWriteTest passed 1 test(s)
+    ok newGenerationStopsNextWriteTest passed 1 test(s)
+    ok oldWriterCannotReleaseAfterRestartTest passed 1 test(s)
+
+  3 passing (7ms)
+@@DONE {"label":"api-controls-6","passed":["historyChangeStopsNextWriteTest","newGenerationStopsNextWriteTest","oldWriterCannotReleaseAfterRestartTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

@@ -1,0 +1,192 @@
+# Core LLM design; source identities and verification receipts stay in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / GOVERNED LLM INTEROPERABILITY / SEMANTIC CONTRACTS {
+  class: title
+  near: top-center
+}
+contract: SCHEME / TASK SEMANTICS {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  request: Canonical agent request\nChat / response / tool intent\nOriginal claim and task domains {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  semantics: Declared semantic projection\nRoles / tools / single candidate\nCapabilities before model ranking {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  policy: Code as Policy / Cedar\nActual operation / output contract\nHistory / budget / disclosure rules {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+adapter: GO AND RUST / PROVIDER ADAPTERS {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  catalog: Capability profiles / Go\nKubernetes pools / provider identity\nQualified protocols and codecs {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  codec: Provider codec / Rust or Go\nPreserve constraints and tool aliases\nReject unsupported conversion {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  seal: Immutable wire seal / Rust\nActual target / body / manifest\nExact child and canonical input {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+broker: RUST / FINAL SEND AND STREAM {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  admit: Current child admission\nPolicy / epoch / spent-state\nOriginal task allowance {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  stream: Source-bound provider stream\nOne response winner\nNo replay or model tail substitution {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  validation: Bounded output validation\nCurrent disclosure / range gate\nPartial data or validated document {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+tools: RUST / TOOL PROPOSAL BOUNDARY {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  assembly: Attributed argument fragments\nCall identity / sequence / limits\nUntrusted data only {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  proposal: Complete typed tool proposal\nExact arguments / finish / schema\nRestore sealed qualified tool name {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  execution: Separate tool-effect admission\nFresh actual-operation authorization\nParent budget and history retained {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+quint: QUINT\nRole loss / target mutation / mixed source\nPartial tools / partial schema / buffer limits {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nPreserved projection / actual child binding\nSource-bound output / no implicit tool effect {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+contract.request -> contract.semantics
+contract.semantics -> adapter.codec
+contract.policy -> adapter.seal { style.stroke-dash: 4 }
+adapter.catalog -> adapter.codec
+adapter.codec -> adapter.seal
+adapter.seal -> broker.admit
+broker.admit -> broker.stream
+broker.stream -> broker.validation
+broker.stream -> tools.assembly
+broker.validation -> tools.proposal { style.stroke-dash: 4 }
+tools.assembly -> tools.proposal
+tools.proposal -> tools.execution { style.stroke-dash: 4 }

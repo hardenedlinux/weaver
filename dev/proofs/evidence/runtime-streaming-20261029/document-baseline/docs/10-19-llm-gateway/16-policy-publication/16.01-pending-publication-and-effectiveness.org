@@ -1,0 +1,180 @@
+#+title: Weaver Pending Policy Changes, Authority Publication and Effective Acknowledgement
+#+language: en
+#+options: toc:3
+
+* Core decision and meaning of effectiveness
+
+An external producer cannot make a Policy/history change effective independently
+and notify the final consumer asynchronously. The recommended protocol stages
+a source-bound intent, commits the change at the final consumption authority,
+and only then acknowledges that exact committed change to the producer.
+
+The authority commit is the effective ordering point relative to consumption.
+Producer staging is pending data. Producer acknowledgement is evidence that the
+change committed at a particular generation; it is not a claim that this older
+change is still the current tip. Confirmation never resets the current Policy,
+reissues a permit, changes the original semantic contract or releases a hold.
+
+This is logical execution-authority separation for an AI Agent Gateway. No
+physical-isolation device is required. A qualified non-rollback authoritative
+log and authenticated source/owner receipts remain deployment contracts.
+
+* Persistent objects and immutable identity
+
+| Object | Required identity and contents | Owner |
+|--------+--------------------------------+-------|
+| Staged change | Stable change ID, admitted authority domain/source vector, exact original binding, expected parent generation/tip, content commitment and semantic decision | Durable producer intent store with approval/source evidence |
+| Authority publication | Exact staged change, committed generation and current publisher fence | Rust consumption authority and its durable conditional log |
+| Producer acknowledgement | Exact attributable authority publication and its historical generation | Durable producer acknowledgement store |
+| Readable projections | Available staged rows, owner prefix and acknowledgement rows | Recoverable caches; never the source of authority |
+| Consumption image | Original binding, ledger revision, current fence and current published Policy generation | Existing final CAS authority |
+
+Change ID binds the full operation and payload, not only the desired Allow/Deny
+value. It must not be rebound after a lost reply. A new source namespace, nonce
+or worker cannot redirect an existing change to another original claim, profile,
+budget or history domain. Typed source identity and domain membership must be
+authenticated; numerical equality alone is insufficient.
+
+The Lean model binds each staged change to the actual original registry intent,
+the admitted source vector and the original source history domain. It models one
+original task and one external authority domain, with arbitrary finite publication
+lists. Quint uses a bounded source fixture and a small sampled change-ID set.
+A shared multi-task authority domain still needs its earlier identity/lineage
+contracts; this delta does not claim to verify that complete product.
+
+* Three ordered durable decisions
+
+| Phase | Preconditions | Result |
+|-------+---------------+--------|
+| Stage pending | Authenticated original subject/domain, approved content and durable fresh stable ID | Immutable producer intent; no effective-state or execution grant |
+| Publish at owner | Exact staged object readable, change not already published, expected parent generation/tip equals actual committed tip, current publisher fence, actual publication Policy, owner online, qualified durable commit | Append exact publication and advance effective Policy generation/value atomically |
+| Acknowledge to producer | Exact publication is in the qualified owner prefix, exact staged object is available, producer acknowledgement durably recorded | Historical committed-generation evidence only |
+
+Staging approval is not a cached publication grant. Publication rechecks the
+authenticated actual change, current source state and worker through
+=owner.publishValid=; denial or indeterminate authorization blocks the append.
+A stale stage approval cannot substitute for that check.
+
+Only owner publication projects to category 15's =policyChange=. Other source
+transitions must leave Policy generation/value unchanged. Thus producer callbacks,
+cache restoration and ordinary worker progress cannot bypass the publication log.
+The effective value and generation always equal the committed log tip and length
+in the initialized abstract model. Real implementations must bind that position to
+namespace, authority lineage and authenticated prefix identity, not just a counter.
+
+Publication shares the final consumption serialization domain. A consumption
+before publication follows the earlier effective contract; consumption afterward
+must match the new generation and all current original constraints. Old permits
+fail even if an Allow/Deny/Allow sequence restores the same Boolean. Permission
+restoration cannot override original history denial, scope limits or spent-state.
+
+The exact parent check prevents two pending changes from silently overwriting
+one another. The winner commits once; the other remains stale and cannot be
+automatically rebased. Reconciliation must expose the conflict. A new approved
+change may name a newly observed parent, but cannot erase the original pending
+identity, unknown consumption or original obligations. No timeout cancellation or
+pending garbage-collection protocol is introduced here.
+
+* Lost replies, retries and late confirmations
+
+| Failure window | Required recovery | Prohibited shortcut |
+|----------------+-------------------+---------------------|
+| Stage commit loses reply | Query/restore the exact stable producer intent | Reuse the ID for another payload or infer absence from cache |
+| Owner commit loses reply | Query the exact change and authority prefix; return the existing publication if present | Apply again, allocate a new generation or retry based on empty local visibility |
+| Ack commit loses reply | Restore/query the producer record or repeat the same attributable acknowledgement | Treat acknowledgement loss as owner rollback |
+| Older publication confirmation arrives after a newer change | Preserve it as historical evidence with its original generation/content | Set effective state to the older Allow or revive its old permit |
+| Concurrent publisher with stale parent | Report conflict against the actual current prefix | Automatically reinterpret the change under the new predecessor |
+| Old publisher resumes after owner change | Reject its old fence; current owner may reconcile the same original intent | Trust its existing connection or durable-receipt possession as a fresh writer grant |
+
+The modeled stage/publish commands are fresh-only mutations. Retries first use
+exact authoritative lookup; an existing decision returns data instead of a second
+append. The producer may repeat acknowledgement delivery, which is semantically
+idempotent: it does not change the owner log or effective state. Native storage
+may deduplicate acknowledgement rows by the exact publication identity.
+
+A record saying =Committed(change, generation)= must not be presented as a current
+permission lease. If a caller needs current status, it must read the current
+qualified owner prefix and compare the full publication identity. Every actual
+consumption still uses the final CAS; no confirmation API produces a send grant.
+
+* Cross-store snapshots and owner recovery
+
+Producer intent storage, authority log and producer acknowledgements can lose
+local visibility independently. Their projections may be restored at different
+ages. The following recovery rules keep these mismatches safe:
+
+1. Keep stable authoritative contents separate from readable projections. Loading
+   a producer or acknowledgement snapshot does not assign the owner generation,
+   effective value, claim, profile or ledger state.
+2. Restore a staged intent only from its exact durable source identity. Reconstruct
+   missing producer state from qualified evidence rather than inventing an intent.
+3. Reconcile the owner publication by exact change ID and payload, committed parent
+   and qualified current prefix. An empty local view is not proof of no commit.
+4. On owner restart, advance the logical fence, close owner operations and require
+   qualified recovery of the exact authoritative base state and publication log.
+   Existing source-ledger recovery gates also remain mandatory before consumption.
+5. Restore acknowledgement visibility from exact committed records. An old record
+   can remain valid history while the current effective Policy is different.
+
+The formal =recoverOwner= step does not load an arbitrary snapshot into authority.
+It reopens access only under =owner.recoveryValid= over the exact current source
+state and durable publication log. In Lean, the prior source restart also retires
+old child admission and marks execution unrecovered; owner-log recovery alone
+cannot manufacture the source's execution-recovery proof. Quint abstracts that
+source recovery behind its qualified recovery fixture.
+
+The durable log and its anti-rollback witness must survive the cache/worker
+snapshot failure domain. If the entire trusted publication log, ledger and witness
+roll back together, the deployment violates this premise. Native recovery must
+verify complete committed prefixes and exact namespaces, including unresolved
+operations; it cannot merely accept matching local counter values.
+
+* Pending restrictions and response semantics
+
+Before owner publication, a submitted restriction is explicitly pending, not
+already effective. The submission API must expose that status. A producer that
+requires immediate revocation must synchronously reach the owner publication
+point or place the relevant owner path into a qualified closed state. A separate
+producer database write followed by asynchronous notification does not meet this
+protocol. Keeping a change pending is an availability limitation, not permission
+to falsely acknowledge effectiveness.
+
+The abstraction does not model a distributed outbox implementation, lease expiry,
+cryptographic commitments, consensus, fairness or cancellation. The native adapter
+must preserve the status distinction and stable query identity across restarts.
+The existing POO Flow attempt representation has bounded generation/revision
+checks; native code must reject exhaustion or perform an explicitly qualified
+lineage transition. Wrapping a generation to reuse old authority is not supported
+by the unbounded-natural proof.
+
+* Original obligations and final sending
+
+Publication changes the effective external authorization context. It cannot
+replace the original task binding or semantic profile. The composition retains
+original claim uniqueness, original budget/history domains and allowance bounds.
+An old Allow acknowledgement cannot mint a new claim, reset a consumed nonce or
+turn unknown usage into zero. A late qualified usage receipt still reconciles the
+original child slot; original settlement and account-application protocols apply.
+
+Final consumption validates the complete current image and actual source effect.
+Already accepted transport bytes are not retracted by later publication. New
+messages, ranges and retries still cross their existing gates; no producer ack
+creates another tail capability. This design does not claim remote exactly-once.
+
+* Responsibilities and performance boundary
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme / POO Flow | Original subject and domain semantics; approve source-bound staged change and define status/obligation meaning |
+| Go | Cloud-native change submission and reconciliation; preserve stable IDs, pending/conflict status and historical receipt attribution |
+| Rust authority owner | Fenced parent-CAS publication, atomic effective generation/log update, exact lookup and final consumption serialization |
+| Rust broker | Enforce current full image and actual effect; keep spent-state, range and unknown-hold constraints |
+| Cedar | Authorize the authenticated stage/publication/use operation under every required layer; reject errors or indeterminate evaluation |
+| Quint / Lean | Check protocol failures and compose actual existing execution transitions under explicit durable-owner premises |
+
+Keep immutable profile/certification caches on the fast path. A producer
+acknowledgement is outside the final consumption critical path. The owner commit
+must include effective generation publication before acknowledging effectiveness;
+asynchronous producer delivery is then safe. Measure pending age, parent-CAS
+conflicts, publication/lookup latency, effective-change lag and recovery backlog.
+No throughput or native durability result is claimed here.

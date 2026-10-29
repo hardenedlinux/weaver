@@ -1,0 +1,18 @@
+proofs/lean/DynamicImageCustody.lean:56:5: error: unexpected token 'open'; expected '_' or identifier
+proofs/lean/DynamicImageCustody.lean:56:9: error: unexpected token ':'; expected 'scoped' or identifier
+proofs/lean/DynamicImageCustody.lean:58:52: error: unknown namespace `rfl`
+proofs/lean/DynamicImageCustody.lean:58:55: error: unexpected token ')'; expected command
+proofs/lean/DynamicImageCustody.lean:61:37: error: unexpected token 'open'; expected '_' or identifier
+proofs/lean/DynamicImageCustody.lean:61:41: error: unexpected token ':'; expected 'scoped' or identifier
+proofs/lean/DynamicImageCustody.lean:62:80: error: unknown namespace `same`
+proofs/lean/DynamicImageCustody.lean:64:51: error(lean.unknownIdentifier): Unknown identifier `s.stopping`
+proofs/lean/DynamicImageCustody.lean:65:15: error(lean.unknownIdentifier): Unknown identifier `s.stopping`
+proofs/lean/DynamicImageCustody.lean:68:52: error(lean.unknownIdentifier): Unknown identifier `s.closed`
+proofs/lean/DynamicImageCustody.lean:68:72: error(lean.unknownIdentifier): Unknown identifier `s.closed`
+'Weaver.DynamicImageCustody.shared_image_step_preserves_custody' depends on axioms: [propext]
+'Weaver.DynamicImageCustody.initialized_shared_image_custody' depends on axioms: [propext, Quot.sound]
+proofs/lean/DynamicImageCustody.lean:81:14: error(lean.unknownIdentifier): Unknown constant `live_alias_blocks_image_release`
+proofs/lean/DynamicImageCustody.lean:82:14: error(lean.unknownIdentifier): Unknown constant `all_aliases_closed_after_image_release`
+'Weaver.DynamicImageCustody.stopping_blocks_new_acquisition' depends on axioms: [propext, sorryAx]
+proofs/lean/DynamicImageCustody.lean:84:14: error(lean.unknownIdentifier): Unknown constant `repeated_close_is_not_fresh`
+'Weaver.DynamicImageCustody.image_packing_does_not_grant_policy' does not depend on any axioms

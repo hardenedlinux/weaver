@@ -1,0 +1,161 @@
+# Core failure domains and authority flow. Physical evidence stays in Org.
+...@lib/theme
+title: ANCHORED RECOVERY / THREE DIFFERENT SEND CUTS {
+  class: title
+  near: top-center
+}
+host: SNAPSHOTABLE HOST {
+  top: 0
+  left: 0
+  width: 300
+  height: 720
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  proposal: Scheme / Cedar admission\nGo / lifecycle reconciliation {
+    top: 90
+    left: 25
+    width: 250
+    height: 110
+    class: semantic
+  }
+  status: Local image / cached status\nRollback cannot prove freshness {
+    top: 305
+    left: 25
+    width: 250
+    height: 110
+    class: unknown
+  }
+  handle: Opaque original range handle\nNo autonomous socket or retry {
+    top: 520
+    left: 25
+    width: 250
+    height: 110
+    class: cloud
+  }
+}
+journal: RUST JOURNAL / SEPARATE FATE {
+  top: 0
+  left: 420
+  width: 360
+  height: 720
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  commit: Canonical operation and lineage\nOne immutable commit or abort\nFull state or replayable prefix {
+    top: 90
+    left: 25
+    width: 310
+    height: 120
+    class: ledger
+  }
+  lookup: Resolve the original operation\nLost reply does not mint authority {
+    top: 305
+    left: 25
+    width: 310
+    height: 110
+    class: policy
+  }
+  recovery: Authenticated complete recovery\nOriginal claims / held cost / history {
+    top: 520
+    left: 25
+    width: 310
+    height: 110
+    class: ledger
+  }
+}
+owner: RUST BROKER / SEPARATE FATE {
+  top: 0
+  left: 900
+  width: 390
+  height: 720
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  seal: Seal the actual old transport epoch\nSame epoch cannot reopen {
+    top: 90
+    left: 25
+    width: 340
+    height: 110
+    class: runtime
+  }
+  gate: Commit-bound activation and gate\nOriginal claim / current range binding\nSerialize seal with actual delegation {
+    top: 305
+    left: 25
+    width: 340
+    height: 120
+    class: runtime
+  }
+  buffer: Irreversible bounded delegation\nAccepted copies can drain after cut\nUnknown never permits range replay {
+    top: 520
+    left: 25
+    width: 340
+    height: 120
+    class: unknown
+  }
+}
+receiver: RECEIVER / INDEPENDENT STATE {
+  top: 0
+  left: 1410
+  width: 340
+  height: 720
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  barrier: Authenticated epoch barrier\nDurable operation and range identity {
+    top: 90
+    left: 25
+    width: 290
+    height: 110
+    class: ledger
+  }
+  wire: Old wire bytes may arrive\nRejection cannot undo disclosure {
+    top: 305
+    left: 25
+    width: 290
+    height: 110
+    class: unknown
+  }
+  application: Epoch check and deduplication\nControls business application {
+    top: 520
+    left: 25
+    width: 290
+    height: 110
+    class: policy
+  }
+}
+quint: QUINT\nRollback / lost reply / retained-buffer traces {
+  top: 845
+  left: 320
+  width: 460
+  height: 100
+  class: policy
+}
+lean: LEAN\nConditional journal and owner invariants\nPost-cut drain remains possible {
+  top: 845
+  left: 1010
+  width: 460
+  height: 100
+  class: semantic
+}
+host.proposal -> journal.commit: exact request
+owner.seal -> journal.commit: seal before publication
+journal.commit -> journal.lookup
+journal.lookup -> host.status: facts only
+journal.commit -> journal.recovery
+journal.recovery -> owner.gate: current bound state
+host.handle -> owner.gate: revalidate at writer
+owner.gate -> owner.buffer
+owner.buffer -> receiver.wire: may drain after seal
+receiver.barrier -> receiver.application
+receiver.wire -> receiver.application
+quint -> journal.lookup: explore ambiguity {
+  style.stroke-dash: 5
+}
+lean -> owner.buffer: preserve cut semantics {
+  style.stroke-dash: 5
+}

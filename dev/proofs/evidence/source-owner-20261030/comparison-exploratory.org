@@ -1,0 +1,24 @@
+#+TITLE: Exploratory Source-Owner Comparison
+#+LANGUAGE: en
+
+This earlier exploratory run used the same fixed 256-commit ABBAAB workload and
+the same baseline/current executable hashes as the qualified comparison. Formal
+and witness assets were still being edited, so no full-source currentness claim
+is attached to this run. It is retained rather than substituted for the final
+post-verification comparison.
+
+| Child | ns/op | Go allocations/op |
+|-------+-------+-------------------|
+| A1-reopen | 3879291 | 114 |
+| B1-owned | 2833885 | 114 |
+| B2-owned | 2780993 | 114 |
+| A2-reopen | 4106050 | 114 |
+| A3-reopen | 4006300 | 114 |
+| B3-owned | 2761629 | 114 |
+
+The baseline executable SHA-256 was
+=dde7a7514e319e9766d8eb3d08d4c78ab252eff7ade7973b6d37e1fa6182d506=.
+The owned-source executable SHA-256 was
+=3e726f8724cc9b4bb758d9f27a16a9fc0398a914c230838bc842e01dda69977f=.
+The Go test process exited successfully; measured fixtures made zero provider
+requests. These observations do not add production or contention qualification.

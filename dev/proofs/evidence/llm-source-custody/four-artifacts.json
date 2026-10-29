@@ -1,0 +1,93 @@
+[
+  {
+    "id": "SC1",
+    "theorem": "join_projection",
+    "test": "exactCustodyPublishesTest",
+    "node": "broker.cas",
+    "meaning": "A custody event projects to the actual source join or stutter"
+  },
+  {
+    "id": "SC2",
+    "theorem": "actual_join_composition",
+    "test": "recoveredHolderPublishesTest",
+    "node": "recovery.join",
+    "meaning": "Arbitrary finite custody run extends an initialized actual join run"
+  },
+  {
+    "id": "SC3",
+    "theorem": "final_cas_requires_current_custody",
+    "test": "oldCustodyCannotPublishTest",
+    "node": "broker.cas",
+    "meaning": "Final publication compares current custody and actual current join"
+  },
+  {
+    "id": "SC4",
+    "theorem": "fence_monotone",
+    "test": "unprotectedTransferRejectedTest",
+    "node": "recovery.join",
+    "meaning": "Abstract durable transfer advances the fence; native rollback protection is a premise"
+  },
+  {
+    "id": "SC5",
+    "theorem": "transfer_preserves_original",
+    "test": "lostCommitResolvedAfterTransferTest",
+    "node": "registry.origin",
+    "meaning": "Transfer retains original intent and outcome"
+  },
+  {
+    "id": "SC6",
+    "theorem": "old_fence_rejected",
+    "test": "oldCustodyCannotResolveTest",
+    "node": "broker.alias",
+    "meaning": "Old tuple cannot resolve/commit through the current authority"
+  },
+  {
+    "id": "SC7",
+    "theorem": "determined_outcome_retained",
+    "test": "knownResultCannotPublishAgainTest",
+    "node": "broker.alias",
+    "meaning": "A known original outcome cannot be replaced by later custody events"
+  },
+  {
+    "id": "SC8",
+    "theorem": "unresolved_cannot_close",
+    "test": "unknownResultCannotCloseTest",
+    "node": "broker.hold",
+    "meaning": "No outcome means no determined custody close"
+  },
+  {
+    "id": "SC9",
+    "theorem": "source_mutation_blocked_while_armed",
+    "test": "armedMutationBlockedTest",
+    "node": "recovery.projection",
+    "meaning": "Conservative mutation serialization while armed"
+  },
+  {
+    "id": "SC10",
+    "theorem": "publication_no_financial_effect",
+    "test": "closeOnlyCustodyTest",
+    "node": "registry.query",
+    "meaning": "Floor/custody publication does not apply money; account settlement remains separate"
+  },
+  {
+    "id": "SC11",
+    "theorem": "original_reservation_once",
+    "test": "recoveredHolderPublishesTest",
+    "node": "broker.hold",
+    "meaning": "Initialized actual account prefix and owner Safe premise imply reservation application at most once"
+  },
+  {
+    "id": "SC12",
+    "theorem": "unknown_original_hold_retained",
+    "test": "unknownResultCannotCloseTest",
+    "node": "broker.hold",
+    "meaning": "Unmetered original source plus authentic OriginalReady binding retains original hold"
+  },
+  {
+    "id": "SC13",
+    "theorem": "original_result_unique",
+    "test": "knownResultCannotPublishAgainTest",
+    "node": "broker.cas",
+    "meaning": "Existing floor operation identity permits one result"
+  }
+]

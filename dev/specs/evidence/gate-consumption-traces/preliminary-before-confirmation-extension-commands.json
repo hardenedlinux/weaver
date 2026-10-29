@@ -1,0 +1,342 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-gate-consumption-final-proof/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 4.451,
+    "exit": 0
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-gate-consumption-final-proof/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.167,
+    "exit": 0
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-gate-consumption-final-proof/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.267,
+    "exit": 0
+  },
+  {
+    "label": "AnchoredRecoveryAndEgress",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-gate-consumption-final-proof/AnchoredRecoveryAndEgress.olean",
+      "specs/lean/AnchoredRecoveryAndEgress.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.256,
+    "exit": 0
+  },
+  {
+    "label": "ComposedGatewayLifecycle",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-gate-consumption-final-proof/ComposedGatewayLifecycle.olean",
+      "specs/lean/ComposedGatewayLifecycle.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.221,
+    "exit": 0
+  },
+  {
+    "label": "FiniteStreamManifest",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-gate-consumption-final-proof/FiniteStreamManifest.olean",
+      "specs/lean/FiniteStreamManifest.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.729,
+    "exit": 0
+  },
+  {
+    "label": "DriverCompletionRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-gate-consumption-final-proof/DriverCompletionRecovery.olean",
+      "specs/lean/DriverCompletionRecovery.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.311,
+    "exit": 0
+  },
+  {
+    "label": "WriterSettlementClosure",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-gate-consumption-final-proof/WriterSettlementClosure.olean",
+      "specs/lean/WriterSettlementClosure.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.943,
+    "exit": 0
+  },
+  {
+    "label": "SettlementAnchorRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-gate-consumption-final-proof/SettlementAnchorRecovery.olean",
+      "specs/lean/SettlementAnchorRecovery.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.15,
+    "exit": 0
+  },
+  {
+    "label": "GateConsumptionPersistence",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-gate-consumption-final-proof/GateConsumptionPersistence.olean",
+      "specs/lean/GateConsumptionPersistence.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.487,
+    "exit": 0
+  },
+  {
+    "label": "typecheck",
+    "args": [
+      "quint",
+      "typecheck",
+      "specs/quint/GateConsumptionPersistence.qnt"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 13.041,
+    "exit": 0
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "specs/quint/GateConsumptionPersistence.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--out-itf",
+      "specs/evidence/gate-consumption-traces/itf/{test}-{seq}.itf.json"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 15.298,
+    "exit": 0
+  },
+  {
+    "label": "emptyInit",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/GateConsumptionPersistence.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "emptyInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "37",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 5.708,
+    "exit": 0
+  },
+  {
+    "label": "singletonInit",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/GateConsumptionPersistence.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "singletonInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "37",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 5.523,
+    "exit": 0
+  },
+  {
+    "label": "init",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/GateConsumptionPersistence.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "37",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 6.131,
+    "exit": 0
+  },
+  {
+    "label": "largerInit",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/GateConsumptionPersistence.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "largerInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "37",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 8.365,
+    "exit": 0
+  },
+  {
+    "label": "sealed",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/GateConsumptionPersistence.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "sealed",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "37",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 8.461,
+    "exit": 0
+  },
+  {
+    "label": "burned",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/GateConsumptionPersistence.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "burned",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "37",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 13.487,
+    "exit": 0
+  }
+]

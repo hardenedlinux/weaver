@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/opt/homebrew/opt/node/bin/node",
+    "proofs/run_beneficiary_registration.cjs"
+  ],
+  "exit": 0,
+  "inputs": {
+    "proofs/qunit/LlmBeneficiaryRegistration.qnt": "7a7f01e7d031cae790d34b11ca0bee3997c53b2105cdec5b98be5029787bf341",
+    "proofs/run_beneficiary_registration.cjs": "e3a649b3d7154dd5cb1bdae3c7f0c9f0445770f8f7042f31bb18855b40cda017",
+    "proofs/check_beneficiary_api.py": "2818d5cc9ac81adfe78e1a74b87742ae9034eb3c565bc3c0318050f99a2c1463",
+    "proofs/evidence/llm-beneficiary-registration/bundle/LlmBeneficiaryRegistration.qnt": "963766e0e348627332dee0298ac3ca132303fd82dac7ab6baf5cd3cef5961bb6"
+  },
+  "officialPipeline": "load -> parse -> typecheck -> runTests; new Evaluator per group",
+  "expectedControls": 32
+}

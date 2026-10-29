@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/weaver-doc-check-anchor-broker.py", line 9, in <module>
+    target=target.split('::')[0];assert (p.parent/target).exists(),(p,target);nlinks+=1
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~^^
+AssertionError: (PosixPath('/Users/guangtao/ghq/github.com/tao3k/weaver/specs/evidence/anchor-broker-commit-2026-10-19.org'), 'anchor-broker-traces/org-export.log')

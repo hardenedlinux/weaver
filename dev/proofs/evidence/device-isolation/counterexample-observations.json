@@ -1,0 +1,915 @@
+[
+  {
+    "path": "proofs/evidence/device-isolation/itf/floorScalarWithoutCommitPrefixCounterexampleTest-6.itf.json",
+    "states": 28,
+    "device": 0,
+    "driver": 0,
+    "floor": 1,
+    "service": 1,
+    "journalRows": 0,
+    "havePending": false,
+    "acceptedIntents": 1,
+    "haveCertificate": true,
+    "certificateDevice": 0,
+    "certificateDriver": 0,
+    "registeredAliases": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "blockedAliases": [
+      0,
+      1,
+      2
+    ],
+    "certificateMembers": [
+      0,
+      1,
+      2
+    ],
+    "viewKnown": true,
+    "viewFloor": 1,
+    "exports": [],
+    "callbackAudits": [
+      {
+        "actual": {
+          "callback": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 7,
+            "kind": 2
+          },
+          "callbackId": 5,
+          "device": 0,
+          "dma": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 6,
+            "kind": 1
+          },
+          "dmaId": 4,
+          "driver": 0,
+          "profile": 0,
+          "ticket": {
+            "epoch": 1,
+            "handleId": 0,
+            "requestId": 0,
+            "statement": {
+              "candidate": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 1
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 1
+              },
+              "epoch": 1,
+              "expected": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 0
+              },
+              "id": 0,
+              "incarnation": 0,
+              "revision": 0,
+              "term": 0,
+              "voter": 0
+            }
+          }
+        },
+        "claimed": {
+          "callback": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 7,
+            "kind": 2
+          },
+          "callbackId": 5,
+          "device": 0,
+          "dma": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 6,
+            "kind": 1
+          },
+          "dmaId": 4,
+          "driver": 0,
+          "profile": 0,
+          "ticket": {
+            "epoch": 1,
+            "handleId": 0,
+            "requestId": 0,
+            "statement": {
+              "candidate": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 1
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 1
+              },
+              "epoch": 1,
+              "expected": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 0
+              },
+              "id": 0,
+              "incarnation": 0,
+              "revision": 0,
+              "term": 0,
+              "voter": 0
+            }
+          }
+        },
+        "job": 0
+      }
+    ]
+  },
+  {
+    "path": "proofs/evidence/device-isolation/itf/lateCallbackRelabelsNewJobCounterexampleTest-3.itf.json",
+    "states": 50,
+    "device": 1,
+    "driver": 1,
+    "floor": 2,
+    "service": 2,
+    "journalRows": 2,
+    "havePending": false,
+    "acceptedIntents": 2,
+    "haveCertificate": true,
+    "certificateDevice": 1,
+    "certificateDriver": 1,
+    "registeredAliases": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "blockedAliases": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "certificateMembers": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "viewKnown": true,
+    "viewFloor": 2,
+    "exports": [],
+    "callbackAudits": [
+      {
+        "actual": {
+          "callback": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 7,
+            "kind": 2
+          },
+          "callbackId": 5,
+          "device": 0,
+          "dma": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 6,
+            "kind": 1
+          },
+          "dmaId": 4,
+          "driver": 0,
+          "profile": 0,
+          "ticket": {
+            "epoch": 1,
+            "handleId": 0,
+            "requestId": 0,
+            "statement": {
+              "candidate": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 1
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 1
+              },
+              "epoch": 1,
+              "expected": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 0
+              },
+              "id": 0,
+              "incarnation": 0,
+              "revision": 0,
+              "term": 0,
+              "voter": 0
+            }
+          }
+        },
+        "claimed": {
+          "callback": {
+            "device": 1,
+            "driver": 1,
+            "epoch": 2,
+            "generation": 12,
+            "kind": 2
+          },
+          "callbackId": 8,
+          "device": 1,
+          "dma": {
+            "device": 1,
+            "driver": 1,
+            "epoch": 2,
+            "generation": 11,
+            "kind": 1
+          },
+          "dmaId": 7,
+          "driver": 1,
+          "profile": 0,
+          "ticket": {
+            "epoch": 2,
+            "handleId": 1,
+            "requestId": 1,
+            "statement": {
+              "candidate": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 1
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 1
+              },
+              "epoch": 2,
+              "expected": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 1
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 1
+              },
+              "id": 1,
+              "incarnation": 0,
+              "revision": 0,
+              "term": 0,
+              "voter": 0
+            }
+          }
+        },
+        "job": 1
+      }
+    ]
+  },
+  {
+    "path": "proofs/evidence/device-isolation/itf/omittedOldFDIsolationCounterexampleTest-1.itf.json",
+    "states": 9,
+    "device": 0,
+    "driver": 0,
+    "floor": 0,
+    "service": 0,
+    "journalRows": 0,
+    "havePending": false,
+    "acceptedIntents": 0,
+    "haveCertificate": true,
+    "certificateDevice": 0,
+    "certificateDriver": 0,
+    "registeredAliases": [
+      0,
+      1,
+      2
+    ],
+    "blockedAliases": [
+      1,
+      2
+    ],
+    "certificateMembers": [
+      1,
+      2
+    ],
+    "viewKnown": true,
+    "viewFloor": 0,
+    "exports": [],
+    "callbackAudits": []
+  },
+  {
+    "path": "proofs/evidence/device-isolation/itf/resetForgetsAcceptedFloorIntentCounterexampleTest-5.itf.json",
+    "states": 34,
+    "device": 1,
+    "driver": 1,
+    "floor": 1,
+    "service": 1,
+    "journalRows": 1,
+    "havePending": false,
+    "acceptedIntents": 2,
+    "haveCertificate": false,
+    "certificateDevice": 0,
+    "certificateDriver": 0,
+    "registeredAliases": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "blockedAliases": [],
+    "certificateMembers": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "viewKnown": false,
+    "viewFloor": 1,
+    "exports": [],
+    "callbackAudits": []
+  },
+  {
+    "path": "proofs/evidence/device-isolation/itf/resetReceiptReplayCounterexampleTest-0.itf.json",
+    "states": 32,
+    "device": 1,
+    "driver": 1,
+    "floor": 1,
+    "service": 1,
+    "journalRows": 1,
+    "havePending": false,
+    "acceptedIntents": 1,
+    "haveCertificate": true,
+    "certificateDevice": 0,
+    "certificateDriver": 0,
+    "registeredAliases": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "blockedAliases": [],
+    "certificateMembers": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "viewKnown": false,
+    "viewFloor": 1,
+    "exports": [],
+    "callbackAudits": []
+  },
+  {
+    "path": "proofs/evidence/device-isolation/itf/resettableDeviceCounterRestoresFloorCounterexampleTest-4.itf.json",
+    "states": 29,
+    "device": 1,
+    "driver": 1,
+    "floor": 1,
+    "service": 1,
+    "journalRows": 1,
+    "havePending": false,
+    "acceptedIntents": 1,
+    "haveCertificate": false,
+    "certificateDevice": 0,
+    "certificateDriver": 0,
+    "registeredAliases": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "blockedAliases": [],
+    "certificateMembers": [
+      0,
+      1,
+      2
+    ],
+    "viewKnown": true,
+    "viewFloor": 0,
+    "exports": [],
+    "callbackAudits": [
+      {
+        "actual": {
+          "callback": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 7,
+            "kind": 2
+          },
+          "callbackId": 5,
+          "device": 0,
+          "dma": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 6,
+            "kind": 1
+          },
+          "dmaId": 4,
+          "driver": 0,
+          "profile": 0,
+          "ticket": {
+            "epoch": 1,
+            "handleId": 0,
+            "requestId": 0,
+            "statement": {
+              "candidate": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 1
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 1
+              },
+              "epoch": 1,
+              "expected": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 0
+              },
+              "id": 0,
+              "incarnation": 0,
+              "revision": 0,
+              "term": 0,
+              "voter": 0
+            }
+          }
+        },
+        "claimed": {
+          "callback": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 7,
+            "kind": 2
+          },
+          "callbackId": 5,
+          "device": 0,
+          "dma": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 6,
+            "kind": 1
+          },
+          "dmaId": 4,
+          "driver": 0,
+          "profile": 0,
+          "ticket": {
+            "epoch": 1,
+            "handleId": 0,
+            "requestId": 0,
+            "statement": {
+              "candidate": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 1
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 1
+              },
+              "epoch": 1,
+              "expected": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 0
+              },
+              "id": 0,
+              "incarnation": 0,
+              "revision": 0,
+              "term": 0,
+              "voter": 0
+            }
+          }
+        },
+        "job": 0
+      }
+    ]
+  },
+  {
+    "path": "proofs/evidence/device-isolation/itf/retainedDMABufferLeaksOnResetCounterexampleTest-2.itf.json",
+    "states": 29,
+    "device": 1,
+    "driver": 1,
+    "floor": 1,
+    "service": 1,
+    "journalRows": 1,
+    "havePending": false,
+    "acceptedIntents": 1,
+    "haveCertificate": false,
+    "certificateDevice": 0,
+    "certificateDriver": 0,
+    "registeredAliases": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "blockedAliases": [],
+    "certificateMembers": [
+      0,
+      1,
+      2
+    ],
+    "viewKnown": false,
+    "viewFloor": 1,
+    "exports": [
+      {
+        "epoch": 1,
+        "gateOpen": false,
+        "service": 1,
+        "ticket": {
+          "epoch": 1,
+          "handleId": 0,
+          "requestId": 0,
+          "statement": {
+            "candidate": {
+              "rows": {
+                "0": {
+                  "revision": 0,
+                  "term": 0,
+                  "value": 1
+                },
+                "1": {
+                  "revision": 0,
+                  "term": 0,
+                  "value": 0
+                },
+                "2": {
+                  "revision": 0,
+                  "term": 0,
+                  "value": 0
+                }
+              },
+              "size": 1
+            },
+            "epoch": 1,
+            "expected": {
+              "rows": {
+                "0": {
+                  "revision": 0,
+                  "term": 0,
+                  "value": 0
+                },
+                "1": {
+                  "revision": 0,
+                  "term": 0,
+                  "value": 0
+                },
+                "2": {
+                  "revision": 0,
+                  "term": 0,
+                  "value": 0
+                }
+              },
+              "size": 0
+            },
+            "id": 0,
+            "incarnation": 0,
+            "revision": 0,
+            "term": 0,
+            "voter": 0
+          }
+        }
+      }
+    ],
+    "callbackAudits": [
+      {
+        "actual": {
+          "callback": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 7,
+            "kind": 2
+          },
+          "callbackId": 5,
+          "device": 0,
+          "dma": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 6,
+            "kind": 1
+          },
+          "dmaId": 4,
+          "driver": 0,
+          "profile": 0,
+          "ticket": {
+            "epoch": 1,
+            "handleId": 0,
+            "requestId": 0,
+            "statement": {
+              "candidate": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 1
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 1
+              },
+              "epoch": 1,
+              "expected": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 0
+              },
+              "id": 0,
+              "incarnation": 0,
+              "revision": 0,
+              "term": 0,
+              "voter": 0
+            }
+          }
+        },
+        "claimed": {
+          "callback": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 7,
+            "kind": 2
+          },
+          "callbackId": 5,
+          "device": 0,
+          "dma": {
+            "device": 0,
+            "driver": 0,
+            "epoch": 1,
+            "generation": 6,
+            "kind": 1
+          },
+          "dmaId": 4,
+          "driver": 0,
+          "profile": 0,
+          "ticket": {
+            "epoch": 1,
+            "handleId": 0,
+            "requestId": 0,
+            "statement": {
+              "candidate": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 1
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 1
+              },
+              "epoch": 1,
+              "expected": {
+                "rows": {
+                  "0": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "1": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  },
+                  "2": {
+                    "revision": 0,
+                    "term": 0,
+                    "value": 0
+                  }
+                },
+                "size": 0
+              },
+              "id": 0,
+              "incarnation": 0,
+              "revision": 0,
+              "term": 0,
+              "voter": 0
+            }
+          }
+        },
+        "job": 0
+      }
+    ]
+  }
+]

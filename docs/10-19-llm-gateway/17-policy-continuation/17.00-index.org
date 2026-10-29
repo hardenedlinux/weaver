@@ -1,0 +1,22 @@
+#+title: Weaver Policy Conflict Resolution and Protocol Boundaries Index
+#+language: en
+#+options: toc:2
+
+* Preserve the original intent through safe continuation
+
+Area =10-19 LLM Gateway=; category =17 Policy continuation=.
+This delta extends [[file:../16-policy-publication/16.00-index.org][16 Policy publication]] with authoritative family inspection,
+source-bound reauthorization and one family winner. Protocol-specific identifiers
+are aliases of canonical authority, not new authorization roots.
+
+| ID | Artifact |
+|----+----------|
+| 17.00 | This index |
+| 17.01 | [[file:17.01-conflict-resolution-and-safe-continuation.org][Conflict, uncertainty, reauthorization and final winner CAS]] |
+| 17.02 | [[file:17.02-policy-continuation.d2][Core D2]] / [[file:17.02-policy-continuation.svg][SVG]] |
+| 17.03 | [[file:17.03-validation-evidence.org][Source comparison, proofs and counterexamples]] |
+| 17.04 | [[file:17.04-protocol-admission-and-identity.org][MCP, A2A, ACP, UI, ASP and other interface boundaries]] |
+
+Formal sources: [[file:../../../dev/proofs/lean/LlmPolicyContinuation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmPolicyContinuation.qnt][Quint]].
+Reproduce with [[file:../../../dev/proofs/check_llm_policy_continuation.py][the isolated runner]]. No Gateway implementation, upstream source or
+dependency pin is changed. Earlier sealed artifacts remain unchanged.

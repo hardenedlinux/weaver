@@ -1,0 +1,182 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "exit": 0,
+    "seconds": 4.862,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.262,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.63,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "GatewayHeadCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/GatewayHeadCAS.olean",
+      "proofs/lean/GatewayHeadCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.427,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "BrokerConsumptionQueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/BrokerConsumptionQueue.olean",
+      "proofs/lean/BrokerConsumptionQueue.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.932,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LogicalRangeRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/LogicalRangeRecovery.olean",
+      "proofs/lean/LogicalRangeRecovery.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.471,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRouting",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/LlmRouting.olean",
+      "proofs/lean/LlmRouting.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.557,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAttemptLedger",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/LlmAttemptLedger.olean",
+      "proofs/lean/LlmAttemptLedger.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.997,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmSemanticContract",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/LlmSemanticContract.olean",
+      "proofs/lean/LlmSemanticContract.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.868,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAuthoritativeScope",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/LlmAuthoritativeScope.olean",
+      "proofs/lean/LlmAuthoritativeScope.lean"
+    ],
+    "exit": 0,
+    "seconds": 2.627,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRegistryPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/LlmRegistryPublication.olean",
+      "proofs/lean/LlmRegistryPublication.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.888,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRecoveryCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-f8j6vnxb/LlmRecoveryCAS.olean",
+      "proofs/lean/LlmRecoveryCAS.lean"
+    ],
+    "exit": 1,
+    "seconds": 2.028,
+    "watchdogSeconds": 20
+  }
+]

@@ -1,0 +1,49 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":1,"sourceSha256":"ee9167e4ab8f903068a30a0b5caa344535d456769041ab5316c1449b6754cc59"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"98fb941ec1bf7982d92d5b667199a210e443344cf194a11ff5e6445227a0f455"}
+@@START {"label":"api-controls-0","limit":20}
+
+  NativeLocatorClosure
+    ok replacedSourceRejectedTest passed 1 test(s)
+    ok sourceCommitmentBypassCounterexampleTest passed 1 test(s)
+    ok sameNameDifferentImagesTest passed 1 test(s)
+
+  3 passing (11ms)
+@@DONE {"label":"api-controls-0","passed":["replacedSourceRejectedTest","sourceCommitmentBypassCounterexampleTest","sameNameDifferentImagesTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  NativeLocatorClosure
+    ok oneImageCollisionRejectedTest passed 1 test(s)
+    ok incompleteProducerRejectedTest passed 1 test(s)
+    ok foreignBodyRejectedTest passed 1 test(s)
+
+  3 passing (2ms)
+@@DONE {"label":"api-controls-1","passed":["oneImageCollisionRejectedTest","incompleteProducerRejectedTest","foreignBodyRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  NativeLocatorClosure
+    ok rewrittenEntryRejectedTest passed 1 test(s)
+    ok wrongHandleRejectedTest passed 1 test(s)
+    ok qualifiedHandleInitializesOwnerTest passed 1 test(s)
+
+  3 passing (2ms)
+@@DONE {"label":"api-controls-2","passed":["rewrittenEntryRejectedTest","wrongHandleRejectedTest","qualifiedHandleInitializesOwnerTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  NativeLocatorClosure
+    ok mappingIsNotInitializationTest passed 1 test(s)
+    ok closedReferenceCannotInitializeTest passed 1 test(s)
+    ok duplicateInitializationRejectedTest passed 1 test(s)
+
+  3 passing (105ms)
+@@DONE {"label":"api-controls-3","passed":["mappingIsNotInitializationTest","closedReferenceCannotInitializeTest","duplicateInitializationRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  NativeLocatorClosure
+    ok collisionBypassCounterexampleTest passed 1 test(s)
+    ok missingCompletionCounterexampleTest passed 1 test(s)
+    ok bareLookupWrongOwnerCounterexampleTest passed 1 test(s)
+
+  3 passing (2ms)
+@@DONE {"label":"api-controls-4","passed":["collisionBypassCounterexampleTest","missingCompletionCounterexampleTest","bareLookupWrongOwnerCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

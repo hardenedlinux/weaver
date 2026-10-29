@@ -1,0 +1,293 @@
+proofs/lean/LlmPolicyPublication.lean:41:76: error: unexpected identifier; expected '}'
+proofs/lean/LlmPolicyPublication.lean:46:24: error: Application type mismatch: The argument
+  LlmRegistryPublication.Step.restart ?m.40
+has type
+  LlmRegistryPublication.Step ?m.29 ?m.30 ?m.31 ?m.32 ?m.33 ?m.34 ?m.35 ?m.36 ?m.37 ?m.38 ?m.39 ?m.40
+    { execution := LlmRegistryPublication.restarted (LlmRegistryPublication.State.execution ?m.40),
+      revision := LlmRegistryPublication.State.revision ?m.40 + 1,
+      fence := LlmRegistryPublication.State.fence ?m.40 + 1, blobs := LlmRegistryPublication.State.blobs ?m.40,
+      readable := LlmRegistryPublication.State.readable ?m.40, intent := LlmRegistryPublication.State.intent ?m.40,
+      journal := LlmRegistryPublication.State.journal ?m.40,
+      journalVisible := LlmRegistryPublication.State.journalVisible ?m.40,
+      certified := LlmRegistryPublication.State.certified ?m.40, online := LlmRegistryPublication.State.online ?m.40,
+      permits := LlmRegistryPublication.State.permits ?m.40 }
+but is expected to have type
+  LlmRegistryPublication.Step source registry routing profile rootOwner childOwner codec scopeOwner publicationOwner
+    tenant vector s.publication
+    (have __src := s.publication;
+    { execution := __src.execution, revision := __src.revision, fence := s.publication.fence + 1, blobs := __src.blobs,
+      readable := __src.readable, intent := __src.intent, journal := __src.journal,
+      journalVisible := __src.journalVisible, certified := __src.certified, acknowledged := __src.acknowledged,
+      online := __src.online, projection := __src.projection, active := __src.active, permits := __src.permits })
+in the application
+  LlmRecoveryCAS.Step.background s
+    (have __src := s.publication;
+    { execution := __src.execution, revision := __src.revision, fence := s.publication.fence + 1, blobs := __src.blobs,
+      readable := __src.readable, intent := __src.intent, journal := __src.journal,
+      journalVisible := __src.journalVisible, certified := __src.certified, acknowledged := __src.acknowledged,
+      online := __src.online, projection := __src.projection, active := __src.active, permits := __src.permits })
+    (LlmRegistryPublication.Step.restart ?m.40)
+proofs/lean/LlmPolicyPublication.lean:52:7: error: unexpected token 'namespace'; expected '_' or identifier
+proofs/lean/LlmPolicyPublication.lean:52:16: error: unexpected token ':'; expected identifier
+proofs/lean/LlmPolicyPublication.lean:58:71: error: unexpected identifier; expected prec
+proofs/lean/LlmPolicyPublication.lean:88:144: error: Function expected at
+  Step
+but this term has type
+  ?m.4
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:90:336: error(lean.unknownIdentifier): Unknown identifier `s.base`
+proofs/lean/LlmPolicyPublication.lean:90:30: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:95:58: error: unexpected identifier; expected ':'
+proofs/lean/LlmPolicyPublication.lean:100:189: error(lean.unknownIdentifier): Unknown identifier `s.base.policyGeneration`
+proofs/lean/LlmPolicyPublication.lean:100:215: error(lean.unknownIdentifier): Unknown identifier `s.published.length`
+proofs/lean/LlmPolicyPublication.lean:100:49: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:109:194: error(lean.unknownIdentifier): Unknown identifier `s.base.policyAllowed`
+proofs/lean/LlmPolicyPublication.lean:109:227: error(lean.unknownIdentifier): Unknown identifier `s.published`
+proofs/lean/LlmPolicyPublication.lean:109:54: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:119:10: error(lean.unknownIdentifier): Unknown identifier `s.acknowledgements`
+proofs/lean/LlmPolicyPublication.lean:119:34: error(lean.unknownIdentifier): Unknown identifier `s.published`
+proofs/lean/LlmPolicyPublication.lean:118:60: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:134:49: error: Function expected at
+  Step
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:136:56: error: unexpected identifier; expected ':'
+proofs/lean/LlmPolicyPublication.lean:146:42: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:152:10: error(lean.unknownIdentifier): Unknown identifier `s.published`
+proofs/lean/LlmPolicyPublication.lean:151:55: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:152:23: error(lean.invalidField): Invalid field notation: Type of
+  r
+is not known; cannot resolve field `generation`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `FiniteDomainMigration.Ticket.generation`
+  • `Publication.generation`
+proofs/lean/LlmPolicyPublication.lean:152:38: error(lean.invalidField): Invalid field notation: Type of
+  r
+is not known; cannot resolve field `change`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Lean.Parser.Tactic.change`
+  • `Publication.change`
+  • `Lean.Parser.Tactic.Conv.change`
+proofs/lean/LlmPolicyPublication.lean:157:58: error: unexpected identifier; expected ':'
+proofs/lean/LlmPolicyPublication.lean:166:190: error(lean.unknownIdentifier): Unknown identifier `t.published`
+proofs/lean/LlmPolicyPublication.lean:166:204: error(lean.unknownIdentifier): Unknown identifier `s.published`
+proofs/lean/LlmPolicyPublication.lean:166:47: error: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:171:195: error(lean.unknownIdentifier): Unknown identifier `s.published`
+proofs/lean/LlmPolicyPublication.lean:171:219: error(lean.unknownIdentifier): Unknown identifier `s.staged`
+proofs/lean/LlmPolicyPublication.lean:171:49: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:171:208: error(lean.invalidField): Invalid field notation: Type of
+  r
+is not known; cannot resolve field `change`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Lean.Parser.Tactic.change`
+  • `Publication.change`
+  • `Lean.Parser.Tactic.Conv.change`
+proofs/lean/LlmPolicyPublication.lean:176:44: error: unexpected identifier; expected command
+proofs/lean/LlmPolicyPublication.lean:178:58: error: unexpected identifier; expected ':'
+proofs/lean/LlmPolicyPublication.lean:187:10: error(lean.unknownIdentifier): Unknown identifier `s.staged`
+proofs/lean/LlmPolicyPublication.lean:186:47: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:187:20: error(lean.invalidField): Invalid field notation: Type of
+  c
+is not known; cannot resolve field `domain`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `GatewayHeadCAS.Head.domain`
+  • `LlmAuthoritativeScope.Record.domain`
+  • `Change.domain`
+proofs/lean/LlmPolicyPublication.lean:187:40: error(lean.invalidField): Invalid field notation: Type of
+  c
+is not known; cannot resolve field `sourceVector`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Change.sourceVector`
+  • `LlmRegistryPublication.Blob.sourceVector`
+proofs/lean/LlmPolicyPublication.lean:192:44: error: unexpected identifier; expected command
+proofs/lean/LlmPolicyPublication.lean:198:4: error: unexpected token '|'; expected command
+proofs/lean/LlmPolicyPublication.lean:207:81: error(lean.unknownIdentifier): Unknown identifier `s.base`
+proofs/lean/LlmPolicyPublication.lean:208:38: error(lean.unknownIdentifier): Unknown identifier `s.base.policyGeneration`
+proofs/lean/LlmPolicyPublication.lean:210:74: error(lean.unknownIdentifier): Unknown identifier `s.base`
+proofs/lean/LlmPolicyPublication.lean:211:31: error(lean.unknownIdentifier): Unknown identifier `s.base.publication.fence`
+proofs/lean/LlmPolicyPublication.lean:213:43: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:214:5: error(lean.unknownIdentifier): Unknown identifier `s.base.publication.execution.roots.base.messages`
+proofs/lean/LlmPolicyPublication.lean:215:5: error(lean.unknownIdentifier): Unknown identifier `s.base.publication.execution.roots.base.messages`
+proofs/lean/LlmPolicyPublication.lean:217:191: error(lean.unknownIdentifier): Unknown identifier `s.base.publication.intent`
+proofs/lean/LlmPolicyPublication.lean:218:53: error(lean.unknownIdentifier): Unknown identifier `routing.root`
+proofs/lean/LlmPolicyPublication.lean:218:68: error(lean.unknownIdentifier): Unknown identifier `registry.resolve`
+proofs/lean/LlmPolicyPublication.lean:217:44: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:221:34: error(lean.unknownIdentifier): Unknown identifier `s.base.publication.execution.children.attempts`
+proofs/lean/LlmPolicyPublication.lean:221:83: error(lean.unknownIdentifier): Unknown identifier `source.cost`
+proofs/lean/LlmPolicyPublication.lean:220:48: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:223:195: error(lean.unknownIdentifier): Unknown identifier `s.base.publication.execution.uses`
+proofs/lean/LlmPolicyPublication.lean:224:44: error(lean.unknownIdentifier): Unknown identifier `source.budget`
+proofs/lean/LlmPolicyPublication.lean:225:45: error(lean.unknownIdentifier): Unknown identifier `source.history`
+proofs/lean/LlmPolicyPublication.lean:223:43: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:224:4: error(lean.invalidField): Invalid field notation: Type of
+  u
+is not known; cannot resolve field `ticket`
+
+Hint: Consider replacing the field projection `.ticket` with a call to the function `LlmAuthoritativeScope.Use.ticket`.
+proofs/lean/LlmPolicyPublication.lean:225:4: error(lean.invalidField): Invalid field notation: Type of
+  u
+is not known; cannot resolve field `ticket`
+
+Hint: Consider replacing the field projection `.ticket` with a call to the function `LlmAuthoritativeScope.Use.ticket`.
+proofs/lean/LlmPolicyPublication.lean:228:22: error(lean.unknownIdentifier): Unknown identifier `s.base.publication.execution.children.attempts`
+proofs/lean/LlmPolicyPublication.lean:228:81: error(lean.unknownIdentifier): Unknown identifier `s.base.publication.execution.children.usage`
+proofs/lean/LlmPolicyPublication.lean:227:42: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:229:13: error: Function expected at
+  Step
+but this term has type
+  ?m.3
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmPolicyPublication.lean:230:5: error(lean.unknownIdentifier): Unknown identifier `t.base.publication.execution.roots.base.messages`
+proofs/lean/LlmPolicyPublication.lean:230:79: error(lean.unknownIdentifier): Unknown identifier `s.base.publication.execution.roots.base.messages`
+'Weaver.LlmPolicyPublication.cas_projection' depends on axioms: [propext, sorryAx, Quot.sound]
+proofs/lean/LlmPolicyPublication.lean:236:14: error(lean.unknownIdentifier): Unknown constant `generation_matches_durable_prefix`
+'Weaver.LlmPolicyPublication.effective_value_matches_durable_prefix' depends on axioms: [sorryAx]
+proofs/lean/LlmPolicyPublication.lean:238:14: error(lean.unknownIdentifier): Unknown constant `acknowledgements_name_committed_publications`
+'Weaver.LlmPolicyPublication.one_publication_per_change' depends on axioms: [sorryAx]
+proofs/lean/LlmPolicyPublication.lean:240:14: error(lean.unknownIdentifier): Unknown constant `published_changes_have_parent_successor`
+proofs/lean/LlmPolicyPublication.lean:241:14: error(lean.unknownIdentifier): Unknown constant `published_prefix_is_inherited`
+proofs/lean/LlmPolicyPublication.lean:242:14: error(lean.unknownIdentifier): Unknown constant `publication_is_from_staged_change`
+proofs/lean/LlmPolicyPublication.lean:243:14: error(lean.unknownIdentifier): Unknown constant `original_change_domain_is_bound`
+'Weaver.LlmPolicyPublication.sourceBound.sourceBound.sourceBound.late_acknowledgement_preserves_authority' does not depend on any axioms
+'Weaver.LlmPolicyPublication.sourceBound.sourceBound.sourceBound.producer_projection_loss_preserves_authority' does not depend on any axioms
+'Weaver.LlmPolicyPublication.sourceBound.sourceBound.sourceBound.stale_generation_cannot_consume' depends on axioms: [sorryAx]
+'Weaver.LlmPolicyPublication.sourceBound.sourceBound.sourceBound.old_fence_cannot_consume' depends on axioms: [sorryAx]
+'Weaver.LlmPolicyPublication.sourceBound.sourceBound.sourceBound.original_claim_stays_unique' depends on axioms: [sorryAx]
+'Weaver.LlmPolicyPublication.sourceBound.sourceBound.sourceBound.original_profile_stays_bound' depends on axioms: [sorryAx]
+'Weaver.LlmPolicyPublication.sourceBound.sourceBound.sourceBound.original_allowance_stays_bounded' depends on axioms: [sorryAx]
+proofs/lean/LlmPolicyPublication.lean:251:14: error(lean.unknownIdentifier): Unknown constant `original_domains_stay_bound`
+proofs/lean/LlmPolicyPublication.lean:252:14: error(lean.unknownIdentifier): Unknown constant `unknown_usage_retains_hold`
+proofs/lean/LlmPolicyPublication.lean:253:0: error: Invalid name after `end`: Expected `sourceBound.sourceBound`, but found `Weaver.LlmPolicyPublication`
+
+Hint: If you meant to end the outer scope(s) `Weaver.LlmPolicyPublication`, you must end all the intervening scopes `Weaver.LlmPolicyPublication.sourceBound.sourceBound.sourceBound`:
+  end Weaver.LlmPolicyPublication.̲s̲o̲u̲r̲c̲e̲B̲o̲u̲n̲d̲.̲s̲o̲u̲r̲c̲e̲B̲o̲u̲n̲d̲.̲s̲o̲u̲r̲c̲e̲B̲o̲u̲n̲d̲

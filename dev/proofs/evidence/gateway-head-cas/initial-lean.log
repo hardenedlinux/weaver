@@ -1,0 +1,348 @@
+proofs/lean/GatewayHeadCAS.lean:7:68: error(lean.inferBinderTypeFailed): Failed to infer type of binder `policy`
+proofs/lean/GatewayHeadCAS.lean:7:62: error(lean.inferBinderTypeFailed): Failed to infer type of binder `route`
+proofs/lean/GatewayHeadCAS.lean:7:50: error(lean.inferBinderTypeFailed): Failed to infer type of binder `claimStream`
+proofs/lean/GatewayHeadCAS.lean:7:39: error(lean.inferBinderTypeFailed): Failed to infer type of binder `claimToken`
+proofs/lean/GatewayHeadCAS.lean:7:31: error(lean.inferBinderTypeFailed): Failed to infer type of binder `payload`
+proofs/lean/GatewayHeadCAS.lean:7:23: error(lean.inferBinderTypeFailed): Failed to infer type of binder `history`
+proofs/lean/GatewayHeadCAS.lean:7:16: error(lean.inferBinderTypeFailed): Failed to infer type of binder `budget`
+proofs/lean/GatewayHeadCAS.lean:7:9: error(lean.inferBinderTypeFailed): Failed to infer type of binder `domain`
+proofs/lean/GatewayHeadCAS.lean:7:5: error(lean.inferBinderTypeFailed): Failed to infer type of binder `key`
+proofs/lean/GatewayHeadCAS.lean:11:23: error(lean.inferBinderTypeFailed): Failed to infer type of binder `semanticRevision`
+proofs/lean/GatewayHeadCAS.lean:11:17: error(lean.inferBinderTypeFailed): Failed to infer type of binder `fence`
+proofs/lean/GatewayHeadCAS.lean:11:10: error(lean.inferBinderTypeFailed): Failed to infer type of binder `worker`
+proofs/lean/GatewayHeadCAS.lean:13:10: error: Constructor field `view` of `Weaver.GatewayHeadCAS.Job.mk` contains universe level metavariables at the expression
+  {View : Sort ?u.5} → View
+in its type
+  {View : Sort ?u.5} → View
+proofs/lean/GatewayHeadCAS.lean:17:10: error: Constructor field `job` of `Weaver.GatewayHeadCAS.Decision.mk` contains universe level metavariables at the expression
+  {Job : Sort ?u.4} → Job
+in its type
+  {Job : Sort ?u.4} → Job
+proofs/lean/GatewayHeadCAS.lean:19:2: error: unexpected token 'at'; expected command
+proofs/lean/GatewayHeadCAS.lean:20:10: error: unexpected identifier; expected 'instance'
+proofs/lean/GatewayHeadCAS.lean:23:12: error(lean.inferBinderTypeFailed): Failed to infer type of binder `rows`
+proofs/lean/GatewayHeadCAS.lean:26:10: error: Constructor field `decision` of `Weaver.GatewayHeadCAS.Send.mk` contains universe level metavariables at the expression
+  {Decision : Sort ?u.4} → Decision
+in its type
+  {Decision : Sort ?u.4} → Decision
+proofs/lean/GatewayHeadCAS.lean:28:2: error: unexpected token 'at'; expected command
+proofs/lean/GatewayHeadCAS.lean:30:10: error: unexpected identifier; expected 'instance'
+proofs/lean/GatewayHeadCAS.lean:47:18: error(lean.inferBinderTypeFailed): Failed to infer type of binder `projectionOnline`
+proofs/lean/GatewayHeadCAS.lean:44:12: error(lean.inferBinderTypeFailed): Failed to infer type of binder `rows`
+proofs/lean/GatewayHeadCAS.lean:41:23: error(lean.inferBinderTypeFailed): Failed to infer type of binder `boot`
+proofs/lean/GatewayHeadCAS.lean:41:17: error(lean.inferBinderTypeFailed): Failed to infer type of binder `fence`
+proofs/lean/GatewayHeadCAS.lean:41:10: error(lean.inferBinderTypeFailed): Failed to infer type of binder `worker`
+proofs/lean/GatewayHeadCAS.lean:49:23: error: overloaded, errors 
+  failed to synthesize instance of type class
+    EmptyCollection State
+  
+  Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+  
+  invalid {...} notation, expected type is not of the form (C ...)
+    State
+proofs/lean/GatewayHeadCAS.lean:50:42: error: Invalid `⟨...⟩` notation: The expected type `View` is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+proofs/lean/GatewayHeadCAS.lean:51:50: error: Invalid `⟨...⟩` notation: The expected type `Joined` is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+proofs/lean/GatewayHeadCAS.lean:52:60: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:52:77: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:52:95: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:53:2: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:53:22: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:53:33: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:53:55: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:53:66: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:53:88: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:55:2: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:55:54: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  h
+has type `Head` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:54:3: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:54:44: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:55:18: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:55:71: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:57:55: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:57:68: error(lean.invalidField): Invalid field notation: Type of
+  d
+is not known; cannot resolve field `job`
+proofs/lean/GatewayHeadCAS.lean:58:44: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:58:63: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:58:76: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `job`
+proofs/lean/GatewayHeadCAS.lean:58:98: error(lean.invalidField): Invalid field notation: Type of
+  b
+is not known; cannot resolve field `job`
+proofs/lean/GatewayHeadCAS.lean:59:42: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:59:54: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:60:38: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:60:51: error(lean.invalidField): Invalid field notation: Type of
+  d
+is not known; cannot resolve field `job`
+proofs/lean/GatewayHeadCAS.lean:60:64: error(lean.invalidField): Invalid field notation: Type of
+  d
+is not known; cannot resolve field `at`
+
+Hint: Consider replacing the field projection `.at` with a call to the function `List.Cursor.at`.
+proofs/lean/GatewayHeadCAS.lean:61:47: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:62:9: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:62:26: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:62:36: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:62:63: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  s
+has type `State` which does not have the necessary form.
+proofs/lean/GatewayHeadCAS.lean:65:74: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `base`
+
+Hint: Consider replacing the field projection `.base` with a call to the function `Nat.lt.base`.
+proofs/lean/GatewayHeadCAS.lean:66:48: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `base`
+
+Hint: Consider replacing the field projection `.base` with a call to the function `Nat.lt.base`.
+proofs/lean/GatewayHeadCAS.lean:67:21: error: expected structure
+proofs/lean/GatewayHeadCAS.lean:68:38: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `authorityOnline`
+proofs/lean/GatewayHeadCAS.lean:68:84: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `worker`
+
+Hint: Consider replacing the field projection `.worker` with a call to the function `FiniteDomainMigration.Ticket.worker`.
+proofs/lean/GatewayHeadCAS.lean:69:45: error(lean.invalidField): Invalid field notation: Type of
+  h
+is not known; cannot resolve field `id`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `id`
+  • `Function.LeftInverse.id`
+  • `Function.RightInverse.id`
+  • `Std.CancellationContext.id`
+  • `Std.CancellationContext.State.id`
+  • `Std.Internal.LawfulMonadLiftBindFunction.id`
+proofs/lean/GatewayHeadCAS.lean:69:52: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `heads`
+proofs/lean/GatewayHeadCAS.lean:70:21: error: expected structure
+proofs/lean/GatewayHeadCAS.lean:71:39: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `authorityOnline`
+proofs/lean/GatewayHeadCAS.lean:71:85: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `worker`
+
+Hint: Consider replacing the field projection `.worker` with a call to the function `FiniteDomainMigration.Ticket.worker`.
+proofs/lean/GatewayHeadCAS.lean:72:24: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `heads`
+proofs/lean/GatewayHeadCAS.lean:73:21: error: expected structure
+proofs/lean/GatewayHeadCAS.lean:74:30: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `authorityOnline`
+proofs/lean/GatewayHeadCAS.lean:74:64: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `head`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `List.head`
+  • `Vector.head`
+  • `List.IsPrefix.head`
+  • `List.Mem.head`
+  • `List.Mem.below.head`
+  • `Std.Http.Method.head`
+  • `Std.Http.Request.head`
+  • `Std.Internal.Do.EPost.Cons.head`
+proofs/lean/GatewayHeadCAS.lean:75:21: error: expected structure
+proofs/lean/GatewayHeadCAS.lean:76:34: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `authorityOnline`
+proofs/lean/GatewayHeadCAS.lean:76:68: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `head`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `List.head`
+  • `Vector.head`
+  • `List.IsPrefix.head`
+  • `List.Mem.head`
+  • `List.Mem.below.head`
+  • `Std.Http.Method.head`
+  • `Std.Http.Request.head`
+  • `Std.Internal.Do.EPost.Cons.head`
+proofs/lean/GatewayHeadCAS.lean:77:82: error: expected structure
+proofs/lean/GatewayHeadCAS.lean:78:28: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `authorityOnline`
+proofs/lean/GatewayHeadCAS.lean:78:62: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `head`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `List.head`
+  • `Vector.head`
+  • `List.IsPrefix.head`
+  • `List.Mem.head`
+  • `List.Mem.below.head`
+  • `Std.Http.Method.head`
+  • `Std.Http.Request.head`
+  • `Std.Internal.Do.EPost.Cons.head`
+proofs/lean/GatewayHeadCAS.lean:79:14: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `observed`
+
+Hint: Consider replacing the field projection `.observed` with a call to the function `LogicalMessageAuthority.State.observed`.
+proofs/lean/GatewayHeadCAS.lean:79:100: error(lean.invalidField): Invalid field notation: Type of
+  h
+is not known; cannot resolve field `key`
+proofs/lean/GatewayHeadCAS.lean:80:21: error: expected structure
+proofs/lean/GatewayHeadCAS.lean:81:36: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `authorityOnline`
+proofs/lean/GatewayHeadCAS.lean:81:70: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `head`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `List.head`
+  • `Vector.head`
+  • `List.IsPrefix.head`
+  • `List.Mem.head`
+  • `List.Mem.below.head`
+  • `Std.Http.Method.head`
+  • `Std.Http.Request.head`
+  • `Std.Internal.Do.EPost.Cons.head`
+proofs/lean/GatewayHeadCAS.lean:82:24: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `jobs`
+proofs/lean/GatewayHeadCAS.lean:82:52: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `worker`
+
+Hint: Consider replacing the field projection `.worker` with a call to the function `FiniteDomainMigration.Ticket.worker`.
+proofs/lean/GatewayHeadCAS.lean:82:77: error(lean.invalidField): Invalid field notation: Type of
+  j
+is not known; cannot resolve field `view`
+
+Hint: Consider replacing the field projection `.view` with a call to the function `view`.
+proofs/lean/GatewayHeadCAS.lean:83:15: error(lean.invalidField): Invalid field notation: Type of
+  j
+is not known; cannot resolve field `view`
+
+Hint: Consider replacing the field projection `.view` with a call to the function `view`.
+proofs/lean/GatewayHeadCAS.lean:83:42: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `observed`
+
+Hint: Consider replacing the field projection `.observed` with a call to the function `LogicalMessageAuthority.State.observed`.
+proofs/lean/GatewayHeadCAS.lean:83:60: error(lean.invalidField): Invalid field notation: Type of
+  j
+is not known; cannot resolve field `view`
+
+Hint: Consider replacing the field projection `.view` with a call to the function `view`.
+proofs/lean/GatewayHeadCAS.lean:84:67: error(lean.invalidField): Invalid field notation: Type of
+  s
+is not known; cannot resolve field `base`
+
+Hint: Consider replacing the field projection `.base` with a call to the function `Nat.lt.base`.
+proofs/lean/GatewayHeadCAS.lean:84:101: error(lean.invalidField): Invalid field notation: Type of
+  h
+is not known; cannot resolve field `key`
+proofs/lean/GatewayHeadCAS.lean:86:21: error: expected structure
+proofs/lean/GatewayHeadCAS.lean:85:34: error: Application type mismatch: The argument
+  j
+has type
+  ?m.135
+of sort `Type ?u.114` but is expected to have type
+  ?m.175
+of sort `Prop` in the application
+  owner.casValid j
+proofs/lean/GatewayHeadCAS.lean:111:29: error: Function expected at
+  Step
+but this term has type
+  ?m.6
+
+Note: Expected a function because this term is being applied to the argument
+  c
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/GatewayHeadCAS.lean:115:59: error(lean.unknownIdentifier): Unknown identifier `s.decisions`
+proofs/lean/GatewayHeadCAS.lean:115:75: error(lean.unknownIdentifier): Unknown identifier `t.decisions`
+proofs/lean/GatewayHeadCAS.lean:115:39: error: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  c
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/GatewayHeadCAS.lean:120:51: error: Function expected at
+  Step
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  c
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/GatewayHeadCAS.lean:138:47: error: Function expected at
+  Step
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  c
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/GatewayHeadCAS.lean:139:19: error: maximum number of errors (100; from option `maxErrors`) reached, exiting

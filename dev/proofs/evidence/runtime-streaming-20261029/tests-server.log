@@ -1,0 +1,74 @@
+   Compiling serde_core v1.0.229
+   Compiling tokio-macros v2.7.2
+   Compiling tracing v0.1.44
+   Compiling form_urlencoded v1.2.2
+   Compiling httpdate v1.0.3
+   Compiling subtle v2.6.1
+   Compiling mime v0.3.17
+   Compiling ryu v1.0.23
+   Compiling matchit v0.8.4
+   Compiling url v2.5.8
+   Compiling rustls v0.23.46
+   Compiling axum-core v0.5.6
+   Compiling tokio v1.53.2
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.154
+   Compiling semver v1.0.28
+   Compiling smol_str v0.3.6
+   Compiling serde_spanned v1.1.2
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling serde_path_to_error v0.1.20
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling linked-hash-map v0.5.6
+   Compiling miette v7.6.0
+   Compiling nonempty v0.12.0
+   Compiling serde_urlencoded v0.7.1
+   Compiling linked_hash_set v0.1.6
+   Compiling cargo_toml v1.0.1
+   Compiling serde_with v3.24.0
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling asp-rust v0.1.2 (https://github.com/tao3k/asp-rust?rev=1ca41124b846dec947f3d05119cafa07eaa57924#1ca41124)
+   Compiling cedar-policy-core v4.12.0
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling tokio-rustls v0.26.5
+   Compiling tower-http v0.6.11
+   Compiling hyper-util v0.1.20
+   Compiling hyper-rustls v0.27.9
+   Compiling axum v0.8.9
+   Compiling reqwest v0.13.5
+   Compiling cedar-policy-formatter v4.12.0
+   Compiling cedar-policy v4.12.0
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+   Compiling weaver-cli v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 30.84s
+     Running unittests src/lib.rs (target/debug/deps/weaver_cli-88899c16483bf86a)
+
+running 1 test
+test enforce_asp_rust_gate ... FAILED
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (19694062) panicked at crates/cli/src/lib.rs:6:1:
+[RUST-AGENT-CFG-PUBLIC-016] Info: Public function owns a broad linear algorithm surface
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/cli/src/commands.rs:18:1
+fix: split this broad function into named algorithm steps
+line: 18 | pub fn run() -> Result<()> {
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/cli/src/commands.rs public function `run` spans 87 lines with 37 statements and a 6-statement block. Criteria: software-criterion/control-flow.broad-linear-phase.
+Contract: Split broad public Rust functions into small named helpers or pipeline steps so agents can edit one algorithm responsibility at a time.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `-p weaver-cli --lib`

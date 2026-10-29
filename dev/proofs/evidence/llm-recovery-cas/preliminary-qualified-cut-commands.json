@@ -1,0 +1,435 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "exit": 0,
+    "seconds": 5.176,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.933,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.065,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "GatewayHeadCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/GatewayHeadCAS.olean",
+      "proofs/lean/GatewayHeadCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.999,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "BrokerConsumptionQueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/BrokerConsumptionQueue.olean",
+      "proofs/lean/BrokerConsumptionQueue.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.167,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LogicalRangeRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/LogicalRangeRecovery.olean",
+      "proofs/lean/LogicalRangeRecovery.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.238,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRouting",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/LlmRouting.olean",
+      "proofs/lean/LlmRouting.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.849,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAttemptLedger",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/LlmAttemptLedger.olean",
+      "proofs/lean/LlmAttemptLedger.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.779,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmSemanticContract",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/LlmSemanticContract.olean",
+      "proofs/lean/LlmSemanticContract.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.728,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAuthoritativeScope",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/LlmAuthoritativeScope.olean",
+      "proofs/lean/LlmAuthoritativeScope.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.8,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRegistryPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/LlmRegistryPublication.olean",
+      "proofs/lean/LlmRegistryPublication.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.579,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRecoveryCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-recovery-cas-qr38y5md/LlmRecoveryCAS.olean",
+      "proofs/lean/LlmRecoveryCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.563,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "typecheck",
+    "args": [
+      "quint",
+      "typecheck",
+      "proofs/qunit/LlmRecoveryCAS.qnt"
+    ],
+    "exit": 0,
+    "seconds": 1.173,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmRecoveryCAS.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 0.825,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmRecoveryCAS.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "(tornRead|policyABA|oldFence|staleLedger|lateAck|duplicate|profileSwap|unknownRefund)CASCounterexampleTest$",
+      "--out-itf",
+      "proofs/evidence/llm-recovery-cas/itf/{test}-{seq}.itf.json"
+    ],
+    "exit": 0,
+    "seconds": 0.733,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "init",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmRecoveryCAS.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "173",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.778,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "observed",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmRecoveryCAS.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "observed",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "173",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.726,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "prepared",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmRecoveryCAS.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "prepared",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "173",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.732,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "committed",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmRecoveryCAS.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "committed",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "173",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.782,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "restricted",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmRecoveryCAS.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "restricted",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "173",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.721,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "restarted",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmRecoveryCAS.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "restarted",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "173",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.729,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "unknown",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmRecoveryCAS.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "unknown",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "173",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 0.772,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "publication-regression",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmRegistryPublication.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 0.831,
+    "watchdogSeconds": 55
+  }
+]

@@ -1,0 +1,34 @@
+#+TITLE: Weaver Integrated Research Audit
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Decision
+Prioritize a useful LLM Gateway slice and the constructive connection between
+configuration, original task authority, routing, final dispatch, and accounting.
+Further recovery models are justified when a concrete slice requirement exposes
+an unresolved counterexample. Model depth alone is not product qualification.
+
+This entry records the research-program review of 2026-10-20. Earlier sealed
+navigation and evidence remain historical snapshots. This review does not
+implement Gateway code, alter dependency pins, or authorize deployment.
+
+* Reading order
+1. [[file:50.01-integrated-audit.org][Findings and architecture boundaries]].
+2. [[file:50.02-research-plan.org][Prioritized research packages and decision gates]].
+3. [[file:50.03-audit-evidence.org][Evidence classification and reproduction limits]].
+
+* Existing design and four-artifact anchors
+| Concern | Existing anchor | Use in this program |
+|---------+-----------------+---------------------|
+| Product differentiation | [[file:../../10-19-llm-gateway/10-routing-and-inference/10.03-differentiation-and-delivery.org][LLM delivery strategy]] | Keep advantages measurable |
+| Actual child attempts | [[file:../../10-19-llm-gateway/11-attempts-and-failover/11.03-validation-evidence.org][Attempt evidence]] | Preserve root reservation coupling |
+| Wire semantics | [[file:../../10-19-llm-gateway/12-semantic-contracts/12.03-validation-evidence.org][Semantic evidence]] | Bind canonical operation to actual effect |
+| Original task authority | [[file:../../10-19-llm-gateway/13-authoritative-scope/13.03-validation-evidence.org][Authority evidence]] | Reuse canonical source-to-scope derivation |
+| Configurable routines and routes | [[file:../../40-49-admission-coordination/49-routine-routing-config/49.01-routine-routing-config.org][Configuration design]] | Extend common semantics constructively |
+| Core diagram | [[file:../../40-49-admission-coordination/49-routine-routing-config/49.02-routine-routing-config.d2][Routine/routing D2]] | Retain core design only |
+| Lean | [[file:../../../proofs/lean/RoutineRoutingConfig.lean][Configuration proofs]] | Identify supplied premises |
+| Quint | [[file:../../../proofs/qunit/RoutineRoutingConfig.qnt][Configuration transition model]] | Preserve guarded and fault controls |
+
+This planning audit adds no runtime state transition and therefore creates no
+new diagram or proof-count claim. Existing Org, D2, Lean, and Quint remain the
+four linked design surfaces; future behavioral changes must update all four.

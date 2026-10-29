@@ -1,0 +1,317 @@
+proofs/lean/FencedIntentContinuation.lean:248:76: error: Type mismatch: After simplification, term
+  original
+ has type
+  FloorIntentDecision.Committed
+    {
+      base :=
+        { base := next, device := s.legacy.base.device, driver := s.legacy.base.driver,
+          profile := s.legacy.base.profile, serial := s.legacy.base.serial, aliases := s.legacy.base.aliases,
+          blocked := s.legacy.base.blocked, captured := s.legacy.base.captured, certified := s.legacy.base.certified,
+          journal := s.legacy.base.journal ++ [i.cut], submissions := s.legacy.base.submissions,
+          validated := s.legacy.base.validated, archived := s.legacy.base.archived },
+      worker := s.legacy.worker, fence := s.legacy.fence, accepted := s.legacy.accepted,
+      decisions := s.legacy.decisions, slot := s.legacy.slot, observed := s.legacy.observed }
+    i
+but is expected to have type
+  FloorIntentDecision.Committed s.legacy i
+proofs/lean/FencedIntentContinuation.lean:391:36: error: don't know how to synthesize implicit argument `root`
+  @NextMilestoneEnabled (?m.89 trace reachable events stable within available n m)
+    (?m.90 trace reachable events stable within available n m)
+    (?m.91 trace reachable events stable within available n m)
+    (?m.92 trace reachable events stable within available n m)
+    (?m.93 trace reachable events stable within available n m)
+    (?m.94 trace reachable events stable within available n m) trace m
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+available : ∀ (n : Nat), 0 < (trace n).phase → NextMilestoneEnabled trace n
+n m : Nat
+⊢ Nat
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:391:36: error: don't know how to synthesize implicit argument `native`
+  @NextMilestoneEnabled (?m.89 trace reachable events stable within available n m)
+    (?m.90 trace reachable events stable within available n m)
+    (?m.91 trace reachable events stable within available n m)
+    (?m.92 trace reachable events stable within available n m)
+    (?m.93 trace reachable events stable within available n m)
+    (?m.94 trace reachable events stable within available n m) trace m
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+available : ∀ (n : Nat), 0 < (trace n).phase → NextMilestoneEnabled trace n
+n m : Nat
+⊢ DeviceIsolationRecovery.NativeOwner
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:391:36: error: don't know how to synthesize implicit argument `continuationOwner`
+  @NextMilestoneEnabled (?m.89 trace reachable events stable within available n m)
+    (?m.90 trace reachable events stable within available n m)
+    (?m.91 trace reachable events stable within available n m)
+    (?m.92 trace reachable events stable within available n m)
+    (?m.93 trace reachable events stable within available n m)
+    (?m.94 trace reachable events stable within available n m) trace m
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+available : ∀ (n : Nat), 0 < (trace n).phase → NextMilestoneEnabled trace n
+n m : Nat
+⊢ ContinuationOwner
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:391:36: error: don't know how to synthesize implicit argument `decisionOwner`
+  @NextMilestoneEnabled (?m.89 trace reachable events stable within available n m)
+    (?m.90 trace reachable events stable within available n m)
+    (?m.91 trace reachable events stable within available n m)
+    (?m.92 trace reachable events stable within available n m)
+    (?m.93 trace reachable events stable within available n m)
+    (?m.94 trace reachable events stable within available n m) trace m
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+available : ∀ (n : Nat), 0 < (trace n).phase → NextMilestoneEnabled trace n
+n m : Nat
+⊢ FloorIntentDecision.DecisionOwner
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:391:36: error: don't know how to synthesize implicit argument `ds`
+  @NextMilestoneEnabled (?m.89 trace reachable events stable within available n m)
+    (?m.90 trace reachable events stable within available n m)
+    (?m.91 trace reachable events stable within available n m)
+    (?m.92 trace reachable events stable within available n m)
+    (?m.93 trace reachable events stable within available n m)
+    (?m.94 trace reachable events stable within available n m) trace m
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+available : ∀ (n : Nat), 0 < (trace n).phase → NextMilestoneEnabled trace n
+n m : Nat
+⊢ Device → Device → Prop
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:391:36: error: don't know how to synthesize implicit argument `ks`
+  @NextMilestoneEnabled (?m.89 trace reachable events stable within available n m)
+    (?m.90 trace reachable events stable within available n m)
+    (?m.91 trace reachable events stable within available n m)
+    (?m.92 trace reachable events stable within available n m)
+    (?m.93 trace reachable events stable within available n m)
+    (?m.94 trace reachable events stable within available n m) trace m
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+available : ∀ (n : Nat), 0 < (trace n).phase → NextMilestoneEnabled trace n
+n m : Nat
+⊢ Key → Key → Prop
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:390:44: error: don't know how to synthesize implicit argument `root`
+  @NextMilestoneEnabled (?m.83 trace reachable events stable within n) (?m.84 trace reachable events stable within n)
+    (?m.85 trace reachable events stable within n) (?m.86 trace reachable events stable within n)
+    (?m.87 trace reachable events stable within n) (?m.88 trace reachable events stable within n) trace n
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+n : Nat
+⊢ Nat
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:390:44: error: don't know how to synthesize implicit argument `native`
+  @NextMilestoneEnabled (?m.83 trace reachable events stable within n) (?m.84 trace reachable events stable within n)
+    (?m.85 trace reachable events stable within n) (?m.86 trace reachable events stable within n)
+    (?m.87 trace reachable events stable within n) (?m.88 trace reachable events stable within n) trace n
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+n : Nat
+⊢ DeviceIsolationRecovery.NativeOwner
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:390:44: error: don't know how to synthesize implicit argument `continuationOwner`
+  @NextMilestoneEnabled (?m.83 trace reachable events stable within n) (?m.84 trace reachable events stable within n)
+    (?m.85 trace reachable events stable within n) (?m.86 trace reachable events stable within n)
+    (?m.87 trace reachable events stable within n) (?m.88 trace reachable events stable within n) trace n
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+n : Nat
+⊢ ContinuationOwner
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:390:44: error: don't know how to synthesize implicit argument `decisionOwner`
+  @NextMilestoneEnabled (?m.83 trace reachable events stable within n) (?m.84 trace reachable events stable within n)
+    (?m.85 trace reachable events stable within n) (?m.86 trace reachable events stable within n)
+    (?m.87 trace reachable events stable within n) (?m.88 trace reachable events stable within n) trace n
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+n : Nat
+⊢ FloorIntentDecision.DecisionOwner
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:390:44: error: don't know how to synthesize implicit argument `ds`
+  @NextMilestoneEnabled (?m.83 trace reachable events stable within n) (?m.84 trace reachable events stable within n)
+    (?m.85 trace reachable events stable within n) (?m.86 trace reachable events stable within n)
+    (?m.87 trace reachable events stable within n) (?m.88 trace reachable events stable within n) trace n
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+n : Nat
+⊢ Device → Device → Prop
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:390:44: error: don't know how to synthesize implicit argument `ks`
+  @NextMilestoneEnabled (?m.83 trace reachable events stable within n) (?m.84 trace reachable events stable within n)
+    (?m.85 trace reachable events stable within n) (?m.86 trace reachable events stable within n)
+    (?m.87 trace reachable events stable within n) (?m.88 trace reachable events stable within n) trace n
+context:
+ks : Key → Key → Prop
+ds : Device → Device → Prop
+decisionOwner : FloorIntentDecision.DecisionOwner
+continuationOwner : ContinuationOwner
+native : DeviceIsolationRecovery.NativeOwner
+root : Nat
+trace : Nat → State
+reachable : ∀ (n : Nat), History initial (trace n)
+events : ∀ (n : Nat), Event (trace n) (trace (n + 1))
+stable : ∀ (n : Nat), (trace (n + 1)).legacy.worker = (trace n).legacy.worker
+within : ∀ (n : Nat), (trace n).phase ≤ 13
+n : Nat
+⊢ Key → Key → Prop
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+proofs/lean/FencedIntentContinuation.lean:468:14: error(lean.unknownIdentifier): Unknown constant `weakly_fair_available_recovery_becomes_enabled`
+'Weaver.FencedIntentContinuation.initialized_original_and_continuation_cannot_both_commit' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_original_attempt_outcomes_unique' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_zero_phase_means_enabled' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.stable_fair_recovery_becomes_enabled' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.late_active_link_cannot_cross_new_fence' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.retired_attempts_never_reactivate' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.recut_unlock_counterexample' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.duplicate_root_commit_counterexample' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.unfair_stutter_has_no_recovery' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.commits_never_roll_back' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.old_attempt_decisions_never_change' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.recut_preserves_original_obligation' does not depend on any axioms
+'Weaver.FencedIntentContinuation.only_current_unsettled_root_can_commit' does not depend on any axioms
+'Weaver.FencedIntentContinuation.initialized_conservation' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_unique_root' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.continuation_acknowledges_original_root' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.stable_rank_nonincreasing' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FencedIntentContinuation.fair_monotone_rank_eventually_zero' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.stable_fair_recovery_finishes' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_product_refines_key' does not depend on any axioms
+'Weaver.FencedIntentContinuation.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.original_budget_remains_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

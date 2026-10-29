@@ -1,0 +1,129 @@
+#+title: Weaver Agent Protocol Admission, Canonical Identity and Routing
+#+language: en
+#+options: toc:3
+
+* Decision: multiple protocol roles, one governed execution boundary
+
+Weaver must account for tool access, agent collaboration, editor interaction,
+frontend events, semantic provenance and LLM provider traffic. These interfaces
+have different operation/lifecycle semantics. The architecture preserves those
+differences while joining admitted operations to the same original task, semantic
+profile, canonical intent family, budget/history domains and final broker.
+
+The protocol taxonomy below is grounded in official documentation listed in the
+[[file:../../../proofs/evidence/llm-policy-continuation/protocol-sources.json][protocol reference register]]. It is an architectural admission plan, not a
+claim of implemented or certified adapter support. Mutable official documentation
+must be resolved to a reviewed explicit profile before native implementation;
+this review changes no dependency pin.
+
+* Protocol inventory and names
+
+| Interface | Actual role and primary source | Weaver architectural position |
+|-----------+--------------------------------+-------------------------------|
+| MCP: Model Context Protocol | Agent access to tools, resources and prompts; [[https://modelcontextprotocol.io/specification/2026-07-28][official specification]] | First-class tool/data ingress and egress profile; preserve operation kind and selected transport/authentication semantics |
+| A2A: Agent2Agent | Agent collaboration through messages, tasks, artifacts and asynchronous/streaming updates; [[https://a2a-protocol.org/dev/specification/][official specification]] | First-class delegated-agent boundary; remote task lifecycle remains distinct from local effect/budget completion |
+| ACP: Agent Client Protocol | Editor/client-to-coding-agent sessions and bidirectional methods/notifications; [[https://agentclientprotocol.com/protocol/v1/overview][official overview]] | Optional client integration; permission requests, file operations and terminal actions each retain separate actual-effect admission |
+| ACP: Agent Communication Protocol | REST-oriented agent interoperability; its [[https://agentcommunicationprotocol.dev/introduction/welcome][official welcome]] announces integration into A2A | Distinguish this name from Client ACP; evaluate an explicit legacy import profile only where a real deployment requires it, rather than create a second mandatory agent-network core |
+| AG-UI | Agent/frontend interaction through bidirectional events and shared UI/agent state; [[https://docs.ag-ui.com/introduction][official overview]] | Optional presentation/event boundary; user interaction and replayed state updates are requests or data, not authority publications |
+| A2UI | Declarative agent-generated UI content; [[https://a2ui.org/introduction/what-is-a2ui/][official introduction]] | Typed output/artifact content profile; distinguish UI description from AG-UI transport/lifecycle and from execution permission |
+| ANP: Agent Network Protocol | Layered agent identity, discovery and communication; [[https://github.com/agent-network-protocol/AgentNetworkProtocol/blob/main/docs/anp-getting-started-guide.md][official project guide]] | Evaluate for federated discovery under a separate trust profile; external identity/discovery never grants original-root authority by itself |
+| ASP: this project's Agent Semantic Protocols | Local shared semantic schemas/provider contracts and source-bound query projection; [[file:../../../proofs/evidence/llm-policy-continuation/asp-source-review.json][inspected local sources]] | Semantic provenance and typed source evidence; distinct from both meanings of ACP and from A2A; packets do not own mutation or Gateway execution authority |
+| LLM provider APIs | Provider-specific request/response, tool proposal, streaming and usage representations | Existing LLM routing/codec layer; bind actual model, target, input, response mode and retry to the original admitted operation |
+| HTTP/JSON, gRPC, SSE, WebSocket and webhooks | Transport/binding choices for selected operation profiles | Framing, connection and delivery properties do not allocate claims, intent families or budgets |
+
+A2A is the Google-originated Agent-to-Agent protocol the request refers to. The
+A2A project explicitly distinguishes agent-to-tool MCP from agent-to-agent A2A
+in its [[https://a2a-protocol.org/][official overview]]. These layers can coexist. ACP must always be qualified
+as =Client ACP= or =Communication ACP= in maintained Weaver contracts.
+
+* Unified admission envelope without flattening semantics
+
+A native adapter must authenticate and bind the following information before it
+can produce a broker-admissible operation:
+
+| Binding | Required content |
+|---------+------------------|
+| Principal/source | Tenant, authenticated principal/delegation, source issuer, adapter identity and approved endpoint/authority namespace |
+| Canonical operation | Original task/claim, immutable profile commitment, intent family, exact effect kind and payload commitment |
+| Wire identity | Protocol/profile, peer, session/task/message/request IDs and streaming range identity, retained as attributable aliases |
+| Destination | Exact resolved provider/agent/tool target, route/capability commitment and credential audience |
+| Current authority | Qualified prefix, generation, execution revision, fence and applicable actual-operation Policy layers |
+| Obligations | Original budget/history domains, child allocation, unknown/spent disposition and attributable result/usage evidence |
+
+Missing or lossy identity/semantic mapping closes admission. A protocol adapter
+cannot invent a default profile, choose another history domain, treat an OAuth
+scope as a Cedar grant or infer a family from a raw wire task ID. Public discovery
+and capability descriptions are data until source/Policy admission succeeds.
+Credentials and protocol-level authentication establish selected peer/principal
+facts; the actual effect still needs current governed authorization.
+
+Request classes stay typed: tool call, resource read, prompt retrieval, agent task
+submission, task observation, frontend event, semantic query and tool-effect
+execution are not interchangeable. A UI approval event is not the Policy decision
+for every later effect. A semantic read locator is not a mutation capability.
+Unknown/custom methods and extensions require an admitted profile or are rejected.
+
+* Protocol lifecycle to canonical execution
+
+| Wire event | Canonical handling | Failure or retry rule |
+|------------+--------------------+-----------------------|
+| MCP reconnect or request retry | Resolve authenticated session/request alias to original operation and exact tool/data kind | New session/request ID cannot reset consumption or create a fresh budget |
+| A2A delegation/task submission | Allocate a child under the original scope, claim and allowance; bind remote task identity after attributable acknowledgement | Unknown remote submission retains the original slot/hold; do not submit a fresh task just because a reply was lost |
+| A2A status, artifact update, resubscription or webhook | Attributable observations/output ranges under the original child | Replayed status is not a durable winner or financial settlement; callback target/peer needs current egress admission |
+| Client ACP session load/prompt/permission callback | Resolve original session/task context; admit each actual filesystem/terminal/tool effect separately | Session resume and permission UI response do not bypass current Policy or original pending intent |
+| AG-UI replay, state patch or frontend tool request | Validate typed event/source and resolve the original root before proposing an effect | Reconnect/UI state cannot publish Policy or manufacture an approval/winner |
+| A2UI artifact/action | Validate the admitted output/content profile; a user action becomes a separately authenticated input | Rendering a component cannot grant execution, widen tool scope or silently downgrade response validation |
+| ASP query/read/expansion/patch proposal | Preserve parser/source fingerprint, exact locator and producer/schema identity | A new packet or provider does not grant write authority; actual mutation takes separate admission |
+| Provider fallback, redirect or SDK retry | Re-evaluate actual target/codec and preserve original intent and budget/history links | New target, connection or nonce cannot repeat an unknown operation or enlarge its original profile |
+
+A2A's official specification warns that message history and reconnect delivery do
+not guarantee all messages are retained or received. Weaver therefore cannot use
+protocol history as its authoritative publication/consumption ledger. Protocol
+cancellation and terminal task status also do not establish transport quiescence,
+final usage or the absence of an already accepted remote effect; those are Weaver
+execution/settlement acceptance obligations.
+
+* Routing and language responsibilities
+
+Routing first identifies the semantic operation and admitted protocol profile,
+then resolves an allowed destination under the original contract. LLM model
+selection, delegated-agent selection and tool/resource routing are separate typed
+choices. Model/provider substitution cannot be disguised as a protocol conversion.
+All retries and route/capability changes retain original identity and cross the
+existing currentness/Policy gates.
+
+Scheme defines operation semantics, same-intent/conflict rules and source/Policy
+projections. Go supplies cloud-native controllers, lifecycle reconciliation,
+service discovery and selected protocol SDK integration. Its adapter may terminate
+wire framing and propose a source-bound operation, but cannot own an independent
+final-send or Policy-publication path. Rust owns durable canonical identity lookup,
+intent-family/winner CAS, consumption, current routing checks and final byte/range
+ownership. A Go SDK that insists on uncontrolled retries or direct egress cannot
+be admitted for a protected effect without an explicit mediated design.
+
+Go ingress framing termination is distinct from protected egress. Deployment
+capabilities must prevent adapters from independently exercising protected
+external-egress credentials/routes outside the broker. This is a logical ownership
+contract requiring native qualification, not a physical-isolation assumption.
+
+The adapter/broker contract must bind exact encoded content and destination before
+send. Redirects, remote artifact URLs and webhook targets are untrusted destination
+inputs until current routing/egress authorization succeeds. Response conversion
+must preserve tool arguments, response mode, artifact/range identity and usage
+attribution. A permissive adapter parser cannot silently replace Scheme's contract.
+
+* Cross-protocol continuation and verification boundary
+
+MCP, A2A, Client ACP, AG-UI and ASP are represented by abstract protocol tags in
+the new Quint alias scenarios. Each tag binds to the same admitted canonical root;
+new session/task IDs do not affect original pending, winner, spent-state or hold.
+Lean proves alias registration changes data only and retains the original root.
+A2UI/ANP and provider formats are considered in the architecture but are not new
+wire-conformance models in this delta.
+
+Native adapter acceptance must test authenticated namespace collisions, duplicate
+wire IDs, protocol upgrades/extensions, task recreation, reconnect/resubscription,
+replayed callbacks, redirect/destination changes and cancellation after partial
+send. Interoperability tests and schema/parser tests remain separate from the
+abstract safety proof. No protocol is claimed to implement Cedar Policy, durable
+family consensus or budget settlement on Weaver's behalf.

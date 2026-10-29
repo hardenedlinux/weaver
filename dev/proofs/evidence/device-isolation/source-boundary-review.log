@@ -1,0 +1,234 @@
+P12 modules/governance/policy/authorized-effect-token.ss
+6: ;;; Invariant: validation and consumption are pure immutable transitions.
+12:         poo-flow-effect-binding
+13:         poo-flow-effect-binding-digest
+19:         poo-flow-authorized-effect-token-consume)
+27: (def (poo-flow-effect-binding-digest binding-object)
+28:   (unless (eq? (.ref binding-object 'kind) 'poo-flow-effect-binding)
+29:     (error "effect binding digest requires EffectBinding" binding-object))
+31:    (cons 'poo-flow.effect-binding.v1
+32:          (binding-projection binding-object))))
+36:     (error "token digest requires AuthorizedEffectToken" token-object))
+43:            (poo-flow-effect-binding-digest (.ref token-object 'binding))
+64: (def (poo-flow-effect-binding b-digest b-epoch p-digest e-digest d-digest i-digest
+66:                               arena arena-gen offset length pld-digest lease)
+68:    (list (cons 'kind 'poo-flow-effect-binding)
+75:          (cons 'arena-id arena) (cons 'arena-generation arena-gen)
+76:          (cons 'payload-offset offset) (cons 'payload-length length)
+77:          (cons 'payload-digest pld-digest) (cons 'lease-id lease))))
+84: (def (poo-flow-authorized-effect-token identity token-nonce root effect-binding
+91:          (cons 'semantic-root root) (cons 'binding effect-binding)
+96: (def (poo-flow-token-validation-context root expected-binding current-time
+99:       (semantic-root root) (binding expected-binding) (now current-time)
+100:       (revocation-epoch current-revocation) (consumed-nonces spent-nonces)))
+102: (def (binding-projection binding)
+103:   (list (.ref binding 'bundle-digest) (.ref binding 'bundle-epoch)
+
+P13 modules/governance/policy/strict-mediation.ss
+6: ;;; Invariant: a token is consumed at most once and roots never fork silently.
+18:       (consumed-nonces spent) (revocation-epoch revocation)
+37:     (transition state (negative-receipt 'execution-root-fork state token)))
+48:                    (cons token-nonce (.ref state 'consumed-nonces))
+59:           (let* ((consumption-receipt
+60:                   (poo-flow-authorized-effect-token-consume
+65:                    (.ref consumption-receipt 'execution-root)
+67:                    (cons token-nonce (.ref state 'consumed-nonces))
+74:                       (after-root (.ref consumption-receipt 'execution-root))
+75:                       (consumption consumption-receipt) (durability 'strict))))
+
+P15 modules/assurance/effect-host.ss
+27:       (error "effect Host requires its exact serialized owner"))
+28:     (when (vector-ref state 7) (error "effect Host mutation during runtime handoff"))
+33:       (error "effect Host clock must be monotonic and nonnegative"))
+45: (def (assurance-effect-host authorize deliver clock lease)
+47:                (exact-integer? lease) (> lease 0))
+48:     (error "invalid effect Host runtime configuration"))
+50:     (hash-put! hosts host (vector (current-thread) authorize deliver clock lease 0 0 #f 0))
+78:                       (.ref (vector-ref issued 3) 'binding)
+97:                        (binding
+98:                         (poo-flow-effect-binding
+104:                                decision next next root binding
+115: ;;; Reservation consumes the grant once, but executes no external effect.
+133:       ;; Consume even on rejection / exception / unknown acknowledgement.
+142:               (error "runtime delivery returned an invalid acknowledgement" outcome))
+
+P17 modules/ai-agentic-context/features/memory/durable/store-backend.ss
+8: ;;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs.
+140: (def (poo-flow-durable-runtime-backend-diagnostic code slot severity payload)
+148:    (cons 'payload payload)
+151:           payload
+164:       'error
+177:       'error
+194:       'error
+210:       'error
+358:            'error
+370:            'error
+397:         'error
+443:   (bindings ((diagnostics
+502:       'error
+511:       'error
+531:       'error
+540:       'error
+560:       'error
+693:   (bindings ((diagnostics
+861:   (error-message "durable runtime store negotiation serialization requires a list"))
+
+P18 packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean
+162: def leakedRollbackObservation : EffectObservation where
+169:     receiptId := "rollback-with-leaked-effect"
+173: theorem runtimeDigestRollbackCanHideExternalEffect :
+182:         leakedRollbackObservation.runtimeStateDigest ∧
+183:       preEffectObservation ≠ leakedRollbackObservation := by
+274: theorem closedRollbackRestoresCompleteEffectObservation
+
+P20 packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean
+7: namespace PooFlowProof.Enterprise.CommittedEffectApplicationExactlyOnce
+9: open PooFlowProof.Enterprise.BundleEvidenceBinding
+18: def sourceBoundTraceExecutesUniverseExactlyOnce
+25: structure SourceBoundCommittedEffectExactlyOnceClosed
+30:     (bindingValid : SourceBoundObjectBindingValid)
+44:       bindingValid
+52:   effectUniverseExecutesExactlyOnce :
+53:     sourceBoundTraceExecutesUniverseExactlyOnce witness traceReceipt
+55: structure SourceBoundCommittedEffectExactlyOnceEvidence where
+60:   bindingValid : SourceBoundObjectBindingValid
+69:     SourceBoundCommittedEffectExactlyOnceClosed
+74:       bindingValid
+88:     {bindingValid : SourceBoundObjectBindingValid}
+97:       SourceBoundCommittedEffectExactlyOnceClosed
+102:         bindingValid
+115:       bindingValid
+125: theorem everyDeclaredEffectExecutesExactlyOnce
+130:     {bindingValid : SourceBoundObjectBindingValid}
+139:       SourceBoundCommittedEffectExactlyOnceClosed
+144:         bindingValid
+154:   closed.effectUniverseExecutesExactlyOnce.2
+156: theorem evidenceExecutesEveryDeclaredEffectExactlyOnce
+157:     (evidence : SourceBoundCommittedEffectExactlyOnceEvidence) :
+160:   everyDeclaredEffectExecutesExactlyOnce evidence.closed
+
+P22 modules/ai-agentic-context/features/memory/durable/store.ss
+8: ;;; owns storage, locking, leases, fsync, backfill, replay, and side effects.
+79:     claim-job-lease
+118: ;; : (-> PooDurableRuntimeStoreDiagnosticCode PooDurableRuntimeStoreDiagnosticSlot PooDurableRuntimeStoreDiagnosticSeverity PooDurableRuntimeStoreDiagnosticPayload PooDurableRuntimeStoreDiagnosticRow)
+119: (def (poo-flow-durable-runtime-store-diagnostic code slot severity payload)
+127:    (cons 'payload payload)
+130:           payload
+139:    'error
+253:       'error
+286:         'error
+319:         'error
+437:        'error
+593:   (bindings ((diagnostics
+667:     (error "durable runtime store contract batch projection requires a list"
+674:   (error-message
+
+P31 packages/proofs/lean-poo/SessionAttempt.lean
+7: -- Pure owner-coordinate projection. Binding includes every native routing/input field.
+11:   generation : Nat
+14:   pending : List (Nat × α)
+18:     some { s with revision := s.revision + 1, generation := s.generation + 1,
+19:                   active := none, pending := s.active.toList ++ s.pending }
+29: theorem recovery_generation_advances (s : Schedule α) (openState : s.closed = false) :
+30:     (recover s).map Schedule.generation = some (s.generation + 1) := by
+36:     (recover s).map Schedule.pending = some (s.active.toList ++ s.pending) := by
+65:           throwError "{name} depends on disallowed axiom {axiomName}"
+67:       `PooFlowSessionAttemptProof.recovery_generation_advances,
+74:     unless environment.contains required do throwError "Missing Attempt theorem: {required}"
+
+P31 packages/proofs/quint/SessionAttempt.qnt
+5:   var generation: int
+7:   var pending: int
+12:   action init = all { generation' = 0, active' = -1, pending' = -1,
+15:     not(closed), active == -1, pending == -1, generation < 3,
+16:     generation' = generation + 1, active' = generation + 1,
+17:     pending' = pending, closed' = closed, everClosed' = everClosed, routed' = routed, recoveries' = recoveries
+19:   action complete(requestGeneration: int): bool = all {
+21:     (requestGeneration == active or BUG == "ignoreGeneration"),
+22:     routed' = routed.append((requestGeneration,active)), active' = -1,
+23:     generation' = generation, pending' = pending, closed' = closed, everClosed' = everClosed, recoveries' = recoveries
+26:     (not(closed) or BUG == "resumeClosed"), generation < 3, recoveries.length() < 2,
+27:     generation' = generation + 1, active' = -1, closed' = false, everClosed' = everClosed,
+28:     pending' = if (BUG == "dropObligation") -1 else if (active >= 0) active else pending,
+29:     recoveries' = recoveries.append((if (active >= 0) active else pending,
+30:       if (BUG == "dropObligation") -1 else if (active >= 0) active else pending)),
+34:     pending >= 0, pending' = -1, active' = active, generation' = generation,
+38:     not(closed), active == -1, pending == -1, closed' = true, everClosed' = true,
+39:     generation' = generation, active' = active, pending' = pending,
+43:     nondet requestGeneration = Set(0,1,2,3).oneOf()
+44:     any { claim, complete(requestGeneration), recover, reconcile, close }
+
+P35 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean
+13: and strictly advance the authority generation.  Strict advancement makes the
+14: generation an anti-ABA fence rather than a mutable version label.
+19:     before.authorityGeneration < after.authorityGeneration
+26:   have generationsEqual :
+27:       before.authorityGeneration = after.authorityGeneration :=
+28:     congrArg ReceiptValidationContext.authorityGeneration contextsEqual
+29:   exact (Nat.ne_of_lt transitionValid.2) generationsEqual
+45: `C₀ → C₁ → C₀` rollback replay.
+47: theorem exactEqualityAlonePermitsRollbackReplay :
+58:       authorityGeneration := 5
+66:       authorityGeneration := 6
+100:   generationStrict :
+103:         (contextAt earlier).authorityGeneration <
+104:           (contextAt later).authorityGeneration
+112:   have generationsEqual :
+113:       (lineage.contextAt earlier).authorityGeneration =
+114:         (lineage.contextAt later).authorityGeneration :=
+115:     congrArg ReceiptValidationContext.authorityGeneration contextsEqual
+117:     (Nat.ne_of_lt (lineage.generationStrict positionAdvanced))
+118:       generationsEqual
+144: same context while reusing the same next generation.
+146: theorem validTransitionsAlonePermitSameGenerationFork :
+152:         left.authorityGeneration = right.authorityGeneration := by
+156:       authorityGeneration := 10
+
+P35 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean
+21: def publishedByLineagePrefix
+28: theorem lineagePrefixHeadIsPublished
+30:     publishedByLineagePrefix
+35: theorem lineagePositionAtOrBeforeHeadIsPublished
+39:     publishedByLineagePrefix
+44: theorem lineagePositionAfterHeadIsNotPublished
+48:     ¬ publishedByLineagePrefix
+51:   intro published
+52:   rcases published with ⟨publishedPosition, beforeHead, contextsEqual⟩
+53:   have publishedBeforeFuture : publishedPosition < position :=
+57:       lineagePrefix.lineage publishedBeforeFuture)
+60: theorem lineagePrefixPublicationIsForkFree
+62:     ForkFreeContextPublication (publishedByLineagePrefix lineagePrefix) := by
+63:   intro left right leftPublished rightPublished sameAuthority sameGeneration
+64:   apply lineagePublicationIsForkFree lineagePrefix.lineage
+65:   · rcases leftPublished with ⟨position, _, contextEqual⟩
+67:   · rcases rightPublished with ⟨position, _, contextEqual⟩
+70:   · exact sameGeneration
+79:   published := publishedByLineagePrefix lineagePrefix
+81:     intro context published
+82:     rcases published with ⟨position, _, contextEqual⟩
+85:   forkFree := lineagePrefixPublicationIsForkFree lineagePrefix
+87: structure LineagePrefixPublicationDomainBinding
+92:   publishedExact :
+
+C8 CedarPooSpec/Admission/BoundOperation.lean
+33: inductive Error where
+36:   | policy (error : PolicyModules.Error)
+48:     Except Error
+51:     .error .effectMismatch
+53:     .error .stateMismatch
+55:     (CompoundAuthorization.authorizeAll model root [operation.request] entities).mapError .policy
+
+C10 CedarPooSpec/CompoundAuthorization.lean
+22: /-- Every query must allow, and no query may have a policy evaluation error. -/
+27:       response.decision == .allow && response.erroringPolicies.isEmpty)
+31:     (entities : Entities) : Except PolicyModules.Error (Receipt model root requests entities) :=
+33:   | .error error => .error error
+46: /-- All required layers must allow without policy evaluation errors. -/
+50:     layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty
+73:     (root : String) : Except PolicyModules.Error
+79:       | .error error => .error error
+85:     (entities : Entities) : Except PolicyModules.Error (List (LayerReceipt model entities)) :=
+89:       Except PolicyModules.Error (List (LayerReceipt model entities)) := do
+
+C11 CedarPooSpec/Composition.lean
+

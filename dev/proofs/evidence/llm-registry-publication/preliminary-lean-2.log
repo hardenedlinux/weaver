@@ -1,0 +1,145 @@
+proofs/lean/LlmRegistryPublication.lean:128:112: error: unexpected identifier; expected '}'
+proofs/lean/LlmRegistryPublication.lean:154:70: error: No goals to be solved
+proofs/lean/LlmRegistryPublication.lean:154:4: error: unsolved goals
+case commitRoot.refine_1
+registry : LlmAuthoritativeScope.Registry
+tenant vector : Nat
+s : State
+source : GatewayHeadCAS.Config
+routing : LlmRouting.Config
+profile : LlmAttemptLedger.Profile
+rootOwner : GatewayHeadCAS.Owner
+childOwner : LlmAttemptLedger.Owner
+codec : LlmSemanticContract.Owner
+scopeOwner : LlmAuthoritativeScope.Owner
+owner : Owner
+intentBound : ∀ (b : Binding), s.intent = some b → Valid registry routing.root tenant vector b
+journalBound : ∀ (b : Binding), b ∈ s.journal → s.intent = some b
+count : s.journal.length ≤ 1
+certified : s.certified = true → ∃ b, s.intent = some b ∧ s.journal = [b]
+active : s.active = true → ∃ b, Ready s b ∧ s.projection = some (image s b)
+b : Binding
+worker : Nat
+intent : s.intent = some b
+fresh : s.journal = []
+workerCurrent : worker = s.fence
+session : owner.sessionValid worker
+online : s.online = true
+durable : owner.rootCommit b 1
+row : Binding
+member :
+  row ∈
+    { execution := s.execution, revision := s.revision, fence := s.fence, blobs := s.blobs, readable := s.readable,
+        intent := s.intent, journal := [b], journalVisible := 1, certified := s.certified,
+        acknowledged := s.acknowledged, online := s.online, projection := s.projection, active := s.active,
+        permits := s.permits }.journal
+same : row = b
+⊢ { execution := s.execution, revision := s.revision, fence := s.fence, blobs := s.blobs, readable := s.readable,
+        intent := s.intent, journal := [b], journalVisible := 1, certified := s.certified,
+        acknowledged := s.acknowledged, online := s.online, projection := s.projection, active := s.active,
+        permits := s.permits }.intent =
+    some row
+proofs/lean/LlmRegistryPublication.lean:177:52: error: unsolved goals
+registry : LlmAuthoritativeScope.Registry
+tenant vector : Nat
+s : State
+source : GatewayHeadCAS.Config
+routing : LlmRouting.Config
+profile : LlmAttemptLedger.Profile
+rootOwner : GatewayHeadCAS.Owner
+childOwner : LlmAttemptLedger.Owner
+codec : LlmSemanticContract.Owner
+scopeOwner : LlmAuthoritativeScope.Owner
+owner : Owner
+intentBound : ∀ (b : Binding), s.intent = some b → Valid registry routing.root tenant vector b
+journalBound : ∀ (b : Binding), b ∈ s.journal → s.intent = some b
+count : s.journal.length ≤ 1
+certified : s.certified = true → ∃ b, s.intent = some b ∧ s.journal = [b]
+active : s.active = true → ∃ b, Ready s b ∧ s.projection = some (image s b)
+bad : s.active = true
+⊢ ∃ b,
+    Ready
+        {
+          execution :=
+            let __src := s.execution;
+            { roots := __src.roots, children := __src.children, record := __src.record, boot := s.execution.boot + 1,
+              recovered := false, tickets := __src.tickets, semantic := __src.semantic, uses := __src.uses },
+          revision := s.revision, fence := s.fence + 1, blobs := s.blobs, readable := s.readable, intent := s.intent,
+          journal := s.journal, journalVisible := s.journalVisible, certified := s.certified,
+          acknowledged := s.acknowledged, online := s.online, projection := s.projection, active := s.active,
+          permits := s.permits }
+        b ∧
+      {
+            execution :=
+              let __src := s.execution;
+              { roots := __src.roots, children := __src.children, record := __src.record, boot := s.execution.boot + 1,
+                recovered := false, tickets := __src.tickets, semantic := __src.semantic, uses := __src.uses },
+            revision := s.revision, fence := s.fence + 1, blobs := s.blobs, readable := s.readable, intent := s.intent,
+            journal := s.journal, journalVisible := s.journalVisible, certified := s.certified,
+            acknowledged := s.acknowledged, online := s.online, projection := s.projection, active := s.active,
+            permits := s.permits }.projection =
+        some
+          (image
+            {
+              execution :=
+                let __src := s.execution;
+                { roots := __src.roots, children := __src.children, record := __src.record,
+                  boot := s.execution.boot + 1, recovered := false, tickets := __src.tickets,
+                  semantic := __src.semantic, uses := __src.uses },
+              revision := s.revision, fence := s.fence + 1, blobs := s.blobs, readable := s.readable,
+              intent := s.intent, journal := s.journal, journalVisible := s.journalVisible, certified := s.certified,
+              acknowledged := s.acknowledged, online := s.online, projection := s.projection, active := s.active,
+              permits := s.permits }
+            b)
+proofs/lean/LlmRegistryPublication.lean:199:32: error: Application type mismatch: The argument
+  LlmAuthoritativeScope.Step.restart ?m.232
+has type
+  LlmAuthoritativeScope.Step ?m.224 ?m.225 ?m.226 ?m.227 ?m.228 ?m.229 ?m.230 ?m.231 ?m.232
+    { roots := LlmAuthoritativeScope.State.roots ?m.232,
+      children :=
+        let __src := LlmAuthoritativeScope.State.children ?m.232;
+        { routes := __src.routes, epoch := (LlmAuthoritativeScope.State.children ?m.232).epoch + 1,
+          attempts := __src.attempts, allocated := __src.allocated, charged := __src.charged, calls := __src.calls,
+          retired := fun x => true, terminal := __src.terminal, usage := __src.usage, ready := __src.ready,
+          winner := __src.winner, closed := __src.closed },
+      record := LlmAuthoritativeScope.State.record ?m.232, boot := LlmAuthoritativeScope.State.boot ?m.232 + 1,
+      recovered := false, tickets := LlmAuthoritativeScope.State.tickets ?m.232,
+      semantic := fun i =>
+        let __src := LlmAuthoritativeScope.State.semantic ?m.232 i;
+        { epoch := (LlmAuthoritativeScope.State.semantic ?m.232 i).epoch + 1, view := __src.view,
+          sealed := __src.sealed, consumed := __src.consumed, retired := true, outputs := __src.outputs,
+          buffers := __src.buffers, parts := __src.parts, calls := __src.calls, proposals := __src.proposals,
+          ended := __src.ended, toolEffects := __src.toolEffects },
+      uses := LlmAuthoritativeScope.State.uses ?m.232 }
+but is expected to have type
+  LlmAuthoritativeScope.Step source registry routing profile rootOwner childOwner codec scopeOwner b✝.execution
+    {
+        execution :=
+          let __src := b✝.execution;
+          { roots := __src.roots, children := __src.children, record := __src.record, boot := b✝.execution.boot + 1,
+            recovered := false, tickets := __src.tickets, semantic := __src.semantic, uses := __src.uses },
+        revision := b✝.revision, fence := b✝.fence + 1, blobs := b✝.blobs, readable := b✝.readable, intent := b✝.intent,
+        journal := b✝.journal, journalVisible := b✝.journalVisible, certified := b✝.certified,
+        acknowledged := b✝.acknowledged, online := b✝.online, projection := b✝.projection, active := b✝.active,
+        permits := b✝.permits }.execution
+in the application
+  LlmAuthoritativeScope.Run.next ih (LlmAuthoritativeScope.Step.restart ?m.232)
+'Weaver.LlmRegistryPublication.initialized_safe' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmRegistryPublication.execution_projection' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmRegistryPublication.intent_is_never_replaced' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRegistryPublication.certified_requires_exact_journal' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmRegistryPublication.one_original_publication' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmRegistryPublication.active_requires_current_join' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmRegistryPublication.stale_worker_cannot_use' does not depend on any axioms
+'Weaver.LlmRegistryPublication.stale_execution_snapshot_cannot_use' does not depend on any axioms
+'Weaver.LlmRegistryPublication.lost_reply_preserves_binding' does not depend on any axioms
+'Weaver.LlmRegistryPublication.snapshot_install_never_restores_execution' does not depend on any axioms
+'Weaver.LlmRegistryPublication.original_claim_remains_unique' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LlmRegistryPublication.original_allowance_is_preserved' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmRegistryPublication.original_scope_domains_survive_recovery' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.LlmRegistryPublication.unknown_usage_blocks_settlement' depends on axioms: [propext, sorryAx, Quot.sound]

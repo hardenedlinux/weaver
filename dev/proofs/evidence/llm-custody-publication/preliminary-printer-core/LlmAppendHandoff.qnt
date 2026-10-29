@@ -1,0 +1,61 @@
+module LlmAppendHandoff {
+  type Receipt = { root: int, rootGeneration: int, appendGeneration: int, frontier: int, worker: int }
+  pure val emptyCut = Rec("id", 0, "parent", 0, "rootGeneration", 0, "appendGeneration", 0, "records", List())
+  import LlmCheckpointTruncation as C from "./LlmCheckpointTruncation"
+  pure def flat = ((xs) => foldl(xs, List(), ((rs, seg) => concat(rs, field(seg, "records")))))
+  type Segment = { id: int, records: List[C::Record] }
+  type Cut = { id: int, parent: int, rootGeneration: int, appendGeneration: int, records: List[C::Record] }
+  pure val old = Rec("id", 10, "records", field(field(C::cp1, "basis"), "journal"))
+  pure val tailSegment = Rec("id", 11, "records", List(C::fOther))
+  pure val root0 = Rec("id", 0, "parent", 0, "checkpoint", C::cp1, "haveCheckpoint", true, "segments", List())
+  pure def manifestReplay = ((r) => concat(field(field(field(r, "checkpoint"), "basis"), "journal"), flat(field(r, "segments"))))
+  action idle = C::observeFinancial
+  type Manifest = { id: int, parent: int, checkpoint: C::Checkpoint, haveCheckpoint: bool, segments: List[Segment] }
+  pure val replacement = with(root0, "id", 1)
+  pure val initial = Rec("root", root0, "closed", List(), "live", List(), "objects", Set(old), "allocated", Set(old), "rootGeneration", 0, "appendGeneration", 0, "frontier", 0, "sequence", 0, "cut", emptyCut, "haveCut", false, "candidate", root0, "haveCandidate", false, "observed", Rec("root", 0, "rootGeneration", 0, "appendGeneration", 0, "frontier", 0, "worker", 0), "haveObservation", true, "lastAuthorized", true, "attempted", Rec("root", 0, "rootGeneration", 0, "appendGeneration", 0, "frontier", 0, "worker", 0))
+  type Storage = { root: Manifest, closed: List[Segment], live: List[Segment], objects: Set[Segment], allocated: Set[Segment], rootGeneration: int, appendGeneration: int, frontier: int, sequence: int, cut: Cut, haveCut: bool, candidate: Manifest, haveCandidate: bool, observed: Receipt, haveObservation: bool, lastAuthorized: bool, attempted: Receipt }
+  pure val withPending = with(replacement, "segments", List(tailSegment))
+  var h: Storage
+  def snapshot = concat(manifestReplay(field(h, "root")), flat(field(h, "closed")))
+  def refs = concat(concat(concat(field(field(h, "root"), "segments"), field(h, "closed")), field(h, "live")), ite(field(h, "haveCandidate"), field(field(h, "candidate"), "segments"), List()))
+  def view = Rec("root", field(field(h, "root"), "id"), "rootGeneration", field(h, "rootGeneration"), "appendGeneration", field(h, "appendGeneration"), "frontier", field(h, "frontier"), "worker", field(C::pubView, "epoch"))
+  val candidateAligned = or(not(field(h, "haveCandidate")), and(field(h, "haveCut"), eq(manifestReplay(field(h, "candidate")), field(field(h, "cut"), "records"))))
+  action init = actionAll(C::recovered, assign(h, initial))
+  action prepare = actionAll(C::prepareOther, assign(h, h))
+  action stage = ((r, durable) => actionAll(field(h, "haveCut"), eq(manifestReplay(r), field(field(h, "cut"), "records")), eq(field(r, "parent"), field(field(h, "cut"), "parent")), durable, contains(field(C::c, "blobs"), field(r, "checkpoint")), forall(indices(field(r, "segments")), ((i) => contains(field(h, "objects"), nth(field(r, "segments"), i)))), idle, assign(h, with(with(h, "candidate", r), "haveCandidate", true))))
+  action submit = actionAll(C::submitOther, assign(h, h))
+  action commit = actionAll(C::commitOther, assign(h, h))
+  action rotate = actionAll(C::rotate, assign(h, h))
+  action crash = actionAll(C::loseReply, assign(h, with(h, "haveObservation", false)))
+  action refresh = actionAll(C::observe(true), assign(h, h))
+  action install = actionAll(C::install, assign(h, h))
+  action unsafeDropLive = actionAll(idle, assign(h, with(h, "live", List())))
+  action unsafeDropClosed = actionAll(idle, assign(h, with(with(h, "closed", List()), "cut", with(field(h, "cut"), "records", manifestReplay(field(h, "root"))))))
+  action unsafeEraseTail = actionAll(idle, assign(h, with(h, "objects", filter(field(h, "objects"), ((seg) => neq(field(seg, "id"), 11))))))
+  action unsafePendingCheckpoint = actionAll(C::unsafePublish(C::cp2), assign(h, h))
+  def replay = concat(snapshot, flat(field(h, "live")))
+  def confirmed = and(field(h, "haveObservation"), eq(field(h, "observed"), view))
+  val available = and(and(contains(field(C::c, "blobs"), field(field(h, "root"), "checkpoint")), or(not(field(h, "haveCandidate")), contains(field(C::c, "blobs"), field(field(h, "candidate"), "checkpoint")))), forall(indices(refs), ((i) => contains(field(h, "objects"), nth(refs, i)))))
+  val aligned = or(not(field(h, "haveCut")), and(and(and(eq(field(field(h, "cut"), "records"), snapshot), eq(field(field(h, "cut"), "parent"), field(field(h, "root"), "id"))), eq(field(field(h, "cut"), "rootGeneration"), field(h, "rootGeneration"))), eq(field(field(h, "cut"), "appendGeneration"), field(h, "appendGeneration"))))
+  action prepared = then(init, prepare)
+  def descriptor = ((worker, generation, frontier) => and(and(and(confirmed, eq(worker, field(C::pubView, "epoch"))), eq(generation, field(h, "appendGeneration"))), eq(frontier, field(h, "frontier"))))
+  val represented = and(and(and(eq(replay, C::expanded), eq(field(field(h, "root"), "checkpoint"), field(C::c, "local"))), field(C::c, "haveLocal")), eq(concat(concat(flat(field(field(h, "root"), "segments")), flat(field(h, "closed"))), flat(field(h, "live"))), field(C::c, "suffix")))
+  action observe = ((worker, authentic) => actionAll(authentic, available, eq(worker, field(C::pubView, "epoch")), idle, assign(h, with(with(h, "observed", view), "haveObservation", true))))
+  val safety = and(and(and(and(and(available, represented), aligned), candidateAligned), field(h, "lastAuthorized")), C::safety)
+  action appendFrame = ((worker, generation, frontier, durable, policy) => actionAll(descriptor(worker, generation, frontier), durable, policy, forall(field(h, "allocated"), ((seg) => neq(field(seg, "id"), field(tailSegment, "id")))), C::flushOther, assign(h, with(with(with(with(with(h, "live", append(field(h, "live"), tailSegment)), "objects", union(field(h, "objects"), Set(tailSegment))), "allocated", union(field(h, "allocated"), Set(tailSegment))), "frontier", iadd(field(h, "frontier"), 1)), "haveObservation", false))))
+  action sealCut = ((worker, generation, frontier, durable, policy) => actionAll(policy, not(field(h, "haveCut")), not(field(h, "haveCandidate")), descriptor(worker, generation, frontier), durable, idle, assign(h, with(with(with(with(with(with(with(h, "cut", Rec("id", iadd(field(h, "sequence"), 1), "parent", field(field(h, "root"), "id"), "rootGeneration", field(h, "rootGeneration"), "appendGeneration", iadd(field(h, "appendGeneration"), 1), "records", replay)), "haveCut", true), "sequence", iadd(field(h, "sequence"), 1)), "closed", concat(field(h, "closed"), field(h, "live"))), "live", List()), "appendGeneration", iadd(field(h, "appendGeneration"), 1)), "haveObservation", false))))
+  action switchRoot = ((worker, generation, frontier, durable, policy) => actionAll(field(h, "haveCut"), field(h, "haveCandidate"), aligned, candidateAligned, descriptor(worker, generation, frontier), durable, policy, eq(field(field(h, "candidate"), "parent"), field(field(h, "root"), "id")), available, C::trim(field(field(h, "candidate"), "checkpoint"), concat(flat(field(field(h, "candidate"), "segments")), flat(field(h, "live"))), worker, true), assign(h, with(with(with(with(with(with(h, "root", field(h, "candidate")), "closed", List()), "rootGeneration", iadd(field(h, "rootGeneration"), 1)), "haveCut", false), "haveCandidate", false), "haveObservation", false))))
+  action erase = ((id, worker, generation, frontier, policy) => actionAll(policy, descriptor(worker, generation, frontier), forall(indices(refs), ((i) => neq(field(nth(refs, i), "id"), id))), idle, assign(h, with(h, "objects", filter(field(h, "objects"), ((seg) => neq(field(seg, "id"), id)))))))
+  action unsafeAppend = ((worker, generation, frontier) => actionAll(C::flushOther, assign(h, with(with(with(with(with(with(h, "live", append(field(h, "live"), tailSegment)), "objects", union(field(h, "objects"), Set(tailSegment))), "allocated", union(field(h, "allocated"), Set(tailSegment))), "frontier", iadd(field(h, "frontier"), 1)), "lastAuthorized", descriptor(worker, generation, frontier)), "attempted", with(with(with(view, "worker", worker), "appendGeneration", generation), "frontier", frontier)))))
+  action unsafeSwitchDescriptor = ((worker, generation, frontier) => actionAll(idle, assign(h, with(with(h, "lastAuthorized", descriptor(worker, generation, frontier)), "attempted", with(with(with(view, "worker", worker), "appendGeneration", generation), "frontier", frontier)))))
+  action activate = actionAll(confirmed, safety, C::activate(field(C::pubView, "epoch"), true), assign(h, h))
+  action cutFirst = then(then(then(prepared, sealCut(0, 0, 0, true, true)), observe(0, true)), stage(replacement, true))
+  action preCutPending = then(then(then(then(then(prepared, appendFrame(0, 0, 0, true, true)), submit), observe(0, true)), sealCut(0, 0, 1, true, true)), stage(withPending, true))
+  action appended = then(cutFirst, appendFrame(0, 1, 0, true, true))
+  action step = nondet r = oneOf(Set(replacement, withPending)) { nondet id = oneOf(Set(10, 11, 99)) { actionAny(prepare, appendFrame(field(C::pubView, "epoch"), field(h, "appendGeneration"), field(h, "frontier"), true, true), sealCut(field(C::pubView, "epoch"), field(h, "appendGeneration"), field(h, "frontier"), true, true), stage(r, true), switchRoot(field(C::pubView, "epoch"), field(h, "appendGeneration"), field(h, "frontier"), true, true), observe(field(C::pubView, "epoch"), true), erase(id, field(C::pubView, "epoch"), field(h, "appendGeneration"), field(h, "frontier"), true), submit, commit, rotate, crash, refresh, install, activate) } }
+  action pending = then(appended, submit)
+  action switched = then(then(pending, observe(0, true)), switchRoot(0, 1, 1, true, true))
+  action oldOwner = then(then(then(then(pending, crash), rotate), observe(1, true)), refresh)
+  action lateCommitted = then(switched, commit)
+  action recovered = then(then(then(then(then(lateCommitted, crash), observe(0, true)), refresh), install), activate)
+}

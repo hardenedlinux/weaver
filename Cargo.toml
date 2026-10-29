@@ -1,0 +1,51 @@
+[workspace]
+resolver = "2"
+members = ["crates/contracts", "crates/policy", "crates/ledger", "crates/execution", "crates/server"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+
+[workspace.dependencies]
+weaver-contracts = { path = "crates/contracts" }
+weaver-policy = { path = "crates/policy" }
+weaver-ledger = { path = "crates/ledger" }
+weaver-execution = { path = "crates/execution" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+sha2 = "0.10"
+hex = "0.4"
+cedar-policy = { version = "=4.12.0", default-features = false }
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+reqwest = { version = "0.13.5", default-features = false, features = ["blocking", "rustls"] }
+proptest = "1.11"
+tempfile = "3.27"
+rustls = { version = "0.23.46", default-features = false, features = ["ring", "std"] }
+rcgen = "0.14.9"
+socket2 = "0.6.4"
+tokio = { version = "1.53.2", features = ["full"] }
+tokio-util = { version = "0.7.19", features = ["rt"] }
+subtle = "2.6.1"
+tonic = { version = "0.14.6", features = ["transport", "tls-ring"] }
+tonic-prost = "0.14.6"
+tonic-prost-build = "0.14.6"
+prost = "0.14.4"
+tokio-stream = { version = "0.1.19", features = ["net"] }
+arrow-array = "58.4.0"
+arrow-schema = "58.4.0"
+arrow-ipc = "58.4.0"
+criterion = { version = "0.8.2", default-features = false, features = ["cargo_bench_support"] }
+
+asp-rust = { git = "https://github.com/tao3k/asp-rust", rev = "1ca41124b846dec947f3d05119cafa07eaa57924", default-features = false }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"
+

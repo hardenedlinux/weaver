@@ -1,0 +1,23 @@
+[
+  {
+    "protocol": "MCP",
+    "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports",
+    "observed": "2026-10-19",
+    "reviewedRole": "Per-request protocol version/capability metadata; earlier profiles had connection-scoped sessions; wire identity does not issue canonical origin",
+    "scope": "Official reference inspected for architecture taxonomy; no wire conformance, dependency update or implementation claim"
+  },
+  {
+    "protocol": "A2A",
+    "url": "https://a2a-protocol.org/dev/specification/",
+    "observed": "2026-10-19",
+    "reviewedRole": "Task IDs are server-generated; contexts can group tasks; remote locators are not canonical source operations",
+    "scope": "Official reference inspected for architecture taxonomy; no wire conformance, dependency update or implementation claim"
+  },
+  {
+    "protocol": "Client ACP",
+    "url": "https://agentclientprotocol.com/protocol/v1/overview",
+    "observed": "2026-10-19",
+    "reviewedRole": "session/load resumes an existing session where supported; source authority requires separate admission",
+    "scope": "Official reference inspected for architecture taxonomy; no wire conformance, dependency update or implementation claim"
+  }
+]

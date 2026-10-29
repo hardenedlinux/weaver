@@ -1,0 +1,171 @@
+#+title: Weaver Execution Reconciliation Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and bounded evidence
+
+Run [[file:../../../proofs/check_llm_execution_reconciliation.py][the isolated checker]] for [[file:../../../proofs/lean/LlmExecutionReconciliation.lean][Lean]] and [[file:../../../proofs/qunit/LlmExecutionReconciliation.qnt][Quint]].
+Retain [[file:../../../proofs/evidence/llm-execution-reconciliation/commands.json][command results]], [[file:../../../proofs/evidence/llm-execution-reconciliation/receipt.json][the receipt]] and [[file:../../../proofs/evidence/llm-execution-reconciliation/SHA256SUMS][the byte manifest]].
+
+The runner compiles 20 Lean modules and prints 17 new declarations with no
+=sorryAx=. Quint checks 46 new controls, including 10 deliberate broken-protocol
+alternatives, plus 42 imported executor controls (88 total). A separate executor
+regression checks those 42 controls again. Seven initializers each sample ten
+paths with at most 30 post-initializer steps and seed 227. Sampling is finite;
+these checks do not establish native durability, exhaustive exploration or liveness.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| ER1 | Source zero cannot certify execution absence | sourceZeroAfterActualOfferTest | no_source_zero_premise | protocols.a2a |
+| ER2 | Uncertain burn excludes no-execution | uncertainBurnCannotCertifyAbsenceTest | negative_needs_dispatch_absence | recovery.join |
+| ER3 | Closed absence remains absent under permitted execution steps | sealedCannotDriveTest | absence_after_seal | recovery.projection |
+| ER4 | Original executor history composes rather than resetting calls | restartRetainsUnknownTest | actual_executor_composition | recovery.fence |
+| ER5 | Source terminal changes use actual source transitions | completeAbsenceCanResolveTest | source_projection | broker.cas |
+| ER6 | Reconciliation extends the initialized source history | currentWorkerCanReconcileOldDecisionTest | source_composition | broker.cas |
+| ER7 | Terminal without usage cannot release budget | terminalIsNotFinalUsageTest | unknown_retains_full_reservation | registry.query |
+| ER8 | Financial application requires source terminal | accountRequiresSourceAndUsageTest | source_terminal_precedes_release | broker.hold |
+| ER9 | Usage and released remainder conserve the original bound | usageCannotExceedOriginalBoundTest | release_conserves_original_bound | broker.hold |
+| ER10 | Lost source response cannot create another resolution | sourceLostReplyCannotApplyTwiceTest | decision_immutable | recovery.fence |
+| ER11 | Lost account response cannot apply another financial delta | accountLostReplyCannotApplyTwiceTest | account_application_immutable | broker.hold |
+| ER12 | Late full receipt does not reprice a completed payment | lateFullAfterPaymentIsDataTest | account_application_immutable | broker.alias |
+| ER13 | Restart preserves authoritative decisions and financial result | restoredAccountCannotPayAgainTest | restart_retains_records | protocols.acp |
+| ER14 | Original sponsor capacity remains bounded | negativeUsageMustBeZeroTest | actual_source_capacity | registry.origin |
+| ER15 | Unknown actual source usage prevents source close | sourceTerminalDoesNotRefundTest | actual_source_unknown_prevents_close | registry.query |
+| ER16 | Guarded product preserves its linked evidence invariant | completeAbsenceCanResolveTest | initialized_safe | lean |
+| ER17 | Sealed logical execution cannot regain possible-offer power | negativeNeedsClosedExecutionTest | sealed_execution_cannot_rearm | recovery.projection |
+
+Correspondence records complementary checks, not literal theorem/test equivalence.
+ER1's Lean lemma excludes a burn without assuming any source counter; Quint reaches
+an actual original offer with source calls still zero. ER14's control tests the
+negative usage rule while the theorem reuses the actual initialized attempt-budget
+bound. ER15's executable control keeps financial release zero; the source close
+conclusion follows from the actual Lean source history and unknown usage premise.
+
+* Actual composition and proof limits
+
+=Step= contains the actual =LlmExecutorOffer.State= and actual
+=LlmAttemptLedger.State=. Source transitions carry an actual imported source
+=Step= proof. A source application must change an originally unset terminal to the
+chosen kind and align the selected call count with negative or executed evidence.
+Usage application requires an originally absent usage and an actual source step.
+Ordinary source progress preserves selected terminal/usage, and any selected call
+change additionally requires dispatch possible-execution evidence.
+
+=source_projection= constructs the actual source suffix.
+=source_composition= extends an initialized source run, rather than pretending that
+a source ledger fabricated at recovery has an initialized invariant.
+=actual_source_capacity= and =actual_source_unknown_prevents_close= reuse the actual
+source budget and close theorems on this composed run.
+
+=execution_projection= constructs an arbitrary finite execution path.
+=actual_executor_composition= maps that path to the actual category-22 executor
+=Step= relation using an explicit mapping and an initialized executor prefix.
+Consequently its original queue/range/broker results can be reused. The mapping
+must be supplied by the implementation refinement; an arbitrary relation =D= is
+not automatically an authorized executor transition.
+
+=absence_after_seal= proves that a closed, absent execution suffix stays absent:
+any later execution step preserves the original burn, submitted marker and call
+count. Closing cannot be inferred solely from a source lease. The native
+=closedPrefix= premise must establish exclusive complete-prefix closure with the
+final broker, including every callback still capable of making a possible offer.
+
+The product proves one immutable decision and one account application for a
+selected original attempt/reservation. The fixed attempt, original binding and
+initialized source prefix are parameters. Full original registry identity is
+inherited under native binding qualification, not proved by a fresh numeric key.
+Financial release is a logical account CAS over that one reserved bound; native
+atomic coupling of application identity and balance delta remains unimplemented.
+The source model's =allocated= stays monotonic; no refund is smuggled into it.
+
+Quint imports the actual executor module and composes its variables with a
+reconciliation state. Its source/application records abstract source terminal and
+metering rather than execute the Lean attempt relation. It additionally models
+stale dispatch/source/account views and tests exact recovery joins. Lean's recovery
+predicate receives the whole product state, while restart preserves authoritative
+records. Neither model proves that an arbitrary physical snapshot is authentic.
+
+* Broken protocols and independently decoded observations
+
+| Missing contract | Broken control | Required final observation |
+|------------------+----------------+----------------------------|
+| Dispatch evidence instead of source zero | sourceZeroReconciliationCounterexampleTest | Actual original call is one; source counter zero; negative decision |
+| Uncertain burn retained | burnOnlyReconciliationCounterexampleTest | Burn present, no call yet, negative decision |
+| Whole-call terminal evidence | fullAsTerminalReconciliationCounterexampleTest | Full range recorded; terminal evidence absent; terminal decision |
+| Unknown financial hold | unknownRefundReconciliationCounterexampleTest | Unknown original call; release without account application |
+| Source application identity CAS | duplicateSourceReconciliationCounterexampleTest | Two source applications for one original decision |
+| Original claim binding | changedClaimReconciliationCounterexampleTest | Source application uses another claim body |
+| Metering before account release | missingUsageReconciliationCounterexampleTest | Payment exists while final usage is absent |
+| Immutable final metering | lateUsageReconciliationCounterexampleTest | Original payment usage differs from overwritten usage |
+| Current application owner | oldWorkerReconciliationCounterexampleTest | Payment worker differs from current application epoch |
+| Financial application identity CAS | duplicatePaymentReconciliationCounterexampleTest | Two account applications for one original decision |
+
+These unsafe constructors are excluded from =step=. Tests deliberately expect the
+named invariant to fail; their passing status means the defect was reproduced.
+[[file:../../../proofs/evidence/llm-execution-reconciliation/check-counterexample-observations.py][The independent decoder]] checks ITF payloads and the actual original queue/consume
+history, rather than relying on test names or log success alone.
+
+Additional guarded controls restore concrete participant views behind durable
+results: =rolledBackDispatchCannotRecoverTest=, =rolledBackSourceCannotRecoverTest=
+and =rolledBackAccountCannotRecoverTest=. Even with truth-valued authenticity inputs,
+a stale position cannot satisfy the modeled recovery join. Full-body authenticity
+and anti-rollback prefix inheritance remain separate native prerequisites.
+
+* Source-by-source reuse audit
+
+[[file:../../../proofs/evidence/llm-execution-reconciliation/source-review.json][Pinned source identities and excerpts]] and [[file:../../../proofs/evidence/llm-execution-reconciliation/source-receipt-check.json][fresh blob checks]] cover 19 source files.
+Repeated identifiers below denote separate Lean/Quint or paired proof files.
+
+| Source | Inspected mechanism | Reuse | Required extension / non-claim |
+|--------+---------------------+-------+--------------------------------|
+| P12 authorized-effect-token.ss | Exact immutable effect binding and token consumption | Bind original root, operation, nonce, payload/range | Persistent dispatch absence and account application records |
+| P13 strict-mediation.ss | Rejected validation leaves state unchanged; unavailable observation and committed consumption record the nonce | Conservative spent-state and no nonce resurrection | Source zero cannot stand for executor absence |
+| P15 effect-host.ss | reserve! sends nothing; deliver! consumes on rejection/exception/indeterminate; receipts declare durable? false | Distinct reserve and possible-handoff phases | Durable closure, cross-store joins and distributed owner fencing |
+| P17 store-backend.ss | Negotiated runtime backend receipt contract | Explicit runtime ownership and handoff boundary | Native atomic ID/delta writes and qualified recovery |
+| P18 PromotionTransactionRecovery.lean | Recovery witness and attributable effect observation | Source-bound recovery premises | Original dispatch/terminal/meter/account envelope mapping |
+| P19 authorized recovery bridge | Recovery member and authorized materialization bridge | Exact source and authority correspondence | Do not infer member authenticity from matching local counters |
+| P20 CommittedEffectApplicationExactlyOnce.lean | Exact effect occurrence conclusion depends on runtime trace receipt | Declare complete effect universe and native occurrence premise | Does not prove provider delivery or our storage persistence |
+| P22 store.ss | Scheme receipt contract; runtime owns locking, leases, fsync and side effects | Keep pure semantics separate from native persistence | Resolution/application WAL and anti-rollback recovery |
+| P31 SessionAttempt.lean | recover moves active attempt into pending | Retain unresolved original obligation | Terminal truth and final usage must come from trusted runtime evidence |
+| P31 SessionAttempt.qnt | reconcile/close protocol and pending invariant | Recovery cannot silently discard pending | Add dispatch absence and monetary application joins |
+| P33 deterministic budget closure | Deterministic source-bound cost witness | Keep original reservation provenance | Actual provider usage attribution and refund application |
+| P33 runtime budget separation | Watchdog and semantic budget have distinct meaning | Timeout never proves zero resource usage | Unknown usage continues holding exposure |
+| P35 receipt context monotonicity | Governed context progression | Reject backwards authority | Persistent source/account application qualification |
+| P35 receipt lineage prefix | Explicit authenticated ancestry | Complete original prefix inheritance | Local receipt absence cannot prove no execution |
+| P43 funs-attempt.ss | Pure scheduling intents; runtime-published?, action-authorized?, durable? false; reconcile is not acknowledgment | Expected generation/revision CAS and pending retention | Runtime must resolve original terminal/closure evidence |
+| P44 objects-attempt.ss | Frozen source/producer/scope/profile references | Keep original typed semantic binding | Frozen references alone do not authenticate runtime evidence |
+| C8 BoundOperation.lean | matches compares exact effect/state; authorize still requires Host-authenticated actual input | Code as Policy for exact original resolution and account effect | Equality and Cedar allow do not certify storage durability or absence |
+| C10 CompoundAuthorization.lean | Required layers all allow without policy errors | Fail closed on missing/denying/erroring authority | Populate truthful current dispatch/source/account context |
+| C11 Composition.lean | Validation and evaluation certificates plus expression alignment | Reuse only compatible semantic obligations | No theorem here supplies a cross-store financial transaction |
+
+The audit does not claim these upstream proofs were recompiled by the Weaver
+runner: it compiles Weaver composition modules. Upstream pinned bytes/excerpts
+were independently checked. No upstream source or dependency pin is changed.
+
+* Current working source qualification
+
+[[file:../../../proofs/evidence/llm-execution-reconciliation/working-source-check.json][Current source hashes]] distinguish live working files from pinned references.
+Eighteen of the nineteen inspected files match the reviewed bytes. P17 changes
+only two control-plane import paths; the captured [[file:../../../proofs/evidence/llm-execution-reconciliation/P17-working-diff.patch][working diff]] preserves the exact change.
+The comments assigning native persistence responsibility still hold. Import target
+runtime/ABI equivalence is not established by that textual observation.
+
+* Native acceptance gates
+
+| Gate | Required executable native evidence before implementation acceptance |
+|------+--------------------------------------------------------------------|
+| Closed prefix | Race final offer with close; show one serialized outcome and no old queued closure can offer afterward |
+| Conservative absence | Commit burn then crash before/after handoff; no source-zero or missing-submit inference releases budget |
+| Source CAS | Commit terminal and lose reply; current recovery finds one exact application, including original pending obligation |
+| Usage | Terminal before usage, partial callbacks, malformed/over-bound usage, duplicates and contradictory late usage |
+| Account CAS | Lose acknowledgment before/after atomic application-ID plus delta commit; one charge/remainder delta |
+| Mixed recovery | Restore each participant independently behind its authority, including account-ahead/source-behind; stay closed until exact replay |
+| Owner fence | Restore old worker with cached resolution/application ticket; stale epoch cannot mutate source or account |
+| Original binding | Mutate claim/profile/domain/reservation/range or mint a retry alias; exact original resolution lookup fails closed |
+| Complete mediation | Every SDK/network callback and financial delta refines a checked broker or account gate |
+
+No hardware-isolation, native storage, complete provider behavior or recovery
+liveness acceptance is asserted. Unknown outcomes may safely remain unresolved;
+automatic reclamation needs additional qualified evidence and separate proofs.

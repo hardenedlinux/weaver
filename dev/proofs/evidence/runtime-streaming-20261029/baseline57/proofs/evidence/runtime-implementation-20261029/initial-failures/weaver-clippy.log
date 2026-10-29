@@ -1,0 +1,134 @@
+    Checking typenum v1.20.1
+    Checking aho-corasick v1.1.5
+   Compiling quote v1.0.47
+    Checking bitflags v2.13.2
+    Checking num-traits v0.2.19
+    Checking semver v1.0.28
+   Compiling blake3 v1.8.7
+   Compiling arrayvec v0.7.8
+   Compiling constant_time_eq v0.4.2
+    Checking unicode-ident v1.0.27
+    Checking winnow v1.0.4
+    Checking toml_datetime v1.1.2+spec-1.1.0
+    Checking proc-macro2 v1.0.107
+    Checking serde_spanned v1.1.2
+    Checking toml_writer v1.1.3+spec-1.1.0
+    Checking const-oid v0.10.2
+    Checking cpufeatures v0.3.1
+    Checking bstr v1.13.1
+   Compiling syn v3.0.9
+   Compiling syn v2.0.119
+    Checking rusqlite v0.40.2
+    Checking security-framework v3.7.0
+    Checking toml_parser v1.1.5+spec-1.1.0
+    Checking tokio-rustls v0.26.5
+    Checking getrandom v0.3.4
+    Checking hyper-rustls v0.27.9
+    Checking chrono v0.4.45
+    Checking rand_core v0.9.5
+    Checking errno v0.3.14
+    Checking zerocopy v0.8.59
+    Checking toml v1.1.8+spec-1.1.0
+    Checking rustix v1.1.5
+    Checking regex-automata v0.4.18
+    Checking generic-array v0.14.7
+    Checking hybrid-array v0.4.15
+    Checking rustls-platform-verifier v0.7.0
+    Checking getrandom v0.4.3
+    Checking fastrand v2.5.0
+    Checking wait-timeout v0.2.1
+    Checking crypto-common v0.1.7
+    Checking block-buffer v0.10.4
+    Checking bit-vec v0.8.0
+    Checking quick-error v1.2.3
+    Checking fnv v1.0.7
+    Checking digest v0.10.7
+    Checking rand_xorshift v0.4.0
+    Checking rand v0.9.5
+    Checking block-buffer v0.12.1
+    Checking crypto-common v0.2.2
+    Checking bit-set v0.8.0
+    Checking sha2 v0.10.9
+    Checking unarray v0.1.4
+    Checking tempfile v3.27.0
+    Checking rusty-fork v0.3.1
+    Checking digest v0.11.3
+    Checking sha2 v0.11.1
+    Checking regex v1.13.1
+    Checking lalrpop-util v0.22.2
+    Checking globset v0.4.21
+   Compiling logos-codegen v0.16.1
+   Compiling synstructure v0.14.0
+   Compiling darling_core v0.24.1
+   Compiling miette-derive v7.6.0
+   Compiling serde_derive v1.0.229
+   Compiling zerovec-derive v0.11.6
+   Compiling thiserror-impl v2.0.21
+   Compiling displaydoc v0.2.7
+   Compiling enum-ordinalize-derive v4.4.2
+   Compiling ref-cast-impl v1.0.27
+   Compiling zerofrom-derive v0.1.8
+   Compiling yoke-derive v0.8.4
+    Checking ref-cast v1.0.27
+   Compiling asp-rust-build-support v0.1.0 (https://github.com/tao3k/asp-rust?rev=1ca41124b846dec947f3d05119cafa07eaa57924#1ca41124)
+   Compiling logos-derive v0.16.1
+   Compiling enum-ordinalize v4.4.2
+   Compiling educe v0.7.6
+   Compiling asp-rust v0.1.2 (https://github.com/tao3k/asp-rust?rev=1ca41124b846dec947f3d05119cafa07eaa57924#1ca41124)
+    Checking thiserror v2.0.21
+    Checking zerofrom v0.1.8
+    Checking ppv-lite86 v0.2.21
+    Checking logos v0.16.1
+    Checking yoke v0.8.3
+    Checking rand_chacha v0.9.0
+    Checking proptest v1.11.0
+    Checking zerovec v0.11.8
+    Checking zerotrie v0.2.5
+   Compiling darling_macro v0.24.1
+   Compiling darling v0.24.1
+    Checking serde v1.0.229
+    Checking tinystr v0.8.4
+    Checking potential_utf v0.1.6
+   Compiling serde_with_macros v3.24.0
+    Checking icu_collections v2.3.0
+    Checking icu_locale_core v2.3.0
+    Checking linked-hash-map v0.5.6
+    Checking miette v7.6.0
+    Checking nonempty v0.12.0
+    Checking weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-contracts)
+    Checking cargo_toml v1.0.1
+    Checking linked_hash_set v0.1.6
+    Checking icu_provider v2.3.1
+    Checking icu_properties v2.3.0
+    Checking icu_normalizer v2.3.0
+    Checking serde_with v3.24.0
+    Checking idna_adapter v1.2.2
+    Checking idna v1.1.0
+    Checking url v2.5.8
+    Checking tower-http v0.6.11
+    Checking reqwest v0.13.5
+    Checking cedar-policy-core v4.12.0
+    Checking cedar-policy-formatter v4.12.0
+    Checking cedar-policy v4.12.0
+    Checking weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-policy)
+    Checking weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+    Checking weaver-broker v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-broker)
+    Checking weaver-cli v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-cli)
+error: enclosing `Ok` and `?` operator are unneeded
+  --> crates/weaver-cli/src/commands.rs:15:5
+   |
+15 |     Ok(weaver_contracts::decode(&bytes)?)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#needless_question_mark
+   = note: `-D clippy::needless-question-mark` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::needless_question_mark)]`
+help: remove the enclosing `Ok` and `?` operator
+   |
+15 -     Ok(weaver_contracts::decode(&bytes)?)
+15 +     weaver_contracts::decode(&bytes)
+   |
+
+error: could not compile `weaver-cli` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `weaver-cli` (lib test) due to 1 previous error

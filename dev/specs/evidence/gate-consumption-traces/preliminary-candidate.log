@@ -1,0 +1,36 @@
+specs/lean/GateConsumptionPersistence.lean:59:84: error: unexpected identifier; expected '}'
+specs/lean/GateConsumptionPersistence.lean:104:3: error: unexpected token 'seal'; expected '_' or identifier
+specs/lean/GateConsumptionPersistence.lean:104:2: error: Missing alternative name: Expected `seal` or `grant`
+specs/lean/GateConsumptionPersistence.lean:102:2: error: Alternative `seal` has not been provided
+specs/lean/GateConsumptionPersistence.lean:102:2: error: Alternative `grant` has not been provided
+specs/lean/GateConsumptionPersistence.lean:104:9: error(lean.unknownIdentifier): Unknown constant `k`
+specs/lean/GateConsumptionPersistence.lean:104:73: error: unexpected token '=>'; expected command
+specs/lean/GateConsumptionPersistence.lean:117:3: error: unexpected token 'seal'; expected '_' or identifier
+specs/lean/GateConsumptionPersistence.lean:117:2: error: Missing alternative name: Expected `advance`, `seal`, or `grant`
+specs/lean/GateConsumptionPersistence.lean:116:2: error: Alternative `advance` has not been provided
+specs/lean/GateConsumptionPersistence.lean:116:2: error: Alternative `seal` has not been provided
+specs/lean/GateConsumptionPersistence.lean:116:2: error: Alternative `grant` has not been provided
+specs/lean/GateConsumptionPersistence.lean:117:9: error(lean.unknownIdentifier): Unknown constant `j`
+specs/lean/GateConsumptionPersistence.lean:117:11: error: unexpected token '=>'; expected command
+specs/lean/GateConsumptionPersistence.lean:121:2: error: Invalid alternative name `burn`: Expected `advance`, `seal`, or `grant`
+specs/lean/GateConsumptionPersistence.lean:129:2: error: Invalid alternative name `archive`: Expected `advance`, `seal`, or `grant`
+specs/lean/GateConsumptionPersistence.lean:153:3: error: unexpected token 'seal'; expected '_' or identifier
+specs/lean/GateConsumptionPersistence.lean:153:2: error: Missing alternative name: Expected `seal` or `grant`
+specs/lean/GateConsumptionPersistence.lean:150:2: error: Alternative `seal` has not been provided
+specs/lean/GateConsumptionPersistence.lean:150:2: error: Alternative `grant` has not been provided
+specs/lean/GateConsumptionPersistence.lean:153:9: error(lean.unknownIdentifier): Unknown constant `k`
+specs/lean/GateConsumptionPersistence.lean:153:73: error: unexpected token '=>'; expected command
+specs/lean/GateConsumptionPersistence.lean:210:56: error(lean.unknownIdentifier): Unknown identifier `s.epoch`
+specs/lean/GateConsumptionPersistence.lean:210:77: error(lean.unknownIdentifier): Unknown identifier `s.epoch`
+'Weaver.GateConsumptionPersistence.reachable_invariant' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.GateConsumptionPersistence.covered_root_equals_actual_outcomes' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.GateConsumptionPersistence.no_regrant_or_reburn' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.GateConsumptionPersistence.actual_account_application_at_most_once' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.GateConsumptionPersistence.sealed_unknown_retains_original_reservation' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

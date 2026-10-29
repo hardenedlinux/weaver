@@ -1,0 +1,11 @@
+
+ Error [QNT000]: Couldn't unify set and list
+Trying to unify Set[_t5563] and List[Segment]
+Trying to unify (Set[_t5563], (_t5563) => bool) => bool and (List[Segment], (Segment) => bool) => _t5564
+
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmManifestSwitch.qnt:20:48
+  20:   def available(r)=m.manifests.contains(r) and r.segments.forall(seg=>m.objects.contains(seg)) and
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

@@ -1,0 +1,73 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 1,
+    "sourceSha256": "553d3f42d5dd5b4648365b5ebc738ce2c3dd59717ddc50590b86f6e5677a8d86",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.617
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "fb69a43c97d1bf03acb1f0471134e640d4b64adb627f14698b98f59cdd9e43d6",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 0.324
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "markerAloneIsNotPassTest",
+      "nativeReturnAloneIsNotPassTest",
+      "aotStillAllowsNaturalCleanupTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.044
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "noDynamicSchemeHandlesStillChecksTest",
+      "outstandingHandleBlocksExitTest",
+      "missingDecoderCheckRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.008
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "incompleteChecksRejectedTest",
+      "lateNaturalZeroExitStillFailsTest",
+      "repeatedHandleCloseRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.015
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "forcedExitCounterexampleTest",
+      "substitutedSourceCounterexampleTest",
+      "skippedChecksCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.006
+  }
+]

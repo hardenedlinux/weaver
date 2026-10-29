@@ -1,0 +1,183 @@
+#+title: Weaver Atomic Account Application and Anti-Rollback Recovery
+#+language: en
+#+options: toc:3
+
+* Decision and trust boundary
+
+Application ID, original reservation consumption, hold reduction and balance delta
+must be one authoritative account commit. An application row alone cannot prove
+that money moved; a balance change without its original application row cannot
+safely be retried. An independent immutable commit prefix must survive restoration
+of account and worker snapshots, or recovery cannot distinguish an old snapshot
+from a genuinely unapplied operation.
+
+This is a software authority contract for an AI Agent Gateway. The independent
+anchor is a logical durable authority outside the account projection's rollback
+domain. It does not require physical isolation, a particular device or an HSM.
+Its no-fork, durable-prefix and current-fence properties still require native
+qualification; a database label or a hash chain on the same restorable disk does
+not supply anti-rollback protection.
+
+* Canonical account transaction
+
+The immutable transaction body identifies the original account, globally canonical
+reservation, root/family/claim, profile commitment, budget/history domains,
+resolution, source application and final usage application. It binds units, original
+reserved bound, final usage, exact account before-image and expected commit position.
+The release is the proven unused remainder, not a caller-supplied amount.
+
+Application ID is stable across response loss, reconnect, worker epoch and replay.
+The original reservation is a second independently unique key. A caller that creates
+a new application ID for the same reservation still loses the reservation CAS.
+Conversely, reusing an application ID for another body or reservation is a conflict,
+never an idempotency hit. Query by ID must compare the full immutable body.
+
+A globally canonical reservation key is not a bare source-local attempt number.
+The Lean bridge takes the original key explicitly and separately binds the local
+attempt, original bound and metered usage. Runtime qualification must supply the
+original registry/domain and receipt-body correspondence. Numeric IDs in a finite
+fixture do not authenticate any of those facts.
+
+* Atomic transition and accounting
+
+An account image contains exact balances, per-reservation holds, the immutable
+application table, original-reservation consumption table and account revision.
+The durable journal record contains the complete proposal, exact before-image and
+resulting after-image. Each accepted transition performs all of the following:
+
+1. Recheck complete current account image, owner epoch, source qualification and
+   source generation, original final metering evidence and current Cedar policy.
+2. Require both application ID and original reservation to be unused. Require the
+   original reservation hold to equal the original bound and enough aggregate hold
+   to cover it. Shared account availability cannot substitute for that hold.
+3. Atomically insert the application, consume the original reservation, set that
+   reservation's hold to zero, reduce aggregate held amount by the original bound,
+   retain final usage as charged and add only the unused remainder to available.
+4. Append the exact immutable result and close balance visibility until a complete
+   local projection is verified against the current authoritative prefix.
+
+For each account, =available + held + charged= is conserved. For an applied original
+reservation, =usage + released remainder = original bound=. A zero remainder still
+consumes the application and reservation keys. The reservation must never be
+reusable merely because the numeric released amount equals zero.
+
+The initial account image must already represent real, source-authorized booked
+reservations and account capacity. The formal account theorem proves conservation
+relative to that initial image. It does not construct legitimate funding from an
+arbitrary supplied balance, nor prove that arbitrary infinite hold maps sum to the
+aggregate balance. Native finite reservation reconciliation and the existing source
+capacity witness remain required before activation.
+
+* One authority across stores
+
+The selected protocol makes the protected account journal the authoritative commit
+point. Its record includes the account application and financial after-image in one
+atomic, durable append/CAS. The account database exposed to workers is a replayable
+projection. It cannot independently mint another release when applying the record.
+
+Preparation may durably store a draft in another store, but has no financial effect.
+The authoritative commit compares the exact original predecessor, not just a digest
+returned by an untrusted worker or an equal numeric revision. Native implementations
+must enforce uniqueness and atomicity inside that commit boundary, using a qualified
+transaction/WAL implementation whose application ID and financial delta recover
+all-or-nothing. The model's single transition states this contract; it is not a
+storage-engine implementation or crash-durability proof.
+
+Do not reinterpret this as two independent authoritative writes followed by best-effort reconciliation. An account-first update visible before anchor commit can
+release money even if its anchor entry never commits. An anchor-first ID with a
+separate authoritative balance update can be applied twice after a lost response.
+Either implementation violates the selected single-authority contract.
+
+A native deployment may co-locate the account authority's transactional state with
+its protected log. It must still qualify independently current durable-prefix
+recovery. If all supposedly protected authority can be rolled back with the account,
+remain unavailable until an external currentness witness resolves the original
+prefix. The protocol does not claim software can reconstruct lost authority ex nihilo.
+
+* Response loss, retries and competing proposals
+
+| Fault or race | Required outcome |
+|---------------+------------------|
+| Draft persisted, commit not known | Query original application/reservation against current authority; no release from draft |
+| Commit durable, acknowledgment lost | Find original exact application and after-image; materialize it without a second delta |
+| Commit status remains uncertain | Keep the original hold and mutation gate closed; no inference of absence from timeout |
+| Two workers prepare the same original reservation | Only one original reservation CAS can commit, even with distinct application IDs |
+| Two reservations share an account before-image | One commit advances the account image; the other proposal is stale |
+| Rebase another still-unconsumed reservation | Preserve its original transaction body, revalidate current source/policy and prepare against the new exact image |
+| Rebase an already consumed reservation | Return the original immutable outcome; no new application or delta |
+| Owner changes after prepare | Previously prepared worker stamp fails at final commit |
+| Source conflict or generation changes after prepare | Final source qualification/generation check fails; source recovery cannot revive the old proposal |
+| Full usage equals bound | Zero remainder with consumed original keys; no later reclaim by another ID |
+
+The proposal is inert. It is not a portable permit to write a financial database.
+Only the current account authority may perform the final CAS. A previously accepted
+transport operation can complete late as historical execution data, but it grants
+no account writer an exemption from the account's current commit fence.
+
+* Anti-rollback and mixed-image recovery
+
+Recovery first closes mutation and balance visibility. Obtain a current qualified
+protected prefix and owner/source fence information, then compare exact application,
+reservation, hold and balance bodies. Restore the account projection from the
+canonical record sequence; restore source and usage references from their already
+committed authority. Recovery never rebuilds the authoritative log from a worker's
+snapshot or erases a consumed reservation because a local application row is absent.
+
+A complete old image, a new ID with old balance, an old ID with new balance, an old
+hold with a new reservation tombstone or a matching revision with mismatched body
+must all remain closed. A digest can index the canonical body only when its complete
+binding and current prefix membership are authenticated. Equal revisions alone
+are insufficient. A source projection behind an account application must catch up
+to the exact original source/usage applications; it cannot justify reapplying the
+account delta or discarding the original claim/history obligation.
+
+Account image equality is necessary but not sufficient for recovery. Native prefix
+qualification also authenticates current owner epoch, source generation and the
+commit lineage. These are protected authority fields, not reconstructed worker
+counters. The financial journal in the finite model contains financial entries;
+owner rotations and source invalidations have separate modeled monotonic stamps.
+
+Restore a worker with an old prepared proposal, cached SDK result or stale local
+image: it still cannot commit with an old owner, account before-image or source
+generation. Loss of all known source evidence retains unknown budget even if the
+restored account would have spare availability. Other independently confirmed
+reservations may settle without releasing the unknown original reservation's hold.
+
+* Scheme, Go, Rust and Code as Policy
+
+| Component | Responsibility | Required gate |
+|-----------+----------------+---------------|
+| Scheme / POO | Canonical financial effect, units, original reservation binding, source terminal/usage semantics and pending obligations | Construct the exact settleOriginalReservation request and immutable expected effect |
+| Go | Cloud-native owner lifecycle, Kubernetes identity, provider receipt normalization and retry/readback proposals | No direct account balance writer; a retry queries the original outcome |
+| Rust account authority | Final serialization, dual uniqueness checks, original hold consumption and atomic record/delta commit | Exact current image, owner, source generation, metering and policy at commit |
+| Rust recovery/projection owner | Replay immutable after-images, authenticate current non-rollback prefix and qualify complete joined state | No balance visibility or new grants from mixed/old images |
+| Cedar / cedar-poo-spec | Code as Policy for prepare, commit, recovery activation and any financial correction | Match actual effect/state; all required nonempty layers allow without evaluation errors |
+| Quint / Lean | Adverse-interleaving controls, account invariants and actual source-reconciliation bridge | Native WAL atomicity, prefix authenticity and receipt truth remain explicit premises |
+
+A Cedar allow receipt says that the exact proposed effect is authorized under its
+bound request. The Host must still authenticate the actual current account/source
+state and atomically execute that effect. Cedar cannot convert an old projection,
+a source-zero counter or an absent acknowledgment into an accounting fact.
+
+* Reuse, scope and high-performance path
+
+Reuse POO Flow's exact effect binding, spent-state retention, pure CAS intents,
+source-bound recovery and immutable lineage. Reuse the earlier Weaver settlement
+anchor and gate-persistence principles: recover the complete current image and
+never turn a ghost counter into authority. The new account model adds explicit
+balance and reservation-hold mutation; the older application counter abstraction
+did not prove atomic balance persistence.
+
+The Lean model supports arbitrary finite runs and application/reservation IDs,
+with independent balances per account. The Quint fixture has two reservations in
+one shared account. One reservation uses the actual preceding reconciliation
+module; the second uses an explicit trusted-evidence fixture, not another composed
+provider execution. There is no claim of an arbitrary-many-source product or a
+native cross-store transaction established by this fixture.
+
+Keep final account commit serialized per account/revision; do not replay provider
+work to settle money. Cache only immutable verified records; qualify mutable balance
+views against current authority before use. Reconciliation can run off the network
+sending path. Batching or group commit must preserve each original uniqueness/CAS
+and acknowledgment durability contract. No latency or throughput benefit is claimed
+without native measurements, and a cache hit is not recovery authorization.

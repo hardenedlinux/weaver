@@ -1,0 +1,8 @@
+.It Fl no_uuid
+Do not generate an LC_UUID load command in the output file.  Be warned that binaries without UUIDs
+may cause the debugger and crash reporting tools to be unable to track and inspect the binary.
+.It Fl random_uuid
+Generate a random LC_UUID load command in the output file. By default the linker generates the UUID
+of the output file based on a hash of the output file's content. But for very large output files, the
+hash can slow down the link. Using a hash based UUID is important for reproducible builds, but if you
+are just doing rapid debug builds, using -random_uuid may improve turn around time.

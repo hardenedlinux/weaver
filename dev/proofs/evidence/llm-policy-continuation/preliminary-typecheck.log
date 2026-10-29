@@ -1,0 +1,15 @@
+
+ Error [QNT101]: Conflicting definitions found for name 'approved' in module 'LlmPolicyContinuation'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmPolicyContinuation.qnt:28:7
+  28:   def approved(c)=c==original or s.approvals.exists(a=>a.candidate==c and a.view==view and a.authorized)
+            ^^^^^^^^
+
+
+ Error [QNT101]: Conflicting definitions found for name 'approved' in module 'LlmPolicyContinuation'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmPolicyContinuation.qnt:77:10
+  77:   action approved=inspected.then(approve(continuation,v1,true,true))
+               ^^^^^^^^
+
+error: parsing failed

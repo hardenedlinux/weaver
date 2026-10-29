@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-1","limit":20}
+
+  LlmSubjectAuthority
+    ok taskOriginCannotComeFromSharedWorkloadTest passed 1 test(s)
+    ok sharedIdentityCannotAssignTest passed 1 test(s)
+    ok tenantSubstitutionRejectedTest passed 1 test(s)
+
+  3 passing (858ms)
+@@DONE {"label":"api-controls-1","passed":["taskOriginCannotComeFromSharedWorkloadTest","sharedIdentityCannotAssignTest","tenantSubstitutionRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

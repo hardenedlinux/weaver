@@ -1,0 +1,20 @@
+#+title: Weaver Atomic Account Commit Index
+#+language: en
+#+options: toc:2
+
+* One account commit, one original reservation, one recoverable result
+
+Area =20-29 Execution authority=; category =24 Account commit=.
+This extends [[file:../23-execution-reconciliation/23.00-index.org][23 Execution reconciliation]] with an explicit atomic account image,
+reservation hold consumption, durable commit prefix and closed recovery gate.
+
+| ID | Artifact |
+|----+----------|
+| 24.00 | This index |
+| 24.01 | [[file:24.01-atomic-account-commit.org][Atomic account application and anti-rollback recovery protocol]] |
+| 24.02 | [[file:24.02-account-commit.d2][Core D2]] / [[file:24.02-account-commit.svg][SVG]] |
+| 24.03 | [[file:24.03-proof-and-source-evidence.org][Composition, source audit, counterexamples and acceptance evidence]] |
+
+Models: [[file:../../../proofs/lean/LlmAccountCommit.lean][Lean]] / [[file:../../../proofs/qunit/LlmAccountCommit.qnt][Quint]].
+Run [[file:../../../proofs/check_llm_account_commit.py][the isolated runner]]. English only; no Gateway implementation, dependency pin,
+upstream source or historical sealed artifact is changed.

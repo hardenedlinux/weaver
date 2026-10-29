@@ -1,0 +1,181 @@
+#+title: Weaver Protected Custody Fence and Floor Outcome Publication
+#+language: en
+#+options: toc:3
+
+* Design decision
+
+Extend the existing authoritative admission floor journal with custody transitions
+and original outcome bindings. A custody database and an independently determining
+floor database cannot acknowledge separate writes and call their combination an
+atomic publication. There is one determining authority; other stores materialize
+its committed prefix. This removes that two-writer ambiguity from the design.
+
+The admission journal records both a custody transfer and a floor admission in a
+single ordering domain. They are separate event kinds, each atomically published
+against the same current authority head. A floor event binds its exact outcome to
+the custody holder/fence under which it was admitted. A later transfer retains
+that outcome. A transfer does not itself consume a tail or apply money.
+
+This is an AI Agent Gateway logical execution-authority boundary. A Kubernetes
+lease, worker restart, SDK request identity or local cache does not grant custody.
+The broker/executor still owns separately fenced final sending. Staging, journal
+publication, projection and acknowledgement cannot invoke a provider send.
+
+* Authoritative event and identity
+
+| Coordinate | Meaning |
+|------------+---------|
+| Authority position | Increases for protected transitions, including transfers with no new floor admission |
+| Custody fence | Increases on authorized custody transfer; distinct from execution-owner generation |
+| Floor revision | Increases on an admitted floor operation; unchanged by custody-only transfer |
+| Original operation | Stable original claim/profile/history/reservation/tail binding; never a retry/session key |
+| Outcome reference | Exact original floor result and its determining journal event |
+
+The event binds the canonical authority domain, original operation and semantic
+commitment, expected predecessor, before/after custody tuple and owner-incarnation/capability commitment, original attempt,
+before/after floor commitment, original outcome and retained recovery references.
+A transfer preserves the original intent, pending obligations, known outcome and
+unknown budget constraints. Same floor revision does not imply same authority
+position or permission to reuse an old candidate. Native finite counters must
+fail closed at exhaustion; wrapping a coordinate or creating a replacement
+domain cannot reset the original constraints.
+
+The existing canonical registry supplies domain/origin/family identity. A new
+journal namespace cannot manufacture a new original task or reset the reservation
+and history domain. This review models one original custody lifetime within a
+qualified domain, not an arbitrary product of all namespaces and accounts.
+
+* Publication protocol
+
+1. Recover a qualified protected prefix containing the original intent and arm.
+   Retain the original body/tail pins. Durable body preparation is inert and does
+   not admit a tail before determining publication.
+2. Stage a typed command with the current authority parent and original operation.
+   Staging may preview a pure transition; it performs no floor consumption and
+   grants no external execution authority.
+3. At the determining append, atomically compare the current authority parent,
+   current custody tuple, original intent/attempt, current source/account/floor
+   join and required Policy/history facts. Recompute the actual transition against
+   the current authority, rather than trusting the staged preview.
+4. Append one protected event containing the resulting custody/floor association.
+   Its committed position determines the floor result. The separate floor store
+   becomes a replayable projection and must not independently admit the operation.
+5. Acknowledge only a durably committed event. Lost acknowledgement leaves the
+   caller uncertain; it does not undo the event or create a new operation key.
+6. Materialize custody and floor projections from that committed prefix. Partial
+   materialization is inactive. A native implementation must verify original
+   bindings and the complete current source/account join before enabling a new CAS.
+7. Resolve the original operation at the authority. Historical outcome resolution
+   and a current-head permission read are different operations. A late outcome
+   receipt can report a committed result without refreshing a permit.
+
+Only the protected append determines both sides of the association. There is no
+protocol step that first commits independent floor admission and then best-effort
+writes its custody outcome. If a deployment cannot place them under one qualified
+authority, it does not implement this design; it needs another proved coordination
+protocol before it can activate either projection.
+
+This narrows the previous abstract durability premises. The new Lean logical
+custody owner treats its per-component persistence callbacks as pure semantics;
+=Step.publish= supplies one protected publication contract around the actual
+custody transition. Returning =True= in that logical owner is not a native grant
+or evidence of persistence. =Owner.publishDurable= must implement authenticated,
+atomic, persistent publication of the whole event, including original outcome.
+
+* Concurrency and lost responses
+
+| Interleaving | Required result |
+|--------------+-----------------|
+| Old floor candidate staged; transfer publishes first | Old authority parent fails; changing only its parent still fails the old custody tuple |
+| Floor event publishes first; transfer candidate is still queued | Transfer retries from the new parent and preserves the committed original outcome |
+| Floor append succeeds; response is lost | Original outcome remains in the same journal event; never infer absence from a projection |
+| Transfer append succeeds; response is lost | Read current protected custody; local old/new owner guesses remain inactive |
+| Cached head read precedes another append | Determining CAS compares the current parent again |
+| Old worker resumes with queued command | Parent and current custody tuple are checked at actual append |
+| Old acknowledgement arrives after a transfer | It can confirm its historical event, not qualify the current head |
+| Same bytes are restored from an untrusted snapshot | Equality alone does not authenticate freshness; protected read qualification is required |
+
+A candidate commitment includes its original operation, predecessor and exact
+typed command. Retrying that candidate resolves its existing event or fails the
+old parent CAS. Replacing its predecessor requires a newly authorized transition;
+it is not an automatic retry shortcut.
+
+Numeric fence equality is not caller authentication. The native publisher must
+bind authenticated caller incarnation and custody capability to the original
+command and committed fence. Shared Kubernetes service-account identity and a
+current-head read cannot mint a new capability for an old worker. This extends
+P12's exact arena/generation/context binding at the protected Rust boundary. The
+finite model assumes authenticated publication through its owner contract; it
+does not model credential impersonation or prove capability unforgeability.
+
+The two determining events cannot both publish from the same predecessor. A
+transfer does not rewrite =proposal.worker=: custody holder and Gateway execution
+owner remain distinct. SDK retries recover or resubmit the original typed intent;
+Go cannot allocate a replacement family, nonce or operation to escape its outcome.
+
+* Cross-storage recovery
+
+Stop admission and reconciliation consumers until a protected current prefix is
+qualified. Recover the original custody and floor-result map from that prefix,
+then rebuild projections. A floor projection ahead of the authority is quarantined;
+a projection behind it is replayed by original operation identity. Neither state
+is evidence that an unknown operation did not execute.
+
+| Recovered material | Decision |
+|--------------------+----------|
+| New journal, old custody projection | Replay current fence and original outcome before activation |
+| New journal, old floor projection | Rebuild the original admission result; do not submit another append |
+| Custody projection claims a transfer absent from journal | Do not acknowledge or activate it as authoritative |
+| Floor projection claims an admission absent from journal | Quarantine; no provider send, no refund, no inferred no-execution |
+| Journal unavailable or protected prefix cannot be authenticated | Remain inactive with original pending obligations and holds |
+| Original outcome found, response receipt missing | Return that exact result; current continuation still needs current qualification |
+| Local state rolled back after a valid close | Retain authoritative outcome/close; rebuild local knowledge without a refund |
+
+The account WAL/anchor remains its own authority. This journal does not overwrite
+balances or settle usage. Its current account/source join must remain serialized
+with determining admission as required by category 41. Unknown original usage
+continues to require the original reservation and source-bound evidence; custody
+close and projection completion are not such evidence.
+
+Native recovery must authenticate the journal domain, committed prefix and any
+checkpoint root. A co-restored local counter cannot prove that the authority itself
+has not rolled back. The formal model allows arbitrary projection restoration but
+never silently rolls back the protected journal. Native anti-rollback availability,
+atomic append durability and complete original checkpoint contents remain explicit
+qualification obligations. No physical isolation is assumed.
+
+No journal garbage collection is modeled here. Any checkpoint/truncation extension
+must retain original outcome IDs, consumed reservations, current custody fences,
+pending tail references and unknown holds before deleting their only recoverable
+copy. An acknowledgement or projection watermark cannot substitute for that proof.
+
+* Language and Policy responsibilities
+
+| Owner | Concrete boundary |
+|-------+-------------------|
+| Scheme / POO Flow | Original semantic commitment and canonical domain; exact claim/profile/history/reservation binding; typed event contract, same-intent recovery and Cedar request projection |
+| Go | Cloud native workers and adapters; original-operation retry/status lookup, reconnect and lifecycle coordination; no local lease can publish custody or send directly |
+| Rust | Protected authority append, expected-parent/current-fence CAS, immutable original outcome index, retained pins, projection recovery and broker/executor send gates |
+| Cedar | Explicit required Policy decisions over authentic current effect/state; no durability or distributed transaction semantics |
+| Quint | Two competing queued candidates, both commit/transfer orders, partial projection restoration, late receipts and deliberately split publication controls |
+| Lean | Arbitrary finite protected publication runs project to the actual custody/join/floor/account chain; journal prefix, original result and unknown hold preservation |
+
+* Efficient path and qualification
+
+A normal determining operation uses one protected authority CAS. Immutable bodies
+and semantic closures can be addressed by authenticated commitments; the Lean full
+state journal is a specification representation, not a demand to serialize the
+entire process state on every write. Group commit must preserve predecessor order,
+whole-event atomicity and durable acknowledgement. Projection work can be async;
+projection freshness cannot grant a permit without a current determining check.
+
+The focused Quint model reuses the actual prior =armed= initializer, rather than
+reimplementing task admission. Its journal entries project fence, original intent,
+outcome and floor results while the inherited custody machine retains phase and
+join checks. Lean accepts an explicit initialized custody prefix and records full
+authoritative states; the two representations are not claimed to have an automatic
+refinement proof. The finite fixture keeps the actual account unchanged; cross-account-store
+rollback remains a native recovery qualification, not an allowed journal repair.
+Native event codecs, authentication, current source coverage,
+crash IO and protected prefix recovery must still be qualified. No throughput,
+provider exactly-once, eventual recovery or fair scheduling result is claimed.

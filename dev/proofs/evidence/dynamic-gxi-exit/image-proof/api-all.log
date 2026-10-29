@@ -1,0 +1,58 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":1,"sourceSha256":"f5fda9196522f0df1fd7ffa9a33209c0714bc1d8eff7aa6eceabdd1265d77982"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"8ec130a91193f0d221261a804c0b09e6cf5955744cafafd19195ae6e8362a4ee"}
+@@START {"label":"api-controls-0","limit":20}
+
+  DynamicImageCustody
+    ok twoLogicalRefsOneImageTest passed 1 test(s)
+    ok oneCloseCannotUnmapTest passed 1 test(s)
+    ok finalCloseAllowsUnmapTest passed 1 test(s)
+
+  3 passing (87ms)
+@@DONE {"label":"api-controls-0","passed":["twoLogicalRefsOneImageTest","oneCloseCannotUnmapTest","finalCloseAllowsUnmapTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  DynamicImageCustody
+    ok duplicateAcquisitionRejectedTest passed 1 test(s)
+    ok duplicateCloseRejectedTest passed 1 test(s)
+    ok shutdownRejectsAcquisitionTest passed 1 test(s)
+
+  3 passing (2ms)
+@@DONE {"label":"api-controls-1","passed":["duplicateAcquisitionRejectedTest","duplicateCloseRejectedTest","shutdownRejectsAcquisitionTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  DynamicImageCustody
+    ok mappingDoesNotInitializeTest passed 1 test(s)
+    ok requestedEntriesStayLazyTest passed 1 test(s)
+    ok foreignInitializerRejectedTest passed 1 test(s)
+
+  3 passing (17ms)
+@@DONE {"label":"api-controls-2","passed":["mappingDoesNotInitializeTest","requestedEntriesStayLazyTest","foreignInitializerRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  DynamicImageCustody
+    ok duplicateEntryRejectedTest passed 1 test(s)
+    ok independentImageCanReleaseTest passed 1 test(s)
+    ok earlyUnmapCounterexampleTest passed 1 test(s)
+
+  3 passing (2ms)
+@@DONE {"label":"api-controls-3","passed":["duplicateEntryRejectedTest","independentImageCanReleaseTest","earlyUnmapCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  DynamicImageCustody
+    ok forgottenReferenceCounterexampleTest passed 1 test(s)
+    ok eagerForeignCtorCounterexampleTest passed 1 test(s)
+    ok collapsedEntryCounterexampleTest passed 1 test(s)
+
+  3 passing (1ms)
+@@DONE {"label":"api-controls-4","passed":["forgottenReferenceCounterexampleTest","eagerForeignCtorCounterexampleTest","collapsedEntryCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-5","limit":20}
+
+  DynamicImageCustody
+    ok shutdownRejectsInitializationTest passed 1 test(s)
+    ok closedReferenceCannotInitializeTest passed 1 test(s)
+    ok releasedImageCannotInitializeTest passed 1 test(s)
+
+  3 passing (1ms)
+@@DONE {"label":"api-controls-5","passed":["shutdownRejectsInitializationTest","closedReferenceCannotInitializeTest","releasedImageCannotInitializeTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

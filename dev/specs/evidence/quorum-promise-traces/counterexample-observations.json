@@ -1,0 +1,124 @@
+[
+  {
+    "path": "specs/evidence/quorum-promise-traces/itf/allRollbackRootsLostCounterexampleTest-3.itf.json",
+    "states": 10,
+    "certificates": [
+      {
+        "scope": 0,
+        "revision": 0,
+        "term": 0,
+        "quorum": [
+          0,
+          1
+        ],
+        "history": [
+          1
+        ]
+      },
+      {
+        "scope": 0,
+        "revision": 0,
+        "term": 0,
+        "quorum": [
+          0,
+          1
+        ],
+        "history": [
+          2
+        ]
+      }
+    ],
+    "history": [
+      2
+    ]
+  },
+  {
+    "path": "specs/evidence/quorum-promise-traces/itf/oldRosterResurrectionCounterexampleTest-2.itf.json",
+    "states": 15,
+    "certificates": [
+      {
+        "scope": 0,
+        "revision": 0,
+        "term": 0,
+        "quorum": [
+          0,
+          1
+        ],
+        "history": [
+          2
+        ]
+      },
+      {
+        "scope": 1,
+        "revision": 0,
+        "term": 0,
+        "quorum": [
+          0,
+          1,
+          3,
+          4
+        ],
+        "history": [
+          7
+        ]
+      },
+      {
+        "scope": 1,
+        "revision": 1,
+        "term": 0,
+        "quorum": [
+          0,
+          1,
+          3,
+          4
+        ],
+        "history": [
+          7,
+          8
+        ]
+      }
+    ],
+    "history": [
+      2
+    ]
+  },
+  {
+    "path": "specs/evidence/quorum-promise-traces/itf/reEnrollSameSignerCounterexampleTest-1.itf.json",
+    "states": 4,
+    "certificates": [],
+    "history": []
+  },
+  {
+    "path": "specs/evidence/quorum-promise-traces/itf/rollbackSharedWitnessCounterexampleTest-0.itf.json",
+    "states": 9,
+    "certificates": [
+      {
+        "scope": 0,
+        "revision": 0,
+        "term": 0,
+        "quorum": [
+          0,
+          1
+        ],
+        "history": [
+          1
+        ]
+      },
+      {
+        "scope": 0,
+        "revision": 0,
+        "term": 0,
+        "quorum": [
+          1,
+          2
+        ],
+        "history": [
+          2
+        ]
+      }
+    ],
+    "history": [
+      2
+    ]
+  }
+]

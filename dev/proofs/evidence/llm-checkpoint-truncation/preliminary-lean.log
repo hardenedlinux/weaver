@@ -1,0 +1,66 @@
+proofs/lean/LlmCheckpointTruncation.lean:77:95: error: unexpected identifier; expected '}'
+proofs/lean/LlmCheckpointTruncation.lean:116:2: error: Invalid alternative name `repair`: Expected `persist` or `observe`
+proofs/lean/LlmCheckpointTruncation.lean:117:2: error: Invalid alternative name `activate`: Expected `persist` or `observe`
+proofs/lean/LlmCheckpointTruncation.lean:118:2: error: Invalid alternative name `loseReply`: Expected `persist` or `observe`
+proofs/lean/LlmCheckpointTruncation.lean:115:45: error: Application type mismatch: The argument
+  LlmWalActivation.Step.restoreWal ?m.168 ?m.169
+has type
+  LlmWalActivation.Step ?m.166 ?m.167 ?m.168
+    { core := LlmWalActivation.State.core ?m.168, wal := ?m.169, submitted := LlmWalActivation.State.submitted ?m.168,
+      receipt := LlmWalActivation.State.receipt ?m.168 }
+but is expected to have type
+  LlmWalActivation.Step ao wo s.logical
+    { logical := s.logical, published := s.published, blobs := s.blobs, localCheckpoint := cp, suffix := tail,
+        observed := s.observed }.logical
+in the application
+  LlmWalActivation.Run.next (LlmWalActivation.Run.refl s.logical) (LlmWalActivation.Step.restoreWal ?m.168 ?m.169)
+proofs/lean/LlmCheckpointTruncation.lean:143:2: error: Invalid alternative name `repair`: There are no unhandled alternatives
+proofs/lean/LlmCheckpointTruncation.lean:144:2: error: Invalid alternative name `activate`: There are no unhandled alternatives
+proofs/lean/LlmCheckpointTruncation.lean:149:2: error: Invalid alternative name `loseReply`: There are no unhandled alternatives
+proofs/lean/LlmCheckpointTruncation.lean:142:40: error: unsolved goals
+genesis : LlmAccountCommit.Image
+s : State
+ao : LlmAccountCommit.Owner
+wo : LlmWalActivation.Owner
+o : Owner
+published : ∀ (cp : Checkpoint), cp ∈ s.published → Valid genesis s cp
+live : s.logical.active = true → Physical s ∧ Confirmed s
+cp : Option Checkpoint
+tail : List LlmAccountCommit.Record
+⊢ s.logical.active = true →
+    Physical
+        { logical := s.logical, published := s.published, blobs := s.blobs, localCheckpoint := cp, suffix := tail,
+          observed := s.observed } ∧
+      Confirmed
+        { logical := s.logical, published := s.published, blobs := s.blobs, localCheckpoint := cp, suffix := tail,
+          observed := s.observed }
+proofs/lean/LlmCheckpointTruncation.lean:173:32: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  f ≥ 0
+  e ≥ 0
+  d ≥ 0
+  c ≥ 0
+  b ≥ 0
+  b - c ≥ 1
+  b - f ≤ -1
+  a ≥ 0
+where
+ a := ↑s.published.length
+ b := ↑cp.position
+ c := ↑(floor s)
+ d := ↑cp.epoch
+ e := ↑s.logical.core.sourceGeneration
+ f := ↑(match latest s.published with
+  | none => 0
+  | some cp => cp.position)
+'Weaver.LlmCheckpointTruncation.logical_projection' depends on axioms: [sorryAx]
+'Weaver.LlmCheckpointTruncation.initialized_safe' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCheckpointTruncation.actual_wal_composition' depends on axioms: [sorryAx]
+'Weaver.LlmCheckpointTruncation.publication_floor_monotone' depends on axioms: [sorryAx]
+'Weaver.LlmCheckpointTruncation.published_checkpoint_retained' does not depend on any axioms
+'Weaver.LlmCheckpointTruncation.active_requires_current_checkpoint' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCheckpointTruncation.truncate_preserves_logical_account' does not depend on any axioms
+'Weaver.LlmCheckpointTruncation.published_image_is_complete' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCheckpointTruncation.old_parent_cannot_publish' does not depend on any axioms
+'Weaver.LlmCheckpointTruncation.original_reservation_once' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCheckpointTruncation.unknown_original_hold_retained' depends on axioms: [propext, sorryAx, Quot.sound]

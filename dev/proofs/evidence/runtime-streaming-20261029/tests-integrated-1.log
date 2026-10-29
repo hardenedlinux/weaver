@@ -1,0 +1,117 @@
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+   Compiling weaver-cli v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.99s
+     Running unittests src/lib.rs (target/debug/deps/weaver_cli-88899c16483bf86a)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running unittests src/main.rs (target/debug/deps/weaver_cli-c5cdb9017b29250b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-5734dd05d91cd585)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-3e1a67e749b5a26d)
+
+running 1 test
+test decoder::duplicate_keys_unknown_fields_and_streams_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_execution-11c6fcf8c3af8eeb)
+
+running 10 tests
+test transport::https::tests::destination_aliases_credentials_and_http_are_rejected ... ok
+test broker::stream_session::tests::effective_revocation_stops_actual_next_range_and_prefix_reconnect ... ok
+test broker::stream_session::tests::tls_flush_cannot_release_a_tail_after_effective_revocation ... ok
+test broker::stream_session::tests::recovered_old_worker_socket_cannot_use_new_custody ... ok
+test broker::stream_session::tests::actual_tcp_ranges_preserve_one_message_and_one_hold ... ok
+test broker::stream_session::tests::revoke_after_range_consumption_proves_zero_call_and_recovers_original_message ... ok
+test enforce_asp_rust_gate ... ok
+test transport::https::tests::redirect_is_observed_without_following_or_refunding ... ok
+test transport::https::tests::partial_transport_failure_is_unknown_and_never_retried ... ok
+test broker::stream_session::tests::native_partial_write_freezes_tail_and_never_refunds ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.24s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_ledger-84cecf986adecce9)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-020524ce0ab964e6)
+
+running 13 tests
+test recovery::authored_ceiling_cannot_underreserve_the_original_wire_cost ... ok
+test recovery::publication_between_consume_and_send_closes_old_permit ... ok
+test recovery::original_task_body_and_profile_cannot_be_replaced ... ok
+test recovery::crash_after_consumption_never_reopens_or_refunds ... ok
+test recovery::lost_enqueue_reply_recovers_same_hold_and_rejects_changed_wire ... ok
+test recovery::token_cannot_move_to_a_second_ledger_handle ... ok
+test stream_properties::unknown_range_after_restart_blocks_new_nonce_and_authority ... ok
+test concurrency::concurrent_consumers_invoke_once ... ok
+test serialization::effective_publication_cannot_overtake_the_locked_send_boundary ... ok
+test stream_properties::concurrent_stream_registration_and_consumption_do_not_duplicate_holds_or_writes ... ok
+test concurrency::concurrent_nodes_share_one_capacity ... ok
+test stream_properties::arbitrary_stream_crashes_reauthorizations_and_ranges_preserve_identity ... ok
+test properties::arbitrary_replays_restarts_and_consumption_preserve_claims ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.45s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_policy-bcea027ee3b756e7)
+
+running 2 tests
+test compiled::tests::compiled_storage_caps_slots_and_exact_hits_do_not_allocate_new_entries ... ok
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-eab568471f1ef389)
+
+running 3 tests
+test decisions::default_deny_forbid_and_evaluation_error_are_fail_closed ... ok
+test stream_policy::specification_derived_policy_is_typed_and_constrains_actual_range_facts ... ok
+test compiled_cache::exact_source_cache_is_bounded_and_never_caches_permission ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_server-7f43cd03d3798e07)
+
+running 1 test
+test enforce_asp_rust_gate ... FAILED
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (19718192) panicked at crates/server/src/lib.rs:8:1:
+[RUST-AGENT-TOKIO-RUNTIME-002] Info: Tokio runtime operation bypasses a runtime owner
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/http.rs:135:1
+fix: route Tokio spawn/blocking/runtime construction through a typed runtime facade with task tracking, shutdown, cancellation, and observability
+line: 135 |     match tokio::task::spawn_blocking(move || {
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/http.rs calls Tokio runtime operation `tokio::task::spawn_blocking` in `native` without a runtime owner boundary.
+Contract: Route Tokio spawn, blocking work, and runtime construction through a typed runtime facade so agents preserve task tracking, shutdown, cancellation, thread model, and observability behavior.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p weaver-server --lib`

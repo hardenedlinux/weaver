@@ -1,0 +1,1486 @@
+[
+  {
+    "path": "proofs/evidence/llm-authoritative-scope/itf/foreignClaimScopeCounterexampleTest-2.itf.json",
+    "states": 5,
+    "authority": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "input": 10,
+          "manifest": 100,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "boot": 0,
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "closed": false,
+      "history": [],
+      "known": true,
+      "online": true,
+      "parentCharged": false,
+      "parentRetired": false,
+      "record": {
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "domain": 2,
+        "input": 10,
+        "maxArgs": 4,
+        "maxCalls": 2,
+        "root": 0,
+        "stream": 4,
+        "tools": [
+          7,
+          8
+        ]
+      },
+      "recovered": true,
+      "registered": true,
+      "retired": [],
+      "route": 0,
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "tickets": [
+        {
+          "child": {
+            "bound": 6,
+            "epoch": 0,
+            "id": 0,
+            "input": 10,
+            "manifest": 100,
+            "root": 0,
+            "target": 0,
+            "view": 0
+          },
+          "id": 0,
+          "image": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "scope": {
+            "attempt": 0,
+            "budget": 5,
+            "candidates": 1,
+            "choice": 7,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "manifest": 100,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "parallel": false,
+            "roles": [
+              1,
+              2,
+              3
+            ],
+            "root": 0,
+            "schema": 4,
+            "target": 0,
+            "tools": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "toolEffects": 0,
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "uses": [
+        {
+          "actual": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "historyClear": true,
+          "kind": 0,
+          "record": {
+            "claim": 12,
+            "commitment": 21,
+            "document": false,
+            "domain": 2,
+            "input": 10,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "root": 1,
+            "stream": 4,
+            "tools": [
+              7,
+              8
+            ]
+          },
+          "ticket": {
+            "child": {
+              "bound": 6,
+              "epoch": 0,
+              "id": 0,
+              "input": 10,
+              "manifest": 100,
+              "root": 0,
+              "target": 0,
+              "view": 0
+            },
+            "id": 0,
+            "image": {
+              "boot": 0,
+              "claim": 11,
+              "route": 0,
+              "stream": 4,
+              "version": 0
+            },
+            "scope": {
+              "attempt": 0,
+              "budget": 5,
+              "candidates": 1,
+              "choice": 7,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "manifest": 100,
+              "maxArgs": 4,
+              "maxCalls": 2,
+              "parallel": false,
+              "roles": [
+                1,
+                2,
+                3
+              ],
+              "root": 0,
+              "schema": 4,
+              "target": 0,
+              "tools": [
+                7,
+                8
+              ]
+            }
+          }
+        }
+      ],
+      "version": 0,
+      "winner": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-authoritative-scope/itf/forgedDomainScopeCounterexampleTest-0.itf.json",
+    "states": 5,
+    "authority": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "input": 10,
+          "manifest": 100,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "boot": 0,
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "closed": false,
+      "history": [],
+      "known": true,
+      "online": true,
+      "parentCharged": false,
+      "parentRetired": false,
+      "record": {
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "domain": 2,
+        "input": 10,
+        "maxArgs": 4,
+        "maxCalls": 2,
+        "root": 0,
+        "stream": 4,
+        "tools": [
+          7,
+          8
+        ]
+      },
+      "recovered": true,
+      "registered": true,
+      "retired": [],
+      "route": 0,
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "tickets": [
+        {
+          "child": {
+            "bound": 6,
+            "epoch": 0,
+            "id": 0,
+            "input": 10,
+            "manifest": 100,
+            "root": 0,
+            "target": 0,
+            "view": 0
+          },
+          "id": 0,
+          "image": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "scope": {
+            "attempt": 0,
+            "budget": 5,
+            "candidates": 1,
+            "choice": 7,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "manifest": 100,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "parallel": false,
+            "roles": [
+              1,
+              2,
+              3
+            ],
+            "root": 0,
+            "schema": 4,
+            "target": 0,
+            "tools": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "toolEffects": 0,
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "uses": [
+        {
+          "actual": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "historyClear": true,
+          "kind": 0,
+          "record": {
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "domain": 2,
+            "input": 10,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "root": 0,
+            "stream": 4,
+            "tools": [
+              7,
+              8
+            ]
+          },
+          "ticket": {
+            "child": {
+              "bound": 6,
+              "epoch": 0,
+              "id": 0,
+              "input": 10,
+              "manifest": 100,
+              "root": 0,
+              "target": 0,
+              "view": 0
+            },
+            "id": 0,
+            "image": {
+              "boot": 0,
+              "claim": 11,
+              "route": 0,
+              "stream": 4,
+              "version": 0
+            },
+            "scope": {
+              "attempt": 0,
+              "budget": 99,
+              "candidates": 1,
+              "choice": 7,
+              "document": true,
+              "history": 99,
+              "input": 10,
+              "manifest": 100,
+              "maxArgs": 4,
+              "maxCalls": 2,
+              "parallel": false,
+              "roles": [
+                1,
+                2,
+                3
+              ],
+              "root": 0,
+              "schema": 4,
+              "target": 0,
+              "tools": [
+                7,
+                8
+              ]
+            }
+          }
+        }
+      ],
+      "version": 0,
+      "winner": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-authoritative-scope/itf/historyAliasScopeCounterexampleTest-4.itf.json",
+    "states": 6,
+    "authority": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "input": 10,
+          "manifest": 100,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "boot": 0,
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "closed": false,
+      "history": [
+        9
+      ],
+      "known": true,
+      "online": true,
+      "parentCharged": false,
+      "parentRetired": false,
+      "record": {
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "domain": 2,
+        "input": 10,
+        "maxArgs": 4,
+        "maxCalls": 2,
+        "root": 0,
+        "stream": 4,
+        "tools": [
+          7,
+          8
+        ]
+      },
+      "recovered": true,
+      "registered": true,
+      "retired": [],
+      "route": 0,
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "tickets": [
+        {
+          "child": {
+            "bound": 6,
+            "epoch": 0,
+            "id": 0,
+            "input": 10,
+            "manifest": 100,
+            "root": 0,
+            "target": 0,
+            "view": 0
+          },
+          "id": 0,
+          "image": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "scope": {
+            "attempt": 0,
+            "budget": 5,
+            "candidates": 1,
+            "choice": 7,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "manifest": 100,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "parallel": false,
+            "roles": [
+              1,
+              2,
+              3
+            ],
+            "root": 0,
+            "schema": 4,
+            "target": 0,
+            "tools": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "toolEffects": 0,
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "uses": [
+        {
+          "actual": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 1
+          },
+          "historyClear": false,
+          "kind": 0,
+          "record": {
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "domain": 2,
+            "input": 10,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "root": 0,
+            "stream": 4,
+            "tools": [
+              7,
+              8
+            ]
+          },
+          "ticket": {
+            "child": {
+              "bound": 6,
+              "epoch": 0,
+              "id": 0,
+              "input": 10,
+              "manifest": 100,
+              "root": 0,
+              "target": 0,
+              "view": 0
+            },
+            "id": -1,
+            "image": {
+              "boot": 0,
+              "claim": 11,
+              "route": 0,
+              "stream": 4,
+              "version": 1
+            },
+            "scope": {
+              "attempt": 0,
+              "budget": 5,
+              "candidates": 1,
+              "choice": 7,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "manifest": 100,
+              "maxArgs": 4,
+              "maxCalls": 2,
+              "parallel": false,
+              "roles": [
+                1,
+                2,
+                3
+              ],
+              "root": 0,
+              "schema": 4,
+              "target": 0,
+              "tools": [
+                7,
+                8
+              ]
+            }
+          }
+        }
+      ],
+      "version": 1,
+      "winner": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-authoritative-scope/itf/newScopeReplayScopeCounterexampleTest-6.itf.json",
+    "states": 6,
+    "authority": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "input": 10,
+          "manifest": 100,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "boot": 0,
+      "calls": {
+        "0": 2,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "closed": false,
+      "history": [],
+      "known": true,
+      "online": true,
+      "parentCharged": false,
+      "parentRetired": false,
+      "record": {
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "domain": 2,
+        "input": 10,
+        "maxArgs": 4,
+        "maxCalls": 2,
+        "root": 0,
+        "stream": 4,
+        "tools": [
+          7,
+          8
+        ]
+      },
+      "recovered": true,
+      "registered": true,
+      "retired": [],
+      "route": 0,
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "tickets": [
+        {
+          "child": {
+            "bound": 6,
+            "epoch": 0,
+            "id": 0,
+            "input": 10,
+            "manifest": 100,
+            "root": 0,
+            "target": 0,
+            "view": 0
+          },
+          "id": 0,
+          "image": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "scope": {
+            "attempt": 0,
+            "budget": 5,
+            "candidates": 1,
+            "choice": 7,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "manifest": 100,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "parallel": false,
+            "roles": [
+              1,
+              2,
+              3
+            ],
+            "root": 0,
+            "schema": 4,
+            "target": 0,
+            "tools": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "toolEffects": 0,
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "uses": [
+        {
+          "actual": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "historyClear": true,
+          "kind": 0,
+          "record": {
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "domain": 2,
+            "input": 10,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "root": 0,
+            "stream": 4,
+            "tools": [
+              7,
+              8
+            ]
+          },
+          "ticket": {
+            "child": {
+              "bound": 6,
+              "epoch": 0,
+              "id": 0,
+              "input": 10,
+              "manifest": 100,
+              "root": 0,
+              "target": 0,
+              "view": 0
+            },
+            "id": 0,
+            "image": {
+              "boot": 0,
+              "claim": 11,
+              "route": 0,
+              "stream": 4,
+              "version": 0
+            },
+            "scope": {
+              "attempt": 0,
+              "budget": 5,
+              "candidates": 1,
+              "choice": 7,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "manifest": 100,
+              "maxArgs": 4,
+              "maxCalls": 2,
+              "parallel": false,
+              "roles": [
+                1,
+                2,
+                3
+              ],
+              "root": 0,
+              "schema": 4,
+              "target": 0,
+              "tools": [
+                7,
+                8
+              ]
+            }
+          }
+        }
+      ],
+      "version": 0,
+      "winner": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-authoritative-scope/itf/responseDowngradeScopeCounterexampleTest-1.itf.json",
+    "states": 5,
+    "authority": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "input": 10,
+          "manifest": 100,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "boot": 0,
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "closed": false,
+      "history": [],
+      "known": true,
+      "online": true,
+      "parentCharged": false,
+      "parentRetired": false,
+      "record": {
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "domain": 2,
+        "input": 10,
+        "maxArgs": 4,
+        "maxCalls": 2,
+        "root": 0,
+        "stream": 4,
+        "tools": [
+          7,
+          8
+        ]
+      },
+      "recovered": true,
+      "registered": true,
+      "retired": [],
+      "route": 0,
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "tickets": [
+        {
+          "child": {
+            "bound": 6,
+            "epoch": 0,
+            "id": 0,
+            "input": 10,
+            "manifest": 100,
+            "root": 0,
+            "target": 0,
+            "view": 0
+          },
+          "id": 0,
+          "image": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "scope": {
+            "attempt": 0,
+            "budget": 5,
+            "candidates": 1,
+            "choice": 7,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "manifest": 100,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "parallel": false,
+            "roles": [
+              1,
+              2,
+              3
+            ],
+            "root": 0,
+            "schema": 4,
+            "target": 0,
+            "tools": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "toolEffects": 0,
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "uses": [
+        {
+          "actual": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "historyClear": true,
+          "kind": 0,
+          "record": {
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "domain": 2,
+            "input": 10,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "root": 0,
+            "stream": 4,
+            "tools": [
+              7,
+              8
+            ]
+          },
+          "ticket": {
+            "child": {
+              "bound": 6,
+              "epoch": 0,
+              "id": 0,
+              "input": 10,
+              "manifest": 100,
+              "root": 0,
+              "target": 0,
+              "view": 0
+            },
+            "id": 0,
+            "image": {
+              "boot": 0,
+              "claim": 11,
+              "route": 0,
+              "stream": 4,
+              "version": 0
+            },
+            "scope": {
+              "attempt": 0,
+              "budget": 5,
+              "candidates": 1,
+              "choice": 7,
+              "document": false,
+              "history": 9,
+              "input": 10,
+              "manifest": 100,
+              "maxArgs": 4,
+              "maxCalls": 2,
+              "parallel": false,
+              "roles": [
+                1,
+                2,
+                3
+              ],
+              "root": 0,
+              "schema": 4,
+              "target": 0,
+              "tools": [
+                7,
+                8
+              ]
+            }
+          }
+        }
+      ],
+      "version": 0,
+      "winner": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-authoritative-scope/itf/staleAuthorityScopeCounterexampleTest-3.itf.json",
+    "states": 6,
+    "authority": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "input": 10,
+          "manifest": 100,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "boot": 0,
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "closed": false,
+      "history": [],
+      "known": true,
+      "online": true,
+      "parentCharged": false,
+      "parentRetired": false,
+      "record": {
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "domain": 2,
+        "input": 10,
+        "maxArgs": 4,
+        "maxCalls": 2,
+        "root": 0,
+        "stream": 4,
+        "tools": [
+          7,
+          8
+        ]
+      },
+      "recovered": true,
+      "registered": true,
+      "retired": [],
+      "route": 0,
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "tickets": [
+        {
+          "child": {
+            "bound": 6,
+            "epoch": 0,
+            "id": 0,
+            "input": 10,
+            "manifest": 100,
+            "root": 0,
+            "target": 0,
+            "view": 0
+          },
+          "id": 0,
+          "image": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "scope": {
+            "attempt": 0,
+            "budget": 5,
+            "candidates": 1,
+            "choice": 7,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "manifest": 100,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "parallel": false,
+            "roles": [
+              1,
+              2,
+              3
+            ],
+            "root": 0,
+            "schema": 4,
+            "target": 0,
+            "tools": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "toolEffects": 0,
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "uses": [
+        {
+          "actual": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 1
+          },
+          "historyClear": true,
+          "kind": 0,
+          "record": {
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "domain": 2,
+            "input": 10,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "root": 0,
+            "stream": 4,
+            "tools": [
+              7,
+              8
+            ]
+          },
+          "ticket": {
+            "child": {
+              "bound": 0,
+              "epoch": -1,
+              "id": -1,
+              "input": -1,
+              "manifest": -1,
+              "root": -1,
+              "target": -1,
+              "view": -1
+            },
+            "id": -1,
+            "image": {
+              "boot": -1,
+              "claim": -1,
+              "route": -1,
+              "stream": -1,
+              "version": -1
+            },
+            "scope": {
+              "attempt": -1,
+              "budget": -1,
+              "candidates": 1,
+              "choice": 0,
+              "document": false,
+              "history": -1,
+              "input": -1,
+              "manifest": -1,
+              "maxArgs": 0,
+              "maxCalls": 0,
+              "parallel": false,
+              "roles": [],
+              "root": -1,
+              "schema": 0,
+              "target": -1,
+              "tools": []
+            }
+          }
+        }
+      ],
+      "version": 1,
+      "winner": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-authoritative-scope/itf/toolExpansionScopeCounterexampleTest-5.itf.json",
+    "states": 5,
+    "authority": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "input": 10,
+          "manifest": 100,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "boot": 0,
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "closed": false,
+      "history": [],
+      "known": true,
+      "online": true,
+      "parentCharged": false,
+      "parentRetired": false,
+      "record": {
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "domain": 2,
+        "input": 10,
+        "maxArgs": 4,
+        "maxCalls": 2,
+        "root": 0,
+        "stream": 4,
+        "tools": [
+          7,
+          8
+        ]
+      },
+      "recovered": true,
+      "registered": true,
+      "retired": [],
+      "route": 0,
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "tickets": [
+        {
+          "child": {
+            "bound": 6,
+            "epoch": 0,
+            "id": 0,
+            "input": 10,
+            "manifest": 100,
+            "root": 0,
+            "target": 0,
+            "view": 0
+          },
+          "id": 0,
+          "image": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "scope": {
+            "attempt": 0,
+            "budget": 5,
+            "candidates": 1,
+            "choice": 7,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "manifest": 100,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "parallel": false,
+            "roles": [
+              1,
+              2,
+              3
+            ],
+            "root": 0,
+            "schema": 4,
+            "target": 0,
+            "tools": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "toolEffects": 0,
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "uses": [
+        {
+          "actual": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "historyClear": true,
+          "kind": 0,
+          "record": {
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "domain": 2,
+            "input": 10,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "root": 0,
+            "stream": 4,
+            "tools": [
+              7,
+              8
+            ]
+          },
+          "ticket": {
+            "child": {
+              "bound": 6,
+              "epoch": 0,
+              "id": 0,
+              "input": 10,
+              "manifest": 100,
+              "root": 0,
+              "target": 0,
+              "view": 0
+            },
+            "id": 0,
+            "image": {
+              "boot": 0,
+              "claim": 11,
+              "route": 0,
+              "stream": 4,
+              "version": 0
+            },
+            "scope": {
+              "attempt": 0,
+              "budget": 5,
+              "candidates": 1,
+              "choice": 7,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "manifest": 100,
+              "maxArgs": 4,
+              "maxCalls": 2,
+              "parallel": false,
+              "roles": [
+                1,
+                2,
+                3
+              ],
+              "root": 0,
+              "schema": 4,
+              "target": 0,
+              "tools": [
+                7,
+                8,
+                9
+              ]
+            }
+          }
+        }
+      ],
+      "version": 0,
+      "winner": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-authoritative-scope/itf/unknownRefundScopeCounterexampleTest-7.itf.json",
+    "states": 6,
+    "authority": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "input": 10,
+          "manifest": 100,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "boot": 0,
+      "calls": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "closed": false,
+      "history": [],
+      "known": true,
+      "online": true,
+      "parentCharged": true,
+      "parentRetired": false,
+      "record": {
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "domain": 2,
+        "input": 10,
+        "maxArgs": 4,
+        "maxCalls": 2,
+        "root": 0,
+        "stream": 4,
+        "tools": [
+          7,
+          8
+        ]
+      },
+      "recovered": true,
+      "registered": true,
+      "retired": [],
+      "route": 0,
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "tickets": [
+        {
+          "child": {
+            "bound": 6,
+            "epoch": 0,
+            "id": 0,
+            "input": 10,
+            "manifest": 100,
+            "root": 0,
+            "target": 0,
+            "view": 0
+          },
+          "id": 0,
+          "image": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "scope": {
+            "attempt": 0,
+            "budget": 5,
+            "candidates": 1,
+            "choice": 7,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "manifest": 100,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "parallel": false,
+            "roles": [
+              1,
+              2,
+              3
+            ],
+            "root": 0,
+            "schema": 4,
+            "target": 0,
+            "tools": [
+              7,
+              8
+            ]
+          }
+        }
+      ],
+      "toolEffects": 0,
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "uses": [
+        {
+          "actual": {
+            "boot": 0,
+            "claim": 11,
+            "route": 0,
+            "stream": 4,
+            "version": 0
+          },
+          "historyClear": true,
+          "kind": 0,
+          "record": {
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "domain": 2,
+            "input": 10,
+            "maxArgs": 4,
+            "maxCalls": 2,
+            "root": 0,
+            "stream": 4,
+            "tools": [
+              7,
+              8
+            ]
+          },
+          "ticket": {
+            "child": {
+              "bound": 6,
+              "epoch": 0,
+              "id": 0,
+              "input": 10,
+              "manifest": 100,
+              "root": 0,
+              "target": 0,
+              "view": 0
+            },
+            "id": 0,
+            "image": {
+              "boot": 0,
+              "claim": 11,
+              "route": 0,
+              "stream": 4,
+              "version": 0
+            },
+            "scope": {
+              "attempt": 0,
+              "budget": 5,
+              "candidates": 1,
+              "choice": 7,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "manifest": 100,
+              "maxArgs": 4,
+              "maxCalls": 2,
+              "parallel": false,
+              "roles": [
+                1,
+                2,
+                3
+              ],
+              "root": 0,
+              "schema": 4,
+              "target": 0,
+              "tools": [
+                7,
+                8
+              ]
+            }
+          }
+        }
+      ],
+      "version": 0,
+      "winner": -1
+    }
+  }
+]

@@ -1,0 +1,138 @@
+dev/proofs/lean/PublicationRecovery.lean:26:23: error: Application type mismatch: The argument
+  Id
+has type
+  Type ?u.3 → Type ?u.3
+but is expected to have type
+  Type ?u.3
+in the application
+  DecidableEq Id
+dev/proofs/lean/PublicationRecovery.lean:26:38: error: type expected, got
+  (Id : Type ?u.6 → Type ?u.6)
+dev/proofs/lean/PublicationRecovery.lean:26:66: error: type expected, got
+  (Id : Type ?u.10 → Type ?u.10)
+dev/proofs/lean/PublicationRecovery.lean:29:25: error: Application type mismatch: The argument
+  Id
+has type
+  Type → Type
+but is expected to have type
+  Type
+in the application
+  State Id
+dev/proofs/lean/PublicationRecovery.lean:29:25: error: Application type mismatch: The argument
+  Id
+has type
+  Type → Type
+but is expected to have type
+  Type
+in the application
+  State Id
+dev/proofs/lean/PublicationRecovery.lean:30:20: error: Application type mismatch: The argument
+  Id
+has type
+  Type → Type
+but is expected to have type
+  Type
+in the application
+  State Id
+dev/proofs/lean/PublicationRecovery.lean:34:84: error: unexpected identifier; expected '}'
+dev/proofs/lean/PublicationRecovery.lean:41:55: error: Application type mismatch: The argument
+  Id
+has type
+  Type ?u.5 → Type ?u.5
+but is expected to have type
+  Type ?u.5
+in the application
+  DecidableEq Id
+dev/proofs/lean/PublicationRecovery.lean:48:2: error: Invalid alternative name `reject`: There are no unhandled alternatives
+dev/proofs/lean/PublicationRecovery.lean:52:2: error: Invalid alternative name `replayOrObservationOrRestart`: There are no unhandled alternatives
+dev/proofs/lean/PublicationRecovery.lean:44:2: error: Too many variable names provided at alternative `commit`: 6 provided, but 5 expected
+dev/proofs/lean/PublicationRecovery.lean:46:6: error: Tactic `subst` failed: did not find equation for eliminating 'key'
+
+case pos
+s✝ : State sorry
+inst✝ : DecidableEq sorry
+key : sorry
+d : Decision
+existing : s✝.records key = some d
+s : sorry
+id payload : Nat
+fence : s✝.records s = none
+fresh : s✝.fence ≤ payload
+same : sorry
+⊢ { head := s✝.head + 1, fence := payload, records := s✝.records, commits := s✝.commits ++ [s], held := s✝.held,
+          calls := s✝.calls }.records
+      key =
+    some d
+dev/proofs/lean/PublicationRecovery.lean:47:13: error(lean.unknownIdentifier): Unknown identifier `write`
+dev/proofs/lean/PublicationRecovery.lean:54:47: error: Application type mismatch: The argument
+  Id
+has type
+  Type ?u.5 → Type ?u.5
+but is expected to have type
+  Type ?u.5
+in the application
+  DecidableEq Id
+dev/proofs/lean/PublicationRecovery.lean:55:27: warning: declaration uses `sorry`
+dev/proofs/lean/PublicationRecovery.lean:57:27: error: Application type mismatch: The argument
+  Id
+has type
+  Type ?u.3 → Type ?u.3
+but is expected to have type
+  Type ?u.3
+in the application
+  DecidableEq Id
+dev/proofs/lean/PublicationRecovery.lean:57:39: error: Application type mismatch: The argument
+  Id
+has type
+  Type → Type
+but is expected to have type
+  Type
+in the application
+  State Id
+dev/proofs/lean/PublicationRecovery.lean:57:50: error: Application type mismatch: The argument
+  Id
+has type
+  Type → Type
+but is expected to have type
+  Type
+in the application
+  State Id
+dev/proofs/lean/PublicationRecovery.lean:61:54: error: Application type mismatch: The argument
+  Id
+has type
+  Type ?u.5 → Type ?u.5
+but is expected to have type
+  Type ?u.5
+in the application
+  DecidableEq Id
+dev/proofs/lean/PublicationRecovery.lean:68:46: error: Application type mismatch: The argument
+  Id
+has type
+  Type ?u.5 → Type ?u.5
+but is expected to have type
+  Type ?u.5
+in the application
+  DecidableEq Id
+dev/proofs/lean/PublicationRecovery.lean:73:66: error: Application type mismatch: The argument
+  Id
+has type
+  Type ?u.6 → Type ?u.6
+but is expected to have type
+  Type ?u.6
+in the application
+  DecidableEq Id
+'Weaver.PublicationRecovery.step_preserves_original_decisions' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.PublicationRecovery.step_preserves_accounting' depends on axioms: [propext, sorryAx]
+'Weaver.PublicationRecovery.run_preserves_original_decisions' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.PublicationRecovery.run_preserves_accounting' depends on axioms: [propext, sorryAx]
+'Weaver.PublicationRecovery.recovery_and_provider_accounting_composition' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+

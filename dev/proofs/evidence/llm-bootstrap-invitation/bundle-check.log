@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-bootstrap-invitation/check-bundle.py", line 28, in <module>
+    rows=json.loads((OUT/'bundle-control-shards.json').read_text());tests=[d['name'] for d in raw['declarations'] if d.get('qualifier')=='run'];assert [t for row in rows for t in row['tests']]==tests
+                                                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

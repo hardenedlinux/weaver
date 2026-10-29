@@ -1,0 +1,5 @@
+(import :weaver-native/fixture)
+(export main)
+(def (main . args)
+  (##load (getenv "WEAVER_NATIVE_CANARY"))
+  (display "NATIVE-MAIN-RETURN\n"))

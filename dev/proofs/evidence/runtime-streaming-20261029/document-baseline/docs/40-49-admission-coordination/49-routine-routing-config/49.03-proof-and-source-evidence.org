@@ -1,0 +1,154 @@
+#+title: Routine and Routing Configuration Evidence
+#+language: en
+#+startup: overview
+
+* Current scope
+This is product architecture and a focused refinement proof, not a Gateway implementation.
+It connects configurable routine requirements to concrete LLM route selection. It does not
+replace the original routing, multi-attempt, identity, broker or account designs.
+
+- [[file:../../../proofs/lean/RoutineRoutingConfig.lean][Lean refinement and routing composition]]
+- [[file:../../../proofs/qunit/RoutineRoutingConfig.qnt][Quint configuration/routing controls]]
+- [[file:../../../proofs/check_routine_config.py][Primary bounded checker]]
+- [[file:../../../proofs/prepare_routine_config.py][Source-preserving ancestor preparation]]
+- [[file:../../../proofs/check_routine_config_api.py][Official pipeline watchdog]]
+- [[file:../../../proofs/run_routine_config.cjs][Official type/effect analysis and fresh evaluators]]
+- [[file:../../../proofs/evidence/routine-routing-config/receipt.json][Current classification receipt]]
+- [[file:../../../proofs/evidence/routine-routing-config/commands.json][Executed proof/check phases]]
+- [[file:../../../proofs/evidence/routine-routing-config/RoutineRoutingConfig.log][Lean axiom report]]
+- [[file:../../../proofs/evidence/routine-routing-config/api-invocation.json][Executed source identities]]
+- [[file:../../../proofs/evidence/routine-routing-config/typed-stage-summary.json][Official typed IR and tool identities]]
+- [[file:../../../proofs/evidence/routine-routing-config/bundle-certificate.json][Ancestor and current-source association]]
+- [[file:../../../proofs/evidence/routine-routing-config/source-review.json][Exact current source excerpts]]
+- [[file:../../../proofs/evidence/routine-routing-config/source-check.json][Current Git and working-source check]]
+- [[file:../../../proofs/evidence/routine-routing-config/example-check.json][Finite JSON/YAML example and rejection checks]]
+- [[file:../../../proofs/evidence/routine-routing-config/counterexample-observations.json][Decoded counterexample observations]]
+- [[file:../../../proofs/evidence/routine-routing-config/four-artifacts.json][Four-artifact mapping]]
+- [[file:../../../proofs/evidence/routine-routing-config/SHA256SUMS][Sealed byte manifest]]
+
+* Exact source study
+The study verifies sixteen files across agentgateway, current POO Flow Core, POO Flow
+Governance and cedar-poo-spec. Agentgateway is the existing pinned research checkout,
+not an assertion about the newest release. Current Core is a separate checkout at
+52130d2d338b09622a3f55e37987ddc0375b6187. CO7 configuration-source.ss has working
+modifications relative to that HEAD; its exact working bytes and distinct Git blob hash
+are recorded and checked. All other reviewed working files match their respective HEAD.
+No upstream file or dependency pin is edited. Current-source evidence is not an ABI or
+compatibility migration claim.
+
+| Source | Observed mechanism | Weaver use / extension boundary |
+|--------+--------------------+---------------------------------|
+| AG1 configuration architecture | Local YAML/JSON and xDS share runtime IR; resource granularity avoids broad fanout | Reuse thin projections and incremental publication; add coherent POO semantic/Policy closure and original-task binding |
+| AG2 model_router.rs | Concrete route policies and public/internal model distinction | Reuse model-facing operational patterns; catalog visibility is not ambient task authority |
+| AG3 router_callout.rs | Callout transformations, fallback and optional response cache | Advisory output and cached response must re-enter task eligibility; classifier calls themselves need disclosure/cost admission |
+| AG4 callout config example | Session-keyed sticky routing example | Session identity alone is not a permission or original-budget cache key |
+| AG5 Go model API | Declarative model matching/control-plane API | Cloud-native resource ergonomics; no need to move final provider sends into Go |
+| CO1 config-adapter.ss | Reuses module Contracts to adapt POO Funflow values; states no workflow effects | Reuse typed adaptation; proposed Weaver routine/compiler schemas are not already implemented here |
+| CO2 config-prototypes.ss | Check/pipeline/DAG/normalized-flow/plan vocabulary, lineage and nonexecuted fields | Reuse graph and projection vocabulary; add model/tool/agent/response and accounting obligations |
+| CO3 objects.ss | Task/Job prototypes and flow combinators | Reuse composition; a generic flow-bind/try-flow is not a governed retry or a grant |
+| CO4 JSON Schema contract emission | Normalized schema metadata and prebuilt predicate closures | Reuse data-to-native-Contract admission; no measured throughput inference |
+| CO5 slot-contracts.ss | Native Types/Contracts; receipt labels are not runtime admission | One owner of semantic validation across Scheme and serialized data |
+| CO6 prototype syntax | Static slot constructors; kind predicate checks only kind | Do not mistake kind equality for complete value/graph/Policy validation |
+| CO7 current configuration source | Native evaluation with fresh source checks before bootstrap and after evaluation | Reuse complete currentness discipline; arbitrary initializers/IO require separately qualified containment |
+| PF1 authorized-effect-token | Exact bound operation, spent nonce and revocation epoch | Config/advice cannot recreate original claim or weaken the final effect binding |
+| PF2 strict mediation | Pure consume before uncertain observation | Unknown external outcome is not a zero-cost/no-execution fact |
+| CP1 BoundOperation | Request equality authenticates neither input; host must authenticate actual effect/state | Authenticated semantic and native wire/current facts remain explicit |
+| CP2 CompoundAuthorization | Cedar over a compiled POO root/entity snapshot | Code as Policy constrains execution; arbitrary config text cannot supply authentic facts |
+
+The directly compiled proof import is Weaver.LlmRouting and its existing software
+semantics ancestors. The source study does not claim a newly compiled upstream POO/Cedar
+refinement or a native Schema/Go/Rust compiler implementation.
+
+* Four-artifact obligations
+Rows associate this Org requirement, a printed Lean declaration, a concrete passing Quint
+scenario and a stable D2 node. They are an explicit design correspondence, not a checked
+bisimulation. Bridge/account rows use actual imported Lean theorems under their bridge
+premises; their small routing scenarios do not execute the native account ledger.
+
+| ID | Obligation | Lean declaration | Quint control | D2 node |
+|----+------------+------------------+---------------+---------|
+| RC1 | Configuration only narrows original route eligibility | =eligible_is_narrowed= | =configuredTargetIsNotPermissionTest= | =execution.cas= |
+| RC2 | Selected target belongs to declared candidates | =selected_target_is_declared= | =emptyCandidateSetFailsClosedTest= | =execution.cas= |
+| RC3 | A configured allowance cannot exceed original escrow | =original_budget_is_bound= | =largerBudgetRejectedTest= | =semantic.query= |
+| RC4 | Required capability survives normalization and selection | =required_capability_preserved= | =strengthenedContractFiltersPrimaryTest= | =semantic.origin= |
+| RC5 | Current original history constrains dispatch | =history_cannot_be_overridden= | =historyRestrictionRecheckedTest= | =execution.alias= |
+| RC6 | Equivalent accepted values share runtime lowering | =same_normal_same_runtime= | =jsonSurfaceUsesSameNormalTest= | =authoring.a2a= |
+| RC7 | All accepted equivalent surface outputs share semantics | =all_surfaces_share_runtime= | =yamlSurfaceUsesSameNormalTest= | =authoring.a2a= |
+| RC8 | Equal semantics do not remove source admission | =source_provenance_is_separate= | =fullSourceClosureRequiredTest= | =authoring.acp= |
+| RC9 | Source package identity can differ for the same semantic value | =provenance_changes_without_semantic_change= | =publisherAdmissionRequiredTest= | =cloud.projection= |
+| RC10 | Bound task/profile/node/response remain authoritative | =task_identity_is_fixed= | =forgedRootRejectedTest= | =semantic.query= |
+| RC11 | Config cannot drop original capability requirements | =dropped_capability_rejected= | =droppedCapabilityRejectedTest= | =semantic.origin= |
+| RC12 | Config cannot grant a larger budget | =enlarged_allowance_rejected= | =largerBudgetRejectedTest= | =semantic.query= |
+| RC13 | Config cannot forge another semantic profile | =changed_profile_rejected= | =forgedProfileRejectedTest= | =semantic.query= |
+| RC14 | Config cannot silently change response semantics | =changed_response_rejected= | =changedResponseModeRejectedTest= | =semantic.origin= |
+| RC15 | Empty eligible candidates do not trigger permissive fallback | =no_empty_route_fallback= | =emptyCandidateSetFailsClosedTest= | =execution.cas= |
+| RC16 | Actual final routing rechecks original eligibility | =final_dispatch_rechecks_parent= | =hardWithdrawalInvalidatesOldSelectionTest= | =execution.alias= |
+| RC17 | Final admission requires admitted and current compiled artifacts | =artifact_current_at_dispatch= | =currentCompilerArtifactRequiredTest= | =execution.alias= |
+| RC18 | Unknown outcome cannot enable hidden retry | =no_extra_provider_attempt= | =unknownOutcomeKeepsOriginalAdmissionTest= | =execution.hold= |
+| RC19 | A logical response has one committed provider source | =no_response_splicing= | =routineCannotSpliceResponseSourcesTest= | =execution.hold= |
+| RC20 | Callout advice cannot choose a denied model | =advice_does_not_grant_authority= | =configuredTargetIsNotPermissionTest= | =cloud.join= |
+| RC21 | Soft telemetry affects ranking, not the hard authority view | =telemetry_is_not_authority= | =softTelemetryPreservesHardAuthorityTest= | =execution.cas= |
+| RC22 | Selected cost binds the actual step reservation | =cost_fits_actual_step_reservation= | =narrowedAllowanceConstrainsRouteTest= | =execution.alias= |
+| RC23 | Actual source bridge preserves shared account capacity | =shared_account_capacity_retained= | =allowedAlternativeKeepsOriginalRootTest= | =semantic.query= |
+| RC24 | Actual source bridge preserves the original claim and offer | =original_claim_retained= | =unknownOutcomeKeepsOriginalAdmissionTest= | =execution.hold= |
+
+* Lean model and proof boundary
+Twenty-four declarations compile without sorryAx. Refines constrains a bound semantic
+Normal value to the authentic original root/payload/profile/node/response, preserves every
+original capability, strengthens the context requirement, preserves region and narrows the
+allowance. lower intersects declared targets with the actual catalog and preserves original
+Policy/history/support/region/price functions. eligible_is_narrowed derives original eligibility;
+this is not achieved by assuming the entire final security property.
+
+Requirements and candidate lists are arbitrary finite lists. The base router supplies actual
+catalog generations, capability support, context/cost bounds and current Policy/history facts.
+Same-normal lemmas establish extensional equality of lowered runtime configuration after a
+normalization witness is supplied. They do not prove a Scheme interpreter, parser normalization
+or complete semantic equivalence of arbitrary Scheme and JSON/YAML programs. The fixture check
+compares two actual decoded document examples; Scheme is not executed.
+
+provenance_changes_without_semantic_change constructs distinct source identities with equal
+semantic values. Package admission and currentness therefore remain separate predicates.
+executionOwner requires native finalPolicyValid, admitted package and currentAtCAS for the
+actual dispatch view. Compiler/source closure validity, deterministic supported lowering,
+authentic original context and final native currentness remain explicit host obligations.
+The model does not implement config publication, a Scheme sandbox or native encoding.
+
+Final dispatch and advice theorems use actual LlmRouting transitions. The original one-admission
+and one-response-source bounds remain unchanged, so this profile cannot silently implement a
+multi-attempt routine. Telemetry stays outside the hard authorization view. AdmissionBridge
+must bind the real original source claim, payload, selected target, wire and step reservation;
+the imported cost, shared-account and original-claim results are conditional on that actual
+bridge. They do not establish full routine-DAG execution, parallel reservation allocation,
+identity recovery, native storage/transport refinement or unknown-usage settlement.
+
+* Quint and finite fixture evidence
+Thirty-two deterministic controls execute through the installed official full type/effect
+pipeline with fresh evaluators per group and unchanged typed IR. The bundle contains the
+complete LlmRouting transition module and current leaf; only the thirty-two parent run
+declarations are omitted. Official parsed IR comparison checks all non-run ancestor definitions
+and every current raw-leaf definition. Parent tests are identity reuse, not newly rerun controls.
+
+Twenty-eight guarded controls cover accepted surface outputs, typed/closure/publisher admission,
+profile/response/root/capability/budget rejection, stronger capability filtering, denied advice,
+empty candidates, pinned defaults, current hard withdrawals, metrics, final wire/Policy,
+unknown retry and single response source. Four unsafe actions outside step produce counterexamples
+for weakened allowance, replaced pinned routine, rewritten wire root and hidden second dispatch.
+Decoded traces inspect the actual final config/routing records. These are model observations,
+not provider calls, storage qualification or a production router benchmark.
+
+Sixteen finite document-fixture checks compare actual JSON/YAML decoding, validate the declared
+three-node acyclic example and single-invocation allowance, and reject duplicates, executable
+tags, aliases outside the example profile, wrong scalar types, unknown fields/credentials,
+forward/cyclic dependencies, excessive totals, missing Contracts and missing capability needs.
+The helper is deliberately an example verifier, not the Gateway's production schema/parser.
+The source Scheme block remains illustrative. Registered Type/Contract references, arbitrary
+routine composition, conditional/fanout/loop validation and native cross-language lowering need
+independent implementation/refinement evidence.
+
+The first Lean draft had a record-update layout error and consequent sorryAx diagnostics;
+lean-initial.log is retained and not acceptance evidence. The first Quint draft redefined
+select, a reserved built-in, and failed official name resolution; its source/invocation/errors
+are retained in draft-reserved-select. Final successful sources and receipts are distinct.
+No exhaustive/random exploration, recovery liveness, learned-router quality, native compiler/
+provider integration, end-to-end performance or remote CI is claimed.

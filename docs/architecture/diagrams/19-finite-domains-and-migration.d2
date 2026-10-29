@@ -1,0 +1,158 @@
+# Core semantic identities and execution lifecycle. Evidence remains in Org.
+...@lib/theme
+title: FINITE MESSAGES / PERSISTENT DOMAIN LINEAGE {
+  class: title
+  near: top-center
+}
+meaning: SEMANTICS AND INTEGRATION {
+  top: 0
+  left: 0
+  width: 350
+  height: 760
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  message: Scheme / canonical message\nImmutable effect and owner root {
+    top: 100
+    left: 25
+    width: 300
+    height: 105
+    class: semantic
+  }
+  accounts: Scheme / persistent account meaning\nBudget and history are independent {
+    top: 330
+    left: 25
+    width: 300
+    height: 105
+    class: policy
+  }
+  workers: Go / cloud lifecycle integration\nEndpoints / restart / reconciliation {
+    top: 560
+    left: 25
+    width: 300
+    height: 105
+    class: cloud
+  }
+}
+owner: RUST / AUTHORITATIVE DOMAIN LINEAGE {
+  top: 0
+  left: 480
+  width: 640
+  height: 760
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  records: Finite canonical message registry\nSpent state / original claims / retained obligations {
+    top: 100
+    left: 45
+    width: 550
+    height: 105
+    class: ledger
+  }
+  active: Active owner {
+    top: 330
+    left: 20
+    width: 130
+    height: 85
+    class: runtime
+    label.near: center-center
+    style.font-size: 14
+  }
+  sealed: Sealed root\nAdvance fence {
+    top: 330
+    left: 175
+    width: 130
+    height: 85
+    class: unknown
+    label.near: center-center
+    style.font-size: 14
+  }
+  transfer: Staged transfer\nShared snapshot {
+    top: 330
+    left: 330
+    width: 130
+    height: 85
+    class: ledger
+    label.near: center-center
+    style.font-size: 14
+  }
+  target: Active target\nFresh fence {
+    top: 330
+    left: 485
+    width: 130
+    height: 85
+    class: runtime
+    label.near: center-center
+    style.font-size: 14
+  }
+  shared: Canonical budget and history accounts\nFinite cost sums / free / held / charged\nMigration and restart preserve identity and state {
+    top: 555
+    left: 45
+    width: 550
+    height: 125
+    class: ledger
+  }
+}
+broker: RUST / FINAL BROKER {
+  top: 0
+  left: 1250
+  width: 380
+  height: 760
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  context: Bound root / account / message\nLive worker / generation / fence\nCurrent shared revision and purpose {
+    top: 100
+    left: 30
+    width: 320
+    height: 125
+    class: policy
+  }
+  claim: Original executor claim and stream\nA new process cannot inherit send {
+    top: 330
+    left: 30
+    width: 320
+    height: 105
+    class: runtime
+  }
+  offer: Bounded new offer\nAccepted buffers retire separately\nLate evidence never recreates authority {
+    top: 555
+    left: 30
+    width: 320
+    height: 125
+    class: unknown
+  }
+}
+quint: QUINT\nNew domain / stale worker / rollback traces {
+  top: 885
+  left: 280
+  width: 450
+  height: 100
+  class: policy
+}
+lean: LEAN\nFinite-set induction / account conservation\nImmutable tickets and original claims {
+  top: 885
+  left: 960
+  width: 450
+  height: 100
+  class: semantic
+}
+meaning.message -> owner.records: authenticated binding
+meaning.accounts -> owner.shared: stable semantic IDs
+meaning.workers -> owner.active: lifecycle proposals
+owner.active -> owner.sealed
+owner.sealed -> owner.transfer
+owner.transfer -> owner.target
+owner.shared -> owner.transfer: shared-state witness
+owner.records -> broker.context
+broker.context -> broker.claim
+broker.claim -> broker.offer
+quint -> owner.sealed: explore failures {
+  style.stroke-dash: 5
+}
+lean -> owner.shared: preserve invariants {
+  style.stroke-dash: 5
+}

@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-7","limit":20}
+
+  LlmEnrollmentCredential
+    ok authenticSignatureRequiredTest passed 1 test(s)
+    ok lateCallbackAfterRevocationRejectedTest passed 1 test(s)
+    ok interveningCommitInvalidatesReadTest passed 1 test(s)
+
+  3 passing (1670ms)
+@@DONE {"label":"api-controls-7","passed":["authenticSignatureRequiredTest","lateCallbackAfterRevocationRejectedTest","interveningCommitInvalidatesReadTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

@@ -1,0 +1,14 @@
+proofs/lean/NativeLocatorClosure.lean:47:37: error: `simp` made no progress
+proofs/lean/NativeLocatorClosure.lean:47:52: error: unexpected identifier; expected command
+proofs/lean/NativeLocatorClosure.lean:50:43: error: `simp` made no progress
+proofs/lean/NativeLocatorClosure.lean:50:62: error: unexpected identifier; expected command
+'Weaver.NativeLocatorClosure.qualified_lookup_is_unique' does not depend on any axioms
+'Weaver.NativeLocatorClosure.colliding_names_require_different_images' does not depend on any axioms
+'Weaver.NativeLocatorClosure.wrong_image_cannot_resolve' does not depend on any axioms
+'Weaver.NativeLocatorClosure.incomplete_producer_cannot_publish' depends on axioms: [sorryAx]
+'Weaver.NativeLocatorClosure.foreign_initializer_cannot_publish' depends on axioms: [sorryAx]
+'Weaver.NativeLocatorClosure.native_entries_preserve_original_owner' does not depend on any axioms
+'Weaver.NativeLocatorClosure.identical_locator_cannot_name_distinct_modules' does not depend on any axioms
+'Weaver.NativeLocatorClosure.shared_image_preserves_all_owned_refs' depends on axioms: [propext, Quot.sound]
+'Weaver.NativeLocatorClosure.late_exit_rejects_even_with_valid_partition' depends on axioms: [propext, Quot.sound]
+'Weaver.NativeLocatorClosure.shared_native_profile_never_grants_dispatch' does not depend on any axioms

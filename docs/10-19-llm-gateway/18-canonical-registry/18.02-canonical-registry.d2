@@ -1,0 +1,191 @@
+# Core design only; source identities and proof receipts remain in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / AUTHORITATIVE CANONICAL ORIGIN / CROSS-PROTOCOL RECOVERY {
+  class: title
+  near: top-center
+}
+protocols: GO / ADMITTED PROTOCOL LIFECYCLE {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  mcp: MCP request and reconnect\nAdmitted peer / profile / incarnation\nNo family from transport identifiers {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  a2a: A2A task and context locators\nAuthenticate original continuity\nNew task is not a fresh claim {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  acp: Client ACP session resume\nResolve original source operation\nSession history is not authority {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+registry: RUST / CANONICAL REGISTRY {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  origin: Write-once source origin\nScheme / ASP provenance / exact intent\nOriginal claim / profile / domains {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  alias: Authoritative namespaced aliases\nPrincipal / peer / profile / wire key\nExact committed target / no rebind {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  query: Exact durable identity lookup\nLost reply returns original record\nNo lookup-or-create on resume {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+}
+recovery: RUST / QUALIFIED IDENTITY RECOVERY {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  projection: Recover identity projections\nExact registered rows and aliases\nNever assign source ledger state {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  join: Complete current resolution image\nRegistry revision / source authority cut\nLookup is data / not a send grant {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  fence: Non-rollback identity owner fence\nRestart closes access and retires receipts\nLate confirmation is not currentness {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+broker: RUST / ORIGINAL ACTUAL-EFFECT GATE {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  cas: Current identity and source CAS\nActual child / payload / route / Policy\nNew alias invalidates old receipt {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  claim: Original claim and pending intent\nSame profile / family winner / history\nFresh resolution cannot reset spent-state {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  hold: Original account and usage hold\nUnknown work remains spent and held\nNew protocol is not a funding domain {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+quint: QUINT\nReconnect / new task / resume / reply loss\nAlias collision / stale owner / ledger rollback {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nImmutable origin / alias keys / pending intent\nCurrent identity / original source obligations {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+protocols.mcp -> registry.alias
+protocols.a2a -> registry.alias
+protocols.acp -> registry.query
+registry.origin -> registry.alias
+registry.alias -> registry.query
+registry.query -> recovery.projection
+recovery.projection -> recovery.join
+recovery.fence -> recovery.join { style.stroke-dash: 4 }
+recovery.join -> broker.cas
+broker.claim -> broker.cas { style.stroke-dash: 4 }
+broker.claim -> broker.hold

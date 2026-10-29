@@ -1,0 +1,211 @@
+#+title: Weaver Original Task Authority and Canonical Semantic Scope
+#+language: en
+#+options: toc:3
+
+* Decision and security boundary
+
+A scope supplied by an SDK, provider, Go adapter or client is data. Its internal
+consistency and a matching payload digest cannot establish original task authority.
+The Rust gate resolves the original logical key through the authority-owned
+registry, checks the existing claim and canonical budget/history identities,
+resolves that task's immutable semantic commitment, and derives the exact scope
+for the registered child. It compares the complete authority image again at the
+actual consume, disclosure or authoritative-proposal decision.
+
+This joins the task-aware routing and attempt ledger to semantic interoperability.
+Changing provider encoding cannot change the root claim, response mode, tool set,
+resource limits or account domains. A newly created scope, nonce, Authority,
+worker or client reconnect does not create task authority or release unknown cost.
+Weaver's advantage is that the same original task governs selection, encoding,
+paid generation, disclosure and later tool-effect admission.
+
+The new Lean module directly projects its root transitions into GatewayHeadCAS
+and child transitions into LlmAttemptLedger. It constructs an actual child
+invocation through the existing ChildCall proof and checks semantic transitions
+under a derived scope. It does not replace the gap with a caller-provided
+=scopeValid= Boolean. Authentication, registry ownership, canonicalization and
+native durability remain explicit trusted boundaries.
+
+* Two identities that must not be conflated
+
+| Identity | Source and binding | What equality establishes |
+|----------+--------------------+---------------------------|
+| Canonical input identity | Existing source configuration and original logical message | The admitted input identity; not the full response/profile contract |
+| Semantic contract commitment | Authority-owned original-task mapping to an immutable profile | Exact role/tool/schema constraints, response mode, limits and allowed targets |
+| Original claim | Root key plus source-owned claim token and claim stream | The existing consumed task claim; not a new SDK request identity |
+| Domain references | Source configuration maps original key to domain, then budget and history account | Account identity independent of provider or execution-domain aliases |
+| Current execution image | Authority head/view, publication and semantic revision, route view, broker boot | Currentness at one decision; not reusable permission |
+
+Two legitimate tasks can share input bytes while having different authorized
+response contracts. Conversely, repeating the same input with a new caller scope
+cannot create another task. Do not use payload equality to pick an arbitrary
+profile, and do not assume that an input digest commits response mode or private
+governance fields. The new registry has a separate original-key-to-commitment
+mapping and immutable commitment-to-contract resolution.
+
+The registry is owned by the same original task authority, under its namespace
+and authenticated publication domain. It is not an adapter's local model catalog.
+The model holds this mapping fixed across the entire run, including restart;
+changing it at process startup would violate the model premise. Native recovery
+must authenticate the original mapping and exact committed prefix before enabling
+any gate. A local monotone revision or a valid-looking signed digest alone does
+not establish common publication membership or fork freedom.
+
+* Original task record and profile publication
+
+The authoritative record binds logical key, original claim token/stream, canonical
+input identity, execution domain, canonical budget/history accounts, semantic
+commitment, exact profile, allowed provider targets and resource limits. The model
+constructs Record from GatewayHeadCAS.Canonical and the source-owned registry;
+registration is create-only. Every later use requires the same registered record
+and current canonical source head. Returning to an old head cannot replace this
+record or revive an old image.
+
+| Publication phase | Required durable fact | Failure behavior |
+|-------------------+-----------------------+------------------|
+| Freeze contract | Scheme resolves canonical task, producer receipts, source/scope/profile digests and policy schema | Caller object shape or a provider echo is not provenance |
+| Store immutable profile | Verify the exact commitment and required source vector; profile bytes are durable | Missing or mismatched object blocks publication/use |
+| Bind original root | Original task authority commits profile reference with the original claim/domain binding and authoritative publication membership | Losing the reply requires querying the same original operation; never choose a new profile or key |
+| Materialize/cache record | Cache carries exact original decision and immutable profile reference | Cache acknowledgements cannot replace authority; absent profile stays unavailable |
+| Observe for a child | Resolve full original record and registered child; capture exact current image | Observation is data, not a transferable grant |
+| Final gate | Recompare current authority image and exact derived scope at the consuming write | Any changed head, route view, boot, restriction or incomplete recovery fails closed |
+
+The profile reference must be part of the original authority decision. The native
+extension must not attach an arbitrary profile after a claim merely because its
+payload matches. POO Flow's existing input/source/profile digest fields provide
+reuse points, but the complete Gateway task-profile publication record and joint
+commit contract are extensions. In the new model the authority-owned mapping is
+an immutable configuration primitive, analogous to the existing canonical domain
+maps. It is not claimed to be already implemented in POO Flow or cedar-poo-spec.
+
+A profile store may be separate from the root log. Persist and authenticate the
+immutable object before acknowledging a root decision that references it; recover
+only an exact committed reference. Missing objects, split publication views,
+unknown root commits and cross-store snapshot mismatch block use. They must not
+fall back to a default profile, a provider's suggested scope or a freshly generated
+contract. The total helper used to describe model lookup has an empty default,
+but registration and all authority gates explicitly reject a missing lookup.
+The helper default is never an outbound contract.
+
+* Derivation and final currentness checks
+
+For original key =k=, the scope uses input =source.payload(k)=, budget
+=source.budget(source.root(k))= and history =source.history(source.root(k))=.
+The semantic profile resolves from the original task's separate commitment.
+The child contributes only its registered ordinal, actual target and immutable
+wire manifest. Its root and input must match the original task, and its target
+must belong to the admitted target set as well as pass current route Policy.
+Response mode, tool set, argument/call limits, schema and role constraints come
+from the resolved contract, never from the child request.
+
+A ticket captures the exact authority view, route view and broker boot. The view
+includes canonical head, publication/worker/fence and semantic-ledger revision.
+The gate requires the authority online, recovery qualified, original root live
+and uncharged, original logical offer present, current source Policy and an
+authenticated head. It checks the original history account's restriction state,
+not the execution-domain number or a caller-supplied replacement history account.
+
+Observe and consume are separate transitions. A cached ticket that was once
+correct fails if the current image differs. SDK retries, queue handoff, redirects,
+provider changes and response release cannot bypass that comparison. Changes to
+soft ranking metrics need not change authority; hard route publication does.
+The model compares the full current image in the same abstract transition as
+consumption/use. Native implementations must provide the equivalent linearization
+point, not a preflight check followed by an independently writable queue.
+
+* Actual provider conversion and child invocation
+
+The joint invocation requires a registered current ticket; the actual ChildCall
+whose before-state equals the product's current child ledger; the same immutable
+child record; current broker worker; and EncodingBridge for the derived scope.
+The bridge ties actual target, manifest, canonical payload and wire metadata to
+that registered child. The actual semantic consumed transition and child call
+slot advance together in the abstract product. The routing escrow must equal
+the original source cost bound; child allocations also enforce that equality.
+A self-consistent alternative scope or a body with the correct input but wrong
+response mode/history/budget context cannot satisfy these bindings.
+
+Provider encoding still requires qualified payload projection, immutable wire
+ownership and alias-map validation from [[file:../12-semantic-contracts/12.01-request-response-and-tool-semantics.org][12.01]]. The new proof binds those
+checks to authoritative task semantics. It does not prove a native JSON codec,
+cryptographic collision resistance or identical model behavior. A target change
+requires the appropriate new authorized child within the existing retry profile,
+original allowance and original history domain. It cannot mutate the contract.
+
+Consume response loss, pre/post-enqueue crash and unknown provider execution use
+the existing conservative contracts from [[file:../../30-39-assurance/37-broker-consumption-queue/37.00-index.org][37]] and [[file:../11-attempts-and-failover/11.01-attempts-budget-and-stream-winner.org][11]]. Query the same immutable
+operation and spent record; a fresh scope or nonce cannot replay the child.
+The root model's one logical offer is task admission; it is not a claim of one
+remote provider generation when the task explicitly sponsors additional children.
+
+* Response mode and tool proposal gates
+
+A validated-document contract remains a validated-document contract through
+conversion and recovery. Release under its derived scope requires a complete
+validated document, the committed response winner, current disclosure Policy,
+worker and range gate. A provider cannot change that contract to text deltas by
+returning a different scope. Raw partial output is available only under an
+independently declared contract that was authorized before use.
+
+An authoritative tool proposal requires an actually invoked registered child,
+the derived original scope, exact assembled argument state, qualified completion,
+canonical allowed tool and schema/argument bounds. A proposal from another task
+with identical input cannot be imported using its tool set or weaker limits.
+The semantic model proves these proposal properties under its parser/observation
+owner contracts; the new wrapper requires fresh original authority for proposal
+promotion. Late fragments may remain source-attributed data. They do not become
+an authoritative proposal while history is restricted or recovery is incomplete.
+
+Proposals, including those retained from a losing child, remain data. Disclosure
+requires winner/range checks; tool execution requires a distinct actual-operation
+admission binding parent claim, exact tool and argument digest, original account
+and current history. This category introduces no tool-execution transition or
+grant. Cedar must authorize every required operation layer; a valid profile,
+parse result or existing inference grant is insufficient.
+
+* Unknown budgets, settlement and restart
+
+The product projects all child transitions into the existing attempt ledger and
+all root transitions into GatewayHeadCAS. It preserves source account capacity,
+original claim uniqueness and the sum of child maxima. Child allocation cannot
+choose a routing escrow larger than the original source allowance. Additional
+nonces/scopes do not create another reservation domain.
+
+A root transition that changes settlement state requires the child ledger already
+closed. Existing child closure requires retirement, terminal result and final
+usage for every child. Therefore an unknown usage slot prevents advancement of
+root settlement even if a new scope or worker is available. This is a logical
+charged-state coupling; actual financial account application and its independent
+anchor remain separate contracts. It is not a new refund API.
+
+Restart preserves original record, semantic commitment, call/usage slots and
+allowances, increments broker boot, retires old child admissions and closes the
+recovery gate. Recovered authority must validate the original record/profile
+publication. Old tickets fail currentness; uncalled old children cannot be
+relabelled with the new epoch. Attributable late data can reconcile the original
+child; it cannot resurrect invocation authority or release unknown funds.
+
+A semantic contract rewrite under an existing root is unsupported by this
+baseline, even if a caller calls it a migration. An authorized continuation that
+changes semantics needs its own source-bound protocol retaining original claim,
+shared budget, history and outstanding obligations. No restart/default-profile
+path is such a protocol.
+
+* Language responsibilities and performance
+
+| Owner | Responsibility at this boundary |
+|-------+---------------------------------|
+| Scheme / POO Flow | Canonical task and contract meaning; freeze exact producer/source/profile references; define scope derivation and Cedar request projection |
+| Go | Kubernetes/provider capability and identity reconciliation, SDK adaptation and attributable observations; propose encodings, never publish task authority from adapter data |
+| Rust authority owner | Persist immutable root-to-profile binding, original claim/domain record and authenticated current publication; recover an exact committed prefix |
+| Rust final broker | Join current root, profile, actual child and wire; consume once; gate winner-bound disclosure/proposal promotion and retain unknown budget |
+| Cedar | Validate actual bound operation and observed authority state, then require all applicable nonempty policy layers to Allow without evaluation errors |
+| Quint / Lean | Check forged/stale scope traces and compose actual source/child transitions under stated ownership and persistence premises |
+
+Cache immutable verified profile bodies by commitment. Reuse typed derived
+structures without reinterpreting provider JSON on every token. Keep mutable
+history, publication, recovery, spent-state and owner epoch current at each
+actual gate. Co-locate the authoritative gate and final broker when useful;
+otherwise require a current conditional-write protocol. Benchmark join/read/CAS
+latency, cache misses, first-token delay, range gating and reconciliation backlog.
+No performance result is claimed by this design-only change.

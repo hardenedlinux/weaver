@@ -1,0 +1,72 @@
+[
+  {
+    "id": "AT1",
+    "design": "Root sponsorship and child operation authority",
+    "quint": "primaryKeepsOriginalRootTest",
+    "lean": "new_allocation_requires_sponsored_retry",
+    "d2": "control.sponsor"
+  },
+  {
+    "id": "AT2",
+    "design": "Unknown execution cannot default-failover",
+    "quint": "unknownDefaultCannotFailoverTest",
+    "lean": "new_allocation_requires_sponsored_retry",
+    "d2": "attempts.allocate"
+  },
+  {
+    "id": "AT3",
+    "design": "Explicit non-tool duplicate generation",
+    "quint": "toolProfileCannotDuplicateTest",
+    "lean": "new_allocation_requires_sponsored_retry",
+    "d2": "control.profile"
+  },
+  {
+    "id": "AT4",
+    "design": "All child maxima fit original escrow",
+    "quint": "sharedEscrowCannotExpandTest",
+    "lean": "child_total_fits_original_root",
+    "d2": "attempts.allowance"
+  },
+  {
+    "id": "AT5",
+    "design": "Current target and owner fence at invocation",
+    "quint": "oldUncalledChildCannotRelabelEpochTest",
+    "lean": "invocation_rechecks_current_route",
+    "d2": "broker.consume"
+  },
+  {
+    "id": "AT6",
+    "design": "SDK replay cannot call the same child twice",
+    "quint": "sdkRetryCannotReinvokeTest",
+    "lean": "each_child_invoked_at_most_once",
+    "d2": "broker.queue"
+  },
+  {
+    "id": "AT7",
+    "design": "One sticky stream winner",
+    "quint": "winnerCannotSwitchTest",
+    "lean": "winner_never_switches",
+    "d2": "stream.winner"
+  },
+  {
+    "id": "AT8",
+    "design": "Winner commitment stops new children",
+    "quint": "winnerStopsNewAttemptsTest",
+    "lean": "winner_locks_child_allocation",
+    "d2": "stream.ranges"
+  },
+  {
+    "id": "AT9",
+    "design": "Unknown loser usage retains original hold",
+    "quint": "loserUnknownPreventsClosureTest",
+    "lean": "unknown_usage_prevents_close",
+    "d2": "stream.usage"
+  },
+  {
+    "id": "AT10",
+    "design": "Final usage requires exact fresh observation",
+    "quint": "foreignAttemptReceiptRejectedTest",
+    "lean": "usage_change_requires_registered_fresh_evidence",
+    "d2": "broker.observations"
+  }
+]

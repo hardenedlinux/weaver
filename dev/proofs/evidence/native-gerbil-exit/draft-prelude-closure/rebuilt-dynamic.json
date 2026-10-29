@@ -1,0 +1,14 @@
+{
+  "args": [
+    "gxi",
+    "-e",
+    "(import :weaver-native/fixture)"
+  ],
+  "exit": 70,
+  "seconds": 11.848,
+  "acceptanceBudgetSeconds": 15,
+  "withinBudget": true,
+  "nativeExitForced": false,
+  "output": ":core/module-system/source/module-prelude\n*** ERROR IN gx#core-import-module__% -- \n*** ERROR IN ?\n--- Syntax Error: error reading module\n--- Context: \n... form:   \"/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-exit-20261020/lib-clean/core/modules/json-schema/contracts.ssi\"\n... detail: \"\\n*** ERROR IN \\\".data/native-gerbil-exit-20261020/lib-clean/core/modules/json-schema/contracts.ssi\\\"@1.10-1.51\\n--- Syntax Error: cannot find library module\\n... form:   \"\n",
+  "loadpath": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-exit-20261020/lib-clean"
+}

@@ -1,0 +1,128 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "sourceSha256": {
+      "specs/lean/LogicalMessageAuthority.lean": "649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca"
+    },
+    "exit": 0,
+    "seconds": 2.262,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "sourceSha256": {
+      "specs/lean/SharedMessageBudget.lean": "be3f2237e83c6d1ecf824795919d7278654aa05012d30a8c5363f1bc24a3904f"
+    },
+    "exit": 0,
+    "seconds": 1.023,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "sourceSha256": {
+      "specs/lean/FiniteDomainMigration.lean": "89a16ca38a6b6e21e4fd4892c26043c0d4f68881c7c4626a2e648cadaabf1c2d"
+    },
+    "exit": 0,
+    "seconds": 1.9,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "GatewayHeadCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/GatewayHeadCAS.olean",
+      "proofs/lean/GatewayHeadCAS.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/GatewayHeadCAS.lean": "a8f03aa567aef9376254cc04e4539ba19df072c0693693d968edf115a133f828"
+    },
+    "exit": 0,
+    "seconds": 2.304,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "BrokerConsumptionQueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/BrokerConsumptionQueue.olean",
+      "proofs/lean/BrokerConsumptionQueue.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/BrokerConsumptionQueue.lean": "3c9f52a3fd90e965b9a96e653a40fd29e2e7942d76899167cb7d0be8d297ac6f"
+    },
+    "exit": 0,
+    "seconds": 2.252,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LogicalRangeRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LogicalRangeRecovery.olean",
+      "proofs/lean/LogicalRangeRecovery.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LogicalRangeRecovery.lean": "5b5c48048213d702a181aed1bb96e21fb251bc7bc459674423241e118133efa4"
+    },
+    "exit": 0,
+    "seconds": 2.19,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRouting",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmRouting.olean",
+      "proofs/lean/LlmRouting.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmRouting.lean": "222f1af3fae8368fcf384ffebb28bd725fedeccab5f00c033287a0a17e3769d9"
+    },
+    "exit": 0,
+    "seconds": 1.979,
+    "watchdogSeconds": 20
+  }
+]

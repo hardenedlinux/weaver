@@ -1,0 +1,21 @@
+'Weaver.LlmAccountCommit.initialized_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.balance_conserved' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.original_reservation_at_most_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.application_and_reservation_join' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.applications_immutable' depends on axioms: [propext]
+'Weaver.LlmAccountCommit.original_reservation_immutable' depends on axioms: [propext]
+'Weaver.LlmAccountCommit.commit_is_atomic' does not depend on any axioms
+'Weaver.LlmAccountCommit.new_commit_requires_final_source' does not depend on any axioms
+'Weaver.LlmAccountCommit.stale_before_image_blocks_commit' does not depend on any axioms
+'Weaver.LlmAccountCommit.old_worker_blocks_commit' does not depend on any axioms
+'Weaver.LlmAccountCommit.complete_image_before_visibility' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.restore_cannot_rollback_authority' does not depend on any axioms
+'Weaver.LlmAccountCommit.commit_response_loss_preserves_result' does not depend on any axioms
+'Weaver.LlmAccountCommit.account_zero_delta_is_still_consumed' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.actual_reconciliation_has_terminal_and_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.unknown_reconciliation_has_no_account_authority' depends on axioms: [propext]
+'Weaver.LlmAccountCommit.unknown_reservation_hold_is_unchanged' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.journal_revision' depends on axioms: [propext]
+'Weaver.LlmAccountCommit.journal_prefix_retained' depends on axioms: [propext]
+'Weaver.LlmAccountCommit.commit_joins_actual_reconciliation' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.changed_source_generation_blocks_commit' does not depend on any axioms

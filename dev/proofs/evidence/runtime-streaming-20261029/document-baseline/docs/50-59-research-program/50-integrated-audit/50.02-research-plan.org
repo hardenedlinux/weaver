@@ -1,0 +1,150 @@
+#+TITLE: Weaver Research Plan: A Qualified Semantic Gateway Slice
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Immediate decision
+Proceed with bounded design research. Do not implement Gateway code, change
+pins, or treat this plan as deployment authorization. Order work by decisions
+and evidence rather than unsupported calendar or staffing estimates.
+
+The central hypothesis is that configurable POO routines and LLM routing can
+share one original-task semantic authority, so protocol/provider changes remain
+useful without resetting claim, budget, or history. Prove this connection and
+measure its cost before expanding the feature surface.
+
+* Work packages
+** RP1 / P0: Freeze workload and assurance profile
+Depends on: none. Owner roles: product/architecture with Scheme, Go, Rust review.
+Resolve A01 and the scope part of A05. Reuse the existing LLM delivery strategy.
+Deliver a representative task transcript, minimum protocol/response/streaming
+matrix, supported deployment profile, trust assumptions, and explicit rejections.
+Exit evidence: reviewers can trace one request through every intended effect
+and state which failures preserve unknown holds. Defer features that are not
+needed by this trace. A coherent greenfield baseline is required; a historical
+compatibility layer is not.
+
+** RP2 / P0: Specify common configuration semantics and authority construction
+Depends on: RP1. Owner roles: Scheme/POO semantics, Cedar and proof reviewers.
+Resolve A02 and A03. Reuse Core Contracts, adapters, graph projection, schema
+predicate closures, and category 13/49 proofs. Do not invent a second workflow
+owner. Deliver a public schema/Contracts table, normalization and rejection
+corpus, typed normal form, source diagnostics, publisher/evaluation boundary,
+and original-task/package-to-refinement witness construction.
+
+Exit evidence: Scheme and JSON/YAML common-subset examples have one specified
+meaning; conflicting defaults, forged scope, alias mutation, and package churn
+have explicit rejection traces. Identify actual prior Step constructors in the
+composition. Illustrative snippets and assumed equality are insufficient native
+parity evidence. If unrestricted Scheme evaluation is required, resolve its
+capability contract before package admission is declared safe.
+
+** RP3 / P0: Specify provider conversion and actual final-send contract
+Depends on: RP1, RP2. Owner roles: Go integration, Rust executor, Scheme semantics.
+Resolve A04 and A06. Reuse semantic-contract, broker, and streaming designs.
+Deliver a small provider/deployment feature matrix, independent golden corpus,
+and exact canonical-to-wire mapping with unsupported conversions rejected.
+Trace original claim/profile, Policy facts, budget, destination, payload,
+credential, queue identity, and deciding fence through every SDK call.
+
+Exit evidence: retry, redirect, cancellation, partial write, policy change after
+queueing, and lost response each have a deciding event and conservative unknown
+state. Queue/commit phases cannot send externally. State exactly where native
+experiments will later be needed; no conformance claim from a design trace.
+
+** RP4 / P0: Choose minimal durable authority and recovery topology
+Depends on: RP1. Owner roles: Rust ledger/executor with Go lifecycle and Scheme review.
+Resolve A05 and the storage part of A04. Design can proceed alongside RP2/RP3,
+but they must join before claiming an end-to-end slice. Reuse existing source,
+account, floor, checkpoint and custody protocols where their assumptions fit.
+Deliver a logical transaction/topology table and a trusted-predicate register:
+authentic owner, record/commit identity, linearization point, invalidation,
+recovery query, unknown result, and external trust dependency for each predicate.
+
+Exit evidence: one trace covers commit-lost-response, rollback within the stated
+profile, owner change, delayed receipt, and stale worker. It preserves original
+claims and unknown reservations without silently recreating identity. Prefer a
+single deciding transaction when possible. Escalate to stronger independent
+anchors only for an explicit required threat; do not mandate hardware isolation.
+
+** RP5 / P1: Bound routines and protocol capability profiles
+Depends on: RP2, RP4. Owner roles: Scheme graph semantics, Go protocol adapters.
+Resolve A07. Reuse POO Flow task/job combinators and canonical identity designs.
+Deliver graph/capability schemas, child identity rules, bounded expansion and
+reservation rules, plus separate MCP/A2A/Client ACP support profiles. Extend
+Lean/Quint only for a named gap in actual interpreter/adapter correspondence.
+Exit evidence: reconnect, new remote task, branch/fan-out, cancellation and
+forged capability cannot reset the original family or shared constraints.
+Defer complete protocol coverage beyond the chosen task.
+
+** RP6 / P1: Join extra attempts, streaming and shared settlement
+Depends on: RP3, RP4, RP5. Owner roles: Rust accounting/stream owner, Go SDK review.
+Resolve A08. Reuse category 11 and existing range/execution/account models.
+Deliver constructive root-reservation retention, exact accepted-usage accounting
+obligations, winner/prefix identity and recovery correspondence. Review attempts
+and ranges as parts of one execution, not independently refundable requests.
+Exit evidence: later success after timeout, cancelled loser, duplicate receipt,
+restart after partial write, and attempted post-prefix failover cannot duplicate
+send capability or release unknown budget. Keep one-attempt mode when these
+conditions remain unqualified; no automatic retry promotion from model counts.
+
+** RP7 / P1: Establish reproducible evaluation and operational evidence
+Depends on: RP1. Owner roles: assurance/performance with all language owners.
+Resolve A09, A10 and A11. Specifications may start now; actual native performance
+results require later implementation authorization and qualified RP2/RP3/RP4
+behavior. Deliver a portable source/import/artifact graph, independent test
+oracles, redacted explanation schema, bounded resource policies and a matched
+workload manifest. Include quality, full inference/routing cost, TTFT, sustained
+throughput, memory, churn, cancellation, and unknown-hold behavior.
+
+Exit evidence for this design stage: commands, data identities, semantic parity,
+metrics, fault schedules, and disqualifying conditions are specified. Later
+native acceptance must keep semantic/fault admission separate from speed claims.
+Do not label synthetic allocation or finite-model timing as Gateway throughput.
+
+** RP8 / P2: Admit adaptive optimization only after a stable baseline
+Depends on: RP3, RP4, RP5, RP6, RP7. Owner roles: product and routing research.
+Resolve A12. Study classifiers, adaptive strategies, richer routines and broader
+protocols only when the baseline shows a concrete benefit opportunity. Any
+classifier or judge inference has its own admitted cost/effect budget.
+Exit evidence: a matched ablation improves a declared metric while preserving
+semantic, accounting and fault gates. Stop or defer when improvement depends on
+weaker semantics, hidden retries, fresh identity, or unaccounted inference.
+
+* Finding-to-package traceability
+| Findings | Deciding packages |
+|----------+-------------------|
+| A01 | RP1 |
+| A02, A03 | RP2 |
+| A04 | RP3, RP4 |
+| A05 | RP1, RP4 |
+| A06 | RP3 |
+| A07 | RP5 |
+| A08 | RP6 |
+| A09, A10, A11 | RP7 |
+| A12 | RP8 |
+
+* Next design-only checkpoint
+| Order | Concrete review artifact | Decision enabled |
+|-------+--------------------------+------------------|
+| 1 | Representative task and minimum feature/threat matrix | What the first slice must actually support |
+| 2 | Common schema/Contracts, canonical form and rejection corpus | Whether configurable authoring has one meaning |
+| 3 | Constructive original-task/package-to-send correspondence | Which proof premises still lack an authentic producer |
+| 4 | Minimal transaction topology, predicate register and fault tables | Which records/fences must decide together |
+| 5 | Independent evaluation and resource manifest | How later native behavior and advantage will be judged |
+
+Do not start another recursive trust-root model merely because the preceding
+model has a premise. First decide whether the selected deployment requires that
+premise, whether an existing trusted service supplies it, and what independent
+evidence is missing. The next implementation decision follows this checkpoint;
+it is not granted by this document.
+
+* Four-artifact update rule
+For each behavioral change, name the Org contract, core D2 edge, actual Lean
+constructor/theorem and Quint action/invariant/negative control affected. Record
+unproved authenticity, durability, fairness and native-conformance premises next
+to the claim. A planning or evidence-only change may reuse unchanged diagrams
+and proofs with an explicit reason. This review does so; it adds no behavior.
+
+* Navigation
+[[file:50.01-integrated-audit.org][Findings A01-A12]] and
+[[file:50.03-audit-evidence.org][current audit evidence]] define the basis and limits.

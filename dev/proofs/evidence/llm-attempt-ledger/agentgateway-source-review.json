@@ -1,0 +1,3220 @@
+[
+  {
+    "id": "AGL1",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "controller/api/v1alpha1/agentgateway/agentgateway_model_types.go",
+    "sha256": "3dc64cf826ffb45a44f9130b4432f3cdc616ba074f7f2b3af646af97fabef4ec",
+    "excerpts": [
+      {
+        "line": 247,
+        "text": "// ModelMatch contains conditions for selecting a model."
+      },
+      {
+        "line": 248,
+        "text": "type ModelMatch struct {"
+      },
+      {
+        "line": 249,
+        "text": "\t// Model name matched against client requests. It may be exact, a suffix"
+      },
+      {
+        "line": 250,
+        "text": "\t// wildcard such as `gpt-*`, a prefix wildcard such as `*-latest`, or `*`."
+      },
+      {
+        "line": 251,
+        "text": "\t// When omitted, the model matches metadata.name exactly."
+      },
+      {
+        "line": 252,
+        "text": "\t// +kubebuilder:validation:XValidation:rule=\"!self.contains('*') || (self.indexOf('*') == self.lastIndexOf('*') && (self.indexOf('*') == 0 || self.indexOf('*') == size(self) - 1))\",message=\"model wildcards must be '*', a suffix like 'gpt-*', or a prefix like '*-latest'\""
+      },
+      {
+        "line": 253,
+        "text": "\t// +optional"
+      },
+      {
+        "line": 289,
+        "text": "// +k8s:enum"
+      },
+      {
+        "line": 290,
+        "text": "type ModelVisibility string"
+      },
+      {
+        "line": 291,
+        "text": ""
+      },
+      {
+        "line": 292,
+        "text": "const ("
+      },
+      {
+        "line": 293,
+        "text": "\t// ModelVisibilityPublic allows direct client requests and includes the model"
+      },
+      {
+        "line": 294,
+        "text": "\t// in model discovery responses."
+      },
+      {
+        "line": 295,
+        "text": "\tModelVisibilityPublic ModelVisibility = \"Public\""
+      },
+      {
+        "line": 301,
+        "text": "// +kubebuilder:validation:ExactlyOneOf=weighted;failover;conditional;callout"
+      },
+      {
+        "line": 302,
+        "text": "type VirtualModel struct {"
+      },
+      {
+        "line": 303,
+        "text": "\t// Weight-based model selection."
+      },
+      {
+        "line": 304,
+        "text": "\t// +optional"
+      },
+      {
+        "line": 305,
+        "text": "\tWeighted *WeightedModelRouting `json:\"weighted,omitempty\"`"
+      },
+      {
+        "line": 306,
+        "text": ""
+      },
+      {
+        "line": 307,
+        "text": "\t// Priority-based model selection with failover between priority groups."
+      },
+      {
+        "line": 348,
+        "text": ""
+      },
+      {
+        "line": 349,
+        "text": "\t// Priority of this target. Lower values are preferred. Targets at the same"
+      },
+      {
+        "line": 350,
+        "text": "\t// priority are selected using a score that considers health and latency. The"
+      },
+      {
+        "line": 351,
+        "text": "\t// next priority is used only when every target at this priority is degraded."
+      },
+      {
+        "line": 352,
+        "text": "\t// Configure policies.health on concrete target models to customize"
+      },
+      {
+        "line": 353,
+        "text": "\t// degradation and eviction behavior."
+      },
+      {
+        "line": 354,
+        "text": "\t// +kubebuilder:validation:Minimum=0"
+      },
+      {
+        "line": 360,
+        "text": "type ConditionalModelRouting struct {"
+      },
+      {
+        "line": 361,
+        "text": "\t// Concrete model targets evaluated in order. The first matching condition is"
+      },
+      {
+        "line": 362,
+        "text": "\t// selected. One final target may omit when to act as the fallback."
+      },
+      {
+        "line": 363,
+        "text": "\t// +kubebuilder:validation:MinItems=1"
+      },
+      {
+        "line": 364,
+        "text": "\t// +kubebuilder:validation:MaxItems=64"
+      },
+      {
+        "line": 365,
+        "text": "\t// +kubebuilder:validation:XValidation:message=\"conditional targets without when must be last\",rule=\"self.filter(e, !has(e.when)).size() <= 1 && (!self.exists(e, !has(e.when)) || !has(self[size(self) - 1].when))\""
+      },
+      {
+        "line": 366,
+        "text": "\t// +required"
+      },
+      {
+        "line": 379,
+        "text": "// +kubebuilder:validation:ExactlyOneOf=backendRef;url"
+      },
+      {
+        "line": 380,
+        "text": "type CalloutModelRouting struct {"
+      },
+      {
+        "line": 381,
+        "text": "\t// Service that selects the model. Supported types: `Service` and `Backend`."
+      },
+      {
+        "line": 382,
+        "text": "\t// A `url` may include the request path, such as `https://router.example.com/v1/route`."
+      },
+      {
+        "line": 383,
+        "text": "\t// The callout request is sent with the `POST` method."
+      },
+      {
+        "line": 384,
+        "text": "\tPolicyBackendEndpoint `json:\",inline\"`"
+      },
+      {
+        "line": 385,
+        "text": ""
+      },
+      {
+        "line": 422,
+        "text": ""
+      },
+      {
+        "line": 423,
+        "text": "type CalloutCache struct {"
+      },
+      {
+        "line": 424,
+        "text": "\t// Ordered list of CEL expressions evaluated against the request to"
+      },
+      {
+        "line": 425,
+        "text": "\t// construct the cache key."
+      },
+      {
+        "line": 426,
+        "text": "\t// +kubebuilder:validation:MinItems=1"
+      },
+      {
+        "line": 427,
+        "text": "\t// +kubebuilder:validation:MaxItems=16"
+      },
+      {
+        "line": 428,
+        "text": "\t// +required"
+      }
+    ]
+  },
+  {
+    "id": "AGL2",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "crates/agentgateway/src/llm/model_router.rs",
+    "sha256": "b28f5459b107893459bc5cc84d728a7c80386eca31822a2f3a1fa04b4b61ceb3",
+    "excerpts": [
+      {
+        "line": 158,
+        "text": ""
+      },
+      {
+        "line": 159,
+        "text": "pub fn classify_route(path: &str) -> Option<llm::RouteType> {"
+      },
+      {
+        "line": 160,
+        "text": "\tfor (matcher, kind, _) in SERVING_ENDPOINTS.iter() {"
+      },
+      {
+        "line": 161,
+        "text": "\t\tlet matched = match matcher {"
+      },
+      {
+        "line": 162,
+        "text": "\t\t\tEndpointMatch::Exact(expected) => expected.as_str() == path,"
+      },
+      {
+        "line": 163,
+        "text": "\t\t\tEndpointMatch::Regex(regex) => regex.is_match(path),"
+      },
+      {
+        "line": 164,
+        "text": "\t\t};"
+      },
+      {
+        "line": 182,
+        "text": "#[apply(schema_ser_schema!)]"
+      },
+      {
+        "line": 183,
+        "text": "pub enum VirtualModelRouting {"
+      },
+      {
+        "line": 184,
+        "text": "\tWeighted(Vec<WeightedTarget>),"
+      },
+      {
+        "line": 185,
+        "text": "\tFailover { backend: RouteBackendReference },"
+      },
+      {
+        "line": 186,
+        "text": "\tConditional(Vec<ConditionalTarget>),"
+      },
+      {
+        "line": 187,
+        "text": "\tCallout(Arc<llm::router_callout::VirtualModelCallout>),"
+      },
+      {
+        "line": 188,
+        "text": "}"
+      },
+      {
+        "line": 192,
+        "text": "#[derive(Debug, Clone, PartialEq, Eq)]"
+      },
+      {
+        "line": 193,
+        "text": "pub struct OriginalModel(pub String);"
+      },
+      {
+        "line": 194,
+        "text": ""
+      },
+      {
+        "line": 195,
+        "text": "#[apply(schema_ser_schema!)]"
+      },
+      {
+        "line": 196,
+        "text": "pub struct WeightedTarget {"
+      },
+      {
+        "line": 197,
+        "text": "\tpub model: String,"
+      },
+      {
+        "line": 198,
+        "text": "\tpub weight: usize,"
+      },
+      {
+        "line": 345,
+        "text": "\t\t};"
+      },
+      {
+        "line": 346,
+        "text": "\t\tif !api_key_model_authorized(req, &requested_model.model) {"
+      },
+      {
+        "line": 347,
+        "text": "\t\t\treturn ResolveResult::DirectResponse(api_key_model_authorization_denied_response());"
+      },
+      {
+        "line": 348,
+        "text": "\t\t}"
+      },
+      {
+        "line": 349,
+        "text": "\t\treq"
+      },
+      {
+        "line": 350,
+        "text": "\t\t\t.extensions_mut()"
+      },
+      {
+        "line": 351,
+        "text": "\t\t\t.insert(OriginalModel(requested_model.model.clone()));"
+      },
+      {
+        "line": 373,
+        "text": ""
+      },
+      {
+        "line": 374,
+        "text": "\tfn model_list_response(&self, req: &Request, catalog: &llm::catalog::ModelCatalog) -> Response {"
+      },
+      {
+        "line": 375,
+        "text": "\t\tlet catalog = catalog.snapshot();"
+      },
+      {
+        "line": 376,
+        "text": "\t\tlet expand = self.discovery == llm::discovery::Discovery::Catalog;"
+      },
+      {
+        "line": 377,
+        "text": "\t\tlet data = self"
+      },
+      {
+        "line": 378,
+        "text": "\t\t\t.models"
+      },
+      {
+        "line": 379,
+        "text": "\t\t\t.iter()"
+      },
+      {
+        "line": 380,
+        "text": "\t\t\t.filter(|model| model.visibility == ModelVisibility::Public)"
+      },
+      {
+        "line": 381,
+        "text": "\t\t\t.filter(|model| model_authorized(model, req))"
+      },
+      {
+        "line": 382,
+        "text": "\t\t\t.flat_map(|model| {"
+      },
+      {
+        "line": 383,
+        "text": "\t\t\t\tif expand"
+      },
+      {
+        "line": 384,
+        "text": "\t\t\t\t\t&& let Some(discovery) = &model.discovery"
+      },
+      {
+        "line": 385,
+        "text": "\t\t\t\t\t&& discovery.expands(&model.name)"
+      },
+      {
+        "line": 386,
+        "text": "\t\t\t\t\t&& let Some(model_ids) = catalog.model_ids(&discovery.provider)"
+      },
+      {
+        "line": 394,
+        "text": "\t\t\t\t\t\t\t// Now check it still matches the model match (e.g 'foo/*') and we are authorized for this model"
+      },
+      {
+        "line": 395,
+        "text": "\t\t\t\t\t\t\tmodel_name_matches(&model.name, name) && api_key_model_authorized(req, name)"
+      },
+      {
+        "line": 396,
+        "text": "\t\t\t\t\t\t})"
+      },
+      {
+        "line": 397,
+        "text": "\t\t\t\t\t\t.map(|(id, name)| {"
+      },
+      {
+        "line": 398,
+        "text": "\t\t\t\t\t\t\tllm::model_list::ModelInfo::new("
+      },
+      {
+        "line": 399,
+        "text": "\t\t\t\t\t\t\t\tname.into_owned(),"
+      },
+      {
+        "line": 400,
+        "text": "\t\t\t\t\t\t\t\tmodel.created,"
+      },
+      {
+        "line": 415,
+        "text": "\t\t\t\t\t.iter()"
+      },
+      {
+        "line": 416,
+        "text": "\t\t\t\t\t.filter(|model| api_key_model_authorized(req, &model.name))"
+      },
+      {
+        "line": 417,
+        "text": "\t\t\t\t\t.map(|model| self.virtual_model_info(model, &catalog)),"
+      },
+      {
+        "line": 418,
+        "text": "\t\t\t)"
+      },
+      {
+        "line": 419,
+        "text": "\t\t\t.unique_by(|model| model.id.clone())"
+      },
+      {
+        "line": 420,
+        "text": "\t\t\t.collect::<Vec<_>>();"
+      },
+      {
+        "line": 421,
+        "text": "\t\tlet path = req.uri().path().trim_end_matches('/');"
+      },
+      {
+        "line": 485,
+        "text": ""
+      },
+      {
+        "line": 486,
+        "text": "\tasync fn resolve_virtual_model("
+      },
+      {
+        "line": 487,
+        "text": "\t\t&self,"
+      },
+      {
+        "line": 488,
+        "text": "\t\tvirtual_model: &VirtualModelRoute,"
+      },
+      {
+        "line": 489,
+        "text": "\t\treq: &mut Request,"
+      },
+      {
+        "line": 490,
+        "text": "\t\tlocation: RequestedModelLocation,"
+      },
+      {
+        "line": 491,
+        "text": "\t\tclient: &PolicyClient,"
+      },
+      {
+        "line": 495,
+        "text": "\t\t\tVirtualModelRouting::Weighted(targets) => {"
+      },
+      {
+        "line": 496,
+        "text": "\t\t\t\tmatch targets.choose_weighted(&mut rand::rng(), |target| target.weight) {"
+      },
+      {
+        "line": 497,
+        "text": "\t\t\t\t\tOk(target) => (target.model.clone(), target.invalid),"
+      },
+      {
+        "line": 498,
+        "text": "\t\t\t\t\tErr(err) => {"
+      },
+      {
+        "line": 499,
+        "text": "\t\t\t\t\t\ttracing::debug!(%err, \"failed to select weighted virtual model target\");"
+      },
+      {
+        "line": 500,
+        "text": "\t\t\t\t\t\treturn ResolveResult::DirectResponse(llm_error_response("
+      },
+      {
+        "line": 501,
+        "text": "\t\t\t\t\t\t\t::http::StatusCode::NOT_FOUND,"
+      },
+      {
+        "line": 540,
+        "text": "\t\t\t\t\tOk(selection) => {"
+      },
+      {
+        "line": 541,
+        "text": "\t\t\t\t\t\ttracing::debug!("
+      },
+      {
+        "line": 542,
+        "text": "\t\t\t\t\t\t\tvirtual_model = %virtual_model.name,"
+      },
+      {
+        "line": 543,
+        "text": "\t\t\t\t\t\t\ttarget_model = %selection.model,"
+      },
+      {
+        "line": 544,
+        "text": "\t\t\t\t\t\t\t\"virtual model callout selected unknown model\","
+      },
+      {
+        "line": 545,
+        "text": "\t\t\t\t\t\t);"
+      },
+      {
+        "line": 546,
+        "text": "\t\t\t\t\t\tNone"
+      },
+      {
+        "line": 547,
+        "text": "\t\t\t\t\t},"
+      },
+      {
+        "line": 548,
+        "text": "\t\t\t\t\tErr(err) => {"
+      },
+      {
+        "line": 549,
+        "text": "\t\t\t\t\t\ttracing::debug!(virtual_model = %virtual_model.name, %err, \"virtual model callout failed\");"
+      },
+      {
+        "line": 550,
+        "text": "\t\t\t\t\t\tNone"
+      },
+      {
+        "line": 551,
+        "text": "\t\t\t\t\t},"
+      },
+      {
+        "line": 552,
+        "text": "\t\t\t\t};"
+      },
+      {
+        "line": 553,
+        "text": "\t\t\t\tmatch (selection, &callout.failure_mode) {"
+      },
+      {
+        "line": 554,
+        "text": "\t\t\t\t\t(Some(selection), _) => {"
+      },
+      {
+        "line": 555,
+        "text": "\t\t\t\t\t\tfields = selection.fields;"
+      },
+      {
+        "line": 556,
+        "text": "\t\t\t\t\t\t(selection.model, false)"
+      },
+      {
+        "line": 557,
+        "text": "\t\t\t\t\t},"
+      },
+      {
+        "line": 558,
+        "text": "\t\t\t\t\t(None, VirtualModelCalloutFailureMode::Fallback(model)) => (model.clone(), false),"
+      },
+      {
+        "line": 559,
+        "text": "\t\t\t\t\t(None, VirtualModelCalloutFailureMode::FailClosed) => {"
+      },
+      {
+        "line": 560,
+        "text": "\t\t\t\t\t\treturn ResolveResult::DirectResponse(llm_error_response("
+      },
+      {
+        "line": 561,
+        "text": "\t\t\t\t\t\t\t::http::StatusCode::SERVICE_UNAVAILABLE,"
+      },
+      {
+        "line": 562,
+        "text": "\t\t\t\t\t\t\t&format!(\"Virtual model {} callout failed\", virtual_model.name),"
+      },
+      {
+        "line": 563,
+        "text": "\t\t\t\t\t\t\t\"virtual_model_callout_failed\","
+      },
+      {
+        "line": 564,
+        "text": "\t\t\t\t\t\t));"
+      },
+      {
+        "line": 565,
+        "text": "\t\t\t\t\t},"
+      },
+      {
+        "line": 566,
+        "text": "\t\t\t\t}"
+      },
+      {
+        "line": 567,
+        "text": "\t\t\t},"
+      },
+      {
+        "line": 568,
+        "text": "\t\t};"
+      },
+      {
+        "line": 569,
+        "text": "\t\tif invalid {"
+      },
+      {
+        "line": 570,
+        "text": "\t\t\ttracing::debug!("
+      },
+      {
+        "line": 571,
+        "text": "\t\t\t\tvirtual_model = %virtual_model.name,"
+      },
+      {
+        "line": 572,
+        "text": "\t\t\t\ttarget_model = %target,"
+      },
+      {
+        "line": 573,
+        "text": "\t\t\t\t\"virtual model selected an invalid target\","
+      },
+      {
+        "line": 574,
+        "text": "\t\t\t);"
+      },
+      {
+        "line": 575,
+        "text": "\t\t\treturn ResolveResult::DirectResponse(llm_error_response("
+      },
+      {
+        "line": 576,
+        "text": "\t\t\t\t::http::StatusCode::NOT_FOUND,"
+      },
+      {
+        "line": 577,
+        "text": "\t\t\t\t&format!("
+      },
+      {
+        "line": 578,
+        "text": "\t\t\t\t\t\"Virtual model {} selected invalid target {target}\","
+      },
+      {
+        "line": 579,
+        "text": "\t\t\t\t\tvirtual_model.name"
+      },
+      {
+        "line": 580,
+        "text": "\t\t\t\t),"
+      },
+      {
+        "line": 581,
+        "text": "\t\t\t\t\"virtual_model_target_not_found\","
+      },
+      {
+        "line": 582,
+        "text": "\t\t\t));"
+      },
+      {
+        "line": 583,
+        "text": "\t\t}"
+      },
+      {
+        "line": 584,
+        "text": ""
+      },
+      {
+        "line": 585,
+        "text": "\t\tif let Err(resp) = Box::pin(rewrite_request_model(req, location, &target, fields)).await {"
+      },
+      {
+        "line": 586,
+        "text": "\t\t\treturn ResolveResult::DirectResponse(*resp);"
+      },
+      {
+        "line": 587,
+        "text": "\t\t}"
+      },
+      {
+        "line": 588,
+        "text": "\t\tmatch self.resolve_concrete_model(&target, true, req) {"
+      },
+      {
+        "line": 589,
+        "text": "\t\t\tOk(Some(route)) => ResolveResult::Backend(route),"
+      },
+      {
+        "line": 590,
+        "text": "\t\t\tOk(None) => {"
+      },
+      {
+        "line": 591,
+        "text": "\t\t\t\ttracing::debug!("
+      },
+      {
+        "line": 592,
+        "text": "\t\t\t\t\tvirtual_model = %virtual_model.name,"
+      },
+      {
+        "line": 593,
+        "text": "\t\t\t\t\ttarget_model = %target,"
+      },
+      {
+        "line": 594,
+        "text": "\t\t\t\t\t\"virtual model selected target with no declared concrete model\","
+      },
+      {
+        "line": 595,
+        "text": "\t\t\t\t);"
+      },
+      {
+        "line": 596,
+        "text": "\t\t\t\tResolveResult::DirectResponse(llm_error_response("
+      },
+      {
+        "line": 597,
+        "text": "\t\t\t\t\t::http::StatusCode::NOT_FOUND,"
+      },
+      {
+        "line": 598,
+        "text": "\t\t\t\t\t&format!("
+      },
+      {
+        "line": 599,
+        "text": "\t\t\t\t\t\t\"Virtual model {} selected target {target}, but no matching model was found\","
+      },
+      {
+        "line": 600,
+        "text": "\t\t\t\t\t\tvirtual_model.name"
+      },
+      {
+        "line": 601,
+        "text": "\t\t\t\t\t),"
+      },
+      {
+        "line": 602,
+        "text": "\t\t\t\t\t\"virtual_model_target_not_found\","
+      },
+      {
+        "line": 603,
+        "text": "\t\t\t\t))"
+      },
+      {
+        "line": 604,
+        "text": "\t\t\t},"
+      },
+      {
+        "line": 605,
+        "text": "\t\t\tErr(()) => ResolveResult::DirectResponse(model_authorization_denied_response()),"
+      },
+      {
+        "line": 606,
+        "text": "\t\t}"
+      },
+      {
+        "line": 607,
+        "text": "\t}"
+      },
+      {
+        "line": 608,
+        "text": ""
+      },
+      {
+        "line": 609,
+        "text": "\tfn has_model(&self, model: &str) -> bool {"
+      },
+      {
+        "line": 610,
+        "text": "\t\tself"
+      },
+      {
+        "line": 611,
+        "text": "\t\t\t.models"
+      },
+      {
+        "line": 612,
+        "text": "\t\t\t.iter()"
+      },
+      {
+        "line": 613,
+        "text": "\t\t\t.any(|route| model_name_matches(&route.name, model))"
+      },
+      {
+        "line": 614,
+        "text": "\t}"
+      },
+      {
+        "line": 615,
+        "text": ""
+      },
+      {
+        "line": 616,
+        "text": "\tfn resolve_concrete_model("
+      },
+      {
+        "line": 617,
+        "text": "\t\t&self,"
+      },
+      {
+        "line": 618,
+        "text": "\t\trequested_model: &str,"
+      },
+      {
+        "line": 619,
+        "text": "\t\tallow_internal: bool,"
+      },
+      {
+        "line": 620,
+        "text": "\t\treq: &Request,"
+      },
+      {
+        "line": 621,
+        "text": "\t) -> Result<Option<ResolvedBackend>, ()> {"
+      },
+      {
+        "line": 622,
+        "text": "\t\t// `models` can store things like `provider/*`. The concrete `requested_model` will be like `provider/real-model`."
+      },
+      {
+        "line": 623,
+        "text": "\t\tlet matches = |model: &ModelRoute| {"
+      },
+      {
+        "line": 624,
+        "text": "\t\t\t(allow_internal || model.visibility == ModelVisibility::Public)"
+      },
+      {
+        "line": 625,
+        "text": "\t\t\t\t&& model_name_matches(&model.name, requested_model)"
+      },
+      {
+        "line": 626,
+        "text": "\t\t\t\t&& header_matches(&model.header_matches, req)"
+      },
+      {
+        "line": 627,
+        "text": "\t\t};"
+      },
+      {
+        "line": 628,
+        "text": "\t\tlet Some(model) = self"
+      },
+      {
+        "line": 629,
+        "text": "\t\t\t.models"
+      },
+      {
+        "line": 630,
+        "text": "\t\t\t.iter()"
+      },
+      {
+        "line": 631,
+        "text": "\t\t\t.find(|model| matches(model) && model_authorized(model, req))"
+      },
+      {
+        "line": 632,
+        "text": "\t\telse {"
+      },
+      {
+        "line": 633,
+        "text": "\t\t\treturn if self.models.iter().any(matches) {"
+      },
+      {
+        "line": 634,
+        "text": "\t\t\t\tErr(())"
+      },
+      {
+        "line": 635,
+        "text": "\t\t\t} else {"
+      },
+      {
+        "line": 636,
+        "text": "\t\t\t\tOk(None)"
+      },
+      {
+        "line": 637,
+        "text": "\t\t\t};"
+      },
+      {
+        "line": 638,
+        "text": "\t\t};"
+      },
+      {
+        "line": 639,
+        "text": "\t\tOk(Some(ResolvedBackend {"
+      },
+      {
+        "line": 640,
+        "text": "\t\t\tbackend: model.backend.clone(),"
+      },
+      {
+        "line": 641,
+        "text": "\t\t\troute_type: classify_route(req.uri().path()).unwrap_or("
+      },
+      {
+        "line": 642,
+        "text": "\t\t\t\tmodel"
+      },
+      {
+        "line": 643,
+        "text": "\t\t\t\t\t.policies"
+      },
+      {
+        "line": 644,
+        "text": "\t\t\t\t\t.passthrough"
+      },
+      {
+        "line": 645,
+        "text": "\t\t\t\t\t.unwrap_or(llm::RouteType::Passthrough),"
+      },
+      {
+        "line": 646,
+        "text": "\t\t\t),"
+      },
+      {
+        "line": 647,
+        "text": "\t\t\tllm_policy: model.policies.llm.clone(),"
+      },
+      {
+        "line": 648,
+        "text": "\t\t}))"
+      },
+      {
+        "line": 649,
+        "text": "\t}"
+      },
+      {
+        "line": 650,
+        "text": "}"
+      }
+    ]
+  },
+  {
+    "id": "AGL3",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "crates/agentgateway/src/llm/catalog/model.rs",
+    "sha256": "ab6fadbb408e74b6c15011c43f1071629cf7f3ba7607036709b0ac6089a74d12",
+    "excerpts": [
+      {
+        "line": 50,
+        "text": "\tfn check(&self, strict: bool) -> anyhow::Result<()> {"
+      },
+      {
+        "line": 51,
+        "text": "\t\tlet reject_unknown = |path: &dyn fmt::Display, unknown: &Unknown| {"
+      },
+      {
+        "line": 52,
+        "text": "\t\t\tif strict && let Some(k) = unknown.keys().next() {"
+      },
+      {
+        "line": 53,
+        "text": "\t\t\t\tanyhow::bail!(\"{path}: unknown field {k:?}\");"
+      },
+      {
+        "line": 54,
+        "text": "\t\t\t}"
+      },
+      {
+        "line": 55,
+        "text": "\t\t\tOk(())"
+      },
+      {
+        "line": 56,
+        "text": "\t\t};"
+      },
+      {
+        "line": 57,
+        "text": "\t\treject_unknown(&\"catalog\", &self.unknown)?;"
+      },
+      {
+        "line": 58,
+        "text": "\t\tif let Some(metadata) = &self.metadata {"
+      },
+      {
+        "line": 59,
+        "text": "\t\t\treject_unknown(&\"metadata\", &metadata.unknown)?;"
+      },
+      {
+        "line": 60,
+        "text": "\t\t}"
+      },
+      {
+        "line": 61,
+        "text": "\t\tfor (provider, entry) in &self.providers {"
+      },
+      {
+        "line": 62,
+        "text": "\t\t\treject_unknown(provider, &entry.unknown)?;"
+      },
+      {
+        "line": 63,
+        "text": "\t\t\tfor (model, pricing) in &entry.models {"
+      },
+      {
+        "line": 64,
+        "text": "\t\t\t\treject_unknown(&format_args!(\"{provider}/{model}\"), &pricing.unknown)?;"
+      },
+      {
+        "line": 65,
+        "text": "\t\t\t\tfor (field, unknown) in ["
+      },
+      {
+        "line": 66,
+        "text": "\t\t\t\t\t(\"rates\", &pricing.rates.unknown),"
+      },
+      {
+        "line": 67,
+        "text": "\t\t\t\t\t(\"limits\", &pricing.limits.unknown),"
+      },
+      {
+        "line": 68,
+        "text": "\t\t\t\t\t(\"modalities\", &pricing.modalities.unknown),"
+      },
+      {
+        "line": 69,
+        "text": "\t\t\t\t\t(\"capabilities\", &pricing.capabilities.unknown),"
+      },
+      {
+        "line": 71,
+        "text": "\t\t\t\t] {"
+      },
+      {
+        "line": 72,
+        "text": "\t\t\t\t\treject_unknown(&format_args!(\"{provider}/{model} {field}\"), unknown)?;"
+      },
+      {
+        "line": 73,
+        "text": "\t\t\t\t}"
+      },
+      {
+        "line": 74,
+        "text": "\t\t\t\tif let Some(budget) = &pricing.reasoning.budget_tokens {"
+      },
+      {
+        "line": 75,
+        "text": "\t\t\t\t\treject_unknown("
+      },
+      {
+        "line": 76,
+        "text": "\t\t\t\t\t\t&format_args!(\"{provider}/{model} reasoning budgetTokens\"),"
+      },
+      {
+        "line": 77,
+        "text": "\t\t\t\t\t\t&budget.unknown,"
+      },
+      {
+        "line": 78,
+        "text": "\t\t\t\t\t)?;"
+      },
+      {
+        "line": 79,
+        "text": "\t\t\t\t}"
+      },
+      {
+        "line": 80,
+        "text": "\t\t\t\tlet mut previous = BTreeMap::new();"
+      },
+      {
+        "line": 81,
+        "text": "\t\t\t\tfor (index, tier) in pricing.tiers.iter().enumerate() {"
+      },
+      {
+        "line": 82,
+        "text": "\t\t\t\t\treject_unknown("
+      },
+      {
+        "line": 83,
+        "text": "\t\t\t\t\t\t&format_args!(\"{provider}/{model} tier {index}\"),"
+      },
+      {
+        "line": 84,
+        "text": "\t\t\t\t\t\t&tier.unknown,"
+      },
+      {
+        "line": 85,
+        "text": "\t\t\t\t\t)?;"
+      },
+      {
+        "line": 86,
+        "text": "\t\t\t\t\treject_unknown("
+      },
+      {
+        "line": 87,
+        "text": "\t\t\t\t\t\t&format_args!(\"{provider}/{model} tier {index} rates\"),"
+      },
+      {
+        "line": 88,
+        "text": "\t\t\t\t\t\t&tier.rates.unknown,"
+      },
+      {
+        "line": 89,
+        "text": "\t\t\t\t\t)?;"
+      },
+      {
+        "line": 90,
+        "text": "\t\t\t\t\tif let Some(prior) = previous.insert(tier.service_tier, tier.context_over)"
+      },
+      {
+        "line": 91,
+        "text": "\t\t\t\t\t\t&& tier.context_over <= prior"
+      },
+      {
+        "line": 93,
+        "text": "\t\t\t\t\t\tanyhow::bail!("
+      },
+      {
+        "line": 94,
+        "text": "\t\t\t\t\t\t\t\"{provider}/{model}: tier {index} contextOver must increase within its serviceTier\""
+      },
+      {
+        "line": 95,
+        "text": "\t\t\t\t\t\t);"
+      },
+      {
+        "line": 96,
+        "text": "\t\t\t\t\t}"
+      },
+      {
+        "line": 97,
+        "text": "\t\t\t\t}"
+      },
+      {
+        "line": 98,
+        "text": "\t\t\t}"
+      },
+      {
+        "line": 99,
+        "text": "\t\t}"
+      },
+      {
+        "line": 221,
+        "text": "pub struct Model {"
+      },
+      {
+        "line": 222,
+        "text": "\t/// Human-readable display name."
+      },
+      {
+        "line": 223,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 224,
+        "text": "\tpub name: Option<String>,"
+      },
+      {
+        "line": 225,
+        "text": "\t/// Lifecycle stage (alpha, beta, deprecated); absent means generally available."
+      },
+      {
+        "line": 226,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 227,
+        "text": "\tpub status: Option<String>,"
+      },
+      {
+        "line": 228,
+        "text": "\t/// Release date, as YYYY-MM-DD or YYYY-MM."
+      },
+      {
+        "line": 229,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 230,
+        "text": "\tpub released: Option<String>,"
+      },
+      {
+        "line": 231,
+        "text": "\t/// Base pricing rates for this model."
+      },
+      {
+        "line": 232,
+        "text": "\t#[serde(default, skip_serializing_if = \"Rates::is_empty\")]"
+      },
+      {
+        "line": 233,
+        "text": "\tpub rates: Rates,"
+      },
+      {
+        "line": 234,
+        "text": "\t/// Pricing rules ordered by increasing context threshold within each service tier."
+      },
+      {
+        "line": 235,
+        "text": "\t#[serde(default, skip_serializing_if = \"Vec::is_empty\")]"
+      },
+      {
+        "line": 236,
+        "text": "\tpub tiers: Vec<Tier>,"
+      },
+      {
+        "line": 237,
+        "text": "\t/// Freeform capability/routing tags for this model."
+      },
+      {
+        "line": 238,
+        "text": "\t#[serde(default, skip_serializing_if = \"BTreeSet::is_empty\")]"
+      },
+      {
+        "line": 239,
+        "text": "\tpub tags: BTreeSet<String>,"
+      },
+      {
+        "line": 240,
+        "text": "\t/// Token limits."
+      },
+      {
+        "line": 241,
+        "text": "\t#[serde(default, skip_serializing_if = \"crate::serdes::is_default\")]"
+      },
+      {
+        "line": 242,
+        "text": "\tpub limits: Limits,"
+      },
+      {
+        "line": 243,
+        "text": "\t/// Supported input and output modalities."
+      },
+      {
+        "line": 244,
+        "text": "\t#[serde(default, skip_serializing_if = \"crate::serdes::is_default\")]"
+      },
+      {
+        "line": 245,
+        "text": "\tpub modalities: Modalities,"
+      },
+      {
+        "line": 246,
+        "text": "\t/// Supported features. Absent fields are unknown."
+      },
+      {
+        "line": 247,
+        "text": "\t#[serde(default, skip_serializing_if = \"crate::serdes::is_default\")]"
+      },
+      {
+        "line": 248,
+        "text": "\tpub capabilities: Capabilities,"
+      },
+      {
+        "line": 249,
+        "text": "\t/// How reasoning can be controlled."
+      },
+      {
+        "line": 250,
+        "text": "\t#[serde(default, skip_serializing_if = \"crate::serdes::is_default\")]"
+      },
+      {
+        "line": 251,
+        "text": "\tpub reasoning: Reasoning,"
+      },
+      {
+        "line": 252,
+        "text": "\t/// Fields not understood by this version."
+      },
+      {
+        "line": 253,
+        "text": "\t#[serde(flatten, skip_serializing)]"
+      },
+      {
+        "line": 254,
+        "text": "\t#[cfg_attr(feature = \"schema\", schemars(skip))]"
+      },
+      {
+        "line": 255,
+        "text": "\tpub unknown: Unknown,"
+      },
+      {
+        "line": 256,
+        "text": "}"
+      },
+      {
+        "line": 257,
+        "text": ""
+      },
+      {
+        "line": 258,
+        "text": "#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ::cel::DynamicType)]"
+      },
+      {
+        "line": 259,
+        "text": "#[cfg_attr(feature = \"schema\", derive(schemars::JsonSchema))]"
+      },
+      {
+        "line": 260,
+        "text": "#[cfg_attr(feature = \"schema\", schemars(deny_unknown_fields))]"
+      },
+      {
+        "line": 261,
+        "text": "#[serde(rename_all = \"camelCase\")]"
+      },
+      {
+        "line": 262,
+        "text": "pub struct Limits {"
+      },
+      {
+        "line": 263,
+        "text": "\t/// Total context window, shared by input and output."
+      },
+      {
+        "line": 264,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 265,
+        "text": "\tpub context: Option<u64>,"
+      },
+      {
+        "line": 266,
+        "text": "\t/// Maximum input tokens, when tighter than the context window allows."
+      },
+      {
+        "line": 267,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 268,
+        "text": "\tpub input: Option<u64>,"
+      },
+      {
+        "line": 269,
+        "text": "\t/// Maximum output tokens."
+      },
+      {
+        "line": 270,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 271,
+        "text": "\tpub output: Option<u64>,"
+      },
+      {
+        "line": 272,
+        "text": "\t/// Fields not understood by this version."
+      },
+      {
+        "line": 273,
+        "text": "\t#[serde(flatten, skip_serializing)]"
+      },
+      {
+        "line": 274,
+        "text": "\t#[cfg_attr(feature = \"schema\", schemars(skip))]"
+      },
+      {
+        "line": 275,
+        "text": "\t#[dynamic(skip)]"
+      },
+      {
+        "line": 276,
+        "text": "\tpub unknown: Unknown,"
+      },
+      {
+        "line": 277,
+        "text": "}"
+      },
+      {
+        "line": 278,
+        "text": ""
+      },
+      {
+        "line": 279,
+        "text": "#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ::cel::DynamicType)]"
+      },
+      {
+        "line": 280,
+        "text": "#[cfg_attr(feature = \"schema\", derive(schemars::JsonSchema))]"
+      },
+      {
+        "line": 281,
+        "text": "#[cfg_attr(feature = \"schema\", schemars(deny_unknown_fields))]"
+      },
+      {
+        "line": 282,
+        "text": "#[serde(rename_all = \"camelCase\")]"
+      },
+      {
+        "line": 283,
+        "text": "pub struct Modalities {"
+      },
+      {
+        "line": 284,
+        "text": "\t/// Input modalities, such as text, image, pdf, audio, or video."
+      },
+      {
+        "line": 285,
+        "text": "\t#[serde(default, skip_serializing_if = \"Vec::is_empty\")]"
+      },
+      {
+        "line": 286,
+        "text": "\tpub input: Vec<String>,"
+      },
+      {
+        "line": 287,
+        "text": "\t/// Output modalities, such as text, image, audio, or video."
+      },
+      {
+        "line": 288,
+        "text": "\t#[serde(default, skip_serializing_if = \"Vec::is_empty\")]"
+      },
+      {
+        "line": 289,
+        "text": "\tpub output: Vec<String>,"
+      },
+      {
+        "line": 290,
+        "text": "\t/// Fields not understood by this version."
+      },
+      {
+        "line": 291,
+        "text": "\t#[serde(flatten, skip_serializing)]"
+      },
+      {
+        "line": 292,
+        "text": "\t#[cfg_attr(feature = \"schema\", schemars(skip))]"
+      },
+      {
+        "line": 293,
+        "text": "\t#[dynamic(skip)]"
+      },
+      {
+        "line": 294,
+        "text": "\tpub unknown: Unknown,"
+      },
+      {
+        "line": 295,
+        "text": "}"
+      },
+      {
+        "line": 296,
+        "text": ""
+      },
+      {
+        "line": 297,
+        "text": "#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ::cel::DynamicType)]"
+      },
+      {
+        "line": 298,
+        "text": "#[cfg_attr(feature = \"schema\", derive(schemars::JsonSchema))]"
+      },
+      {
+        "line": 299,
+        "text": "#[cfg_attr(feature = \"schema\", schemars(deny_unknown_fields))]"
+      },
+      {
+        "line": 300,
+        "text": "#[serde(rename_all = \"camelCase\")]"
+      },
+      {
+        "line": 301,
+        "text": "pub struct Capabilities {"
+      },
+      {
+        "line": 302,
+        "text": "\t/// Whether the model supports reasoning."
+      },
+      {
+        "line": 303,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 304,
+        "text": "\tpub reasoning: Option<bool>,"
+      },
+      {
+        "line": 305,
+        "text": "\t/// Whether the model supports JSON Schema structured outputs."
+      },
+      {
+        "line": 306,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 307,
+        "text": "\t#[dynamic(rename = \"structuredOutput\")]"
+      },
+      {
+        "line": 308,
+        "text": "\tpub structured_output: Option<bool>,"
+      },
+      {
+        "line": 309,
+        "text": "\t/// Whether the model supports tool calling."
+      },
+      {
+        "line": 310,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 311,
+        "text": "\t#[dynamic(rename = \"toolCall\")]"
+      },
+      {
+        "line": 312,
+        "text": "\tpub tool_call: Option<bool>,"
+      },
+      {
+        "line": 313,
+        "text": "\t/// Whether the model accepts the temperature parameter."
+      },
+      {
+        "line": 314,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 315,
+        "text": "\tpub temperature: Option<bool>,"
+      },
+      {
+        "line": 316,
+        "text": "\t/// Fields not understood by this version."
+      },
+      {
+        "line": 317,
+        "text": "\t#[serde(flatten, skip_serializing)]"
+      },
+      {
+        "line": 318,
+        "text": "\t#[cfg_attr(feature = \"schema\", schemars(skip))]"
+      },
+      {
+        "line": 319,
+        "text": "\t#[dynamic(skip)]"
+      },
+      {
+        "line": 320,
+        "text": "\tpub unknown: Unknown,"
+      },
+      {
+        "line": 321,
+        "text": "}"
+      },
+      {
+        "line": 322,
+        "text": ""
+      },
+      {
+        "line": 323,
+        "text": "#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ::cel::DynamicType)]"
+      },
+      {
+        "line": 324,
+        "text": "#[cfg_attr(feature = \"schema\", derive(schemars::JsonSchema))]"
+      },
+      {
+        "line": 325,
+        "text": "#[cfg_attr(feature = \"schema\", schemars(deny_unknown_fields))]"
+      },
+      {
+        "line": 326,
+        "text": "#[serde(rename_all = \"camelCase\")]"
+      }
+    ]
+  },
+  {
+    "id": "AGL4",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "crates/agentgateway/src/llm/mod.rs",
+    "sha256": "fe83aec161add58845f51bff2f61011faa3d8bde2db2e606e4c1bb9f3e90cad0",
+    "excerpts": [
+      {
+        "line": 79,
+        "text": "#[serde(rename_all = \"camelCase\")]"
+      },
+      {
+        "line": 80,
+        "text": "pub struct AIBackend {"
+      },
+      {
+        "line": 81,
+        "text": "\t#[serde(skip_serializing)]"
+      },
+      {
+        "line": 82,
+        "text": "\tpub default_health: Option<http::health::Policy>,"
+      },
+      {
+        "line": 83,
+        "text": "\tpub providers: crate::types::loadbalancer::EndpointSet<NamedAIProvider>,"
+      },
+      {
+        "line": 84,
+        "text": "}"
+      },
+      {
+        "line": 85,
+        "text": ""
+      },
+      {
+        "line": 324,
+        "text": ""
+      },
+      {
+        "line": 325,
+        "text": "/// Result of translating a chat request before it is sent upstream."
+      },
+      {
+        "line": 326,
+        "text": "///"
+      },
+      {
+        "line": 327,
+        "text": "/// `body` is the upstream request payload. `provider_state` carries any"
+      },
+      {
+        "line": 328,
+        "text": "/// conversion state needed to translate the later response/stream back to the"
+      },
+      {
+        "line": 329,
+        "text": "/// original `InputFormat`; most providers do not need it."
+      },
+      {
+        "line": 330,
+        "text": "struct RenderedChatRequest {"
+      },
+      {
+        "line": 687,
+        "text": ""
+      },
+      {
+        "line": 688,
+        "text": "\tfn stream(&self, resp: Response, ctx: ChatStreamContext) -> Response {"
+      },
+      {
+        "line": 689,
+        "text": "\t\tmatch self.output {"
+      },
+      {
+        "line": 690,
+        "text": "\t\t\tChatFormat::OpenAICompletions => match self.input {"
+      },
+      {
+        "line": 691,
+        "text": "\t\t\t\tInputFormat::Completions => {"
+      },
+      {
+        "line": 692,
+        "text": "\t\t\t\t\tconversion::completions::passthrough_stream(ctx.logger, ctx.log_content, resp)"
+      },
+      {
+        "line": 693,
+        "text": "\t\t\t\t},"
+      },
+      {
+        "line": 1769,
+        "text": "\t\t\treq.stream_options = Some(types::completions::StreamOptions {"
+      },
+      {
+        "line": 1770,
+        "text": "\t\t\t\tinclude_usage: true,"
+      },
+      {
+        "line": 1771,
+        "text": "\t\t\t\trest: Default::default(),"
+      },
+      {
+        "line": 1772,
+        "text": "\t\t\t});"
+      },
+      {
+        "line": 1773,
+        "text": "\t\t}"
+      },
+      {
+        "line": 1774,
+        "text": "\t\tif matches!("
+      },
+      {
+        "line": 1775,
+        "text": "\t\t\tself,"
+      },
+      {
+        "line": 1842,
+        "text": "\t\t\treturn Ok(RequestResult::Rejected(google_invalid_argument("
+      },
+      {
+        "line": 1843,
+        "text": "\t\t\t\t\"streamGenerateContent requires alt=sse; the JSON-array streaming variant is not supported\","
+      },
+      {
+        "line": 1844,
+        "text": "\t\t\t)));"
+      },
+      {
+        "line": 1845,
+        "text": "\t\t}"
+      },
+      {
+        "line": 1846,
+        "text": "\t\tlet (parts, managed_body, mut req) = self"
+      },
+      {
+        "line": 1847,
+        "text": "\t\t\t.read_gemini_body_and_default_model::<types::gemini::Request>(policies, req, log)"
+      },
+      {
+        "line": 1848,
+        "text": "\t\t\t.await?;"
+      }
+    ]
+  },
+  {
+    "id": "AGL5",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "crates/llm/src/conversion/mod.rs",
+    "sha256": "a0adbc97ce8029ebafd9a5d02e2eeff088f5ed9e8ffbf45071fd60624a552bcd",
+    "excerpts": [
+      {
+        "line": 1,
+        "text": "pub mod bedrock;"
+      },
+      {
+        "line": 2,
+        "text": "pub mod completions;"
+      },
+      {
+        "line": 3,
+        "text": "pub mod gemini;"
+      },
+      {
+        "line": 4,
+        "text": "pub mod messages;"
+      },
+      {
+        "line": 5,
+        "text": "pub mod namespace_tools;"
+      },
+      {
+        "line": 6,
+        "text": "pub mod openai_compat;"
+      },
+      {
+        "line": 7,
+        "text": "pub mod responses;"
+      },
+      {
+        "line": 8,
+        "text": "pub mod systemone;"
+      },
+      {
+        "line": 9,
+        "text": "pub mod vertex;"
+      },
+      {
+        "line": 10,
+        "text": "pub mod vertex_gemini;"
+      },
+      {
+        "line": 11,
+        "text": ""
+      },
+      {
+        "line": 12,
+        "text": "#[derive(Default)]"
+      },
+      {
+        "line": 13,
+        "text": "struct ProviderUsage {"
+      },
+      {
+        "line": 14,
+        "text": "\tinput_tokens: u64,"
+      },
+      {
+        "line": 15,
+        "text": "\ttotal_tokens: u64,"
+      }
+    ]
+  },
+  {
+    "id": "AGL6",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "crates/agentgateway/src/llm/router_callout.rs",
+    "sha256": "ce1342254288a8175cf290fc431880c01028fcc21f5412d2e8849c6517e1c08b",
+    "excerpts": [
+      {
+        "line": 25,
+        "text": "#[apply(schema!)]"
+      },
+      {
+        "line": 26,
+        "text": "pub struct VirtualModelCallout {"
+      },
+      {
+        "line": 27,
+        "text": "\t/// Service that selects the model, and the backend policies used when connecting to it."
+      },
+      {
+        "line": 28,
+        "text": "\t/// A `host` URL may include the request path, such as `https://router.example.com/v1/route`."
+      },
+      {
+        "line": 29,
+        "text": "\t#[serde(flatten)]"
+      },
+      {
+        "line": 30,
+        "text": "\tpub target: SimpleBackendReferenceWithPoliciesAndPath,"
+      },
+      {
+        "line": 31,
+        "text": "\t/// Headers to set on the callout request, computed from CEL expressions."
+      },
+      {
+        "line": 61,
+        "text": "#[derive(Default)]"
+      },
+      {
+        "line": 62,
+        "text": "pub enum VirtualModelCalloutFailureMode {"
+      },
+      {
+        "line": 63,
+        "text": "\t/// Reject the request."
+      },
+      {
+        "line": 64,
+        "text": "\t#[default]"
+      },
+      {
+        "line": 65,
+        "text": "\tFailClosed,"
+      },
+      {
+        "line": 66,
+        "text": "\t/// Route to this model, which is resolved against llm.models, without applying `transformation`."
+      },
+      {
+        "line": 67,
+        "text": "\tFallback(String),"
+      },
+      {
+        "line": 76,
+        "text": "#[derive(Debug)]"
+      },
+      {
+        "line": 77,
+        "text": "pub struct CalloutSelection {"
+      },
+      {
+        "line": 78,
+        "text": "\tpub model: String,"
+      },
+      {
+        "line": 79,
+        "text": "\t/// Request payload fields to set. `None` removes the field."
+      },
+      {
+        "line": 80,
+        "text": "\tpub fields: Vec<(String, Option<JsonValue>)>,"
+      },
+      {
+        "line": 81,
+        "text": "}"
+      },
+      {
+        "line": 82,
+        "text": ""
+      },
+      {
+        "line": 91,
+        "text": ""
+      },
+      {
+        "line": 92,
+        "text": "\tpub async fn select("
+      },
+      {
+        "line": 93,
+        "text": "\t\t&self,"
+      },
+      {
+        "line": 94,
+        "text": "\t\tclient: &PolicyClient,"
+      },
+      {
+        "line": 95,
+        "text": "\t\treq: &mut Request,"
+      },
+      {
+        "line": 96,
+        "text": "\t) -> anyhow::Result<CalloutSelection> {"
+      },
+      {
+        "line": 97,
+        "text": "\t\tlet cache_key = self.cache_key(req);"
+      }
+    ]
+  },
+  {
+    "id": "AGL7",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "crates/agentgateway/src/types/loadbalancer.rs",
+    "sha256": "cdb3651dddaffcb6e3952adea8a2f9494e3dce49395077bfcc59ba469d9eea1d",
+    "excerpts": [
+      {
+        "line": 34,
+        "text": "// on this u64 and the cached endpoint hashes below."
+      },
+      {
+        "line": 35,
+        "text": "pub(crate) fn hash_affinity_key(value: &[u8]) -> u64 {"
+      },
+      {
+        "line": 36,
+        "text": "\tXxHash3_64::oneshot_with_seed(AFFINITY_KEY_HASH_SEED, value)"
+      },
+      {
+        "line": 37,
+        "text": "}"
+      },
+      {
+        "line": 38,
+        "text": ""
+      },
+      {
+        "line": 39,
+        "text": "fn hash_endpoint_key(value: &[u8]) -> u64 {"
+      },
+      {
+        "line": 40,
+        "text": "\tXxHash3_64::oneshot_with_seed(ENDPOINT_KEY_HASH_SEED, value)"
+      },
+      {
+        "line": 59,
+        "text": "\tfn with_capacity(key: &EndpointKey, ep: T, capacity: u32) -> Self {"
+      },
+      {
+        "line": 60,
+        "text": "\t\t// Endpoint identities change far less often than requests arrive. Pay for XXH3 at creation"
+      },
+      {
+        "line": 61,
+        "text": "\t\t// so the request hot path never reads and hashes an arbitrary-length endpoint key."
+      },
+      {
+        "line": 62,
+        "text": "\t\tSelf {"
+      },
+      {
+        "line": 63,
+        "text": "\t\t\tendpoint: Arc::new(ep),"
+      },
+      {
+        "line": 64,
+        "text": "\t\t\tinfo: Default::default(),"
+      },
+      {
+        "line": 65,
+        "text": "\t\t\tcapacity,"
+      },
+      {
+        "line": 71,
+        "text": "#[derive(Debug, Clone, Default)]"
+      },
+      {
+        "line": 72,
+        "text": "pub enum Sampler {"
+      },
+      {
+        "line": 73,
+        "text": "\t/// Every endpoint has the default capacity of 1. No need for weighted sampling."
+      },
+      {
+        "line": 74,
+        "text": "\t#[default]"
+      },
+      {
+        "line": 75,
+        "text": "\tUniform,"
+      },
+      {
+        "line": 76,
+        "text": "\t/// Weighted sampling by capacity via a cached prefix sum."
+      },
+      {
+        "line": 77,
+        "text": "\tWeighted(WeightedIndex<u64>),"
+      },
+      {
+        "line": 89,
+        "text": ""
+      },
+      {
+        "line": 90,
+        "text": "fn build_sampler<T>(active: &IndexMap<EndpointKey, EndpointWithInfo<T>>) -> Sampler {"
+      },
+      {
+        "line": 91,
+        "text": "\tif active.is_empty() {"
+      },
+      {
+        "line": 92,
+        "text": "\t\treturn Sampler::default();"
+      },
+      {
+        "line": 93,
+        "text": "\t}"
+      },
+      {
+        "line": 94,
+        "text": "\tlet mut all_ones = true;"
+      },
+      {
+        "line": 95,
+        "text": "\tlet mut any_nonzero = false;"
+      },
+      {
+        "line": 1295,
+        "text": "\t\tlet (endpoints, discovery) = affinity_fixture(endpoint_count, |_| 1);"
+      },
+      {
+        "line": 1296,
+        "text": "\t\tlet affinity_key = hash_affinity_key(b\"affinity-benchmark-client\");"
+      },
+      {
+        "line": 1297,
+        "text": ""
+      },
+      {
+        "line": 1298,
+        "text": "\t\tb.bench_local(|| {"
+      },
+      {
+        "line": 1299,
+        "text": "\t\t\tblack_box(endpoints.select_affinity(&discovery.workloads, 80, 8080, black_box(affinity_key)))"
+      },
+      {
+        "line": 1300,
+        "text": "\t\t});"
+      },
+      {
+        "line": 1301,
+        "text": "\t}"
+      },
+      {
+        "line": 1306,
+        "text": "\t\tlet (endpoints, discovery) = affinity_fixture(endpoint_count, |i| (i % 4 + 1) as u32);"
+      },
+      {
+        "line": 1307,
+        "text": "\t\tlet affinity_key = hash_affinity_key(b\"affinity-benchmark-client\");"
+      },
+      {
+        "line": 1308,
+        "text": ""
+      },
+      {
+        "line": 1309,
+        "text": "\t\tb.bench_local(|| {"
+      },
+      {
+        "line": 1310,
+        "text": "\t\t\tblack_box(endpoints.select_affinity(&discovery.workloads, 80, 8080, black_box(affinity_key)))"
+      },
+      {
+        "line": 1311,
+        "text": "\t\t});"
+      },
+      {
+        "line": 1312,
+        "text": "\t}"
+      },
+      {
+        "line": 1320,
+        "text": "\tfn rendezvous_score_is_stable_and_respects_weight() {"
+      },
+      {
+        "line": 1321,
+        "text": "\t\tlet affinity_key = hash_affinity_key(b\"client-a\");"
+      },
+      {
+        "line": 1322,
+        "text": "\t\tlet endpoint_a = hash_endpoint_key(b\"endpoint-a\");"
+      },
+      {
+        "line": 1323,
+        "text": "\t\tlet first = weighted_rendezvous_score(affinity_key, endpoint_a, 1);"
+      },
+      {
+        "line": 1324,
+        "text": "\t\tassert_eq!("
+      },
+      {
+        "line": 1325,
+        "text": "\t\t\tfirst,"
+      },
+      {
+        "line": 1326,
+        "text": "\t\t\tweighted_rendezvous_score(affinity_key, endpoint_a, 1)"
+      },
+      {
+        "line": 1996,
+        "text": "\t#[test]"
+      },
+      {
+        "line": 1997,
+        "text": "\tfn build_sampler_reflects_active_state() {"
+      },
+      {
+        "line": 1998,
+        "text": "\t\tlet mut group = EndpointGroup::<()>::default();"
+      },
+      {
+        "line": 1999,
+        "text": "\t\tadd_with_capacity(&mut group, \"a\", 1);"
+      },
+      {
+        "line": 2000,
+        "text": "\t\tadd_with_capacity(&mut group, \"b\", 1);"
+      },
+      {
+        "line": 2001,
+        "text": "\t\tassert!(matches!(group.sampler, Sampler::Uniform));"
+      },
+      {
+        "line": 2002,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "id": "AGL8",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "controller/pkg/agentgateway/translator/model_collections.go",
+    "sha256": "23971f9580fdf949206c7dd8ff3f22c07bf0dd5229521f1275cf0b84d2b73ce0",
+    "excerpts": [
+      {
+        "line": 32,
+        "text": ""
+      },
+      {
+        "line": 33,
+        "text": "func AgwModelCollection("
+      },
+      {
+        "line": 34,
+        "text": "\tqueue *status.StatusCollections,"
+      },
+      {
+        "line": 35,
+        "text": "\tmodels krt.Collection[*agentgateway.AgentgatewayModel],"
+      },
+      {
+        "line": 36,
+        "text": "\tinputs RouteContextInputs,"
+      },
+      {
+        "line": 37,
+        "text": "\tkrtopts krtutil.KrtOptions,"
+      },
+      {
+        "line": 38,
+        "text": ") (krt.Collection[agwir.AgwResource], krt.Collection[*plugins.RouteAttachment], krt.Collection[*utils.AncestorBackend]) {"
+      },
+      {
+        "line": 65,
+        "text": "// failover targets, and its callout backend."
+      },
+      {
+        "line": 66,
+        "text": "func extractModelAncestorBackends(ctx RouteContext, model *agentgateway.AgentgatewayModel) []*utils.AncestorBackend {"
+      },
+      {
+        "line": 67,
+        "text": "\tsource := utils.TypedNamespacedName{"
+      },
+      {
+        "line": 68,
+        "text": "\t\tNamespace: model.Namespace,"
+      },
+      {
+        "line": 69,
+        "text": "\t\tName:      model.Name,"
+      },
+      {
+        "line": 70,
+        "text": "\t\tKind:      wellknown.AgentgatewayModelGVK.Kind,"
+      },
+      {
+        "line": 71,
+        "text": "\t}"
+      },
+      {
+        "line": 150,
+        "text": "// backendRef can only target Service or InferencePool (CEL constraint); Kind defaults to Service."
+      },
+      {
+        "line": 151,
+        "text": "func backendRefToTypedNamespacedName(namespace string, ref *agentgateway.LocalBackendObjectReference) utils.TypedNamespacedName {"
+      },
+      {
+        "line": 152,
+        "text": "\tkind := wellknown.ServiceKind"
+      },
+      {
+        "line": 153,
+        "text": "\tif ref.Kind != nil {"
+      },
+      {
+        "line": 154,
+        "text": "\t\tkind = *ref.Kind"
+      },
+      {
+        "line": 155,
+        "text": "\t}"
+      },
+      {
+        "line": 156,
+        "text": "\treturn utils.TypedNamespacedName{"
+      },
+      {
+        "line": 165,
+        "text": "// policy behavior; models populate its generated LLM router backend."
+      },
+      {
+        "line": 166,
+        "text": "func extractModelParentReferenceInfo(ctx RouteContext, model *agentgateway.AgentgatewayModel) []RouteParentReference {"
+      },
+      {
+        "line": 167,
+        "text": "\tparents := extractParentReferenceInfo(ctx, ctx.RouteParents, model)"
+      },
+      {
+        "line": 168,
+        "text": "\tfor _, ref := range model.Spec.ParentRefs {"
+      },
+      {
+        "line": 169,
+        "text": "\t\tif NormalizeReference(ref.Group, ref.Kind, wellknown.GatewayGVK.GroupKind()) != wellknown.HTTPRouteGVK.GroupKind() {"
+      },
+      {
+        "line": 170,
+        "text": "\t\t\tcontinue"
+      },
+      {
+        "line": 171,
+        "text": "\t\t}"
+      },
+      {
+        "line": 224,
+        "text": ""
+      },
+      {
+        "line": 225,
+        "text": "func modelParentRuleIndex(rules []gwv1.HTTPRouteRule, sectionName *gwv1.SectionName) (int, error) {"
+      },
+      {
+        "line": 226,
+        "text": "\tif sectionName == nil {"
+      },
+      {
+        "line": 227,
+        "text": "\t\tif len(rules) != 1 {"
+      },
+      {
+        "line": 228,
+        "text": "\t\t\treturn -1, fmt.Errorf(\"model HTTPRoute parentRef without sectionName requires exactly one rule\")"
+      },
+      {
+        "line": 229,
+        "text": "\t\t}"
+      },
+      {
+        "line": 230,
+        "text": "\t\treturn 0, nil"
+      },
+      {
+        "line": 239,
+        "text": ""
+      },
+      {
+        "line": 240,
+        "text": "func modelServingRuleMatchesRoot(rule gwv1.HTTPRouteRule) bool {"
+      },
+      {
+        "line": 241,
+        "text": "\tif len(rule.Matches) == 0 {"
+      },
+      {
+        "line": 242,
+        "text": "\t\treturn true"
+      },
+      {
+        "line": 243,
+        "text": "\t}"
+      },
+      {
+        "line": 244,
+        "text": "\tfor _, match := range rule.Matches {"
+      },
+      {
+        "line": 245,
+        "text": "\t\tif match.Path == nil {"
+      },
+      {
+        "line": 255,
+        "text": ""
+      },
+      {
+        "line": 256,
+        "text": "func rootModelRouteDirectListenerConflicts(ctx RouteContext, route *gwv1.HTTPRoute) []string {"
+      },
+      {
+        "line": 257,
+        "text": "\trouteListeners := make(map[string]struct{})"
+      },
+      {
+        "line": 258,
+        "text": "\tfor _, parent := range FilteredReferences(extractParentReferenceInfo(ctx, ctx.RouteParents, route)) {"
+      },
+      {
+        "line": 259,
+        "text": "\t\trouteListeners[parent.ListenerKey] = struct{}{}"
+      },
+      {
+        "line": 260,
+        "text": "\t}"
+      },
+      {
+        "line": 261,
+        "text": "\tif len(routeListeners) == 0 {"
+      },
+      {
+        "line": 280,
+        "text": ""
+      },
+      {
+        "line": 281,
+        "text": "func rootModelRouteConflictMessage(listeners []string) string {"
+      },
+      {
+        "line": 282,
+        "text": "\treturn fmt.Sprintf(\"root model-serving HTTPRoute conflicts with directly attached models on listeners: %s\", strings.Join(listeners, \", \"))"
+      },
+      {
+        "line": 283,
+        "text": "}"
+      },
+      {
+        "line": 284,
+        "text": ""
+      },
+      {
+        "line": 285,
+        "text": "func modelServingRuleRouterKey(namespace, route string, ruleIndex int, rule gwv1.HTTPRouteRule) (string, bool, error) {"
+      },
+      {
+        "line": 286,
+        "text": "\tmodelBackendRefs := make([]gwv1.HTTPBackendRef, 0, 1)"
+      },
+      {
+        "line": 287,
+        "text": "\tfor _, backend := range rule.BackendRefs {"
+      },
+      {
+        "line": 288,
+        "text": "\t\tif NormalizeReference(backend.Group, backend.Kind, wellknown.ServiceGVK.GroupKind()) == wellknown.AgentgatewayModelGVK.GroupKind() {"
+      },
+      {
+        "line": 289,
+        "text": "\t\t\tmodelBackendRefs = append(modelBackendRefs, backend)"
+      },
+      {
+        "line": 290,
+        "text": "\t\t}"
+      },
+      {
+        "line": 330,
+        "text": ""
+      },
+      {
+        "line": 331,
+        "text": "func modelRouterBackendKey(namespace, route, rule string) string {"
+      },
+      {
+        "line": 332,
+        "text": "\treturn fmt.Sprintf(\"/llm:router:httproute:%s:%s:%s\", namespace, route, rule)"
+      },
+      {
+        "line": 333,
+        "text": "}"
+      },
+      {
+        "line": 334,
+        "text": ""
+      },
+      {
+        "line": 335,
+        "text": "func translateModelForParents("
+      },
+      {
+        "line": 336,
+        "text": "\tctx RouteContext,"
+      },
+      {
+        "line": 545,
+        "text": "\t\t\tRouting: &api.ModelRoute_VirtualModel_Conditional_{"
+      },
+      {
+        "line": 546,
+        "text": "\t\t\t\tConditional: &api.ModelRoute_VirtualModel_Conditional{Targets: targets},"
+      },
+      {
+        "line": 547,
+        "text": "\t\t\t},"
+      },
+      {
+        "line": 548,
+        "text": "\t\t}, nil, errors.Join(errs...)"
+      },
+      {
+        "line": 549,
+        "text": "\tcase vm.Callout != nil:"
+      },
+      {
+        "line": 550,
+        "text": "\t\tcallout, err := plugins.TranslateModelCallout(modelPolicyCtx(ctx), model.Namespace, vm.Callout)"
+      },
+      {
+        "line": 551,
+        "text": "\t\tif fallback := vm.Callout.Fallback; fallback != nil {"
+      },
+      {
+        "line": 552,
+        "text": "\t\t\tmodelName, ferr := resolveModelTargetName(ctx, model.Namespace, *fallback)"
+      },
+      {
+        "line": 553,
+        "text": "\t\t\tif ferr != nil {"
+      },
+      {
+        "line": 554,
+        "text": "\t\t\t\terr = errors.Join(err, ferr)"
+      },
+      {
+        "line": 555,
+        "text": "\t\t\t} else {"
+      },
+      {
+        "line": 556,
+        "text": "\t\t\t\tcallout.FallbackModel = &modelName"
+      },
+      {
+        "line": 557,
+        "text": "\t\t\t}"
+      },
+      {
+        "line": 558,
+        "text": "\t\t}"
+      },
+      {
+        "line": 559,
+        "text": "\t\treturn &api.ModelRoute_VirtualModel{"
+      },
+      {
+        "line": 560,
+        "text": "\t\t\tRouting: &api.ModelRoute_VirtualModel_Callout_{Callout: callout},"
+      },
+      {
+        "line": 561,
+        "text": "\t\t}, nil, err"
+      },
+      {
+        "line": 562,
+        "text": "\tcase vm.Failover != nil:"
+      },
+      {
+        "line": 563,
+        "text": "\t\tbackend, err := modelFailoverBackend(ctx, model, parent)"
+      },
+      {
+        "line": 564,
+        "text": "\t\tif backend == nil {"
+      },
+      {
+        "line": 565,
+        "text": "\t\t\treturn nil, nil, err"
+      },
+      {
+        "line": 566,
+        "text": "\t\t}"
+      },
+      {
+        "line": 567,
+        "text": "\t\treturn &api.ModelRoute_VirtualModel{"
+      },
+      {
+        "line": 568,
+        "text": "\t\t\tRouting: &api.ModelRoute_VirtualModel_Failover_{"
+      },
+      {
+        "line": 569,
+        "text": "\t\t\t\tFailover: &api.ModelRoute_VirtualModel_Failover{Backend: backendRef(backend.Key)},"
+      },
+      {
+        "line": 570,
+        "text": "\t\t\t},"
+      },
+      {
+        "line": 571,
+        "text": "\t\t}, []*api.Resource{backendResource(backend)}, err"
+      },
+      {
+        "line": 572,
+        "text": "\tdefault:"
+      },
+      {
+        "line": 573,
+        "text": "\t\treturn nil, nil, fmt.Errorf(\"virtualModel must define weighted, conditional, failover, or callout\")"
+      },
+      {
+        "line": 574,
+        "text": "\t}"
+      },
+      {
+        "line": 575,
+        "text": "}"
+      },
+      {
+        "line": 576,
+        "text": ""
+      },
+      {
+        "line": 577,
+        "text": "func modelConcreteBackend(ctx RouteContext, model *agentgateway.AgentgatewayModel, parent RouteParentReference, selectedModel *string) (*api.Backend, error) {"
+      },
+      {
+        "line": 578,
+        "text": "\tprovider, err := translateModelLLMProvider(ctx, model.Namespace, &model.Spec, utils.SingularLLMProviderSubBackendName, selectedModel)"
+      },
+      {
+        "line": 579,
+        "text": "\tif err != nil {"
+      },
+      {
+        "line": 580,
+        "text": "\t\treturn nil, err"
+      },
+      {
+        "line": 581,
+        "text": "\t}"
+      },
+      {
+        "line": 582,
+        "text": "\treturn &api.Backend{"
+      },
+      {
+        "line": 583,
+        "text": "\t\tKey:  modelBackendKey(model, parent, \"backend\"),"
+      },
+      {
+        "line": 584,
+        "text": "\t\tName: plugins.ResourceName(model),"
+      },
+      {
+        "line": 585,
+        "text": "\t\tKind: &api.Backend_Ai{"
+      },
+      {
+        "line": 586,
+        "text": "\t\t\tAi: &api.AIBackend{"
+      },
+      {
+        "line": 587,
+        "text": "\t\t\t\tProviderGroups: []*api.AIBackend_ProviderGroup{{Providers: []*api.AIBackend_Provider{provider}}},"
+      },
+      {
+        "line": 588,
+        "text": "\t\t\t},"
+      },
+      {
+        "line": 589,
+        "text": "\t\t},"
+      },
+      {
+        "line": 590,
+        "text": "\t}, nil"
+      },
+      {
+        "line": 591,
+        "text": "}"
+      },
+      {
+        "line": 592,
+        "text": ""
+      },
+      {
+        "line": 593,
+        "text": "func modelFailoverBackend(ctx RouteContext, model *agentgateway.AgentgatewayModel, parent RouteParentReference) (*api.Backend, error) {"
+      },
+      {
+        "line": 594,
+        "text": "\tgroups := map[int32][]*api.AIBackend_Provider{}"
+      },
+      {
+        "line": 595,
+        "text": "\tvar errs []error"
+      },
+      {
+        "line": 596,
+        "text": "\tfor _, target := range model.Spec.VirtualModel.Failover.Targets {"
+      },
+      {
+        "line": 597,
+        "text": "\t\t_, provider, err := translateFailoverTarget(ctx, model.Namespace, target)"
+      },
+      {
+        "line": 598,
+        "text": "\t\tif err != nil {"
+      },
+      {
+        "line": 599,
+        "text": "\t\t\terrs = append(errs, err)"
+      },
+      {
+        "line": 600,
+        "text": "\t\t\tcontinue"
+      },
+      {
+        "line": 601,
+        "text": "\t\t}"
+      },
+      {
+        "line": 602,
+        "text": "\t\tgroups[target.Priority] = append(groups[target.Priority], provider)"
+      },
+      {
+        "line": 603,
+        "text": "\t}"
+      },
+      {
+        "line": 604,
+        "text": "\tif len(groups) == 0 {"
+      },
+      {
+        "line": 605,
+        "text": "\t\terr := errors.Join(errs...)"
+      },
+      {
+        "line": 606,
+        "text": "\t\tif err == nil {"
+      },
+      {
+        "line": 607,
+        "text": "\t\t\terr = fmt.Errorf(\"failover requires at least one valid target\")"
+      },
+      {
+        "line": 608,
+        "text": "\t\t}"
+      },
+      {
+        "line": 609,
+        "text": "\t\treturn nil, err"
+      },
+      {
+        "line": 610,
+        "text": "\t}"
+      },
+      {
+        "line": 611,
+        "text": ""
+      },
+      {
+        "line": 612,
+        "text": "\tpriorities := make([]int32, 0, len(groups))"
+      },
+      {
+        "line": 613,
+        "text": "\tfor p := range groups {"
+      },
+      {
+        "line": 614,
+        "text": "\t\tpriorities = append(priorities, p)"
+      },
+      {
+        "line": 615,
+        "text": "\t}"
+      },
+      {
+        "line": 616,
+        "text": "\tslices.Sort(priorities)"
+      },
+      {
+        "line": 617,
+        "text": ""
+      },
+      {
+        "line": 618,
+        "text": "\tbackend := &api.AIBackend{}"
+      },
+      {
+        "line": 619,
+        "text": "\tfor _, priority := range priorities {"
+      },
+      {
+        "line": 620,
+        "text": "\t\tproviders := groups[priority]"
+      },
+      {
+        "line": 621,
+        "text": "\t\tslices.SortFunc(providers, func(a, b *api.AIBackend_Provider) int {"
+      },
+      {
+        "line": 622,
+        "text": "\t\t\treturn strings.Compare(a.GetName(), b.GetName())"
+      },
+      {
+        "line": 623,
+        "text": "\t\t})"
+      },
+      {
+        "line": 624,
+        "text": "\t\tbackend.ProviderGroups = append(backend.ProviderGroups, &api.AIBackend_ProviderGroup{Providers: providers})"
+      },
+      {
+        "line": 625,
+        "text": "\t}"
+      },
+      {
+        "line": 626,
+        "text": ""
+      },
+      {
+        "line": 627,
+        "text": "\treturn &api.Backend{"
+      },
+      {
+        "line": 628,
+        "text": "\t\tKey:  modelBackendKey(model, parent, \"failover\"),"
+      },
+      {
+        "line": 629,
+        "text": "\t\tName: plugins.ResourceName(model),"
+      },
+      {
+        "line": 630,
+        "text": "\t\tKind: &api.Backend_Ai{Ai: backend},"
+      },
+      {
+        "line": 631,
+        "text": "\t}, errors.Join(errs...)"
+      },
+      {
+        "line": 632,
+        "text": "}"
+      },
+      {
+        "line": 633,
+        "text": ""
+      },
+      {
+        "line": 634,
+        "text": "// translateFailoverTarget resolves and translates one failover target. Callers omit targets"
+      },
+      {
+        "line": 635,
+        "text": "// that return an error so the ancestry index and generated failover backend stay consistent."
+      },
+      {
+        "line": 636,
+        "text": "func translateFailoverTarget("
+      },
+      {
+        "line": 637,
+        "text": "\tctx RouteContext,"
+      },
+      {
+        "line": 638,
+        "text": "\tnamespace string,"
+      },
+      {
+        "line": 639,
+        "text": "\ttarget agentgateway.FailoverModelTarget,"
+      },
+      {
+        "line": 640,
+        "text": ") (*agentgateway.AgentgatewayModel, *api.AIBackend_Provider, error) {"
+      },
+      {
+        "line": 641,
+        "text": "\trefModel, modelName, err := resolveModelTarget(ctx, namespace, target.ModelTargetReference)"
+      },
+      {
+        "line": 642,
+        "text": "\tif err != nil {"
+      },
+      {
+        "line": 643,
+        "text": "\t\treturn nil, nil, err"
+      },
+      {
+        "line": 644,
+        "text": "\t}"
+      },
+      {
+        "line": 645,
+        "text": "\tif refModel.Spec.Provider == nil {"
+      }
+    ]
+  },
+  {
+    "id": "AGL9",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "crates/agentgateway/src/http/retry/mod.rs",
+    "sha256": "f8b5b9dad5379dfdcdf7fcad13d0eb5f33064b4c955edf29b6a6dae8ec382f20",
+    "excerpts": [
+      {
+        "line": 6,
+        "text": ""
+      },
+      {
+        "line": 7,
+        "text": "pub use body::ReplayBody;"
+      },
+      {
+        "line": 8,
+        "text": ""
+      },
+      {
+        "line": 9,
+        "text": "use crate::cel::Expression;"
+      },
+      {
+        "line": 10,
+        "text": "use crate::store::HasExpressions;"
+      },
+      {
+        "line": 11,
+        "text": "use crate::*;"
+      },
+      {
+        "line": 12,
+        "text": ""
+      },
+      {
+        "line": 14,
+        "text": "#[cfg_attr(feature = \"schema\", schemars(rename = \"RetryPolicy\"))]"
+      },
+      {
+        "line": 15,
+        "text": "pub struct Policy {"
+      },
+      {
+        "line": 16,
+        "text": "\t/// Total number of attempts, including the original request."
+      },
+      {
+        "line": 17,
+        "text": "\t#[serde(default = \"default_attempts\")]"
+      },
+      {
+        "line": 18,
+        "text": "\tpub attempts: NonZeroU8,"
+      },
+      {
+        "line": 19,
+        "text": "\t/// Delay between retry attempts."
+      },
+      {
+        "line": 20,
+        "text": "\t#[serde("
+      },
+      {
+        "line": 21,
+        "text": "\t\tdefault,"
+      },
+      {
+        "line": 22,
+        "text": "\t\tskip_serializing_if = \"Option::is_none\","
+      },
+      {
+        "line": 23,
+        "text": "\t\twith = \"serde_dur_option\""
+      },
+      {
+        "line": 24,
+        "text": "\t)]"
+      },
+      {
+        "line": 32,
+        "text": "\t/// retries are disabled (only the initial attempt is made), e.g. `request.method == \"GET\"`."
+      },
+      {
+        "line": 33,
+        "text": "\t/// Retrying requires buffering the request body in memory for replay, so this lets us skip"
+      },
+      {
+        "line": 34,
+        "text": "\t/// that cost when the request is known to be non-retriable (e.g. streaming or websockets)."
+      },
+      {
+        "line": 35,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 36,
+        "text": "\tpub precondition: Option<Arc<Expression>>,"
+      },
+      {
+        "line": 37,
+        "text": "\t/// CEL expression evaluated against each response to decide whether to retry. A response"
+      },
+      {
+        "line": 38,
+        "text": "\t/// is retried when its status code is in `codes` *or* this expression evaluates to `true`."
+      },
+      {
+        "line": 39,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 40,
+        "text": "\tpub condition: Option<Arc<Expression>>,"
+      },
+      {
+        "line": 41,
+        "text": "}"
+      },
+      {
+        "line": 42,
+        "text": ""
+      },
+      {
+        "line": 43,
+        "text": "impl HasExpressions for Policy {"
+      },
+      {
+        "line": 44,
+        "text": "\t/// Exposes the precondition/condition expressions so the proxy snapshots the"
+      },
+      {
+        "line": 45,
+        "text": "\t/// request/response attributes they reference."
+      },
+      {
+        "line": 46,
+        "text": "\tfn expressions(&self) -> impl Iterator<Item = &Expression> {"
+      },
+      {
+        "line": 47,
+        "text": "\t\tself"
+      },
+      {
+        "line": 48,
+        "text": "\t\t\t.precondition"
+      },
+      {
+        "line": 54,
+        "text": ""
+      },
+      {
+        "line": 55,
+        "text": "pub fn de_codes<'de: 'a, 'a, D>(deserializer: D) -> Result<Box<[http::StatusCode]>, D::Error>"
+      },
+      {
+        "line": 56,
+        "text": "where"
+      },
+      {
+        "line": 57,
+        "text": "\tD: Deserializer<'de>,"
+      },
+      {
+        "line": 58,
+        "text": "{"
+      },
+      {
+        "line": 59,
+        "text": "\tlet raw = Vec::<u16>::deserialize(deserializer)?;"
+      },
+      {
+        "line": 60,
+        "text": "\tlet boxed = raw"
+      }
+    ]
+  },
+  {
+    "id": "AGL10",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "crates/llm/src/golden_tests.rs",
+    "sha256": "dc8fd8724c8052c0b9eb610fe12d343ba3f811d24c9f59a36f95846450b9f763",
+    "excerpts": [
+      {
+        "line": 14,
+        "text": ""
+      },
+      {
+        "line": 15,
+        "text": "fn fixture_path(relative_path: &str) -> PathBuf {"
+      },
+      {
+        "line": 16,
+        "text": "\tPath::new(\"src/tests\").join(relative_path)"
+      },
+      {
+        "line": 17,
+        "text": "}"
+      },
+      {
+        "line": 18,
+        "text": ""
+      },
+      {
+        "line": 19,
+        "text": "fn snapshot_path_and_name(relative_path: &str, provider: &str) -> (String, String) {"
+      },
+      {
+        "line": 20,
+        "text": "\tlet rel = Path::new(relative_path);"
+      },
+      {
+        "line": 21,
+        "text": "\tlet parent = rel.parent().unwrap_or_else(|| Path::new(\"\"));"
+      },
+      {
+        "line": 22,
+        "text": "\tlet stem = rel"
+      },
+      {
+        "line": 23,
+        "text": "\t\t.file_stem()"
+      },
+      {
+        "line": 24,
+        "text": "\t\t.unwrap_or_else(|| panic!(\"{relative_path}: missing filename\"))"
+      },
+      {
+        "line": 89,
+        "text": "\t\t};"
+      },
+      {
+        "line": 90,
+        "text": "\t\tlet (snapshot_path, snapshot_name) = snapshot_path_and_name(relative_path, provider);"
+      },
+      {
+        "line": 91,
+        "text": ""
+      },
+      {
+        "line": 92,
+        "text": "\t\tinsta::with_settings!({"
+      },
+      {
+        "line": 93,
+        "text": "\t\t\tinfo => &input_raw,"
+      },
+      {
+        "line": 94,
+        "text": "\t\t\tfilters => vec![(r#\"\"id\": \"msg_[0-9a-f]{16}\"\"#, r#\"\"id\": \"msg_redacted\"\"#)],"
+      },
+      {
+        "line": 95,
+        "text": "\t\t\tdescription => input_path.to_string_lossy().to_string(),"
+      },
+      {
+        "line": 96,
+        "text": "\t\t\tomit_expression => true,"
+      },
+      {
+        "line": 97,
+        "text": "\t\t\tprepend_module_to_snapshot => false,"
+      },
+      {
+        "line": 98,
+        "text": "\t\t\tsnapshot_path => snapshot_path,"
+      },
+      {
+        "line": 99,
+        "text": "\t\t}, {"
+      },
+      {
+        "line": 100,
+        "text": "\t\t\tinsta::assert_json_snapshot!(snapshot_name, report, {"
+      },
+      {
+        "line": 101,
+        "text": "\t\t\t\t\".request.id\" => \"[id]\","
+      },
+      {
+        "line": 102,
+        "text": "\t\t\t\t\".request.created\" => \"[date]\","
+      },
+      {
+        "line": 103,
+        "text": "\t\t\t\t\".request.metadata\" => insta::sorted_redaction(),"
+      },
+      {
+        "line": 104,
+        "text": "\t\t\t\t\".request.additionalModelRequestFields.metadata\" => insta::sorted_redaction(),"
+      },
+      {
+        "line": 105,
+        "text": "\t\t\t});"
+      },
+      {
+        "line": 257,
+        "text": ""
+      },
+      {
+        "line": 258,
+        "text": "\t/// Native Gemini inbound bodies, used for both the render snapshots and the fidelity assertions"
+      },
+      {
+        "line": 259,
+        "text": "\t/// in [`gemini_request_passthrough_is_lossless`]."
+      },
+      {
+        "line": 260,
+        "text": "\tconst GEMINI_REQUESTS: &[&str] = &["
+      },
+      {
+        "line": 261,
+        "text": "\t\t\"text\","
+      },
+      {
+        "line": 262,
+        "text": "\t\t\"tools\","
+      },
+      {
+        "line": 263,
+        "text": "\t\t\"thinking\","
+      },
+      {
+        "line": 598,
+        "text": "\tfn gemini_native() {"
+      },
+      {
+        "line": 599,
+        "text": "\t\t// Native Gemini inbound: the \"translation\" is a re-serialize, so these snapshots exist to make"
+      },
+      {
+        "line": 600,
+        "text": "\t\t// any change to the wire body visible in review. `gemini_request_passthrough_is_lossless`"
+      },
+      {
+        "line": 601,
+        "text": "\t\t// asserts the fidelity property itself."
+      },
+      {
+        "line": 602,
+        "text": "\t\tfor name in GEMINI_REQUESTS {"
+      },
+      {
+        "line": 603,
+        "text": "\t\t\tlet path = format!(\"requests/gemini/{name}.json\");"
+      },
+      {
+        "line": 604,
+        "text": "\t\t\ttest_request(GEMINI_NATIVE, &path, |i: &mut types::gemini::Request| {"
+      },
+      {
+        "line": 677,
+        "text": ""
+      },
+      {
+        "line": 678,
+        "text": "\t\t\tlet (snapshot_path, snapshot_name) = snapshot_path_and_name(fixture, provider);"
+      },
+      {
+        "line": 679,
+        "text": "\t\t\tinsta::with_settings!({"
+      },
+      {
+        "line": 680,
+        "text": "\t\t\t\tinfo => &raw,"
+      },
+      {
+        "line": 681,
+        "text": "\t\t\t\tdescription => path.to_string_lossy().to_string(),"
+      },
+      {
+        "line": 682,
+        "text": "\t\t\t\tomit_expression => true,"
+      },
+      {
+        "line": 683,
+        "text": "\t\t\t\tprepend_module_to_snapshot => false,"
+      },
+      {
+        "line": 684,
+        "text": "\t\t\t\tsnapshot_path => snapshot_path,"
+      },
+      {
+        "line": 685,
+        "text": "\t\t\t}, {"
+      },
+      {
+        "line": 686,
+        "text": "\t\t\t\tinsta::assert_json_snapshot!(snapshot_name, messages);"
+      },
+      {
+        "line": 687,
+        "text": "\t\t\t});"
+      },
+      {
+        "line": 688,
+        "text": "\t\t}"
+      }
+    ]
+  }
+]

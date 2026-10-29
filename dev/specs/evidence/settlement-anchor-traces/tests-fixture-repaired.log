@@ -1,0 +1,13 @@
+
+ Error [QNT000]: Expected [s,x,y,z] and [s,x,y,z,a] to be the same
+Trying to unify entities ['s', 'x', 'y', 'z'] and ['s', 'x', 'y', 'z', 'a']
+Trying to unify Read[_v18972] & Update['s', 'x', 'y', 'z'] and Read['s', 'x', 'y', 'z'] & Update['s', 'x', 'y', 'z', 'a']
+Trying to unify (Read[_v18970] & Update[_v18971], Read[_v18972] & Update[_v18971]) => Read[_v18973] & Update[_v18971] and (Read[_v18960] & Update['s', 'x', 'y', 'z'], Read['s', 'x', 'y', 'z'] & Update['s', 'x', 'y', 'z', 'a']) => _e4375
+Trying to infer effect for operator application in then(W::terminal, actionAll(baseStay, assign(a, initialState)))
+
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:91:21
+  91:   action decision = W::terminal.then(all {baseStay,a' = initialState}).then(sync)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

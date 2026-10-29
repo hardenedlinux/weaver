@@ -1,0 +1,156 @@
+#+title: Weaver Caller Binding at Protected Publication
+#+language: en
+#+options: toc:3
+
+* Finding and decision
+
+Category 42 makes custody fence, original floor outcome and determining append
+atomic. Its native publisher still needs an authenticated caller. A request can
+copy the current holder, fence, parent and grant fields. If the broker accepts
+those fields as caller identity, an old worker sharing the new worker's Kubernetes
+ServiceAccount can pass every numeric check. A current journal read alone does
+not fix that confused-deputy boundary.
+
+The determining Rust publisher must verify a native authenticated context and
+proof of possession against the current custody capability in the same serialized
+operation as the actual source/account/floor join and protected append. It must
+repeat this check after queueing; stage-time authentication is insufficient.
+The capability registry is a field of the protected journal envelope, not an
+independently authoritative capability database. Its projections stay inactive
+until they have caught up to the authenticated current prefix.
+
+* Identity and authority contract
+
+| Identity | Meaning | Authority it does not supply |
+|----------+---------+------------------------------|
+| Workload principal | Trust domain/cluster issuer, expected audience, namespace and ServiceAccount UID | A particular live process, custody holder or current fence |
+| Pod UID | Bound Kubernetes object identity used during enrollment | A process incarnation within a Pod |
+| Worker incarnation | Authority-issued, never-reused identity for one enrolled worker/key relationship | A client-selected restart counter or session ID |
+| Transport context | Verified peer incarnation and key commitment, request purpose and channel binding | Claimed fields in a request, SDK metadata or a forwarded header |
+| Custody capability | Current registry commitment to domain, original operation, holder, fence, incarnation, key, serial, purpose and deadline | A bearer receipt, a grant ID alone or a refund permission |
+| Recovery principal | Independently authorized enrollment/transfer role | A role obtained merely by holding the worker ServiceAccount token |
+
+Kubernetes documents object-bound token claims and TokenReview validation in
+[[https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/][Managing Service Accounts]].
+Offline JWT validation does not establish that the bound object is still current.
+Use audience/issuer validation and current bound-object checks during enrollment;
+require the Gateway audience rather than accepting an API-server token audience
+as an implicit substitute;
+do not treat TokenReview as proof of possession of a Gateway worker key. The
+Gateway additionally needs its own incarnation issuance and a challenge bound to
+the exact enrolled key and trusted transport. The Pod/process distinction is a
+Gateway design requirement: process restart must not silently inherit publication
+rights from a Pod name, UID or shared credential.
+
+The enrollment/recovery service must prevent a stale worker from minting a fresh
+incarnation through the same workload role. Rust accepts context only from the
+verified peer mechanism. Go must strip untrusted identity headers and pass a typed
+request descriptor; a Go assertion is not sufficient evidence of peer identity.
+If Go terminates the peer channel, its signed/delegated context must be audience-,
+request-, key- and expiry-bound and independently verified by Rust. Otherwise use
+end-to-end peer authentication. The model assumes this native verification; it
+does not prove a cryptographic protocol, identity provider or Kubernetes RBAC.
+
+* One protected publication envelope
+
+The envelope associates the original operation, current custody state, source and
+account join, floor outcome, capability serial/key/incarnation, and retained issued
+incarnations at one journal position. Lean's =capJournal= and the inherited journal
+are mathematical projections of that single append, not two stores with a
+proposed atomic transaction between them. No client receives an authoritative
+success until this whole envelope satisfies the protected publication contract.
+Unknown acknowledgement means resolve the original event by operation identity
+and current prefix. It must not create another original operation or extend a
+permit's deadline.
+
+At final publication Rust checks:
+
+1. Decode the canonical typed operation and immutable original semantic contract.
+2. Verify trusted peer context and proof of possession; require worker purpose,
+   exact current capability commitment/serial, matching workload/incarnation/key,
+   current holder/fence, and an unexpired deadline.
+3. Compare the current protected parent and recheck the actual source/account join,
+   Policy/history generation, original pending intent and spent-state.
+4. Validate the actual custody transition; append its resulting state and grant
+   association together, or reject without changing authoritative state.
+5. Return or later resolve that exact outcome. Neither commit nor grant delivery
+   performs an external provider send or a financial release.
+
+The validity clock must be nondecreasing across recovery or its trusted deadline
+check must fail closed. A wall-clock rollback must not revive an expired grant.
+Expiry, revocation, handoff and publication share an ordering at the determining
+owner. Publication already ordered before revocation remains a historical result;
+revocation cannot unsend bytes. Final executor offer and stream-range gates from
+the earlier design still apply to future sends.
+
+* Redelivery, key rotation and fenced recovery
+
+| Event | Authorized transition | Preserved obligations and rejection rules |
+|-------+-----------------------+-------------------------------------------|
+| Exact redelivery | Current peer proves the current grant key; return the same grant | No new serial, deadline extension, Ready refresh, floor append or account change |
+| Reconnect | A newly verified channel may resolve to the same enrolled incarnation/key | New transport session alone grants no new logical identity or budget |
+| Explicit key rotation | Current old key proof plus trusted new-key enrollment; serial increases in one append | Same domain, workload, original, incarnation, holder/fence, purpose and deadline; clear join/resolution through actual custody restart |
+| Custody handoff | Independent recovery authorization plus fresh enrolled incarnation; serial and custody fence increase | Same original scope/deadline; retain original outcome, issued-incarnation tombstones and unknown reservation |
+| Lost rotation/transfer reply | Query the current protected envelope by original event identity | Old key cannot authorize rollback, grant reminting or a second transfer under an old parent |
+| Process restart | Rebuild untrusted local views; authenticate the current prefix and current peer again | No implicit enrollment, local grant mint or reuse of an old incarnation after handoff |
+| Expiry | Refuse final publication after deadline, including queued work | Redelivery, acknowledgements and restart cannot renew authorization |
+
+Rotation clears the actual inherited join and resolution while preserving the
+original intent and outcome. If the original operation is armed and its execution
+status is unknown, rotation does not turn it into a fresh admission. Recovery must
+follow the existing fenced continuation and source reconciliation path. Handoff
+with unknown status likewise retains the pending obligation. This review does not
+claim recovery liveness or automatic progress from every armed state.
+
+The custody fence and worker incarnation are separate from the Gateway executor
+owner generation and the inherited proposal.worker field. Handoff does not
+rewrite that proposal worker or its original account image. Those execution and
+source/account fences remain independently checked by the actual inherited
+transition. Rebase can change an attempt only under the original same-intent
+contract; it cannot replace the original claim/profile or reservation.
+
+Issued-incarnation history must be retained in protected snapshots/checkpoints
+or replaced by an equally strong non-reuse namespace commitment. Garbage
+collection cannot simply forget identities while old workers may recover.
+Native bounded counters must reject exhaustion rather than wrap or recycle an
+incarnation, capability serial or custody fence. This reuses the intent of POO
+Flow session-coordinate exhaustion checks; the mathematical Nat/int models do
+not prove a bounded native codec. Exhaustion retains the original pending
+obligation and unknown hold instead of opening a replacement budget domain.
+Capability revocation cannot erase a private key from an old worker; safety comes
+from rejection by the current determining publisher. If an attacker can steal the
+new enrolled key or forge the trusted context, the model's authentication premise
+is false. This is a logical Gateway boundary with explicit credential assumptions.
+
+* Language and policy responsibilities
+
+| Layer | Responsibility |
+|-------+----------------|
+| Scheme / POO Flow | Own canonical original task, claim/profile commitment, policy input semantics, history and budget-domain identity; derive typed publication intent and recovery duties; preserve pending unknown outcomes |
+| Cedar / Code as Policy | Decide whether this exact principal, operation, domain and recovery purpose are permitted using authentic current facts; an allow decision cannot invent those facts or replace final atomic mediation |
+| Go / cloud native adapter | Kubernetes enrollment integration, reconnection and lifecycle orchestration, protocol conversion and SDK control; resolve original operations after lost replies; never remint a family, broaden scope, auto-renew a grant or send during commit |
+| Rust / determining broker | Verify peer/key context, compare exact current grant, parent and join; serialize capability changes with custody outcome publication; retain durable spent-state and reject stale queued work; enforce separate final-send gates |
+| Quint | Exercise shared-principal impersonation, expiry races, lost replies, rotation, handoff, restart and deliberate boundary mutations over the inherited actual floor/account fixture |
+| Lean | Prove finite-run refinement to actual custody/account transitions, final permit requirement, scope/non-reuse properties and conditional original-result/budget preservation |
+
+The high-performance path uses a local verified peer context and an indexed
+capability commitment inside the same protected CAS. It does not call the
+Kubernetes API per token or byte. Enrollment validation may be amortized only
+within its explicit validity/revocation contract; queued publication repeats the
+current grant/parent/deadline checks. Compiled Cedar evaluation and immutable
+Scheme semantic commitments can be cached by exact identity. Cache hits never
+replace current spent-state, fence or join validation. No throughput claim is
+made before a native implementation and matched fault/performance qualification.
+
+* Proof scope and remaining native obligations
+
+[[file:43.03-proof-and-source-evidence.org][43.03]] maps source reuse and all printed declarations to controls and core nodes.
+The models assume protected whole-event durability, authentic peer/enrollment
+facts, canonical domain/original bindings and nondecreasing time. They do not
+prove native key possession, RBAC, transport TLS, a durable anti-rollback store,
+serialization codecs or eventual recovery. Acceptance must later inject a shared
+ServiceAccount with distinct process keys, forged headers, old channel contexts,
+queued expired requests, concurrent rotation/append and handoff/append, lost
+acknowledgements, inconsistent cache snapshots and restored old workers. Unknown
+usage must remain reserved in every case until authentic original execution and
+usage evidence authorizes the separate account protocol.

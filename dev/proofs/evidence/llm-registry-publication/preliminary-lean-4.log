@@ -1,0 +1,51 @@
+proofs/lean/LlmRegistryPublication.lean:139:95: error: unexpected identifier; expected '}'
+proofs/lean/LlmRegistryPublication.lean:188:52: error: unsolved goals
+registry : LlmAuthoritativeScope.Registry
+tenant vector : Nat
+s : State
+source : GatewayHeadCAS.Config
+routing : LlmRouting.Config
+profile : LlmAttemptLedger.Profile
+rootOwner : GatewayHeadCAS.Owner
+childOwner : LlmAttemptLedger.Owner
+codec : LlmSemanticContract.Owner
+scopeOwner : LlmAuthoritativeScope.Owner
+owner : Owner
+intentBound : ∀ (b : Binding), s.intent = some b → Valid registry routing.root tenant vector b
+journalBound : ∀ (b : Binding), b ∈ s.journal → s.intent = some b
+count : s.journal.length ≤ 1
+certified : s.certified = true → ∃ b, s.intent = some b ∧ s.journal = [b]
+active : s.active = true → ∃ b, Ready s b ∧ s.projection = some (image s b)
+bad : s.active = true
+⊢ ∃ b,
+    Ready
+        { execution := restarted s.execution, revision := s.revision + 1, fence := s.fence + 1, blobs := s.blobs,
+          readable := s.readable, intent := s.intent, journal := s.journal, journalVisible := s.journalVisible,
+          certified := s.certified, acknowledged := s.acknowledged, online := s.online, projection := s.projection,
+          active := s.active, permits := s.permits }
+        b ∧
+      { execution := restarted s.execution, revision := s.revision + 1, fence := s.fence + 1, blobs := s.blobs,
+            readable := s.readable, intent := s.intent, journal := s.journal, journalVisible := s.journalVisible,
+            certified := s.certified, acknowledged := s.acknowledged, online := s.online, projection := s.projection,
+            active := s.active, permits := s.permits }.projection =
+        some
+          (image
+            { execution := restarted s.execution, revision := s.revision + 1, fence := s.fence + 1, blobs := s.blobs,
+              readable := s.readable, intent := s.intent, journal := s.journal, journalVisible := s.journalVisible,
+              certified := s.certified, acknowledged := s.acknowledged, online := s.online, projection := s.projection,
+              active := s.active, permits := s.permits }
+            b)
+'Weaver.LlmRegistryPublication.initialized_safe' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmRegistryPublication.execution_projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRegistryPublication.intent_is_never_replaced' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRegistryPublication.certified_requires_exact_journal' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmRegistryPublication.one_original_publication' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmRegistryPublication.active_requires_current_join' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmRegistryPublication.stale_worker_cannot_use' does not depend on any axioms
+'Weaver.LlmRegistryPublication.stale_execution_snapshot_cannot_use' does not depend on any axioms
+'Weaver.LlmRegistryPublication.lost_reply_preserves_binding' does not depend on any axioms
+'Weaver.LlmRegistryPublication.snapshot_install_never_restores_execution' does not depend on any axioms
+'Weaver.LlmRegistryPublication.original_claim_remains_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmRegistryPublication.original_allowance_is_preserved' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRegistryPublication.original_scope_domains_survive_recovery' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRegistryPublication.unknown_usage_blocks_settlement' depends on axioms: [propext, Quot.sound]

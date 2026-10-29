@@ -1,0 +1,191 @@
+# Core design only; source identities and proof receipts remain in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / COMMITTED RESULTS / FENCED LEDGER RECOVERY {
+  class: title
+  near: top-center
+}
+protocols: GO / REQUEST AND OBSERVATION {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  mcp: MCP / A2A / Client ACP\nOriginal immutable operation\nNo new identity on retry {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  a2a: Exact outcome lookup\nLost commit or application reply\nObserve original result {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  acp: Cloud-native owner lifecycle\nRetain pending and unknown exposure\nHistorical receipt is not a grant {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+registry: SCHEME / SEMANTIC CONTRACT {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  origin: Original semantic binding\nClaim / profile / budget / history\nExact source before and after {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  alias: Cedar Code as Policy\nActual authenticated effect and state\nCurrent aligned authorization {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  query: Pure transition and obligations\nUnknown result stays spent and held\nRecovery cannot invent a result {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+}
+recovery: RUST / AUTHORITATIVE RESULT LOG {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  projection: One original source commit\nImmutable request and result body\nDurable before permission release {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  join: Exact committed result chain\nParent / position / before / after\nSource + account + identity bound {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  fence: Qualified prefix and owner recovery\nRetire old mutation permissions\nMissing result keeps recovery closed {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+broker: RUST / PROJECTION AND BROKER {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  cas: Participant result CAS\nCurrent fence / cursor / before-image\nPublish exact after-image atomically {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  claim: Complete source and account join\nCurrent prefix and exact result images\nPartial or torn projection closes queue {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  hold: Original protected queue operation\nApplication replay never sends again\nUnknown exposure remains reserved {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+quint: QUINT\nReply loss / partial application / mixed snapshots\nOld owner / delta retry / late callback {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nImmutable ordered results / exact application gates\nOriginal source projection / retained unknown exposure {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+protocols.mcp -> registry.origin
+protocols.a2a -> recovery.join
+protocols.acp -> recovery.fence
+registry.origin -> recovery.projection
+registry.alias -> recovery.projection
+registry.query -> recovery.fence { style.stroke-dash: 4 }
+recovery.projection -> recovery.join
+recovery.fence -> broker.cas { style.stroke-dash: 4 }
+recovery.join -> broker.cas
+broker.cas -> broker.claim
+broker.claim -> broker.hold

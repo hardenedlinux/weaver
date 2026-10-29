@@ -1,0 +1,28 @@
+{
+  "args": [
+    "quint",
+    "run",
+    "proofs/evidence/semantic-gateway-slice/bundle.qnt",
+    "--main",
+    "SemanticGatewaySlice",
+    "--backend",
+    "typescript",
+    "--init",
+    "boot",
+    "--step",
+    "step",
+    "--invariant",
+    "safety",
+    "--max-samples",
+    "50",
+    "--max-steps",
+    "12",
+    "--seed",
+    "293",
+    "--out",
+    "proofs/evidence/semantic-gateway-slice/simulation.json"
+  ],
+  "exit": 0,
+  "seconds": 7.105,
+  "watchdogSeconds": 55
+}

@@ -1,0 +1,93 @@
+'Weaver.LogicalMessageAuthority.reachable_safe' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LogicalMessageAuthority.logical_message_offered_at_most_once' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LogicalMessageAuthority.claim_origin_is_sticky' depends on axioms: [propext]
+'Weaver.LogicalMessageAuthority.budget_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LogicalMessageAuthority.consume_invalidates_captured_revision' depends on axioms: [propext, Quot.sound]
+'Weaver.SharedMessageBudget.reachable_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.SharedMessageBudget.aliases_share_claim_budget_and_history' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SharedMessageBudget.shared_free_held_charged_conservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SharedMessageBudget.original_claim_survives_all_global_steps' depends on axioms: [propext, Quot.sound]
+'Weaver.SharedMessageBudget.passive_update_does_not_replenish' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteDomainMigration.reachable_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteDomainMigration.finite_free_held_charged_conservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FiniteDomainMigration.claim_executor_stamp_is_sticky' depends on axioms: [propext]
+'Weaver.FiniteDomainMigration.restart_rejects_retained_ticket' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteDomainMigration.migration_preserves_obligations' does not depend on any axioms
+'Weaver.FiniteDomainMigration.issued_ticket_is_immutable' depends on axioms: [propext]
+'Weaver.FiniteDomainMigration.advanced_fence_rejects_old_ticket' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.Journal.reachable_invariant' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.Journal.recovered_budget_conservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.Journal.operation_receipt_is_immutable' depends on axioms: [propext]
+'Weaver.AnchoredRecoveryAndEgress.Egress.reachable_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.Egress.post_seal_wire_emission_is_reachable' depends on axioms: [propext]
+'Weaver.AnchoredRecoveryAndEgress.joint_publication_preserves' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.protected_handoff_requires_original_claim' does not depend on any axioms
+'Weaver.ComposedGatewayLifecycle.reachable_invariant' depends on axioms: [propext, Quot.sound]
+'Weaver.ComposedGatewayLifecycle.end_to_end_conservation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ComposedGatewayLifecycle.end_to_end_free_held_charged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ComposedGatewayLifecycle.end_to_end_nonce_claim_offer_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ComposedGatewayLifecycle.accepted_range_retains_original_executor' depends on axioms: [propext, Quot.sound]
+'Weaver.ComposedGatewayLifecycle.original_claim_survives_trace' depends on axioms: [propext]
+'Weaver.ComposedGatewayLifecycle.restrictive_history_survives_trace' depends on axioms: [propext]
+'Weaver.ComposedGatewayLifecycle.range_record_is_immutable' depends on axioms: [propext]
+'Weaver.ComposedGatewayLifecycle.activation_has_exact_committed_seal' depends on axioms: [propext]
+'Weaver.ComposedGatewayLifecycle.migration_advance_has_matching_seal' depends on axioms: [propext]
+'Weaver.ComposedGatewayLifecycle.accepted_range_retains_admission' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteStreamManifest.reachable_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteStreamManifest.shared_budget_covered' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteStreamManifest.admitted_range_has_exact_peer' does not depend on any axioms
+'Weaver.FiniteStreamManifest.retired_message_has_no_live_tail' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteStreamManifest.one_unfinished_message_per_stream' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FiniteStreamManifest.advancing_frontier_retains_slot' does not depend on any axioms
+'Weaver.FiniteStreamManifest.occupied_range_blocks_new_delegation' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.byte_offered_at_most_once' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteStreamManifest.manifest_exact_partition' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteStreamManifest.original_manifest_is_immutable' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.range_admission_is_immutable' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.cursor_never_rewinds' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteStreamManifest.quarantine_is_monotone' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.live_stream_has_one_tail' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteStreamManifest.delegated_range_has_original_admission' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FiniteStreamManifest.original_claim_and_history_survive_trace' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.account_history_survives_trace' depends on axioms: [propext]
+'Weaver.FiniteStreamManifest.message_quota_never_released' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteStreamManifest.canonical_body_byte_affinity' depends on axioms: [propext, Classical.choice, Quot.sound]
+specs/lean/DriverCompletionRecovery.lean:52:109: error: unexpected token '('; expected '}'
+specs/lean/DriverCompletionRecovery.lean:89:2: error: Invalid alternative name `finish`: There are no unhandled alternatives
+specs/lean/DriverCompletionRecovery.lean:92:2: error: Invalid alternative name `quarantine`: There are no unhandled alternatives
+specs/lean/DriverCompletionRecovery.lean:93:2: error: Wildcard alternative is not needed
+specs/lean/DriverCompletionRecovery.lean:113:2: error: Invalid alternative name `finish`: Expected `administrative`, `delegate`, or `write`
+specs/lean/DriverCompletionRecovery.lean:120:99: error: unexpected token '{'; expected '}'
+specs/lean/DriverCompletionRecovery.lean:124:123: error: unexpected token '{'; expected '}'
+specs/lean/DriverCompletionRecovery.lean:143:71: error(lean.unknownIdentifier): Unknown identifier `m.stream`
+specs/lean/DriverCompletionRecovery.lean:143:140: error(lean.unknownIdentifier): Unknown identifier `m.stream`
+specs/lean/DriverCompletionRecovery.lean:142:129: error(lean.unknownIdentifier): Unknown identifier `m.spec`
+'Weaver.DriverCompletionRecovery.reachable_projection' depends on axioms: [sorryAx]
+'Weaver.DriverCompletionRecovery.no_duplicate_bytes' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Weaver.DriverCompletionRecovery.shared_escrow' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Weaver.DriverCompletionRecovery.retirement_requires_closed_tails' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.DriverCompletionRecovery.result_is_immutable' depends on axioms: [sorryAx]
+specs/lean/DriverCompletionRecovery.lean:151:14: error(lean.unknownIdentifier): Unknown constant `completion_keeps_ledger`
+specs/lean/DriverCompletionRecovery.lean:152:14: error(lean.unknownIdentifier): Unknown constant `completion_keeps_quota`
+'Weaver.DriverCompletionRecovery.restart_does_not_transfer_tail' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.DriverCompletionRecovery.stale_request_cannot_finish' does not depend on any axioms

@@ -1,0 +1,262 @@
+#+title: Weaver Zero Trust Baseline and Architecture Review
+#+language: en
+#+date: 2026-10-18
+#+property: STATUS required-design-baseline-not-runtime-qualified
+#+options: toc:3
+
+* Decision and evidence boundary
+
+Zero Trust is a starting requirement for Weaver. Network location, a local
+socket, a common language, a valid certificate, and an organization-owned
+process confer no implicit right to act. Every resource access requires an
+explicit scoped policy and an enforcement path. An explicitly anonymous
+health endpoint is a policy choice, not an exception granting ambient access.
+
+This document corrects assumptions in the earlier design. Requirements below
+are architectural constraints; none is a claim of implemented protection.
+The reference basis, including NIST and AWS Strands Box, is in
+[[file:01-reference-comparison.org][Reference comparison and evidence]]. Protocol and lifecycle details belong
+in [[file:02-interfaces-and-policy.org][Unified interfaces and Policy model]] and required experiments in
+[[file:03-performance-and-validation.org][Performance and validation]].
+
+Zero Trust does not eliminate a trusted computing base. The kernel or
+isolation substrate, credential issuer, publication roots, authorization
+owner, canonicalization boundary, and final enforcement component remain
+trusted for explicitly limited functions. Compromise of a component that can
+both obtain credentials and emit arbitrary bytes can invalidate its local
+enforcement. Move those powers to a smaller independently isolated component
+when that compromise must be contained; language separation alone cannot do so.
+
+The [[file:10-zero-trust-assurance.org][mandatory Quint and Lean framework]] binds this contract to cedar-poo-spec,
+existing POO proof owners, explicit transition/refinement obligations and
+concrete Scheme/Go/Rust evidence. FM1-FM12 remain pending. A source digest,
+certificate constructor, bounded model run or proof of pure guards alone
+cannot qualify the complete authorization-to-execution path.
+
+* Code as Policy enforcement requirement
+
+Code as Policy is mandatory for the declared mediated surfaces. Governance and
+application authorization remain explicit, versioned owner contracts. Cedar
+artifacts, schema/entity inputs, evaluator identity and enforcement profile are
+admitted together; an agent prompt, internal network position or handwritten
+transport branch cannot replace them. See [[file:09-code-as-policy.org][Code as Policy and Cedar integration]].
+
+Cedar evaluation is a required authorization layer for the selected Cedar-backed
+capabilities, not a database transaction, sandbox or proof of physical execution.
+Error-free execution admission, ledger CAS, final transport and response release
+are independent required boundaries. Apply the same artifact and role checks to
+administration, recovery, status reads and callback methods.
+
+* Non-negotiable invariants
+
+| ID | Required property | Evidence boundary |
+|----+-------------------+-------------------|
+| Z1 | All reachable effects and disclosures have an explicit mediation or containment classification | Inventory and bypass tests on the selected deployment |
+| Z2 | Peer identity is authenticated and each RPC is authorized for tenant, role, audience, and operation | Negative RPC tests, not just successful mTLS |
+| Z3 | Publication is authorized within delegated change scope and cannot weaken mandatory parent controls | Signing alone is insufficient |
+| Z4 | All policy engines and phases join the same bound operation and relevant state versions | Independent projection and mismatch controls |
+| Z5 | Stateful admission has a declared linearization point and conservative crash recovery | Concurrent history/budget/consume tests |
+| Z6 | The final executor controls the frozen handoff, credential attachment, and actual network emission | Recording upstream plus adversarial adapter tests |
+| Z7 | Security freshness has a bounded lease and monotonic fencing; stale replicas cannot issue indefinitely | Partition, restart, rollback, and clock tests |
+| Z8 | Every fast path preserves mandatory checks and complete input dependencies | Matched semantic, isolation, and performance lanes |
+| Z9 | Secrets stay outside untrusted workloads and cannot cross an unauthorized destination or response surface | Redirect, reflection, logging, and reuse tests |
+| Z10 | History completeness and continuity are qualified before history-dependent permission | Missing events or lost state cannot mean a clean history |
+
+* Mediation coverage and deployment profiles
+
+The gateway protects the paths it actually mediates. A protected-agent profile
+must pair it with a separately qualified execution environment that blocks
+unmediated network and local effects. A service-gateway profile protects its
+declared service path and must not claim confinement of arbitrary client code.
+Both use explicit trust and least privilege; their coverage claims differ.
+
+| Surface | Required treatment in a protected-agent profile |
+|---------+-----------------------------------------------|
+| Outbound HTTP/gRPC and tool calls | Enforced gateway or broker path with actual-effect identity |
+| Raw TCP, UDP/QUIC, alternate proxies, direct IP and IPv6 | Deny unless a separately admitted path provides the required visibility |
+| DNS and name resolution | Approved resolver and bounded destination validation; DNS is also a possible disclosure channel |
+| Cloud metadata, loopback, host sockets, local daemons | Deny ambient access; explicit service-specific grant if required |
+| Filesystem and subprocesses | Qualified containment or effect-aware broker; network policy does not cover local reads or exec |
+| Child processes and native tools | Inherit containment; do not obtain operator environment or credential stores |
+| Mounted workspaces and shared storage | Scope read/write separately; record whether accesses enter semantic history |
+| Telemetry, callbacks, mirrors, health checks and plugins | Constrained service capabilities; no hidden general-purpose egress |
+
+If a surface is containment-only, exclude it from claims requiring complete
+event history, or add a qualified observer. A direct read invisible to history
+invalidates a rule claiming to forbid egress after every sensitive read.
+Do not label an unobserved event as absent. Kernel containment proves neither
+operation semantics nor application-level authorization on its own.
+
+No new sandbox implementation is selected here. Platform support, syscall
+coverage, container/microVM choice, and kernel assumptions require separate
+qualification. OS administrators, root compromise, and microarchitectural side
+channels are outside a normal gateway's containment guarantee unless an explicit
+stronger deployment profile covers them.
+
+* Scheme, Go, and Rust trust responsibilities
+
+| Boundary | Permitted authority | Authority explicitly withheld |
+|----------+---------------------+--------------------------------|
+| Scheme authoring / evaluator | Construct and assess POO values under owner contracts | No unrestricted runtime secrets, default publication key, or arbitrary effect authority |
+| Publication admission | Check composition, contributor authority, mandatory baselines, and artifact identity | A valid contributor signature cannot approve all changes |
+| Go integration / discovery | Observe scoped infrastructure resources and propose bounded updates | Discovery or Kubernetes write access cannot grant application capabilities |
+| Go or Rust network adapter | Validate protocol, authenticate caller, construct bounded operation | Cannot assert its own assessment, erase provenance, or choose a weaker assurance mode |
+| Rust authority / evaluation Host | Evaluate bound subject and manage issuer state through qualified interfaces | Does not prove adapter honesty, remote state truth, or exact network dispatch |
+| Final effect and credential broker | Redeem the current durable dispatch claim and emit the constrained operation; coordinator owns issuer consumption | No arbitrary target, secret export, free-form signing, or reusable permit handoff |
+
+These roles may be implemented in different languages without changing their
+authority. A co-located Go and Rust library share one compromise domain unless
+an actual isolation boundary says otherwise. Same-process plugins enlarge the
+trusted base. Arbitrary tenant Scheme code must not run in the publication
+signer's process: a POO contract validates values, not arbitrary code execution.
+
+Expose named bounded RPC methods with service identities and per-method
+authorization. Revalidate security-relevant fields at each boundary. Reject
+caller-supplied runtime identity, epoch, or issuer endpoint unless independently
+resolved from the deployment binding. A grant's issuer address is not a safe
+redirect target. Bootstrap identity and rotate keys through an explicit root
+of trust; deny when that bootstrap is unavailable rather than trust first use.
+
+* Stateful Policy and temporal admission
+
+The first design treated authorization, quotas, evidence, history, and grant
+consumption as independently successful checks. That is insufficient when a
+concurrent action can invalidate a premise between checks.
+
+Each history-dependent capability selects a history authority, scope, event
+schema, policy epoch, state version, and consistency contract. Scope may span
+workers, sessions, or a delegation tree. It must not reset by switching tools,
+language runtimes, network replicas, or session IDs. Cross-scope rules require
+a defined join, not a local cached history.
+
+Canonical events distinguish proposed action, admission/reservation, dispatch,
+data release, and observed completion. Clients and tool return values cannot
+declare trusted completion. Bind a passing check to its exact source/artifact
+digest and operation, not a free-form success string. Count denied attempts
+and failed attempts according to the declared rule; do not silently count only
+successful responses.
+
+For a history-dependent operation, commit a serialized admission transition
+against the expected state version before its effect. This transition validates
+current fencing/lease, budget reservation, required history predicates, and
+grant consumption, or uses a qualified protocol to bind their separate owners.
+Do not assume a distributed transaction exists. Until such a protocol is
+qualified, reject operations requiring unsupported cross-owner atomicity.
+
+The transition records pending effects conservatively. If a read can reveal
+sensitive data, update its flow restrictions before releasing those bytes.
+A concurrent send cannot wait until the read's completion event to learn of
+the restriction. A failed or unknown read does not automatically remove it.
+Removing a restriction requires the rule's explicit safe evidence.
+
+The concrete refinement is [[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]]: prepare
+pending restrictions and maximum budget holds, obtain issuer consumption, then
+commit the durable send intent in the one history/budget domain. The two owners
+are not transactionally merged. A safe consumed-grant orphan cannot dispatch;
+a unique broker claim gates actual emission. This is the selected safety ordering,
+with recovery bindings still requiring implementation and qualification.
+
+The exact source/ledger/fencing extension contract is now
+[[file:07-source-admission-ledger-fencing.org][Source admission, durable ledger, and fencing contracts]]. It preserves the
+undecided preflight boundary and requires a distinct issued runtime family.
+It also distinguishes store-write fencing, the final broker gate and actual
+receiver/physical fencing. Restarted empty process memory cannot erase durable
+claims, and an old paused worker is not equivalent to a newly created instance.
+
+Persist relevant admission/history state before exposing its result. On crash,
+replay or retain restrictive pending state; missing history, unavailable storage,
+or uncertain recovery cannot create new permission. Policy updates must migrate
+qualified summaries or rebuild required history; otherwise enter a declared
+restrictive initialization period. A policy epoch change cannot silently erase
+past sensitive reads, outstanding reservations, or revocations.
+
+Cedar receives authenticated state projections where selected. This does not
+make Cedar a durable temporal ledger. A future temporal provider must be selected
+explicitly, retain its own semantic authority, and join Z4/Z5. This design neither
+adds Dogwood as an implicit permit engine nor claims equivalence with it.
+
+* Authorization, dispatch, and credential seam
+
+Define the admission linearization point precisely. A revocation ordered before
+that point blocks the operation. A revocation ordered afterward follows the
+declared committed/in-flight policy; an irreversible remote effect cannot be
+recalled. A pre-consumption currentness check alone leaves a consumption-to-send
+window. If stronger prevention is required, qualify a fenced executor/backend
+commit protocol or reject that capability; do not promise instantaneous revocation.
+
+The final executor authenticates to the issuer and holds the consumed handoff
+only in its own dispatch domain. Bind recipient identity and audience so another
+authenticated service cannot steal or redeem it. No client-visible grant serves
+as a portable unrestricted bearer permission. Local unforgeable handles remain
+scoped to an instance and generation; restarting must not make them reusable.
+
+Freeze policy-relevant bytes or a qualified immutable payload reference through
+actual dispatch. Shared-memory arenas need generation, range, ownership, and
+lease checks plus prevention/detection of mutation. A digest checked before a
+mutable buffer is changed does not bind the bytes later sent. Large streaming
+payloads need a distinct admitted stream capability and enforcement checkpoints.
+
+Authorize a semantic credential binding before dispatch: upstream identity,
+account/role, route, permitted request, and credential version/rotation rule.
+Only the designated broker may attach the secret or sign the final request.
+Record a redacted transform identity binding the frozen request to emitted
+bytes. Randomized signatures or nonce headers may vary only under the declared
+transport transform; a secret must not be exposed to make raw-wire digests equal.
+
+Validate the final resolved destination and TLS/service identity. Bind pooled
+connections to credential and authorization scope, not only a hostname. Redirect,
+retry, CONNECT tunnel, or authority change cannot forward injected secrets
+under an earlier decision. An opaque tunnel cannot claim method/path inspection.
+Automatic SDK retries and redirect following must be disabled or integrated
+with the same attempt authority. A signing endpoint must not become a general
+signing oracle.
+
+Strip secrets from errors, traces, response reflection, caches, and child-process
+environments. A placeholder token is only a route selector, never authority.
+A backend receiving a reusable credential can itself be compromised; scope its
+credential and outbound privileges accordingly. No gateway can promise that an
+authorized third-party recipient never discloses a received secret or payload.
+
+* Review findings and dispositions
+
+Design changes below resolve ambiguity in the documents. Runtime closure remains
+pending the linked tests and deployment evidence. Priority describes consequence
+if the original assumption were implemented, not a discovered deployed exploit.
+
+| ID | Priority | Hidden assumption / counterexample | Required disposition |
+|----+----------+------------------------------------+----------------------|
+| R1 | Critical | Same host or mTLS permits every internal RPC | Per-method role/tenant/audience authorization, Z2 |
+| R2 | Critical | A mandatory HTTP proxy mediates all agent effects | Coverage inventory plus containment; bypass paths denied, Z1 |
+| R3 | Critical | Single-use consumption guarantees the bytes later sent | Final dispatch and credential broker enforce frozen operation, Z6/Z9 |
+| R4 | Critical | Separate permit, history, and budget checks compose atomically | Versioned serialized admission or qualified cross-owner protocol, Z5 |
+| R5 | High | Current epoch at consumption forbids every later send | Explicit linearization and in-flight contract; bounded revocation, Z7 |
+| R6 | High | A signed publication may replace any parent restriction | Contributor change scope and independent baseline enforcement, Z3 |
+| R7 | Critical | A missing history event means no sensitive read occurred | Coverage, conservative pending labels, durable continuity, Z10 |
+| R8 | High | A fresh policy starts with a harmless empty history | Qualified migration or restrictive initialization, Z10 |
+| R9 | High | Authorization of metadata permits later body mutation | Freeze bytes or use a separately scoped stream capability, Z4/Z6 |
+| R10 | High | Go/Rust separation or memory-safe types isolate a compromised adapter | Explicit compromise domains and minimized credential holder, Z2/Z6 |
+| R11 | High | POO token/state constructors imply authenticated durable mediation | Keep pure semantics distinct from crypto, serialization, and host commit evidence |
+| R12 | High | Caches, shared memory, and group commit preserve currentness automatically | Identity-complete keys, mutation protection, durable-commit and lease checks, Z8 |
+| R13 | High | SDK retries, policy callouts, and telemetry are harmless internals | Treat them as scoped effects with bounded attempt and disclosure authority, Z1 |
+| R14 | High | Partitioned replicas can keep checking a locally current epoch | Issuer lease expiry and monotonic fencing; no stale renewal, Z7 |
+
+R11 is grounded in newly inspected POO sources P12-P14 in the comparison
+register. It is a limitation of what those pure APIs establish, not a claim
+that the independent signed Rust authority omits its signature checks.
+
+* Residual risks and review closure
+
+The reference now assigns physical coordination and final credentialed dispatch
+to Rust, preserves Scheme's existing semantic/lifecycle owner, and assigns
+cloud-native integration to Go. It selects a single history/budget consistency
+domain and conservative no-redispatch recovery. Containment, identity bootstrap,
+physical backend, source-admission bridge and history migration implementations
+remain unqualified. Cross-store rules remain disabled until their required
+coordination protocol is qualified. These are deployment gates, not unspecified
+permission to weaken the selected ordering.
+
+Test Z1-Z10 and R1-R14 under the selected Go/Rust placement, rather than assuming
+one successful topology transfers to another. Zero Trust is the required design
+baseline; a claim of effective enforcement requires the G9 gate and the other
+applicable gates in the validation document. A passed document review does not
+close those gates.

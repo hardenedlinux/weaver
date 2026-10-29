@@ -1,0 +1,102 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 50.48s
+     Running unittests src/lib.rs (target/debug/deps/weaver_broker-e87efd4ac3577f7f)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_cli-2306698ccb9a79eb)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running unittests src/main.rs (target/debug/deps/weaver_cli-0948f5c0a9dc82d3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-47845845d2fbd85a)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-a9733b9ead0b9f2e)
+
+running 1 test
+test decoder::duplicate_keys_unknown_fields_and_streams_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_ledger-8ada819d593979a6)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-ecb326e0c38e34e5)
+
+running 8 tests
+test recovery::original_task_body_and_profile_cannot_be_replaced ... ok
+test recovery::token_cannot_move_to_a_second_ledger_handle ... ok
+test recovery::publication_between_consume_and_send_closes_old_permit ... ok
+test recovery::crash_after_consumption_never_reopens_or_refunds ... ok
+test recovery::lost_enqueue_reply_recovers_same_hold_and_rejects_changed_wire ... ok
+test concurrency::concurrent_consumers_invoke_once ... ok
+test concurrency::concurrent_nodes_share_one_capacity ... ok
+test properties::arbitrary_replays_restarts_and_consumption_preserve_claims ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.94s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_policy-1a82fc10b3fadff7)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-35484eb15d4a7be2)
+
+running 1 test
+test decisions::default_deny_forbid_and_evaluation_error_are_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Doc-tests weaver_broker
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests weaver_cli
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests weaver_contracts
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests weaver_ledger
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests weaver_policy
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

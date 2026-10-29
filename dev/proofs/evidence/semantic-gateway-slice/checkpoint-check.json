@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "freshLeanDeclarations": 19,
+  "freshCompiledModules": 12,
+  "guardedQuintControls": 29,
+  "deliberateFaultControls": 6,
+  "officialPhases": 14,
+  "authoringFixtureChecks": 19,
+  "priorSeals": 46,
+  "sourceMatches": 16,
+  "traceabilityRows": [
+    [
+      "constructed_refinement",
+      "forgedProfileCannotQueueTest"
+    ],
+    [
+      "actual_dispatch_preserves_constructed_parent",
+      "queueHasNoExternalSendTest"
+    ],
+    [
+      "actual_uses_share_registered_contract",
+      "forgedOriginCannotQueueTest"
+    ],
+    [
+      "actual_source_claim_not_recreated",
+      "lostReplyCannotRetryTest"
+    ],
+    [
+      "inherited_account_capacity",
+      "unknownRefundCounterexampleTest"
+    ]
+  ],
+  "nativeQualification": false
+}

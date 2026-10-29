@@ -1,0 +1,20 @@
+#+title: Weaver Manifest Switch and Deletion Recovery Index
+#+language: en
+#+options: toc:2
+
+* A durable replacement precedes deletion
+
+Area =20-29 Execution authority=; category =27 Manifest switch=.
+This refines [[file:../26-checkpoint-truncation/26.00-index.org][26 Checkpoint truncation]] by separating candidate objects, manifest
+persistence, current-root switch, result readback and incremental deletion.
+
+| ID | Artifact |
+|----+----------|
+| 27.00 | This index |
+| 27.01 | [[file:27.01-manifest-switch.org][Manifest switching, deletion and recovery contract]] |
+| 27.02 | [[file:27.02-manifest-switch.d2][Core D2]] / [[file:27.02-manifest-switch.svg][SVG]] |
+| 27.03 | [[file:27.03-proof-and-source-evidence.org][Proof correspondence, source review and acceptance boundary]] |
+
+Four artifacts: [[file:../../../proofs/lean/LlmManifestSwitch.lean][Lean]] / [[file:../../../proofs/qunit/LlmManifestSwitch.qnt][Quint]] / this Org category / core D2.
+Reproduce with [[file:../../../proofs/check_llm_manifest_switch.py][the isolated runner]]. This is design and executable formal evidence;
+no Gateway implementation, dependency pin or historical sealed artifact changes.

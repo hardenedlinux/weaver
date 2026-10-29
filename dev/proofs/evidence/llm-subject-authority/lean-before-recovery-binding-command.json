@@ -1,0 +1,19 @@
+{
+  "label": "LlmSubjectAuthority",
+  "args": [
+    "elan",
+    "run",
+    "leanprover/lean4:v4.34.1",
+    "lean",
+    "-o",
+    "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmSubjectAuthority.olean",
+    "proofs/lean/LlmSubjectAuthority.lean"
+  ],
+  "sourceSha256": {
+    "proofs/lean/LlmSubjectAuthority.lean": "97918caeea73d365ebddd0213d8bf51f0ac99ddec49844cd74bdd606b72d83d0"
+  },
+  "exit": 0,
+  "seconds": 7.997,
+  "watchdogSeconds": 20,
+  "compiledSha256": "21c341493b968641de10b1a27ba03aa8da04fbefb25d4c06cc714e59de2da647"
+}

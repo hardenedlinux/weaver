@@ -1,0 +1,1092 @@
+[
+  {
+    "path": "proofs/evidence/llm-registry-publication/itf/foreignSnapshotPublicationCounterexampleTest-3.itf.json",
+    "states": 7,
+    "authority": {
+      "ack": false,
+      "active": true,
+      "allocated": 0,
+      "binding": {
+        "blob": {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        },
+        "budget": 5,
+        "claim": 11,
+        "escrow": 20,
+        "history": 9,
+        "input": 10,
+        "operation": 40,
+        "root": 0,
+        "stream": 4,
+        "tenant": 3
+      },
+      "blobs": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "calls": 0,
+      "certified": true,
+      "charged": false,
+      "closed": false,
+      "fence": 0,
+      "first": 20,
+      "hasProjection": true,
+      "journal": 1,
+      "locked": true,
+      "offered": false,
+      "online": true,
+      "permits": [],
+      "projection": {
+        "binding": {
+          "blob": {
+            "commitment": 21,
+            "document": false,
+            "tenant": 3,
+            "tools": [
+              7,
+              8
+            ],
+            "vector": 30
+          },
+          "budget": 5,
+          "claim": 11,
+          "escrow": 20,
+          "history": 9,
+          "input": 10,
+          "operation": 40,
+          "root": 0,
+          "stream": 4,
+          "tenant": 3
+        },
+        "fence": 0,
+        "position": 1,
+        "revision": 0
+      },
+      "readable": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "recovered": true,
+      "restricted": false,
+      "retired": false,
+      "revision": 0,
+      "terminal": false,
+      "usage": -1,
+      "uses": [],
+      "visible": 1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-registry-publication/itf/localAbsenceReplayPublicationCounterexampleTest-1.itf.json",
+    "states": 6,
+    "authority": {
+      "ack": false,
+      "active": false,
+      "allocated": 0,
+      "binding": {
+        "blob": {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        },
+        "budget": 5,
+        "claim": 11,
+        "escrow": 20,
+        "history": 9,
+        "input": 10,
+        "operation": 40,
+        "root": 0,
+        "stream": 4,
+        "tenant": 3
+      },
+      "blobs": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "calls": 0,
+      "certified": false,
+      "charged": false,
+      "closed": false,
+      "fence": 0,
+      "first": 20,
+      "hasProjection": false,
+      "journal": 2,
+      "locked": true,
+      "offered": false,
+      "online": true,
+      "permits": [],
+      "projection": {
+        "binding": {
+          "blob": {
+            "commitment": 20,
+            "document": true,
+            "tenant": 3,
+            "tools": [
+              7,
+              8
+            ],
+            "vector": 30
+          },
+          "budget": 5,
+          "claim": 11,
+          "escrow": 20,
+          "history": 9,
+          "input": 10,
+          "operation": 40,
+          "root": 0,
+          "stream": 4,
+          "tenant": 3
+        },
+        "fence": -1,
+        "position": -1,
+        "revision": -1
+      },
+      "readable": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "recovered": true,
+      "restricted": false,
+      "retired": false,
+      "revision": 0,
+      "terminal": false,
+      "usage": -1,
+      "uses": [],
+      "visible": 0
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-registry-publication/itf/missingBlobPublicationCounterexampleTest-6.itf.json",
+    "states": 8,
+    "authority": {
+      "ack": false,
+      "active": true,
+      "allocated": 0,
+      "binding": {
+        "blob": {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        },
+        "budget": 5,
+        "claim": 11,
+        "escrow": 20,
+        "history": 9,
+        "input": 10,
+        "operation": 40,
+        "root": 0,
+        "stream": 4,
+        "tenant": 3
+      },
+      "blobs": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "calls": 0,
+      "certified": true,
+      "charged": false,
+      "closed": false,
+      "fence": 0,
+      "first": 20,
+      "hasProjection": true,
+      "journal": 1,
+      "locked": true,
+      "offered": false,
+      "online": true,
+      "permits": [],
+      "projection": {
+        "binding": {
+          "blob": {
+            "commitment": 20,
+            "document": true,
+            "tenant": 3,
+            "tools": [
+              7,
+              8
+            ],
+            "vector": 30
+          },
+          "budget": 5,
+          "claim": 11,
+          "escrow": 20,
+          "history": 9,
+          "input": 10,
+          "operation": 40,
+          "root": 0,
+          "stream": 4,
+          "tenant": 3
+        },
+        "fence": 0,
+        "position": 1,
+        "revision": 0
+      },
+      "readable": [],
+      "recovered": true,
+      "restricted": false,
+      "retired": false,
+      "revision": 0,
+      "terminal": false,
+      "usage": -1,
+      "uses": [],
+      "visible": 1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-registry-publication/itf/oldWorkerPublicationCounterexampleTest-4.itf.json",
+    "states": 14,
+    "authority": {
+      "ack": false,
+      "active": true,
+      "allocated": 0,
+      "binding": {
+        "blob": {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        },
+        "budget": 5,
+        "claim": 11,
+        "escrow": 20,
+        "history": 9,
+        "input": 10,
+        "operation": 40,
+        "root": 0,
+        "stream": 4,
+        "tenant": 3
+      },
+      "blobs": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "calls": 0,
+      "certified": true,
+      "charged": false,
+      "closed": false,
+      "fence": 1,
+      "first": 20,
+      "hasProjection": true,
+      "journal": 1,
+      "locked": true,
+      "offered": false,
+      "online": true,
+      "permits": [
+        {
+          "id": 0,
+          "image": {
+            "binding": {
+              "blob": {
+                "commitment": 20,
+                "document": true,
+                "tenant": 3,
+                "tools": [
+                  7,
+                  8
+                ],
+                "vector": 30
+              },
+              "budget": 5,
+              "claim": 11,
+              "escrow": 20,
+              "history": 9,
+              "input": 10,
+              "operation": 40,
+              "root": 0,
+              "stream": 4,
+              "tenant": 3
+            },
+            "fence": 0,
+            "position": 1,
+            "revision": 0
+          },
+          "worker": 0
+        },
+        {
+          "id": 1,
+          "image": {
+            "binding": {
+              "blob": {
+                "commitment": 20,
+                "document": true,
+                "tenant": 3,
+                "tools": [
+                  7,
+                  8
+                ],
+                "vector": 30
+              },
+              "budget": 5,
+              "claim": 11,
+              "escrow": 20,
+              "history": 9,
+              "input": 10,
+              "operation": 40,
+              "root": 0,
+              "stream": 4,
+              "tenant": 3
+            },
+            "fence": 1,
+            "position": 1,
+            "revision": 2
+          },
+          "worker": 1
+        }
+      ],
+      "projection": {
+        "binding": {
+          "blob": {
+            "commitment": 20,
+            "document": true,
+            "tenant": 3,
+            "tools": [
+              7,
+              8
+            ],
+            "vector": 30
+          },
+          "budget": 5,
+          "claim": 11,
+          "escrow": 20,
+          "history": 9,
+          "input": 10,
+          "operation": 40,
+          "root": 0,
+          "stream": 4,
+          "tenant": 3
+        },
+        "fence": 1,
+        "position": 1,
+        "revision": 2
+      },
+      "readable": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "recovered": true,
+      "restricted": false,
+      "retired": true,
+      "revision": 2,
+      "terminal": false,
+      "usage": -1,
+      "uses": [
+        {
+          "actual": {
+            "binding": {
+              "blob": {
+                "commitment": 20,
+                "document": true,
+                "tenant": 3,
+                "tools": [
+                  7,
+                  8
+                ],
+                "vector": 30
+              },
+              "budget": 5,
+              "claim": 11,
+              "escrow": 20,
+              "history": 9,
+              "input": 10,
+              "operation": 40,
+              "root": 0,
+              "stream": 4,
+              "tenant": 3
+            },
+            "fence": 1,
+            "position": 1,
+            "revision": 2
+          },
+          "permit": {
+            "id": 0,
+            "image": {
+              "binding": {
+                "blob": {
+                  "commitment": 20,
+                  "document": true,
+                  "tenant": 3,
+                  "tools": [
+                    7,
+                    8
+                  ],
+                  "vector": 30
+                },
+                "budget": 5,
+                "claim": 11,
+                "escrow": 20,
+                "history": 9,
+                "input": 10,
+                "operation": 40,
+                "root": 0,
+                "stream": 4,
+                "tenant": 3
+              },
+              "fence": 0,
+              "position": 1,
+              "revision": 0
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "visible": 1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-registry-publication/itf/prematureCertificatePublicationCounterexampleTest-2.itf.json",
+    "states": 4,
+    "authority": {
+      "ack": false,
+      "active": false,
+      "allocated": 0,
+      "binding": {
+        "blob": {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        },
+        "budget": 5,
+        "claim": 11,
+        "escrow": 20,
+        "history": 9,
+        "input": 10,
+        "operation": 40,
+        "root": 0,
+        "stream": 4,
+        "tenant": 3
+      },
+      "blobs": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "calls": 0,
+      "certified": true,
+      "charged": false,
+      "closed": false,
+      "fence": 0,
+      "first": 20,
+      "hasProjection": false,
+      "journal": 0,
+      "locked": true,
+      "offered": false,
+      "online": true,
+      "permits": [],
+      "projection": {
+        "binding": {
+          "blob": {
+            "commitment": 20,
+            "document": true,
+            "tenant": 3,
+            "tools": [
+              7,
+              8
+            ],
+            "vector": 30
+          },
+          "budget": 5,
+          "claim": 11,
+          "escrow": 20,
+          "history": 9,
+          "input": 10,
+          "operation": 40,
+          "root": 0,
+          "stream": 4,
+          "tenant": 3
+        },
+        "fence": -1,
+        "position": -1,
+        "revision": -1
+      },
+      "readable": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "recovered": true,
+      "restricted": false,
+      "retired": false,
+      "revision": 0,
+      "terminal": false,
+      "usage": -1,
+      "uses": [],
+      "visible": 0
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-registry-publication/itf/replacedIntentPublicationCounterexampleTest-0.itf.json",
+    "states": 4,
+    "authority": {
+      "ack": false,
+      "active": false,
+      "allocated": 0,
+      "binding": {
+        "blob": {
+          "commitment": 21,
+          "document": false,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        },
+        "budget": 5,
+        "claim": 11,
+        "escrow": 20,
+        "history": 9,
+        "input": 10,
+        "operation": 40,
+        "root": 0,
+        "stream": 4,
+        "tenant": 3
+      },
+      "blobs": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "calls": 0,
+      "certified": false,
+      "charged": false,
+      "closed": false,
+      "fence": 0,
+      "first": 20,
+      "hasProjection": false,
+      "journal": 0,
+      "locked": true,
+      "offered": false,
+      "online": true,
+      "permits": [],
+      "projection": {
+        "binding": {
+          "blob": {
+            "commitment": 20,
+            "document": true,
+            "tenant": 3,
+            "tools": [
+              7,
+              8
+            ],
+            "vector": 30
+          },
+          "budget": 5,
+          "claim": 11,
+          "escrow": 20,
+          "history": 9,
+          "input": 10,
+          "operation": 40,
+          "root": 0,
+          "stream": 4,
+          "tenant": 3
+        },
+        "fence": -1,
+        "position": -1,
+        "revision": -1
+      },
+      "readable": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "recovered": true,
+      "restricted": false,
+      "retired": false,
+      "revision": 0,
+      "terminal": false,
+      "usage": -1,
+      "uses": [],
+      "visible": 0
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-registry-publication/itf/staleExecutionPublicationCounterexampleTest-5.itf.json",
+    "states": 11,
+    "authority": {
+      "ack": false,
+      "active": true,
+      "allocated": 0,
+      "binding": {
+        "blob": {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        },
+        "budget": 5,
+        "claim": 11,
+        "escrow": 20,
+        "history": 9,
+        "input": 10,
+        "operation": 40,
+        "root": 0,
+        "stream": 4,
+        "tenant": 3
+      },
+      "blobs": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "calls": 0,
+      "certified": true,
+      "charged": false,
+      "closed": false,
+      "fence": 0,
+      "first": 20,
+      "hasProjection": true,
+      "journal": 1,
+      "locked": true,
+      "offered": true,
+      "online": true,
+      "permits": [
+        {
+          "id": 0,
+          "image": {
+            "binding": {
+              "blob": {
+                "commitment": 20,
+                "document": true,
+                "tenant": 3,
+                "tools": [
+                  7,
+                  8
+                ],
+                "vector": 30
+              },
+              "budget": 5,
+              "claim": 11,
+              "escrow": 20,
+              "history": 9,
+              "input": 10,
+              "operation": 40,
+              "root": 0,
+              "stream": 4,
+              "tenant": 3
+            },
+            "fence": 0,
+            "position": 1,
+            "revision": 0
+          },
+          "worker": 0
+        }
+      ],
+      "projection": {
+        "binding": {
+          "blob": {
+            "commitment": 20,
+            "document": true,
+            "tenant": 3,
+            "tools": [
+              7,
+              8
+            ],
+            "vector": 30
+          },
+          "budget": 5,
+          "claim": 11,
+          "escrow": 20,
+          "history": 9,
+          "input": 10,
+          "operation": 40,
+          "root": 0,
+          "stream": 4,
+          "tenant": 3
+        },
+        "fence": 0,
+        "position": 1,
+        "revision": 0
+      },
+      "readable": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "recovered": true,
+      "restricted": false,
+      "retired": false,
+      "revision": 1,
+      "terminal": false,
+      "usage": -1,
+      "uses": [],
+      "visible": 1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-registry-publication/itf/unknownRefundPublicationCounterexampleTest-7.itf.json",
+    "states": 18,
+    "authority": {
+      "ack": false,
+      "active": false,
+      "allocated": 6,
+      "binding": {
+        "blob": {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        },
+        "budget": 5,
+        "claim": 11,
+        "escrow": 20,
+        "history": 9,
+        "input": 10,
+        "operation": 40,
+        "root": 0,
+        "stream": 4,
+        "tenant": 3
+      },
+      "blobs": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "calls": 1,
+      "certified": true,
+      "charged": true,
+      "closed": false,
+      "fence": 0,
+      "first": 20,
+      "hasProjection": false,
+      "journal": 1,
+      "locked": true,
+      "offered": true,
+      "online": true,
+      "permits": [
+        {
+          "id": 0,
+          "image": {
+            "binding": {
+              "blob": {
+                "commitment": 20,
+                "document": true,
+                "tenant": 3,
+                "tools": [
+                  7,
+                  8
+                ],
+                "vector": 30
+              },
+              "budget": 5,
+              "claim": 11,
+              "escrow": 20,
+              "history": 9,
+              "input": 10,
+              "operation": 40,
+              "root": 0,
+              "stream": 4,
+              "tenant": 3
+            },
+            "fence": 0,
+            "position": 1,
+            "revision": 0
+          },
+          "worker": 0
+        },
+        {
+          "id": 1,
+          "image": {
+            "binding": {
+              "blob": {
+                "commitment": 20,
+                "document": true,
+                "tenant": 3,
+                "tools": [
+                  7,
+                  8
+                ],
+                "vector": 30
+              },
+              "budget": 5,
+              "claim": 11,
+              "escrow": 20,
+              "history": 9,
+              "input": 10,
+              "operation": 40,
+              "root": 0,
+              "stream": 4,
+              "tenant": 3
+            },
+            "fence": 0,
+            "position": 1,
+            "revision": 1
+          },
+          "worker": 0
+        },
+        {
+          "id": 2,
+          "image": {
+            "binding": {
+              "blob": {
+                "commitment": 20,
+                "document": true,
+                "tenant": 3,
+                "tools": [
+                  7,
+                  8
+                ],
+                "vector": 30
+              },
+              "budget": 5,
+              "claim": 11,
+              "escrow": 20,
+              "history": 9,
+              "input": 10,
+              "operation": 40,
+              "root": 0,
+              "stream": 4,
+              "tenant": 3
+            },
+            "fence": 0,
+            "position": 1,
+            "revision": 2
+          },
+          "worker": 0
+        }
+      ],
+      "projection": {
+        "binding": {
+          "blob": {
+            "commitment": 20,
+            "document": true,
+            "tenant": 3,
+            "tools": [
+              7,
+              8
+            ],
+            "vector": 30
+          },
+          "budget": 5,
+          "claim": 11,
+          "escrow": 20,
+          "history": 9,
+          "input": 10,
+          "operation": 40,
+          "root": 0,
+          "stream": 4,
+          "tenant": 3
+        },
+        "fence": 0,
+        "position": 1,
+        "revision": 2
+      },
+      "readable": [
+        {
+          "commitment": 20,
+          "document": true,
+          "tenant": 3,
+          "tools": [
+            7,
+            8
+          ],
+          "vector": 30
+        }
+      ],
+      "recovered": true,
+      "restricted": false,
+      "retired": false,
+      "revision": 3,
+      "terminal": false,
+      "usage": -1,
+      "uses": [
+        {
+          "actual": {
+            "binding": {
+              "blob": {
+                "commitment": 20,
+                "document": true,
+                "tenant": 3,
+                "tools": [
+                  7,
+                  8
+                ],
+                "vector": 30
+              },
+              "budget": 5,
+              "claim": 11,
+              "escrow": 20,
+              "history": 9,
+              "input": 10,
+              "operation": 40,
+              "root": 0,
+              "stream": 4,
+              "tenant": 3
+            },
+            "fence": 0,
+            "position": 1,
+            "revision": 2
+          },
+          "permit": {
+            "id": 2,
+            "image": {
+              "binding": {
+                "blob": {
+                  "commitment": 20,
+                  "document": true,
+                  "tenant": 3,
+                  "tools": [
+                    7,
+                    8
+                  ],
+                  "vector": 30
+                },
+                "budget": 5,
+                "claim": 11,
+                "escrow": 20,
+                "history": 9,
+                "input": 10,
+                "operation": 40,
+                "root": 0,
+                "stream": 4,
+                "tenant": 3
+              },
+              "fence": 0,
+              "position": 1,
+              "revision": 2
+            },
+            "worker": 0
+          }
+        }
+      ],
+      "visible": 1
+    }
+  }
+]

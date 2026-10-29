@@ -1,0 +1,26 @@
+#+TITLE: Native Rust Benchmark Baseline
+#+LANGUAGE: en
+
+* Scope
+Local empirical baseline, not a throughput guarantee. Values are nanoseconds per measured iteration. CPU, compiler and client environment are in the adjacent stage logs. Go RPC client allocations are not Rust allocations.
+
+| Benchmark | Mean ns | Lower confidence bound ns | Upper confidence bound ns |
+|-----------+---------+---------------------------+---------------------------|
+| contracts_provider_commitment/128 | 3774.510 | 3706.228 | 3858.164 |
+| contracts_provider_commitment/16384 | 53074.899 | 51998.323 | 54544.141 |
+| contracts_provider_commitment/524288 | 1620438.207 | 1561325.210 | 1724886.149 |
+| contracts_publication_commitment | 53116.982 | 52378.573 | 54004.350 |
+| execution_https_guarded_sse_three_events | 4460565.092 | 3785176.264 | 5358576.630 |
+| ledger_consume_and_dispatch_burn | 408288.756 | 387951.616 | 432730.072 |
+| ledger_fresh_admission | 307119.064 | 276000.603 | 346883.028 |
+| ledger_idempotent_admission | 103303.433 | 90073.635 | 127252.351 |
+| ledger_publication_atomic_commit | 366627.171 | 336060.372 | 410771.586 |
+| ledger_publication_exact_replay | 8644.383 | 8433.852 | 8976.514 |
+| ledger_publication_historical_lookup | 2808.724 | 2744.748 | 2924.626 |
+| policy_compilation_cache_churn | 80577.368 | 78722.419 | 83186.952 |
+| policy_typed_schema_validation | 176804.162 | 168576.430 | 190187.268 |
+| policy_warm_compilation_current_decision | 49937.613 | 49539.173 | 50410.167 |
+| server_response_encoding/arrow_batch/1 | 4186.834 | 4067.261 | 4377.045 |
+| server_response_encoding/arrow_batch/32 | 5447.270 | 4808.636 | 6406.346 |
+| server_response_encoding/protobuf_frames/1 | 162.278 | 160.548 | 164.517 |
+| server_response_encoding/protobuf_frames/32 | 5043.625 | 5022.904 | 5068.304 |

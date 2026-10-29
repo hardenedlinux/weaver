@@ -1,0 +1,15 @@
+'Weaver.LogicalRangeRecovery.initialized_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.LogicalRangeRecovery.call_slot_never_resets' depends on axioms: [propext]
+'Weaver.LogicalRangeRecovery.at_most_one_original_invocation' depends on axioms: [propext, Quot.sound]
+'Weaver.LogicalRangeRecovery.consumed_slot_cannot_rearm' depends on axioms: [propext, Quot.sound]
+'Weaver.LogicalRangeRecovery.activation_rechecks_original_cut' depends on axioms: [propext]
+'Weaver.LogicalRangeRecovery.invocation_rechecks_current_permit' does not depend on any axioms
+'Weaver.LogicalRangeRecovery.published_fence_clears_execution' does not depend on any axioms
+'Weaver.LogicalRangeRecovery.initialized_job_provenance' depends on axioms: [propext, Quot.sound]
+'Weaver.LogicalRangeRecovery.receipt_rechecks_original_call' depends on axioms: [propext]
+'Weaver.LogicalRangeRecovery.recovery_preserves_original_obligations' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LogicalRangeRecovery.forgotten_slot_counterexample' depends on axioms: [propext]
+'Weaver.LogicalRangeRecovery.stale_permit_counterexample' depends on axioms: [propext]
+'Weaver.LogicalRangeRecovery.unknown_as_full_counterexample' depends on axioms: [propext]

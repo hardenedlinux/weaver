@@ -1,0 +1,68 @@
+{
+  "status": "SEMANTIC_CHECKS_PASS_RESOURCE_GATE_FAILED",
+  "standaloneTypecheck": "TIMEOUT_20S_NOT_PASSED",
+  "successfulRoutes": 42,
+  "timeoutRoutes": 1,
+  "typingEvidence": "Official installed test pipeline performs typecheck before runTests; standalone timeout remains failed",
+  "scope": "Executable design models and English Org / core D2; no Gateway runtime implementation",
+  "routes": 43,
+  "leanModules": 30,
+  "printedDeclarations": 22,
+  "newQuintControls": 27,
+  "parentPublicationControls": 25,
+  "exportedMutations": 7,
+  "randomInitializers": 8,
+  "randomSamples": 80,
+  "maxPostInitSteps": 30,
+  "seed": 283,
+  "sourceFiles": 19,
+  "workingSourceExactMatches": 18,
+  "originalHold12": 2,
+  "providerCallsInCounterexamples": 0,
+  "englishOrgDocuments": 144,
+  "coreDiagramPairs": 61,
+  "historicalManifests": 38,
+  "fourArtifactRows": 22,
+  "pins": [
+    {
+      "path": "devenv.lock",
+      "sha256": "fc018f67b8d35c6a0f1188027640c620318b5695854ac9161938183bcfe9870f"
+    },
+    {
+      "path": "devenv.nix",
+      "sha256": "9174bc46e0f7ced64b12fff0b8ab237147444b4236c62c49b32eab21ec90e692"
+    },
+    {
+      "path": "devenv.yaml",
+      "sha256": "ad0ccd3d05adccefa272b7d3fd9bcedc6b06bda0bcc0d13252209069150c04da"
+    },
+    {
+      "path": ".envrc",
+      "sha256": "58a3f4458fe9212c600361b634bc82ebc59e4fa886188859ee6a60e12876b99f"
+    },
+    {
+      "path": "proofs/evidence/llm-semantic-contract/dependency-identity.log",
+      "sha256": "c37dc9e836eaa0b3a1c4dc4c511aabbd438df5788ce8a7bca42e2f36eb1befe0"
+    }
+  ],
+  "premises": [
+    "Authentic native peer and request-bound key proof",
+    "Trusted enrollment and independent recovery authorization",
+    "One protected whole-event append including current grant and custody outcome",
+    "Nondecreasing trusted time across recovery",
+    "Canonical original semantic and reservation/source binding",
+    "Initialized actual publication/custody/account prefix and Safe handoff"
+  ],
+  "notQualified": [
+    "Native authentication/PoP implementation",
+    "Kubernetes RBAC and enrollment deployment",
+    "Native durability and anti-rollback",
+    "Quint-to-Lean or model-to-runtime automatic refinement",
+    "Recovery liveness",
+    "Provider IO exactly-once or performance"
+  ],
+  "documentQa": "PASS: 144 English Org documents and 2069 local links; current three documents re-exported",
+  "diagramQa": "PASS: 61 D2/SVG pairs; final current SVG inspected at 2400px; staging is explicitly inert and final CAS appends the joint event",
+  "historicalEvidence": "PASS: 38 historical manifests unchanged",
+  "standaloneGateUnresolved": "Fixed 20-second standalone typecheck timed out; not reported green. Official test pipeline completed typechecking before passing controls."
+}

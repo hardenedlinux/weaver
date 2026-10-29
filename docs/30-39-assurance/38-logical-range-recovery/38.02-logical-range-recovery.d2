@@ -1,0 +1,193 @@
+# AI Agent Gateway core only. Runtime evidence stays in the Org receipt.
+...@../../architecture/diagrams/lib/theme
+title: AI AGENT GATEWAY / SAME RANGE / FENCED CONTINUATION {
+  class: title
+  near: top-center
+}
+semantic: SCHEME / POLICY SEMANTICS {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  intent: Immutable logical range identity\nRoot / claim / payload / wire manifest\nRoute / interval / budget / history {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  policy: Cedar / Code as Policy\nEvaluate bound operation and state\nProvider / model / method / route {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  unknown: Consumed call retains original hold\nUnknown is not proof of no call\nNo new key or automatic refund {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+}
+cloud: GO / CLOUD AND PROVIDER ADAPTERS {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  adapter: Go / cloud-native agent adapters\nKubernetes lifecycle / SDK shaping\nAll outbound attempts use the broker {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  observe: Recover the original operation\nRead the authoritative current cut\nNo independent retry transport {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  recover: Submit original bound observations\nLate receipts are data, not permits\nFull local write is not final usage {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+ledger: AUTHORITATIVE RECOVERY HISTORY {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  cas: Commit a new execution fence\nClose old permit generation\nPreserve the original call slot {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  rows: Certify the exact post-fence cut\nOriginal range / epoch / revision\nZero calls required for continuation {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  join: CAS the same-range activation\nCompare current cut and live Policy\nLost reply resolves original decision {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+broker: RUST / FINAL EXECUTION OWNER {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  queue: Current execution permit\nSame immutable logical range\nNew epoch never resets call slot {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  gate: Final mediated SDK invocation\nCurrent permit / fence / live Policy\nConsume original call slot once {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  fence: Resolve exact original invocation\nFull receipt advances range evidence\nUnknown keeps stream and budget held {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+quint: QUINT\nCall before fence / fence before call / stale cuts / old permits / foreign receipts {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nCurrent permit / original call slot / queue refinement / conditional progress {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+semantic.intent -> cloud.adapter
+semantic.policy -> cloud.observe
+cloud.adapter -> cloud.observe
+cloud.observe -> ledger.cas
+ledger.cas -> ledger.rows
+ledger.rows -> ledger.join
+cloud.recover -> broker.fence
+ledger.join -> broker.queue
+broker.queue -> broker.gate
+broker.gate -> broker.fence
+semantic.unknown -> cloud.recover: reconcile {
+  style.stroke-dash: 4
+}

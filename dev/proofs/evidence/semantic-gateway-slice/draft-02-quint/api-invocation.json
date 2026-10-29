@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/opt/homebrew/opt/node/bin/node",
+    "proofs/evidence/semantic-gateway-slice/run-quint.cjs"
+  ],
+  "exit": 1,
+  "inputs": {
+    "proofs/qunit/SemanticGatewaySlice.qnt": "a0c2df480068680a3d29f0abc2460091d462b3396da4db68253675622b634e5f",
+    "proofs/evidence/semantic-gateway-slice/run-quint.cjs": "630a73368d83a85dbc7c0c39bb773db10ef9ade0d8ee388089be2deb3f149ebc",
+    "proofs/check_routine_config_api.py": "d61834946240f0d37a7daafc66fbbd2a31a9387e255dcb13d227d9a14295022d",
+    "proofs/evidence/semantic-gateway-slice/bundle.qnt": "6acfbc7d1b3368e0c0019e5eb703c642e7a2f5d057ed1c89b96a17edda930a0b"
+  },
+  "officialPipeline": "load -> parse -> typecheck -> runTests; new Evaluator per group",
+  "expectedControls": 34
+}

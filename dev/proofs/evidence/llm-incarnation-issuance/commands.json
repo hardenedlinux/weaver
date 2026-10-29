@@ -1,0 +1,351 @@
+[
+  {
+    "label": "LlmIncarnationIssuance",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmIncarnationIssuance.olean",
+      "proofs/lean/LlmIncarnationIssuance.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmIncarnationIssuance.lean": "e612987654b6840cf45d7c271fe9972530178e54cf5b77049baee9f82f88bfb1"
+    },
+    "exit": 0,
+    "seconds": 6.033,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(issueDoesNotActivateCustodyTest|sharedWorkloadCannotIssueTest|independentLaunchApprovalRequiredTest|assignedKeyRequiredTest|lostIssueReplySameLaunchCannotRemintTest|reservedIncarnationCannotReissueTest|selfSelectedOldKeyCannotIssueTest|lostIssueReplyRecoveredByLaunchLookupTest|sharedWorkloadCannotLookupNewLaunchTest|launchLookupNeedsCurrentReadPolicyTest|oldWorkerCannotProveNewKeyTest|invalidSignatureRejectedTest|substitutedKeyRejectedTest|wrongTranscriptChallengeRejectedTest|wrongFutureIncarnationRejectedTest|wrongBootstrapSessionRejectedTest|proofWithoutActivationHasNoGrantTest|issuedWithoutProofCannotActivateTest|currentBootstrapActivatesOriginalTest|lostActivationReplyCannotRepeatTest|oldWorkerCannotCollectNewTicketTest|redeliveryDoesNotRefreshActivationReadTest|issuerEpochChangeRejectsQueuedActivationTest|sourcePublicationRejectsOldIssueParentTest|twoLaunchesCannotBothUseOldParentTest|sharedIdentityIssuanceCounterexampleTest|noProofIssuanceCounterexampleTest|revokedProofIssuanceCounterexampleTest|keySubstitutionIssuanceCounterexampleTest|rollbackIssueIssuanceCounterexampleTest|lostActivationResultIssuanceCounterexampleTest)$"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt": "b7a7239704f5ba37c013d3d41da78e65a1e008d2eaa4209e92fad07859a57e64"
+    },
+    "exit": 0,
+    "seconds": 41.962,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "IssuanceCounterexampleTest$",
+      "--out-itf",
+      "proofs/evidence/llm-incarnation-issuance/itf/{test}-{seq}.itf.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt": "b7a7239704f5ba37c013d3d41da78e65a1e008d2eaa4209e92fad07859a57e64"
+    },
+    "exit": 0,
+    "seconds": 34.886,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "prepare-closure",
+    "args": [
+      "python3",
+      "proofs/prepare_llm_issuance_closure.py"
+    ],
+    "sourceSha256": {
+      "proofs/prepare_llm_issuance_closure.py": "bd74083bb30a44194b05cee677360d5c3086e11538d1d7a3ab5b344ffc5ef93e"
+    },
+    "exit": 0,
+    "seconds": 13.745,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "parse-simulation",
+    "args": [
+      "quint",
+      "parse",
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt",
+      "--out",
+      "proofs/evidence/llm-incarnation-issuance/simulation-parsed.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd"
+    },
+    "exit": 0,
+    "seconds": 6.432,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "boot",
+    "args": [
+      "quint",
+      "run",
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "boot",
+      "--step",
+      "step",
+      "--invariant",
+      "invariant",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "293",
+      "--verbosity",
+      "1"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd"
+    },
+    "exit": 0,
+    "seconds": 23.015,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "issued",
+    "args": [
+      "quint",
+      "run",
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "issued",
+      "--step",
+      "step",
+      "--invariant",
+      "invariant",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "293",
+      "--verbosity",
+      "1"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd"
+    },
+    "exit": 0,
+    "seconds": 23.943,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "proven",
+    "args": [
+      "quint",
+      "run",
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "proven",
+      "--step",
+      "step",
+      "--invariant",
+      "invariant",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "293",
+      "--verbosity",
+      "1"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd"
+    },
+    "exit": 0,
+    "seconds": 19.842,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "ready",
+    "args": [
+      "quint",
+      "run",
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "ready",
+      "--step",
+      "step",
+      "--invariant",
+      "invariant",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "293",
+      "--verbosity",
+      "1"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd"
+    },
+    "exit": 0,
+    "seconds": 23.006,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "activated",
+    "args": [
+      "quint",
+      "run",
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "activated",
+      "--step",
+      "step",
+      "--invariant",
+      "invariant",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "293",
+      "--verbosity",
+      "1"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd"
+    },
+    "exit": 0,
+    "seconds": 25.651,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "competing",
+    "args": [
+      "quint",
+      "run",
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "competing",
+      "--step",
+      "step",
+      "--invariant",
+      "invariant",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "293",
+      "--verbosity",
+      "1"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd"
+    },
+    "exit": 0,
+    "seconds": 26.095,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "moved",
+    "args": [
+      "quint",
+      "run",
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "moved",
+      "--step",
+      "step",
+      "--invariant",
+      "invariant",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "293",
+      "--verbosity",
+      "1"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd"
+    },
+    "exit": 0,
+    "seconds": 21.302,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "revoked",
+    "args": [
+      "quint",
+      "run",
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "revoked",
+      "--step",
+      "step",
+      "--invariant",
+      "invariant",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "293",
+      "--verbosity",
+      "1"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/simulation-core/LlmIncarnationIssuance.qnt": "eaaec573c43901848cfc3f5ef5c22682d4cb3b862961852d1e74c0e86d10b0bd"
+    },
+    "exit": 0,
+    "seconds": 24.791,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "caller-regression",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-caller-custody/quint-core/LlmCallerCustody.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(unknownChannelRejectedTest|sharedWorkloadCannotUseNewGrantTest|claimedFenceCannotAuthenticateTest|currentIncarnationCanFinishOriginalTest|reconnectPreservesOriginalGrantTest|redeliveryCannotRefreshReadTest|oldGrantCannotBeRedeliveredTest|workerCannotMintRecoveryGrantTest|recoveryAuthorizationRequiredTest|enrollmentRequiredTest|incarnationReuseRejectedTest|lostHandoffReplyRetainsGrantTest|oldWorkerAfterRestartRejectedTest|expiryBetweenStageAndCommitRejectedTest|oldKeyAfterRotationRejectedTest|oldSerialAfterRotationRejectedTest|newKeyGetsSameScopeTest|rotationRequiresNewKeyEnrollmentTest|lateAckDoesNotRestorePublishRightTest|originalCannotReadmitAfterLostReplyTest|sharedIdentityCallerCounterexampleTest|expiryCallerCounterexampleTest|splitGrantCallerCounterexampleTest|workloadMintCallerCounterexampleTest|redeliveryRenewCallerCounterexampleTest|restartReuseCallerCounterexampleTest|rotationOldKeyCallerCounterexampleTest)$"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-caller-custody/quint-core/LlmCallerCustody.qnt": "78b9ad45918b4253ea013eb591343f366d1ceb7f55c65951ab6849f45d05fb36"
+    },
+    "exit": 0,
+    "seconds": 33.36,
+    "watchdogSeconds": 55
+  }
+]

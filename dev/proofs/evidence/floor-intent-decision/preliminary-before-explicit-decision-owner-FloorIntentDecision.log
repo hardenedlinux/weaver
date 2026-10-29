@@ -1,0 +1,22 @@
+'Weaver.FloorIntentDecision.context_fence_invalidates_observation' does not depend on any axioms
+'Weaver.FloorIntentDecision.new_acceptance_requires_free_slot' does not depend on any axioms
+'Weaver.FloorIntentDecision.timeout_unlock_is_a_counterexample' depends on axioms: [propext, Quot.sound]
+'Weaver.FloorIntentDecision.commit_after_fence_is_a_counterexample' depends on axioms: [propext]
+'Weaver.FloorIntentDecision.decisions_never_roll_back' depends on axioms: [propext]
+'Weaver.FloorIntentDecision.accepted_intents_never_disappear' depends on axioms: [propext]
+'Weaver.FloorIntentDecision.commitment_survives' depends on axioms: [propext]
+'Weaver.FloorIntentDecision.initialized_conservation' depends on axioms: [propext, Quot.sound]
+'Weaver.FloorIntentDecision.initialized_unique_decision' depends on axioms: [propext, Quot.sound]
+'Weaver.FloorIntentDecision.only_original_commit_unlocks' depends on axioms: [propext]
+'Weaver.FloorIntentDecision.fenced_accepted_intent_stays_locked' depends on axioms: [propext, Quot.sound]
+'Weaver.FloorIntentDecision.fence_is_not_a_commit' does not depend on any axioms
+'Weaver.FloorIntentDecision.old_worker_cannot_newly_commit' depends on axioms: [propext]
+'Weaver.FloorIntentDecision.observation_is_exact' depends on axioms: [propext]
+'Weaver.FloorIntentDecision.initialized_product_refines_device' does not depend on any axioms
+'Weaver.FloorIntentDecision.original_consumption_and_settlement_remain_unique' depends on axioms: [propext, Quot.sound]
+'Weaver.FloorIntentDecision.original_budget_remains_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FloorIntentDecision.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

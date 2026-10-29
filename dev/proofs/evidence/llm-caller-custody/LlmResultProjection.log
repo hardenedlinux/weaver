@@ -1,0 +1,22 @@
+'Weaver.LlmResultProjection.authority_projection' depends on axioms: [propext]
+'Weaver.LlmResultProjection.result_retained' depends on axioms: [propext]
+'Weaver.LlmResultProjection.exact_source_result' depends on axioms: [propext]
+'Weaver.LlmResultProjection.exact_account_result' depends on axioms: [propext]
+'Weaver.LlmResultProjection.old_owner_blocks_application' depends on axioms: [propext]
+'Weaver.LlmResultProjection.wrong_before_blocks_application' depends on axioms: [propext]
+'Weaver.LlmResultProjection.duplicate_position_blocks_application' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmResultProjection.partial_projection_blocks_join' does not depend on any axioms
+'Weaver.LlmResultProjection.joined_source_is_authoritative' does not depend on any axioms
+'Weaver.LlmResultProjection.joined_account_holds_original_exposure' does not depend on any axioms
+'Weaver.LlmResultProjection.unknown_exposure_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmResultProjection.original_spent_retained' depends on axioms: [propext]
+'Weaver.LlmResultProjection.original_pending_retained' depends on axioms: [propext]
+'Weaver.LlmResultProjection.original_origin_retained' depends on axioms: [propext]
+'Weaver.LlmResultProjection.shared_exposure_bound' depends on axioms: [propext]
+'Weaver.LlmResultProjection.committed_request_cannot_repeat' depends on axioms: [propext]
+'Weaver.LlmResultProjection.source_application_has_no_authority_effect' does not depend on any axioms
+'Weaver.LlmResultProjection.account_application_has_no_authority_effect' does not depend on any axioms
+'Weaver.LlmResultProjection.initialized_result_index' depends on axioms: [propext]
+'Weaver.LlmResultProjection.initialized_position_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmResultProjection.initialized_positions_ordered' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmResultProjection.fresh_decision_has_no_old_result' does not depend on any axioms

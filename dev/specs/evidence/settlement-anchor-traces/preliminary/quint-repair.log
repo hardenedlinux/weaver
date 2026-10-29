@@ -1,0 +1,15 @@
+
+ Error [QNT404]: Name 'isEmpty' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:87:31
+  87:   action sourceFixture = all {a.intents.isEmpty(),a.accepted.isEmpty(),W::terminal,a' = sourceChanged(a)}
+                                    ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT404]: Name 'isEmpty' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:87:51
+  87:   action sourceFixture = all {a.intents.isEmpty(),a.accepted.isEmpty(),W::terminal,a' = sourceChanged(a)}
+                                                        ^^^^^^^^^^^^^^^^^^^^
+
+error: parsing failed

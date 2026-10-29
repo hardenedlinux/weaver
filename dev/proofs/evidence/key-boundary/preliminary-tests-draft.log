@@ -1,0 +1,296 @@
+
+  KeyBoundaryQueue
+    ok P::init passed 1 test(s)
+    1) P::readCurrent failed after 1 test(s)
+    2) P::qualify failed after 1 test(s)
+    3) P::restart failed after 1 test(s)
+    4) P::election failed after 1 test(s)
+    5) P::loseResponse failed after 1 test(s)
+    6) P::durableBeforeRelease failed after 1 test(s)
+    7) P::noConflictingRelease failed after 1 test(s)
+    8) P::prefixCovered failed after 1 test(s)
+    9) P::qualificationSafety failed after 1 test(s)
+    10) P::deliveredOriginal failed after 1 test(s)
+    11) P::safety failed after 1 test(s)
+    12) P::step failed after 1 test(s)
+    ok P::ready passed 1 test(s)
+    ok P::pending passed 1 test(s)
+    ok P::durable passed 1 test(s)
+    ok P::signed passed 1 test(s)
+    ok P::lostCommitReplyRemainsDurableTest passed 1 test(s)
+    ok P::unknownCommitCannotReleaseTest passed 1 test(s)
+    ok P::exactLookupEnablesOriginalReleaseTest passed 1 test(s)
+    ok P::forgedLookupRejectedTest passed 1 test(s)
+    ok P::wrongLookupBodyRejectedTest passed 1 test(s)
+    ok P::duplicateRequestIdCannotChangeBodyTest passed 1 test(s)
+    ok P::concurrentConflictFailsCASTest passed 1 test(s)
+    ok P::concurrentSameBodyMustResolveFirstTest passed 1 test(s)
+    ok P::reobservedSameBodyMayBeSignedAgainTest passed 1 test(s)
+    ok P::serviceRestartPreservesCommitTest passed 1 test(s)
+    ok P::restartCannotQualifyFromCachedReadTest passed 1 test(s)
+    ok P::oldServiceEpochReleaseRejectedTest passed 1 test(s)
+    ok P::restoreOldOwnerReadRejectedTest passed 1 test(s)
+    ok P::falseRecoveryReadRejectedTest passed 1 test(s)
+    ok P::exactCandidateCanResumeUnderFreshServiceTest passed 1 test(s)
+    ok P::freshServiceCannotChangeOriginalChoiceTest passed 1 test(s)
+    ok P::retiredHandleCannotReleaseTest passed 1 test(s)
+    ok P::retiredIdentityCannotReenrollTest passed 1 test(s)
+    ok P::oldRootTermCannotReleaseTest passed 1 test(s)
+    ok P::newTermCannotRewriteStickyRecordTest passed 1 test(s)
+    ok P::quorumNeedsReleasedSignaturesTest passed 1 test(s)
+    ok P::twoSignerRootCommitTest passed 1 test(s)
+    ok P::lateOriginalDeliveryAfterRestartTest passed 1 test(s)
+    ok P::unreleasedOutputCannotDeliverTest passed 1 test(s)
+    ok P::lateOldTermDeliveryCannotCommitNewTermTest passed 1 test(s)
+    13) P::unsafeCheckpointRestart failed after 1 test(s)
+    14) P::unsafeCachedQualification failed after 1 test(s)
+    ok P::concurrentDetachedCASCounterexampleTest passed 1 test(s)
+    ok P::signBeforeDurableCommitCounterexampleTest passed 1 test(s)
+    ok P::oldRawKeyAfterRestartCounterexampleTest passed 1 test(s)
+    ok P::checkpointRestoresSigningAuthorityCounterexampleTest passed 1 test(s)
+    ok P::cachedRecoveryQualificationCounterexampleTest passed 1 test(s)
+    ok init passed 1 test(s)
+    15) close failed after 1 test(s)
+    16) observeBarrier failed after 1 test(s)
+    17) parentRead failed after 1 test(s)
+    18) parentQualify failed after 1 test(s)
+    19) parentElection failed after 1 test(s)
+    20) loseResponse failed after 1 test(s)
+    21) releaseGateAudit failed after 1 test(s)
+    22) exportedComputed failed after 1 test(s)
+    23) originalReleased failed after 1 test(s)
+    24) barrierSound failed after 1 test(s)
+    25) qualifiedBoundary failed after 1 test(s)
+    26) safety failed after 1 test(s)
+    27) step failed after 1 test(s)
+    28) recover failed after 1 test(s)
+    ok boot passed 1 test(s)
+    ok durable passed 1 test(s)
+    ok queued passed 1 test(s)
+    ok running passed 1 test(s)
+    ok computed passed 1 test(s)
+    ok signed passed 1 test(s)
+    ok normalQueueCommitReleaseTest passed 1 test(s)
+    ok queueRequiresProtectedCommitTest passed 1 test(s)
+    ok queueRequiresResolvedCommitTest passed 1 test(s)
+    ok wrongSignerHandleRejectedTest passed 1 test(s)
+    ok handleIdentityNeverRetaggedTest passed 1 test(s)
+    ok queuedDigestCannotStartAfterCloseTest passed 1 test(s)
+    ok runningDigestCanCompleteButStaySealedTest passed 1 test(s)
+    ok completedOutputCannotEscapeAfterCloseTest passed 1 test(s)
+    ok completeResponseMustMatchTicketTest passed 1 test(s)
+    ok unauthenticDeviceResultRejectedTest passed 1 test(s)
+    ok lostDeviceResponseDoesNotRecreateOutputTest passed 1 test(s)
+    ok lostBarrierReplyCannotAdvanceTest passed 1 test(s)
+    ok authenticBarrierQueryCanResumeTest passed 1 test(s)
+    ok lostFloorReplyCannotActivateTest passed 1 test(s)
+    ok fakePhysicalBarrierRejectedTest passed 1 test(s)
+    ok fakeFloorObservationRejectedTest passed 1 test(s)
+    ok cachedQualificationCannotOpenNewKeyEpochTest passed 1 test(s)
+    ok oldQueuedDigestSurvivesRestartButCannotStartTest passed 1 test(s)
+    ok lateDeviceCompletionAfterRestartStaysSealedTest passed 1 test(s)
+    ok oldCompletedBufferSurvivesRestartButCannotExportTest passed 1 test(s)
+    ok staleHandleCannotServeFreshRequestTest passed 1 test(s)
+    ok freshHandleCanRepeatExactOriginalPrefixTest passed 1 test(s)
+    ok freshHandleCannotChangeOriginalPrefixTest passed 1 test(s)
+    ok usedTicketCannotBeReboundAfterBufferLossTest passed 1 test(s)
+    ok retiredSignerCannotExportQueuedResultTest passed 1 test(s)
+    ok electionCannotRelabelQueuedDigestTest passed 1 test(s)
+    ok releasedOriginalMayDeliverAfterRevocationTest passed 1 test(s)
+    29) unsafeQueueEmptyBarrier failed after 1 test(s)
+    30) unsafeWarmRestart failed after 1 test(s)
+    ok queuedAutomaticReplyAfterRevocationCounterexampleTest passed 1 test(s)
+    ok oldRawHSMHandleAfterRestartCounterexampleTest passed 1 test(s)
+    ok digestSubstitutionAtDeviceOutputCounterexampleTest passed 1 test(s)
+    ok softwareQueueDrainIsNotIsolationCounterexampleTest passed 1 test(s)
+    ok serviceRestartWithoutKeyFloorCounterexampleTest passed 1 test(s)
+
+  74 passing (882ms)
+  30 failed
+  46 ignored
+
+  1) P::readCurrent:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:27:38
+        27:   action readCurrent = readProtected(s.epoch,s.locks,s.entries,true)
+                                                 ^
+    Use --seed=0x1907cabe4732ae --match=P::readCurrent to repeat.
+  2) P::qualify:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:28:25
+        28:   action qualify = all {s.readEpoch == s.epoch,s' = s.with("qualified",true).with("qualifiedEpoch",s.epoch)}
+                                    ^
+    Use --seed=0x1907cabe4732ae --match=P::qualify to repeat.
+  3) P::restart:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:54:25
+        54:   action restart = s' = s.with("epoch",s.epoch+1).with("qualified",false).with("qualifiedEpoch",-1).with("readEpoch",-1)
+                                    ^
+    Use --seed=0x1907cabe4732ae --match=P::restart to repeat.
+  4) P::election:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:57:26
+        57:   action election = s' = s.with("term",s.term+1).with("readEpoch",-1)
+                                     ^
+    Use --seed=0x1907cabe4732ae --match=P::election to repeat.
+  5) P::loseResponse:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:58:30
+        58:   action loseResponse = s' = s
+                                         ^
+    Use --seed=0x1907cabe4732ae --match=P::loseResponse to repeat.
+  6) P::durableBeforeRelease:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:59:30
+        59:   val durableBeforeRelease = s.released.forall(q => s.committed.contains(q.id) and s.entries.get(q.id) == q and extends(q.candidate,s.locks.get(q.voter)))
+                                         ^
+    Use --seed=0x1907cabe4732ae --match=P::durableBeforeRelease to repeat.
+  7) P::noConflictingRelease:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:60:30
+        60:   val noConflictingRelease = s.released.forall(a => s.released.forall(b => a.voter != b.voter or comparable(a.candidate,b.candidate)))
+                                         ^
+    Use --seed=0x1907cabe4732ae --match=P::noConflictingRelease to repeat.
+  8) P::prefixCovered:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:61:23
+        61:   val prefixCovered = s.history.size == 0 or s.released.exists(q => extends(s.history,q.candidate))
+                                  ^
+    Use --seed=0x1907cabe4732ae --match=P::prefixCovered to repeat.
+  9) P::qualificationSafety:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:62:29
+        62:   val qualificationSafety = s.qualified implies s.qualifiedEpoch == s.epoch
+                                        ^
+    Use --seed=0x1907cabe4732ae --match=P::qualificationSafety to repeat.
+  10) P::deliveredOriginal:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:63:27
+        63:   val deliveredOriginal = s.delivered.subseteq(s.released)
+                                      ^
+    Use --seed=0x1907cabe4732ae --match=P::deliveredOriginal to repeat.
+  11) P::safety:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:63:27
+        63:   val deliveredOriginal = s.delivered.subseteq(s.released)
+                                      ^
+    Use --seed=0x1907cabe4732ae --match=P::safety to repeat.
+  12) P::step:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:33:10
+        33:     all {s.qualified,s.staged.contains(id),not(s.committed.contains(id)),current(q),not(s.retired.contains(q.voter)),
+                     ^
+    Use --seed=0x1907cabe4732ae --match=P::step to repeat.
+  13) P::unsafeCheckpointRestart:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:115:41
+        115:   action unsafeCheckpointRestart = s' = s.with("epoch",0).with("qualified",true).with("locks",voters.mapBy(_ => empty))
+                                                     ^
+    Use --seed=0x1907cabe4732bc --match=P::unsafeCheckpointRestart to repeat.
+  14) P::unsafeCachedQualification:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:117:43
+        117:   action unsafeCachedQualification = s' = s.with("qualified",true)
+                                                       ^
+    Use --seed=0x1907cabe4732bc --match=P::unsafeCachedQualification to repeat.
+  15) close:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:58:30
+        58:   action loseResponse = s' = s
+                                         ^
+    Use --seed=0x1907cabe4732bc --match=close to repeat.
+  16) observeBarrier:
+       Error [QNT502]: Variable k not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/KeyBoundaryQueue.qnt:42:32
+        42:   action observeBarrier = all {k.isolation == k.epoch+1,P::loseResponse,k' = k.with("barrierKnown",true)}
+                                           ^
+    Use --seed=0x1907cabe4732bc --match=observeBarrier to repeat.
+  17) parentRead:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:27:38
+        27:   action readCurrent = readProtected(s.epoch,s.locks,s.entries,true)
+                                                 ^
+    Use --seed=0x1907cabe4732bc --match=parentRead to repeat.
+  18) parentQualify:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:28:25
+        28:   action qualify = all {s.readEpoch == s.epoch,s' = s.with("qualified",true).with("qualifiedEpoch",s.epoch)}
+                                    ^
+    Use --seed=0x1907cabe4732bc --match=parentQualify to repeat.
+  19) parentElection:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:57:26
+        57:   action election = s' = s.with("term",s.term+1).with("readEpoch",-1)
+                                     ^
+    Use --seed=0x1907cabe4732bc --match=parentElection to repeat.
+  20) loseResponse:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:58:30
+        58:   action loseResponse = s' = s
+                                         ^
+    Use --seed=0x1907cabe4732bc --match=loseResponse to repeat.
+  21) releaseGateAudit:
+       Error [QNT502]: Variable k not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/KeyBoundaryQueue.qnt:60:26
+        60:   val releaseGateAudit = k.exports.forall(e => e.gateOpen and e.ticket.epoch == e.epoch and e.ticket.statement.epoch == e.service)
+                                     ^
+    Use --seed=0x1907cabe4732bc --match=releaseGateAudit to repeat.
+  22) exportedComputed:
+       Error [QNT502]: Variable k not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/KeyBoundaryQueue.qnt:61:26
+        61:   val exportedComputed = k.exports.forall(e => k.produced.contains(e.ticket))
+                                     ^
+    Use --seed=0x1907cabe4732bc --match=exportedComputed to repeat.
+  23) originalReleased:
+       Error [QNT502]: Variable k not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/KeyBoundaryQueue.qnt:62:26
+        62:   val originalReleased = k.exports.forall(e => P::s.released.contains(e.ticket.statement))
+                                     ^
+    Use --seed=0x1907cabe4732bc --match=originalReleased to repeat.
+  24) barrierSound:
+       Error [QNT502]: Variable k not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/KeyBoundaryQueue.qnt:63:22
+        63:   val barrierSound = k.isolation < 0 or k.deviceIsolated
+                                 ^
+    Use --seed=0x1907cabe4732bc --match=barrierSound to repeat.
+  25) qualifiedBoundary:
+       Error [QNT502]: Variable k not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/KeyBoundaryQueue.qnt:64:27
+        64:   val qualifiedBoundary = k.enabled implies (k.floorKnown and k.isolation == k.epoch and k.deviceIsolated and k.activeService == P::s.epoch)
+                                      ^
+    Use --seed=0x1907cabe4732bc --match=qualifiedBoundary to repeat.
+  26) safety:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:63:27
+        63:   val deliveredOriginal = s.delivered.subseteq(s.released)
+                                      ^
+    Use --seed=0x1907cabe4732bc --match=safety to repeat.
+  27) step:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:40:35
+        40:   action resolve(id) = observe(id,s.entries.get(id),true)
+                                              ^
+    Use --seed=0x1907cabe4732bc --match=step to repeat.
+  28) recover:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:58:30
+        58:   action loseResponse = s' = s
+                                         ^
+    Use --seed=0x1907cabe4732d6 --match=recover to repeat.
+  29) unsafeQueueEmptyBarrier:
+       Error [QNT502]: Variable k not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/KeyBoundaryQueue.qnt:130:41
+        130:   action unsafeQueueEmptyBarrier = all {k.queued.size() == 0,P::loseResponse,k' = k.with("isolation",k.epoch+1).with("barrierKnown",true)}
+                                                     ^
+    Use --seed=0x1907cabe4732d6 --match=unsafeQueueEmptyBarrier to repeat.
+  30) unsafeWarmRestart:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/ProtectedSignerRelease.qnt:54:25
+        54:   action restart = s' = s.with("epoch",s.epoch+1).with("qualified",false).with("qualifiedEpoch",-1).with("readEpoch",-1)
+                                    ^
+    Use --seed=0x1907cabe4732d6 --match=unsafeWarmRestart to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 proofs/qunit/KeyBoundaryQueue.qnt
+error: Tests failed

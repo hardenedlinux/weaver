@@ -1,0 +1,299 @@
+[
+  {
+    "path": "proofs/evidence/llm-attempt-ledger/itf/closeUnknownAttemptCounterexampleTest-3.itf.json",
+    "states": 8,
+    "ledger": {
+      "allocated": 14,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        },
+        {
+          "bound": 8,
+          "epoch": 0,
+          "id": 1,
+          "root": 0,
+          "target": 6,
+          "view": 0
+        }
+      ],
+      "calls": {
+        "0": 1,
+        "1": 1,
+        "2": 0,
+        "3": 0
+      },
+      "charged": 0,
+      "closed": true,
+      "duplicate": true,
+      "epoch": 0,
+      "nonTool": true,
+      "ready": [
+        1
+      ],
+      "retired": [],
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "view": 0,
+      "winner": 1,
+      "winners": [
+        1
+      ]
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-attempt-ledger/itf/duplicateUsageAttemptCounterexampleTest-4.itf.json",
+    "states": 7,
+    "ledger": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "calls": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "charged": 1,
+      "closed": false,
+      "duplicate": false,
+      "epoch": 0,
+      "nonTool": true,
+      "ready": [],
+      "retired": [
+        0
+      ],
+      "terminal": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "usage": {
+        "0": 0,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "view": 0,
+      "winner": -1,
+      "winners": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-attempt-ledger/itf/foreignRootAttemptCounterexampleTest-5.itf.json",
+    "states": 3,
+    "ledger": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "root": 9,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "charged": 0,
+      "closed": false,
+      "duplicate": false,
+      "epoch": 0,
+      "nonTool": true,
+      "ready": [],
+      "retired": [],
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "view": 0,
+      "winner": -1,
+      "winners": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-attempt-ledger/itf/resetAllowanceAttemptCounterexampleTest-0.itf.json",
+    "states": 3,
+    "ledger": {
+      "allocated": 0,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "charged": 0,
+      "closed": false,
+      "duplicate": false,
+      "epoch": 0,
+      "nonTool": true,
+      "ready": [],
+      "retired": [],
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "view": 0,
+      "winner": -1,
+      "winners": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-attempt-ledger/itf/sdkReplayAttemptCounterexampleTest-1.itf.json",
+    "states": 4,
+    "ledger": {
+      "allocated": 6,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        }
+      ],
+      "calls": {
+        "0": 2,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "charged": 0,
+      "closed": false,
+      "duplicate": false,
+      "epoch": 0,
+      "nonTool": true,
+      "ready": [],
+      "retired": [],
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "view": 0,
+      "winner": -1,
+      "winners": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-attempt-ledger/itf/switchWinnerAttemptCounterexampleTest-2.itf.json",
+    "states": 8,
+    "ledger": {
+      "allocated": 14,
+      "attempts": [
+        {
+          "bound": 6,
+          "epoch": 0,
+          "id": 0,
+          "root": 0,
+          "target": 0,
+          "view": 0
+        },
+        {
+          "bound": 8,
+          "epoch": 0,
+          "id": 1,
+          "root": 0,
+          "target": 6,
+          "view": 0
+        }
+      ],
+      "calls": {
+        "0": 1,
+        "1": 1,
+        "2": 0,
+        "3": 0
+      },
+      "charged": 0,
+      "closed": false,
+      "duplicate": true,
+      "epoch": 0,
+      "nonTool": true,
+      "ready": [
+        1
+      ],
+      "retired": [],
+      "terminal": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "usage": {
+        "0": -1,
+        "1": -1,
+        "2": -1,
+        "3": -1
+      },
+      "view": 0,
+      "winner": 0,
+      "winners": [
+        0,
+        1
+      ]
+    }
+  }
+]

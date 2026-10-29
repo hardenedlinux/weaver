@@ -1,0 +1,570 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.662,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.824,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.846,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "GatewayHeadCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/GatewayHeadCAS.olean",
+      "proofs/lean/GatewayHeadCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.799,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "BrokerConsumptionQueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/BrokerConsumptionQueue.olean",
+      "proofs/lean/BrokerConsumptionQueue.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.813,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LogicalRangeRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LogicalRangeRecovery.olean",
+      "proofs/lean/LogicalRangeRecovery.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.804,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRouting",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmRouting.olean",
+      "proofs/lean/LlmRouting.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.721,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAttemptLedger",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmAttemptLedger.olean",
+      "proofs/lean/LlmAttemptLedger.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.717,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmSemanticContract",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmSemanticContract.olean",
+      "proofs/lean/LlmSemanticContract.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.665,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAuthoritativeScope",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmAuthoritativeScope.olean",
+      "proofs/lean/LlmAuthoritativeScope.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.833,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRegistryPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmRegistryPublication.olean",
+      "proofs/lean/LlmRegistryPublication.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.751,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRecoveryCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmRecoveryCAS.olean",
+      "proofs/lean/LlmRecoveryCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.531,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmPolicyPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmPolicyPublication.olean",
+      "proofs/lean/LlmPolicyPublication.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.695,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmPolicyContinuation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmPolicyContinuation.olean",
+      "proofs/lean/LlmPolicyContinuation.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.56,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmCanonicalRegistry",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmCanonicalRegistry.olean",
+      "proofs/lean/LlmCanonicalRegistry.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.681,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmMultiKeyRegistry",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmMultiKeyRegistry.olean",
+      "proofs/lean/LlmMultiKeyRegistry.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.671,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmResultProjection",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmResultProjection.olean",
+      "proofs/lean/LlmResultProjection.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.565,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmJoinEnqueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmJoinEnqueue.olean",
+      "proofs/lean/LlmJoinEnqueue.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.617,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmExecutorOffer",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmExecutorOffer.olean",
+      "proofs/lean/LlmExecutorOffer.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.519,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmExecutionReconciliation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmExecutionReconciliation.olean",
+      "proofs/lean/LlmExecutionReconciliation.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.876,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAccountCommit",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-account-commit-9n671kmd/LlmAccountCommit.olean",
+      "proofs/lean/LlmAccountCommit.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.564,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "typecheck",
+    "args": [
+      "quint",
+      "typecheck",
+      "proofs/qunit/LlmAccountCommit.qnt"
+    ],
+    "exit": 0,
+    "seconds": 1.977,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmAccountCommit.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 2.251,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmAccountCommit.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "AccountCounterexampleTest$",
+      "--out-itf",
+      "proofs/evidence/llm-account-commit/itf/{test}-{seq}.itf.json"
+    ],
+    "exit": 0,
+    "seconds": 2.045,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "init",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAccountCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "229",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.926,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "prepared",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAccountCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "prepared",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "229",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 2.088,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "committed",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAccountCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "committed",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "229",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 2.094,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "projected",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAccountCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "projected",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "229",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.975,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "restarted",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAccountCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "restarted",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "229",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 2.188,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "twoPrepared",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAccountCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "twoPrepared",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "229",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.982,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "fullyCharged",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmAccountCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "fullyCharged",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "229",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.947,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "reconciliation-regression",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmExecutionReconciliation.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 1.607,
+    "watchdogSeconds": 55
+  }
+]

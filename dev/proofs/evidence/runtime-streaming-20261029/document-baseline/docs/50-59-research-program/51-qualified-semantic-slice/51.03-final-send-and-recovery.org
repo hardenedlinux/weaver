@@ -1,0 +1,108 @@
+#+TITLE: Final Send, Durable Authority and Recovery Contract
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Minimal software topology
+Use one logical deciding store for original claim/profile, reservation ownership,
+consumed execution identity, queue item, owner fence and settlement application
+ID where the deployment can provide their required atomicity. Immutable payloads
+and knowledge artifacts may live outside it, verified against commitments.
+Role separation does not require a database or service per role.
+
+An independently durable accepted-prefix authority is required only for the
+profile that admits rollback of the deciding store. It may be an existing trusted
+service; do not bootstrap trust from mutually rollbackable snapshots. A missing
+or inconsistent prefix blocks admission and release. A managed storage promise
+must be documented and tested, not inferred from a Kubernetes volume or fsync.
+Coordinated rollback of every trusted anchor is outside this baseline guarantee.
+There is no physical-isolation or HSM requirement.
+
+* Deciding records
+| Record | Stable key / binding | Deciding operation |
+|--------+----------------------+--------------------|
+| Original task | Canonical origin/family, input and profile commitment | Register-or-recover original claim |
+| Node allocation | Original family, declared node and reservation identity | Allocate within original account capacity |
+| Queue item | Same logical execution key, package, wire and target | Persist admitted proposal without sending |
+| Executor consumption | Same key, current fence and exact request | CAS queued to consumed before possible external bytes |
+| Range/release | Execution key, output commitment, ordered cursor and current release view | Broker decides each bounded write/release |
+| Terminal/usage | Execution key, authenticated execution/usage evidence | Reconcile terminal outcome; retain unknown holds |
+| Account application | Original reservation plus stable application ID and delta | Atomically apply ID and balance delta |
+
+A physical split across stores reopens the existing join/outcome/anchor protocol;
+it is not covered merely by reusing these record names. Retain exact outcome
+lookup after a lost reply. The same operation ID cannot change payload, parent,
+profile or account delta on retry. Prefix confirmation must include outer
+configuration/profile/identity decisions, even when inner floors are unchanged.
+
+* Authorization to actual bytes
+1. Freeze actual route: model/deployment, endpoint, transport mode, request body,
+   relevant headers, credential handle scope, tokenizer/price and schema mapping.
+2. The Go adapter supplies a canonical proposal. Cedar evaluates typed actions
+   against authenticated original task, resource and current context. Rust owns
+   consumption, queue and transport. A commit or queue callback never sends.
+3. At executor consumption, join the current original record, package, Policy,
+   history, reservation and owner fence. A stale observation must fail this CAS.
+   Record consumed before any possible send. A crash in that gap remains unknown
+   unless an authentic no-execution seal proves the send opportunity is closed.
+4. Each bounded write/release checks current execution ownership and current hard
+   constraints at the broker's deciding boundary. Serialize hard changes and
+   writes there, or state the explicitly weaker propagation guarantee. A remote
+   Policy update is effective only after authoritative publication/acknowledgment;
+   announcing it pending is not an immediate global cut.
+5. Transport target resolution, connection pooling and redirects cannot substitute
+   a different destination after authorization. Credential material is not an
+   adapter return value. SDK network retries are disabled or the adapter is rejected.
+
+A DNS/IP validation or TLS requirement depends on the deployment threat profile;
+freeze the authenticated destination binding and permitted resolution changes.
+No callback, old socket or buffered continuation may bypass the broker after a
+fence change. The native executor must serialize writers and fence/revoke access
+to its send path. The abstract model cannot revoke bytes already handed to the
+kernel/provider; it makes no exactly-once provider-delivery claim.
+
+* Trusted predicate register
+| Predicate | Authentic owner and evidence | Invalidation / unknown behavior |
+|-----------+------------------------------+---------------------------------|
+| admitted package | Scheme publisher and immutable source/Contract/adapter closure | Withdrawal is a hard deciding revision; stale closure rejects |
+| original profile/template | Canonical task registry, same commitment as source claim | Conflicting registration rejects; missing resolve fails closed |
+| current Policy/history | Authoritative publication log and Rust deciding join | Pending/lost publication resolved by original intent ID |
+| reserved capacity | Deciding account/source allocation record | Lost reply queries same allocation; never assume released |
+| custody/fence | Deciding store owner epoch plus authentic caller incarnation | Recovery must advance/reconcile epoch; old shared K8s identity insufficient |
+| wire and capability facts | Admitted decoder/tokenizer/price/capability closure | New binding/endpoint requires current admission; no model self-attestation |
+| no execution | Executor terminal seal covering all queued/active write opportunities | Source-side zero calls, timeout and missing telemetry insufficient |
+| usage and completion | Admitted observer evidence bound to execution and terminal decision | Late receipts reconcile original record; do not create permission |
+| balance application | Atomic application-ID/delta record and accepted prefix | Replay returns stored outcome; rollback mismatch quarantines |
+
+The new Quint =recover=, current package/Policy inputs, and authentic receipt input
+abstract these owner contracts. They are not implemented recovery or evidence
+verifiers. The Lean bridge does not remove these premises.
+
+* Failure and concurrency decisions
+| Event | Required action | Forbidden inference |
+|-------+-----------------+---------------------|
+| Claim/queue commit loses reply | Query same deciding key/outcome | New nonce means a new logical message |
+| Crash before enqueue | Recover original reservation and proposal | Reserve again without resolving prior outcome |
+| Crash after enqueue, before consumption | Preserve queue identity; rejoin current fence/authority | Old ticket remains current after restart |
+| Crash after consumption, before first byte | Keep consumed and unknown until executor seal | No receipt means no execution |
+| Partial request write | Keep consumed/unknown; no automatic provider replay | Refund or change provider under same consumed claim |
+| Policy/history changes after queue | Reject stale ticket; re-admit only under current facts | Queue admission is lifetime send authority |
+| Hard change during stream | Stop next ordered write/release; reconcile committed prefix | Retract externally accepted bytes |
+| Old worker callback | Accept only authenticated evidence for original operation; no send authority | Callback adopts new fence or creates new claim |
+| Provider/client disconnect | Bound buffers and terminate/reconcile | Retry or replay automatically |
+| Usage arrives late | Apply original settlement decision once | Late usage opens execution again |
+| Snapshot/prefix mismatch | Quarantine, restore authoritative prefix or fail closed | Unlock unknown reservation from older local state |
+
+A no-execution terminal seal races with consumption in the same deciding order.
+Exactly one may win; the seal closes future execution for that key. Settlement
+requires terminal execution and accepted usage/no-execution evidence, followed
+by atomic account application and acknowledged projection. The new finite model
+abstracts that application as one transition; it does not replace prior WAL,
+checkpoint, application-ID or independent-anchor protocols.
+
+* Recovery availability
+Before consumption, an authentic recovery can rebind a queued item to the new
+owner without changing its original identity. After consumption, this baseline
+permits termination and accounting reconciliation only; it does not resume body
+writes or issue another model call. Unknown holds can persist indefinitely if
+external evidence is unavailable. Expose reconciliation authority and hold age;
+never make availability appear by releasing unproven capacity.

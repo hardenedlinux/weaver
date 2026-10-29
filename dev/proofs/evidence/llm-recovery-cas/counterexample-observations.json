@@ -1,0 +1,1348 @@
+[
+  {
+    "path": "proofs/evidence/llm-recovery-cas/itf/duplicateCASCounterexampleTest-5.itf.json",
+    "states": 8,
+    "authority": {
+      "ack": false,
+      "allocated": 6,
+      "allowed": true,
+      "binding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "calls": 1,
+      "charged": false,
+      "closed": false,
+      "confirmations": [],
+      "decisions": [
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "allowed": true,
+          "historyClear": true,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        },
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "allowed": true,
+          "historyClear": true,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        }
+      ],
+      "fence": 0,
+      "hasBinding": true,
+      "hasExecution": true,
+      "hasPolicy": true,
+      "hold": 6,
+      "permits": [
+        {
+          "binding": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "operation": 40
+          },
+          "fence": 0,
+          "id": 0,
+          "revision": 0,
+          "worker": 0
+        }
+      ],
+      "policyGeneration": 0,
+      "readBinding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "readFence": 0,
+      "readGeneration": 0,
+      "readRevision": 0,
+      "requests": [
+        {
+          "cut": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "id": 0,
+          "kind": 0,
+          "permit": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "id": 0,
+            "revision": 0,
+            "worker": 0
+          }
+        }
+      ],
+      "restricted": false,
+      "revision": 1,
+      "spent": true,
+      "usage": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-recovery-cas/itf/lateAckCASCounterexampleTest-4.itf.json",
+    "states": 11,
+    "authority": {
+      "ack": true,
+      "allocated": 6,
+      "allowed": true,
+      "binding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "calls": 2,
+      "charged": false,
+      "closed": false,
+      "confirmations": [
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "allowed": true,
+          "historyClear": true,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        }
+      ],
+      "decisions": [
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "allowed": true,
+          "historyClear": true,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        },
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 1,
+            "policyGeneration": 0,
+            "revision": 2
+          },
+          "allowed": true,
+          "historyClear": true,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        }
+      ],
+      "fence": 1,
+      "hasBinding": true,
+      "hasExecution": true,
+      "hasPolicy": true,
+      "hold": 6,
+      "permits": [
+        {
+          "binding": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "operation": 40
+          },
+          "fence": 0,
+          "id": 0,
+          "revision": 0,
+          "worker": 0
+        }
+      ],
+      "policyGeneration": 0,
+      "readBinding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "readFence": 0,
+      "readGeneration": 0,
+      "readRevision": 0,
+      "requests": [
+        {
+          "cut": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "id": 0,
+          "kind": 0,
+          "permit": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "id": 0,
+            "revision": 0,
+            "worker": 0
+          }
+        }
+      ],
+      "restricted": false,
+      "revision": 2,
+      "spent": true,
+      "usage": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-recovery-cas/itf/oldFenceCASCounterexampleTest-2.itf.json",
+    "states": 8,
+    "authority": {
+      "ack": false,
+      "allocated": 6,
+      "allowed": true,
+      "binding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "calls": 1,
+      "charged": false,
+      "closed": false,
+      "confirmations": [],
+      "decisions": [
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 1,
+            "policyGeneration": 0,
+            "revision": 1
+          },
+          "allowed": true,
+          "historyClear": true,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        }
+      ],
+      "fence": 1,
+      "hasBinding": true,
+      "hasExecution": true,
+      "hasPolicy": true,
+      "hold": 6,
+      "permits": [
+        {
+          "binding": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "operation": 40
+          },
+          "fence": 0,
+          "id": 0,
+          "revision": 0,
+          "worker": 0
+        }
+      ],
+      "policyGeneration": 0,
+      "readBinding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "readFence": 0,
+      "readGeneration": 0,
+      "readRevision": 0,
+      "requests": [
+        {
+          "cut": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "id": 0,
+          "kind": 0,
+          "permit": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "id": 0,
+            "revision": 0,
+            "worker": 0
+          }
+        }
+      ],
+      "restricted": false,
+      "revision": 1,
+      "spent": true,
+      "usage": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-recovery-cas/itf/policyABACASCounterexampleTest-1.itf.json",
+    "states": 9,
+    "authority": {
+      "ack": false,
+      "allocated": 6,
+      "allowed": true,
+      "binding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "calls": 1,
+      "charged": false,
+      "closed": false,
+      "confirmations": [],
+      "decisions": [
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 2,
+            "revision": 0
+          },
+          "allowed": true,
+          "historyClear": true,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        }
+      ],
+      "fence": 0,
+      "hasBinding": true,
+      "hasExecution": true,
+      "hasPolicy": true,
+      "hold": 6,
+      "permits": [
+        {
+          "binding": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "operation": 40
+          },
+          "fence": 0,
+          "id": 0,
+          "revision": 0,
+          "worker": 0
+        }
+      ],
+      "policyGeneration": 2,
+      "readBinding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "readFence": 0,
+      "readGeneration": 0,
+      "readRevision": 0,
+      "requests": [
+        {
+          "cut": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "id": 0,
+          "kind": 0,
+          "permit": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "id": 0,
+            "revision": 0,
+            "worker": 0
+          }
+        }
+      ],
+      "restricted": false,
+      "revision": 0,
+      "spent": true,
+      "usage": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-recovery-cas/itf/profileSwapCASCounterexampleTest-6.itf.json",
+    "states": 7,
+    "authority": {
+      "ack": false,
+      "allocated": 6,
+      "allowed": true,
+      "binding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "calls": 1,
+      "charged": false,
+      "closed": false,
+      "confirmations": [],
+      "decisions": [
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "allowed": true,
+          "historyClear": true,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 21,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        }
+      ],
+      "fence": 0,
+      "hasBinding": true,
+      "hasExecution": true,
+      "hasPolicy": true,
+      "hold": 6,
+      "permits": [
+        {
+          "binding": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "operation": 40
+          },
+          "fence": 0,
+          "id": 0,
+          "revision": 0,
+          "worker": 0
+        }
+      ],
+      "policyGeneration": 0,
+      "readBinding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "readFence": 0,
+      "readGeneration": 0,
+      "readRevision": 0,
+      "requests": [
+        {
+          "cut": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "id": 0,
+          "kind": 0,
+          "permit": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "id": 0,
+            "revision": 0,
+            "worker": 0
+          }
+        }
+      ],
+      "restricted": false,
+      "revision": 0,
+      "spent": true,
+      "usage": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-recovery-cas/itf/staleLedgerCASCounterexampleTest-3.itf.json",
+    "states": 8,
+    "authority": {
+      "ack": false,
+      "allocated": 6,
+      "allowed": true,
+      "binding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "calls": 1,
+      "charged": false,
+      "closed": false,
+      "confirmations": [],
+      "decisions": [
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 1
+          },
+          "allowed": true,
+          "historyClear": true,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        }
+      ],
+      "fence": 0,
+      "hasBinding": true,
+      "hasExecution": true,
+      "hasPolicy": true,
+      "hold": 6,
+      "permits": [
+        {
+          "binding": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "operation": 40
+          },
+          "fence": 0,
+          "id": 0,
+          "revision": 0,
+          "worker": 0
+        }
+      ],
+      "policyGeneration": 0,
+      "readBinding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "readFence": 0,
+      "readGeneration": 0,
+      "readRevision": 0,
+      "requests": [
+        {
+          "cut": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "id": 0,
+          "kind": 0,
+          "permit": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "id": 0,
+            "revision": 0,
+            "worker": 0
+          }
+        }
+      ],
+      "restricted": false,
+      "revision": 1,
+      "spent": true,
+      "usage": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-recovery-cas/itf/tornReadCASCounterexampleTest-0.itf.json",
+    "states": 8,
+    "authority": {
+      "ack": false,
+      "allocated": 6,
+      "allowed": false,
+      "binding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "calls": 1,
+      "charged": false,
+      "closed": false,
+      "confirmations": [],
+      "decisions": [
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 1,
+            "revision": 0
+          },
+          "allowed": false,
+          "historyClear": false,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        }
+      ],
+      "fence": 0,
+      "hasBinding": true,
+      "hasExecution": true,
+      "hasPolicy": true,
+      "hold": 6,
+      "permits": [
+        {
+          "binding": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "operation": 40
+          },
+          "fence": 0,
+          "id": 0,
+          "revision": 0,
+          "worker": 0
+        }
+      ],
+      "policyGeneration": 1,
+      "readBinding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "readFence": 0,
+      "readGeneration": 0,
+      "readRevision": 0,
+      "requests": [
+        {
+          "cut": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "id": 0,
+          "kind": 0,
+          "permit": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "id": 0,
+            "revision": 0,
+            "worker": 0
+          }
+        }
+      ],
+      "restricted": true,
+      "revision": 0,
+      "spent": true,
+      "usage": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-recovery-cas/itf/unknownRefundCASCounterexampleTest-7.itf.json",
+    "states": 10,
+    "authority": {
+      "ack": false,
+      "allocated": 6,
+      "allowed": true,
+      "binding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "calls": 1,
+      "charged": true,
+      "closed": false,
+      "confirmations": [],
+      "decisions": [
+        {
+          "actual": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "allowed": true,
+          "historyClear": true,
+          "request": {
+            "cut": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 0
+            },
+            "id": 0,
+            "kind": 0,
+            "permit": {
+              "binding": {
+                "budget": 5,
+                "claim": 11,
+                "commitment": 20,
+                "document": true,
+                "history": 9,
+                "input": 10,
+                "operation": 40
+              },
+              "fence": 0,
+              "id": 0,
+              "revision": 0,
+              "worker": 0
+            }
+          }
+        }
+      ],
+      "fence": 1,
+      "hasBinding": true,
+      "hasExecution": true,
+      "hasPolicy": true,
+      "hold": 0,
+      "permits": [
+        {
+          "binding": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "document": true,
+            "history": 9,
+            "input": 10,
+            "operation": 40
+          },
+          "fence": 0,
+          "id": 0,
+          "revision": 0,
+          "worker": 0
+        }
+      ],
+      "policyGeneration": 0,
+      "readBinding": {
+        "budget": 5,
+        "claim": 11,
+        "commitment": 20,
+        "document": true,
+        "history": 9,
+        "input": 10,
+        "operation": 40
+      },
+      "readFence": 0,
+      "readGeneration": 0,
+      "readRevision": 0,
+      "requests": [
+        {
+          "cut": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 0
+          },
+          "id": 0,
+          "kind": 0,
+          "permit": {
+            "binding": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "document": true,
+              "history": 9,
+              "input": 10,
+              "operation": 40
+            },
+            "fence": 0,
+            "id": 0,
+            "revision": 0,
+            "worker": 0
+          }
+        }
+      ],
+      "restricted": false,
+      "revision": 2,
+      "spent": true,
+      "usage": -1
+    }
+  }
+]

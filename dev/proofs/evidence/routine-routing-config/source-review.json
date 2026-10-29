@@ -1,0 +1,2774 @@
+[
+  {
+    "id": "AG1",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "architecture/configuration.md",
+    "sha256": "cc6973a209c5f18c13df56b8b2d5b3c938ec25a9c8f652ceedec036a4c9ec976",
+    "gitBlobSha256": "cc6973a209c5f18c13df56b8b2d5b3c938ec25a9c8f652ceedec036a4c9ec976",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 1,
+        "text": "# Configuration"
+      },
+      {
+        "line": 2,
+        "text": ""
+      },
+      {
+        "line": 3,
+        "text": "Agentgateway has three forms of configuration:"
+      },
+      {
+        "line": 4,
+        "text": ""
+      },
+      {
+        "line": 5,
+        "text": "## Static Configuration"
+      },
+      {
+        "line": 6,
+        "text": ""
+      },
+      {
+        "line": 7,
+        "text": "**Static configuration** is set exactly once early in the process lifecycle."
+      },
+      {
+        "line": 8,
+        "text": "This is set by environment variables or a YAML/JSON configuration (typically a file, but can also be passed as inline bytes into the command line)."
+      },
+      {
+        "line": 9,
+        "text": "This information is really about global settings like logging configurations, ports to use, etc."
+      },
+      {
+        "line": 10,
+        "text": "All routing, policies, backends, etc are not configurable here."
+      },
+      {
+        "line": 11,
+        "text": ""
+      },
+      {
+        "line": 12,
+        "text": "## Local Configuration"
+      },
+      {
+        "line": 13,
+        "text": ""
+      },
+      {
+        "line": 14,
+        "text": "**Local configuration** is configured via a file (YAML/JSON) and can define the full feature set of agentgateway (backends, routes, policies, etc)."
+      },
+      {
+        "line": 15,
+        "text": "The local configuration uses a file watch to dynamically reload changes."
+      },
+      {
+        "line": 16,
+        "text": "The local configuration will translate into a shared (with [XDS](#xds-configuration)) internal representation (IR) that is used by the proxy at runtime."
+      },
+      {
+        "line": 17,
+        "text": ""
+      },
+      {
+        "line": 18,
+        "text": "In some cases, the IR and the local configuration are identical. In other cases, there are trivial re-mappings to make the usage more ergonomic."
+      },
+      {
+        "line": 19,
+        "text": "Others are more broad differences, allow things like fetching JWKS from URLs, or creating a backend + policy with a simple expression like `host: https://example.com`."
+      },
+      {
+        "line": 20,
+        "text": ""
+      },
+      {
+        "line": 21,
+        "text": "## XDS Configuration"
+      },
+      {
+        "line": 22,
+        "text": ""
+      },
+      {
+        "line": 23,
+        "text": "**XDS configuration** allows the proxy to be configured by a remote control plane. "
+      },
+      {
+        "line": 24,
+        "text": "We use the [XDS Transport Protocol](https://www.envoyproxy.io/docs/envoy/latest/api-docs/xds_protocol), but do not use the Envoy types (Listener, Cluster, etc), and instead use [purpose-built types](../crates/agentgateway/proto/resource.proto)."
+      },
+      {
+        "line": 25,
+        "text": "Like the local configuration, these map into the same shared IR."
+      },
+      {
+        "line": 26,
+        "text": ""
+      },
+      {
+        "line": 27,
+        "text": "Unlike the local configuration, the XDS translation will not do things like fetching from URLs/files, etc, and is optimized around being simple and efficient rather than easy for humans."
+      },
+      {
+        "line": 28,
+        "text": ""
+      },
+      {
+        "line": 29,
+        "text": "A critical design philosophy for the APIs is to maintain a nearly direct mapping of user facing APIs to XDS to IR."
+      },
+      {
+        "line": 31,
+        "text": "Additionally, the control plane is greatly simplified as most of the translations are trivial mechanical operations rather than complex joins."
+      },
+      {
+        "line": 32,
+        "text": ""
+      },
+      {
+        "line": 33,
+        "text": "For example, consider a user facing API that allows a user to globally configure the TLS cipher suites."
+      },
+      {
+        "line": 34,
+        "text": "In Envoy, the user changing this 1 field would fan out to every Cluster need to change; this is expensive."
+      },
+      {
+        "line": 35,
+        "text": "In agentgateway, instead we would have a Policy that targets a Bind."
+      },
+      {
+        "line": 36,
+        "text": "This means the user changing 1 field will only need to change 1 small protobuf message."
+      },
+      {
+        "line": 37,
+        "text": ""
+      },
+      {
+        "line": 38,
+        "text": "Another similar example is routes. In Envoy, listeners point to a list of routes."
+      },
+      {
+        "line": 39,
+        "text": "Changing one route requires updating all of the routes **even with delta xDS**."
+      },
+      {
+        "line": 40,
+        "text": "This route list can be multiple megabytes, so each time the user changes 1 small field (such as a weight on a route), multiple MBs need to be fanned out to each proxy."
+      },
+      {
+        "line": 41,
+        "text": "In agentgateway, the cardinality of protobuf resources mirrors the user API."
+      },
+      {
+        "line": 42,
+        "text": ""
+      },
+      {
+        "line": 43,
+        "text": "* One `HTTPRoute` rule maps to one agentgateway `Route` (rather than a list of all routes)"
+      },
+      {
+        "line": 44,
+        "text": "* One `Pod` maps to one `Workload` (rather than a list of all endpoints for a service)"
+      },
+      {
+        "line": 45,
+        "text": ""
+      },
+      {
+        "line": 46,
+        "text": "This is generally achieved by having resources point up to their parent, rather than the parent containing a list of children."
+      },
+      {
+        "line": 47,
+        "text": "For example, a route references which listener its a part of."
+      },
+      {
+        "line": 48,
+        "text": ""
+      },
+      {
+        "line": 49,
+        "text": "For policies, similar philosophies are applied."
+      },
+      {
+        "line": 50,
+        "text": "Policies are generally applied to a Gateway/Listener/HTTPRoute/HTTPRouteRule, with merging semantics (some types apply to Backend instead, though)."
+      },
+      {
+        "line": 51,
+        "text": "A naive approach would have the control plane flatten these down to the lowest type (HTTPRouteRule) which has the fanout problem."
+      },
+      {
+        "line": 52,
+        "text": "In agentgateway, the control plane will instead send all of the policies as-is with a reference to where they apply."
+      },
+      {
+        "line": 53,
+        "text": "The precedence/merging of policies is handled at runtime."
+      }
+    ]
+  },
+  {
+    "id": "AG2",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "crates/agentgateway/src/llm/model_router.rs",
+    "sha256": "b28f5459b107893459bc5cc84d728a7c80386eca31822a2f3a1fa04b4b61ceb3",
+    "gitBlobSha256": "b28f5459b107893459bc5cc84d728a7c80386eca31822a2f3a1fa04b4b61ceb3",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 20,
+        "text": "#[apply(schema_ser_schema!)]"
+      },
+      {
+        "line": 21,
+        "text": "pub struct ModelRoute {"
+      },
+      {
+        "line": 22,
+        "text": "\t/// Catalog provider and reverse transformation compiled during local config normalization."
+      },
+      {
+        "line": 23,
+        "text": "\t#[serde(skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 24,
+        "text": "\tpub discovery: Option<llm::discovery::ModelDiscovery>,"
+      },
+      {
+        "line": 25,
+        "text": "\t#[serde(skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 26,
+        "text": "\tpub id: Option<String>,"
+      },
+      {
+        "line": 27,
+        "text": "\tpub name: String,"
+      },
+      {
+        "line": 28,
+        "text": "\tpub created: u64,"
+      },
+      {
+        "line": 29,
+        "text": "\tpub visibility: ModelVisibility,"
+      },
+      {
+        "line": 30,
+        "text": "\tpub header_matches: Vec<Vec<HeaderMatch>>,"
+      },
+      {
+        "line": 31,
+        "text": "\tpub backend: RouteBackendReference,"
+      },
+      {
+        "line": 32,
+        "text": "\t#[cfg_attr(feature = \"schema\", schemars(with = \"serde_json::Value\"))]"
+      },
+      {
+        "line": 33,
+        "text": "\tpub policies: ModelRoutePolicies,"
+      },
+      {
+        "line": 34,
+        "text": "\t#[cfg_attr(feature = \"schema\", schemars(with = \"Vec<serde_json::Value>\"))]"
+      },
+      {
+        "line": 35,
+        "text": "\tpub backend_policies: Vec<BackendTrafficPolicy>,"
+      },
+      {
+        "line": 36,
+        "text": "}"
+      },
+      {
+        "line": 37,
+        "text": ""
+      },
+      {
+        "line": 38,
+        "text": "#[apply(schema_ser_schema!)]"
+      },
+      {
+        "line": 39,
+        "text": "pub struct ModelRoutePolicies {"
+      },
+      {
+        "line": 40,
+        "text": "\t#[serde(skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 41,
+        "text": "\tpub passthrough: Option<llm::RouteType>,"
+      },
+      {
+        "line": 42,
+        "text": "\tpub llm: Arc<llm::Policy>,"
+      },
+      {
+        "line": 43,
+        "text": "\tpub authorization: Option<Authorization>,"
+      },
+      {
+        "line": 44,
+        "text": "}"
+      },
+      {
+        "line": 45,
+        "text": ""
+      },
+      {
+        "line": 46,
+        "text": "#[apply(schema_enum!)]"
+      },
+      {
+        "line": 47,
+        "text": "#[derive(Default)]"
+      },
+      {
+        "line": 48,
+        "text": "pub enum ModelVisibility {"
+      },
+      {
+        "line": 49,
+        "text": "\t/// Public models can be requested directly by clients and are included in the model list."
+      },
+      {
+        "line": 50,
+        "text": "\t#[default]"
+      },
+      {
+        "line": 51,
+        "text": "\tPublic,"
+      },
+      {
+        "line": 52,
+        "text": "\t/// Internal models can be targeted by virtual models but cannot be requested directly."
+      },
+      {
+        "line": 53,
+        "text": "\tInternal,"
+      },
+      {
+        "line": 54,
+        "text": "}"
+      },
+      {
+        "line": 55,
+        "text": ""
+      },
+      {
+        "line": 56,
+        "text": "impl ModelVisibility {"
+      },
+      {
+        "line": 57,
+        "text": "\tpub fn is_public(&self) -> bool {"
+      },
+      {
+        "line": 58,
+        "text": "\t\tmatches!(self, Self::Public)"
+      },
+      {
+        "line": 59,
+        "text": "\t}"
+      },
+      {
+        "line": 60,
+        "text": "}"
+      },
+      {
+        "line": 61,
+        "text": ""
+      },
+      {
+        "line": 62,
+        "text": "enum EndpointMatch {"
+      },
+      {
+        "line": 63,
+        "text": "\tExact(strng::Strng),"
+      }
+    ]
+  },
+  {
+    "id": "AG3",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "crates/agentgateway/src/llm/router_callout.rs",
+    "sha256": "ce1342254288a8175cf290fc431880c01028fcc21f5412d2e8849c6517e1c08b",
+    "gitBlobSha256": "ce1342254288a8175cf290fc431880c01028fcc21f5412d2e8849c6517e1c08b",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 25,
+        "text": "#[apply(schema!)]"
+      },
+      {
+        "line": 26,
+        "text": "pub struct VirtualModelCallout {"
+      },
+      {
+        "line": 27,
+        "text": "\t/// Service that selects the model, and the backend policies used when connecting to it."
+      },
+      {
+        "line": 28,
+        "text": "\t/// A `host` URL may include the request path, such as `https://router.example.com/v1/route`."
+      },
+      {
+        "line": 29,
+        "text": "\t#[serde(flatten)]"
+      },
+      {
+        "line": 30,
+        "text": "\tpub target: SimpleBackendReferenceWithPoliciesAndPath,"
+      },
+      {
+        "line": 31,
+        "text": "\t/// Headers to set on the callout request, computed from CEL expressions."
+      },
+      {
+        "line": 32,
+        "text": "\t/// Keys may be header names or the `:path`, `:method`, and `:authority` pseudo-headers."
+      },
+      {
+        "line": 33,
+        "text": "\t#[serde(default, skip_serializing_if = \"Vec::is_empty\")]"
+      },
+      {
+        "line": 34,
+        "text": "\t#[serde_as(as = \"serde_with::Map<_, _>\")]"
+      },
+      {
+        "line": 35,
+        "text": "\tpub headers: Vec<(HeaderOrPseudo, Arc<Expression>)>,"
+      },
+      {
+        "line": 36,
+        "text": "\t/// CEL expression that computes the callout request body."
+      },
+      {
+        "line": 37,
+        "text": "\t/// Strings and bytes are used directly; other values are JSON-encoded."
+      },
+      {
+        "line": 38,
+        "text": "\t/// If unset, the original request body is forwarded."
+      },
+      {
+        "line": 39,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 40,
+        "text": "\tpub body: Option<Arc<Expression>>,"
+      },
+      {
+        "line": 41,
+        "text": "\t/// CEL expressions that compute request payload fields from the callout response, overriding existing values."
+      },
+      {
+        "line": 42,
+        "text": "\t/// `callout.headers` holds the response headers and `callout.body` the decoded JSON response body."
+      },
+      {
+        "line": 43,
+        "text": "\t/// `model` is required and selects the target from `llm.models`."
+      },
+      {
+        "line": 44,
+        "text": "\tpub transformation: HashMap<String, Arc<Expression>>,"
+      },
+      {
+        "line": 45,
+        "text": "\t/// Behavior when the callout fails, returns a non-2xx or non-JSON response, or selects an unknown model."
+      },
+      {
+        "line": 46,
+        "text": "\t/// Defaults to `failClosed`."
+      },
+      {
+        "line": 47,
+        "text": "\t#[serde(default)]"
+      },
+      {
+        "line": 48,
+        "text": "\tpub failure_mode: VirtualModelCalloutFailureMode,"
+      },
+      {
+        "line": 49,
+        "text": "\t/// Reuse callout responses using CEL expressions as the cache key."
+      },
+      {
+        "line": 50,
+        "text": "\t/// On a cache hit, `transformation` is evaluated against the cached response."
+      },
+      {
+        "line": 51,
+        "text": "\t/// Keying on a session identifier makes routing sticky for that session."
+      },
+      {
+        "line": 52,
+        "text": "\t/// The TTL is evaluated with `callout` available, before `transformation` is applied."
+      },
+      {
+        "line": 53,
+        "text": "\t#[serde(default, skip_serializing_if = \"Option::is_none\")]"
+      },
+      {
+        "line": 54,
+        "text": "\tpub cache: Option<CacheConfig>,"
+      },
+      {
+        "line": 55,
+        "text": "\t#[serde(skip)]"
+      },
+      {
+        "line": 56,
+        "text": "\t#[cfg_attr(feature = \"schema\", schemars(skip))]"
+      },
+      {
+        "line": 57,
+        "text": "\tpub(crate) cache_store: Option<Arc<Cache<CacheKey, CachedCallout>>>,"
+      }
+    ]
+  },
+  {
+    "id": "AG4",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "examples/llm-callout-jev/config.yaml",
+    "sha256": "1cde8c401124e60c5fbe4031074f98759b3e775324ee25949bf2ea50b2eedab3",
+    "gitBlobSha256": "1cde8c401124e60c5fbe4031074f98759b3e775324ee25949bf2ea50b2eedab3",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 12,
+        "text": "  - name: jev-latest"
+      },
+      {
+        "line": 13,
+        "text": "    provider: typesafe"
+      },
+      {
+        "line": 14,
+        "text": "    params:"
+      },
+      {
+        "line": 15,
+        "text": "      apiKey: $TYPESAFE_API_KEY"
+      },
+      {
+        "line": 16,
+        "text": "  virtualModels:"
+      },
+      {
+        "line": 17,
+        "text": "  - name: auto"
+      },
+      {
+        "line": 18,
+        "text": "    routing:"
+      },
+      {
+        "line": 19,
+        "text": "      callout:"
+      },
+      {
+        "line": 20,
+        "text": "        host: http://127.0.0.1:8000/route"
+      },
+      {
+        "line": 21,
+        "text": "        body: '{\"messages\": llmRequest.messages}'"
+      },
+      {
+        "line": 22,
+        "text": "        transformation:"
+      },
+      {
+        "line": 23,
+        "text": "          model: callout.body.model"
+      },
+      {
+        "line": 24,
+        "text": "          reasoning_effort: callout.body.reasoning_effort"
+      },
+      {
+        "line": 25,
+        "text": "        failureMode:"
+      },
+      {
+        "line": 26,
+        "text": "          fallback: gpt-5.6-luna"
+      },
+      {
+        "line": 27,
+        "text": "        # Requests with the same session ID reuse the first routing decision."
+      },
+      {
+        "line": 28,
+        "text": "        cache:"
+      },
+      {
+        "line": 29,
+        "text": "          key:"
+      },
+      {
+        "line": 30,
+        "text": "          - request.agent.session"
+      },
+      {
+        "line": 31,
+        "text": "          ttl: 10m"
+      }
+    ]
+  },
+  {
+    "id": "AG5",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/agentgateway",
+    "revision": "955d56fae09b45f3cb8e85e797dbb1eb06134f77",
+    "path": "controller/api/v1alpha1/agentgateway/agentgateway_model_types.go",
+    "sha256": "3dc64cf826ffb45a44f9130b4432f3cdc616ba074f7f2b3af646af97fabef4ec",
+    "gitBlobSha256": "3dc64cf826ffb45a44f9130b4432f3cdc616ba074f7f2b3af646af97fabef4ec",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 247,
+        "text": "// ModelMatch contains conditions for selecting a model."
+      },
+      {
+        "line": 248,
+        "text": "type ModelMatch struct {"
+      },
+      {
+        "line": 249,
+        "text": "\t// Model name matched against client requests. It may be exact, a suffix"
+      },
+      {
+        "line": 250,
+        "text": "\t// wildcard such as `gpt-*`, a prefix wildcard such as `*-latest`, or `*`."
+      },
+      {
+        "line": 251,
+        "text": "\t// When omitted, the model matches metadata.name exactly."
+      },
+      {
+        "line": 252,
+        "text": "\t// +kubebuilder:validation:XValidation:rule=\"!self.contains('*') || (self.indexOf('*') == self.lastIndexOf('*') && (self.indexOf('*') == 0 || self.indexOf('*') == size(self) - 1))\",message=\"model wildcards must be '*', a suffix like 'gpt-*', or a prefix like '*-latest'\""
+      },
+      {
+        "line": 253,
+        "text": "\t// +optional"
+      },
+      {
+        "line": 254,
+        "text": "\tModel *LongString `json:\"model,omitempty\"`"
+      },
+      {
+        "line": 255,
+        "text": "}"
+      },
+      {
+        "line": 256,
+        "text": ""
+      },
+      {
+        "line": 257,
+        "text": "// ModelProvider identifies the LLM provider serving a concrete model."
+      },
+      {
+        "line": 258,
+        "text": "// +k8s:enum"
+      },
+      {
+        "line": 259,
+        "text": "type ModelProvider string"
+      },
+      {
+        "line": 260,
+        "text": ""
+      },
+      {
+        "line": 261,
+        "text": "const ("
+      },
+      {
+        "line": 262,
+        "text": "\tModelProviderOpenAI      ModelProvider = \"OpenAI\""
+      },
+      {
+        "line": 263,
+        "text": "\tModelProviderCopilot     ModelProvider = \"Copilot\""
+      },
+      {
+        "line": 264,
+        "text": "\tModelProviderAzure       ModelProvider = \"Azure\""
+      },
+      {
+        "line": 265,
+        "text": "\tModelProviderAnthropic   ModelProvider = \"Anthropic\""
+      },
+      {
+        "line": 266,
+        "text": "\tModelProviderGemini      ModelProvider = \"Gemini\""
+      },
+      {
+        "line": 267,
+        "text": "\tModelProviderVertexAI    ModelProvider = \"VertexAI\""
+      },
+      {
+        "line": 268,
+        "text": "\tModelProviderBedrock     ModelProvider = \"Bedrock\""
+      },
+      {
+        "line": 269,
+        "text": "\tModelProviderCohere      ModelProvider = \"Cohere\""
+      },
+      {
+        "line": 270,
+        "text": "\tModelProviderOllama      ModelProvider = \"Ollama\""
+      },
+      {
+        "line": 271,
+        "text": "\tModelProviderBaseten     ModelProvider = \"Baseten\""
+      },
+      {
+        "line": 272,
+        "text": "\tModelProviderCerebras    ModelProvider = \"Cerebras\""
+      },
+      {
+        "line": 273,
+        "text": "\tModelProviderDeepinfra   ModelProvider = \"Deepinfra\""
+      },
+      {
+        "line": 274,
+        "text": "\tModelProviderDeepseek    ModelProvider = \"Deepseek\""
+      },
+      {
+        "line": 275,
+        "text": "\tModelProviderGroq        ModelProvider = \"Groq\""
+      },
+      {
+        "line": 276,
+        "text": "\tModelProviderHuggingface ModelProvider = \"Huggingface\""
+      },
+      {
+        "line": 277,
+        "text": "\tModelProviderMistral     ModelProvider = \"Mistral\""
+      },
+      {
+        "line": 278,
+        "text": "\tModelProviderOpenrouter  ModelProvider = \"Openrouter\""
+      },
+      {
+        "line": 279,
+        "text": "\tModelProviderTogetherAI  ModelProvider = \"TogetherAI\""
+      },
+      {
+        "line": 280,
+        "text": "\tModelProviderXAI         ModelProvider = \"XAI\""
+      }
+    ]
+  },
+  {
+    "id": "CO1",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core",
+    "revision": "52130d2d338b09622a3f55e37987ddc0375b6187",
+    "path": "modules/funflow/config-adapter.ss",
+    "sha256": "0fb58768d3b336e8342cdd3a1fe4822be847dc09402248025c5dd0ea94310996",
+    "gitBlobSha256": "0fb58768d3b336e8342cdd3a1fe4822be847dc09402248025c5dd0ea94310996",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 1,
+        "text": ";;; SPDX-FileCopyrightText: 2026 tao3k team and Contributors"
+      },
+      {
+        "line": 2,
+        "text": ";;;"
+      },
+      {
+        "line": 3,
+        "text": ";;; SPDX-License-Identifier: Apache-2.0 AND LGPL-2.1-or-later"
+      },
+      {
+        "line": 4,
+        "text": ""
+      },
+      {
+        "line": 5,
+        "text": ";;; Boundary: adapts module configuration into Funflow and CI/CD POO projections."
+      },
+      {
+        "line": 6,
+        "text": ";;; Invariant: adapters reuse module contracts and do not execute workflow effects."
+      },
+      {
+        "line": 7,
+        "text": "(import (only-in :clan/poo/object .ref)"
+      },
+      {
+        "line": 8,
+        "text": "        :core/module-system/selection/objects"
+      },
+      {
+        "line": 9,
+        "text": "        :core/utilities/final-projection-syntax"
+      },
+      {
+        "line": 10,
+        "text": "        :core/modules/funflow/check-types"
+      },
+      {
+        "line": 11,
+        "text": "        :core/modules/funflow/check-objects"
+      },
+      {
+        "line": 12,
+        "text": "        :core/modules/funflow/config-prototypes"
+      },
+      {
+        "line": 13,
+        "text": ")"
+      },
+      {
+        "line": 100,
+        "text": "   (.ref check 'secret-requirements)"
+      },
+      {
+        "line": 101,
+        "text": "   (.ref check 'result-protocol)"
+      },
+      {
+        "line": 102,
+        "text": "   (.ref check 'runtime-mode)"
+      },
+      {
+        "line": 103,
+        "text": "   (poo-flow-funflow-poo-check-metadata check)))"
+      },
+      {
+        "line": 104,
+        "text": ""
+      },
+      {
+        "line": 105,
+        "text": "(def (poo-flow-funflow-poo-checks->cicd-checks checks)"
+      },
+      {
+        "line": 106,
+        "text": "  (cond"
+      },
+      {
+        "line": 107,
+        "text": "   ((null? checks) '())"
+      },
+      {
+        "line": 108,
+        "text": "   ((pair? checks)"
+      },
+      {
+        "line": 109,
+        "text": "    (cons (poo-flow-funflow-poo-check->cicd-check (car checks))"
+      },
+      {
+        "line": 110,
+        "text": "          (poo-flow-funflow-poo-checks->cicd-checks (cdr checks))))"
+      },
+      {
+        "line": 111,
+        "text": "   (else"
+      },
+      {
+        "line": 112,
+        "text": "    (error \"funflow POO pipeline checks slot must be a list\" checks))))"
+      },
+      {
+        "line": 113,
+        "text": ""
+      },
+      {
+        "line": 114,
+        "text": "(def (poo-flow-funflow-poo-pipeline->check-map pipeline)"
+      },
+      {
+        "line": 115,
+        "text": "  (poo-flow-funflow-require"
+      },
+      {
+        "line": 116,
+        "text": "   \"funflow config object must extend funflow-pipeline\""
+      },
+      {
+        "line": 117,
+        "text": "   (poo-flow-funflow-poo-pipeline? pipeline)"
+      },
+      {
+        "line": 118,
+        "text": "   pipeline)"
+      },
+      {
+        "line": 119,
+        "text": "  (let ((pipeline-name (.ref pipeline 'pipeline-name))"
+      },
+      {
+        "line": 120,
+        "text": "        (metadata (.ref pipeline 'metadata)))"
+      },
+      {
+        "line": 121,
+        "text": "    (poo-flow-funflow-require"
+      },
+      {
+        "line": 122,
+        "text": "     \"funflow POO pipeline metadata must be an alist\""
+      },
+      {
+        "line": 123,
+        "text": "     (list? metadata)"
+      },
+      {
+        "line": 124,
+        "text": "     metadata)"
+      },
+      {
+        "line": 125,
+        "text": "    (poo-flow-cicd-check-map"
+      },
+      {
+        "line": 126,
+        "text": "     pipeline-name"
+      },
+      {
+        "line": 127,
+        "text": "     (poo-flow-funflow-poo-checks->cicd-checks"
+      },
+      {
+        "line": 128,
+        "text": "      (.ref pipeline 'checks))"
+      },
+      {
+        "line": 129,
+        "text": "     (poo-flow-product-field-rows/tail"
+      },
+      {
+        "line": 130,
+        "text": "      metadata"
+      },
+      {
+        "line": 131,
+        "text": "      (source 'funflow-poo-config)"
+      },
+      {
+        "line": 132,
+        "text": "      (pipeline pipeline-name)))))"
+      }
+    ]
+  },
+  {
+    "id": "CO2",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core",
+    "revision": "52130d2d338b09622a3f55e37987ddc0375b6187",
+    "path": "modules/funflow/config-prototypes.ss",
+    "sha256": "dd332b8206ff90ca8d0502034554f7f4910b88671fda2ca61bd78db97d6f56af",
+    "gitBlobSha256": "dd332b8206ff90ca8d0502034554f7f4910b88671fda2ca61bd78db97d6f56af",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 63,
+        "text": "(defpoo-module-config-prototype"
+      },
+      {
+        "line": 64,
+        "text": "  funflow-check"
+      },
+      {
+        "line": 65,
+        "text": "  (slots ((kind +poo-flow-funflow-check-prototype-kind+)"
+      },
+      {
+        "line": 66,
+        "text": "          (check-name #f)"
+      },
+      {
+        "line": 67,
+        "text": "          (profile-ref #f)"
+      },
+      {
+        "line": 68,
+        "text": "          (command-vector '())"
+      },
+      {
+        "line": 69,
+        "text": "          (input-bindings '())"
+      },
+      {
+        "line": 70,
+        "text": "          (config-sources '())"
+      },
+      {
+        "line": 71,
+        "text": "          (artifact-outputs '())"
+      },
+      {
+        "line": 72,
+        "text": "          (cache-intents '())"
+      },
+      {
+        "line": 73,
+        "text": "          (secret-requirements '())"
+      },
+      {
+        "line": 74,
+        "text": "          (result-protocol '())"
+      },
+      {
+        "line": 75,
+        "text": "          (runtime-mode 'manifest-handoff)"
+      },
+      {
+        "line": 76,
+        "text": "          (dependency-refs '())"
+      },
+      {
+        "line": 77,
+        "text": "          (durable-task-id #f)"
+      },
+      {
+        "line": 78,
+        "text": "          (action-class 'idempotent)"
+      },
+      {
+        "line": 79,
+        "text": "          (compensation-refs '())"
+      },
+      {
+        "line": 80,
+        "text": "          (artifact-retention 'workflow-retained)"
+      },
+      {
+        "line": 81,
+        "text": "          (observability #f)"
+      },
+      {
+        "line": 82,
+        "text": "          (observes '())"
+      },
+      {
+        "line": 83,
+        "text": "          (guards '())"
+      },
+      {
+        "line": 84,
+        "text": "          (report #f)"
+      },
+      {
+        "line": 85,
+        "text": "          (metadata '())"
+      },
+      {
+        "line": 86,
+        "text": "          (runtime-executed #f))))"
+      },
+      {
+        "line": 87,
+        "text": ""
+      },
+      {
+        "line": 88,
+        "text": ";; : PooFlowFunflowPipelinePrototype"
+      },
+      {
+        "line": 89,
+        "text": "(defpoo-module-config-prototype"
+      },
+      {
+        "line": 90,
+        "text": "  funflow-pipeline"
+      },
+      {
+        "line": 91,
+        "text": "  (slots ((kind +poo-flow-funflow-pipeline-prototype-kind+)"
+      },
+      {
+        "line": 92,
+        "text": "          (pipeline-name #f)"
+      },
+      {
+        "line": 93,
+        "text": "          (checks '())"
+      },
+      {
+        "line": 94,
+        "text": "          (metadata '())"
+      },
+      {
+        "line": 95,
+        "text": "          (runtime-executed #f))))"
+      },
+      {
+        "line": 96,
+        "text": ""
+      },
+      {
+        "line": 106,
+        "text": ""
+      },
+      {
+        "line": 107,
+        "text": ";; : PooFlowFunflowCompositionStepPrototype"
+      },
+      {
+        "line": 108,
+        "text": "(defpoo-module-config-prototype"
+      },
+      {
+        "line": 109,
+        "text": "  funflow-composition-step"
+      },
+      {
+        "line": 110,
+        "text": "  (slots ((kind +poo-flow-funflow-composition-step-prototype-kind+)"
+      },
+      {
+        "line": 111,
+        "text": "          (schema 'poo-flow.modules.funflow.composition-step.v1)"
+      },
+      {
+        "line": 112,
+        "text": "          (step-kind #f)"
+      },
+      {
+        "line": 113,
+        "text": "          (check-name #f)"
+      },
+      {
+        "line": 114,
+        "text": "          (from #f)"
+      },
+      {
+        "line": 115,
+        "text": "          (to #f)"
+      },
+      {
+        "line": 116,
+        "text": "          (composition-style #f)"
+      },
+      {
+        "line": 117,
+        "text": "          (metadata '())"
+      },
+      {
+        "line": 118,
+        "text": "          (runtime-executed #f))))"
+      },
+      {
+        "line": 119,
+        "text": ""
+      },
+      {
+        "line": 120,
+        "text": ";; : PooFlowFunflowFunctionalDagPrototype"
+      },
+      {
+        "line": 121,
+        "text": "(defpoo-module-config-prototype"
+      },
+      {
+        "line": 122,
+        "text": "  funflow-functional-dag"
+      },
+      {
+        "line": 123,
+        "text": "  (slots ((kind +poo-flow-funflow-functional-dag-prototype-kind+)"
+      },
+      {
+        "line": 124,
+        "text": "          (schema 'poo-flow.modules.funflow.functional-dag.v1)"
+      },
+      {
+        "line": 125,
+        "text": "          (pipeline-name #f)"
+      },
+      {
+        "line": 126,
+        "text": "          (check-map #f)"
+      },
+      {
+        "line": 127,
+        "text": "          (composition-style 'arrow-kleisli)"
+      },
+      {
+        "line": 128,
+        "text": "          (composition-steps '())"
+      },
+      {
+        "line": 129,
+        "text": "          (composition-step-count 0)"
+      },
+      {
+        "line": 130,
+        "text": "          (nodes '())"
+      },
+      {
+        "line": 131,
+        "text": "          (edges '())"
+      },
+      {
+        "line": 132,
+        "text": "          (edge-count 0)"
+      },
+      {
+        "line": 133,
+        "text": "          (entry-nodes '())"
+      },
+      {
+        "line": 134,
+        "text": "          (terminal-nodes '())"
+      },
+      {
+        "line": 135,
+        "text": "          (ready-order '())"
+      },
+      {
+        "line": 136,
+        "text": "          (unordered-nodes '())"
+      },
+      {
+        "line": 137,
+        "text": "          (blocked-order? #f)"
+      },
+      {
+        "line": 138,
+        "text": "          (diagnostics '())"
+      },
+      {
+        "line": 139,
+        "text": "          (valid? #t)"
+      },
+      {
+        "line": 140,
+        "text": "          (metadata '())"
+      },
+      {
+        "line": 141,
+        "text": "          (runtime-owner \"marlin-agent-core\")"
+      },
+      {
+        "line": 142,
+        "text": "          (runtime-executed #f))))"
+      },
+      {
+        "line": 143,
+        "text": ""
+      },
+      {
+        "line": 144,
+        "text": ";; : PooFlowFunflowNormalizedFlowPrototype"
+      },
+      {
+        "line": 145,
+        "text": "(defpoo-module-config-prototype"
+      }
+    ]
+  },
+  {
+    "id": "CO3",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core",
+    "revision": "52130d2d338b09622a3f55e37987ddc0375b6187",
+    "path": "modules/funflow/objects.ss",
+    "sha256": "be21e14db1a05901cf4e3aa0e93c03f7831c992fdeb44063a82324b0537e4bc0",
+    "gitBlobSha256": "be21e14db1a05901cf4e3aa0e93c03f7831c992fdeb44063a82324b0537e4bc0",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 1,
+        "text": ";;; SPDX-FileCopyrightText: 2026 tao3k team and Contributors"
+      },
+      {
+        "line": 2,
+        "text": ";;; SPDX-License-Identifier: Apache-2.0 AND LGPL-2.1-or-later"
+      },
+      {
+        "line": 3,
+        "text": "(import :clan/poo/object"
+      },
+      {
+        "line": 4,
+        "text": "        (only-in :core/ops/process-script ProcessScript.)"
+      },
+      {
+        "line": 5,
+        "text": "        ;; This role publishes these combinators, not the aggregate control"
+      },
+      {
+        "line": 6,
+        "text": "        ;; plane (including Agent harnesses and unrelated syntax facades)."
+      },
+      {
+        "line": 7,
+        "text": "        (only-in \"control-plane/flow.ss\""
+      },
+      {
+        "line": 8,
+        "text": "                 flow-arr flow-then flow-fanout flow-map flow-bind"
+      },
+      {
+        "line": 9,
+        "text": "                 flow-first flow-second conditional-flow try-flow"
+      },
+      {
+        "line": 10,
+        "text": "                 return-flow cached-pure-flow)"
+      },
+      {
+        "line": 11,
+        "text": "        (only-in \"store.ss\" put-dir-flow get-dir-flow store-flow)"
+      },
+      {
+        "line": 12,
+        "text": "        \"func.ss\" \"config-prototypes.ss\" \"graph-projection.ss\")"
+      },
+      {
+        "line": 13,
+        "text": "(export Task. Job. FunflowModule.)"
+      },
+      {
+        "line": 14,
+        "text": "(.def (Task. @ ProcessScript.) needs: '() after-start: #f)"
+      },
+      {
+        "line": 15,
+        "text": "(.def (Job. job [])"
+      },
+      {
+        "line": 16,
+        "text": "  name: 'job"
+      },
+      {
+        "line": 17,
+        "text": "  tasks: (.o)"
+      },
+      {
+        "line": 18,
+        "text": "  selected: '()"
+      },
+      {
+        "line": 19,
+        "text": "  finalizers: '()"
+      },
+      {
+        "line": 20,
+        "text": "  graph: (job-graph job)"
+      },
+      {
+        "line": 21,
+        "text": "  .run: (lambda (workspace) (run-job job workspace)))"
+      },
+      {
+        "line": 22,
+        "text": "(.def FunflowModule."
+      },
+      {
+        "line": 23,
+        "text": "  store: (.o (put-dir-flow) (get-dir-flow) (store-flow))"
+      },
+      {
+        "line": 24,
+        "text": "  flow: (.o (flow-arr) (flow-then) (flow-fanout) (flow-map) (flow-bind)"
+      },
+      {
+        "line": 25,
+        "text": "            (flow-first) (flow-second) (conditional-flow) (try-flow)"
+      },
+      {
+        "line": 26,
+        "text": "            (return-flow) (cached-pure-flow))"
+      },
+      {
+        "line": 27,
+        "text": "  pipeline-graph: poo-flow-funflow-poo-pipeline->functional-dag"
+      },
+      {
+        "line": 28,
+        "text": "  prototypes: (.o Task: Task. Job: Job. check: funflow-check pipeline: funflow-pipeline))"
+      }
+    ]
+  },
+  {
+    "id": "CO4",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core",
+    "revision": "52130d2d338b09622a3f55e37987ddc0375b6187",
+    "path": "modules/json-schema/json-schema-emit-contracts.ss",
+    "sha256": "15526de58ed738c6961b93e772aded8421b111d75c2429296aa575b3303bb5b8",
+    "gitBlobSha256": "15526de58ed738c6961b93e772aded8421b111d75c2429296aa575b3303bb5b8",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 1,
+        "text": ";;; -*- Gerbil -*-"
+      },
+      {
+        "line": 2,
+        "text": ";;; SPDX-FileCopyrightText: 2026 tao3k team and Contributors"
+      },
+      {
+        "line": 3,
+        "text": ";;;"
+      },
+      {
+        "line": 4,
+        "text": ";;; SPDX-License-Identifier: Apache-2.0 AND LGPL-2.1-or-later"
+      },
+      {
+        "line": 5,
+        "text": ""
+      },
+      {
+        "line": 6,
+        "text": ";;; Contract: emit POO Flow object contracts from normalized JSON Schema IR."
+      },
+      {
+        "line": 7,
+        "text": ";;; Optimization boundary: this module builds predicate closures once while"
+      },
+      {
+        "line": 8,
+        "text": ";;; emitting contracts; value validation reuses those closures without walking"
+      },
+      {
+        "line": 9,
+        "text": ";;; the normalized schema again."
+      },
+      {
+        "line": 10,
+        "text": ""
+      },
+      {
+        "line": 75,
+        "text": "    (cons (poo-flow-json-schema-map-value-schema->alist (car value))"
+      },
+      {
+        "line": 76,
+        "text": "          (poo-flow-json-schema-map-value-schema->alist (cdr value))))"
+      },
+      {
+        "line": 77,
+        "text": "   (else value)))"
+      },
+      {
+        "line": 78,
+        "text": ""
+      },
+      {
+        "line": 79,
+        "text": ";; poo-flow-json-schema-property->slot-contract"
+      },
+      {
+        "line": 80,
+        "text": ";;   : (-> PooFlowJsonSchemaProperty Symbol Symbol PooFlowSlotContract)"
+      },
+      {
+        "line": 81,
+        "text": ";;   | doc m%"
+      },
+      {
+        "line": 82,
+        "text": ";;       Emit one property contract while preserving normalized schema and source"
+      },
+      {
+        "line": 83,
+        "text": ";;       property metadata for later facts and receipts."
+      },
+      {
+        "line": 84,
+        "text": ";;     %"
+      },
+      {
+        "line": 85,
+        "text": "(def (poo-flow-json-schema-property->slot-contract property object-key object-kind)"
+      },
+      {
+        "line": 86,
+        "text": "  (let* ((slot (poo-flow-json-schema-property-name property))"
+      },
+      {
+        "line": 87,
+        "text": "         (schema (poo-flow-json-schema-property-schema property))"
+      },
+      {
+        "line": 88,
+        "text": "         (metadata"
+      },
+      {
+        "line": 89,
+        "text": "          (append"
+      },
+      {
+        "line": 90,
+        "text": "           (list"
+      },
+      {
+        "line": 91,
+        "text": "            (cons 'source 'json-schema)"
+      },
+      {
+        "line": 92,
+        "text": "            (cons 'doc (poo-flow-json-schema-property-doc property))"
+      },
+      {
+        "line": 93,
+        "text": "            (cons 'schema (poo-flow-json-schema-node->alist schema))"
+      },
+      {
+        "line": 94,
+        "text": "            (cons 'property"
+      },
+      {
+        "line": 95,
+        "text": "                  (poo-flow-json-schema-property->alist property)))"
+      },
+      {
+        "line": 96,
+        "text": "           (poo-flow-json-schema-property-metadata property))))"
+      },
+      {
+        "line": 97,
+        "text": "    (poo-flow-contract-slot"
+      },
+      {
+        "line": 98,
+        "text": "     (poo-flow-json-schema-contract-key object-key slot)"
+      },
+      {
+        "line": 99,
+        "text": "     slot"
+      },
+      {
+        "line": 100,
+        "text": "     (poo-flow-contract-value-type"
+      },
+      {
+        "line": 101,
+        "text": "      (poo-flow-json-schema-node-value-kind schema)"
+      },
+      {
+        "line": 102,
+        "text": "      (poo-flow-json-schema-node-predicate schema)"
+      },
+      {
+        "line": 103,
+        "text": "      (poo-flow-json-schema-node-value-kind schema)"
+      },
+      {
+        "line": 104,
+        "text": "      (poo-flow-json-schema-node-predicate-key schema))"
+      },
+      {
+        "line": 105,
+        "text": "     (poo-flow-json-schema-property-required? property)"
+      },
+      {
+        "line": 106,
+        "text": "     metadata)))"
+      },
+      {
+        "line": 107,
+        "text": ""
+      },
+      {
+        "line": 108,
+        "text": ";; poo-flow-json-schema-object-node->object-type-contract"
+      },
+      {
+        "line": 109,
+        "text": ";;   : (-> PooFlowJsonSchemaNode Symbol Symbol Symbol PooFlowObjectTypeContract)"
+      },
+      {
+        "line": 110,
+        "text": ";;   | doc m%"
+      },
+      {
+        "line": 111,
+        "text": ";;       Emit a structural object contract from a normalized object node."
+      },
+      {
+        "line": 112,
+        "text": ";;     %"
+      }
+    ]
+  },
+  {
+    "id": "CO5",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core",
+    "revision": "52130d2d338b09622a3f55e37987ddc0375b6187",
+    "path": "module-system/schema/slot-contracts.ss",
+    "sha256": "880f3748d5e3f38f8ff2ed3e9d4b22f449d987c83dd28971e373cd745c80875f",
+    "gitBlobSha256": "880f3748d5e3f38f8ff2ed3e9d4b22f449d987c83dd28971e373cd745c80875f",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 1,
+        "text": ";;; -*- Gerbil -*-"
+      },
+      {
+        "line": 2,
+        "text": ";;; SPDX-FileCopyrightText: 2026 tao3k team and Contributors"
+      },
+      {
+        "line": 3,
+        "text": ";;;"
+      },
+      {
+        "line": 4,
+        "text": ";;; SPDX-License-Identifier: Apache-2.0 AND LGPL-2.1-or-later"
+      },
+      {
+        "line": 5,
+        "text": ""
+      },
+      {
+        "line": 6,
+        "text": ";;; Boundary: reusable POO-native slot schemas for module Type/Contract owners."
+      },
+      {
+        "line": 7,
+        "text": ";;; Invariant: schemas are ordinary POO values; alists exist only as receipts."
+      },
+      {
+        "line": 8,
+        "text": ""
+      },
+      {
+        "line": 9,
+        "text": "(import (only-in :clan/poo/object .cc .o .ref)"
+      },
+      {
+        "line": 10,
+        "text": "        (only-in :clan/poo/mop element? raise-type-error)"
+      },
+      {
+        "line": 35,
+        "text": ";; report-kind is receipt metadata only.  Runtime admission always dispatches"
+      },
+      {
+        "line": 36,
+        "text": ";; through the native Type protocol and never through this symbolic label."
+      },
+      {
+        "line": 37,
+        "text": "(def (poo-flow-contract-value-type identity predicate report-kind"
+      },
+      {
+        "line": 38,
+        "text": "                                   . maybe-predicate-key)"
+      },
+      {
+        "line": 39,
+        "text": "  (.cc (poo-flow-predicate-type identity predicate)"
+      },
+      {
+        "line": 40,
+        "text": "       'report-kind report-kind"
+      },
+      {
+        "line": 41,
+        "text": "       'predicate-key"
+      },
+      {
+        "line": 42,
+        "text": "       (if (null? maybe-predicate-key) identity (car maybe-predicate-key))))"
+      },
+      {
+        "line": 43,
+        "text": ""
+      },
+      {
+        "line": 44,
+        "text": "(def (poo-flow-contract-slot key-value slot-value value-type-value"
+      },
+      {
+        "line": 45,
+        "text": "                             required-value metadata-value)"
+      },
+      {
+        "line": 46,
+        "text": "  (.o kind: 'poo-flow.contract.slot-schema"
+      },
+      {
+        "line": 47,
+        "text": "      key: key-value"
+      },
+      {
+        "line": 48,
+        "text": "      slot: slot-value"
+      },
+      {
+        "line": 49,
+        "text": "      value-type: value-type-value"
+      },
+      {
+        "line": 50,
+        "text": "      required?: (if required-value #t #f)"
+      },
+      {
+        "line": 51,
+        "text": "      metadata: metadata-value))"
+      }
+    ]
+  },
+  {
+    "id": "CO6",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core",
+    "revision": "52130d2d338b09622a3f55e37987ddc0375b6187",
+    "path": "profile-composition/module-prototype-syntax.ss",
+    "sha256": "dcbd9951bbb25a8ede275406d03bffe7062b73bca25671fec83e6320e9b71abf",
+    "gitBlobSha256": "dcbd9951bbb25a8ede275406d03bffe7062b73bca25671fec83e6320e9b71abf",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 4,
+        "text": ";;; Bootstrap declarations only; importing prototypes must not import selection."
+      },
+      {
+        "line": 5,
+        "text": "(import (only-in :clan/poo/object .ref .slot? object? object<-alist))"
+      },
+      {
+        "line": 6,
+        "text": "(export defpoo-module-config-prototype defpoo-module-config-kind-predicate)"
+      },
+      {
+        "line": 7,
+        "text": ""
+      },
+      {
+        "line": 8,
+        "text": ";;; Prototype macros define named POO config objects from bounded slot rows."
+      },
+      {
+        "line": 9,
+        "text": ";; defpoo-module-config-prototype"
+      },
+      {
+        "line": 10,
+        "text": ";; : (-> Syntax Syntax Syntax)"
+      },
+      {
+        "line": 11,
+        "text": ";; | type ConfigBindingSyntax = Syntax"
+      },
+      {
+        "line": 12,
+        "text": ";; | type ConfigSlotRowsSyntax = Syntax"
+      },
+      {
+        "line": 13,
+        "text": ";; | type ConfigPrototypeSyntax = Syntax"
+      },
+      {
+        "line": 14,
+        "text": ";; | contract: expands bounded literal slots through clan/poo's native object constructor"
+      },
+      {
+        "line": 15,
+        "text": ";; | warning: keep object inheritance and merge policy outside this syntax helper"
+      },
+      {
+        "line": 16,
+        "text": ";; | doc m%"
+      },
+      {
+        "line": 17,
+        "text": ";;   Defines a module config prototype object."
+      },
+      {
+        "line": 31,
+        "text": ";;; Predicate macros generate kind guards over POO config prototypes."
+      },
+      {
+        "line": 32,
+        "text": ";; defpoo-module-config-kind-predicate"
+      },
+      {
+        "line": 33,
+        "text": ";; : (-> Syntax Syntax)"
+      },
+      {
+        "line": 34,
+        "text": ";; | type PredicateBindingSyntax = Syntax"
+      },
+      {
+        "line": 35,
+        "text": ";; | type ConfigKindSyntax = Syntax"
+      },
+      {
+        "line": 36,
+        "text": ";; | type KindPredicateSyntax = Syntax"
+      },
+      {
+        "line": 37,
+        "text": ";; | contract: expands a predicate binding and expected kind into an object guard"
+      },
+      {
+        "line": 38,
+        "text": ";; | warning: this helper checks only the `kind` slot, not full object validation"
+      },
+      {
+        "line": 39,
+        "text": ";; | doc m%"
+      },
+      {
+        "line": 40,
+        "text": ";;   Defines a predicate for module config object kinds."
+      },
+      {
+        "line": 41,
+        "text": ";;   # Examples"
+      },
+      {
+        "line": 42,
+        "text": ";;   ```scheme"
+      },
+      {
+        "line": 43,
+        "text": ";;   (defpoo-module-config-kind-predicate workflow-config? 'workflow)"
+      },
+      {
+        "line": 44,
+        "text": ";;   ;; => workflow-config? accepts objects whose kind is workflow"
+      },
+      {
+        "line": 45,
+        "text": ";;   ```"
+      },
+      {
+        "line": 46,
+        "text": "(defrule (defpoo-module-config-kind-predicate predicate kind-expr)"
+      },
+      {
+        "line": 47,
+        "text": "  (def (predicate value)"
+      },
+      {
+        "line": 48,
+        "text": "    (and (object? value)"
+      },
+      {
+        "line": 49,
+        "text": "         (.slot? value 'kind)"
+      },
+      {
+        "line": 50,
+        "text": "         (eq? (.ref value 'kind) kind-expr))))"
+      }
+    ]
+  },
+  {
+    "id": "CO7",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core",
+    "revision": "52130d2d338b09622a3f55e37987ddc0375b6187",
+    "path": "module-system/building/configuration-source.ss",
+    "sha256": "84f5ec0e4cd133356b6bfe023f9f12a5d187666ff2cc85b64000919e70885e64",
+    "gitBlobSha256": "993ce0a36b95e8e682c2edd1d5625144e5d13edd008ae2b27a9dc33e253393ee",
+    "workingEqualsHead": false,
+    "excerpts": [
+      {
+        "line": 1,
+        "text": ";;; -*- Gerbil -*-"
+      },
+      {
+        "line": 2,
+        "text": ";;; SPDX-FileCopyrightText: 2026 tao3k team and Contributors"
+      },
+      {
+        "line": 3,
+        "text": ";;; SPDX-License-Identifier: Apache-2.0 AND LGPL-2.1-or-later"
+      },
+      {
+        "line": 4,
+        "text": ";;; Explicit build-tool evaluation of an observed role, not a Module Loader."
+      },
+      {
+        "line": 5,
+        "text": "(import (only-in :clan/poo/object .o .get)"
+      },
+      {
+        "line": 6,
+        "text": "        (only-in :core/module-system/source/preparation poo-flow-prepare-module-build-source)"
+      },
+      {
+        "line": 7,
+        "text": "        (only-in :core/module-system/source/admission module-source-type module-source-admit-current! call-with-module-source-read-cache"
+      },
+      {
+        "line": 8,
+        "text": "                 current-module-source-phase)"
+      },
+      {
+        "line": 9,
+        "text": "        (only-in :core/module-system/source/reader module-prepared-source-binding))"
+      },
+      {
+        "line": 10,
+        "text": "(export poo-flow-core-configuration-source)"
+      },
+      {
+        "line": 11,
+        "text": "(def (poo-flow-core-configuration-source path binding context-current! role-sources: (roles '()))"
+      },
+      {
+        "line": 12,
+        "text": "  (unless (and (symbol? binding) (eq? (module-source-type path) 'regular))"
+      },
+      {
+        "line": 13,
+        "text": "    (error \"configuration source requires a regular role and native binding\" path binding))"
+      },
+      {
+        "line": 14,
+        "text": "  ;; A single synchronous validation of this closure shares its context check."
+      },
+      {
+        "line": 15,
+        "text": "  ;; A new POO receiver is allocated on EVERY independent currentness call."
+      },
+      {
+        "line": 16,
+        "text": "  ;; Nothing is cached across role evaluation, file writes or external effects."
+      },
+      {
+        "line": 17,
+        "text": "  (def phase (make-parameter #f))"
+      },
+      {
+        "line": 18,
+        "text": "  (def evaluated-inputs '())"
+      },
+      {
+        "line": 19,
+        "text": "  (def (context!)"
+      },
+      {
+        "line": 20,
+        "text": "    (if (phase) (.get (phase) checked) (context-current!)))"
+      },
+      {
+        "line": 21,
+        "text": "  ;; Preparing inert role/header observations has no native expansion or"
+      },
+      {
+        "line": 22,
+        "text": "  ;; initialization. Share this ONE source-only window, then close it before"
+      },
+      {
+        "line": 31,
+        "text": "                                      (map (lambda (file) (poo-flow-prepare-module-build-source file context!))"
+      },
+      {
+        "line": 32,
+        "text": "                                        (filter (lambda (file) (and (not (equal? path file))"
+      },
+      {
+        "line": 33,
+        "text": "                                                    (not (member (path-strip-directory file) '(\"interface.ss\" \"build.ss\"))))) roles))))))"
+      },
+      {
+        "line": 34,
+        "text": "                      (def (current! (site 'configuration-public))"
+      },
+      {
+        "line": 35,
+        "text": "                        (parameterize ((current-module-source-phase site))"
+      },
+      {
+        "line": 36,
+        "text": "                          (call-with-module-source-read-cache"
+      },
+      {
+        "line": 37,
+        "text": "                            (lambda ()"
+      },
+      {
+        "line": 38,
+        "text": "                              (parameterize ((phase (.o checked: (context-current!))))"
+      },
+      {
+        "line": 39,
+        "text": "                                (module-source-admit-current! evaluated-inputs)"
+      },
+      {
+        "line": 40,
+        "text": "                                ((.get prepared admit-current))"
+      },
+      {
+        "line": 41,
+        "text": "                                (for-each (lambda (input) ((.get input admit-current))) related))))))"
+      },
+      {
+        "line": 42,
+        "text": "                      ;; Only inert header/role observations precede this check."
+      },
+      {
+        "line": 43,
+        "text": "                      ;; Reuse the preparation's bytes, then END this window"
+      },
+      {
+        "line": 44,
+        "text": "                      ;; before the reader can import/initialize bootstrap tools."
+      },
+      {
+        "line": 45,
+        "text": "                      (current! 'configuration-pre-bootstrap)"
+      },
+      {
+        "line": 46,
+        "text": "                      (values prepared related current!))))))"
+      },
+      {
+        "line": 47,
+        "text": "    (let (effective (module-prepared-source-binding prepared binding related"
+      },
+      {
+        "line": 48,
+        "text": "                     source-inputs: (lambda (inputs) (set! evaluated-inputs inputs))))"
+      },
+      {
+        "line": 49,
+        "text": "      ;; The reader checks prepared/related inputs AFTER native evaluation."
+      },
+      {
+        "line": 50,
+        "text": "      ;; Its remaining work only releases completed private expansion results"
+      },
+      {
+        "line": 51,
+        "text": "      ;; and deletes its private wrapper directory. No author code or Nix lies"
+      },
+      {
+        "line": 52,
+        "text": "      ;; between that return check and this inert source projection. Keep the"
+      },
+      {
+        "line": 53,
+        "text": "      ;; pre-bootstrap check above and every later public current! call fresh."
+      },
+      {
+        "line": 54,
+        "text": "      ;; Compiler support is guarded by current!, not serialized into a provider"
+      },
+      {
+        "line": 55,
+        "text": "      ;; package's configuration input. Keep those two dependency roles distinct."
+      },
+      {
+        "line": 56,
+        "text": "      (.o value: effective source-inputs: (append (.get prepared source-inputs) (foldr append '() (map (cut .get <> source-inputs) related)))"
+      },
+      {
+        "line": 57,
+        "text": "          admit-current: current!))))"
+      }
+    ]
+  },
+  {
+    "id": "PF1",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/poo-flow",
+    "revision": "a74fc2fd63437252175b5a67649ee54b886d3bf4",
+    "path": "modules/governance/policy/authorized-effect-token.ss",
+    "sha256": "ef9abd5335f478d15b5b5a782be5ece07380995b009f504c3d5ae41a618281fb",
+    "gitBlobSha256": "ef9abd5335f478d15b5b5a782be5ece07380995b009f504c3d5ae41a618281fb",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 113,
+        "text": "(def (binding-equal? left right)"
+      },
+      {
+        "line": 114,
+        "text": "  (equal? (binding-projection left) (binding-projection right)))"
+      },
+      {
+        "line": 115,
+        "text": ""
+      },
+      {
+        "line": 116,
+        "text": "(def (rejection-code token context)"
+      },
+      {
+        "line": 117,
+        "text": "  (let ((validity (.ref token 'validity))"
+      },
+      {
+        "line": 118,
+        "text": "        (nonce (.ref token 'nonce)))"
+      },
+      {
+        "line": 119,
+        "text": "    (cond"
+      },
+      {
+        "line": 120,
+        "text": "     ((not (equal? (.ref (.ref token 'semantic-root) 'digest)"
+      },
+      {
+        "line": 121,
+        "text": "                   (.ref (.ref context 'semantic-root) 'digest)))"
+      },
+      {
+        "line": 122,
+        "text": "      'semantic-root-mismatch)"
+      },
+      {
+        "line": 123,
+        "text": "     ((not (binding-equal? (.ref token 'binding) (.ref context 'binding)))"
+      },
+      {
+        "line": 124,
+        "text": "      'binding-substitution)"
+      },
+      {
+        "line": 125,
+        "text": "     ((member nonce (.ref context 'consumed-nonces)) 'token-reuse)"
+      },
+      {
+        "line": 126,
+        "text": "     ((< (.ref context 'now) (.ref validity 'not-before)) 'token-not-yet-valid)"
+      },
+      {
+        "line": 127,
+        "text": "     ((> (.ref context 'now) (.ref validity 'expiry)) 'token-expired)"
+      },
+      {
+        "line": 128,
+        "text": "     ((not (= (.ref validity 'revocation-epoch)"
+      },
+      {
+        "line": 129,
+        "text": "              (.ref context 'revocation-epoch))) 'stale-revocation-epoch)"
+      },
+      {
+        "line": 130,
+        "text": "     ((eq? (.ref token 'durability) 'diagnostic) 'diagnostic-cannot-execute)"
+      },
+      {
+        "line": 131,
+        "text": "     (else #f))))"
+      },
+      {
+        "line": 132,
+        "text": ""
+      },
+      {
+        "line": 133,
+        "text": "(def (poo-flow-authorized-effect-token-validate token context)"
+      },
+      {
+        "line": 134,
+        "text": "  (let (rejection (rejection-code token context))"
+      },
+      {
+        "line": 135,
+        "text": "    (.o (kind 'poo-flow-token-validation-receipt)"
+      }
+    ]
+  },
+  {
+    "id": "PF2",
+    "repository": "/Users/guangtao/ghq/github.com/tao3k/poo-flow",
+    "revision": "a74fc2fd63437252175b5a67649ee54b886d3bf4",
+    "path": "modules/governance/policy/strict-mediation.ss",
+    "sha256": "fbb3bfbb16964b382352d1f3afe6aa319caea25adfc92d06c094942b26864916",
+    "gitBlobSha256": "fbb3bfbb16964b382352d1f3afe6aa319caea25adfc92d06c094942b26864916",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 29,
+        "text": "      (before-root (.ref current-state 'execution-root))"
+      },
+      {
+        "line": 30,
+        "text": "      (after-root (.ref current-state 'execution-root))"
+      },
+      {
+        "line": 31,
+        "text": "      (durability 'strict)))"
+      },
+      {
+        "line": 32,
+        "text": ""
+      },
+      {
+        "line": 33,
+        "text": "(def (poo-flow-strict-mediate state token validation-context expected-root"
+      },
+      {
+        "line": 34,
+        "text": "                               observation)"
+      },
+      {
+        "line": 35,
+        "text": "  (cond"
+      },
+      {
+        "line": 36,
+        "text": "   ((not (equal? expected-root (.ref state 'execution-root)))"
+      },
+      {
+        "line": 37,
+        "text": "    (transition state (negative-receipt 'execution-root-fork state token)))"
+      },
+      {
+        "line": 38,
+        "text": "   (else"
+      },
+      {
+        "line": 39,
+        "text": "    (let (validation"
+      },
+      {
+        "line": 40,
+        "text": "          (poo-flow-authorized-effect-token-validate token validation-context))"
+      },
+      {
+        "line": 41,
+        "text": "      (if (not (.ref validation 'accepted?))"
+      },
+      {
+        "line": 42,
+        "text": "        (transition state (negative-receipt (.ref validation 'code) state token))"
+      },
+      {
+        "line": 43,
+        "text": "        (if (not observation)"
+      },
+      {
+        "line": 44,
+        "text": "          (let* ((token-nonce (.ref token 'nonce))"
+      },
+      {
+        "line": 45,
+        "text": "                 (next-state"
+      },
+      {
+        "line": 46,
+        "text": "                  (poo-flow-strict-mediation-state"
+      },
+      {
+        "line": 47,
+        "text": "                   (.ref state 'execution-root) (+ 1 (.ref state 'sequence))"
+      },
+      {
+        "line": 48,
+        "text": "                   (cons token-nonce (.ref state 'consumed-nonces))"
+      },
+      {
+        "line": 49,
+        "text": "                   (.ref state 'revocation-epoch)))"
+      },
+      {
+        "line": 50,
+        "text": "                 (receipt"
+      },
+      {
+        "line": 51,
+        "text": "                  (.o (kind 'poo-flow-strict-mediation-receipt)"
+      },
+      {
+        "line": 52,
+        "text": "                      (accepted? #t) (outcome 'indeterminate)"
+      },
+      {
+        "line": 53,
+        "text": "                      (code 'observation-unavailable)"
+      },
+      {
+        "line": 54,
+        "text": "                      (token-id (.ref token 'token-id)) (nonce token-nonce)"
+      },
+      {
+        "line": 55,
+        "text": "                      (before-root (.ref state 'execution-root))"
+      },
+      {
+        "line": 56,
+        "text": "                      (after-root (.ref state 'execution-root))"
+      },
+      {
+        "line": 57,
+        "text": "                      (durability 'strict))))"
+      },
+      {
+        "line": 58,
+        "text": "            (transition next-state receipt))"
+      },
+      {
+        "line": 59,
+        "text": "          (let* ((consumption-receipt"
+      },
+      {
+        "line": 60,
+        "text": "                  (poo-flow-authorized-effect-token-consume"
+      },
+      {
+        "line": 61,
+        "text": "                   token validation (.ref state 'execution-root) observation))"
+      },
+      {
+        "line": 62,
+        "text": "                 (token-nonce (.ref token 'nonce))"
+      },
+      {
+        "line": 63,
+        "text": "                 (next-state"
+      },
+      {
+        "line": 64,
+        "text": "                  (poo-flow-strict-mediation-state"
+      },
+      {
+        "line": 65,
+        "text": "                   (.ref consumption-receipt 'execution-root)"
+      }
+    ]
+  },
+  {
+    "id": "CP1",
+    "repository": "/private/tmp/weaver-cedar-poo-spec-reference-20261018",
+    "revision": "c8d1a0641120cf65e299e8a98f9fe7666ca96ab5",
+    "path": "CedarPooSpec/Admission/BoundOperation.lean",
+    "sha256": "6105f4f0651886ee413f5edcea44df32323543de8825ca8f0e9f098205cf2afa",
+    "gitBlobSha256": "6105f4f0651886ee413f5edcea44df32323543de8825ca8f0e9f098205cf2afa",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 1,
+        "text": "import CedarPooSpec.CompoundAuthorization"
+      },
+      {
+        "line": 2,
+        "text": ""
+      },
+      {
+        "line": 3,
+        "text": "/-!"
+      },
+      {
+        "line": 4,
+        "text": "A typed operation projects the effect and observed state into Cedar's request"
+      },
+      {
+        "line": 5,
+        "text": "model. The projection is fixed when the operation is constructed; a later Host"
+      },
+      {
+        "line": 6,
+        "text": "must still authenticate the actual effect and state before execution."
+      },
+      {
+        "line": 7,
+        "text": "-/"
+      },
+      {
+        "line": 8,
+        "text": ""
+      },
+      {
+        "line": 9,
+        "text": "namespace CedarPooSpec.Admission"
+      },
+      {
+        "line": 10,
+        "text": ""
+      },
+      {
+        "line": 11,
+        "text": "open Cedar.Spec CedarPooSpec.PolicyModules"
+      },
+      {
+        "line": 12,
+        "text": ""
+      },
+      {
+        "line": 13,
+        "text": "structure BoundOperation (Effect State : Type)"
+      },
+      {
+        "line": 14,
+        "text": "    (project : Effect \u2192 State \u2192 Request) where"
+      },
+      {
+        "line": 15,
+        "text": "  effect : Effect"
+      },
+      {
+        "line": 16,
+        "text": "  state : State"
+      },
+      {
+        "line": 17,
+        "text": ""
+      },
+      {
+        "line": 18,
+        "text": "def BoundOperation.request {Effect State : Type}"
+      },
+      {
+        "line": 19,
+        "text": "    {project : Effect \u2192 State \u2192 Request}"
+      },
+      {
+        "line": 20,
+        "text": "    (operation : BoundOperation Effect State project) : Request :="
+      },
+      {
+        "line": 21,
+        "text": "  project operation.effect operation.state"
+      },
+      {
+        "line": 22,
+        "text": ""
+      },
+      {
+        "line": 23,
+        "text": "/-- Check a concrete operation against the actual effect and state supplied"
+      },
+      {
+        "line": 24,
+        "text": "    by the caller. This equality check does not authenticate either input. -/"
+      },
+      {
+        "line": 25,
+        "text": "def BoundOperation.matches {Effect State : Type}"
+      },
+      {
+        "line": 26,
+        "text": "    {project : Effect \u2192 State \u2192 Request}"
+      },
+      {
+        "line": 27,
+        "text": "    [DecidableEq Effect] [DecidableEq State]"
+      },
+      {
+        "line": 28,
+        "text": "    (operation : BoundOperation Effect State project)"
+      },
+      {
+        "line": 29,
+        "text": "    (effect : Effect) (state : State) : Bool :="
+      },
+      {
+        "line": 30,
+        "text": "  decide (operation.effect = effect \u2227 operation.state = state)"
+      },
+      {
+        "line": 31,
+        "text": ""
+      },
+      {
+        "line": 32,
+        "text": "/-- A value mismatch is distinct from Cedar compilation or evaluation failure. -/"
+      },
+      {
+        "line": 33,
+        "text": "inductive Error where"
+      },
+      {
+        "line": 34,
+        "text": "  | effectMismatch"
+      },
+      {
+        "line": 35,
+        "text": "  | stateMismatch"
+      },
+      {
+        "line": 36,
+        "text": "  | policy (error : PolicyModules.Error)"
+      },
+      {
+        "line": 37,
+        "text": "  deriving Repr, BEq"
+      },
+      {
+        "line": 38,
+        "text": ""
+      },
+      {
+        "line": 39,
+        "text": "/-- Compare the values supplied at admission with the bound operation before"
+      },
+      {
+        "line": 40,
+        "text": "    reusing the proof-bearing Cedar evaluation of its request. The Host must"
+      },
+      {
+        "line": 41,
+        "text": "    authenticate those values and bind any eventual execution to them. -/"
+      },
+      {
+        "line": 42,
+        "text": "def BoundOperation.authorize {Effect State : Type}"
+      },
+      {
+        "line": 43,
+        "text": "    {project : Effect \u2192 State \u2192 Request}"
+      },
+      {
+        "line": 44,
+        "text": "    [DecidableEq Effect] [DecidableEq State]"
+      },
+      {
+        "line": 45,
+        "text": "    (operation : BoundOperation Effect State project)"
+      },
+      {
+        "line": 46,
+        "text": "    (effect : Effect) (state : State)"
+      },
+      {
+        "line": 47,
+        "text": "    (model : Model) (root : String) (entities : Entities) :"
+      },
+      {
+        "line": 48,
+        "text": "    Except Error"
+      },
+      {
+        "line": 49,
+        "text": "      (CompoundAuthorization.Receipt model root [operation.request] entities) :="
+      },
+      {
+        "line": 50,
+        "text": "  if !decide (operation.effect = effect) then"
+      },
+      {
+        "line": 51,
+        "text": "    .error .effectMismatch"
+      },
+      {
+        "line": 52,
+        "text": "  else if !decide (operation.state = state) then"
+      },
+      {
+        "line": 53,
+        "text": "    .error .stateMismatch"
+      }
+    ]
+  },
+  {
+    "id": "CP2",
+    "repository": "/private/tmp/weaver-cedar-poo-spec-reference-20261018",
+    "revision": "c8d1a0641120cf65e299e8a98f9fe7666ca96ab5",
+    "path": "CedarPooSpec/CompoundAuthorization.lean",
+    "sha256": "bd9c938f6986d6f01051d4fda067ffe1d7d106e5deae6956e88e5e9aa4ec3708",
+    "gitBlobSha256": "bd9c938f6986d6f01051d4fda067ffe1d7d106e5deae6956e88e5e9aa4ec3708",
+    "workingEqualsHead": true,
+    "excerpts": [
+      {
+        "line": 1,
+        "text": "import CedarPooSpec.PolicyModules"
+      },
+      {
+        "line": 2,
+        "text": "import Cedar.Spec.Authorizer"
+      },
+      {
+        "line": 3,
+        "text": ""
+      },
+      {
+        "line": 4,
+        "text": "/-!"
+      },
+      {
+        "line": 5,
+        "text": "Compound authorization evaluates several Cedar requests against one compiled"
+      },
+      {
+        "line": 6,
+        "text": "POO root and one caller-supplied entity snapshot. The caller remains"
+      },
+      {
+        "line": 7,
+        "text": "responsible for atomic business execution and authentic input facts."
+      },
+      {
+        "line": 8,
+        "text": "-/"
+      },
+      {
+        "line": 9,
+        "text": ""
+      },
+      {
+        "line": 10,
+        "text": "namespace CedarPooSpec.CompoundAuthorization"
+      },
+      {
+        "line": 11,
+        "text": ""
+      },
+      {
+        "line": 12,
+        "text": "open Cedar.Spec CedarPooSpec.PolicyModules"
+      },
+      {
+        "line": 13,
+        "text": ""
+      },
+      {
+        "line": 14,
+        "text": "/-- A compound receipt binds all responses to one exact POO compilation. -/"
+      },
+      {
+        "line": 15,
+        "text": "structure Receipt (model : Model) (root : String) (requests : List Request)"
+      },
+      {
+        "line": 16,
+        "text": "    (entities : Entities) where"
+      },
+      {
+        "line": 17,
+        "text": "  policies : Policies"
+      },
+      {
+        "line": 18,
+        "text": "  compiled : model.compile root = .ok policies"
+      },
+      {
+        "line": 19,
+        "text": "  responses : List Response"
+      },
+      {
+        "line": 20,
+        "text": "  evaluated : responses = requests.map (fun req => isAuthorized req entities policies)"
+      },
+      {
+        "line": 21,
+        "text": ""
+      },
+      {
+        "line": 22,
+        "text": "/-- Every query must allow, and no query may have a policy evaluation error. -/"
+      },
+      {
+        "line": 23,
+        "text": "def Receipt.allowed {model : Model} {root : String} {requests : List Request}"
+      },
+      {
+        "line": 24,
+        "text": "    {entities : Entities} (receipt : Receipt model root requests entities) : Bool :="
+      },
+      {
+        "line": 25,
+        "text": "  !requests.isEmpty &&"
+      },
+      {
+        "line": 26,
+        "text": "    receipt.responses.all (fun response =>"
+      },
+      {
+        "line": 27,
+        "text": "      response.decision == .allow && response.erroringPolicies.isEmpty)"
+      },
+      {
+        "line": 28,
+        "text": ""
+      },
+      {
+        "line": 29,
+        "text": "/-- Compile once, then evaluate all requests against the same policy set. -/"
+      },
+      {
+        "line": 30,
+        "text": "def authorizeAll (model : Model) (root : String) (requests : List Request)"
+      },
+      {
+        "line": 31,
+        "text": "    (entities : Entities) : Except PolicyModules.Error (Receipt model root requests entities) :="
+      },
+      {
+        "line": 32,
+        "text": "  match hc : model.compile root with"
+      },
+      {
+        "line": 33,
+        "text": "  | .error error => .error error"
+      },
+      {
+        "line": 34,
+        "text": "  | .ok policies =>"
+      },
+      {
+        "line": 35,
+        "text": "      .ok \u27e8policies, hc, requests.map (fun req => isAuthorized req entities policies), rfl\u27e9"
+      },
+      {
+        "line": 36,
+        "text": ""
+      },
+      {
+        "line": 37,
+        "text": "/-- One decision from one root, with its exact compilation and Cedar response. -/"
+      },
+      {
+        "line": 38,
+        "text": "structure LayerReceipt (model : Model) (entities : Entities) where"
+      },
+      {
+        "line": 39,
+        "text": "  root : String"
+      },
+      {
+        "line": 40,
+        "text": "  request : Request"
+      },
+      {
+        "line": 41,
+        "text": "  policies : Policies"
+      },
+      {
+        "line": 42,
+        "text": "  compiled : model.compile root = .ok policies"
+      },
+      {
+        "line": 43,
+        "text": "  response : Response"
+      },
+      {
+        "line": 44,
+        "text": "  evaluated : response = isAuthorized request entities policies"
+      },
+      {
+        "line": 45,
+        "text": ""
+      },
+      {
+        "line": 46,
+        "text": "/-- All required layers must allow without policy evaluation errors. -/"
+      },
+      {
+        "line": 47,
+        "text": "def layersAllowed {model : Model} {entities : Entities}"
+      }
+    ]
+  }
+]

@@ -1,0 +1,555 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "exit": 0,
+    "seconds": 3.412,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.835,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.203,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "GatewayHeadCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/GatewayHeadCAS.olean",
+      "proofs/lean/GatewayHeadCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.736,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "BrokerConsumptionQueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/BrokerConsumptionQueue.olean",
+      "proofs/lean/BrokerConsumptionQueue.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.683,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LogicalRangeRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LogicalRangeRecovery.olean",
+      "proofs/lean/LogicalRangeRecovery.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.099,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRouting",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmRouting.olean",
+      "proofs/lean/LlmRouting.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.891,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAttemptLedger",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmAttemptLedger.olean",
+      "proofs/lean/LlmAttemptLedger.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.73,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmSemanticContract",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmSemanticContract.olean",
+      "proofs/lean/LlmSemanticContract.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.786,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAuthoritativeScope",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmAuthoritativeScope.olean",
+      "proofs/lean/LlmAuthoritativeScope.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.727,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRegistryPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmRegistryPublication.olean",
+      "proofs/lean/LlmRegistryPublication.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.82,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRecoveryCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmRecoveryCAS.olean",
+      "proofs/lean/LlmRecoveryCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.737,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmPolicyPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmPolicyPublication.olean",
+      "proofs/lean/LlmPolicyPublication.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.676,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmPolicyContinuation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmPolicyContinuation.olean",
+      "proofs/lean/LlmPolicyContinuation.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.225,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmCanonicalRegistry",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmCanonicalRegistry.olean",
+      "proofs/lean/LlmCanonicalRegistry.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.773,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmMultiKeyRegistry",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmMultiKeyRegistry.olean",
+      "proofs/lean/LlmMultiKeyRegistry.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.717,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmResultProjection",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmResultProjection.olean",
+      "proofs/lean/LlmResultProjection.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.68,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmJoinEnqueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmJoinEnqueue.olean",
+      "proofs/lean/LlmJoinEnqueue.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.728,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmExecutorOffer",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmExecutorOffer.olean",
+      "proofs/lean/LlmExecutorOffer.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.774,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmExecutionReconciliation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-execution-reconciliation-446affxg/LlmExecutionReconciliation.olean",
+      "proofs/lean/LlmExecutionReconciliation.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.788,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "typecheck",
+    "args": [
+      "quint",
+      "typecheck",
+      "proofs/qunit/LlmExecutionReconciliation.qnt"
+    ],
+    "exit": 0,
+    "seconds": 1.706,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmExecutionReconciliation.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 1.962,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmExecutionReconciliation.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "ReconciliationCounterexampleTest$",
+      "--out-itf",
+      "proofs/evidence/llm-execution-reconciliation/itf/{test}-{seq}.itf.json"
+    ],
+    "exit": 0,
+    "seconds": 1.762,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "init",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmExecutionReconciliation.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "227",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.798,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "burned",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmExecutionReconciliation.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "burned",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "227",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.804,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "offered",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmExecutionReconciliation.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "offered",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "227",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.963,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "negativeDecision",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmExecutionReconciliation.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "negativeDecision",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "227",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.653,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "terminalDecision",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmExecutionReconciliation.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "terminalDecision",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "227",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.868,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "sourceApplied",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmExecutionReconciliation.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "sourceApplied",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "227",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.821,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "usageApplied",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmExecutionReconciliation.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "usageApplied",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "227",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 1.652,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "executor-regression",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmExecutorOffer.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 1.326,
+    "watchdogSeconds": 55
+  }
+]

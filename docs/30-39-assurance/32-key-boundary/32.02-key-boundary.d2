@@ -1,0 +1,190 @@
+# Core key-boundary design only; evidence stays in the Org receipt.
+...@../../architecture/diagrams/lib/theme
+title: IMMUTABLE TICKET / MEDIATED DEVICE OUTPUT / PROTECTED REVOCATION {
+  class: title
+  near: top-center
+}
+semantic: SEMANTICS / CLOUD LIFECYCLE {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  identity: Scheme / original statement\nClaim / budget / history / exact effect\nCedar constrains real authority {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  lifecycle: Go / cloud-native orchestration\nDiscovery / reconcile / original status\nHealth grants no signing authority {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  unknown: Unknown keeps original obligation\nNo promise reset / refund / replay\nResolve the same authentic receipt {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+admission: PROTECTED COMMIT / ADMISSION {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  commit: Exact protected commit row\nOriginal nonforking prefix promise\nRecheck the same statement at emission {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  ticket: Immutable queued ticket\nOwned digest / bytes / source binding\nStart checks current context again {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  handle: Registered native handle\nKey floor / service / signer / generation\nNo identity reuse or retagging {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+key: RUST / ACTUAL KEY BOUNDARY {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  emit: Final mediated signature emission\nOpen gate / live handle / exact commit\nNo generic signing capability escapes {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  compute: Device execution and sealed result\nExact ticket and authentic key result\nLate completion grants no release {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  revoke: Close the actual release boundary\nIsolate old handles and output aliases\nEmpty software queue is insufficient {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+outcome: RECOVERY / ORIGINAL EXECUTION {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  delivery: Previously emitted original signature\nMay arrive after session revocation\nNever relabel the original statement {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  root: Exact original quorum certificate\nDelivered signatures and full prefix\nBroker checks consumption and Policy {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  recovery: Observe protected successor floor\nCurrent signer and device qualification\nActivate only after actual isolation {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+}
+quint: QUINT\nOld handles / queued replies / digest replacement / false isolation {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nCurrent-handle export / exact completion / original claim and budget {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+semantic.identity -> admission.commit
+semantic.lifecycle -> admission.ticket
+admission.commit -> admission.ticket
+admission.commit -> key.emit
+admission.ticket -> key.compute
+admission.handle -> admission.ticket
+key.compute -> key.emit
+key.emit -> outcome.delivery
+outcome.delivery -> outcome.root
+key.revoke -> outcome.recovery

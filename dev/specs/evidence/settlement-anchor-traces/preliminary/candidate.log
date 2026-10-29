@@ -1,0 +1,34 @@
+specs/lean/SettlementAnchorRecovery.lean:51:83: error: unexpected identifier; expected '}'
+specs/lean/SettlementAnchorRecovery.lean:92:2: error: Wildcard alternative is not needed
+specs/lean/SettlementAnchorRecovery.lean:101:2: error: Invalid alternative name `anchor`: Expected `source`
+specs/lean/SettlementAnchorRecovery.lean:105:2: error: Invalid alternative name `accept`: Expected `source`
+specs/lean/SettlementAnchorRecovery.lean:109:2: error: Invalid alternative name `apply`: Expected `source`
+specs/lean/SettlementAnchorRecovery.lean:113:2: error: Invalid alternative name `confirm`: Expected `source`
+specs/lean/SettlementAnchorRecovery.lean:134:2: error: Invalid alternative name `anchor`: Expected `source`
+specs/lean/SettlementAnchorRecovery.lean:140:2: error: Invalid alternative name `accept`: Expected `source`
+specs/lean/SettlementAnchorRecovery.lean:146:2: error: Invalid alternative name `apply`: Expected `source`
+specs/lean/SettlementAnchorRecovery.lean:152:2: error: Invalid alternative name `confirm`: Expected `source`
+specs/lean/SettlementAnchorRecovery.lean:179:21: error: Invalid argument name `b` for function `Nat.le_trans`
+
+Hint: Perhaps you meant one of the following parameter names:
+  • `n`: b̵n̲
+  • `m`: b̵m̲
+  • `k`: b̵k̲
+specs/lean/SettlementAnchorRecovery.lean:180:2: error: No goals to be solved
+specs/lean/SettlementAnchorRecovery.lean:205:56: error(lean.unknownIdentifier): Unknown identifier `s.authority`
+specs/lean/SettlementAnchorRecovery.lean:205:81: error(lean.unknownIdentifier): Unknown identifier `s.authority`
+specs/lean/SettlementAnchorRecovery.lean:206:48: error(lean.unknownIdentifier): Unknown identifier `s.authority.fence`
+specs/lean/SettlementAnchorRecovery.lean:206:81: error(lean.unknownIdentifier): Unknown identifier `s.authority.worker`
+specs/lean/SettlementAnchorRecovery.lean:206:110: error(lean.unknownIdentifier): Unknown identifier `s.authority.fence`
+'Weaver.SettlementAnchorRecovery.reachable_invariant' depends on axioms: [propext, Quot.sound]
+'Weaver.SettlementAnchorRecovery.accepted_and_applied_at_most_once' depends on axioms: [propext, Quot.sound]
+'Weaver.SettlementAnchorRecovery.application_has_original_settlement' depends on axioms: [propext, Quot.sound]
+'Weaver.SettlementAnchorRecovery.materialization_covered' depends on axioms: [sorryAx]
+'Weaver.SettlementAnchorRecovery.materialization_within_capacity' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SettlementAnchorRecovery.unknown_application_retains_reservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SettlementAnchorRecovery.restore_never_changes_authority' does not depend on any axioms

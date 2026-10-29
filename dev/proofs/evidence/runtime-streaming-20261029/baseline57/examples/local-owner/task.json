@@ -1,0 +1,24 @@
+{
+  "family": "demo-family",
+  "principal": "alice",
+  "profile": "demo-profile",
+  "nodes": [
+    "infer"
+  ],
+  "targets": [
+    "primary"
+  ],
+  "endpoints": {
+    "primary": "https://example.invalid/v1/chat/completions"
+  },
+  "body_digests": {
+    "infer": "477ab9f6a30599c122f348ea9bfb092a286e51b2954a985f772d50e671e00126"
+  },
+  "models": [
+    "model-a"
+  ],
+  "budget": 100,
+  "node_cost_bounds": {
+    "infer": 25
+  }
+}

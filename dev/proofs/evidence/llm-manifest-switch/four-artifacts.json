@@ -1,0 +1,86 @@
+[
+  {
+    "id": "MS1",
+    "design": "At least one selected complete path survives arbitrary finite guarded runs",
+    "quint": "deletionInterruptionIsIdempotentTest",
+    "lean": "recovery_copy_retained",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "MS2",
+    "design": "Storage phases refine the actual checkpoint protocol",
+    "quint": "switchRetainsBothRepresentationsTest",
+    "lean": "logical_projection",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "MS3",
+    "design": "Restarts preserve initialized checkpoint/WAL/account lineage",
+    "quint": "restartRetainsUnknownHoldTest",
+    "lean": "actual_checkpoint_composition",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "MS4",
+    "design": "Original reservation cannot be settled twice",
+    "quint": "readbackThenDeleteTest",
+    "lean": "original_reservation_once",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "MS5",
+    "design": "Unknown original usage retains its original hold",
+    "quint": "restartRetainsUnknownHoldTest",
+    "lean": "unknown_original_hold_retained",
+    "d2": "registry.query"
+  },
+  {
+    "id": "MS6",
+    "design": "Root switch and response observation are distinct",
+    "quint": "lostSwitchReplyRequiresReadbackTest",
+    "lean": "switched_response_is_unknown",
+    "d2": "protocols.mcp"
+  },
+  {
+    "id": "MS7",
+    "design": "Deleting an obsolete object creates no account delta",
+    "quint": "readbackThenDeleteTest",
+    "lean": "erase_preserves_account",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "MS8",
+    "design": "Actual deletion preserves selected segments",
+    "quint": "deleteCurrentCommittedTailRejectedTest",
+    "lean": "deletion_preserves_selected_segments",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "MS9",
+    "design": "Lost response and retry cannot lower generation",
+    "quint": "sameSwitchRetryUsesOriginalResultTest",
+    "lean": "generation_monotone",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "MS10",
+    "design": "A recovered old worker cannot use a delete descriptor",
+    "quint": "staleOwnerCannotDeleteTest",
+    "lean": "stale_owner_cannot_erase",
+    "d2": "protocols.acp"
+  },
+  {
+    "id": "MS11",
+    "design": "Shared or current tail objects remain protected",
+    "quint": "currentSegmentCannotDeleteTest",
+    "lean": "referenced_segment_cannot_be_erased",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "MS12",
+    "design": "New root requires durable complete replacement and parent",
+    "quint": "nondurableSwitchRejectedTest",
+    "lean": "durable_switch_required",
+    "d2": "broker.cas"
+  }
+]

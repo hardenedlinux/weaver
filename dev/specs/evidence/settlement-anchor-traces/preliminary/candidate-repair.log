@@ -1,0 +1,31 @@
+specs/lean/SettlementAnchorRecovery.lean:183:11: error: unsolved goals
+case pos.none
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage : Nat
+s : State
+h : Reachable c m p lineage s
+b k : Nat
+member : k ∈ c.keys
+account : c.budget (c.root k) = b
+record : s.authority.outcomes k = none
+⊢ (match s.authority.outcomes k with
+    | none => 0
+    | some a => a.request.usage.amount) ≤
+    WriterSettlementClosure.settledAmount s.authority.source k
+'Weaver.SettlementAnchorRecovery.reachable_invariant' depends on axioms: [propext, Quot.sound]
+'Weaver.SettlementAnchorRecovery.accepted_and_applied_at_most_once' depends on axioms: [propext, Quot.sound]
+'Weaver.SettlementAnchorRecovery.application_has_original_settlement' depends on axioms: [propext, Quot.sound]
+'Weaver.SettlementAnchorRecovery.materialization_covered' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SettlementAnchorRecovery.materialization_within_capacity' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SettlementAnchorRecovery.unknown_application_retains_reservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SettlementAnchorRecovery.restore_never_changes_authority' does not depend on any axioms

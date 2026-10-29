@@ -1,0 +1,8 @@
+'Weaver.ProviderRpc.safe_step' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.safe_run' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.consumed_unknown_retains_original_hold' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.new_rpc_nonce_cannot_select_fresh_state' does not depend on any axioms
+'Weaver.ProviderRpc.arrow_cannot_weaken_row_authority' does not depend on any axioms
+'Weaver.ProviderRpc.every_arrow_row_requires_authority' does not depend on any axioms
+'Weaver.ProviderRpc.shared_name_is_not_key_authority' does not depend on any axioms
+'Weaver.ProviderRpc.execution_and_encoding_composition' depends on axioms: [propext, Quot.sound]

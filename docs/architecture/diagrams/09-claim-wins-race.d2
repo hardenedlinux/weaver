@@ -1,0 +1,32 @@
+...@lib/theme
+# W09: late positive response can win only while original live premises remain valid.
+shape: sequence_diagram
+coord: Original fenced coordinator
+issuer: Original issuer
+ledger: Authoritative ledger
+broker: Final broker
+cancel: Authorized abort task
+coord -> ledger: Exact ConsumePending already durable
+coord -> issuer: Consume exact original grant
+issuer -> issuer: Consume once
+coord -> coord: Response timeout\nNo guessed success / holds retained
+cancel -> cancel: Abort requested / scheduling delay
+issuer -> coord: Late authenticated positive response
+coord -> ledger: S4 original allowed-state CAS\nCurrent source / versions / lineage / fence
+ledger -> coord: SendCommitted wins before abort
+broker -> coord: Claim under current valid premise
+coord -> ledger: S5 unique claim CAS
+ledger -> coord: Claim durably spent
+coord -> broker: Original one-use emission handle
+cancel -> ledger: AbortNoDispatch CAS\nRequires absent claim
+ledger -> cancel: Reject abort / claim already exists\nNo refund / no reopened row
+broker -> broker: Final transport gate may still pass or fail
+ledger.rule: "S4 winning alone does not defeat abort; S5 claim must win too.\nIf abort wins between S4 and S5, claim fails and no handle is issued.\nIf a required premise or original owner changed, the late callback cannot commit."
+
+# Shared role accents; brand marks are confined to architecture headers.
+coord.class: runtime
+issuer.class: policy
+ledger.class: ledger
+broker.class: runtime
+cancel.class: deny
+ledger.rule.class: note

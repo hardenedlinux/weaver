@@ -1,0 +1,13 @@
+
+ Error [QNT000]: Expected [s,e,a,w,c,h,f,j] and [s,e,a,w,c,h,j] to be the same
+Trying to unify entities ['s', 'e', 'a', 'w', 'c', 'h', 'f', 'j'] and ['s', 'e', 'a', 'w', 'c', 'h', 'j']
+Trying to unify Read[_v23050] & Update['s', 'e', 'a', 'w', 'c', 'h', 'f', 'j'] and Read['f', 'a', 'j', 'h', 'c', 's', 'e', 'w'] & Update['s', 'e', 'a', 'w', 'c', 'h', 'j']
+Trying to unify (Read[_v23048] & Update[_v23049], Read[_v23050] & Update[_v23049]) => Read[_v23051] & Update[_v23049] and (Read[_v23043] & Update['s', 'e', 'a', 'w', 'c', 'h', 'f', 'j'], Read['f', 'a', 'j', 'h', 'c', 's', 'e', 'w'] & Update['s', 'e', 'a', 'w', 'c', 'h', 'j']) => _e5548
+Trying to infer effect for operator application in then(then(init, propose(F::pFence)), validate(F::pFence, true))
+
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmSourceJoin.qnt:28:17
+  28:   action staged=init.then(propose(F::pFence)).then(validate(F::pFence,true))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

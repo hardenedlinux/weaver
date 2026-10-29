@@ -1,0 +1,48 @@
+proofs/lean/LlmResultProjection.lean:33:6: error: unexpected token ':'; expected 'scoped' or identifier
+proofs/lean/LlmResultProjection.lean:37:2: error: Invalid `⟨...⟩` notation: The expected type `Bool` has more than one constructor
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+proofs/lean/LlmResultProjection.lean:67:123: error: unexpected token 'open'; expected '}'
+proofs/lean/LlmResultProjection.lean:67:128: error: unexpected token ':='; expected 'scoped' or identifier
+proofs/lean/LlmResultProjection.lean:69:101: error: unexpected token ':='; expected 'scoped' or identifier
+proofs/lean/LlmResultProjection.lean:77:42: error: unexpected token ':='; expected 'scoped' or identifier
+proofs/lean/LlmResultProjection.lean:94:4: error: Invalid alternative name `recover`: There are no unhandled alternatives
+proofs/lean/LlmResultProjection.lean:98:4: error: Invalid alternative name `restoreSource`: There are no unhandled alternatives
+proofs/lean/LlmResultProjection.lean:99:4: error: Invalid alternative name `restoreAccount`: There are no unhandled alternatives
+proofs/lean/LlmResultProjection.lean:100:4: error: Invalid alternative name `activate`: There are no unhandled alternatives
+proofs/lean/LlmResultProjection.lean:91:4: error: Too many variable names provided at alternative `stage`: 6 provided, but 5 expected
+proofs/lean/LlmResultProjection.lean:91:59: error(lean.unknownIdentifier): Unknown identifier `stable`
+proofs/lean/LlmResultProjection.lean:92:4: error: Too many variable names provided at alternative `commit`: 10 provided, but 9 expected
+proofs/lean/LlmResultProjection.lean:92:56: error: Application type mismatch: The argument
+  actual
+has type
+  t✝.base.decisions r✝.id = none
+but is expected to have type
+  LlmMultiKeyRegistry.Step R A limit Q t✝.base
+    { base := next✝,
+        log :=
+          t✝.log ++ [{ request := r✝, position := t✝.log.length + 1, before := image t✝.base, after := image next✝ }],
+        sourceStore := t✝.sourceStore, accountStore := t✝.accountStore, qualified := t✝.qualified }.base
+in the application
+  LlmMultiKeyRegistry.Run.next ih actual
+proofs/lean/LlmResultProjection.lean:102:8: warning: declaration uses `sorry`
+proofs/lean/LlmResultProjection.lean:155:49: error(lean.unknownIdentifier): Unknown identifier `s.base.decisions`
+proofs/lean/LlmResultProjection.lean:155:129: error(lean.unknownIdentifier): Unknown identifier `s.base`
+'Weaver.LlmResultProjection.authority_projection' depends on axioms: [propext, sorryAx]
+'Weaver.LlmResultProjection.result_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmResultProjection.exact_source_result' depends on axioms: [propext]
+'Weaver.LlmResultProjection.exact_account_result' depends on axioms: [propext]
+'Weaver.LlmResultProjection.old_owner_blocks_application' depends on axioms: [propext]
+'Weaver.LlmResultProjection.wrong_before_blocks_application' depends on axioms: [propext]
+'Weaver.LlmResultProjection.duplicate_position_blocks_application' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmResultProjection.partial_projection_blocks_join' does not depend on any axioms
+'Weaver.LlmResultProjection.joined_source_is_authoritative' does not depend on any axioms
+'Weaver.LlmResultProjection.joined_account_holds_original_exposure' does not depend on any axioms
+'Weaver.LlmResultProjection.unknown_exposure_retained' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmResultProjection.original_spent_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmResultProjection.original_pending_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmResultProjection.original_origin_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmResultProjection.shared_exposure_bound' depends on axioms: [propext, sorryAx]
+proofs/lean/LlmResultProjection.lean:179:14: error(lean.unknownIdentifier): Unknown constant `committed_request_cannot_repeat`
+'Weaver.LlmResultProjection.source_application_has_no_authority_effect' does not depend on any axioms
+'Weaver.LlmResultProjection.account_application_has_no_authority_effect' does not depend on any axioms

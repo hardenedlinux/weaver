@@ -1,0 +1,136 @@
+specs/lean/AnchorReconfiguration.lean:32:10: error: unexpected identifier; expected prec
+specs/lean/AnchorReconfiguration.lean:41:10: error: unexpected identifier; expected prec
+specs/lean/AnchorReconfiguration.lean:56:33: error: Insufficient number of fields for `⟨...⟩` constructor: Constructor `Weaver.AnchorReconfiguration.Image.mk` does not have explicit fields, but 5 were provided
+specs/lean/AnchorReconfiguration.lean:57:90: error(lean.invalidField): Invalid field `installed`: The environment does not contain `Weaver.AnchorReconfiguration.State.installed`, so it is not possible to project the field `installed` from an expression
+  s
+of type `State`
+specs/lean/AnchorReconfiguration.lean:58:87: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `Weaver.AnchorReconfiguration.State.prefix`, so it is not possible to project the field `prefix` from an expression
+  s
+of type `State`
+specs/lean/AnchorReconfiguration.lean:60:80: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `Weaver.AnchorReconfiguration.State.prefix`, so it is not possible to project the field `prefix` from an expression
+  s
+of type `State`
+specs/lean/AnchorReconfiguration.lean:60:88: error(lean.invalidField): Invalid field notation: Type of
+  r
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `repeatM.body`
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Record.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+specs/lean/AnchorReconfiguration.lean:60:97: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.data` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `ByteArray.data`
+  [apply] `FloatArray.data`
+  [apply] `String.data`
+  [apply] `Std.Http.Chunk.data`
+  [apply] `Body.data`
+  [apply] `IO.FS.Stream.Buffer.data`
+  [apply] `Std.Http.Internal.ChunkedBuffer.data`
+specs/lean/AnchorReconfiguration.lean:84:21: error: unexpected token 'prefix'; expected '}'
+specs/lean/AnchorReconfiguration.lean:84:28: error: unexpected token ':='; expected ':'
+specs/lean/AnchorReconfiguration.lean:92:69: error: unexpected token ':='; expected ':'
+specs/lean/AnchorReconfiguration.lean:99:66: error: unexpected token ':='; expected ':'
+specs/lean/AnchorReconfiguration.lean:134:2: error: Invalid alternative name `isolate`: There are no unhandled alternatives
+specs/lean/AnchorReconfiguration.lean:135:2: error: Invalid alternative name `activate`: There are no unhandled alternatives
+specs/lean/AnchorReconfiguration.lean:136:2: error: Invalid alternative name `readCurrent`: There are no unhandled alternatives
+specs/lean/AnchorReconfiguration.lean:137:2: error: Wildcard alternative is not needed
+specs/lean/AnchorReconfiguration.lean:149:117: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `Weaver.AnchorReconfiguration.State.prefix`, so it is not possible to project the field `prefix` from an expression
+  s
+of type `State`
+specs/lean/AnchorReconfiguration.lean:149:126: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `Weaver.AnchorReconfiguration.State.prefix`, so it is not possible to project the field `prefix` from an expression
+  t
+of type `State`
+specs/lean/AnchorReconfiguration.lean:152:2: error: Invalid alternative name `enterJoint`: Expected `core`
+specs/lean/AnchorReconfiguration.lean:153:2: error: Invalid alternative name `finishJoint`: Expected `core`
+specs/lean/AnchorReconfiguration.lean:155:130: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `Weaver.AnchorReconfiguration.State.prefix`, so it is not possible to project the field `prefix` from an expression
+  s
+of type `State`
+specs/lean/AnchorReconfiguration.lean:155:146: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `Weaver.AnchorReconfiguration.State.prefix`, so it is not possible to project the field `prefix` from an expression
+  t
+of type `State`
+specs/lean/AnchorReconfiguration.lean:159:52: error: unsolved goals
+⊢ sorry { base := { } }
+specs/lean/AnchorReconfiguration.lean:159:61: warning: declaration uses `sorry`
+specs/lean/AnchorReconfiguration.lean:161:65: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `Weaver.AnchorReconfiguration.State.prefix`, so it is not possible to project the field `prefix` from an expression
+  t
+of type `State`
+specs/lean/AnchorReconfiguration.lean:161:73: error(lean.invalidField): Invalid field notation: Type of
+  r
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `repeatM.body`
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Record.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+specs/lean/AnchorReconfiguration.lean:161:82: error(lean.invalidDottedIdent): Invalid dotted identifier notation: The expected type of `.data` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `ByteArray.data`
+  [apply] `FloatArray.data`
+  [apply] `String.data`
+  [apply] `Std.Http.Chunk.data`
+  [apply] `Body.data`
+  [apply] `IO.FS.Stream.Buffer.data`
+  [apply] `Std.Http.Internal.ChunkedBuffer.data`
+specs/lean/AnchorReconfiguration.lean:160:149: error: unsolved goals
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : Family
+store : Store
+s t : State
+inv : BaseEmbeds s
+event : Step c m p lineage root namespaceId owner projectionStore family store s t
+⊢ BaseEmbeds t
+specs/lean/AnchorReconfiguration.lean:187:2: error: Type mismatch
+  (family next).intersects newQ right joint.right
+has type
+  (family next).accepts right → ∃ voter, voter ∈ newQ ∧ voter ∈ right
+but is expected to have type
+  ∃ voter, voter ∈ newQ ∧ voter ∈ right
+specs/lean/AnchorReconfiguration.lean:190:6: error(lean.invalidField): Invalid field `installed`: The environment does not contain `Weaver.AnchorReconfiguration.State.installed`, so it is not possible to project the field `installed` from an expression
+  s
+of type `State`
+specs/lean/AnchorReconfiguration.lean:192:14: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `Weaver.AnchorReconfiguration.Image.prefix`, so it is not possible to project the field `prefix` from an expression
+  image s
+of type `Image`
+specs/lean/AnchorReconfiguration.lean:192:25: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `Weaver.AnchorReconfiguration.State.prefix`, so it is not possible to project the field `prefix` from an expression
+  s
+of type `State`
+specs/lean/AnchorReconfiguration.lean:192:44: error(lean.invalidField): Invalid field `journal`: The environment does not contain `Weaver.AnchorReconfiguration.Image.journal`, so it is not possible to project the field `journal` from an expression
+  image s
+of type `Image`
+specs/lean/AnchorReconfiguration.lean:193:14: error(lean.invalidField): Invalid field `source`: The environment does not contain `Weaver.AnchorReconfiguration.Image.source`, so it is not possible to project the field `source` from an expression
+  image s
+of type `Image`
+specs/lean/AnchorReconfiguration.lean:193:98: error: Invalid `⟨...⟩` notation: The expected type of this term could not be determined
+specs/lean/AnchorReconfiguration.lean:195:8: warning: declaration uses `sorry`
+'Weaver.AnchorReconfiguration.base_reachable' depends on axioms: [sorryAx]
+'Weaver.AnchorReconfiguration.reachable_base_embeds' depends on axioms: [sorryAx]
+'Weaver.AnchorReconfiguration.old_and_joint_quorums_intersect' does not depend on any axioms
+'Weaver.AnchorReconfiguration.joint_and_new_quorums_intersect' depends on axioms: [sorryAx]
+'Weaver.AnchorReconfiguration.replacement_voters_copy_complete_deciding_image' depends on axioms: [propext, sorryAx]
+specs/lean/AnchorReconfiguration.lean:212:14: error(lean.unknownIdentifier): Unknown constant `image_has_no_execution_capability`
+'Weaver.AnchorReconfiguration.membership_revision_monotone' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.AnchorReconfiguration.one_original_consumption_and_application' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.AnchorReconfiguration.original_shared_budget_conserved' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.AnchorReconfiguration.original_unknown_reservation_retained' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

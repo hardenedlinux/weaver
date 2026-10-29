@@ -1,0 +1,68 @@
+proofs/lean/DeviceIsolationRecovery.lean:188:2: error: unsolved goals
+case inl
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s t : State
+event :
+  Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t
+eq : s.base = t.base
+⊢ t.base.epoch ≤ t.base.epoch
+proofs/lean/DeviceIsolationRecovery.lean:210:65: error: unsolved goals
+case advance
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+inv : JournalAligned s
+next : KeyBoundaryQueue.State
+cut : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next
+proof : s.certified = some cut
+current : Context s cut
+before : Before s cut
+coverage : AllBlocked s cut
+effect : next.epoch = s.base.epoch + 1 ∧ next.exports = s.base.exports
+⊢ s.journal.length = s.base.epoch
+proofs/lean/DeviceIsolationRecovery.lean:210:110: warning: This simp argument is unused:
+  inv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [JournalAligned, List.length_append, effect.1]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Weaver.DeviceIsolationRecovery.protected_floor_never_rolls_back' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.DeviceIsolationRecovery.committed_floor_log_never_shrinks' depends on axioms: [propext]
+'Weaver.DeviceIsolationRecovery.journal_tracks_every_floor_commit' depends on axioms: [sorryAx]
+'Weaver.DeviceIsolationRecovery.every_new_export_requires_current_hardware' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.validated_callback_has_original_current_envelope' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.initialized_product_refines_key_boundary' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.initialized_floor_log_is_complete' depends on axioms: [sorryAx]
+'Weaver.DeviceIsolationRecovery.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.DeviceIsolationRecovery.original_budget_remains_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.DeviceIsolationRecovery.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

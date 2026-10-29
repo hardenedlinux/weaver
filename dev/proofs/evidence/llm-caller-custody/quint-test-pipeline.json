@@ -1,0 +1,7 @@
+{
+  "path": "/opt/homebrew/Cellar/quint/0.33.0/libexec/lib/node_modules/@informalsystems/quint/dist/src/cli.js",
+  "sha256": "ad009937066fd22ef96c5bde0df9d26df1e761ae3fc579378eaf84b56e2c2aa2",
+  "line": 212,
+  "text": "        (0, cliCommands_1.load)(args).then(chainCmd(cliCommands_1.parse)).then(chainCmd(cliCommands_1.typecheck)).then(chainCmd(cliCommands_1.runTests)).then(cliCommands_1.outputResult);",
+  "note": "Official installed CLI test pipeline performs load -> parse -> typecheck -> runTests. Passing tests imply that pipeline typechecking succeeded. A separate fixed-20s CLI typecheck remains failed, not reclassified as a pass."
+}

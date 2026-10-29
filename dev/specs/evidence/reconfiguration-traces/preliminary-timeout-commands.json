@@ -1,0 +1,210 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.865,
+    "exit": 0
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.646,
+    "exit": 0
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.986,
+    "exit": 0
+  },
+  {
+    "label": "AnchoredRecoveryAndEgress",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/AnchoredRecoveryAndEgress.olean",
+      "specs/lean/AnchoredRecoveryAndEgress.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.636,
+    "exit": 0
+  },
+  {
+    "label": "ComposedGatewayLifecycle",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/ComposedGatewayLifecycle.olean",
+      "specs/lean/ComposedGatewayLifecycle.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.153,
+    "exit": 0
+  },
+  {
+    "label": "FiniteStreamManifest",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/FiniteStreamManifest.olean",
+      "specs/lean/FiniteStreamManifest.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 2.028,
+    "exit": 0
+  },
+  {
+    "label": "DriverCompletionRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/DriverCompletionRecovery.olean",
+      "specs/lean/DriverCompletionRecovery.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.151,
+    "exit": 0
+  },
+  {
+    "label": "WriterSettlementClosure",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/WriterSettlementClosure.olean",
+      "specs/lean/WriterSettlementClosure.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.281,
+    "exit": 0
+  },
+  {
+    "label": "SettlementAnchorRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/SettlementAnchorRecovery.olean",
+      "specs/lean/SettlementAnchorRecovery.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.853,
+    "exit": 0
+  },
+  {
+    "label": "GateConsumptionPersistence",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/GateConsumptionPersistence.olean",
+      "specs/lean/GateConsumptionPersistence.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.073,
+    "exit": 0
+  },
+  {
+    "label": "AnchorBrokerCommit",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/AnchorBrokerCommit.olean",
+      "specs/lean/AnchorBrokerCommit.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.215,
+    "exit": 0
+  },
+  {
+    "label": "AnchorReconfiguration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-reconfiguration-final-proof/AnchorReconfiguration.olean",
+      "specs/lean/AnchorReconfiguration.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.536,
+    "exit": 0
+  },
+  {
+    "label": "typecheck",
+    "args": [
+      "quint",
+      "typecheck",
+      "specs/quint/AnchorReconfiguration.qnt"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 11.647,
+    "exit": 0
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "specs/quint/AnchorReconfiguration.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--out-itf",
+      "specs/evidence/reconfiguration-traces/itf/{test}-{seq}.itf.json"
+    ],
+    "watchdogSeconds": 55,
+    "seconds": 55.087,
+    "exit": 124
+  }
+]

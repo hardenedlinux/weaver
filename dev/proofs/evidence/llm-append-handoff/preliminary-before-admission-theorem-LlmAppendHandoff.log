@@ -1,0 +1,12 @@
+'Weaver.LlmAppendHandoff.recovery_copy_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAppendHandoff.logical_projection' depends on axioms: [propext]
+'Weaver.LlmAppendHandoff.actual_checkpoint_composition' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAppendHandoff.original_reservation_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAppendHandoff.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAppendHandoff.append_prefix_retained' depends on axioms: [propext]
+'Weaver.LlmAppendHandoff.switched_live_tail_retained' does not depend on any axioms
+'Weaver.LlmAppendHandoff.current_tail_not_collectible' depends on axioms: [propext]
+'Weaver.LlmAppendHandoff.append_generation_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAppendHandoff.root_generation_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAppendHandoff.durable_cut_required' does not depend on any axioms
+'Weaver.LlmAppendHandoff.cut_records_retained' depends on axioms: [propext, Quot.sound]

@@ -1,0 +1,101 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 1,
+    "sourceSha256": "f5fda9196522f0df1fd7ffa9a33209c0714bc1d8eff7aa6eceabdd1265d77982",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.144
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "8ec130a91193f0d221261a804c0b09e6cf5955744cafafd19195ae6e8362a4ee",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 0.402
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "twoLogicalRefsOneImageTest",
+      "oneCloseCannotUnmapTest",
+      "finalCloseAllowsUnmapTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.088
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "duplicateAcquisitionRejectedTest",
+      "duplicateCloseRejectedTest",
+      "shutdownRejectsAcquisitionTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.003
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "mappingDoesNotInitializeTest",
+      "requestedEntriesStayLazyTest",
+      "foreignInitializerRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.021
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "duplicateEntryRejectedTest",
+      "independentImageCanReleaseTest",
+      "earlyUnmapCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.002
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "forgottenReferenceCounterexampleTest",
+      "eagerForeignCtorCounterexampleTest",
+      "collapsedEntryCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.002
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "shutdownRejectsInitializationTest",
+      "closedReferenceCannotInitializeTest",
+      "releasedImageCannotInitializeTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.003
+  }
+]

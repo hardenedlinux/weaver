@@ -1,0 +1,205 @@
+[
+  {
+    "id": "BR1",
+    "lean": "root_retained",
+    "quint": "lostRootReplyRetainsEnrollmentPrincipalTest",
+    "d2": "recovery.projection",
+    "obligation": "Canonical enrollment root is immutable"
+  },
+  {
+    "id": "BR2",
+    "lean": "binding_retained",
+    "quint": "lostBindingReplyRetainsFirstKeyTest",
+    "d2": "recovery.join",
+    "obligation": "First key and session survive lost responses"
+  },
+  {
+    "id": "BR3",
+    "lean": "publication_retained",
+    "quint": "lostPublicationReplyRetainsExactOutcomeTest",
+    "d2": "recovery.fence",
+    "obligation": "Original publication outcome remains exact"
+  },
+  {
+    "id": "BR4",
+    "lean": "binding_run",
+    "quint": "authorizedSecondKeyCannotReplaceFirstTest",
+    "d2": "protocols.acp",
+    "obligation": "Finite recovery does not reopen the first-key slot"
+  },
+  {
+    "id": "BR5",
+    "lean": "no_replacement",
+    "quint": "authorizedSecondKeyCannotReplaceFirstTest",
+    "d2": "recovery.join",
+    "obligation": "Even a second authorized key cannot overwrite the first"
+  },
+  {
+    "id": "BR6",
+    "lean": "shared_identity_not_entitlement",
+    "quint": "sharedIdentityCannotRegisterKeyTest",
+    "d2": "protocols.mcp",
+    "obligation": "Shared workload identity is not enrollment entitlement"
+  },
+  {
+    "id": "BR7",
+    "lean": "beneficiary_possession_required",
+    "quint": "beneficiaryPossessionRequiredTest",
+    "d2": "protocols.a2a",
+    "obligation": "Enrollment authority also requires beneficiary possession"
+  },
+  {
+    "id": "BR8",
+    "lean": "session_cannot_be_selected",
+    "quint": "substitutedSessionRejectedTest",
+    "d2": "protocols.a2a",
+    "obligation": "The peer cannot nominate another bootstrap session"
+  },
+  {
+    "id": "BR9",
+    "lean": "original_previous_preserved",
+    "quint": "originalScopeCannotBeRewrittenTest",
+    "d2": "registry.origin",
+    "obligation": "The full original template remains bound"
+  },
+  {
+    "id": "BR10",
+    "lean": "blueprint_preserves_original_scope",
+    "quint": "originalScopeCannotBeRewrittenTest",
+    "d2": "registry.alias",
+    "obligation": "Current target scope is explicitly constrained before publication"
+  },
+  {
+    "id": "BR11",
+    "lean": "stale_epoch_cannot_publish",
+    "quint": "rootRevocationBlocksPublicationTest",
+    "d2": "broker.cas",
+    "obligation": "An old root epoch cannot publish"
+  },
+  {
+    "id": "BR12",
+    "lean": "stale_read_cannot_publish",
+    "quint": "newRootInvalidatesPublicationReadTest",
+    "d2": "broker.cas",
+    "obligation": "Intervening authority commits invalidate observations"
+  },
+  {
+    "id": "BR13",
+    "lean": "valid_bindings_step",
+    "quint": "sharedIdentityRegistrationCounterexampleTest",
+    "d2": "recovery.join",
+    "obligation": "Binding stores the exact authenticated peer transcript"
+  },
+  {
+    "id": "BR14",
+    "lean": "valid_bindings_run",
+    "quint": "signatureForAnotherBeneficiaryKeyRejectedTest",
+    "d2": "recovery.fence",
+    "obligation": "Historical binding provenance survives recovery"
+  },
+  {
+    "id": "BR15",
+    "lean": "covered_step",
+    "quint": "missingOutcomeRegistrationCounterexampleTest",
+    "d2": "broker.cas",
+    "obligation": "Every invitation requires a retained first binding"
+  },
+  {
+    "id": "BR16",
+    "lean": "covered_run",
+    "quint": "rollbackFirstBindingRegistrationCounterexampleTest",
+    "d2": "recovery.fence",
+    "obligation": "One-sided recovery cannot erase the first binding"
+  },
+  {
+    "id": "BR17",
+    "lean": "root_origin",
+    "quint": "producerApprovalRequiredTest",
+    "d2": "registry.alias",
+    "obligation": "Root provenance starts from independent producer approval"
+  },
+  {
+    "id": "BR18",
+    "lean": "published_from_entitlement",
+    "quint": "forwardedBearerWithOwnKeyRejectedTest",
+    "d2": "registry.origin",
+    "obligation": "Publication derives from the original enrollment principal"
+  },
+  {
+    "id": "BR19",
+    "lean": "joined_step",
+    "quint": "missingOutcomeRegistrationCounterexampleTest",
+    "d2": "broker.cas",
+    "obligation": "Invitation visibility requires the same determining outcome"
+  },
+  {
+    "id": "BR20",
+    "lean": "new_publication_has_current_binding",
+    "quint": "lostPublicationReplyRetainsExactOutcomeTest",
+    "d2": "broker.cas",
+    "obligation": "New publication has current binding and no issuance side effect"
+  },
+  {
+    "id": "BR21",
+    "lean": "revision_monotone",
+    "quint": "newRootInvalidatesPublicationReadTest",
+    "d2": "broker.cas",
+    "obligation": "Authority revisions cannot move backward in a legal trace"
+  },
+  {
+    "id": "BR22",
+    "lean": "old_ticket_epoch_rejected",
+    "quint": "rootRevocationFencesPublishedConsumptionTest",
+    "d2": "broker.hold",
+    "obligation": "Revocation crosses the downstream issuer fence"
+  },
+  {
+    "id": "BR23",
+    "lean": "inconsistent_publication_not_qualified",
+    "quint": "unjoinedImageCannotConsumeTest",
+    "d2": "broker.alias",
+    "obligation": "A refreshed parent read cannot admit an unjoined image"
+  },
+  {
+    "id": "BR24",
+    "lean": "joined_run",
+    "quint": "rollbackFirstBindingRegistrationCounterexampleTest",
+    "d2": "recovery.fence",
+    "obligation": "Qualified recovery preserves publication association"
+  },
+  {
+    "id": "BR25",
+    "lean": "outcome_bound_step",
+    "quint": "splitPublicationRegistrationCounterexampleTest",
+    "d2": "broker.cas",
+    "obligation": "An outcome requires the exact invitation projection"
+  },
+  {
+    "id": "BR26",
+    "lean": "outcome_bound_run",
+    "quint": "lostPublicationReplyRetainsExactOutcomeTest",
+    "d2": "protocols.acp",
+    "obligation": "Repeated recovery returns the same complete result"
+  },
+  {
+    "id": "BR27",
+    "lean": "composition",
+    "quint": "actualActivationRetainsOriginalHoldTest",
+    "d2": "broker.alias",
+    "obligation": "Authority advances project to actual predecessor traces"
+  },
+  {
+    "id": "BR28",
+    "lean": "original_reservation_once",
+    "quint": "actualActivationRetainsOriginalHoldTest",
+    "d2": "broker.hold",
+    "obligation": "Original account application remains conditionally unique"
+  },
+  {
+    "id": "BR29",
+    "lean": "unknown_original_hold_retained",
+    "quint": "actualActivationRetainsOriginalHoldTest",
+    "d2": "registry.query",
+    "obligation": "Unknown original usage retains its reservation"
+  }
+]

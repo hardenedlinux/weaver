@@ -1,0 +1,40 @@
+proofs/lean/KeyBoundaryQueue.lean:87:113: error: unexpected identifier; expected '}'
+proofs/lean/KeyBoundaryQueue.lean:107:26: error: Application type mismatch: The argument
+  ProtectedSignerRelease.Step.restart ?m.161
+has type
+  ProtectedSignerRelease.Step ?m.149 ?m.150 ?m.151 ?m.152 ?m.153 ?m.154 ?m.155 ?m.156 ?m.157 ?m.158 ?m.159 ?m.160 ?m.161
+    { base := ProtectedSignerRelease.State.base ?m.161, epoch := ProtectedSignerRelease.State.epoch ?m.161 + 1,
+      committed := ProtectedSignerRelease.State.committed ?m.161,
+      released := ProtectedSignerRelease.State.released ?m.161,
+      delivered := ProtectedSignerRelease.State.delivered ?m.161 }
+but is expected to have type
+  ProtectedSignerRelease.Step c m p lineage root namespaceId owner projectionStore family store signerOwner eligible
+    s.base
+    {
+        base :=
+          let __src := s.base;
+          { base := __src.base, epoch := s.base.epoch + 1, pending := __src.pending, committed := __src.committed,
+            observed := __src.observed, released := __src.released, delivered := __src.delivered },
+        epoch := s.epoch + 1, enabled := s.enabled, handles := s.handles, usedTickets := s.usedTickets,
+        queued := s.queued, running := s.running, completed := s.completed, isolation := s.isolation,
+        barrierKnown := s.barrierKnown, floorKnown := s.floorKnown, produced := s.produced, exports := s.exports }.base
+in the application
+  Or.inr (ProtectedSignerRelease.Step.restart ?m.161)
+proofs/lean/KeyBoundaryQueue.lean:143:2: error: Invalid alternative name `loseBuffer`: Expected `parentEvent`, `issueHandle`, `enqueue`, `start`, `emit`, `close`, `isolate`, `observeBarrier`, or `advance`
+'Weaver.KeyBoundaryQueue.closed_boundary_cannot_release' depends on axioms: [propext]
+'Weaver.KeyBoundaryQueue.every_new_export_checks_current_handle' does not depend on any axioms
+'Weaver.KeyBoundaryQueue.handle_identity_never_retags' depends on axioms: [propext]
+'Weaver.KeyBoundaryQueue.initialized_queue_safety' depends on axioms: [propext, Quot.sound]
+'Weaver.KeyBoundaryQueue.initialized_product_refines_release' depends on axioms: [sorryAx]
+'Weaver.KeyBoundaryQueue.actual_exported_prefixes_cannot_conflict' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.KeyBoundaryQueue.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.KeyBoundaryQueue.original_budget_remains_conserved' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.KeyBoundaryQueue.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

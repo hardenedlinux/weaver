@@ -1,0 +1,615 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "exit": 0,
+    "seconds": 4.724,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.473,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.31,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "GatewayHeadCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/GatewayHeadCAS.olean",
+      "proofs/lean/GatewayHeadCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.197,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "BrokerConsumptionQueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/BrokerConsumptionQueue.olean",
+      "proofs/lean/BrokerConsumptionQueue.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.172,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LogicalRangeRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LogicalRangeRecovery.olean",
+      "proofs/lean/LogicalRangeRecovery.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.019,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRouting",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmRouting.olean",
+      "proofs/lean/LlmRouting.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.784,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAttemptLedger",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmAttemptLedger.olean",
+      "proofs/lean/LlmAttemptLedger.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.888,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmSemanticContract",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmSemanticContract.olean",
+      "proofs/lean/LlmSemanticContract.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.882,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAuthoritativeScope",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmAuthoritativeScope.olean",
+      "proofs/lean/LlmAuthoritativeScope.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.208,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRegistryPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmRegistryPublication.olean",
+      "proofs/lean/LlmRegistryPublication.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.146,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRecoveryCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmRecoveryCAS.olean",
+      "proofs/lean/LlmRecoveryCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.831,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmPolicyPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmPolicyPublication.olean",
+      "proofs/lean/LlmPolicyPublication.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.952,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmPolicyContinuation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmPolicyContinuation.olean",
+      "proofs/lean/LlmPolicyContinuation.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.885,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmCanonicalRegistry",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmCanonicalRegistry.olean",
+      "proofs/lean/LlmCanonicalRegistry.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.353,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmMultiKeyRegistry",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmMultiKeyRegistry.olean",
+      "proofs/lean/LlmMultiKeyRegistry.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.074,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmResultProjection",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmResultProjection.olean",
+      "proofs/lean/LlmResultProjection.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.572,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmJoinEnqueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmJoinEnqueue.olean",
+      "proofs/lean/LlmJoinEnqueue.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.844,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmExecutorOffer",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmExecutorOffer.olean",
+      "proofs/lean/LlmExecutorOffer.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.841,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmExecutionReconciliation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmExecutionReconciliation.olean",
+      "proofs/lean/LlmExecutionReconciliation.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.06,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAccountCommit",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmAccountCommit.olean",
+      "proofs/lean/LlmAccountCommit.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.232,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmWalActivation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmWalActivation.olean",
+      "proofs/lean/LlmWalActivation.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.871,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmCheckpointTruncation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmCheckpointTruncation.olean",
+      "proofs/lean/LlmCheckpointTruncation.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.847,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmManifestSwitch",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-manifest-switch-31x29ta_/LlmManifestSwitch.olean",
+      "proofs/lean/LlmManifestSwitch.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.853,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "typecheck",
+    "args": [
+      "quint",
+      "typecheck",
+      "proofs/qunit/LlmManifestSwitch.qnt"
+    ],
+    "exit": 0,
+    "seconds": 6.515,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmManifestSwitch.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 9.4,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmManifestSwitch.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "ManifestCounterexampleTest$",
+      "--out-itf",
+      "proofs/evidence/llm-manifest-switch/itf/{test}-{seq}.itf.json"
+    ],
+    "exit": 0,
+    "seconds": 5.236,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "init",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmManifestSwitch.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "241",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 4.909,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "staged",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmManifestSwitch.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "staged",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "241",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 4.382,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "switched",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmManifestSwitch.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "switched",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "241",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 4.024,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "acknowledged",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmManifestSwitch.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "acknowledged",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "241",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 4.47,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "deleted",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmManifestSwitch.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "deleted",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "241",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 5.299,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "restarted",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmManifestSwitch.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "restarted",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "241",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 4.739,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "twoRecords",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/LlmManifestSwitch.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "twoRecords",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "241",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 4.051,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "checkpoint-regression",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/LlmCheckpointTruncation.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 4.298,
+    "watchdogSeconds": 55
+  }
+]

@@ -1,0 +1,66 @@
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-contracts)
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+   Compiling weaver-broker v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-broker)
+   Compiling weaver-cli v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.18s
+     Running unittests src/lib.rs (target/debug/deps/weaver_broker-e87efd4ac3577f7f)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_cli-2306698ccb9a79eb)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/main.rs (target/debug/deps/weaver_cli-0948f5c0a9dc82d3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-47845845d2fbd85a)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-a9733b9ead0b9f2e)
+
+running 1 test
+test decoder::duplicate_keys_unknown_fields_and_streams_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_ledger-8ada819d593979a6)
+
+running 1 test
+test enforce_asp_rust_gate ... FAILED
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (7709330) panicked at crates/weaver-ledger/src/lib.rs:8:1:
+[RUST-MOD-R010] Warning: Glob import hides owner scope
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger/tests/unit/properties.rs:2:1
+fix: replace glob import with explicit owner imports
+line: 2 | use proptest::prelude::*;
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger/tests/unit/properties.rs uses prelude glob import `proptest::prelude::*` in test context.
+Contract: Avoid every Rust glob import, including absolute crate globs; import owner names explicitly so module dependencies stay visible.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p weaver-ledger --lib`

@@ -1,0 +1,175 @@
+#+title: Enrollment Credential Proof and Source Evidence
+#+language: en
+#+startup: overview
+
+* Evidence scope
+This leaf expands category 46's independent enrollment-principal premise. It does
+not prove initial identity provisioning, native signatures, storage or final sends.
+The compiled composition imports the actual Weaver predecessor chain; inspection
+of POO Flow and cedar-poo-spec identifies reusable contracts, not a newly compiled
+upstream refinement proof. All current commands and hashes are in this category's
+own evidence directory. Historical receipts remain unchanged.
+
+- [[file:../../../proofs/lean/LlmEnrollmentCredential.lean][Lean source]]
+- [[file:../../../proofs/qunit/LlmEnrollmentCredential.qnt][Quint source]]
+- [[file:../../../proofs/check_llm_enrollment_credential.py][Primary bounded check]]
+- [[file:../../../proofs/prepare_enrollment_credential.py][Source-preserving bundle preparation]]
+- [[file:../../../proofs/check_enrollment_api.py][Official pipeline phase watchdog]]
+- [[file:../../../proofs/run_enrollment_credential.cjs][Official typed pipeline and fresh evaluators]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/receipt.json][Current classification receipt]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/api-invocation.json][Executed source and tool identities]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/typed-stage-summary.json][Immutable official type/effect analysis]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/lean-command.json][Fresh Lean compilation command]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/LlmEnrollmentCredential.log][Printed Lean axiom report]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/counterexample-observations.json][Decoded injected-fault and quarantine observations]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/source-review.json][Pinned source excerpts]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/source-receipt-check.json][Fresh Git blob checks]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/working-source-check.json][Current working-source comparison]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/bundle-certificate.json][Ancestor/current source association]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/four-artifacts.json][Four-artifact mapping]]
+- [[file:../../../proofs/evidence/llm-enrollment-credential/SHA256SUMS][Byte manifest]]
+
+* Source-grounded reuse and extension
+Nineteen pinned blobs and their recorded line excerpts are checked again. Current
+working source hashes are also checked: eighteen match; P17 has only the two
+previously recorded control-plane import changes. No dependency pin is edited.
+
+| Source | Existing mechanism | Required extension / evidence boundary |
+|--------+--------------------+----------------------------------------|
+| P12 authorized-effect-token | Full binding equality, nonce spent state, revocation epoch | Bind subject authentication and enrollment possession to the same full credential; a new ID cannot reopen canonical issuance |
+| P13 strict-mediation | Pure consume before uncertain observation; consumed nonce remains spent | Lost issue/sign/release response resolves the same credential; pure consumed state is not a native credential store |
+| P15 lambda-aitia effect-host | Producer-issued opaque grants, exact host owner, reserve without external effect | Reuse provenance and no-effect staging; weak tables and current-thread identity are not independent subject identity or durable restart state |
+| P17 store-backend | Native storage/owner negotiation contract | Conditional credential/index/request/release/root-outcome append and complete accepted-prefix recovery still require native realization |
+| P18 promotion recovery | Canonical request and exact pre/post/outcome association | Resolve the same issuance body and ID after missing responses; a signer callback is not a new commit decision |
+| P19 authorized recovery bridge | Original authority/claim/source association | Recovery does not allocate another launch, enrollment subject, first-key slot or budget/history domain |
+| P20 committed-effect exactly-once | Conditional trace-level application uniqueness | Compose it through actual Weaver traces; no external exactly-once signature or LLM delivery claim |
+| P22 durable store | Locking/fsync/replay ownership contracts | Accepted outer credential prefix and complete projection qualification are additional requirements; source/account floors alone can stay unchanged |
+| P31 SessionAttempt Lean/Quint | Revision/generation and pending recovery discipline | Old worker/recovery responses add no current observation; stable credential identity outlives transport attempts |
+| P33 budget/watchdog | Timeout does not establish no execution or refund | Enrollment retries never release unknown original holds |
+| P35 context lineage | Current dependency/invalidation association | Frozen original contract cannot be replaced during credential recovery |
+| P43 funs-attempt | Expected-revision CAS, session/turn binding, bounded-coordinate rejection | Authenticate native peer facts; local receipt does not grant runtime publication, durability or effect authority |
+| P44 objects-attempt | Typed identity/generation/anchor vocabulary | Separate subject, subject key, enrollment key, beneficiary key, session and credential ID namespaces |
+| C8 BoundOperation | Bound request equality and proof-bearing authorization | Source explicitly says equality authenticates neither input; host must authenticate the independent subject, keys, channels and actual operation |
+| C10 CompoundAuthorization | Cedar evaluation over compiled POO root and entity snapshot | Authentic issuer/subject facts and atomic current-state application remain native obligations |
+| C11 composition family | Dependency/invalidation composition | No proof of cryptographic enrollment, key provisioning, anti-rollback storage or IO refinement |
+
+P12's expiry comparison permits equality; the Gateway predecessor deliberately
+requires current time strictly below target expiry. No ABI equivalence or automatic
+upstream migration is inferred from this source comparison.
+
+* Four-artifact obligations
+Each row associates one compiled Lean declaration, a concrete passing Quint control,
+this Org obligation and a stable core D2 node. They cover the same design obligation,
+not a machine-checked bisimulation between Lean and Quint. Unsafe fault actions are
+excluded from step; a passing counterexample test detects a missing native contract.
+
+| ID | Obligation | Lean declaration | Quint control | D2 node |
+|----+------------+------------------+---------------+---------|
+| EC1 | Canonical subject/key assignment survives retries | =plan_retained= | =producerAssignmentRequiredTest= | =registry.origin= |
+| EC2 | Credential body survives loss of reply | =credential_retained= | =lostIssueReplyRecoversSameCredentialTest= | =recovery.projection= |
+| EC3 | ID ownership is retained | =id_retained= | =crossLaunchIdCannotBeReusedTest= | =recovery.projection= |
+| EC4 | Signing intent retains the committed body | =request_retained= | =lostSignerReplyRetainsExactIntentTest= | =recovery.join= |
+| EC5 | Released result survives recovery | =release_retained= | =lostSignerReplyRetainsExactIntentTest= | =recovery.join= |
+| EC6 | Root outcome cannot be overwritten | =activation_retained= | =activationCannotRepeatTest= | =broker.cas= |
+| EC7 | Finite recovery never reopens issuance | =credential_run= | =canonicalLaunchCannotReissueTest= | =protocols.acp= |
+| EC8 | Subject and enrollment key cannot be replaced | =no_subject_or_key_replacement= | =authenticatedSubjectCannotNominateKeyTest= | =recovery.projection= |
+| EC9 | Forwarded identity lacks the independent subject key | =forwarded_subject_rejected= | =forwardedSubjectCredentialRejectedTest= | =protocols.mcp= |
+| EC10 | Subject authentication cannot nominate another key | =nominated_enrollment_key_rejected= | =authenticatedSubjectCannotNominateKeyTest= | =protocols.a2a= |
+| EC11 | Issuance proofs bind the selected channel | =issue_session_bound= | =issuanceSessionBoundTest= | =protocols.a2a= |
+| EC12 | Recovery connection is not bootstrap possession | =holder_session_bound= | =recoveredConnectionCannotActivateTest= | =broker.cas= |
+| EC13 | Late callback cannot revive an old epoch | =stale_issuer_rejected= | =lateCallbackAfterRevocationRejectedTest= | =broker.hold= |
+| EC14 | Intervening commits invalidate old observations | =stale_read_rejected= | =interveningCommitInvalidatesReadTest= | =broker.cas= |
+| EC15 | Credentials retain actual authenticated peer facts | =valid_step= | =forgedSubjectCounterexampleTest= | =recovery.projection= |
+| EC16 | Credential provenance holds over finite traces | =valid_run= | =subjectAuthenticationRequiredTest= | =registry.alias= |
+| EC17 | One credential ID cannot identify two launches | =credential_id_unique= | =secondSubjectGetsDistinctIdTest= | =recovery.projection= |
+| EC18 | Only a committed body can reach signing | =requested_step= | =uncommittedBodyCannotReachSignerTest= | =recovery.join= |
+| EC19 | Release requires the original signing intent | =released_step= | =signatureWithoutRequestRejectedTest= | =recovery.join= |
+| EC20 | Every root requires its exact released credential and outcome | =joined_step= | =missingActivationOutcomeCounterexampleTest= | =recovery.fence= |
+| EC21 | Every activation outcome requires an actual root | =outcome_step= | =phantomActivationOutcomeCounterexampleTest= | =broker.cas= |
+| EC22 | Complete joins survive legal transitions | =qualified_step= | =erasedReleaseCounterexampleTest= | =recovery.fence= |
+| EC23 | Recovery cannot silently erase credential authority | =qualified_run= | =erasedCredentialCounterexampleTest= | =recovery.fence= |
+| EC24 | Refreshing parent reads cannot repair a split image | =inconsistent_image_rejected= | =splitRecoveryCannotBindFirstKeyTest= | =broker.alias= |
+| EC25 | Producer assignment has independent provenance | =plan_origin= | =sharedWorkloadCannotAssignSubjectTest= | =registry.origin= |
+| EC26 | Credential derives from an independently assigned subject | =issuance_authorized= | =sharedWorkloadCannotIssueTest= | =registry.alias= |
+| EC27 | Authority changes project to actual predecessor runs | =composition= | =rootActivationDoesNotBindBeneficiaryTest= | =broker.alias= |
+| EC28 | Recovery cannot overwrite the first beneficiary key | =first_key_retained= | =recoveryCannotReplaceFirstKeyTest= | =broker.alias= |
+| EC29 | Original account application remains conditionally unique | =original_reservation_once= | =actualActivationPreservesOriginalBudgetTest= | =broker.hold= |
+| EC30 | Unknown original use preserves its hold | =unknown_original_hold_retained= | =actualActivationPreservesOriginalBudgetTest= | =registry.query= |
+| EC31 | Root activation cannot bind a beneficiary or advance invitation state | =new_root_stages_only= | =rootActivationDoesNotBindBeneficiaryTest= | =broker.alias= |
+| EC32 | Every new root has a live released credential and fresh holder proof | =new_root_has_current_holder= | =releasedCredentialStillNeedsHolderTest= | =broker.cas= |
+
+* Lean premises and composition
+Thirty-two printed declarations are compiled with no sorryAx. Registries are indexed
+by Nat and Run is inductive, covering arbitrary finite populations and traces.
+Valid binds each credential to its immutable Plan, authenticated peer transcript,
+canonical launch and unique ID index. Requested and Released bind signing stages.
+Joined and Outcome constrain both directions of actual predecessor root activation.
+qualified_step and qualified_run derive preservation from constructor guards and
+append rules; they do not assume the entire post-state invariant as a premise.
+
+plan_origin derives independent producer assignment from an empty initial Plan
+registry. issuance_authorized uses the retained Plan and Valid relation. Native
+planAuthorized cannot be implemented as a shared-SA check. verifyIssue authenticates
+both subject-key and enrollment-key proofs for the full body; verifyUse authenticates
+a fresh bootstrap holder transcript. signature covers exactly the committed body.
+They are distinct predicates, not interchangeable booleans in an implementation.
+
+Current adds live credential and predecessor epochs, original Blueprint, current
+revision, authentic current policy and qualified image to historical joins. A
+revocation advances both outer issuer and actual predecessor enrollment epochs.
+The predecessor propagates the downstream invitation-issuer fence. Historical
+rows remain valid provenance; current usability is a separate condition.
+
+composition requires every generic inner edge to have an actual category-46 Run
+witness. Instantiate it with category-46 Step and a one-step Run, retaining its
+native rootAuthorized and durability premises. first_key_retained applies actual
+category-46 no_replacement. Financial theorems apply its actual original account
+uniqueness and unknown-hold theorems with initialized caller/publication/custody/
+account prefixes, safe handoff and original sourceReady-to-OriginalReady binding.
+No initialization, authentic-facts, original-budget or native-durability premise
+is discharged by a credential signature.
+
+A recovered arbitrary map is not a reachable initial state. Pure qualification
+cannot detect a coherent rollback of every table and ID counter. The independent
+accepted-prefix premise must include the entire outer enrollment history. Restore
+below that prefix is rejected before any absence/read certificate or mutation.
+Nat counters do not wrap; bounded native counters must reject exhaustion. Neither
+key-loss migration nor recovery liveness is proved.
+
+* Quint controls and counterexamples
+The new leaf has forty deterministic controls over two canonical launches, two
+independent subjects and one shared workload. It imports fourteen complete ancestor
+transition modules. Parent run declarations alone are omitted; official parsed IR
+comparison checks every non-run ancestor declaration and the entire new raw leaf.
+Full official type/effect analysis occurs once. Each group executes through the
+installed official runTests with a new evaluator and RNG; the typed AST, lookup
+table and collected definitions are fingerprinted before/after each group.
+
+Thirty-four guarded controls exercise current policy/proof requirements, distinct
+IDs, lost replies, signer recovery, stale callback rejection, actual root and
+beneficiary/invitation/custody activation, retained unknown hold and issuer fencing.
+Five unsafe injected faults show forged subject facts, lost credential/release,
+missing activation outcome and phantom outcome. A sixth quarantine control first
+refreshes the raw predecessor read on a split image, records the fully defined
+pre-rejection state, then requires the outer bind action to fail. No post-state is
+claimed for a failed action. Faults are outside legal step; they are not security
+failures of the guarded transition relation.
+
+The fixture proof booleans and authenticated channel assignments are trusted native
+results, never caller-controlled request flags. They do not execute Cedar or a
+cryptographic verifier. new_root_stages_only additionally fixes the entire successor
+predecessor state to the exact root/revision update; new_root_has_current_holder
+extracts the current released credential and fresh holder proof for every new root.
+
+The fixture uses preallocated placeholder map keys for the two credential IDs,
+with a separate authoritative allocated-ID set. Placeholders grant no ownership;
+Lean uses arbitrary Nat-indexed optional maps. The first draft used Map.set on an
+absent key and produced QNT507; that tool/model error and its failed invocation
+are retained in draft-empty-map. It is not counted as a passed security control.
+The initial Lean draft diagnostics are likewise retained in lean-initial.log.
+
+Current evidence is focused deterministic model execution and conditional Lean
+proof. It is not exhaustive state exploration, new random simulation, native
+crypto/storage/SDK testing, recovery liveness, performance qualification or remote
+CI. Predecessor receipts are source-identity reuse, not fresh execution of all
+historical controls or compilation of every ancestor this turn.

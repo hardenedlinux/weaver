@@ -1,0 +1,37 @@
+    Checking weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-contracts)
+    Checking weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-policy)
+    Checking weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+    Checking weaver-broker v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-broker)
+    Checking weaver-cli v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-cli)
+error[E0282]: type annotations needed
+  --> crates/weaver-cli/src/commands.rs:49:13
+   |
+49 |             Ok(())?
+   |             ^^ cannot infer type of the type parameter `E` declared on the enum `Result`
+   |
+help: consider specifying the generic arguments
+   |
+49 |             Ok::<(), E>(())?
+   |               +++++++++
+
+error[E0283]: type annotations needed
+  --> crates/weaver-cli/src/commands.rs:49:13
+   |
+49 |             Ok(())?
+   |             ^^    - type must be known at this point
+   |             |
+   |             cannot infer type of the type parameter `E` declared on the enum `Result`
+   |
+   = note: multiple `impl`s satisfying `weaver_contracts::Error: std::convert::From<_>` found in the following crates: `core`, `weaver_contracts`:
+           - impl std::convert::From<serde_json::Error> for weaver_contracts::Error;
+           - impl<T> std::convert::From<T> for T;
+help: consider specifying the generic arguments
+   |
+49 |             Ok::<(), E>(())?
+   |               +++++++++
+
+Some errors have detailed explanations: E0282, E0283.
+For more information about an error, try `rustc --explain E0282`.
+error: could not compile `weaver-cli` (lib test) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `weaver-cli` (lib) due to 2 previous errors

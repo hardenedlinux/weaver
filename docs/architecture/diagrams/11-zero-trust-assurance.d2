@@ -1,0 +1,132 @@
+# W11: evidence obligations, not an implemented verification pipeline.
+...@lib/theme
+foundation: Scheme Governance + Cedar permission semantics\nGo observations / Rust execution / shared operation contracts {
+  top: 0
+  left: 345
+  width: 540
+  height: 80
+  class: policy
+}
+model: QUINT / CONCURRENT MODEL {
+  top: 200
+  left: 0
+  width: 350
+  height: 460
+  label.near: top-center
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  style.font-size: 18
+  state: Explicit states and actions\nConsume / commit / claim / send {
+    top: 65
+    left: 30
+    width: 290
+    height: 80
+    class: semantic
+  }
+  faults: Concurrent faults and mutations\nLate replies / restore / old workers {
+    top: 190
+    left: 30
+    width: 290
+    height: 80
+    class: semantic
+  }
+  receipt: Counterexamples and reachable paths\nBounded interleaving exploration {
+    top: 315
+    left: 30
+    width: 290
+    height: 80
+    class: semantic
+  }
+}
+proof: LEAN / SEMANTIC PRESERVATION {
+  top: 200
+  left: 440
+  width: 350
+  height: 460
+  label.near: top-center
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  style.font-size: 18
+  meaning: Preserve policy meaning\nExact projection / authenticated inputs {
+    top: 65
+    left: 30
+    width: 290
+    height: 80
+    label.near: center-center
+    class: runtime
+  }
+  relation: Prove guarded transitions\nState / step / safety invariants {
+    top: 190
+    left: 30
+    width: 290
+    height: 80
+    label.near: center-center
+    class: runtime
+  }
+  receipt: Safety under explicit premises\nProjection / preservation / refinement {
+    top: 315
+    left: 30
+    width: 290
+    height: 80
+    label.near: center-center
+    class: runtime
+  }
+}
+physical: RUNTIME / PHYSICAL GUARDS {
+  top: 200
+  left: 880
+  width: 350
+  height: 460
+  label.near: top-center
+  style.fill: "#f7f9fc"
+  style.stroke: "#9cacc2"
+  style.font-size: 18
+  adapters: Scheme sources / Go integrations\nRust coordinator / ledger / broker {
+    top: 65
+    left: 30
+    width: 290
+    height: 80
+    class: ledger
+  }
+  faults: Ledger atomicity / broker isolation\nStop / drain / receiver fencing {
+    top: 190
+    left: 30
+    width: 290
+    height: 80
+    class: ledger
+  }
+  receipt: Physical boundary enforcement\nIdentity / stop / release / isolation {
+    top: 315
+    left: 30
+    width: 290
+    height: 80
+    class: ledger
+  }
+}
+
+admit: Protected execution contract\nLive source / policy / budget / unique claim / final-send guards {
+  top: 800
+  left: 335
+  width: 560
+  height: 90
+  class: verified
+}
+foundation -> model: Model exact owner contracts
+foundation -> proof: Reuse / extend existing owners
+foundation -> physical: Bind runtime premises
+model.state -> model.faults
+model.faults -> model.receipt
+proof.meaning -> proof.relation
+proof.relation -> proof.receipt
+physical.adapters -> physical.faults
+physical.faults -> physical.receipt
+model.faults -> proof.relation: Step relation
+proof.relation -> physical.faults: Trace mapping
+model.receipt -> admit: Concurrent safety contract
+proof.receipt -> admit: Preservation contract
+physical.receipt -> admit: Enforced physical premises
+rule: "Models expose fault schedules. Proofs preserve declared invariants. Runtime enforcement establishes the physical premises.\nEvery operation still needs live source, policy, budget, claim and final-send guards." {
+  shape: text
+  class: note
+  near: bottom-center
+}

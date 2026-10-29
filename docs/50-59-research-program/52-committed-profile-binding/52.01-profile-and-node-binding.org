@@ -1,0 +1,90 @@
+#+TITLE: Full Profile Publication and Canonical Node Binding
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* The gap addressed
+Category 51 constructed refinement while accepting a supplied original template
+and NodeRule. A numeric node label did not establish membership in the original
+routine, and category 13's semantic Contract did not contain all capability,
+context and region fields. This checkpoint supplies an explicit full-profile
+projection and append-only binding model rather than equating caller labels with
+authority. It does not prove the authenticity of a first publication from nothing.
+
+* Full committed descriptor
+A profile content commitment covers the semantic Contract, admitted routine graph,
+unique node IDs, per-node required capabilities, context demand, region, and node
+refinement rule. The rule carries extra requirements, declared targets, a ceiling
+and a context floor. Also bind the native source/Contract/adapter closures and
+canonical encoding profile in publication; they are native closure obligations
+outside the smaller Lean data structure.
+
+Original task admission owns two immutable maps: logical source key to profile
+commitment, and that key to declared node. The assignment is created with the
+canonical task graph and source claim, not by a Go adapter during reconnect.
+Bind original source payload, budget domain and history domain from the same
+source identity. A new nonce or transport session does not allocate another key.
+
+* Publication and binding protocol
+1. Scheme validates the complete graph/Contracts and evaluates only under the
+   admitted publisher/evaluation capability. Require unique node IDs. Authenticate
+   the publisher and verify content against the proposed commitment before first
+   publication. Content-address verification and identity admission are still
+   trusted native obligations, not consequences of a numeric ID.
+2. Publish-if-absent stores the exact descriptor and intent outcome. Repeating the
+   same operation resolves its stored result; different bytes under the same ID
+   are a conflict. A second profile ID may be published without replacing work
+   already bound to the first. Publication does not send or reserve new inference.
+3. Original task admission binds its canonical key to the assigned profile/node
+   only if that profile exists and the node is a member. Construct payload and
+   domains from the source record. Do not accept these fields in an adapter body.
+4. Resolve the bound profile and node; project required capabilities/context/region
+   from that node, then construct category 51's normal form. Mutable catalog data
+   supplies support, cost, availability and ranking facts, never task constraints.
+5. At final consumption, join the current original binding, source/account records,
+   effective Policy/history and owner fence with the queue item. A cached resolved
+   descriptor is not a permit. The existing queue/executor contract still applies.
+
+Use one deciding transaction for publication/binding outcomes and the original
+source claim when practical. If stores are split, reuse the existing authoritative
+outcome/projection join; a profile-store success reply cannot bypass source CAS.
+Bind the outer profile/assignment decision into the accepted prefix even when an
+inner account floor has not changed. The new pure model does not implement that
+durability or cross-store recovery protocol.
+
+* Projection and checked properties
+[[file:../../../dev/proofs/lean/CommittedSemanticProfile.lean][CommittedSemanticProfile]] derives =templateFor= from a resolved node, overriding
+external required/context/region fields. It then calls the existing category 51
+normalizer and routes through actual prior LlmRouting and authoritative-scope
+constructors. The normal form binds the original profile, assigned node, schema,
+required capabilities, context and region. Its allowance remains bounded by the
+original source cost, and catalog membership cannot grant a different task scope.
+
+An initialized run preserves original bindings and published descriptors. A
+conflicting later record cannot replace either. Published graphs remain node-ID
+unique, so two legitimate resolutions of the same binding cannot select different
+nodes. Recovery preserves that node rather than rebuilding an arbitrary template.
+These statements quantify over arbitrary finite node lists and runs in Lean;
+Quint checks a small executable fixture and actual parent dispatch transitions.
+
+* Concurrency and recovery decisions
+| Interleaving | Required result |
+|--------------+-----------------|
+| Two publications compete for one ID | One immutable record; conflict cannot overwrite |
+| Publication commits but reply is lost | Resolve the same ID/intent; no alternative content retry |
+| Binding commits but reply is lost | Recover the same original source assignment and domains |
+| Unrelated profile is published after observation | Original binding stays pinned; no implicit repin |
+| Restart after read, before queue or consume | Old read/fence rejects; recover and observe current authority |
+| Restart with a queued unconsumed item | Rejoin under current owner, same profile/node/key |
+| Restart after consumption | Preserve consumed identity/unknown hold; no new provider attempt |
+| Snapshot loses profile or binding | Reject/quarantine against accepted prefix; do not reconstruct fresh authority |
+| Hard withdrawal of a pinned profile | Current Policy/fence stops next deciding effect; immutable bytes are not perpetual permission |
+
+* Premises retained
+The original assignment and source functions are authoritative inputs, not a
+verified identity provider. The Lean publisher models an admitted owner; it does
+not implement signature or content-hash verification. Its restart preserves
+records by construction, so it proves no physical-storage durability or defense
+against rollback of every trusted copy. The finite Quint commitment oracle
+matches complete expected descriptors, not a cryptographic hash implementation.
+Native codec, final-write owner, source/account join, receipt authentication and
+full asynchronous settlement remain their existing independent gates.

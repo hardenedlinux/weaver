@@ -1,0 +1,16 @@
+{
+  "args": [
+    "elan",
+    "run",
+    "leanprover/lean4:v4.34.1",
+    "lean",
+    "-o",
+    "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-p2jp5mlz/DynamicLoaderPublication.olean",
+    "proofs/lean/DynamicLoaderPublication.lean"
+  ],
+  "exit": 0,
+  "source": "proofs/lean/DynamicLoaderPublication.lean",
+  "sourceSha256": "727d7f74bd029a451805cc7a92a99a171ad44660669d8d12e74b6d22f3d56c2d",
+  "retryCondition": "Own C builders and native runs finished; unchanged formal 20-second limit",
+  "scope": "Auxiliary thin-loader research lemma only; does not establish actual native repair"
+}

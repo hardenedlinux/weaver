@@ -1,0 +1,25 @@
+#+TITLE: Request and publication commitments
+#+LANGUAGE: en
+
+* Workload
+
+Provider request commitments for 128 B, 16 KiB and 512 KiB source payloads; publication commitment for a 16 KiB Policy comment and typed schema.
+
+* Measurement boundary
+
+Canonical hashing and commitment construction. Fixtures are created before timing; byte throughput is reported. This does not measure network transport.
+
+* Entrypoints
+
+Run this package with =cargo bench -p weaver-contracts --all-features --bench gateway --locked --offline -- --noplot=.
+Run the complete measured matrix with =go run ./go/cmd/weaver-dev bench=.
+Criterion is inherited from the workspace as a development dependency.
+Each case uses thirty samples, one second of warm-up and two seconds of requested measurement.
+Compilation or a smoke invocation alone is not a measured baseline.
+
+The Go runner retains environment logs, source hashes, fresh per-case Criterion
+data and an English Org summary. Missing cases fail artifact collection.
+Regression warnings remain evidence even when the benchmark process succeeds;
+these measurements do not establish a production latency or throughput target.
+
+See [[file:../../../docs/50-59-research-program/59-provider-rpc/59.05-benchmarks.org][the workspace benchmark contract]] for the complete matrix and interpretation rules.

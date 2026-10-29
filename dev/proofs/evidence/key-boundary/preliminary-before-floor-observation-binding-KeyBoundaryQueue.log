@@ -1,0 +1,13 @@
+'Weaver.KeyBoundaryQueue.protected_key_epoch_never_rolls_back' depends on axioms: [propext, Quot.sound]
+'Weaver.KeyBoundaryQueue.used_ticket_cannot_be_reissued' depends on axioms: [propext]
+'Weaver.KeyBoundaryQueue.closed_boundary_cannot_release' depends on axioms: [propext]
+'Weaver.KeyBoundaryQueue.every_new_export_checks_current_handle' does not depend on any axioms
+'Weaver.KeyBoundaryQueue.handle_identity_never_retags' depends on axioms: [propext]
+'Weaver.KeyBoundaryQueue.initialized_queue_safety' depends on axioms: [propext, Quot.sound]
+'Weaver.KeyBoundaryQueue.initialized_product_refines_release' does not depend on any axioms
+'Weaver.KeyBoundaryQueue.actual_exported_prefixes_cannot_conflict' depends on axioms: [propext, Quot.sound]
+'Weaver.KeyBoundaryQueue.original_consumption_and_settlement_remain_unique' depends on axioms: [propext, Quot.sound]
+'Weaver.KeyBoundaryQueue.original_budget_remains_conserved' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.KeyBoundaryQueue.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

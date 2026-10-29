@@ -1,0 +1,25 @@
+proofs/lean/LlmCanonicalRegistry.lean:192:38: warning: Variable name `run` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _run
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'Weaver.LlmCanonicalRegistry.continuation_projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.initialized_registry_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.registration_is_original' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.aliases_resolve_registered_original' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.alias_keys_cannot_rebind' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.registration_is_never_replaced' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.stale_registry_revision_blocks_use' does not depend on any axioms
+'Weaver.LlmCanonicalRegistry.stale_registry_fence_blocks_use' does not depend on any axioms
+'Weaver.LlmCanonicalRegistry.missing_registry_projection_blocks_use' depends on axioms: [propext]
+'Weaver.LlmCanonicalRegistry.projection_restore_never_assigns_authority' does not depend on any axioms
+'Weaver.LlmCanonicalRegistry.resolution_is_not_consumption' does not depend on any axioms
+'Weaver.LlmCanonicalRegistry.owner_fence_never_decreases' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.original_pending_is_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.family_winner_is_never_replaced' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.original_claim_stays_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmCanonicalRegistry.original_profile_stays_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.original_allowance_stays_bounded' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.original_domains_stay_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCanonicalRegistry.unknown_usage_retains_hold' depends on axioms: [propext, Quot.sound]

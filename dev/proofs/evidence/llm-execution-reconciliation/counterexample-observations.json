@@ -1,0 +1,666 @@
+[
+  {
+    "name": "burnOnly",
+    "path": "proofs/evidence/llm-execution-reconciliation/itf/burnOnlyReconciliationCounterexampleTest-1.itf.json",
+    "states": 15,
+    "finalSourceCalls": 0,
+    "finalDispatchCalls": 0,
+    "final": {
+      "accountView": 0,
+      "conflict": false,
+      "decisions": [
+        {
+          "burns": 1,
+          "calls": 0,
+          "cut": 0,
+          "key": {
+            "budget": 5,
+            "claim": 11,
+            "hi": 4,
+            "history": 9,
+            "lo": 0,
+            "profile": 30,
+            "root": 10,
+            "slot": 11
+          },
+          "kind": 1,
+          "submitted": false
+        }
+      ],
+      "dispatchView": 0,
+      "epoch": 0,
+      "payments": [],
+      "qualified": true,
+      "released": 0,
+      "sealed": true,
+      "source": [],
+      "sourceView": 0,
+      "terminalEvidence": false,
+      "usage": -1,
+      "usageEvidence": false
+    }
+  },
+  {
+    "name": "changedClaim",
+    "path": "proofs/evidence/llm-execution-reconciliation/itf/changedClaimReconciliationCounterexampleTest-5.itf.json",
+    "states": 19,
+    "finalSourceCalls": 0,
+    "finalDispatchCalls": 1,
+    "final": {
+      "accountView": 0,
+      "conflict": false,
+      "decisions": [
+        {
+          "burns": 1,
+          "calls": 1,
+          "cut": 0,
+          "key": {
+            "budget": 5,
+            "claim": 11,
+            "hi": 4,
+            "history": 9,
+            "lo": 0,
+            "profile": 30,
+            "root": 10,
+            "slot": 11
+          },
+          "kind": 2,
+          "submitted": true
+        }
+      ],
+      "dispatchView": 1,
+      "epoch": 0,
+      "payments": [],
+      "qualified": true,
+      "released": 0,
+      "sealed": true,
+      "source": [
+        {
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 12,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "worker": 0
+        }
+      ],
+      "sourceView": 0,
+      "terminalEvidence": true,
+      "usage": -1,
+      "usageEvidence": false
+    }
+  },
+  {
+    "name": "duplicatePayment",
+    "path": "proofs/evidence/llm-execution-reconciliation/itf/duplicatePaymentReconciliationCounterexampleTest-9.itf.json",
+    "states": 23,
+    "finalSourceCalls": 0,
+    "finalDispatchCalls": 1,
+    "final": {
+      "accountView": 1,
+      "conflict": false,
+      "decisions": [
+        {
+          "burns": 1,
+          "calls": 1,
+          "cut": 0,
+          "key": {
+            "budget": 5,
+            "claim": 11,
+            "hi": 4,
+            "history": 9,
+            "lo": 0,
+            "profile": 30,
+            "root": 10,
+            "slot": 11
+          },
+          "kind": 2,
+          "submitted": true
+        }
+      ],
+      "dispatchView": 1,
+      "epoch": 0,
+      "payments": [
+        {
+          "amount": 2,
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "released": 1,
+          "worker": 0
+        },
+        {
+          "amount": 0,
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "released": 3,
+          "worker": 0
+        }
+      ],
+      "qualified": true,
+      "released": 3,
+      "sealed": true,
+      "source": [
+        {
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "worker": 0
+        }
+      ],
+      "sourceView": 1,
+      "terminalEvidence": true,
+      "usage": 2,
+      "usageEvidence": true
+    }
+  },
+  {
+    "name": "duplicateSource",
+    "path": "proofs/evidence/llm-execution-reconciliation/itf/duplicateSourceReconciliationCounterexampleTest-4.itf.json",
+    "states": 20,
+    "finalSourceCalls": 0,
+    "finalDispatchCalls": 1,
+    "final": {
+      "accountView": 0,
+      "conflict": false,
+      "decisions": [
+        {
+          "burns": 1,
+          "calls": 1,
+          "cut": 0,
+          "key": {
+            "budget": 5,
+            "claim": 11,
+            "hi": 4,
+            "history": 9,
+            "lo": 0,
+            "profile": 30,
+            "root": 10,
+            "slot": 11
+          },
+          "kind": 2,
+          "submitted": true
+        }
+      ],
+      "dispatchView": 1,
+      "epoch": 0,
+      "payments": [],
+      "qualified": true,
+      "released": 0,
+      "sealed": true,
+      "source": [
+        {
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "worker": 0
+        },
+        {
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "worker": 0
+        }
+      ],
+      "sourceView": 1,
+      "terminalEvidence": true,
+      "usage": -1,
+      "usageEvidence": false
+    }
+  },
+  {
+    "name": "fullAsTerminal",
+    "path": "proofs/evidence/llm-execution-reconciliation/itf/fullAsTerminalReconciliationCounterexampleTest-2.itf.json",
+    "states": 17,
+    "finalSourceCalls": 0,
+    "finalDispatchCalls": 1,
+    "final": {
+      "accountView": 0,
+      "conflict": false,
+      "decisions": [
+        {
+          "burns": 1,
+          "calls": 1,
+          "cut": 0,
+          "key": {
+            "budget": 5,
+            "claim": 11,
+            "hi": 4,
+            "history": 9,
+            "lo": 0,
+            "profile": 30,
+            "root": 10,
+            "slot": 11
+          },
+          "kind": 2,
+          "submitted": true
+        }
+      ],
+      "dispatchView": 0,
+      "epoch": 0,
+      "payments": [],
+      "qualified": true,
+      "released": 0,
+      "sealed": false,
+      "source": [],
+      "sourceView": 0,
+      "terminalEvidence": false,
+      "usage": -1,
+      "usageEvidence": false
+    }
+  },
+  {
+    "name": "lateUsage",
+    "path": "proofs/evidence/llm-execution-reconciliation/itf/lateUsageReconciliationCounterexampleTest-7.itf.json",
+    "states": 23,
+    "finalSourceCalls": 0,
+    "finalDispatchCalls": 1,
+    "final": {
+      "accountView": 1,
+      "conflict": false,
+      "decisions": [
+        {
+          "burns": 1,
+          "calls": 1,
+          "cut": 0,
+          "key": {
+            "budget": 5,
+            "claim": 11,
+            "hi": 4,
+            "history": 9,
+            "lo": 0,
+            "profile": 30,
+            "root": 10,
+            "slot": 11
+          },
+          "kind": 2,
+          "submitted": true
+        }
+      ],
+      "dispatchView": 1,
+      "epoch": 0,
+      "payments": [
+        {
+          "amount": 2,
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "released": 1,
+          "worker": 0
+        }
+      ],
+      "qualified": true,
+      "released": 1,
+      "sealed": true,
+      "source": [
+        {
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "worker": 0
+        }
+      ],
+      "sourceView": 1,
+      "terminalEvidence": true,
+      "usage": 0,
+      "usageEvidence": true
+    }
+  },
+  {
+    "name": "missingUsage",
+    "path": "proofs/evidence/llm-execution-reconciliation/itf/missingUsageReconciliationCounterexampleTest-6.itf.json",
+    "states": 20,
+    "finalSourceCalls": 0,
+    "finalDispatchCalls": 1,
+    "final": {
+      "accountView": 0,
+      "conflict": false,
+      "decisions": [
+        {
+          "burns": 1,
+          "calls": 1,
+          "cut": 0,
+          "key": {
+            "budget": 5,
+            "claim": 11,
+            "hi": 4,
+            "history": 9,
+            "lo": 0,
+            "profile": 30,
+            "root": 10,
+            "slot": 11
+          },
+          "kind": 2,
+          "submitted": true
+        }
+      ],
+      "dispatchView": 1,
+      "epoch": 0,
+      "payments": [
+        {
+          "amount": 0,
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "released": 3,
+          "worker": 0
+        }
+      ],
+      "qualified": true,
+      "released": 3,
+      "sealed": true,
+      "source": [
+        {
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "worker": 0
+        }
+      ],
+      "sourceView": 1,
+      "terminalEvidence": true,
+      "usage": -1,
+      "usageEvidence": false
+    }
+  },
+  {
+    "name": "oldWorker",
+    "path": "proofs/evidence/llm-execution-reconciliation/itf/oldWorkerReconciliationCounterexampleTest-8.itf.json",
+    "states": 23,
+    "finalSourceCalls": 0,
+    "finalDispatchCalls": 1,
+    "final": {
+      "accountView": -1,
+      "conflict": false,
+      "decisions": [
+        {
+          "burns": 1,
+          "calls": 1,
+          "cut": 0,
+          "key": {
+            "budget": 5,
+            "claim": 11,
+            "hi": 4,
+            "history": 9,
+            "lo": 0,
+            "profile": 30,
+            "root": 10,
+            "slot": 11
+          },
+          "kind": 2,
+          "submitted": true
+        }
+      ],
+      "dispatchView": -1,
+      "epoch": 1,
+      "payments": [
+        {
+          "amount": 0,
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 1,
+          "released": 3,
+          "worker": 0
+        }
+      ],
+      "qualified": false,
+      "released": 3,
+      "sealed": true,
+      "source": [
+        {
+          "decision": {
+            "burns": 1,
+            "calls": 1,
+            "cut": 0,
+            "key": {
+              "budget": 5,
+              "claim": 11,
+              "hi": 4,
+              "history": 9,
+              "lo": 0,
+              "profile": 30,
+              "root": 10,
+              "slot": 11
+            },
+            "kind": 2,
+            "submitted": true
+          },
+          "epoch": 0,
+          "worker": 0
+        }
+      ],
+      "sourceView": -1,
+      "terminalEvidence": true,
+      "usage": 2,
+      "usageEvidence": true
+    }
+  },
+  {
+    "name": "sourceZero",
+    "path": "proofs/evidence/llm-execution-reconciliation/itf/sourceZeroReconciliationCounterexampleTest-0.itf.json",
+    "states": 16,
+    "finalSourceCalls": 0,
+    "finalDispatchCalls": 1,
+    "final": {
+      "accountView": 0,
+      "conflict": false,
+      "decisions": [
+        {
+          "burns": 1,
+          "calls": 1,
+          "cut": 0,
+          "key": {
+            "budget": 5,
+            "claim": 11,
+            "hi": 4,
+            "history": 9,
+            "lo": 0,
+            "profile": 30,
+            "root": 10,
+            "slot": 11
+          },
+          "kind": 1,
+          "submitted": true
+        }
+      ],
+      "dispatchView": 0,
+      "epoch": 0,
+      "payments": [],
+      "qualified": true,
+      "released": 0,
+      "sealed": true,
+      "source": [],
+      "sourceView": 0,
+      "terminalEvidence": false,
+      "usage": -1,
+      "usageEvidence": false
+    }
+  },
+  {
+    "name": "unknownRefund",
+    "path": "proofs/evidence/llm-execution-reconciliation/itf/unknownRefundReconciliationCounterexampleTest-3.itf.json",
+    "states": 16,
+    "finalSourceCalls": 0,
+    "finalDispatchCalls": 1,
+    "final": {
+      "accountView": 0,
+      "conflict": false,
+      "decisions": [],
+      "dispatchView": 0,
+      "epoch": 0,
+      "payments": [],
+      "qualified": true,
+      "released": 3,
+      "sealed": false,
+      "source": [],
+      "sourceView": 0,
+      "terminalEvidence": false,
+      "usage": -1,
+      "usageEvidence": false
+    }
+  }
+]

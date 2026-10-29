@@ -1,0 +1,20 @@
+#+title: Weaver Execution Reconciliation Index
+#+language: en
+#+options: toc:2
+
+* Execution evidence precedes source terminal and financial release
+
+Area =20-29 Execution authority=; category =23 Execution reconciliation=.
+This extends [[file:../22-executor-offer/22.00-index.org][22 Executor offer]] from original dispatch execution into source reconciliation
+and application of the original reservation's unused remainder.
+
+| ID | Artifact |
+|----+----------|
+| 23.00 | This index |
+| 23.01 | [[file:23.01-execution-evidence-chain.org][Execution evidence, terminal decisions and original budget release]] |
+| 23.02 | [[file:23.02-execution-reconciliation.d2][Core D2]] / [[file:23.02-execution-reconciliation.svg][SVG]] |
+| 23.03 | [[file:23.03-proof-and-source-evidence.org][Composition proofs, source audit and executable counterexamples]] |
+
+Formal artifacts: [[file:../../../dev/proofs/lean/LlmExecutionReconciliation.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmExecutionReconciliation.qnt][Quint]].
+Run [[file:../../../dev/proofs/check_llm_execution_reconciliation.py][the isolated checker]]. Maintained documents and diagrams are English only.
+No Gateway implementation, dependency pin or historical sealed artifact is changed.

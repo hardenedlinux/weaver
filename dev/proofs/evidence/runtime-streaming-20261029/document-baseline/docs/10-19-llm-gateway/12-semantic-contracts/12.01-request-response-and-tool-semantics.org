@@ -1,0 +1,223 @@
+#+title: Weaver LLM Request, Response and Tool Semantic Contracts
+#+language: en
+#+options: toc:3
+
+* Product purpose and differentiation
+
+A unified LLM Gateway must expose useful chat, response, streaming and tool-call
+interfaces across model deployments. Catalog and routing choose a capable target;
+provider conversion must then preserve the task's declared constraints. A model
+that is nominally available is not eligible if its selected protocol cannot
+express a required constraint. This matters for model fallback as much as initial
+routing: lower price or better latency cannot justify dropping a required tool
+choice, schema, role distinction, data boundary or budget domain.
+
+Weaver's advantage is to carry POO Flow's canonical task and Policy semantics
+through that entire path. The same contract identifies what the router requires,
+what the encoder must preserve, what Cedar authorizes at final send, what the
+stream validator may release and what a later tool effect must independently
+authorize. Provider adapters remain reusable ecosystem integrations. They cannot
+become a second policy language or a source of execution grants.
+
+This is protocol-contract preservation, not a theorem that two models produce
+the same answer or assign the same meaning to natural language. Role precedence,
+reasoning behavior, prompt injection resistance and generation quality require
+provider qualification and task evaluations. Zero Trust requires executable
+boundaries even when model output is malicious or misleading.
+
+* Canonical request and capability negotiation
+
+| Contract field | Required meaning | Conversion rule |
+|----------------+------------------+-----------------|
+| Task identity | Original root, canonical input digest, tenant and principal | Preserve root and canonical claim through every child attempt |
+| Conversation | Ordered roles, ordered content blocks, call/result edges and trust labels | Preserve required order and distinctions; reject unsupported mappings |
+| Tool declarations | Stable qualified identities, schemas, allowed subset, forced/required/none choice, parallel constraint | Injective aliases with an immutable inverse; no silent expansion or dropping |
+| Output contract | Text, schema-validated document, declared stream framing, refusal/error behavior | Use the declared validation and disclosure profile |
+| Attachments | Exact source identity, content digest, MIME/type, size and permitted destination | Resolve authorized bytes; a remote URL is not permission for provider-side fetch |
+| Generation bounds | Context/output limits, candidate count and conservative cost bound | Binding limits before allocation and actual encoding |
+| Governance context | History domain, budget domain, current policy and publication | Bind actual operation and recheck current authority at final admission |
+| Extension fields | Explicit provider-specific semantics and trust category | Support by a qualified contract or reject; never silently discard security-relevant fields |
+
+The strict baseline requires an exact declared semantic projection after
+provider encoding. When a provider merges system/developer roles, rewrites tool
+choice or cannot support an allowed-tools subset, it is ineligible for that
+strict contract. An explicitly approved alternate profile may define a different
+projection before authorization, with a new contract digest and compatible task
+scope. It is not a post-authorization mutation of the same request or a fresh
+budget/history domain. A prompt that asks the model to imitate an unsupported
+feature is not equivalent to native enforcement of that feature.
+
+The baseline permits one candidate per attempt. A provider option such as =n > 1=
+cannot silently multiply generation, billing or tool proposals. Supporting
+multiple candidates requires candidate-scoped winner, range and cost contracts;
+it is outside this baseline. Unexpected extra candidates are not authorized
+output or effects, and any attributable charge still needs reconciliation.
+
+The formal =Semantics= projection includes canonical input, ordered roles, tool
+identities, output schema, tool choice, parallel flag and single-candidate constraint. The sealed internal control
+envelope separately binds response validation mode and history/budget domains;
+these private governance fields do not need to be sent to the LLM provider.
+Production contracts also need the attachment, content-block and generation
+fields above. Their native representation and refinement are open obligations;
+the current finite projection is not a complete public API schema.
+
+* Seal actual wire data before child admission
+
+A qualified encoding binds original root, child ordinal, actual provider/model,
+endpoint publication, canonical input, codec profile, alias table, body digest,
+internal governance envelope, credential scope and required policy layers. Encode into an immutable bounded
+body or immutable manifest. Compute the actual body's digest and semantic
+projection, then compare them with the admitted contract. Include any mutable
+header that changes model, destination or semantics in the binding. Secrets stay
+in a scoped credential reference; policy logs do not expose credentials.
+
+=WireValid= checks root, attempt, target, manifest, body digest, decoded payload projection,
+separately bound control metadata and qualified tool-name mapping. The Lean =EncodingBridge= explicitly matches
+that wire to an existing =ChildCall= record's root, ordinal, target, manifest and
+canonical payload. =ChildCall= carries the exact prerequisites of the existing
+attempt-ledger invocation and refines to its actual =Step.invoke=. This preserves
+its shared-root allocation and one-call constraints. The bridge is checked
+composition at an invocation boundary, not a native implementation proof.
+
+The scope is resolved from original task sponsorship, never accepted as caller
+assertion. Final send Policy must compare its private domains and response mode
+with that authoritative root record. The present formal bridge checks a supplied
+scope, not the complete upstream registry-to-scope attestation path.
+
+Rust seals and owns the final body/manifest and last send queue. Mutable SDK
+request objects cannot be changed after seal. A model header rewrite, redirect,
+codec change or body replacement invalidates the binding and must return through
+selection/encoding and the appropriate child authorization. A generic request
+replay is not a new permission. The immutable body check is separate from the
+current policy/history/owner-epoch check: valid old bytes can still lack current
+authority to send.
+
+A lost consume reply or crash before enqueue follows category [[file:../../30-39-assurance/37-broker-consumption-queue/37.00-index.org][37]]: retain the
+spent record and unknown result; no same-child replay. Restart preserves the
+sealed representation and consumption, retires old invocation eligibility and
+requires the original child ledger for any new authorized attempt. Raising a
+worker epoch alone cannot make an uncalled old child runnable. Data recovery may
+reconcile that child without recreating its send capability.
+
+* Canonical streaming events and disclosure
+
+Every accepted frame is attributed to the original root, actual child attempt,
+provider request, candidate and event/call position. Stable internal call keys
+include the attempt and candidate; provider-supplied IDs are not globally trusted
+logical identities. Alias restoration uses the exact sealed map. Never reconstruct
+a map from a later catalog or accept a colliding unqualified tool name.
+
+| Event class | Validation | Consumer contract |
+|-------------+------------+-------------------|
+| Text delta | Envelope, ordering, current disclosure policy and content rules | Partial text; no claim of final document validity |
+| Tool argument fragment | Exact source/call/sequence, bounded assembly, valid framing | Untrusted data; cannot execute a tool |
+| Completed tool proposal | Explicit qualified completion, exact assembled bytes, strict parse and tool schema | Typed proposal; still no execution authority |
+| Structured document | Complete framing and full schema validation within bounded storage | Release as validated document only after success |
+| Refusal, truncation or error | Exact source and finish reason | Typed outcome; not a fabricated successful response |
+| Usage observation | Exact attempt and attributable finality | Internal accounting data under category 11; not a refund instruction |
+
+Winner CAS precedes the first visible prefix. Every later release checks that the
+same child remains the committed winner and uses current disclosure policy,
+owner fencing and range consumption from [[file:../../30-39-assurance/38-logical-range-recovery/38.00-index.org][38]]. A previous successful check or
+validated manifest cannot permit an old worker to release another range. Client
+reconnect cannot select a new candidate or splice another model's output tail.
+The semantic model checks event-source binding, current release preconditions
+and event ordinals; it does not model byte-range offsets or the complete product
+of the asynchronous range, winner, account and store protocols.
+
+A syntactically valid JSON prefix does not prove that the eventual document will
+satisfy its schema. The baseline validated-document profile buffers a bounded
+complete document before release. If that bound is exceeded or the document is
+truncated, fail that contract without emitting a success. A product may expose
+raw partial JSON explicitly as unvalidated data; it must not label it a validated
+document or execute it. Independently validated incremental records require a
+separately declared framing/schema profile; they are not the same contract as a
+single JSON document and are not implemented by this model.
+
+Content checks that require future suffixes must hold the relevant output until
+their decision is available. Once disclosed, bytes cannot be recalled. Schema
+validation does not establish confidentiality, harmlessness or instruction
+following. Disclosure Policy and content controls remain distinct gates.
+
+* Tool assembly, proposals and effect admission
+
+Bound individual argument bytes and the number of active calls, as well as total
+stream/request buffers and queue residence. The formal model checks each buffer
+and the finite call-count cap; native byte sizes, total allocator overhead and
+wall-clock residence remain integration requirements. Append only source-bound
+fragments at the next per-call sequence. Reject duplicate/reordered fragments
+unless a qualified protocol deduplicates the same identity and bytes. A completed
+call cannot receive further argument fragments. Unknown names, ambiguous aliases,
+multiple JSON documents, duplicate object keys, invalid UTF-8, malformed numbers
+and unsupported schema features follow a declared strict-parser policy.
+
+Provider EOF, timeout, =max_tokens=, a parseable prefix or canceled future is not a
+qualified tool completion. A delayed, attributable completion can reconcile an
+old child after restart, but cannot grant it execution or disclosure authority.
+An empty argument string may normalize to an empty object only under a declared
+profile that permits it; a failed parse must not silently become a valid object.
+
+Tool execution needs a distinct actual-operation admission with exact qualified
+tool identity, complete argument digest, principal, parent root/claim, current
+history and the existing shared budget domain. Inference sponsorship and model
+output are not that admission. Every parallel tool effect needs its own action
+slot and allowance within the governing task graph. A new tool call ID or tool
+result cannot mint a new tenant budget/history domain. External tool side effects
+also need their own retry/idempotency contract; category 11's non-tool duplicate-
+generation permission does not apply to them.
+
+The new model intentionally has no tool-execution transition and proves zero
+implicit tool effects for its event path. This proves separation within that
+model, not safety of an arbitrary application that executes raw tool deltas.
+The downstream tool broker must independently satisfy the existing admission and
+consumption contracts. Even a winner's validated proposal is data until then.
+Proposals from a losing attempt may be retained as attributable diagnostics;
+they cannot be disclosed or promoted to effects merely because parsing succeeded.
+
+* Language and policy boundaries
+
+| Component | Responsibility | Required cross-language contract |
+|-----------+----------------+----------------------------------|
+| Scheme / POO Flow | Canonical task/semantic projection, tool and schema semantics, budget/history domain ownership, Code as Policy | Typed immutable contract and digest; explicit supported transformations and all required Cedar layers |
+| Go | Kubernetes capability publication, provider/workload identities, SDK ecosystem integration and provider observations | Typed capability/codec profiles and source-bound data; no independent grant, retry or refund authority |
+| Rust | Canonical protocol runtime, final encoding seal, bounded parser/assembly, actual child admission, winner/range disclosure | Exact body/manifest and actual target; current Policy, authoritative spent-state and owner epoch at final handoff |
+| Cedar | Decide the typed actual operation under all required Policy layers | Validate the actual request schema and evaluator inputs; deny/indeterminate closes the gate |
+| Quint | Explore ordering, mutation, malformed projections, partial messages and restart controls | Explicit unsafe variants and observable counterexample states |
+| Lean | Prove projection/source/buffer preservation and refine typed child invocation | State external codec, schema, observation, storage and release-owner premises explicitly |
+
+Go's cloud-native and provider ecosystems are useful without forcing a Go SDK
+onto every token path. Rust may implement a provider protocol directly when that
+keeps the final queue and bounded streaming efficient. A Go adapter can return a
+candidate encoding or normalized observation, but Rust must seal and validate its
+actual operation before send. Avoid a Scheme/Go/Rust round trip per token when a
+bounded immutable contract and in-process checks suffice. Benchmark parser cost,
+copying, schema validation, first-token delay, backpressure and maximum held memory
+with realistic text/tool/schema workloads before claiming performance.
+
+* Source-grounded reuse and extensions
+
+The [[file:../../../proofs/evidence/llm-semantic-contract/source-review.json][POO Flow / Cedar register]] freshly verifies 18 pinned blobs. The
+[[file:../../../proofs/evidence/llm-semantic-contract/agentgateway-source-review.json][agentgateway register]] verifies 12 pinned blobs, including request-role,
+namespace/tool-choice and conversion boundaries. Snapshot identities remain in
+evidence, not core diagrams; no upstream code or dependency pin is changed.
+
+| Source | What can be reused | What cannot be inferred |
+|--------+--------------------+-------------------------|
+| P12/P13 token and strict mediation | Actual-operation binding and consumed nonce retained on unknown | A pure transition is not durable spent-state publication or a provider codec certificate |
+| P15 effect host | Exact serialized owner and consumption before handoff | Local non-durable host is not a distributed stream/tool authority |
+| P17/P22 store; P18/P19 recovery | Runtime persistence and source-bound reconciliation contracts | Native parser state, alias maps, frame positions and immutable buffer recovery need new records |
+| P31/P43 SessionAttempt | Input identity, source/contract/profile digests and generation/CAS recovery intents | Pure intents do not issue tool grants or prove remote completion |
+| P20/P33/P35 proof contracts | Preserve supplied effect coverage, separate budgets and context lineage | Do not obtain provider exactly-once, native byte semantics or billing finality |
+| C8 BoundOperation | Bind actual effect/state and Host authorization inputs | New semantic projection, child wire and tool operation schemas need explicit qualification |
+| C10 CompoundAuthorization | Every required nonempty layer must allow without evaluation errors | Codec validity or model output is not an Allow decision |
+| C11 Composition | Aligned validation/evaluation proof obligations | Typed Cedar composition does not prove native encoding, parser correctness or network delivery |
+| AGL4 request/response/stream contexts | Preserve conversion state, model identity and tool maps across the stream | Generic conversion support does not establish Weaver's strict projection |
+| AGL5 conversion/mod.rs | Explicit empty-argument handling and preservation of malformed/non-object values as data | Preserved data is not schema-valid executable arguments |
+| AGS11 conversion/messages.rs | Concrete role, tool-choice, parallel and response-format translations | Merging system/developer roles, dropping unsupported tools or unset strictness cannot meet every strict contract |
+| AGS12 namespace_tools.rs | Reject alias collisions, ambiguous choices and unsupported allowed-tools constraints; discard partial rewrites on error | A partially rewritten failed request must never reach the broker |
+| AGL10 golden tests | Representative request/response/stream conversion fixtures | Snapshot equality alone does not prove semantic preservation or Policy admission |
+
+Strict rejection of an unsupported conversion is an intentional compatibility
+boundary. It keeps fallback inside declared task semantics. Provider-specific
+conformance fixtures and task evaluations can expand qualified coverage later.
+This is a design and formal-model change; no provider codec is implemented here.

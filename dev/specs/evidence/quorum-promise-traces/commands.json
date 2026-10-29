@@ -1,0 +1,367 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.671,
+    "exit": 0
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.72,
+    "exit": 0
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.675,
+    "exit": 0
+  },
+  {
+    "label": "AnchoredRecoveryAndEgress",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/AnchoredRecoveryAndEgress.olean",
+      "specs/lean/AnchoredRecoveryAndEgress.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.729,
+    "exit": 0
+  },
+  {
+    "label": "ComposedGatewayLifecycle",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/ComposedGatewayLifecycle.olean",
+      "specs/lean/ComposedGatewayLifecycle.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.617,
+    "exit": 0
+  },
+  {
+    "label": "FiniteStreamManifest",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/FiniteStreamManifest.olean",
+      "specs/lean/FiniteStreamManifest.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.784,
+    "exit": 0
+  },
+  {
+    "label": "DriverCompletionRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/DriverCompletionRecovery.olean",
+      "specs/lean/DriverCompletionRecovery.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.61,
+    "exit": 0
+  },
+  {
+    "label": "WriterSettlementClosure",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/WriterSettlementClosure.olean",
+      "specs/lean/WriterSettlementClosure.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.663,
+    "exit": 0
+  },
+  {
+    "label": "SettlementAnchorRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/SettlementAnchorRecovery.olean",
+      "specs/lean/SettlementAnchorRecovery.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.662,
+    "exit": 0
+  },
+  {
+    "label": "GateConsumptionPersistence",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/GateConsumptionPersistence.olean",
+      "specs/lean/GateConsumptionPersistence.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.564,
+    "exit": 0
+  },
+  {
+    "label": "AnchorBrokerCommit",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/AnchorBrokerCommit.olean",
+      "specs/lean/AnchorBrokerCommit.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.67,
+    "exit": 0
+  },
+  {
+    "label": "AnchorReconfiguration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/AnchorReconfiguration.olean",
+      "specs/lean/AnchorReconfiguration.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.909,
+    "exit": 0
+  },
+  {
+    "label": "QuorumDurablePromises",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-quorum-promise-final-proof/QuorumDurablePromises.olean",
+      "specs/lean/QuorumDurablePromises.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.507,
+    "exit": 0
+  },
+  {
+    "label": "typecheck",
+    "args": [
+      "quint",
+      "typecheck",
+      "specs/quint/QuorumDurablePromises.qnt"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.704,
+    "exit": 0
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "specs/quint/QuorumDurablePromises.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1"
+    ],
+    "watchdogSeconds": 55,
+    "seconds": 0.777,
+    "exit": 0
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "quint",
+      "test",
+      "specs/quint/QuorumDurablePromises.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "CounterexampleTest$",
+      "--out-itf",
+      "specs/evidence/quorum-promise-traces/itf/{test}-{seq}.itf.json"
+    ],
+    "watchdogSeconds": 55,
+    "seconds": 0.722,
+    "exit": 0
+  },
+  {
+    "label": "init",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/QuorumDurablePromises.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "61",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 0.816,
+    "exit": 0
+  },
+  {
+    "label": "committed",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/QuorumDurablePromises.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "committed",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "61",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 0.781,
+    "exit": 0
+  },
+  {
+    "label": "joint",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/QuorumDurablePromises.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "joint",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "61",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 0.94,
+    "exit": 0
+  },
+  {
+    "label": "replacement",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/QuorumDurablePromises.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "replacement",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "61",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 1.189,
+    "exit": 0
+  },
+  {
+    "label": "inherited-account-replay",
+    "args": [
+      "quint",
+      "test",
+      "specs/quint/AnchorReconfiguration.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^disjointReplacementReplaysActualApplicationCounterexampleTest$"
+    ],
+    "watchdogSeconds": 55,
+    "seconds": 5.711,
+    "exit": 0
+  }
+]

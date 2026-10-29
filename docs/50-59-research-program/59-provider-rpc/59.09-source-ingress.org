@@ -1,0 +1,167 @@
+#+TITLE: 59.09 Independent Source Ingress and Authority Binding
+#+LANGUAGE: en
+
+* Problem and resulting boundary
+
+Independent native publication capacity did not make a new source connection
+available when execution callers filled the single TCP accept budget. Source
+publication now has its own mTLS gRPC listener and bounded connection pool. The
+operation listener retains sixteen connections and the source listener admits
+four. Each pool includes its TLS handshakes and listener reservation; neither
+borrows from the other. The accepted-socket bound for one live process is twenty,
+not a cluster quota. Per-connection HTTP/2/request ceilings and the existing
+native execution/publication/observation lanes remain in force.
+
+Both listeners use the same typed Protobuf service definition, but server-owned
+ingress roles restrict methods. ExecuteProvider and Inspect belong to operation
+ingress. RegisterTask and PublishAuthority belong to source ingress. Role is not
+selected by a request field, routing hint, metadata or claimed Kubernetes subject.
+Each ingress authenticates its own pinned leaf and bearer digest before request
+body decoding; each method also rejects a different ingress role before native
+admission or state mutation. A valid source caller cannot execute a provider
+through the source listener, and an operation caller cannot publish authority.
+
+Source and operation leaf digests must be nonzero and distinct. Their bearer
+digests must also be nonzero and distinct. The certificate pin is SHA-256 of
+the complete leaf DER, as before. Distinct DER pins alone do not prove distinct
+SPKI/private keys; provisioning must issue and protect separate key pairs. The
+native fixtures do so, even while the certificates share an issuer and workload
+subject. A forwarded source bearer with an operation certificate fails source
+authentication. TLS and a shared workload name do not establish source authority.
+
+This is an intentional direct API change: serve_grpc accepts named operation and
+source listeners. The shared-listener publication route is removed rather than
+kept as a fallback. No CLI/stdio or HTTP request bridge is added.
+
+* Configuration and lifetime
+
+| Setting | Meaning |
+|---------+---------|
+| WEAVER_LISTEN | Operation listen address; default 127.0.0.1:18080 |
+| WEAVER_SOURCE_LISTEN | Source listen address; default 127.0.0.1:18081 |
+| WEAVER_GRPC_PEER_SHA256 | Approved operation leaf DER digest |
+| WEAVER_GRPC_SOURCE_PEER_SHA256 | Required approved source leaf DER digest; distinct from operation |
+| WEAVER_TOKEN_SHA256 | Operation bearer digest |
+| WEAVER_ADMIN_TOKEN_SHA256 | Required source bearer digest; distinct from operation |
+| WEAVER_GRPC_CERT / WEAVER_GRPC_KEY / WEAVER_GRPC_CLIENT_CA | Process-owned server identity and client issuer roots shared by the two listeners |
+
+Both addresses must remain loopback in this deployment profile and must be
+distinct. Both sockets bind before serving begins. Invalid identity configuration
+fails before admission. The startup owner still loads bounded files outside the
+async I/O executor. TLS handshake deadlines remain three seconds per socket.
+
+One RuntimeOwner governs both servers and all admitted native workers. The two
+server futures are polled together in the serving scope. A process signal or
+either server's terminal return requests common cancellation, closes admission,
+awaits both server futures and then drains tracked native work. Neither server
+is detached. Source and operation permit lifetimes remain attached to their
+sockets; dropping a listener cannot return another live socket's capacity.
+Shutdown is still tested under the original fifteen-second natural-exit gate.
+
+Scheme remains the semantic source for original tasks and Policy contracts. Go
+owns separate source and operation client sessions and source-bound route plans.
+Rust owns listener roles, credential/key joins, durable authority CAS, consume
+and final release. Connection separation changes no claim, cost bound, nonce,
+historical commitment, or unknown-budget rule. Publishing authority never invokes
+an external provider. A committed publication changes the guards that subsequent
+provider dispatch and event release must pass.
+
+* Four-way correspondence
+
+| Artifact | Obligation | Evidence boundary |
+|----------+------------+-------------------|
+| SysML SourceIngressBinding and publication ports | Independent ingress, source-only methods, common lifecycle, authority path to broker | Strict in-process SDK and named witness mapping |
+| Quint SourceIngress | Independent source admission despite full operation pool; exact ingress/certificate/credential/method binding | Finite connection pools; shared-budget and forwarded-credential counterexamples |
+| Lean ProviderRpc | Source methods require source ingress and pin; operation leaf cannot publish; independent connection custody is preserved | Injective configured leaf binding and faithful ingress assignment are native premises |
+| Rust configuration/Go native tests | Reject aliased or empty source identity; cross-ingress calls fail; new source session publishes under combined operation pressure | Actual Rust daemon and mTLS RPC, not a mock adapter |
+
+The source model contains explicit unsafe transitions for sharing connection
+capacity and accepting a forwarded credential without its source certificate.
+Lean preserves each connection pool using the existing socket-custody lemma;
+an operation-only transition leaves source state unchanged. The existing provider
+claim/hold composition remains separate from authenticated publication semantics.
+Neither proof establishes issuer recovery, filesystem anti-rollback, network
+reachability or scheduler fairness.
+
+* Native regressions and negative control
+
+The combined saturation test now fills sixteen native streaming workers and all
+sixteen operation connections. Each original stream has released one permitted
+prefix. It closes the old source client and establishes a new source mTLS session
+using the source certificate and source credential. That session must commit the
+next forbid revision/fence before tails are unblocked. Every tail is denied;
+the sixteen original attempts and shared sixty-four-credit hold remain unchanged.
+
+Identity controls independently substitute an operation leaf with a source
+bearer, a source leaf with an operation bearer, and source credentials on the
+operation address. All fail before publication. Correctly authenticated callers
+also fail methods belonging to the other ingress. A subsequent valid expected
+revision CAS proves rejected identities did not change authority. Saturating all
+four source connections cannot borrow operation capacity or prevent the admitted
+operation fixture from executing. Shutdown is exercised with stalled TLS sockets
+present on both listeners.
+
+The native negative control temporarily removed only source leaf verification.
+The forwarded-source-token case then published a forbid Policy successfully,
+and the following legitimate original-revision CAS failed. The
+[[file:../../../dev/proofs/evidence/source-ingress-20261030/forwarded-credential-counterexample.log][raw failed run]] records both observations. Leaf verification was restored before
+qualification. An early Lean implicit-key typing error is retained separately;
+its repair makes the certificate's Key parameter explicit rather than weakening
+the proposition. No deadline, workload, dependency pin or ASP deny rule changed.
+
+* Restored-source qualification
+
+The [[file:../../../dev/proofs/evidence/source-ingress-20261030/verification-current/receipt.json][unified verification receipt]] passes thirty stages with 141 unchanged input
+hashes. Rust reports forty-four passing tests, including all five ASP deny gates
+and the source identity configuration test. Go race integration passes the
+combined saturation, cross-ingress identity/method, source capacity and joint
+shutdown controls alongside earlier provider retry/partial-write/Arrow tests.
+SourceIngress has ten executable controls and a 1000-trace, sixty-step sampled
+safety run. ProviderRpc prints twenty checked Lean declarations without sorryAx.
+The strict in-process SysML SDK and trace map also pass. The updated core D2 was
+rendered to SVG/PNG and visually checked for readable labels and routing.
+
+* Availability, recovery and performance limits
+
+Separate connection capacity prevents operation-pool occupancy from consuming
+source slots. It is not complete denial-of-service isolation: a process able to
+reach the source address can still occupy that bounded pool before method
+authentication. Source reachability must be restricted by deployment controls;
+this local profile does not yet supply a Kubernetes controller/NetworkPolicy.
+Both listeners also share CPU, the Tokio scheduler, filesystem and deciding
+SQLite locks. Provider dispatch still holds its deciding lock through upstream
+response headers. Source admission is independent, not an unconditional commit
+latency guarantee. This remains logical gateway ownership, without physical
+isolation or a hardware key-boundary claim.
+
+An ambiguous publication response still requires original-CAS reconciliation;
+this increment does not add a durable publication operation-ID/outcome query.
+It does not mark a pending change effective or authorize a retry to invent a new
+claim, fence or budget root. Native anti-rollback anchors, full external history
+publication, issuer recovery and semantic source admission remain separate work.
+The subsequent [[file:59.10-publication-recovery.org][publication-recovery increment]] adds the durable operation-ID outcome
+protocol; the earlier receipts in this chapter remain attached to their original
+bare-revision interface and source hashes.
+
+The new source benchmark performs a real authenticated PublishAuthority per
+iteration, strict typed Cedar validation and a durable next-revision CAS. It
+asserts that source commit produces zero provider requests. It is measured
+separately from warm operation Inspect and new-connection Inspect; Go allocation
+counters do not describe Rust allocation, and no transport-only or production
+throughput claim follows from these samples.
+
+The [[file:../../../dev/proofs/evidence/source-ingress-20261030/benchmark-current/receipt.json][new benchmark receipt]] passes all five stages and binds exactly the same 141
+input hashes as verification. All fourteen Rust cases across the five packages
+were actually resampled; their estimates and confidence bounds are in the
+[[file:../../../dev/proofs/evidence/source-ingress-20261030/benchmark-current/benchmark-summary.org][Criterion summary]]. The [[file:../../../dev/proofs/evidence/source-ingress-20261030/benchmark-current/grpc-benchmark.log][actual gRPC log]] records three runs per boundary:
+
+| Boundary | Observed ns/op, separate runs | Go allocations/op |
+|----------+------------------------------+-------------------|
+| Warm operation Inspect | 1279346; 1521667; 1419599 | 115; 115; 115 |
+| Fresh operation connection plus Inspect and client close | 3896080; 3745922; 5294047 | 1267; 1270; 1268 |
+| Warm source PublishAuthority with typed validation and durable CAS | 7505950; 5532593; 5456187 | 109; 109; 109 |
+
+These are serial Apple M2 Pro/Darwin samples, not a matched before/after study.
+Variance, filesystem durability and validation work must be considered; these
+numbers do not establish a publication latency bound under contested locks.
+The source benchmark's zero-provider-call assertion passes in every run.

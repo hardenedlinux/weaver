@@ -1,0 +1,33 @@
+{
+  "status": "pass",
+  "commandRoutes": 18,
+  "leanModules": 8,
+  "newPrintedDeclarations": 15,
+  "quintControls": 34,
+  "deterministicControls": 28,
+  "counterexamples": 6,
+  "parentRegressionControls": 32,
+  "boundedSamples": 60,
+  "maxPostInitializerSteps": 30,
+  "seed": 151,
+  "fourArtifactRows": 10,
+  "englishOrgDocuments": 77,
+  "d2Pairs": 39,
+  "historicalManifestsUnchanged": 16,
+  "sourceBlobs": 18,
+  "agentgatewaySourceBlobs": 10,
+  "dependencyPinsChanged": false,
+  "gatewayImplementationChanged": false,
+  "scope": "Conditional invariant preservation and bounded simulation; no native SDK/storage/provider or asynchronous full range/settlement product proof",
+  "limitations": [
+    "Owner predicates and durable atomic operations are assumptions",
+    "Provider finality and hard cost bounds need runtime qualification",
+    "General Lean exact usage-slot sum equality is not proved",
+    "No temporal liveness or remote exactly-once claim"
+  ],
+  "preliminaryDiagnostics": [
+    "preliminary-lean.log",
+    "preliminary-lean-2.log",
+    "preliminary-lean-3.log"
+  ]
+}

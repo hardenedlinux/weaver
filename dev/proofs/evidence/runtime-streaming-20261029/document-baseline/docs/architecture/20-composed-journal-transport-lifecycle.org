@@ -1,0 +1,295 @@
+#+title: Weaver Composed Journal, Recovery and Transport Lifecycle
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS abstract-composition-checked-physical-refinement-pending
+#+options: toc:3
+
+* Decision and scope
+
+The journal, recovery image and actual final-owner admission now share one
+reachable product in [[file:../../specs/lean/ComposedGatewayLifecycle.lean][ComposedGatewayLifecycle.lean]]. Its initial journal contains the
+empty finite ledger. Ordinary payload publications use the existing finite
+ledger transition relation; migration decisions preserve that exact payload.
+The product adds operation-bound sealing, immutable terminal decisions,
+commit-bound activation, owner incarnation changes, persistent range delegation
+and possibly delayed exposure. This extends the conditional component join in
+[[file:19-anchor-recovery-and-egress-contract.org][the preceding contract]] without rewriting its historical results.
+
+The composition is an abstract safety proof. It does not implement a journal,
+prove storage durability, authenticate an actual owner, refine a driver, or
+establish a database/socket atomic operation. An independent authenticated,
+non-equivocating journal and a qualified durable transport owner are premises.
+The transport owner's persistence must cover its own restart, not only host
+rollback. Missing or unverifiable owner state keeps admission unavailable.
+
+The checked range unit is one bounded application exposure per canonical
+message, subordinate to an already journaled complete-message offer. It is not
+a second complete-message offer, an arbitrary sequence of chunks, a TCP packet,
+or a provider business effect. Multiple ranges need an immutable message/range
+manifest, range-specific quota and a finite-sum extension; allocating a new range
+ID after uncertainty is forbidden under the present one-range contract.
+
+[[file:../../specs/quint/ComposedGatewayLifecycle.qnt][The Quint product]] starts with four already admitted canonical messages,
+two shared weighted accounts and fixed claim bindings. This is an executable
+post-admission fixture, not the Lean empty initializer. Lean covers arbitrary
+finite keys through its actual imported finite ledger. No machine-checked
+Quint-to-Lean or owner-source refinement is claimed. The Quint fixture keeps
+lineage and admitted identity/cost projection fixed and summarizes full recovery
+with those fixed fields plus current head/history. Lean retains the full payload
+and lineage equality. Neither abstraction proves cryptographic authenticity.
+
+The finite Config is an authoritative semantic identity/account mapping fixed
+for this lineage. Starting a new process, namespace or Authority cannot select
+a new Config and fresh empty initial state for the same original intent. Such a
+new product instance is not an allowed recovery transition. Scheme admission
+and authenticated anchor membership must resolve the original canonical domain;
+that identity resolution remains a source/refinement premise, not a proof about
+arbitrary caller-created copies of this model. [[file:../../specs/evidence/composed-lifecycle-2026-10-19.org][The receipt]] records checks
+and bounds separately from the physical acceptance obligations below.
+
+* One protocol and its linearization boundaries
+
+1. Scheme resolves the canonical operation, message, budget/history roots,
+   immutable subject and policy/source context. Rust accepts only the exact
+   admitted request. Go retries observation of that same operation.
+2. The actual owner atomically closes admission and stores the complete seal
+   request. The seal binds operation, expected journal predecessor, lineage,
+   source epoch, target and semantic binding. An acknowledgment is returned only
+   after this closure and record survive the selected restart fault model.
+3. The journal decides that same request once using predecessor CAS and its
+   operation registry. Commit retains the complete payload and advances the
+   transport epoch; abort installs a terminal tombstone without advancing it.
+   Neither a new command ID nor another migration can consume the first seal.
+4. Recovery reads the authentic complete current head, not a cached success.
+   Activation checks the same sealed request, stored committed receipt, exact
+   current receipt/head, source-to-target epoch and current owner incarnation.
+   Activation clears the seal and opens only that successor epoch.
+5. Before irreversible delegation, the owner checks the recovered authoritative
+   state, current original executor ticket, original claim/token/stream, held
+   reservation, already admitted message offer, restrictive account history,
+   current owner epoch/incarnation and absence of a durable range record.
+6. The durable delegation record is the no-replay point. It precedes the external
+   transport call. A crash before or after the call produces a possibly-exposed
+   range, never a fresh send opportunity. This deliberately permits conservative
+   loss. It cannot promise delivery or exactly one physical transmission.
+
+The selected conservative profile serializes seal with all protected payload
+publications and actual delegation at the external owner. Pending migration
+pauses new payload publications. A handoff that wins first remains a durable
+possible exposure; a seal that wins first blocks new handoff. Two seal requests
+cannot both own the same source epoch. The second must resolve the winner and
+obtain a separately admitted migration after the first closes.
+
+The finite ledger's executor/domain fence and the product's transport epoch are
+different coordinates. Moving a transport endpoint does not change canonical
+budget/history roots or transfer a claimed executor. A worker-generation or
+domain-fence change still invalidates the old finite ticket. A replacement owner
+may reconstruct an opaque handle only after full current validation of the
+original claim; it cannot retag a previously delegated buffer or resurrect a
+claim whose original executor is no longer current.
+
+Pausing publication is a safety baseline, not a required global mutex across
+unrelated roots. A sharded implementation must prove an equivalent complete
+conflict/dependency closure. If revocation must take effect while migration is
+pending, a separately proved cancellation/barrier protocol is needed. The
+current model does not silently admit such a path or guarantee its latency.
+Abort remains sealed; no timeout-based reopen or abort-to-success transition is
+modeled. Administrative recovery requires a separately admitted protocol that
+preserves the terminal operation and all existing obligations.
+
+* Concurrency, response loss and restart matrix
+
+| Schedule or observation | Required behavior |
+|-------------------------+-------------------|
+| Two seals race at one epoch | The owner durably chooses one complete request; loser gets conflict/unknown and cannot submit its request under the winner's seal |
+| Seal wins before delegation | Old handle is rejected at the actual writer gate; cached preflight is irrelevant |
+| Delegation wins before seal | Range remains accepted/possibly exposed and cannot replay; later seal does not retract old buffers |
+| Seal response lost, owner restarts | Recover the durable same seal; never infer open from missing volatile acknowledgment |
+| Commit response lost | Resolve the original canonical operation and full binding; new RPC command cannot append again |
+| Fresh lookup has no record | Request can still be in flight; retain pending state; only a terminal abort tombstone excludes a late commit |
+| Abort response lost, delayed commit arrives | Same operation is already terminal; delayed commit is rejected |
+| Commit succeeds while owner is restarting | Durable seal remains valid; owner remains not ready until authentic full recovery; activation uses its current incarnation |
+| Activation response lost | Query the actual current owner state and original committed transition; retry is a status resolution, not a second opening or new handle |
+| Old activation reply arrives after another owner restart | Reply has historical incarnation; it cannot set ready/open or authorize a current handle |
+| Restart after delegation, before response or transport call | Durable range record survives; no replay even if actual exposure was zero or cannot be observed |
+| Restart while kernel/driver/remote buffers survive | Old buffers remain possibly exposed; recovery does not infer retirement, exact prefix or safe tail reuse |
+| Anchor unavailable after delegation | Reject new protected admission; previously delegated buffers may drain |
+| Partial or stale owner-store restoration | Fail closed; a current head number with empty range records is not complete recovery |
+| Owner store and its only anchor roll back together | Outside the qualified premise; require separate durable high-water/commit membership or remain unavailable |
+
+The logical append of a delegation record and a socket write are not atomic.
+The qualified owner must serialize seal with the irreversible writer delegation,
+and must not enqueue an unrecorded callback that can escape that serialization.
+Recovery verifies the owner-store prefix containing every possibly delegated
+range, alongside the authoritative journal payload. The model keeps these two
+stores distinct; journal recovery alone does not reconstruct missing range
+records. Its owner-restart transition preserves the durable owner store by
+premise, and recoverOwner does not admit arbitrary replacement owner images. If that
+prefix cannot be established after a torn write, preserve an uncertainty
+fence over the affected scope. Do not rebuild an empty accepted set.
+
+An external owner's restart does not prove old instances or helpers stopped.
+The storage/driver ownership protocol must exclude an old process still holding
+a raw FD, copied send buffer, asynchronous callback or NIC offload descriptor.
+A numeric incarnation in a new process is insufficient. The new instance may
+open admission only when the actual delegation gate rejects old incarnations;
+old accepted buffers remain governed by the weaker possible-exposure contract.
+Concurrent replacement instances require exclusive ownership/CAS at that same
+gate. These are physical refinement obligations, not consequences of Lean Nat.
+
+* Composition properties and checked proof names
+
+| Property | Checked Lean artifact | What it establishes |
+|----------+-----------------------+---------------------|
+| One initialized product | initial_invariant, step_preserves, reachable_invariant | Every declared journal, host, owner and exposure transition preserves one inductive invariant from the empty finite ledger |
+| Canonical ledger projection | ledger_projection | Each product step projects to an actual finite-ledger transition or its existing stutter constructor |
+| Scoped nonce and one claim/offer | end_to_end_nonce_claim_offer_bound | Each fully namespaced issuance consumes at most once, with one canonical claim and complete-message offer in every reachable product |
+| Original claim across the complete trace | original_claim_survives_trace, original_executor_survives | Original token, stream, sticky message history and executor stamp cannot be replaced by restart, migration, a fresh issuance or late observation |
+| Shared account history | restrictive_history_survives_trace, restricted_account_blocks_delegate | A restrictive canonical account remains restrictive and prevents later new delegation, including another message sharing that account |
+| Shared budget bound | end_to_end_conservation, end_to_end_free_held_charged | Every reachable product retains the arbitrary finite weighted account bound; free/held/charged conservation is explicitly lifted to the product |
+| Durable no-replay record | range_record_is_immutable, recorded_range_cannot_be_replayed | An accepted range record is never erased or rebound by any normal product step; restart/recovery do not permit a second acceptance |
+| Historical admission at final delegation | accepted_range_retains_admission, accepted_range_retains_original_executor | Every stored range has a reachable original admission image, exact claim and allowed canonical history at delegation, the original current executor ticket, and acceptance/exposure counts at most one |
+| Exact seal before commit | migration_advance_has_matching_seal | Every epoch-advancing product step uses the stored exact request, source epoch, lineage, predecessor and unused canonical operation |
+| Exact commit before activation | activation_has_exact_committed_seal | Every closed-to-open product step has the same seal, a matching committed receipt at current head and complete recovery |
+| Owner incarnation fencing | old_incarnation_cannot_delegate, restart_cannot_replay_range | Restart first removes readiness; old-incarnation handles fail even after recovery |
+
+Historical admission does not mean a range remains newly admissible after a
+restriction. A previously delegated range can drain under its original admitted
+image. The trace monotonicity theorem and gate theorem constrain future new
+admission, not bytes that crossed the earlier irreversible boundary.
+
+The driver projection carries a unique pending range capability. Delegation
+creates it once; drain consumes it before recording the exposure observation.
+The pending capability represents original driver/transport ownership, not a
+restartable outbox command. Owner restart does not recreate it from accepted
+records. The exposure counter is a proof observation and never an action guard.
+Uniqueness/non-reconstruction of that driver capability is an explicit physical
+premise; copied callbacks, raw FDs or a replayed outbox invalidate it. Deliberate
+queue-reconstruction and raw-FD mutants retain counterexamples to that premise.
+No claim about duplicate network packets follows from this abstraction.
+
+The no-replay invariant counts actual acceptance transitions rather than using
+an overwritten Boolean as the count. The ghost count is never used as a runtime
+guard: the real guard is durable range absence. The count remains historical in
+counterexamples that erase the owner store. Canonical operation counts likewise
+remain independent of RPC command IDs and response delivery.
+
+Financial quantities retain the earlier finite model's meaning. Fixed admitted
+cost remains held or charged; outcome alone does not settle, and this product
+adds no refund. Actual provider cost, retirement authenticity and unbounded
+future accrual remain external evidence obligations. A complete-message offer
+in the finite ledger and its later bounded delegation are distinct facts;
+this product cannot be read as a proof of arbitrary chunk replay or billing.
+
+* Executable controls and counterexamples
+
+The normal Quint controls exercise lost commit replies across host/owner restart,
+competing seal/commit rejection, wrong activation request, fresh-command replay,
+terminal abort versus late commit, missing versus abort, restart before commit,
+stale activation incarnation, retained delegation, stale handle rejection,
+shared-history rejection, stale recovery, and post-migration old-buffer drain.
+Additional controls cover seal and activation reply loss across restart,
+seal winning against delegation and a fresh nonce replacing the original claim.
+The old-buffer drain is a valid witness of the physical boundary, not a normal safety failure.
+
+| Excluded mutant / test suffix | Concrete failure |
+|------------------------------+------------------|
+| wrongSealCounterexampleTest | Commit another migration request using the first operation's seal |
+| wrongReceiptCounterexampleTest | Use one successful receipt to activate a different request |
+| forgettingOwnerRecordsCounterexampleTest | Delegate and expose, restart with empty accepted set, delegate again; historical acceptance count becomes two |
+| historyBypassCounterexampleTest | Restrict one account, then admit another message sharing it while ignoring the history gate |
+| incompleteRecoveryCounterexampleTest | Reconstruct empty held state under the current identity; shared account conservation fails |
+| newAuthorityRebindingCounterexampleTest | Replace the original token after observation/new-authority handling |
+| pendingSealReopenCounterexampleTest | Restart with a pending seal, then reopen without a committed successor |
+| duplicateAfterLostReplyCounterexampleTest | Treat a new RPC command as permission to commit the same operation again |
+| rebuildingTransportQueueCounterexampleTest | Recreate a driver capability from accepted records after restart; the same range exposes twice |
+| rawFdBypassCounterexampleTest | An old unmediated FD emits after seal without any admitted range |
+
+The seal/receipt-substitution controls use an independent violation observation:
+ordinary account/count invariants alone would miss those binding errors. The
+mutation deliberately bypasses the exact guard and records that fact. This
+shows why the guard matters; it is not a discovery of a bug in existing runtime
+code. Full traces and source hashes are retained in the receipt.
+
+* Source comparison: reuse and required extensions
+
+All source identities and navigable Git links remain in
+[[file:01-reference-comparison.org][the source register]]. Inspection uses committed blobs, not the concurrently
+modified adjacent checkout. No dependency, pin, ABI or owner code changes.
+
+| Existing source | Reuse directly at the semantic boundary | Required extension / excluded inference |
+|-----------------+-----------------------------------------+-----------------------------------------|
+| P12/P13 authorized-effect-token and strict-mediation | Full validation context, spent membership and next-state transition; pure consume advances sequence and appends nonce | Atomically publish full state/context and canonical operation/range records in the durable journal; a pure Scheme result or unchanged root does not prove persistence or exclusivity |
+| P5 Rust Authority.consume | Full issuer/signature/request/handoff validation and removal before returning consumed handoff | Pending state is instance-local; a recreated Authority or fresh evaluated nonce does not resolve original logical claim, range delegation or old worker ownership |
+| P17/P22 durable store contracts | Scheme selects/projects backend contracts; runtime owns append, fsync, leases, replay/repair and checkpoints | Actual anti-rollback complete-prefix recovery and transport-owner restart contract need implementation/qualification; descriptors and capability flags do not establish them |
+| P18 PromotionTransactionRecovery | Canonical request registry compatibility, full receipt binding, valid prior commit, explicit exclusive-claim premise | Bind seal and activation to that same registry and actual writer owner; matching fences alone do not establish exclusive ownership |
+| P19/P20 source-bound recovery and exactly-once application | Conditional joins and explicit application multiplicity/completeness premises | Neither proves physical sender shutdown, driver range persistence or byte retraction; receiver exactly-once is narrower than disclosure safety |
+| P35 ReceiptContextMonotonicityClosure | Authoritative publication membership and fork-free same-generation equality; exact equality alone permits rollback replay | Choose/qualify an independent authenticated log and verifier; semantic publication domain is not a database/consensus implementation |
+| P43 Session recovery/reconcile | Freeze original attempt inputs, preserve pending obligations; reconciliation is an intent for trusted terminal/isolation receipts | Go must resolve the same operation without converting reconcile/restart/status to authority or clearing possibly exposed ranges |
+| C8 BoundOperation | Exact supplied effect/state projection | Authenticate the supplied image and refine the eventual writer effect; projection equality does not authenticate state or enforce a transport |
+| C10/C11 compound authorization and composition | Nonempty required layers must allow without policy errors; retain conditional certificate alignment | Successful receipt construction is not permission; bind error-free admission and current source/account guards to final delegation and exact immutable content/route |
+
+These owner declarations are reused as contracts and source-grounded premises;
+the standalone Weaver proof imports Weaver modules and Lean Std, not those owner
+packages. No theorem here claims their native implementation refines this model.
+
+* Scheme, Go and Rust obligations
+
+Scheme owns canonical identity, domain/account bindings, Code as Policy
+composition, Cedar projection and the semantic admissibility of migration and
+recovery. It must reject issuer-, reconnect- or caller-selected aliases that
+pretend the original intent is a new empty message/account. It specifies which
+source/history dependencies invalidate admission. It does not claim fsync,
+exclusive writer ownership or transport cancellation from a pure receipt.
+
+Go owns cloud-native discovery, Kubernetes reconciliation, agent/protocol SDK
+adaptation and bounded lifecycle coordination. It preserves the same canonical
+operation across retries and reports unknown outcomes. Discovery/route changes
+become fresh proposals; they cannot mutate an admitted destination or use SDK
+redirect/retry to bypass the broker. Go neither opens raw protected egress nor
+clears claims, budget or accepted ranges after a pod/owner restart. Activation
+responses are observations scoped to the actual current incarnation.
+
+Rust is the reference owner of canonical journal CAS, complete recovery,
+operation resolution, actual delegation serialization, durable range records
+and epoch/incarnation enforcement at the final writer. Placement, storage and
+driver ownership must satisfy the independent-fate premise. Recovery of owner
+state is read/verify/materialize, followed by current owner admission; it is not
+a replay loop over old send commands. Cedar evaluation can remain off the per-byte
+path only when the immutable bounded manifest and every changing dependency
+are checked at delegation with a proved invalidation protocol.
+
+Quint explores schedules and explicit bad designs. Lean proves composition for
+the declared transition relation and arbitrary finite ledger. Neither runs on
+the request path or replaces real storage, actor-authentication and driver tests.
+
+* Physical acceptance obligations
+
+All following rows are pending runtime evidence, not completed formal checks.
+They extend the preceding contract's acceptance register without changing its
+historical statuses. A simulation/Lean pass cannot satisfy these rows.
+
+| Obligation | Required retained evidence | Status |
+|------------+----------------------------+--------|
+| Seal survives owner crash | Crash before/after seal persistence and reply; old worker attempts actual writer delegation | Pending |
+| Commit/abort race and lost reply | Concurrent exact/different requests, crash at append, duplicate commands; one authentic terminal decision with complete payload | Pending |
+| Owner activation and replacement | Lost activation acknowledgment, concurrent replacements, old reply after restart; only current actual gate can admit | Pending |
+| Durable range before external call | Crash on both sides of the record/call boundary; possibly exposed range never resubmitted, even after repeated owner restarts | Pending |
+| Old FD/buffer/callback ownership | Paused old worker holding each capability, restart/migration, attempted callback/offload submission; distinguish rejection from permitted old-buffer drain | Pending |
+| Owner-store rollback/torn replay | Same-height partial state, truncated log, co-rolled-back disks and missing high-water membership; admission remains unavailable | Pending |
+| Canonical account/claim recovery | Multiple messages sharing budget/history, new issuer/nonce/reconnect, delayed observation and stale snapshot; no second claim/account or released unknown hold | Pending |
+| Source-to-final-writer refinement | Exact content/range/route, Cedar error-free layers, current ticket/history and durable no-replay record mapped to real broker/driver events | Pending |
+
+#+caption: Core composition and authority boundaries; evidence stays in this document.
+[[file:diagrams/21-composed-journal-transport-lifecycle.svg]]
+
+
+* Subsequent finite-range refinement
+
+[[file:21-finite-stream-manifest-proof.org][The finite stream manifest contract]] supplies the previously deferred
+manifest/sum extension. It reuses this initialized coordinator's administrative
+relation and replaces its one-range delegate/drain projection. Arbitrary finite
+range partitions, original claim/history, typed shared escrow, partial-offer
+affinity and owner restart are composed in a new checked proof. The historical
+single-range receipt retains its original scope; actual driver continuity and
+complete durable recovery remain physical premises.

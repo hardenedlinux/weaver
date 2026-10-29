@@ -1,0 +1,865 @@
+[
+  {
+    "id": "P12",
+    "path": "modules/governance/policy/authorized-effect-token.ss",
+    "matches": [
+      {
+        "line": 66,
+        "text": "                              arena arena-gen offset length pld-digest lease)"
+      },
+      {
+        "line": 75,
+        "text": "         (cons 'arena-id arena) (cons 'arena-generation arena-gen)"
+      },
+      {
+        "line": 77,
+        "text": "         (cons 'payload-digest pld-digest) (cons 'lease-id lease))))"
+      },
+      {
+        "line": 109,
+        "text": "        (.ref binding 'arena-id) (.ref binding 'arena-generation)"
+      },
+      {
+        "line": 111,
+        "text": "        (.ref binding 'payload-digest) (.ref binding 'lease-id)))"
+      }
+    ]
+  },
+  {
+    "id": "P13",
+    "path": "modules/governance/policy/strict-mediation.ss",
+    "matches": []
+  },
+  {
+    "id": "P15",
+    "path": "modules/assurance/effect-host.ss",
+    "matches": [
+      {
+        "line": 45,
+        "text": "(def (assurance-effect-host authorize deliver clock lease)"
+      },
+      {
+        "line": 47,
+        "text": "               (exact-integer? lease) (> lease 0))"
+      },
+      {
+        "line": 50,
+        "text": "    (hash-put! hosts host (vector (current-thread) authorize deliver clock lease 0 0 #f 0))"
+      },
+      {
+        "line": 126,
+        "text": "      delivered?: (eq? outcome-value 'delivered) durable?: #f distributed-authority?: #f))"
+      }
+    ]
+  },
+  {
+    "id": "P17",
+    "path": "modules/ai-agentic-context/features/memory/durable/store-backend.ss",
+    "matches": [
+      {
+        "line": 8,
+        "text": ";;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs."
+      }
+    ]
+  },
+  {
+    "id": "P18",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean",
+    "matches": [
+      {
+        "line": 5,
+        "text": "import PooFlowProof.Enterprise.PromotionTransactionAtomicity"
+      },
+      {
+        "line": 9,
+        "text": "open PromotionTransactionAtomicity"
+      },
+      {
+        "line": 51,
+        "text": "    outcomePreservesAtomicState,"
+      },
+      {
+        "line": 123,
+        "text": "    outcomePreservesAtomicState commitRequestA orphanDuplicateReceipt \u2227"
+      },
+      {
+        "line": 130,
+        "text": "      outcomePreservesAtomicState,"
+      },
+      {
+        "line": 188,
+        "text": "      outcomePreservesAtomicState,"
+      },
+      {
+        "line": 199,
+        "text": "structure AtomicEffectReceipt where"
+      },
+      {
+        "line": 217,
+        "text": "    (receipt : AtomicEffectReceipt) : Prop :="
+      },
+      {
+        "line": 241,
+        "text": "def committedAtomicEffectReceipt : AtomicEffectReceipt where"
+      },
+      {
+        "line": 246,
+        "text": "theorem committedAtomicEffectCloses :"
+      },
+      {
+        "line": 251,
+        "text": "      committedAtomicEffectReceipt := by"
+      },
+      {
+        "line": 255,
+        "text": "    committedAtomicEffectReceipt,"
+      },
+      {
+        "line": 266,
+        "text": "    (receipt : AtomicEffectReceipt)"
+      },
+      {
+        "line": 278,
+        "text": "    (receipt : AtomicEffectReceipt)"
+      },
+      {
+        "line": 435,
+        "text": "  effectReceipt : AtomicEffectReceipt"
+      },
+      {
+        "line": 491,
+        "text": "  effectReceipt := committedAtomicEffectReceipt"
+      },
+      {
+        "line": 533,
+        "text": "      committedAtomicEffectReceipt,"
+      },
+      {
+        "line": 536,
+        "text": "  \u00b7 exact committedAtomicEffectCloses"
+      }
+    ]
+  },
+  {
+    "id": "P19",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean",
+    "matches": [
+      {
+        "line": 7,
+        "text": "import PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore"
+      },
+      {
+        "line": 13,
+        "text": "open PromotionTransactionAtomicity"
+      },
+      {
+        "line": 15,
+        "text": "open SourceBoundCheckpointRestoreAuthorizationClosure"
+      },
+      {
+        "line": 19,
+        "text": "open SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore"
+      },
+      {
+        "line": 22,
+        "text": "  SourceBoundLatestCheckpointRestoreRequest \u2192"
+      },
+      {
+        "line": 130,
+        "text": "  humanAtomicBridge :"
+      },
+      {
+        "line": 131,
+        "text": "    SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridge"
+      },
+      {
+        "line": 198,
+        "text": "  recordRequestMatchesAtomic :"
+      },
+      {
+        "line": 200,
+        "text": "  recoveryBaseReceiptMatchesAtomic :"
+      },
+      {
+        "line": 215,
+        "text": "theorem closedAuthorizedRecoveryProvidesHumanAtomicBridge"
+      },
+      {
+        "line": 308,
+        "text": "    SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridge"
+      },
+      {
+        "line": 337,
+        "text": "  closed.humanAtomicBridge"
+      },
+      {
+        "line": 541,
+        "text": "theorem wrongAtomicReceiptRejectsAuthorizedBridge"
+      },
+      {
+        "line": 635,
+        "text": "  exact wrong closed.recoveryBaseReceiptMatchesAtomic"
+      }
+    ]
+  },
+  {
+    "id": "P20",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean",
+    "matches": []
+  },
+  {
+    "id": "P22",
+    "path": "modules/ai-agentic-context/features/memory/durable/store.ss",
+    "matches": [
+      {
+        "line": 8,
+        "text": ";;; owns storage, locking, leases, fsync, backfill, replay, and side effects."
+      },
+      {
+        "line": 31,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref"
+      },
+      {
+        "line": 72,
+        "text": "  '(fact-log checkpoint derived-index job repair artifact communication sandbox))"
+      },
+      {
+        "line": 77,
+        "text": "    write-checkpoint"
+      },
+      {
+        "line": 79,
+        "text": "    claim-job-lease"
+      },
+      {
+        "line": 158,
+        "text": "         (checkpoint-store-ref"
+      },
+      {
+        "line": 160,
+        "text": "                                                'checkpoint-store-ref"
+      },
+      {
+        "line": 161,
+        "text": "                                                'runtime/checkpoint-store))"
+      },
+      {
+        "line": 209,
+        "text": "      (cons 'runtime-store-checkpoint-store-ref checkpoint-store-ref)"
+      },
+      {
+        "line": 350,
+        "text": "    'checkpoint-store-ref"
+      },
+      {
+        "line": 351,
+        "text": "    'missing-checkpoint-store-ref"
+      },
+      {
+        "line": 354,
+        "text": "     'runtime-store-checkpoint-store-ref"
+      },
+      {
+        "line": 484,
+        "text": "   checkpoint-store-ref"
+      },
+      {
+        "line": 550,
+        "text": "      'runtime-store-checkpoint-store-ref"
+      },
+      {
+        "line": 623,
+        "text": "           (checkpoint-store-ref"
+      },
+      {
+        "line": 624,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref"
+      }
+    ]
+  },
+  {
+    "id": "P31",
+    "path": "packages/proofs/lean-poo/SessionAttempt.lean",
+    "matches": [
+      {
+        "line": 10,
+        "text": "  revision : Nat"
+      },
+      {
+        "line": 11,
+        "text": "  generation : Nat"
+      },
+      {
+        "line": 14,
+        "text": "  pending : List (Nat \u00d7 \u03b1)"
+      },
+      {
+        "line": 18,
+        "text": "    some { s with revision := s.revision + 1, generation := s.generation + 1,"
+      },
+      {
+        "line": 19,
+        "text": "                  active := none, pending := s.active.toList ++ s.pending }"
+      },
+      {
+        "line": 21,
+        "text": "def complete [DecidableEq \u03b1] (s : Schedule \u03b1) (expectedRevision : Nat)"
+      },
+      {
+        "line": 23,
+        "text": "  if s.revision = expectedRevision \u2227 s.closed = false \u2227 s.active = some request"
+      },
+      {
+        "line": 24,
+        "text": "  then some { s with revision := s.revision + 1, active := none }"
+      },
+      {
+        "line": 29,
+        "text": "theorem recovery_generation_advances (s : Schedule \u03b1) (openState : s.closed = false) :"
+      },
+      {
+        "line": 30,
+        "text": "    (recover s).map Schedule.generation = some (s.generation + 1) := by"
+      },
+      {
+        "line": 32,
+        "text": "theorem recovery_revision_advances (s : Schedule \u03b1) (openState : s.closed = false) :"
+      },
+      {
+        "line": 33,
+        "text": "    (recover s).map Schedule.revision = some (s.revision + 1) := by"
+      },
+      {
+        "line": 36,
+        "text": "    (recover s).map Schedule.pending = some (s.active.toList ++ s.pending) := by"
+      },
+      {
+        "line": 40,
+        "text": "theorem wrong_revision_refused [DecidableEq \u03b1] (s : Schedule \u03b1) (r : Nat)"
+      },
+      {
+        "line": 41,
+        "text": "    (request : Nat \u00d7 \u03b1) (wrong : s.revision \u2260 r) : complete s r request = none := by"
+      },
+      {
+        "line": 48,
+        "text": "    s.revision = r \u2227 s.closed = false \u2227 s.active = some request := by"
+      },
+      {
+        "line": 61,
+        "text": "    if (`PooFlowSessionAttemptProof).isPrefixOf name then"
+      },
+      {
+        "line": 67,
+        "text": "      `PooFlowSessionAttemptProof.recovery_generation_advances,"
+      },
+      {
+        "line": 68,
+        "text": "      `PooFlowSessionAttemptProof.recovery_revision_advances,"
+      },
+      {
+        "line": 71,
+        "text": "      `PooFlowSessionAttemptProof.wrong_revision_refused,"
+      }
+    ]
+  },
+  {
+    "id": "P31",
+    "path": "packages/proofs/quint/SessionAttempt.qnt",
+    "matches": [
+      {
+        "line": 5,
+        "text": "  var generation: int"
+      },
+      {
+        "line": 7,
+        "text": "  var pending: int"
+      },
+      {
+        "line": 12,
+        "text": "  action init = all { generation' = 0, active' = -1, pending' = -1,"
+      },
+      {
+        "line": 15,
+        "text": "    not(closed), active == -1, pending == -1, generation < 3,"
+      },
+      {
+        "line": 16,
+        "text": "    generation' = generation + 1, active' = generation + 1,"
+      },
+      {
+        "line": 17,
+        "text": "    pending' = pending, closed' = closed, everClosed' = everClosed, routed' = routed, recoveries' = recoveries"
+      },
+      {
+        "line": 19,
+        "text": "  action complete(requestGeneration: int): bool = all {"
+      },
+      {
+        "line": 21,
+        "text": "    (requestGeneration == active or BUG == \"ignoreGeneration\"),"
+      },
+      {
+        "line": 22,
+        "text": "    routed' = routed.append((requestGeneration,active)), active' = -1,"
+      },
+      {
+        "line": 23,
+        "text": "    generation' = generation, pending' = pending, closed' = closed, everClosed' = everClosed, recoveries' = recoveries"
+      },
+      {
+        "line": 26,
+        "text": "    (not(closed) or BUG == \"resumeClosed\"), generation < 3, recoveries.length() < 2,"
+      },
+      {
+        "line": 27,
+        "text": "    generation' = generation + 1, active' = -1, closed' = false, everClosed' = everClosed,"
+      },
+      {
+        "line": 28,
+        "text": "    pending' = if (BUG == \"dropObligation\") -1 else if (active >= 0) active else pending,"
+      },
+      {
+        "line": 29,
+        "text": "    recoveries' = recoveries.append((if (active >= 0) active else pending,"
+      },
+      {
+        "line": 30,
+        "text": "      if (BUG == \"dropObligation\") -1 else if (active >= 0) active else pending)),"
+      },
+      {
+        "line": 34,
+        "text": "    pending >= 0, pending' = -1, active' = active, generation' = generation,"
+      },
+      {
+        "line": 38,
+        "text": "    not(closed), active == -1, pending == -1, closed' = true, everClosed' = true,"
+      },
+      {
+        "line": 39,
+        "text": "    generation' = generation, active' = active, pending' = pending,"
+      },
+      {
+        "line": 43,
+        "text": "    nondet requestGeneration = Set(0,1,2,3).oneOf()"
+      },
+      {
+        "line": 44,
+        "text": "    any { claim, complete(requestGeneration), recover, reconcile, close }"
+      }
+    ]
+  },
+  {
+    "id": "P33",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean",
+    "matches": [
+      {
+        "line": 25,
+        "text": "maximum generation.  Runtime watchdog metrics are deliberately absent."
+      },
+      {
+        "line": 31,
+        "text": "  maxGeneration : Nat"
+      },
+      {
+        "line": 48,
+        "text": "  generation : Nat"
+      },
+      {
+        "line": 112,
+        "text": "  planGenerationMatches : plan.maxGeneration = fixedPoint.generation"
+      },
+      {
+        "line": 116,
+        "text": "  receiptGenerationMatches : receipt.generation = progress.generation"
+      },
+      {
+        "line": 117,
+        "text": "  receiptGenerationBound : receipt.generation \u2264 plan.maxGeneration"
+      },
+      {
+        "line": 232,
+        "text": "    maxGeneration := fixedPoint.generation"
+      },
+      {
+        "line": 244,
+        "text": "    maxGeneration := fixedPoint.generation"
+      }
+    ]
+  },
+  {
+    "id": "P33",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean",
+    "matches": [
+      {
+        "line": 21,
+        "text": "    watchdog.generation = budget.generation \u2227"
+      },
+      {
+        "line": 32,
+        "text": "    generation := watchdog.generation"
+      },
+      {
+        "line": 71,
+        "text": "    generation := watchdog.generation"
+      }
+    ]
+  },
+  {
+    "id": "P35",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean",
+    "matches": [
+      {
+        "line": 13,
+        "text": "and strictly advance the authority generation.  Strict advancement makes the"
+      },
+      {
+        "line": 14,
+        "text": "generation an anti-ABA fence rather than a mutable version label."
+      },
+      {
+        "line": 19,
+        "text": "    before.authorityGeneration < after.authorityGeneration"
+      },
+      {
+        "line": 26,
+        "text": "  have generationsEqual :"
+      },
+      {
+        "line": 27,
+        "text": "      before.authorityGeneration = after.authorityGeneration :="
+      },
+      {
+        "line": 28,
+        "text": "    congrArg ReceiptValidationContext.authorityGeneration contextsEqual"
+      },
+      {
+        "line": 29,
+        "text": "  exact (Nat.ne_of_lt transitionValid.2) generationsEqual"
+      },
+      {
+        "line": 58,
+        "text": "      authorityGeneration := 5"
+      },
+      {
+        "line": 66,
+        "text": "      authorityGeneration := 6"
+      },
+      {
+        "line": 100,
+        "text": "  generationStrict :"
+      },
+      {
+        "line": 103,
+        "text": "        (contextAt earlier).authorityGeneration <"
+      },
+      {
+        "line": 104,
+        "text": "          (contextAt later).authorityGeneration"
+      },
+      {
+        "line": 112,
+        "text": "  have generationsEqual :"
+      },
+      {
+        "line": 113,
+        "text": "      (lineage.contextAt earlier).authorityGeneration ="
+      },
+      {
+        "line": 114,
+        "text": "        (lineage.contextAt later).authorityGeneration :="
+      },
+      {
+        "line": 115,
+        "text": "    congrArg ReceiptValidationContext.authorityGeneration contextsEqual"
+      },
+      {
+        "line": 117,
+        "text": "    (Nat.ne_of_lt (lineage.generationStrict positionAdvanced))"
+      },
+      {
+        "line": 118,
+        "text": "      generationsEqual"
+      },
+      {
+        "line": 144,
+        "text": "same context while reusing the same next generation."
+      },
+      {
+        "line": 146,
+        "text": "theorem validTransitionsAlonePermitSameGenerationFork :"
+      },
+      {
+        "line": 152,
+        "text": "        left.authorityGeneration = right.authorityGeneration := by"
+      },
+      {
+        "line": 156,
+        "text": "      authorityGeneration := 10"
+      },
+      {
+        "line": 164,
+        "text": "      authorityGeneration := 11"
+      },
+      {
+        "line": 172,
+        "text": "      authorityGeneration := 11"
+      }
+    ]
+  },
+  {
+    "id": "P35",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean",
+    "matches": [
+      {
+        "line": 7,
+        "text": "namespace PooFlowProof.Enterprise.ReceiptContextLineagePrefixClosure"
+      },
+      {
+        "line": 12,
+        "text": "structure AuthorityContextLineagePrefix where"
+      },
+      {
+        "line": 16,
+        "text": "def lineagePrefixAt"
+      },
+      {
+        "line": 18,
+        "text": "    (headPosition : Nat) : AuthorityContextLineagePrefix :="
+      },
+      {
+        "line": 21,
+        "text": "def publishedByLineagePrefix"
+      },
+      {
+        "line": 22,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 25,
+        "text": "    position \u2264 lineagePrefix.headPosition \u2227"
+      },
+      {
+        "line": 26,
+        "text": "      lineagePrefix.lineage.contextAt position = context"
+      },
+      {
+        "line": 28,
+        "text": "theorem lineagePrefixHeadIsPublished"
+      },
+      {
+        "line": 29,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix) :"
+      },
+      {
+        "line": 30,
+        "text": "    publishedByLineagePrefix"
+      },
+      {
+        "line": 31,
+        "text": "      lineagePrefix"
+      },
+      {
+        "line": 32,
+        "text": "      (lineagePrefix.lineage.contextAt lineagePrefix.headPosition) :="
+      },
+      {
+        "line": 33,
+        "text": "  \u27e8lineagePrefix.headPosition, Nat.le_refl _, rfl\u27e9"
+      },
+      {
+        "line": 36,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 38,
+        "text": "    (notAfterHead : position \u2264 lineagePrefix.headPosition) :"
+      },
+      {
+        "line": 39,
+        "text": "    publishedByLineagePrefix"
+      },
+      {
+        "line": 40,
+        "text": "      lineagePrefix"
+      },
+      {
+        "line": 41,
+        "text": "      (lineagePrefix.lineage.contextAt position) :="
+      },
+      {
+        "line": 45,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 47,
+        "text": "    (afterHead : lineagePrefix.headPosition < position) :"
+      },
+      {
+        "line": 48,
+        "text": "    \u00ac publishedByLineagePrefix"
+      },
+      {
+        "line": 49,
+        "text": "        lineagePrefix"
+      },
+      {
+        "line": 50,
+        "text": "        (lineagePrefix.lineage.contextAt position) := by"
+      }
+    ]
+  },
+  {
+    "id": "P43",
+    "path": "modules/session/funs-attempt.ss",
+    "matches": [
+      {
+        "line": 25,
+        "text": "      schedule: state-value runtime-published?: #f action-authorized?: #f durable?: #f))"
+      },
+      {
+        "line": 28,
+        "text": "        ((not (equal? expected (.ref state 'revision))) (receipt #f 'stale-revision state))"
+      },
+      {
+        "line": 30,
+        "text": "        ((or (= (.ref state 'revision) 65535) (= (.ref state 'generation) 65535))"
+      },
+      {
+        "line": 33,
+        "text": "(def (next-state state status-value active-value obligations-value completed-value generation-value)"
+      },
+      {
+        "line": 34,
+        "text": "  (let ((id-value (string-copy (.ref state 'identity))) (revision-value (+ 1 (.ref state 'revision))))"
+      },
+      {
+        "line": 35,
+        "text": "    (.o (:: @ SessionSchedule.) identity: id-value revision: revision-value"
+      },
+      {
+        "line": 36,
+        "text": "        generation: generation-value status: status-value active: active-value"
+      },
+      {
+        "line": 54,
+        "text": "                   (task-revision-value (.ref task-value 'revision))"
+      },
+      {
+        "line": 58,
+        "text": "                   (generation-value (+ 1 (.ref state 'generation)))"
+      },
+      {
+        "line": 60,
+        "text": "                     task-revision: task-revision-value identity: id-value request: request-value"
+      },
+      {
+        "line": 61,
+        "text": "                     turn: turn-value generation: generation-value input: input-value anchor-refs: anchors-value)))"
+      },
+      {
+        "line": 63,
+        "text": "                 (.ref state 'completed) generation-value))))))))"
+      },
+      {
+        "line": 67,
+        "text": "              '(kind session task task-revision identity generation turn request anchor-refs))"
+      },
+      {
+        "line": 76,
+        "text": "        (cons (string-copy (.ref attempt-value 'identity)) (.ref state 'completed)) (.ref state 'generation)))"
+      },
+      {
+        "line": 80,
+        "text": "    (let ((pending (if (.ref state 'active) (cons (.ref state 'active) (.ref state 'obligations))"
+      },
+      {
+        "line": 82,
+        "text": "          (generation-value (+ 1 (.ref state 'generation))))"
+      },
+      {
+        "line": 83,
+        "text": "      (receipt #t 'recovery-proposed (next-state state (if (null? pending) 'idle 'recovering)"
+      },
+      {
+        "line": 84,
+        "text": "        #f pending (.ref state 'completed) generation-value))))))"
+      },
+      {
+        "line": 92,
+        "text": "        (cons (string-copy (.ref attempt-value 'identity)) (.ref state 'completed)) (.ref state 'generation)))"
+      },
+      {
+        "line": 97,
+        "text": "      (receipt #t 'close-proposed (next-state state 'closed #f '() (.ref state 'completed) (.ref state 'generation)))"
+      },
+      {
+        "line": 98,
+        "text": "      (receipt #f 'pending-obligation state)))))"
+      }
+    ]
+  },
+  {
+    "id": "C8",
+    "path": "CedarPooSpec/Admission/BoundOperation.lean",
+    "matches": [
+      {
+        "line": 39,
+        "text": "/-- Compare the values supplied at admission with the bound operation before"
+      }
+    ]
+  },
+  {
+    "id": "C10",
+    "path": "CedarPooSpec/CompoundAuthorization.lean",
+    "matches": [
+      {
+        "line": 7,
+        "text": "responsible for atomic business execution and authentic input facts."
+      },
+      {
+        "line": 27,
+        "text": "      response.decision == .allow && response.erroringPolicies.isEmpty)"
+      },
+      {
+        "line": 47,
+        "text": "def layersAllowed {model : Model} {entities : Entities}"
+      },
+      {
+        "line": 50,
+        "text": "    layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty"
+      }
+    ]
+  },
+  {
+    "id": "C11",
+    "path": "CedarPooSpec/Composition.lean",
+    "matches": []
+  },
+  {
+    "id": "P44",
+    "path": "modules/session/objects-attempt.ss",
+    "matches": [
+      {
+        "line": 13,
+        "text": "  (.o kind: 'poo-flow.session.task.v1 identity: #f revision: 0"
+      },
+      {
+        "line": 16,
+        "text": "  (.o kind: 'poo-flow.session.attempt.v1 session: #f task: #f task-revision: 0"
+      },
+      {
+        "line": 17,
+        "text": "      identity: #f generation: 0 turn: 0 request: #f input: #f anchor-refs: '()))"
+      },
+      {
+        "line": 19,
+        "text": "  (.o kind: 'poo-flow.session.schedule.v1 identity: #f revision: 0"
+      },
+      {
+        "line": 20,
+        "text": "      generation: 0 status: 'idle active: #f obligations: '() completed: '()))"
+      }
+    ]
+  }
+]

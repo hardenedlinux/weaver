@@ -1,0 +1,114 @@
+[
+  {
+    "id": "CT1",
+    "design": "Checkpoint storage actions refine actual WAL transitions",
+    "quint": "lateCandidateAfterTrimReplaysThroughSuffixTest",
+    "lean": "logical_projection",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "CT2",
+    "design": "Published image and live representation invariants hold",
+    "quint": "secondCheckpointCanTrimFurtherTest",
+    "lean": "initialized_safe",
+    "d2": "lean"
+  },
+  {
+    "id": "CT3",
+    "design": "Recovery retains the initialized WAL/account/source history",
+    "quint": "rollbackAfterTrimRepairsLatestCheckpointTest",
+    "lean": "actual_wal_composition",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "CT4",
+    "design": "Old publication replies cannot lower the protected floor",
+    "quint": "oldCheckpointReplyCannotLowerNewFloorTest",
+    "lean": "publication_floor_monotone",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "CT5",
+    "design": "Lost publication response cannot erase its original result",
+    "quint": "lostPublishReplyQueriesSameRecordTest",
+    "lean": "published_checkpoint_retained",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "CT6",
+    "design": "Activation requires the currently selected checkpoint",
+    "quint": "oldWorkerCannotActivateRecoveredCheckpointTest",
+    "lean": "active_requires_current_checkpoint",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "CT7",
+    "design": "Physical deletion creates no financial delta",
+    "quint": "trimRetainsCompleteApplicationAndReservationTest",
+    "lean": "truncate_preserves_logical_account",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "CT8",
+    "design": "Missing application/consumption/hold fields cannot qualify",
+    "quint": "checkpointWithoutApplicationsRejectedTest",
+    "lean": "published_image_is_complete",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "CT9",
+    "design": "A fresh body still cannot publish under an old parent",
+    "quint": "staleParentCannotRepublishTest",
+    "lean": "old_parent_cannot_publish",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "CT10",
+    "design": "Original reservation cannot be consumed again after trimming",
+    "quint": "trimmedWalCannotReconsumeOriginalReservationTest",
+    "lean": "original_reservation_once",
+    "d2": "registry.query"
+  },
+  {
+    "id": "CT11",
+    "design": "Original unknown budget retains its hold",
+    "quint": "unconsumedOriginalHoldSurvivesCheckpointTest",
+    "lean": "unknown_original_hold_retained",
+    "d2": "protocols.a2a"
+  },
+  {
+    "id": "CT12",
+    "design": "Publication requires a complete durable body and parent CAS",
+    "quint": "unpublishedCheckpointCannotTruncateTest",
+    "lean": "new_publication_requires_complete_body",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "CT13",
+    "design": "Removed prefix is replaced by exact replay-equivalent state",
+    "quint": "checkpointPlusSuffixReplaysCurrentHeadTest",
+    "lean": "truncation_preserves_replay",
+    "d2": "registry.query"
+  },
+  {
+    "id": "CT14",
+    "design": "Publication changes metadata rather than account balances",
+    "quint": "lostPublishReplyQueriesSameRecordTest",
+    "lean": "publication_has_no_financial_effect",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "CT15",
+    "design": "A snapshot below the published baseline remains closed",
+    "quint": "rollbackBelowPublishedFloorCannotActivateTest",
+    "lean": "old_checkpoint_snapshot_stays_closed",
+    "d2": "protocols.acp"
+  },
+  {
+    "id": "CT16",
+    "design": "Published checkpoint ID cannot be rebound to another body",
+    "quint": "sameCheckpointIdDifferentBodyRejectedTest",
+    "lean": "checkpoint_ids_unique",
+    "d2": "broker.cas"
+  }
+]

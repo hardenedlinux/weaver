@@ -1,0 +1,2944 @@
+P12 a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/governance/policy/authorized-effect-token.ss SHA256 ef9abd5335f478d15b5b5a782be5ece07380995b009f504c3d5ae41a618281fb
+4: 
+5: ;;; Boundary: Scheme POO owns semantic roots and one-shot effect capabilities.
+6: ;;; Invariant: validation and consumption are pure immutable transitions.
+7: (import (only-in :clan/poo/object .o .ref object<-alist)
+8:         (only-in :std/crypto/digest sha256)
+18:         poo-flow-authorized-effect-token-validate
+19:         poo-flow-authorized-effect-token-consume)
+20: 
+21: (def (canonical-digest value)
+64: (def (poo-flow-effect-binding b-digest b-epoch p-digest e-digest d-digest i-digest
+65:                               attempt effect runtime session seq-start seq-end
+66:                               arena arena-gen offset length pld-digest lease)
+67:   (object<-alist
+68:    (list (cons 'kind 'poo-flow-effect-binding)
+72:          (cons 'attempt-id attempt) (cons 'effect-kind effect)
+73:          (cons 'runtime-id runtime) (cons 'session-id session)
+74:          (cons 'sequence-start seq-start) (cons 'sequence-end seq-end)
+75:          (cons 'arena-id arena) (cons 'arena-generation arena-gen)
+76:          (cons 'payload-offset offset) (cons 'payload-length length)
+77:          (cons 'payload-digest pld-digest) (cons 'lease-id lease))))
+78: 
+79: (def (poo-flow-token-validity issued not-before-time expiry-time revocation)
+96: (def (poo-flow-token-validation-context root expected-binding current-time
+97:                                          current-revocation spent-nonces)
+98:   (.o (kind 'poo-flow-token-validation-context)
+99:       (semantic-root root) (binding expected-binding) (now current-time)
+100:       (revocation-epoch current-revocation) (consumed-nonces spent-nonces)))
+101: 
+102: (def (binding-projection binding)
+106:         (.ref binding 'attempt-id) (.ref binding 'effect-kind)
+107:         (.ref binding 'runtime-id) (.ref binding 'session-id)
+108:         (.ref binding 'sequence-start) (.ref binding 'sequence-end)
+109:         (.ref binding 'arena-id) (.ref binding 'arena-generation)
+110:         (.ref binding 'payload-offset) (.ref binding 'payload-length)
+111:         (.ref binding 'payload-digest) (.ref binding 'lease-id)))
+112: 
+113: (def (binding-equal? left right)
+124:       'binding-substitution)
+125:      ((member nonce (.ref context 'consumed-nonces)) 'token-reuse)
+126:      ((< (.ref context 'now) (.ref validity 'not-before)) 'token-not-yet-valid)
+127:      ((> (.ref context 'now) (.ref validity 'expiry)) 'token-expired)
+141: 
+142: (def (poo-flow-authorized-effect-token-consume token validation
+143:                                                prior-root observation)
+144:   (unless (.ref validation 'accepted?)
+145:     (error "cannot consume rejected AuthorizedEffectToken"))
+146:   (let* ((leaf (list 'poo-flow.execution-leaf.draft.1
+147:                      prior-root (.ref token 'nonce)
+150:          (next-root (canonical-digest leaf)))
+151:     (.o (kind 'poo-flow-token-consumption-receipt)
+152:         (outcome 'committed) (token-id (.ref token 'token-id))
+153:         (nonce (.ref token 'nonce))
+
+P13 a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/governance/policy/strict-mediation.ss SHA256 fbb3bfbb16964b382352d1f3afe6aa319caea25adfc92d06c094942b26864916
+5: ;;; Boundary: Strict mediation owns pure nonce/root state transitions.
+6: ;;; Invariant: a token is consumed at most once and roots never fork silently.
+7: (import (only-in :clan/poo/object .o .ref)
+8:         :poo-flow/modules/governance/policy/authorized-effect-token)
+14: 
+15: (def (poo-flow-strict-mediation-state root seq spent revocation)
+16:   (.o (kind 'poo-flow-strict-mediation-state)
+17:       (execution-root root) (sequence seq)
+18:       (consumed-nonces spent) (revocation-epoch revocation)
+19:       (durability 'strict)))
+20: 
+47:                    (.ref state 'execution-root) (+ 1 (.ref state 'sequence))
+48:                    (cons token-nonce (.ref state 'consumed-nonces))
+49:                    (.ref state 'revocation-epoch)))
+50:                  (receipt
+51:                   (.o (kind 'poo-flow-strict-mediation-receipt)
+52:                       (accepted? #t) (outcome 'indeterminate)
+53:                       (code 'observation-unavailable)
+54:                       (token-id (.ref token 'token-id)) (nonce token-nonce)
+58:             (transition next-state receipt))
+59:           (let* ((consumption-receipt
+60:                   (poo-flow-authorized-effect-token-consume
+61:                    token validation (.ref state 'execution-root) observation))
+62:                  (token-nonce (.ref token 'nonce))
+64:                   (poo-flow-strict-mediation-state
+65:                    (.ref consumption-receipt 'execution-root)
+66:                    (+ 1 (.ref state 'sequence))
+67:                    (cons token-nonce (.ref state 'consumed-nonces))
+68:                    (.ref state 'revocation-epoch)))
+69:                  (receipt
+73:                       (before-root (.ref state 'execution-root))
+74:                       (after-root (.ref consumption-receipt 'execution-root))
+75:                       (consumption consumption-receipt) (durability 'strict))))
+76:             (transition next-state receipt)))))))
+77:   )
+
+P15 cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc:modules/assurance/effect-host.ss SHA256 0972fd28c7e66c0c4173f8b4116cec29e6c6608a348e7b694ed8f7ead9162de1
+5: ;;; Local serialized integration boundary, not a Cedar evaluator or distributed
+6: ;;; Runtime Host. Only configured runtime operations evaluate policy / deliver.
+7: ;;; Editable preflights, requests, tokens and reports never issue capabilities.
+8: (import (only-in :clan/poo/object .o .ref)
+27:       (error "effect Host requires its exact serialized owner"))
+28:     (when (vector-ref state 7) (error "effect Host mutation during runtime handoff"))
+29:     state))
+30: (def (instant state)
+41: 
+42: ;;; Runtime authorize: Request -> CedarDecision or #f (deny/indeterminate).
+43: ;;; Runtime deliver: Request Token -> delivered / failed / indeterminate.
+44: ;;; 'delivered is an attributable acknowledgement, not inferred from start.
+45: (def (assurance-effect-host authorize deliver clock lease)
+46:   (unless (and (procedure? authorize) (procedure? deliver) (procedure? clock)
+47:                (exact-integer? lease) (> lease 0))
+48:     (error "invalid effect Host runtime configuration"))
+49:   (let (host (.o kind: 'aitia.effect-host.v1))
+50:     (hash-put! hosts host (vector (current-thread) authorize deliver clock lease 0 0 #f 0))
+51:     host))
+52: (def (assurance-effect-host-epoch host) (vector-ref (entry host) 5))
+100:                          (.ref decision 'decision-digest) intent next (.ref request 'action)
+101:                          'configured-runtime 'local 1 1 'local 0 0 1 intent 'local))
+102:                        (until (+ now (vector-ref state 4)))
+103:                        (token (poo-flow-cedar-decision->authorized-effect-token
+105:                                (poo-flow-token-validity now now until epoch)
+106:                                'strict 1 'configured-runtime "local-adapter"))
+107:                        (grant (let ((token-value token) (epoch-value epoch))
+108:                                 (.o kind: 'aitia.effect-grant.v1 token: token-value epoch: epoch-value expires-at: until))))
+114: 
+115: ;;; Reservation consumes the grant once, but executes no external effect.
+116: (def (assurance-effect-host-reserve! host grant)
+117:   (let* ((state (entry host)) (issued (grant-entry host grant)))
+125:   (.o kind: 'aitia.effect-delivery.v1 outcome: outcome-value handoff-executed?: invoked?
+126:       delivered?: (eq? outcome-value 'delivered) durable?: #f distributed-authority?: #f))
+127: (def (assurance-effect-host-deliver! host reservation)
+128:   (let* ((state (entry host)) (issued (hash-get reservations reservation)))
+132:      (else
+133:       ;; Consume even on rejection / exception / unknown acknowledgement.
+134:       (vector-set! issued 3 #t)
+135:       (let (grant-state (vector-ref issued 2))
+140:                                      (vector-ref grant-state 3)))))
+141:             (unless (memq outcome '(delivered failed indeterminate))
+142:               (error "runtime delivery returned an invalid acknowledgement" outcome))
+143:             (delivery-receipt outcome #t))
+144:           (delivery-receipt 'rejected #f)))))))
+
+P17 a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/ai-agentic-context/features/memory/durable/store-backend.ss SHA256 6d15089fbe7e6101b478869db230fdec3282a60d781c551483849ec29a15ed8b
+5: 
+6: ;;; Boundary: durable runtime store backend negotiation and Marlin handoff ABI.
+7: ;;; Invariant: Scheme selects and projects backend contracts only; the runtime
+8: ;;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs.
+9: 
+10: (import (only-in :clan/poo/object .ref .slot? object? object<-alist)
+11:         (only-in :poo-flow/modules/workflow/control-plane/runtime-protocol
+12:                  +runtime-request-schema+)
+13:         (only-in :poo-flow/modules/workflow/control-plane/runtime-command-descriptor
+14:                  runtime-command-fields->manifest)
+15:         :core/utilities/final-projection-syntax
+16:         :poo-flow/modules/ai-agentic-context/features/memory/durable/store)
+17: 
+18: (export +poo-flow-durable-runtime-store-backend-kind+
+19:         +poo-flow-durable-runtime-store-backend-schema+
+20:         +poo-flow-durable-runtime-store-backend-receipt-schema+
+21:         +poo-flow-durable-runtime-store-backend-diagnostic-schema+
+22:         +poo-flow-durable-runtime-store-negotiation-schema+
+23:         +poo-flow-durable-runtime-store-handoff-schema+
+24:         +poo-flow-durable-runtime-store-backend-protocols+
+25:         +poo-flow-durable-runtime-store-handoff-required-fields+
+26:         make-poo-flow-durable-runtime-store-backend-receipt
+27:         poo-flow-durable-runtime-store-backend-receipt?
+28:         poo-flow-durable-runtime-store-backend-receipt-backend-id
+29:         poo-flow-durable-runtime-store-backend-receipt-backend-kind
+30:         poo-flow-durable-runtime-store-backend-receipt-runtime-owner
+31:         poo-flow-durable-runtime-store-backend-receipt-executable
+32:         poo-flow-durable-runtime-store-backend-receipt-protocol
+33:         poo-flow-durable-runtime-store-backend-receipt-supported-ledger-kinds
+34:         poo-flow-durable-runtime-store-backend-receipt-supported-capability-flags
+35:         poo-flow-durable-runtime-store-backend-receipt-operation-kinds
+36:         poo-flow-durable-runtime-store-backend-receipt-valid?
+37:         poo-flow-durable-runtime-store-backend-receipt-diagnostics
+38:         poo-flow-durable-runtime-store-backend-receipt-metadata
+39:         make-poo-flow-durable-runtime-store-negotiation-receipt
+40:         poo-flow-durable-runtime-store-negotiation-receipt?
+41:         poo-flow-durable-runtime-store-negotiation-receipt-store-id
+42:         poo-flow-durable-runtime-store-negotiation-receipt-backend-id
+43:         poo-flow-durable-runtime-store-negotiation-receipt-backend-kind
+44:         poo-flow-durable-runtime-store-negotiation-receipt-selected?
+45:         poo-flow-durable-runtime-store-negotiation-receipt-handoff-ready?
+46:         poo-flow-durable-runtime-store-negotiation-receipt-contract-row
+47:         poo-flow-durable-runtime-store-negotiation-receipt-backend-row
+48:         poo-flow-durable-runtime-store-negotiation-receipt-required-ledger-kinds
+49:         poo-flow-durable-runtime-store-negotiation-receipt-supported-ledger-kinds
+50:         poo-flow-durable-runtime-store-negotiation-receipt-missing-ledger-kinds
+51:         poo-flow-durable-runtime-store-negotiation-receipt-required-capability-flags
+52:         poo-flow-durable-runtime-store-negotiation-receipt-supported-capability-flags
+53:         poo-flow-durable-runtime-store-negotiation-receipt-missing-capability-flags
+54:         poo-flow-durable-runtime-store-negotiation-receipt-operation-kinds
+55:         poo-flow-durable-runtime-store-negotiation-receipt-unsupported-operation-kinds
+56:         poo-flow-durable-runtime-store-negotiation-receipt-manifest-operation
+57:         poo-flow-durable-runtime-store-negotiation-receipt-valid?
+58:         poo-flow-durable-runtime-store-negotiation-receipt-diagnostics
+59:         poo-flow-durable-runtime-store-negotiation-receipt-metadata
+60:  poo-flow-durable-runtime-store-backend
+61:  poo-flow-durable-runtime-store-backend/default
+62:  +poo-flow-turso-durable-runtime-store-capability-flags+
+63:  poo-flow-durable-runtime-store-backend/turso
+64:  poo-flow-durable-runtime-store-backend?
+65:         poo-flow-durable-runtime-store-backend->receipt
+66:         poo-flow-durable-runtime-store-backend-receipt->alist
+67:         poo-flow-durable-runtime-store-backend-negotiation
+68:         poo-flow-durable-runtime-store-negotiation-receipt->alist
+69:         poo-flow-durable-runtime-store-negotiation->marlin-handoff
+70:         poo-flow-durable-runtime-store-negotiations->alists)
+71: 
+72: (def +poo-flow-durable-runtime-store-backend-kind+
+73:   'poo-flow.durable.runtime-store-backend)
+74: 
+75: (def +poo-flow-durable-runtime-store-backend-schema+
+76:   'poo-flow.module-system.durable-runtime-store-backend.v1)
+77: 
+78: (def +poo-flow-durable-runtime-store-backend-receipt-schema+
+79:   'poo-flow.module-system.durable-runtime-store-backend.receipt.v1)
+80: 
+81: (def +poo-flow-durable-runtime-store-backend-diagnostic-schema+
+82:   'poo-flow.module-system.durable-runtime-store-backend.diagnostic.v1)
+83: 
+84: (def +poo-flow-durable-runtime-store-negotiation-schema+
+85:   'poo-flow.module-system.durable-runtime-store-negotiation.v1)
+86: 
+87: (def +poo-flow-durable-runtime-store-handoff-schema+
+88:   'poo-flow.module-system.durable-runtime-store.marlin-handoff.v1)
+89: 
+90: (def +poo-flow-durable-runtime-store-backend-protocols+
+91:   '(stdout-s-expression marlin-runtime-command marlin-service ffi))
+92: 
+93: (def +poo-flow-durable-runtime-store-handoff-required-fields+
+94:   '(schema
+95:     operation
+98:     policy
+99:     runtime-owner
+100:     runtime-command-manifest
+101:     negotiation
+102:     runtime-executed))
+103: 
+104: ;; : (forall (a) (-> Alist Symbol a a))
+105: (def (poo-flow-durable-runtime-backend-option options key default-value)
+106:   (let (entry (assoc key options))
+107:     (if entry (cdr entry) default-value)))
+109: ;; : (forall (a) (-> POOObject Symbol a a))
+110: (def (poo-flow-durable-runtime-backend-slot object key default-value)
+111:   (if (and (object? object) (.slot? object key))
+112:     (.ref object key)
+115: ;; : (forall (a) (-> Alist Symbol a a))
+116: (def (poo-flow-durable-runtime-backend-alist-ref row key default-value)
+117:   (if (list? row)
+118:     (let (entry (assoc key row))
+122: ;; : (-> Procedure List Boolean)
+123: (def (poo-flow-durable-runtime-backend-every? predicate values)
+124:   (cond
+125:    ((null? values) #t)
+126:    ((predicate (car values))
+127:     (poo-flow-durable-runtime-backend-every? predicate (cdr values)))
+128:    (else #f)))
+129: 
+130: ;; : (forall (a) (-> a (List a) Boolean))
+131: (def (poo-flow-durable-runtime-backend-member? value values)
+132:   (if (member value values) #t #f))
+133: 
+134: ;; : (-> Datum Boolean)
+135: (def (poo-flow-durable-runtime-backend-symbol-list? values)
+136:   (and (list? values)
+137:        (poo-flow-durable-runtime-backend-every? symbol? values)))
+138: 
+139: ;; : (-> Symbol Symbol Symbol Alist Alist)
+140: (def (poo-flow-durable-runtime-backend-diagnostic code slot severity payload)
+141:   (list
+142:    (cons 'kind +poo-flow-durable-runtime-store-backend-diagnostic-schema+)
+143:    (cons 'schema +poo-flow-durable-runtime-store-backend-diagnostic-schema+)
+144:    (cons 'code code)
+145:    (cons 'phase 'durable-runtime-store-backend)
+146:    (cons 'slot slot)
+147:    (cons 'severity severity)
+148:    (cons 'payload payload)
+149:    (cons 'recoverable?
+150:          (poo-flow-durable-runtime-backend-option
+151:           payload
+152:           'recoverable?
+153:           #t))
+154:    (cons 'runtime-executed #f)))
+155: 
+156: ;; : (-> Symbol Symbol Datum [Alist])
+157: (def (poo-flow-durable-runtime-backend-required-symbol-diagnostics code slot value)
+158:   (if (symbol? value)
+159:     '()
+160:     (list
+161:      (poo-flow-durable-runtime-backend-diagnostic
+162:       code
+163:       slot
+166:             (cons 'expected 'symbol)
+167:             (cons 'recoverable? #t))))))
+168: 
+169: ;; : (-> Symbol Symbol Datum [Alist])
+170: (def (poo-flow-durable-runtime-backend-required-string-diagnostics code slot value)
+171:   (if (string? value)
+172:     '()
+173:     (list
+174:      (poo-flow-durable-runtime-backend-diagnostic
+175:       code
+176:       slot
+179:             (cons 'expected 'string)
+180:             (cons 'recoverable? #t))))))
+181: 
+182: ;; : (-> Symbol [Symbol] [Symbol] Symbol Symbol [Alist])
+183: (def (poo-flow-durable-runtime-backend-symbol-list-diagnostics code
+184:                                                                values
+185:                                                                allowed
+188:   (cond
+189:    ((not (poo-flow-durable-runtime-backend-symbol-list? values))
+190:     (list
+191:      (poo-flow-durable-runtime-backend-diagnostic
+192:       code
+193:       slot
+198:             (cons 'allowed allowed)
+199:             (cons 'recoverable? #t)))))
+200:    ((poo-flow-durable-runtime-backend-every?
+201:      (lambda (value)
+202:        (poo-flow-durable-runtime-backend-member? value allowed))
+203:      values)
+204:     '())
+206:     (list
+207:      (poo-flow-durable-runtime-backend-diagnostic
+208:       code
+209:       slot
+213:             (cons 'allowed allowed)
+214:             (cons 'recoverable? #t)))))))
+215: 
+216: ;; : (-> [Symbol] [Symbol] [Symbol])
+217: (def (poo-flow-durable-runtime-backend-missing-symbols required supported)
+218:   (cond
+219:    ((null? required) '())
+220:    ((poo-flow-durable-runtime-backend-member? (car required) supported)
+221:     (poo-flow-durable-runtime-backend-missing-symbols (cdr required)
+222:                                                       supported))
+223:    (else
+224:     (cons (car required)
+225:           (poo-flow-durable-runtime-backend-missing-symbols (cdr required)
+226:                                                             supported)))))
+227: 
+228: ;; : (-> Symbol Symbol String Symbol [Symbol] [Symbol] [Symbol] [Alist] POOObject)
+229: (def (poo-flow-durable-runtime-store-backend backend-id
+230:                                              backend-kind
+231:                                              executable
+237:   (let* ((options (if (null? maybe-options) '() (car maybe-options)))
+238:          (runtime-owner
+239:           (poo-flow-durable-runtime-backend-option
+240:            options
+241:            'runtime-owner
+242:            "marlin-agent-core"))
+243:          (metadata
+244:           (poo-flow-durable-runtime-backend-option options 'metadata '())))
+245:     (object<-alist
+246:      (list
+247:       (cons 'durable-runtime-store-backend-kind
+248:             +poo-flow-durable-runtime-store-backend-kind+)
+249:       (cons 'durable-runtime-store-backend-schema
+250:             +poo-flow-durable-runtime-store-backend-schema+)
+251:       (cons 'backend-id backend-id)
+252:       (cons 'backend-kind backend-kind)
+257:       (cons 'operation-kinds operation-kinds)
+258:       (cons 'runtime-owner runtime-owner)
+259:       (cons 'backend-metadata metadata)
+260:       (cons 'runtime-executed #f)))))
+261: 
+262: (def poo-flow-durable-runtime-store-backend/default
+263:   (poo-flow-durable-runtime-store-backend
+264:    'runtime-backend/marlin-store
+265:    'marlin-runtime-store
+266:    "marlin-runtime-store"
+267:    'stdout-s-expression
+268:    +poo-flow-durable-runtime-store-ledger-kinds+
+269:    +poo-flow-durable-runtime-store-capability-flags+
+270:    +poo-flow-durable-runtime-store-capability-flags+
+271:    '((metadata . ((scope . shared)
+272:                   (runtime-executed . #f))))))
+273: 
+274: (def +poo-flow-turso-durable-runtime-store-capability-flags+
+275:   (append +poo-flow-durable-runtime-store-capability-flags+
+276:           '(concurrent-writes
+277:             local-first-push-pull
+281: 
+282: (def poo-flow-durable-runtime-store-backend/turso
+283:   (poo-flow-durable-runtime-store-backend
+284:    'runtime-backend/turso
+285:    'turso-runtime-store
+286:    "turso-runtime-store"
+287:    'python-pyturso
+288:    +poo-flow-durable-runtime-store-ledger-kinds+
+289:    +poo-flow-turso-durable-runtime-store-capability-flags+
+290:    +poo-flow-durable-runtime-store-capability-flags+
+291:    '((metadata . ((driver . turso)
+292:                   (driver-package . pyturso)
+298:                   (vector-query . vector_top_k)
+299:                   (runtime-executed . #f))))))
+300: 
+301: ;; : (-> Datum Boolean)
+302: (def (poo-flow-durable-runtime-store-backend? value)
+303:   (and (object? value)
+304:        (.slot? value 'durable-runtime-store-backend-kind)
+305:        (eq? (.ref value 'durable-runtime-store-backend-kind)
+306:             +poo-flow-durable-runtime-store-backend-kind+)))
+307: 
+308: ;; : (-> PooDurableRuntimeStoreBackend [Alist])
+309: (def (poo-flow-durable-runtime-store-backend-diagnostics backend)
+310:   (let ((backend-id
+311:          (poo-flow-durable-runtime-backend-slot backend 'backend-id #f))
+312:         (backend-kind
+313:          (poo-flow-durable-runtime-backend-slot backend 'backend-kind #f))
+314:         (executable
+315:          (poo-flow-durable-runtime-backend-slot backend 'executable #f))
+316:         (protocol
+317:          (poo-flow-durable-runtime-backend-slot backend 'protocol #f))
+318:         (runtime-owner
+319:          (poo-flow-durable-runtime-backend-slot backend 'runtime-owner #f))
+320:         (ledger-kinds
+321:          (poo-flow-durable-runtime-backend-slot
+322:           backend
+323:           'supported-ledger-kinds
+325:         (capability-flags
+326:          (poo-flow-durable-runtime-backend-slot
+327:           backend
+328:           'supported-capability-flags
+330:         (operation-kinds
+331:          (poo-flow-durable-runtime-backend-slot backend 'operation-kinds #f)))
+332:     (if (poo-flow-durable-runtime-store-backend? backend)
+333:       (append
+334:        (poo-flow-durable-runtime-backend-required-symbol-diagnostics
+335:         'missing-backend-id
+336:         'backend-id
+337:         backend-id)
+338:        (poo-flow-durable-runtime-backend-required-symbol-diagnostics
+339:         'missing-backend-kind
+340:         'backend-kind
+341:         backend-kind)
+342:        (poo-flow-durable-runtime-backend-required-string-diagnostics
+343:         'missing-executable
+344:         'executable
+345:         executable)
+346:        (poo-flow-durable-runtime-backend-required-symbol-diagnostics
+347:         'missing-protocol
+348:         'protocol
+349:         protocol)
+350:        (if (poo-flow-durable-runtime-backend-member?
+351:             protocol
+352:             +poo-flow-durable-runtime-store-backend-protocols+)
+353:          '()
+354:          (list
+355:           (poo-flow-durable-runtime-backend-diagnostic
+356:            'unsupported-backend-protocol
+357:            'protocol
+361:                  (cons 'allowed
+362:                        +poo-flow-durable-runtime-store-backend-protocols+)
+363:                  (cons 'recoverable? #t)))))
+364:        (if (string? runtime-owner)
+365:          '()
+366:          (list
+367:           (poo-flow-durable-runtime-backend-diagnostic
+368:            'invalid-runtime-owner
+369:            'runtime-owner
+370:            'error
+371:            (list (cons 'backend-id backend-id)
+372:                  (cons 'value runtime-owner)
+373:                  (cons 'expected 'string)
+374:                  (cons 'recoverable? #t)))))
+375:        (poo-flow-durable-runtime-backend-symbol-list-diagnostics
+376:         'unsupported-ledger-kind
+377:         ledger-kinds
+378:         +poo-flow-durable-runtime-store-ledger-kinds+
+379:         'supported-ledger-kinds
+380:         backend-id)
+381:        (poo-flow-durable-runtime-backend-symbol-list-diagnostics
+382:         'unsupported-capability-flag
+383:         capability-flags
+384:         +poo-flow-durable-runtime-store-capability-flags+
+385:         'supported-capability-flags
+386:         backend-id)
+387:        (poo-flow-durable-runtime-backend-symbol-list-diagnostics
+388:         'unsupported-operation-kind
+389:         operation-kinds
+390:         +poo-flow-durable-runtime-store-capability-flags+
+391:         'operation-kinds
+392:         backend-id))
+393:       (list
+394:        (poo-flow-durable-runtime-backend-diagnostic
+395:         'invalid-runtime-store-backend
+396:         'backend
+397:         'error
+398:         (list (cons 'value backend)
+399:               (cons 'recoverable? #t)))))))
+400: 
+401: ;;; Runtime store backend receipts stay fixed structs before alist projection.
+402: (defstruct poo-flow-durable-runtime-store-backend-receipt
+403:   (backend-id
+404:    backend-kind
+405:    runtime-owner
+406:    executable
+407:    protocol
+415: 
+416: ;; : (-> PooDurableRuntimeStoreBackend PooDurableRuntimeStoreBackendReceipt)
+417: (def (poo-flow-durable-runtime-store-backend->receipt backend)
+418:   (let* ((diagnostics
+419:           (poo-flow-durable-runtime-store-backend-diagnostics backend))
+420:          (valid? (null? diagnostics)))
+421:     (make-poo-flow-durable-runtime-store-backend-receipt
+422:      (poo-flow-durable-runtime-backend-slot backend 'backend-id #f)
+423:      (poo-flow-durable-runtime-backend-slot backend 'backend-kind #f)
+424:      (poo-flow-durable-runtime-backend-slot backend 'runtime-owner #f)
+425:      (poo-flow-durable-runtime-backend-slot backend 'executable #f)
+426:      (poo-flow-durable-runtime-backend-slot backend 'protocol #f)
+427:      (poo-flow-durable-runtime-backend-slot backend
+428:                                             'supported-ledger-kinds
+429:                                             '())
+430:      (poo-flow-durable-runtime-backend-slot backend
+431:                                             'supported-capability-flags
+432:                                             '())
+433:      (poo-flow-durable-runtime-backend-slot backend 'operation-kinds '())
+434:      valid?
+435:      diagnostics
+436:      (poo-flow-durable-runtime-backend-slot backend
+437:                                             'backend-metadata
+438:                                             '()))))
+439: 
+440: ;; : (-> PooDurableRuntimeStoreBackendReceipt Alist)
+441: (defpoo-final-projection
+442:   poo-flow-durable-runtime-store-backend-receipt->alist (receipt)
+443:   (bindings ((diagnostics
+444:               (poo-flow-durable-runtime-store-backend-receipt-diagnostics
+445:                receipt))))
+446:   (fields ((kind 'poo-flow.durable.runtime-store-backend-receipt)
+447:            (schema +poo-flow-durable-runtime-store-backend-receipt-schema+)
+448:            (backend-id
+449:             (poo-flow-durable-runtime-store-backend-receipt-backend-id receipt))
+450:            (backend-kind
+451:             (poo-flow-durable-runtime-store-backend-receipt-backend-kind
+452:              receipt))
+453:            (runtime-owner
+454:             (poo-flow-durable-runtime-store-backend-receipt-runtime-owner
+455:              receipt))
+456:            (executable
+457:             (poo-flow-durable-runtime-store-backend-receipt-executable
+458:              receipt))
+459:            (protocol
+460:             (poo-flow-durable-runtime-store-backend-receipt-protocol receipt))
+461:            (supported-ledger-kinds
+462:             (poo-flow-durable-runtime-store-backend-receipt-supported-ledger-kinds
+463:              receipt))
+464:            (supported-capability-flags
+465:             (poo-flow-durable-runtime-store-backend-receipt-supported-capability-flags
+466:              receipt))
+467:            (operation-kinds
+468:             (poo-flow-durable-runtime-store-backend-receipt-operation-kinds
+469:              receipt))
+470:            (valid?
+471:             (poo-flow-durable-runtime-store-backend-receipt-valid? receipt))
+472:            (diagnostics diagnostics)
+473:            (diagnostic-count (length diagnostics))
+474:            (metadata
+475:             (poo-flow-durable-runtime-store-backend-receipt-metadata receipt))
+476:            (runtime-executed #f))))
+477: 
+478: ;; : (-> Datum Alist)
+479: (def (poo-flow-durable-runtime-store-contract-receipt-row receipt)
+480:   (cond
+481:    ((poo-flow-durable-runtime-store-contract-receipt? receipt)
+482:     (poo-flow-durable-runtime-store-contract-receipt->alist receipt))
+483:    ((list? receipt) receipt)
+484:    (else receipt)))
+486: ;; : (-> Datum Alist)
+487: (def (poo-flow-durable-runtime-store-backend-receipt-row receipt)
+488:   (cond
+489:    ((poo-flow-durable-runtime-store-backend-receipt? receipt)
+490:     (poo-flow-durable-runtime-store-backend-receipt->alist receipt))
+491:    ((list? receipt) receipt)
+492:    (else receipt)))
+494: ;; : (-> Alist [Alist])
+495: (def (poo-flow-durable-runtime-store-contract-row-diagnostics row)
+496:   (cond
+497:    ((not (list? row))
+498:     (list
+499:      (poo-flow-durable-runtime-backend-diagnostic
+500:       'invalid-runtime-store-contract-receipt
+501:       'contract-row
+502:       'error
+503:       (list (cons 'value row)
+504:             (cons 'recoverable? #t)))))
+505:    ((not (eq? (poo-flow-durable-runtime-backend-alist-ref row 'valid? #f)
+506:               #t))
+507:     (list
+508:      (poo-flow-durable-runtime-backend-diagnostic
+509:       'runtime-store-contract-not-ready
+510:       'contract-row
+511:       'error
+512:       (list (cons 'store-id
+513:                   (poo-flow-durable-runtime-backend-alist-ref row
+514:                                                               'store-id
+515:                                                               #f))
+516:             (cons 'diagnostics
+517:                   (poo-flow-durable-runtime-backend-alist-ref row
+518:                                                               'diagnostics
+519:                                                               '()))
+520:             (cons 'recoverable? #t)))))
+521:    (else '())))
+522: 
+523: ;; : (-> Alist [Alist])
+524: (def (poo-flow-durable-runtime-store-backend-row-diagnostics row)
+525:   (cond
+526:    ((not (list? row))
+527:     (list
+528:      (poo-flow-durable-runtime-backend-diagnostic
+529:       'invalid-runtime-store-backend-receipt
+530:       'backend-row
+531:       'error
+532:       (list (cons 'value row)
+533:             (cons 'recoverable? #t)))))
+534:    ((not (eq? (poo-flow-durable-runtime-backend-alist-ref row 'valid? #f)
+535:               #t))
+536:     (list
+537:      (poo-flow-durable-runtime-backend-diagnostic
+538:       'runtime-store-backend-not-ready
+539:       'backend-row
+540:       'error
+541:       (list (cons 'backend-id
+542:                   (poo-flow-durable-runtime-backend-alist-ref row
+543:                                                               'backend-id
+544:                                                               #f))
+545:             (cons 'diagnostics
+546:                   (poo-flow-durable-runtime-backend-alist-ref row
+547:                                                               'diagnostics
+548:                                                               '()))
+549:             (cons 'recoverable? #t)))))
+550:    (else '())))
+551: 
+552: ;; : (-> Symbol [Symbol] Symbol [Alist])
+553: (def (poo-flow-durable-runtime-store-missing-diagnostics code values slot)
+554:   (if (null? values)
+555:     '()
+556:     (list
+557:      (poo-flow-durable-runtime-backend-diagnostic
+558:       code
+559:       slot
+561:       (list (cons 'missing values)
+562:             (cons 'recoverable? #t))))))
+563: 
+564: ;; : PooDurableRuntimeStoreNegotiationReceipt
+565: (defstruct poo-flow-durable-runtime-store-negotiation-receipt
+566:   (store-id
+567:    backend-id
+584:    metadata
+585:    runtime-owner
+586:    handoff-required
+587:    runtime-executed)
+588:   transparent: #t)
+589: 
+590: ;; : (-> PooDurableRuntimeStoreContractReceipt PooDurableRuntimeStoreBackendReceipt [Alist] PooDurableRuntimeStoreNegotiationReceipt)
+591: (def (poo-flow-durable-runtime-store-backend-negotiation contract-receipt
+592:                                                           backend-receipt
+593:                                                           . maybe-options)
+595:          (contract-row
+596:           (poo-flow-durable-runtime-store-contract-receipt-row
+597:            contract-receipt))
+598:          (backend-row
+599:           (poo-flow-durable-runtime-store-backend-receipt-row backend-receipt))
+600:          (required-ledger-kinds
+601:           (poo-flow-durable-runtime-backend-alist-ref
+602:            contract-row
+603:            'ledger-kinds
+605:          (supported-ledger-kinds
+606:           (poo-flow-durable-runtime-backend-alist-ref
+607:            backend-row
+608:            'supported-ledger-kinds
+610:          (missing-ledger-kinds
+611:           (poo-flow-durable-runtime-backend-missing-symbols
+612:            required-ledger-kinds
+613:            supported-ledger-kinds))
+614:          (required-capability-flags
+615:           (poo-flow-durable-runtime-backend-alist-ref
+616:            contract-row
+617:            'capability-flags
+619:          (supported-capability-flags
+620:           (poo-flow-durable-runtime-backend-alist-ref
+621:            backend-row
+622:            'supported-capability-flags
+624:          (missing-capability-flags
+625:           (poo-flow-durable-runtime-backend-missing-symbols
+626:            required-capability-flags
+627:            supported-capability-flags))
+628:          (operation-kinds
+629:           (poo-flow-durable-runtime-backend-alist-ref backend-row
+630:                                                       'operation-kinds
+631:                                                       '()))
+632:          (unsupported-operation-kinds
+633:           (poo-flow-durable-runtime-backend-missing-symbols
+634:            required-capability-flags
+635:            operation-kinds))
+636:          (manifest-operation
+637:           (poo-flow-durable-runtime-backend-option
+638:            options
+639:            'manifest-operation
+640:            'durable-runtime-store-negotiate))
+641:          (metadata
+642:           (poo-flow-durable-runtime-backend-option options 'metadata '()))
+643:          (diagnostics
+644:           (append
+645:            (poo-flow-durable-runtime-store-contract-row-diagnostics
+646:             contract-row)
+647:            (poo-flow-durable-runtime-store-backend-row-diagnostics
+648:             backend-row)
+649:            (poo-flow-durable-runtime-store-missing-diagnostics
+650:             'missing-ledger-kinds
+651:             missing-ledger-kinds
+652:             'supported-ledger-kinds)
+653:            (poo-flow-durable-runtime-store-missing-diagnostics
+654:             'missing-capability-flags
+655:             missing-capability-flags
+656:             'supported-capability-flags)
+657:            (poo-flow-durable-runtime-store-missing-diagnostics
+658:             'unsupported-operation-kinds
+659:             unsupported-operation-kinds
+661:          (valid? (null? diagnostics)))
+662:     (make-poo-flow-durable-runtime-store-negotiation-receipt
+663:      (poo-flow-durable-runtime-backend-alist-ref contract-row 'store-id #f)
+664:      (poo-flow-durable-runtime-backend-alist-ref backend-row 'backend-id #f)
+665:      (poo-flow-durable-runtime-backend-alist-ref backend-row
+666:                                                  'backend-kind
+667:                                                  #f)
+683:      metadata
+684:      (poo-flow-durable-runtime-backend-alist-ref backend-row
+685:                                                  'runtime-owner
+686:                                                  "marlin-agent-core")
+687:      #t
+689: 
+690: ;; : (-> PooDurableRuntimeStoreNegotiationReceipt Alist)
+691: (defpoo-final-projection
+692:   poo-flow-durable-runtime-store-negotiation-receipt->alist (receipt)
+693:   (bindings ((diagnostics
+694:               (poo-flow-durable-runtime-store-negotiation-receipt-diagnostics
+695:                receipt))))
+696:   (fields ((kind 'poo-flow.durable.runtime-store-negotiation-receipt)
+697:            (schema +poo-flow-durable-runtime-store-negotiation-schema+)
+698:            (store-id
+699:             (poo-flow-durable-runtime-store-negotiation-receipt-store-id
+700:              receipt))
+701:            (backend-id
+702:             (poo-flow-durable-runtime-store-negotiation-receipt-backend-id
+703:              receipt))
+704:            (backend-kind
+705:             (poo-flow-durable-runtime-store-negotiation-receipt-backend-kind
+706:              receipt))
+707:            (selected?
+708:             (poo-flow-durable-runtime-store-negotiation-receipt-selected?
+709:              receipt))
+710:            (handoff-ready?
+711:             (poo-flow-durable-runtime-store-negotiation-receipt-handoff-ready?
+712:              receipt))
+713:            (contract-row
+714:             (poo-flow-durable-runtime-store-negotiation-receipt-contract-row
+715:              receipt))
+716:            (backend-row
+717:             (poo-flow-durable-runtime-store-negotiation-receipt-backend-row
+718:              receipt))
+719:            (required-ledger-kinds
+720:             (poo-flow-durable-runtime-store-negotiation-receipt-required-ledger-kinds
+721:              receipt))
+722:            (supported-ledger-kinds
+723:             (poo-flow-durable-runtime-store-negotiation-receipt-supported-ledger-kinds
+724:              receipt))
+725:            (missing-ledger-kinds
+726:             (poo-flow-durable-runtime-store-negotiation-receipt-missing-ledger-kinds
+727:              receipt))
+728:            (required-capability-flags
+729:             (poo-flow-durable-runtime-store-negotiation-receipt-required-capability-flags
+730:              receipt))
+731:            (supported-capability-flags
+732:             (poo-flow-durable-runtime-store-negotiation-receipt-supported-capability-flags
+733:              receipt))
+734:            (missing-capability-flags
+735:             (poo-flow-durable-runtime-store-negotiation-receipt-missing-capability-flags
+736:              receipt))
+737:            (operation-kinds
+738:             (poo-flow-durable-runtime-store-negotiation-receipt-operation-kinds
+739:              receipt))
+740:            (unsupported-operation-kinds
+741:             (poo-flow-durable-runtime-store-negotiation-receipt-unsupported-operation-kinds
+742:              receipt))
+743:            (manifest-operation
+744:             (poo-flow-durable-runtime-store-negotiation-receipt-manifest-operation
+745:              receipt))
+746:            (valid?
+747:             (poo-flow-durable-runtime-store-negotiation-receipt-valid?
+748:              receipt))
+749:            (diagnostics diagnostics)
+751:            (metadata
+752:             (poo-flow-durable-runtime-store-negotiation-receipt-metadata
+753:              receipt))
+754:            (runtime-owner
+755:             (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner
+756:              receipt))
+757:            (handoff-required
+758:             (poo-flow-durable-runtime-store-negotiation-receipt-handoff-required
+759:              receipt))
+760:            (runtime-executed
+761:             (poo-flow-durable-runtime-store-negotiation-receipt-runtime-executed
+762:              receipt)))))
+763: 
+764: ;; : (-> PooDurableRuntimeStoreNegotiationReceipt Alist)
+765: (def (poo-flow-durable-runtime-store-negotiation->marlin-handoff receipt
+766:                                                                  . maybe-options)
+767:   (let* ((options (if (null? maybe-options) '() (car maybe-options)))
+768:          (row (poo-flow-durable-runtime-store-negotiation-receipt->alist
+769:                receipt))
+770:          (backend-row
+771:           (poo-flow-durable-runtime-store-negotiation-receipt-backend-row
+772:            receipt))
+773:          (operation
+774:           (poo-flow-durable-runtime-store-negotiation-receipt-manifest-operation
+775:            receipt))
+776:          (executable
+777:           (poo-flow-durable-runtime-backend-option
+778:            options
+779:            'executable
+780:            (poo-flow-durable-runtime-backend-alist-ref backend-row
+781:                                                        'executable
+782:                                                        "marlin-runtime-store")))
+783:          (arguments
+784:           (poo-flow-durable-runtime-backend-option
+785:            options
+786:            'arguments
+787:            '("durable-runtime-store" "negotiate")))
+788:          (protocol
+789:           (poo-flow-durable-runtime-backend-alist-ref backend-row
+790:                                                       'protocol
+791:                                                       'stdout-s-expression))
+792:          (metadata
+793:           (list (cons 'source 'poo-flow.durable.runtime-store)
+794:                 (cons 'backend-id
+795:                       (poo-flow-durable-runtime-store-negotiation-receipt-backend-id
+796:                        receipt))
+797:                 (cons 'store-id
+798:                       (poo-flow-durable-runtime-store-negotiation-receipt-store-id
+799:                        receipt))
+800:                 (cons 'runtime-executed #f)))
+801:          (envelope
+802:           (list (cons 'schema +runtime-request-schema+)
+803:                 (cons 'runtime 'marlin)
+804:                 (cons 'operation operation)
+805:                 (cons 'request-id
+806:                       (list 'poo-flow.durable.runtime-store
+807:                             (poo-flow-durable-runtime-store-negotiation-receipt-store-id
+808:                              receipt)
+809:                             (poo-flow-durable-runtime-store-negotiation-receipt-backend-id
+810:                              receipt)))
+811:                 (cons 'artifact-handle #f)
+814:                       (list
+815:                        (cons 'runtime-owner
+816:                              (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner
+817:                               receipt))
+818:                        (cons 'handoff-required #t)
+819:                        (cons 'runtime-executed #f)))
+820:                 (cons 'plan-id #f)
+821:                 (cons 'node-id
+822:                       (poo-flow-durable-runtime-store-negotiation-receipt-store-id
+823:                        receipt))
+824:                 (cons 'frontier '())))
+825:          (runtime-command-manifest
+826:           (runtime-command-fields->manifest
+827:            operation
+828:            executable
+833:     (list
+834:      (cons 'kind 'poo-flow.durable.runtime-store.marlin-handoff)
+835:      (cons 'schema +poo-flow-durable-runtime-store-handoff-schema+)
+836:      (cons 'request-schema +runtime-request-schema+)
+837:      (cons 'operation operation)
+838:      (cons 'request-id
+839:            (poo-flow-durable-runtime-backend-alist-ref
+840:             runtime-command-manifest
+841:             'request-id
+842:             #f))
+843:      (cons 'runtime-owner
+844:            (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner
+845:             receipt))
+846:      (cons 'handoff-ready?
+847:            (poo-flow-durable-runtime-store-negotiation-receipt-handoff-ready?
+848:             receipt))
+849:      (cons 'required-fields
+850:            +poo-flow-durable-runtime-store-handoff-required-fields+)
+851:      (cons 'negotiation row)
+852:      (cons 'runtime-command-manifest runtime-command-manifest)
+853:      (cons 'runtime-executed #f)
+854:      (cons 'runtime-parses-scheme-source #f)
+855:      (cons 'scheme-manufactures-runtime-handlers #f))))
+856: 
+857: ;; : (-> [PooDurableRuntimeStoreNegotiationReceipt] [Alist])
+858: (defpoo-final-projection-batch
+859:   poo-flow-durable-runtime-store-negotiations->alists (receipts)
+860:   (projector poo-flow-durable-runtime-store-negotiation-receipt->alist)
+861:   (error-message "durable runtime store negotiation serialization requires a list"))
+
+P18 a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean SHA256 3b6df2df1bdafe0f90445f46a99a94aed4ef9d79552b5435b257f83880529822
+6: 
+7: namespace PooFlowProof.Enterprise.PromotionTransactionRecovery
+8: 
+9: open PromotionTransactionAtomicity
+12: abbrev WorkerId := String
+13: abbrev RecoveryReceiptId := String
+14: 
+15: structure TransactionRegistryEntry where
+32:   { commitRequestA with
+33:     targetPostStateDigest := "sha256:runtime-conflicting-target" }
+34: 
+35: def conflictingCommittedReceipt : PromotionCommitReceipt :=
+37:     receiptId := "commit-conflicting"
+38:     postStateDigest := "sha256:runtime-conflicting-target" }
+39: 
+40: theorem conflictingCommitAlsoClosesIndividually :
+98: 
+99: def receiptBindsCanonicalRequest
+100:     (request : PromotionCommitRequest)
+101:     (receipt : PromotionCommitReceipt) : Prop :=
+107: 
+108: def priorCommitExists
+109:     (commitValid : CommitReceiptValid)
+110:     (ledger : List PromotionCommitReceipt)
+114:       prior.outcome = .committed ∧
+115:       receiptBindsCanonicalRequest request prior
+116: 
+117: def orphanDuplicateReceipt : PromotionCommitReceipt :=
+121: 
+122: theorem duplicateOutcomeDoesNotProvePriorCommit :
+123:     outcomePreservesAtomicState commitRequestA orphanDuplicateReceipt ∧
+124:       ¬ priorCommitExists
+125:         (fun _receipt => True)
+126:         []
+134:     ]
+135:   · simp [priorCommitExists]
+136: 
+137: theorem matchingPriorCommitFieldsDoNotProveCommitValidity :
+138:     receiptBindsCanonicalRequest commitRequestA committedReceiptA ∧
+139:       ¬ priorCommitExists
+140:         (fun _receipt => False)
+141:         [committedReceiptA]
+144:   · simp [
+145:       receiptBindsCanonicalRequest,
+146:       committedReceiptA,
+147:       commitRequestA
+148:     ]
+149:   · simp [priorCommitExists]
+150: 
+151: structure EffectObservation where
+152:   runtimeStateDigest : RuntimeStateDigest
+153:   externalEffectDigest : ExternalEffectDigest
+154:   uncompensatedApplicationCount : Nat
+157: def preEffectObservation : EffectObservation where
+158:   runtimeStateDigest := "sha256:runtime-before"
+159:   externalEffectDigest := "sha256:external-before"
+160:   uncompensatedApplicationCount := 0
+161: 
+162: def leakedRollbackObservation : EffectObservation where
+163:   runtimeStateDigest := "sha256:runtime-before"
+164:   externalEffectDigest := "sha256:external-leaked-effect"
+165:   uncompensatedApplicationCount := 1
+168:   { committedReceiptA with
+169:     receiptId := "rollback-with-leaked-effect"
+170:     postStateDigest := "sha256:runtime-before"
+171:     outcome := .rolledBack }
+172: 
+173: theorem runtimeDigestRollbackCanHideExternalEffect :
+174:     promotionCommitEvidenceClosed
+175:         (fun _receipt => True)
+180:         rolledBackReceiptWithLeakedEffect ∧
+181:       preEffectObservation.runtimeStateDigest =
+182:         leakedRollbackObservation.runtimeStateDigest ∧
+183:       preEffectObservation ≠ leakedRollbackObservation := by
+184:   constructor
+185:   · simp [
+218:   receiptIdentityMatchesRequest request receipt.base ∧
+219:     receipt.preEffect.runtimeStateDigest = receipt.base.preStateDigest ∧
+220:     receipt.postEffect.runtimeStateDigest = receipt.base.postStateDigest ∧
+221:     match receipt.base.outcome with
+222:     | .committed =>
+227:         receipt.base.postStateDigest = request.targetPostStateDigest ∧
+228:           priorCommitExists commitValid ledger request ∧
+229:           receipt.postEffect = receipt.preEffect ∧
+230:           receipt.postEffect.uncompensatedApplicationCount = 1
+236: def committedEffectObservation : EffectObservation where
+237:   runtimeStateDigest := "sha256:runtime-after"
+238:   externalEffectDigest := "sha256:external-after"
+239:   uncompensatedApplicationCount := 1
+261: 
+262: theorem closedDuplicateRequiresPriorCommit
+263:     (ledger : List PromotionCommitReceipt)
+264:     (commitValid : CommitReceiptValid)
+268:     (duplicate : receipt.base.outcome = .duplicate) :
+269:     priorCommitExists commitValid ledger request := by
+270:   have outcomeClosed := closed.2.2.2
+271:   simp [duplicate] at outcomeClosed
+273: 
+274: theorem closedRollbackRestoresCompleteEffectObservation
+275:     (ledger : List PromotionCommitReceipt)
+276:     (commitValid : CommitReceiptValid)
+312:   durableRecord : Option DurableTransactionRecord
+313:   runtimeStateDigest : RuntimeStateDigest
+314:   deriving DecidableEq, Repr
+315: 
+317:   durableRecord : Option DurableTransactionRecord
+318:   runtimeStateDigest : RuntimeStateDigest
+319:   externalEffectDigest : ExternalEffectDigest
+320:   deriving DecidableEq, Repr
+324:   durableRecord := world.durableRecord
+325:   runtimeStateDigest := world.runtimeStateDigest
+326: 
+327: def crashBeforeEffect : CrashWorld where
+328:   durableRecord := none
+329:   runtimeStateDigest := "sha256:runtime-before"
+330:   externalEffectDigest := "sha256:external-before"
+331: 
+333:   durableRecord := none
+334:   runtimeStateDigest := "sha256:runtime-before"
+335:   externalEffectDigest := "sha256:external-leaked-effect"
+336: 
+350: 
+351: def unfencedRecoveryEligible
+352:     (record : DurableTransactionRecord)
+353:     (_worker : WorkerId) : Prop :=
+356: theorem unfencedApplyingRecordAllowsConcurrentWorkers :
+357:     unfencedRecoveryEligible applyingRecordA "worker-a" ∧
+358:       unfencedRecoveryEligible applyingRecordA "worker-b" ∧
+359:       ("worker-a" : WorkerId) ≠ "worker-b" := by
+360:   simp [unfencedRecoveryEligible, applyingRecordA]
+361: 
+362: structure RecoveryClaim where
+363:   transactionId : TransactionId
+364:   workerId : WorkerId
+368: 
+369: def recoveryClaimFieldsMatch
+370:     (record : DurableTransactionRecord)
+371:     (claim : RecoveryClaim) : Prop :=
+372:   claim.transactionId = record.request.transactionId ∧
+373:     claim.observedFenceToken = record.fenceToken ∧
+375: 
+376: def claimA : RecoveryClaim where
+377:   transactionId := "promotion-transaction-a"
+378:   workerId := "worker-a"
+381: 
+382: def claimB : RecoveryClaim where
+383:   transactionId := "promotion-transaction-a"
+384:   workerId := "worker-b"
+387: 
+388: theorem matchingFenceFieldsDoNotProvideExclusiveOwnership :
+389:     recoveryClaimFieldsMatch applyingRecordA claimA ∧
+390:       recoveryClaimFieldsMatch applyingRecordA claimB ∧
+391:       claimA ≠ claimB := by
+392:   simp [
+393:     recoveryClaimFieldsMatch,
+394:     applyingRecordA,
+395:     commitRequestA,
+399: 
+400: def RecoveryClaimValid :=
+401:   DurableTransactionRecord → RecoveryClaim → Prop
+402: 
+403: def recoveryClaimAuthorityExclusive
+404:     (valid : RecoveryClaimValid) : Prop :=
+405:   ∀ record left right,
+406:     valid record left →
+411:     (_record : DurableTransactionRecord)
+412:     (claim : RecoveryClaim) : Prop :=
+413:   claim = claimA
+414: 
+415: theorem claimAValidityIsExclusive :
+416:     recoveryClaimAuthorityExclusive claimAValid := by
+417:   intro record left right leftValid rightValid
+418:   exact leftValid.trans rightValid.symm
+428: 
+429: structure RecoveryReceipt where
+430:   receiptId : RecoveryReceiptId
+431:   transactionId : TransactionId
+432:   fenceToken : Nat
+433:   recoveredFromPhase : DurablePhase
+434:   terminalPhase : DurablePhase
+435:   effectReceipt : AtomicEffectReceipt
+437: 
+438: def RecoveryReceiptValid :=
+439:   RecoveryReceipt → Prop
+440: 
+441: def registryContainsRequest
+445: 
+446: structure RecoveryEvidenceClosed
+447:     (registry : List TransactionRegistryEntry)
+448:     (registryValid : TransactionRegistryValid)
+450:     (commitValid : CommitReceiptValid)
+451:     (claimValid : RecoveryClaimValid)
+452:     (receiptValid : RecoveryReceiptValid)
+453:     (ledger : List PromotionCommitReceipt)
+454:     (record : DurableTransactionRecord)
+455:     (claim : RecoveryClaim)
+456:     (receipt : RecoveryReceipt) : Prop where
+457:   registryUnique : transactionRegistryUnique registry
+458:   registryValidates : registryValid registry
+461:   recordApplying : record.phase = .applying
+462:   claimAuthorityExclusive : recoveryClaimAuthorityExclusive claimValid
+463:   claimMatches : recoveryClaimFieldsMatch record claim
+464:   claimValidates : claimValid record claim
+465:   receiptTransactionMatches :
+468:     receipt.fenceToken = claim.acquiredFenceToken
+469:   receiptRecoversApplying :
+470:     receipt.recoveredFromPhase = record.phase
+471:   receiptIsTerminal :
+472:     isTerminalPhase receipt.terminalPhase
+484: 
+485: def recoveryReceiptA : RecoveryReceipt where
+486:   receiptId := "recovery-a"
+487:   transactionId := "promotion-transaction-a"
+488:   fenceToken := 8
+489:   recoveredFromPhase := .applying
+490:   terminalPhase := .committed
+491:   effectReceipt := committedAtomicEffectReceipt
+492: 
+493: theorem recoveryEvidenceClosesForExclusiveClaim :
+494:     RecoveryEvidenceClosed
+495:       [registryEntryA]
+496:       (fun _registry => True)
+503:       claimA
+504:       recoveryReceiptA := by
+505:   constructor
+506:   · simp [
+519:   · simp [
+520:       recoveryClaimFieldsMatch,
+521:       applyingRecordA,
+522:       commitRequestA,
+528:   · rfl
+529:   · simp [isTerminalPhase, recoveryReceiptA]
+530:   · simp [
+531:       terminalPhaseMatchesOutcome,
+532:       recoveryReceiptA,
+533:       committedAtomicEffectReceipt,
+534:       committedReceiptA
+538: 
+539: theorem uniqueRegistryFieldsDoNotProveRegistryAuthority :
+540:     transactionRegistryUnique [registryEntryA] ∧
+541:       ¬ (fun _registry : List TransactionRegistryEntry => False)
+549: 
+550: theorem matchingDurableRecordFieldsDoNotProveRecordAuthority :
+551:     applyingRecordA.phase = .applying ∧
+552:       ¬ (fun _record : DurableTransactionRecord => False)
+555: 
+556: theorem closedRecoveryProvidesExclusiveFence
+557:     (registry : List TransactionRegistryEntry)
+558:     (registryValid : TransactionRegistryValid)
+560:     (commitValid : CommitReceiptValid)
+561:     (claimValid : RecoveryClaimValid)
+562:     (receiptValid : RecoveryReceiptValid)
+563:     (ledger : List PromotionCommitReceipt)
+564:     (record : DurableTransactionRecord)
+565:     (claim other : RecoveryClaim)
+566:     (receipt : RecoveryReceipt)
+567:     (closed :
+568:       RecoveryEvidenceClosed
+569:         registry
+570:         registryValid
+580:     claim = other :=
+581:   closed.claimAuthorityExclusive
+582:     record
+583:     claim
+587: 
+588: theorem closedRecoveryEndsInTerminalPhase
+589:     (registry : List TransactionRegistryEntry)
+590:     (registryValid : TransactionRegistryValid)
+592:     (commitValid : CommitReceiptValid)
+593:     (claimValid : RecoveryClaimValid)
+594:     (receiptValid : RecoveryReceiptValid)
+595:     (ledger : List PromotionCommitReceipt)
+596:     (record : DurableTransactionRecord)
+597:     (claim : RecoveryClaim)
+598:     (receipt : RecoveryReceipt)
+599:     (closed :
+600:       RecoveryEvidenceClosed
+601:         registry
+602:         registryValid
+613: 
+614: theorem matchingRecoveryFieldsDoNotProveRecoveryAuthority :
+615:     recoveryClaimFieldsMatch applyingRecordA claimA ∧
+616:       ¬ RecoveryEvidenceClosed
+617:         [registryEntryA]
+618:         (fun _registry => True)
+625:         claimA
+626:         recoveryReceiptA := by
+627:   constructor
+628:   · simp [
+629:       recoveryClaimFieldsMatch,
+630:       applyingRecordA,
+631:       commitRequestA,
+636: 
+637: end PooFlowProof.Enterprise.PromotionTransactionRecovery
+
+P19 a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean SHA256 0c28396b16e390a97a1a8491fb29f7d88e4a84b49e11a740a2610ec04bfb459e
+4: 
+5: import PooFlowProof.Enterprise.PromotionTransactionRecovery
+6: import PooFlowProof.Enterprise.SourceBoundEffectCompletionCrashRecoveryClosure
+7: import PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore
+8: 
+9: namespace PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore
+10: 
+11: open CedarDualEngineAuthorization
+12: open HumanAuthorityAccountability
+13: open PromotionTransactionAtomicity
+14: open PromotionTransactionRecovery
+15: open SourceBoundCheckpointRestoreAuthorizationClosure
+16: open SourceBoundEffectCompletionCrashRecoveryClosure
+17: open SourceBoundEffectCompletionRecoveryCedarAuthorizationLifecycleCore
+18: open SourceBoundEffectCompletionRecoveryCedarAuthorizationSubjectBridgeCore
+19: open SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore
+20: 
+21: abbrev SourceBoundEffectCompletionRecoveryExpectationRequestBindingValid :=
+22:   SourceBoundLatestCheckpointRestoreRequest →
+23:     PromotionCommitRequest →
+24:       Prop
+25: 
+26: abbrev SourceBoundEffectCompletionRecoveryAuthorizationRequestBindingValid :=
+27:   Cedar.Spec.Request →
+28:     PromotionCommitRequest →
+29:       RecoveryClaim →
+30:         Prop
+31: 
+32: abbrev SourceBoundEffectCompletionRecoveryRecoveryIdentityBindingValid :=
+33:   String →
+34:     RecoveryReceiptId →
+35:       Prop
+36: 
+37: abbrev SourceBoundEffectCompletionRecoveryProviderWorkerBindingValid :=
+38:   String →
+39:     WorkerId →
+41: 
+42: abbrev SourceBoundEffectCompletionRecoveryRecoveryProvenanceBindingValid :=
+43:   String →
+44:     String →
+45:       DurableTransactionRecord →
+46:         RecoveryClaim →
+47:           RecoveryReceipt →
+48:             Prop
+49: 
+50: abbrev SourceBoundEffectCompletionRecoveryRecoveryAuthorityAssignmentValid :=
+51:   String →
+52:     String →
+54:         PromotionCommitSubject →
+55:           RecoveryClaim →
+56:             Prop
+57: 
+58: def sourceBoundEffectCompletionTransactionRecoveryRequired
+59:     (state : SourceBoundEffectCompletionCrashRecoveryState) : Prop :=
+60:   state = SourceBoundEffectCompletionCrashRecoveryState.executedUncommitted ∨
+61:     state = SourceBoundEffectCompletionCrashRecoveryState.indeterminate
+62: 
+63: theorem transactionRecoveryRequiredIsNotCommitted
+64:     {state : SourceBoundEffectCompletionCrashRecoveryState}
+65:     (required : sourceBoundEffectCompletionTransactionRecoveryRequired state) :
+66:     state ≠ SourceBoundEffectCompletionCrashRecoveryState.committed := by
+67:   intro committed
+68:   rcases required with executed | indeterminate
+69:   · cases executed.symm.trans committed
+70:   · cases indeterminate.symm.trans committed
+71: 
+72: structure SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridge
+73:     (snapshotSubjectBindingValid :
+74:       SourceBoundEffectCompletionRecoveryCedarSnapshotSubjectBindingValid)
+75:     (semantics : DecisionSemantics)
+76:     (decisionReceiptValid : DecisionReceiptValid)
+77:     (dualDecisionIdentityValid :
+78:       SourceBoundEffectCompletionRecoveryCedarDualDecisionIdentityValid)
+79:     (authorityPathAuthorized : String → String → String → String → Prop)
+80:     (separationOfDutySatisfied : String → String → String → Prop)
+81:     (expectedAuthority expectedCommitment : String)
+82:     (expectedBundle : BundleEvidenceBinding.BundleDigest)
+83:     (authorityReceiptValid : AuthorityReceiptValid)
+84:     (admissionReceiptValid : AdmissionReceiptValid)
+85:     (commitReceiptValid : CommitReceiptValid)
+86:     (dualDecisionEngineRolesValid :
+87:       SourceBoundEffectCompletionRecoveryDualDecisionEngineRolesValid)
+88:     (humanAuthoritySnapshotBindingValid :
+89:       SourceBoundEffectCompletionRecoveryHumanAuthoritySnapshotBindingValid)
+90:     (accountabilityAssignmentValid :
+91:       SourceBoundEffectCompletionRecoveryAccountabilityAssignmentValid)
+92:     (responsibilityScopeCoversPlanValid :
+93:       SourceBoundEffectCompletionRecoveryResponsibilityScopeCoversPlanValid)
+94:     (materializationPlanValid :
+95:       SourceBoundEffectCompletionRecoveryMaterializationPlanValid)
+96:     (commitLifecycle : SourceBoundEffectCompletionRecoveryCedarAuthorizationEvidence)
+97:     (subject : AuthorizationSubject)
+98:     (left right : DecisionReceipt)
+99:     (actors : PromotionActors)
+100:     (grant : AuthorityGrant)
+101:     (humanReceipt : BoundAuthorityReceipt)
+102:     (currentSnapshot : GovernanceSnapshot)
+103:     (admission : PromotionAdmissionReceipt)
+105:     (commitReceipt : PromotionCommitReceipt)
+106:     (recoveryAuthorityIdentity : String)
+107:     (recoveryLifecycle : SourceBoundEffectCompletionRecoveryCedarAuthorizationEvidence)
+108:     (expectation : SourceBoundEffectCompletionRecoveryExpectation)
+109:     (registry : List TransactionRegistryEntry)
+110:     (registryValid : TransactionRegistryValid)
+111:     (recordValid : DurableRecordValid)
+112:     (claimValid : RecoveryClaimValid)
+113:     (receiptValid : RecoveryReceiptValid)
+114:     (ledger : List PromotionCommitReceipt)
+115:     (record : DurableTransactionRecord)
+116:     (claim : RecoveryClaim)
+117:     (recoveryReceipt : RecoveryReceipt)
+118:     (expectationRequestBindingValid :
+119:       SourceBoundEffectCompletionRecoveryExpectationRequestBindingValid)
+120:     (authorizationRequestBindingValid :
+121:       SourceBoundEffectCompletionRecoveryAuthorizationRequestBindingValid)
+122:     (recoveryIdentityBindingValid :
+123:       SourceBoundEffectCompletionRecoveryRecoveryIdentityBindingValid)
+124:     (providerWorkerBindingValid :
+125:       SourceBoundEffectCompletionRecoveryProviderWorkerBindingValid)
+126:     (recoveryProvenanceBindingValid :
+127:       SourceBoundEffectCompletionRecoveryRecoveryProvenanceBindingValid)
+128:     (recoveryAuthorityAssignmentValid :
+129:       SourceBoundEffectCompletionRecoveryRecoveryAuthorityAssignmentValid) : Prop where
+130:   humanAtomicBridge :
+131:     SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridge
+132:       snapshotSubjectBindingValid
+133:       semantics
+135:       dualDecisionIdentityValid
+136:       authorityPathAuthorized
+137:       separationOfDutySatisfied
+138:       expectedAuthority
+139:       expectedCommitment
+140:       expectedBundle
+141:       authorityReceiptValid
+142:       admissionReceiptValid
+143:       commitReceiptValid
+144:       dualDecisionEngineRolesValid
+145:       humanAuthoritySnapshotBindingValid
+146:       accountabilityAssignmentValid
+147:       responsibilityScopeCoversPlanValid
+159:       commitReceipt
+160:   recoveryAuthorizationAdmitted :
+161:     recoveryLifecycle.Admitted
+162:       authorityPathAuthorized
+163:       separationOfDutySatisfied
+164:       recoveryAuthorityIdentity
+165:       expectedCommitment
+166:   recoveryRuntimeEpochMatches :
+167:     recoveryLifecycle.runtimeEpoch = expectation.runtimeEpoch
+168:   recoveryLifecycleFenceMatches :
+169:     recoveryLifecycle.activeFenceToken = expectation.activeFenceToken
+170:   recoveryClaimFenceMatches :
+171:     expectation.activeFenceToken = claim.acquiredFenceToken
+172:   expectationRequestBinds :
+174:   authorizationRequestBinds :
+175:     authorizationRequestBindingValid recoveryLifecycle.snapshot.request record.request claim
+176:   recoveryIdentityBinds :
+177:     recoveryIdentityBindingValid expectation.recoveryId recoveryReceipt.receiptId
+178:   providerWorkerBinds :
+179:     providerWorkerBindingValid expectation.providerIdentity claim.workerId
+180:   recoveryProvenanceBinds :
+181:     recoveryProvenanceBindingValid
+182:       expectedCommitment
+183:       expectation.provenanceDigest
+185:       claim
+186:       recoveryReceipt
+187:   recoveryAuthorityAssigns :
+188:     recoveryAuthorityAssignmentValid
+189:       recoveryLifecycle.authorityIdentity
+190:       recoveryLifecycle.accountabilityIdentity
+191:       actors
+192:       record.request.subject
+193:       claim
+194:   recoveryScopeCoversPlan :
+195:     responsibilityScopeCoversPlanValid
+196:       recoveryLifecycle.responsibilityScopeDigest
+197:       record.request.subject.materializationPlanDigest
+198:   recordRequestMatchesAtomic :
+199:     record.request = request
+200:   recoveryBaseReceiptMatchesAtomic :
+201:     recoveryReceipt.effectReceipt.base = commitReceipt
+202:   recoveryCloses :
+203:     RecoveryEvidenceClosed
+204:       registry
+205:       registryValid
+212:       claim
+213:       recoveryReceipt
+214: 
+215: theorem closedAuthorizedRecoveryProvidesHumanAtomicBridge
+216:     {snapshotSubjectBindingValid}
+217:     {semantics}
+219:     {dualDecisionIdentityValid}
+220:     {authorityPathAuthorized}
+221:     {separationOfDutySatisfied}
+222:     {expectedAuthority expectedCommitment}
+223:     {expectedBundle}
+224:     {authorityReceiptValid}
+225:     {admissionReceiptValid}
+226:     {commitReceiptValid}
+227:     {dualDecisionEngineRolesValid}
+228:     {humanAuthoritySnapshotBindingValid}
+229:     {accountabilityAssignmentValid}
+230:     {responsibilityScopeCoversPlanValid}
+241:     {commitReceipt}
+242:     {recoveryAuthorityIdentity}
+243:     {recoveryLifecycle}
+244:     {expectation}
+245:     {registry}
+252:     {claim}
+253:     {recoveryReceipt}
+254:     {expectationRequestBindingValid}
+255:     {authorizationRequestBindingValid}
+256:     {recoveryIdentityBindingValid}
+257:     {providerWorkerBindingValid}
+258:     {recoveryProvenanceBindingValid}
+259:     {recoveryAuthorityAssignmentValid}
+260:     (closed :
+261:       SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridge
+262:         snapshotSubjectBindingValid
+263:         semantics
+265:         dualDecisionIdentityValid
+266:         authorityPathAuthorized
+267:         separationOfDutySatisfied
+268:         expectedAuthority
+269:         expectedCommitment
+270:         expectedBundle
+271:         authorityReceiptValid
+272:         admissionReceiptValid
+273:         commitReceiptValid
+274:         dualDecisionEngineRolesValid
+275:         humanAuthoritySnapshotBindingValid
+276:         accountabilityAssignmentValid
+277:         responsibilityScopeCoversPlanValid
+289:         commitReceipt
+290:         recoveryAuthorityIdentity
+291:         recoveryLifecycle
+292:         expectation
+293:         registry
+300:         claim
+301:         recoveryReceipt
+302:         expectationRequestBindingValid
+303:         authorizationRequestBindingValid
+304:         recoveryIdentityBindingValid
+305:         providerWorkerBindingValid
+306:         recoveryProvenanceBindingValid
+307:         recoveryAuthorityAssignmentValid) :
+308:     SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridge
+309:       snapshotSubjectBindingValid
+310:       semantics
+312:       dualDecisionIdentityValid
+313:       authorityPathAuthorized
+314:       separationOfDutySatisfied
+315:       expectedAuthority
+316:       expectedCommitment
+317:       expectedBundle
+318:       authorityReceiptValid
+319:       admissionReceiptValid
+320:       commitReceiptValid
+321:       dualDecisionEngineRolesValid
+322:       humanAuthoritySnapshotBindingValid
+323:       accountabilityAssignmentValid
+324:       responsibilityScopeCoversPlanValid
+338: 
+339: theorem closedAuthorizedRecoveryProvidesRecoveryEvidence
+340:     {snapshotSubjectBindingValid}
+341:     {semantics}
+343:     {dualDecisionIdentityValid}
+344:     {authorityPathAuthorized}
+345:     {separationOfDutySatisfied}
+346:     {expectedAuthority expectedCommitment}
+347:     {expectedBundle}
+348:     {authorityReceiptValid}
+349:     {admissionReceiptValid}
+350:     {commitReceiptValid}
+351:     {dualDecisionEngineRolesValid}
+352:     {humanAuthoritySnapshotBindingValid}
+353:     {accountabilityAssignmentValid}
+354:     {responsibilityScopeCoversPlanValid}
+365:     {commitReceipt}
+366:     {recoveryAuthorityIdentity}
+367:     {recoveryLifecycle}
+368:     {expectation}
+369:     {registry}
+376:     {claim}
+377:     {recoveryReceipt}
+378:     {expectationRequestBindingValid}
+379:     {authorizationRequestBindingValid}
+380:     {recoveryIdentityBindingValid}
+381:     {providerWorkerBindingValid}
+382:     {recoveryProvenanceBindingValid}
+383:     {recoveryAuthorityAssignmentValid}
+384:     (closed :
+385:       SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridge
+386:         snapshotSubjectBindingValid
+387:         semantics
+389:         dualDecisionIdentityValid
+390:         authorityPathAuthorized
+391:         separationOfDutySatisfied
+392:         expectedAuthority
+393:         expectedCommitment
+394:         expectedBundle
+395:         authorityReceiptValid
+396:         admissionReceiptValid
+397:         commitReceiptValid
+398:         dualDecisionEngineRolesValid
+399:         humanAuthoritySnapshotBindingValid
+400:         accountabilityAssignmentValid
+401:         responsibilityScopeCoversPlanValid
+413:         commitReceipt
+414:         recoveryAuthorityIdentity
+415:         recoveryLifecycle
+416:         expectation
+417:         registry
+424:         claim
+425:         recoveryReceipt
+426:         expectationRequestBindingValid
+427:         authorizationRequestBindingValid
+428:         recoveryIdentityBindingValid
+429:         providerWorkerBindingValid
+430:         recoveryProvenanceBindingValid
+431:         recoveryAuthorityAssignmentValid) :
+432:     RecoveryEvidenceClosed
+433:       registry
+434:       registryValid
+441:       claim
+442:       recoveryReceipt :=
+443:   closed.recoveryCloses
+444: 
+445: theorem staleRecoveryEpochRejectsAuthorizedBridge
+446:     {snapshotSubjectBindingValid}
+447:     {semantics}
+449:     {dualDecisionIdentityValid}
+450:     {authorityPathAuthorized}
+451:     {separationOfDutySatisfied}
+452:     {expectedAuthority expectedCommitment}
+453:     {expectedBundle}
+454:     {authorityReceiptValid}
+455:     {admissionReceiptValid}
+456:     {commitReceiptValid}
+457:     {dualDecisionEngineRolesValid}
+458:     {humanAuthoritySnapshotBindingValid}
+459:     {accountabilityAssignmentValid}
+460:     {responsibilityScopeCoversPlanValid}
+471:     {commitReceipt}
+472:     {recoveryAuthorityIdentity}
+473:     {recoveryLifecycle}
+474:     {expectation}
+475:     {registry}
+482:     {claim}
+483:     {recoveryReceipt}
+484:     {expectationRequestBindingValid}
+485:     {authorizationRequestBindingValid}
+486:     {recoveryIdentityBindingValid}
+487:     {providerWorkerBindingValid}
+488:     {recoveryProvenanceBindingValid}
+489:     {recoveryAuthorityAssignmentValid}
+490:     (stale : recoveryLifecycle.runtimeEpoch ≠ expectation.runtimeEpoch) :
+491:     ¬ SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridge
+492:       snapshotSubjectBindingValid
+493:       semantics
+495:       dualDecisionIdentityValid
+496:       authorityPathAuthorized
+497:       separationOfDutySatisfied
+498:       expectedAuthority
+499:       expectedCommitment
+500:       expectedBundle
+501:       authorityReceiptValid
+502:       admissionReceiptValid
+503:       commitReceiptValid
+504:       dualDecisionEngineRolesValid
+505:       humanAuthoritySnapshotBindingValid
+506:       accountabilityAssignmentValid
+507:       responsibilityScopeCoversPlanValid
+519:       commitReceipt
+520:       recoveryAuthorityIdentity
+521:       recoveryLifecycle
+522:       expectation
+523:       registry
+530:       claim
+531:       recoveryReceipt
+532:       expectationRequestBindingValid
+533:       authorizationRequestBindingValid
+534:       recoveryIdentityBindingValid
+535:       providerWorkerBindingValid
+536:       recoveryProvenanceBindingValid
+537:       recoveryAuthorityAssignmentValid := by
+538:   intro closed
+539:   exact stale closed.recoveryRuntimeEpochMatches
+540: 
+541: theorem wrongAtomicReceiptRejectsAuthorizedBridge
+545:     {dualDecisionIdentityValid}
+546:     {authorityPathAuthorized}
+547:     {separationOfDutySatisfied}
+548:     {expectedAuthority expectedCommitment}
+549:     {expectedBundle}
+550:     {authorityReceiptValid}
+551:     {admissionReceiptValid}
+552:     {commitReceiptValid}
+553:     {dualDecisionEngineRolesValid}
+554:     {humanAuthoritySnapshotBindingValid}
+555:     {accountabilityAssignmentValid}
+556:     {responsibilityScopeCoversPlanValid}
+567:     {commitReceipt}
+568:     {recoveryAuthorityIdentity}
+569:     {recoveryLifecycle}
+570:     {expectation}
+571:     {registry}
+578:     {claim}
+579:     {recoveryReceipt}
+580:     {expectationRequestBindingValid}
+581:     {authorizationRequestBindingValid}
+582:     {recoveryIdentityBindingValid}
+583:     {providerWorkerBindingValid}
+584:     {recoveryProvenanceBindingValid}
+585:     {recoveryAuthorityAssignmentValid}
+586:     (wrong : recoveryReceipt.effectReceipt.base ≠ commitReceipt) :
+587:     ¬ SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridge
+588:       snapshotSubjectBindingValid
+589:       semantics
+591:       dualDecisionIdentityValid
+592:       authorityPathAuthorized
+593:       separationOfDutySatisfied
+594:       expectedAuthority
+595:       expectedCommitment
+596:       expectedBundle
+597:       authorityReceiptValid
+598:       admissionReceiptValid
+599:       commitReceiptValid
+600:       dualDecisionEngineRolesValid
+601:       humanAuthoritySnapshotBindingValid
+602:       accountabilityAssignmentValid
+603:       responsibilityScopeCoversPlanValid
+615:       commitReceipt
+616:       recoveryAuthorityIdentity
+617:       recoveryLifecycle
+618:       expectation
+619:       registry
+626:       claim
+627:       recoveryReceipt
+628:       expectationRequestBindingValid
+629:       authorizationRequestBindingValid
+630:       recoveryIdentityBindingValid
+631:       providerWorkerBindingValid
+632:       recoveryProvenanceBindingValid
+633:       recoveryAuthorityAssignmentValid := by
+634:   intro closed
+635:   exact wrong closed.recoveryBaseReceiptMatchesAtomic
+636: 
+637: end PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore
+
+P20 a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean SHA256 3b1b645f0f9cbdd4b698d19a6a9852c251b60ee1c5194d10af276f8a8a02d629
+51:       traceReceipt
+52:   effectUniverseExecutesExactlyOnce :
+53:     sourceBoundTraceExecutesUniverseExactlyOnce witness traceReceipt
+54: 
+153:       sourceBoundEffectOccurrenceCount effectId traceReceipt = 1 :=
+154:   closed.effectUniverseExecutesExactlyOnce.2
+155: 
+156: theorem evidenceExecutesEveryDeclaredEffectExactlyOnce
+161: 
+162: theorem everyRuntimeEffectBelongsToDeclaredUniverse
+163:     {request : SourceBoundCompositionRequestSubject}
+164:     {activeFenceToken : Nat}
+191:     event.effectId ∈ witness.effectUniverse :=
+192:   closedSourceBoundCompositionCoversEveryRuntimeEvent
+193:     request
+194:     activeFenceToken
+
+P22 a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/ai-agentic-context/features/memory/durable/store.ss SHA256 ce4fb7cc049d3a5f6395deec31db3130cd87796241506d252a07bcfc73391f1f
+5: 
+6: ;;; Boundary: durable runtime store contract receipts for Rust/Marlin handoff.
+7: ;;; Invariant: Scheme validates and projects store contracts only; the runtime
+8: ;;; owns storage, locking, leases, fsync, backfill, replay, and side effects.
+9: 
+10: (import (only-in :clan/poo/object .o .ref .slot? object? object<-alist)
+13: 
+14: (export +poo-flow-durable-runtime-store-contract-kind+
+15:         +poo-flow-durable-runtime-store-contract-schema+
+16:         +poo-flow-durable-runtime-store-contract-receipt-schema+
+17:         +poo-flow-durable-runtime-store-diagnostic-schema+
+18:         +poo-flow-durable-runtime-store-ledger-kinds+
+19:         +poo-flow-durable-runtime-store-capability-flags+
+20:         make-poo-flow-durable-runtime-store-contract-receipt
+21:         poo-flow-durable-runtime-store-contract-receipt?
+22:         poo-flow-durable-runtime-store-contract-receipt-store-id
+23:         poo-flow-durable-runtime-store-contract-receipt-store-owner
+24:         poo-flow-durable-runtime-store-contract-receipt-durable-policy-ref
+25:         poo-flow-durable-runtime-store-contract-receipt-project-id
+26:         poo-flow-durable-runtime-store-contract-receipt-root-session-id
+27:         poo-flow-durable-runtime-store-contract-receipt-session-id
+28:         poo-flow-durable-runtime-store-contract-receipt-runtime-owner
+29:         poo-flow-durable-runtime-store-contract-receipt-schema-version
+30:         poo-flow-durable-runtime-store-contract-receipt-fact-log-ref
+31:         poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref
+32:         poo-flow-durable-runtime-store-contract-receipt-derived-index-ref
+33:         poo-flow-durable-runtime-store-contract-receipt-job-store-ref
+34:         poo-flow-durable-runtime-store-contract-receipt-repair-journal-ref
+35:         poo-flow-durable-runtime-store-contract-receipt-artifact-store-ref
+36:         poo-flow-durable-runtime-store-contract-receipt-communication-ledger-ref
+37:         poo-flow-durable-runtime-store-contract-receipt-sandbox-ledger-ref
+38:         poo-flow-durable-runtime-store-contract-receipt-ledger-kinds
+39:         poo-flow-durable-runtime-store-contract-receipt-capability-flags
+40:         poo-flow-durable-runtime-store-contract-receipt-valid?
+41:         poo-flow-durable-runtime-store-contract-receipt-diagnostics
+42:         poo-flow-durable-runtime-store-contract-receipt-metadata
+43:         poo-flow-durable-runtime-store-contract
+44:         poo-flow-durable-runtime-store-contract/default
+45:         poo-flow-durable-runtime-store-contract?
+46:         poo-flow-durable-runtime-store-contract-name
+47:         poo-flow-durable-runtime-store-contract-diagnostics
+48:         poo-flow-durable-runtime-store-contract-valid?
+49:         poo-flow-durable-runtime-store-contract->receipt
+50:         poo-flow-durable-runtime-store-contract-receipt->alist
+51:         poo-flow-durable-runtime-store-contracts->receipts
+52:         poo-flow-durable-runtime-store-contract-receipts->alists)
+53: 
+54: ;; : PooFlowDurableRuntimeStoreContractKind
+55: (def +poo-flow-durable-runtime-store-contract-kind+
+56:   'poo-flow.durable.runtime-store-contract)
+57: 
+58: ;; : PooFlowDurableRuntimeStoreContractSchemaId
+59: (def +poo-flow-durable-runtime-store-contract-schema+
+60:   'poo-flow.module-system.durable-runtime-store-contract.v1)
+61: 
+62: ;; : PooFlowDurableRuntimeStoreContractReceiptSchemaId
+63: (def +poo-flow-durable-runtime-store-contract-receipt-schema+
+64:   'poo-flow.module-system.durable-runtime-store-contract.receipt.v1)
+65: 
+66: ;; : PooFlowDurableRuntimeStoreDiagnosticSchemaId
+67: (def +poo-flow-durable-runtime-store-diagnostic-schema+
+68:   'poo-flow.module-system.durable-runtime-store-contract.diagnostic.v1)
+69: 
+70: ;; : [PooFlowDurableRuntimeStoreLedgerKind]
+71: (def +poo-flow-durable-runtime-store-ledger-kinds+
+72:   '(fact-log checkpoint derived-index job repair artifact communication sandbox))
+73: 
+74: ;; : [PooFlowDurableRuntimeStoreCapabilityFlag]
+75: (def +poo-flow-durable-runtime-store-capability-flags+
+76:   '(append-fact
+77:     write-checkpoint
+78:     rebuild-index
+79:     claim-job-lease
+80:     append-repair-event
+81:     retain-artifact
+84: 
+85: ;; : (forall (a) (-> PooDurableRuntimeStoreOptionRows PooDurableRuntimeStoreOptionKey a a))
+86: (def (poo-flow-durable-runtime-store-option options key default-value)
+87:   (let (entry (assoc key options))
+88:     (if entry (cdr entry) default-value)))
+89: 
+90: ;; : (forall (a) (-> PooDurableRuntimeStoreSourceObject PooDurableRuntimeStoreSlotKey a a))
+91: (def (poo-flow-durable-runtime-store-slot object key default-value)
+92:   (if (and (object? object) (.slot? object key))
+93:     (.ref object key)
+95: 
+96: ;; : (forall (a) (-> PooDurableRuntimeStoreIdentityRows PooDurableRuntimeStoreIdentityKey a a))
+97: (def (poo-flow-durable-runtime-store-identity-ref identity key default-value)
+98:   (let (entry (assoc key identity))
+99:     (if entry (cdr entry) default-value)))
+100: 
+101: ;; : (-> PooDurableRuntimeStorePredicate PooDurableRuntimeStoreValueList Bool)
+102: (def (poo-flow-durable-runtime-store-every? predicate values)
+103:   (cond
+104:    ((null? values) #t)
+105:    ((predicate (car values))
+106:     (poo-flow-durable-runtime-store-every? predicate (cdr values)))
+107:    (else #f)))
+108: 
+109: ;; : (forall (a) (-> a (List a) Bool))
+110: (def (poo-flow-durable-runtime-store-member? value values)
+111:   (if (member value values) #t #f))
+112: 
+113: ;; : (-> Datum Bool)
+114: (def (poo-flow-durable-runtime-store-symbol-list? values)
+115:   (and (list? values)
+116:        (poo-flow-durable-runtime-store-every? symbol? values)))
+117: 
+118: ;; : (-> PooDurableRuntimeStoreDiagnosticCode PooDurableRuntimeStoreDiagnosticSlot PooDurableRuntimeStoreDiagnosticSeverity PooDurableRuntimeStoreDiagnosticPayload PooDurableRuntimeStoreDiagnosticRow)
+119: (def (poo-flow-durable-runtime-store-diagnostic code slot severity payload)
+120:   (list
+121:    (cons 'kind +poo-flow-durable-runtime-store-diagnostic-schema+)
+122:    (cons 'schema +poo-flow-durable-runtime-store-diagnostic-schema+)
+123:    (cons 'code code)
+124:    (cons 'phase 'durable-runtime-store-contract)
+125:    (cons 'slot slot)
+126:    (cons 'severity severity)
+127:    (cons 'payload payload)
+128:    (cons 'recoverable?
+129:          (poo-flow-durable-runtime-store-option
+130:           payload
+131:           'recoverable?
+132:           #t))))
+133: 
+134: ;; : (-> PooDurableRuntimeStoreDiagnosticCode PooDurableRuntimeStoreDiagnosticSlot PooDurableRuntimeStoreDiagnosticValue PooDurableRuntimeStoreDiagnosticRow)
+135: (def (poo-flow-durable-runtime-store-value-diagnostic code slot value)
+136:   (poo-flow-durable-runtime-store-diagnostic
+137:    code
+138:    slot
+140:    (list (cons 'value value)
+141:          (cons 'recoverable? #t))))
+142: 
+143: ;;; Runtime store contract construction centralizes ledger and capability
+144: ;;; defaults before backend negotiation while keeping validation and receipt
+145: ;;; projection as separate cheap stages.
+146: ;; : (-> PooDurableRuntimeStoreId PooDurableRuntimeOwner PooDurablePolicy [PooDurableRuntimeStoreOptionRow] PooDurableRuntimeStoreContract)
+147: (def (poo-flow-durable-runtime-store-contract store-id
+148:                                               store-owner
+149:                                               durable-policy
+152:          (schema-version
+153:           (poo-flow-durable-runtime-store-option options 'schema-version 1))
+154:          (fact-log-ref
+155:           (poo-flow-durable-runtime-store-option options
+156:                                                 'fact-log-ref
+157:                                                 'runtime/fact-log))
+158:          (checkpoint-store-ref
+159:           (poo-flow-durable-runtime-store-option options
+160:                                                 'checkpoint-store-ref
+161:                                                 'runtime/checkpoint-store))
+162:          (derived-index-ref
+163:           (poo-flow-durable-runtime-store-option options
+164:                                                 'derived-index-ref
+165:                                                 'runtime/derived-index))
+166:          (job-store-ref
+167:           (poo-flow-durable-runtime-store-option options
+168:                                                 'job-store-ref
+169:                                                 'runtime/job-store))
+170:          (repair-journal-ref
+171:           (poo-flow-durable-runtime-store-option options
+172:                                                 'repair-journal-ref
+173:                                                 'runtime/repair-journal))
+174:          (artifact-store-ref
+175:           (poo-flow-durable-runtime-store-option options
+176:                                                 'artifact-store-ref
+177:                                                 'runtime/artifact-store))
+178:          (communication-ledger-ref
+179:           (poo-flow-durable-runtime-store-option options
+180:                                                 'communication-ledger-ref
+181:                                                 'runtime/communication-ledger))
+182:          (sandbox-ledger-ref
+183:           (poo-flow-durable-runtime-store-option options
+184:                                                 'sandbox-ledger-ref
+185:                                                 'runtime/sandbox-ledger))
+186:          (ledger-kinds
+187:           (poo-flow-durable-runtime-store-option
+188:            options
+189:            'ledger-kinds
+190:            +poo-flow-durable-runtime-store-ledger-kinds+))
+191:          (capability-flags
+192:           (poo-flow-durable-runtime-store-option
+193:            options
+194:            'capability-flags
+195:            +poo-flow-durable-runtime-store-capability-flags+))
+196:          (metadata
+197:           (poo-flow-durable-runtime-store-option options 'metadata '())))
+198:     (object<-alist
+199:      (list
+200:       (cons 'durable-runtime-store-kind
+201:             +poo-flow-durable-runtime-store-contract-kind+)
+202:       (cons 'durable-runtime-store-schema
+203:             +poo-flow-durable-runtime-store-contract-schema+)
+204:       (cons 'runtime-store-id store-id)
+205:       (cons 'runtime-store-owner store-owner)
+206:       (cons 'runtime-store-durable-policy durable-policy)
+207:       (cons 'runtime-store-schema-version schema-version)
+208:       (cons 'runtime-store-fact-log-ref fact-log-ref)
+209:       (cons 'runtime-store-checkpoint-store-ref checkpoint-store-ref)
+210:       (cons 'runtime-store-derived-index-ref derived-index-ref)
+211:       (cons 'runtime-store-job-store-ref job-store-ref)
+212:       (cons 'runtime-store-repair-journal-ref repair-journal-ref)
+213:       (cons 'runtime-store-artifact-store-ref artifact-store-ref)
+214:       (cons 'runtime-store-communication-ledger-ref communication-ledger-ref)
+215:       (cons 'runtime-store-sandbox-ledger-ref sandbox-ledger-ref)
+216:       (cons 'runtime-store-ledger-kinds ledger-kinds)
+217:       (cons 'runtime-store-capability-flags capability-flags)
+218:       (cons 'runtime-store-metadata metadata)
+219:       (cons 'runtime-executed #f)))))
+220: 
+221: ;; : PooDurableRuntimeStoreContract
+222: (def poo-flow-durable-runtime-store-contract/default
+223:   (poo-flow-durable-runtime-store-contract
+224:    'runtime-store/default
+225:    'marlin-runtime-store
+226:    poo-flow-durable-policy/default
+227:    '((metadata . ((scope . shared)
+228:                   (runtime-executed . #f))))))
+229: 
+230: ;; : (-> Datum Boolean)
+231: (def (poo-flow-durable-runtime-store-contract? value)
+232:   (and (object? value)
+233:        (.slot? value 'durable-runtime-store-kind)
+234:        (eq? (.ref value 'durable-runtime-store-kind)
+235:             +poo-flow-durable-runtime-store-contract-kind+)))
+236: 
+237: ;; : (-> PooDurableRuntimeStoreContract PooDurableRuntimeStoreContractName)
+238: (def (poo-flow-durable-runtime-store-contract-name contract)
+239:   (poo-flow-durable-runtime-store-slot contract 'runtime-store-id #f))
+240: 
+241: ;; : (-> PooDurableRuntimeStoreContract PooDurableRuntimeStoreRequiredSlot PooDurableRuntimeStoreRequiredValue [PooDurableRuntimeStoreDiagnosticRow])
+242: (def (poo-flow-durable-runtime-store-required-symbol-diagnostics contract
+243:                                                                   slot
+244:                                                                   code
+249:     (list
+250:      (poo-flow-durable-runtime-store-diagnostic
+251:       code
+252:       slot
+254:       (list (cons 'store-id
+255:                   (poo-flow-durable-runtime-store-contract-name contract))
+256:             (cons 'value value)
+257:             (cons 'expected 'symbol)
+258:             (cons 'recoverable? #t)))))))
+259: 
+260: ;; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])
+261: (def (poo-flow-durable-runtime-store-ledger-kind-diagnostics contract)
+262:   (let (ledger-kinds
+263:         (poo-flow-durable-runtime-store-slot
+264:          contract
+265:          'runtime-store-ledger-kinds
+266:          #f))
+267:     (cond
+268:      ((not (poo-flow-durable-runtime-store-symbol-list? ledger-kinds))
+269:       (list
+270:        (poo-flow-durable-runtime-store-value-diagnostic
+271:         'invalid-ledger-kinds
+272:         'ledger-kinds
+273:         ledger-kinds)))
+274:      ((poo-flow-durable-runtime-store-every?
+275:        (lambda (ledger-kind)
+276:          (poo-flow-durable-runtime-store-member?
+277:           ledger-kind
+278:           +poo-flow-durable-runtime-store-ledger-kinds+))
+279:        ledger-kinds)
+280:       '())
+282:       (list
+283:        (poo-flow-durable-runtime-store-diagnostic
+284:         'unsupported-ledger-kind
+285:         'ledger-kinds
+287:         (list (cons 'store-id
+288:                     (poo-flow-durable-runtime-store-contract-name contract))
+289:               (cons 'value ledger-kinds)
+290:               (cons 'allowed +poo-flow-durable-runtime-store-ledger-kinds+)
+291:               (cons 'recoverable? #t))))))))
+292: 
+293: ;; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])
+294: (def (poo-flow-durable-runtime-store-capability-diagnostics contract)
+295:   (let (capability-flags
+296:         (poo-flow-durable-runtime-store-slot
+297:          contract
+298:          'runtime-store-capability-flags
+299:          #f))
+300:     (cond
+301:      ((not (poo-flow-durable-runtime-store-symbol-list? capability-flags))
+302:       (list
+303:        (poo-flow-durable-runtime-store-value-diagnostic
+304:         'invalid-capability-flags
+305:         'capability-flags
+306:         capability-flags)))
+307:      ((poo-flow-durable-runtime-store-every?
+308:        (lambda (capability-flag)
+309:          (poo-flow-durable-runtime-store-member?
+310:           capability-flag
+311:           +poo-flow-durable-runtime-store-capability-flags+))
+312:        capability-flags)
+313:       '())
+315:       (list
+316:        (poo-flow-durable-runtime-store-diagnostic
+317:         'unsupported-capability-flag
+318:         'capability-flags
+320:         (list (cons 'store-id
+321:                     (poo-flow-durable-runtime-store-contract-name contract))
+322:               (cons 'value capability-flags)
+323:               (cons 'allowed
+324:                     +poo-flow-durable-runtime-store-capability-flags+)
+325:               (cons 'recoverable? #t))))))))
+326: 
+327: ;; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])
+328: (def (poo-flow-durable-runtime-store-required-contract-diagnostics contract)
+329:   (append
+330:    (poo-flow-durable-runtime-store-required-symbol-diagnostics
+331:     contract
+332:     'runtime-store-id
+333:     'missing-store-id
+334:     (poo-flow-durable-runtime-store-slot contract 'runtime-store-id #f))
+335:    (poo-flow-durable-runtime-store-required-symbol-diagnostics
+336:     contract
+337:     'runtime-store-owner
+338:     'missing-store-owner
+339:     (poo-flow-durable-runtime-store-slot contract 'runtime-store-owner #f))
+340:    (poo-flow-durable-runtime-store-required-symbol-diagnostics
+341:     contract
+342:     'fact-log-ref
+343:     'missing-fact-log-ref
+344:     (poo-flow-durable-runtime-store-slot
+345:      contract
+346:      'runtime-store-fact-log-ref
+347:      #f))
+348:    (poo-flow-durable-runtime-store-required-symbol-diagnostics
+349:     contract
+350:     'checkpoint-store-ref
+351:     'missing-checkpoint-store-ref
+352:     (poo-flow-durable-runtime-store-slot
+353:      contract
+354:      'runtime-store-checkpoint-store-ref
+355:      #f))
+356:    (poo-flow-durable-runtime-store-required-symbol-diagnostics
+357:     contract
+358:     'derived-index-ref
+359:     'missing-derived-index-ref
+360:     (poo-flow-durable-runtime-store-slot
+361:      contract
+362:      'runtime-store-derived-index-ref
+363:      #f))
+364:    (poo-flow-durable-runtime-store-required-symbol-diagnostics
+365:     contract
+366:     'job-store-ref
+367:     'missing-job-store-ref
+368:     (poo-flow-durable-runtime-store-slot
+369:      contract
+370:      'runtime-store-job-store-ref
+371:      #f))
+372:    (poo-flow-durable-runtime-store-required-symbol-diagnostics
+373:     contract
+374:     'repair-journal-ref
+375:     'missing-repair-journal-ref
+376:     (poo-flow-durable-runtime-store-slot
+377:      contract
+378:      'runtime-store-repair-journal-ref
+379:      #f))
+380:    (poo-flow-durable-runtime-store-required-symbol-diagnostics
+381:     contract
+382:     'artifact-store-ref
+383:     'missing-artifact-store-ref
+384:     (poo-flow-durable-runtime-store-slot
+385:      contract
+386:      'runtime-store-artifact-store-ref
+387:      #f))
+388:    (poo-flow-durable-runtime-store-required-symbol-diagnostics
+389:     contract
+390:     'communication-ledger-ref
+391:     'missing-communication-ledger-ref
+392:     (poo-flow-durable-runtime-store-slot
+393:      contract
+394:      'runtime-store-communication-ledger-ref
+395:      #f))
+396:    (poo-flow-durable-runtime-store-required-symbol-diagnostics
+397:     contract
+398:     'sandbox-ledger-ref
+399:     'missing-sandbox-ledger-ref
+400:     (poo-flow-durable-runtime-store-slot
+401:      contract
+402:      'runtime-store-sandbox-ledger-ref
+403:      #f))))
+404: 
+405: ;; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])
+406: (def (poo-flow-durable-runtime-store-schema-version-diagnostics contract)
+407:   (let (schema-version
+408:         (poo-flow-durable-runtime-store-slot
+409:          contract
+410:          'runtime-store-schema-version
+411:          #f))
+412:     (if (integer? schema-version)
+414:       (list
+415:        (poo-flow-durable-runtime-store-value-diagnostic
+416:         'invalid-schema-version
+417:         'schema-version
+419: 
+420: ;; : (-> PooDurableRuntimeStoreContract PooDurablePolicyValue [PooDurableRuntimeStoreDiagnosticRow])
+421: (def (poo-flow-durable-runtime-store-policy-diagnostics contract durable-policy)
+422:   (append
+423:    (if (poo-flow-durable-policy? durable-policy)
+425:      (list
+426:       (poo-flow-durable-runtime-store-value-diagnostic
+427:        'invalid-durable-policy
+428:        'durable-policy
+433:      (list
+434:       (poo-flow-durable-runtime-store-diagnostic
+435:        'invalid-durable-policy-receipt
+436:        'durable-policy
+438:        (list (cons 'store-id
+439:                    (poo-flow-durable-runtime-store-contract-name
+440:                     contract))
+441:              (cons 'recoverable? #t)))))))
+442: 
+443: ;; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])
+444: (def (poo-flow-durable-runtime-store-contract-diagnostics contract)
+445:   (if (poo-flow-durable-runtime-store-contract? contract)
+446:     (let ((durable-policy
+447:            (poo-flow-durable-runtime-store-slot
+448:             contract
+449:             'runtime-store-durable-policy
+450:             #f)))
+451:       (append
+452:        (poo-flow-durable-runtime-store-required-contract-diagnostics contract)
+453:        (poo-flow-durable-runtime-store-schema-version-diagnostics contract)
+454:        (poo-flow-durable-runtime-store-policy-diagnostics contract
+455:                                                           durable-policy)
+456:        (poo-flow-durable-runtime-store-ledger-kind-diagnostics contract)
+457:        (poo-flow-durable-runtime-store-capability-diagnostics contract)))
+458:     (list
+459:      (poo-flow-durable-runtime-store-value-diagnostic
+460:       'invalid-runtime-store-contract
+461:       'runtime-store-contract
+462:       contract))))
+463: 
+464: ;; : (-> PooDurableRuntimeStoreContract Bool)
+465: (def (poo-flow-durable-runtime-store-contract-valid? contract)
+466:   (null? (poo-flow-durable-runtime-store-contract-diagnostics contract)))
+467: 
+468: ;; poo-flow-durable-runtime-store-contract-receipt
+469: ;;   : PooDurableRuntimeStoreContractReceiptStruct
+470: ;;   | doc m%
+471: ;;       Runtime store contract receipts stay fixed structs; projection helpers
+472: ;;       own the ABI alist shape.
+473: ;;     %
+474: (defstruct poo-flow-durable-runtime-store-contract-receipt
+475:   (store-id
+476:    store-owner
+480:    session-id
+481:    runtime-owner
+482:    schema-version
+483:    fact-log-ref
+484:    checkpoint-store-ref
+485:    derived-index-ref
+486:    job-store-ref
+497: 
+498: ;; : (forall (a) (-> a PooDurableRuntimeStoreIdentityRows (U #f PooDurablePolicyReceipt)))
+499: (def (poo-flow-durable-runtime-store-policy->receipt durable-policy identity)
+500:   (and (poo-flow-durable-policy? durable-policy)
+501:        (poo-flow-durable-policy->receipt durable-policy identity)))
+503: ;; : (-> (U #f PooDurablePolicyReceipt) (U #f PooDurablePolicyId))
+504: (def (poo-flow-durable-runtime-store-policy-receipt-policy-id receipt)
+505:   (and receipt
+506:        (poo-flow-durable-policy-receipt-policy-id receipt)))
+507: 
+508: ;; : (-> (U #f PooDurablePolicyReceipt) (U #f PooDurableRuntimeOwner))
+509: (def (poo-flow-durable-runtime-store-policy-receipt-runtime-owner receipt)
+510:   (and receipt
+511:        (poo-flow-durable-policy-receipt-runtime-owner receipt)))
+512: 
+513: ;; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreIdentityRow] PooDurableRuntimeStoreContractReceipt)
+514: (def (poo-flow-durable-runtime-store-contract->receipt contract
+515:                                                         . maybe-identity)
+516:   (let* ((identity (if (null? maybe-identity) '() (car maybe-identity)))
+517:          (durable-policy
+518:           (poo-flow-durable-runtime-store-slot
+519:            contract
+520:            'runtime-store-durable-policy
+521:            #f))
+522:          (durable-policy-receipt
+523:           (poo-flow-durable-runtime-store-policy->receipt durable-policy
+524:                                                           identity))
+525:          (diagnostics
+526:           (poo-flow-durable-runtime-store-contract-diagnostics contract))
+527:          (valid? (null? diagnostics)))
+528:     (make-poo-flow-durable-runtime-store-contract-receipt
+529:      (poo-flow-durable-runtime-store-slot contract 'runtime-store-id #f)
+530:      (poo-flow-durable-runtime-store-slot contract 'runtime-store-owner #f)
+531:      (poo-flow-durable-runtime-store-policy-receipt-policy-id
+532:       durable-policy-receipt)
+533:      (poo-flow-durable-runtime-store-identity-ref identity 'project-id #f)
+534:      (poo-flow-durable-runtime-store-identity-ref identity
+535:                                                  'root-session-id
+536:                                                  #f)
+537:      (poo-flow-durable-runtime-store-identity-ref identity 'session-id #f)
+538:      (poo-flow-durable-runtime-store-policy-receipt-runtime-owner
+539:       durable-policy-receipt)
+540:      (poo-flow-durable-runtime-store-slot
+541:       contract
+542:       'runtime-store-schema-version
+543:       #f)
+544:      (poo-flow-durable-runtime-store-slot
+545:       contract
+546:       'runtime-store-fact-log-ref
+547:       #f)
+548:      (poo-flow-durable-runtime-store-slot
+549:       contract
+550:       'runtime-store-checkpoint-store-ref
+551:       #f)
+552:      (poo-flow-durable-runtime-store-slot
+553:       contract
+554:       'runtime-store-derived-index-ref
+555:       #f)
+556:      (poo-flow-durable-runtime-store-slot
+557:       contract
+558:       'runtime-store-job-store-ref
+559:       #f)
+560:      (poo-flow-durable-runtime-store-slot
+561:       contract
+562:       'runtime-store-repair-journal-ref
+563:       #f)
+564:      (poo-flow-durable-runtime-store-slot
+565:       contract
+566:       'runtime-store-artifact-store-ref
+567:       #f)
+568:      (poo-flow-durable-runtime-store-slot contract
+569:                                          'runtime-store-communication-ledger-ref
+570:                                          #f)
+571:      (poo-flow-durable-runtime-store-slot
+572:       contract
+573:       'runtime-store-sandbox-ledger-ref
+574:       #f)
+575:      (poo-flow-durable-runtime-store-slot
+576:       contract
+577:       'runtime-store-ledger-kinds
+578:       '())
+579:      (poo-flow-durable-runtime-store-slot
+580:       contract
+581:       'runtime-store-capability-flags
+582:       '())
+583:      valid?
+584:      diagnostics
+585:      (poo-flow-durable-runtime-store-slot
+586:       contract
+587:       'runtime-store-metadata
+588:       '()))))
+589: 
+590: ;; : (-> PooDurableRuntimeStoreContractReceipt PooDurableRuntimeStoreContractReceiptRow)
+591: (defpoo-final-projection
+592:   poo-flow-durable-runtime-store-contract-receipt->alist (receipt)
+593:   (bindings ((diagnostics
+594:               (poo-flow-durable-runtime-store-contract-receipt-diagnostics
+595:                receipt))))
+596:   (fields ((kind 'poo-flow.durable.runtime-store-contract-receipt)
+597:            (schema +poo-flow-durable-runtime-store-contract-receipt-schema+)
+598:            (store-id
+599:             (poo-flow-durable-runtime-store-contract-receipt-store-id receipt))
+600:            (store-owner
+601:             (poo-flow-durable-runtime-store-contract-receipt-store-owner
+602:              receipt))
+603:            (durable-policy-ref
+604:             (poo-flow-durable-runtime-store-contract-receipt-durable-policy-ref
+605:              receipt))
+606:            (project-id
+607:             (poo-flow-durable-runtime-store-contract-receipt-project-id receipt))
+608:            (root-session-id
+609:             (poo-flow-durable-runtime-store-contract-receipt-root-session-id
+610:              receipt))
+611:            (session-id
+612:             (poo-flow-durable-runtime-store-contract-receipt-session-id
+613:              receipt))
+614:            (runtime-owner
+615:             (poo-flow-durable-runtime-store-contract-receipt-runtime-owner
+616:              receipt))
+617:            (schema-version
+618:             (poo-flow-durable-runtime-store-contract-receipt-schema-version
+619:              receipt))
+620:            (fact-log-ref
+621:             (poo-flow-durable-runtime-store-contract-receipt-fact-log-ref
+622:              receipt))
+623:            (checkpoint-store-ref
+624:             (poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref
+625:              receipt))
+626:            (derived-index-ref
+627:             (poo-flow-durable-runtime-store-contract-receipt-derived-index-ref
+628:              receipt))
+629:            (job-store-ref
+630:             (poo-flow-durable-runtime-store-contract-receipt-job-store-ref
+631:              receipt))
+632:            (repair-journal-ref
+633:             (poo-flow-durable-runtime-store-contract-receipt-repair-journal-ref
+634:              receipt))
+635:            (artifact-store-ref
+636:             (poo-flow-durable-runtime-store-contract-receipt-artifact-store-ref
+637:              receipt))
+638:            (communication-ledger-ref
+639:             (poo-flow-durable-runtime-store-contract-receipt-communication-ledger-ref
+640:              receipt))
+641:            (sandbox-ledger-ref
+642:             (poo-flow-durable-runtime-store-contract-receipt-sandbox-ledger-ref
+643:              receipt))
+644:            (ledger-kinds
+645:             (poo-flow-durable-runtime-store-contract-receipt-ledger-kinds
+646:              receipt))
+647:            (capability-flags
+648:             (poo-flow-durable-runtime-store-contract-receipt-capability-flags
+649:              receipt))
+650:            (valid?
+651:             (poo-flow-durable-runtime-store-contract-receipt-valid? receipt))
+652:            (diagnostics diagnostics)
+653:            (diagnostic-count (length diagnostics))
+654:            (metadata
+655:             (poo-flow-durable-runtime-store-contract-receipt-metadata receipt))
+656:            (runtime-executed #f))))
+657: 
+658: ;; : (-> [PooDurableRuntimeStoreContract] [PooDurableRuntimeStoreContractReceipt])
+659: (def (poo-flow-durable-runtime-store-contracts->receipts contracts)
+660:   (cond
+661:    ((null? contracts) '())
+662:    ((pair? contracts)
+663:     (cons (poo-flow-durable-runtime-store-contract->receipt (car contracts))
+664:           (poo-flow-durable-runtime-store-contracts->receipts
+665:            (cdr contracts))))
+666:    (else
+667:     (error "durable runtime store contract batch projection requires a list"
+668:            contracts))))
+669: 
+670: ;; : (-> [PooDurableRuntimeStoreContractReceipt] [PooDurableRuntimeStoreContractReceiptRow])
+671: (defpoo-final-projection-batch
+672:   poo-flow-durable-runtime-store-contract-receipts->alists (receipts)
+673:   (projector poo-flow-durable-runtime-store-contract-receipt->alist)
+674:   (error-message
+675:    "durable runtime store contract receipt serialization requires a list"))
+
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean-poo/SessionAttempt.lean SHA256 af885ce7b6f3a91f8ab4079a56a7ba439b16a1fc853c3432adfd1b2391b12543
+5: def quintSourceDigest : String := "sha256:2857ad1bc556179f034255a93537a136f08dcc21cd46458a6af18fef206f58b4"
+6: def quintInvariantNames : List String := ["ExactAttempt", "RecoveryPreservesObligation", "ClosedIsTerminal"]
+7: -- Pure owner-coordinate projection. Binding includes every native routing/input field.
+8: -- Producer receipt resolution and runtime publication are outside these laws.
+9: structure Schedule (α : Type) where
+10:   revision : Nat
+15: 
+16: def recover (s : Schedule α) : Option (Schedule α) :=
+17:   if s.closed then none else
+18:     some { s with revision := s.revision + 1, generation := s.generation + 1,
+26: 
+27: theorem closed_recovery_refused (s : Schedule α) (closed : s.closed = true) :
+28:     recover s = none := by simp [recover, closed]
+29: theorem recovery_generation_advances (s : Schedule α) (openState : s.closed = false) :
+30:     (recover s).map Schedule.generation = some (s.generation + 1) := by
+31:   simp [recover, openState]
+32: theorem recovery_revision_advances (s : Schedule α) (openState : s.closed = false) :
+33:     (recover s).map Schedule.revision = some (s.revision + 1) := by
+34:   simp [recover, openState]
+35: theorem recovery_keeps_obligations (s : Schedule α) (openState : s.closed = false) :
+36:     (recover s).map Schedule.pending = some (s.active.toList ++ s.pending) := by
+37:   simp [recover, openState]
+38: theorem recovery_fences_active (s : Schedule α) (openState : s.closed = false) :
+39:     (recover s).map Schedule.active = some none := by simp [recover, openState]
+40: theorem wrong_revision_refused [DecidableEq α] (s : Schedule α) (r : Nat)
+41:     (request : Nat × α) (wrong : s.revision ≠ r) : complete s r request = none := by
+65:           throwError "{name} depends on disallowed axiom {axiomName}"
+66:   for required in #[`PooFlowSessionAttemptProof.closed_recovery_refused,
+67:       `PooFlowSessionAttemptProof.recovery_generation_advances,
+68:       `PooFlowSessionAttemptProof.recovery_revision_advances,
+69:       `PooFlowSessionAttemptProof.recovery_keeps_obligations,
+70:       `PooFlowSessionAttemptProof.recovery_fences_active,
+71:       `PooFlowSessionAttemptProof.wrong_revision_refused,
+72:       `PooFlowSessionAttemptProof.wrong_attempt_refused,
+
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/quint/SessionAttempt.qnt SHA256 2857ad1bc556179f034255a93537a136f08dcc21cd46458a6af18fef206f58b4
+10:   var routed: List[(int,int)]
+11:   var recoveries: List[(int,int)]
+12:   action init = all { generation' = 0, active' = -1, pending' = -1,
+13:     closed' = false, everClosed' = false, routed' = List(), recoveries' = List() }
+14:   action claim = all {
+15:     not(closed), active == -1, pending == -1, generation < 3,
+16:     generation' = generation + 1, active' = generation + 1,
+17:     pending' = pending, closed' = closed, everClosed' = everClosed, routed' = routed, recoveries' = recoveries
+18:   }
+19:   action complete(requestGeneration: int): bool = all {
+22:     routed' = routed.append((requestGeneration,active)), active' = -1,
+23:     generation' = generation, pending' = pending, closed' = closed, everClosed' = everClosed, recoveries' = recoveries
+24:   }
+25:   action recover = all {
+26:     (not(closed) or BUG == "resumeClosed"), generation < 3, recoveries.length() < 2,
+27:     generation' = generation + 1, active' = -1, closed' = false, everClosed' = everClosed,
+28:     pending' = if (BUG == "dropObligation") -1 else if (active >= 0) active else pending,
+29:     recoveries' = recoveries.append((if (active >= 0) active else pending,
+30:       if (BUG == "dropObligation") -1 else if (active >= 0) active else pending)),
+31:     routed' = routed
+32:   }
+33:   action reconcile = all {
+34:     pending >= 0, pending' = -1, active' = active, generation' = generation,
+35:     closed' = closed, everClosed' = everClosed, routed' = routed, recoveries' = recoveries
+36:   }
+37:   action close = all {
+39:     generation' = generation, active' = active, pending' = pending,
+40:     routed' = routed, recoveries' = recoveries
+41:   }
+42:   action step = {
+43:     nondet requestGeneration = Set(0,1,2,3).oneOf()
+44:     any { claim, complete(requestGeneration), recover, reconcile, close }
+45:   }
+46:   val ExactAttempt = routed.foldl(true, (ok,r) => ok and r._1 == r._2)
+47:   val RecoveryPreservesObligation = recoveries.foldl(true, (ok,r) => ok and (r._1 < 0 or r._1 == r._2))
+48:   val ClosedIsTerminal = not(everClosed) or closed
+49:   val safety = ExactAttempt and RecoveryPreservesObligation and ClosedIsTerminal
+50: }
+
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean SHA256 560be0ea351e03ab3907f62248c37f9957a02e150ee6ebb32856440a9f2b8a46
+24: A deterministic budget plan is authorized for one fixed-point receipt and one
+25: maximum generation.  Runtime watchdog metrics are deliberately absent.
+26: -/
+27: structure SourceBoundDeterministicBudgetPlan where
+51:   progressReceiptId : String
+52:   semanticConsumed : Nat
+53:   semanticRemaining : Nat
+54:   schedulingConsumed : Nat
+55:   schedulingRemaining : Nat
+56:   provenanceDigest : String
+70: 
+71: def deterministicBudgetConsumed
+72:     (receipt : SourceBoundDeterministicBudgetReceipt) :
+73:     DeterministicBudgetKind → Nat
+74:   | .semantic => receipt.semanticConsumed
+75:   | .scheduling => receipt.schedulingConsumed
+76: 
+77: def deterministicBudgetRemaining
+86:   ∀ kind,
+87:     deterministicBudgetConsumed receipt kind +
+88:         deterministicBudgetRemaining receipt kind =
+89:       deterministicBudgetLimit plan kind
+96: The complete v1 budget closure binds authorization, accounting, progress
+97: classification, and source coordinates.  It neither consumes nor derives
+98: runtime-watchdog authority.
+99: -/
+100: structure SourceBoundDeterministicBudgetEvidenceClosed
+220:     ∀ kind,
+221:       deterministicBudgetConsumed receipt kind +
+222:           deterministicBudgetRemaining receipt kind =
+223:         deterministicBudgetLimit plan kind :=
+
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean SHA256 4e311cd509f144e842e4bd20293c91da2b4d70534592e9e1b986290692cb9810
+5: import PooFlowProof.Enterprise.SourceBoundDeterministicBudgetClosure
+6: import PooFlowProof.Enterprise.SourceBoundRuntimeWatchdogClosure
+7: 
+8: namespace PooFlowProof.Enterprise.SourceBoundRuntimeBudgetSeparationClosure
+9: 
+10: open PooFlowProof.Enterprise.SourceBoundDeterministicBudgetClosure
+11: open PooFlowProof.Enterprise.SourceBoundRuntimeWatchdogClosure
+12: 
+13: /--
+14: Runtime and deterministic-budget receipts may share source coordinates without
+15: sharing evidence semantics or authority.
+16: -/
+17: def runtimeWatchdogBudgetCoordinatesMatch
+18:     (watchdog : SourceBoundRuntimeWatchdogObservation)
+19:     (budget : SourceBoundDeterministicBudgetReceipt) : Prop :=
+20:   watchdog.registryDigest = budget.registryDigest ∧
+21:     watchdog.generation = budget.generation ∧
+22:       watchdog.cycleObservationId = budget.cycleObservationId ∧
+23:         watchdog.continuationIdentity = budget.continuationIdentity
+24: 
+25: def positiveBudgetReceiptForWatchdog
+26:     (watchdog : SourceBoundRuntimeWatchdogObservation) :
+27:     SourceBoundDeterministicBudgetReceipt :=
+28:   { receiptId := "positive-budget-receipt"
+29:     planId := "positive-budget-plan"
+30:     registryDigest := watchdog.registryDigest
+31:     fixedPointReceiptId := "independent-fixed-point-receipt"
+32:     generation := watchdog.generation
+33:     cycleObservationId := watchdog.cycleObservationId
+34:     continuationIdentity := watchdog.continuationIdentity
+35:     progressReceiptId := "independent-progress-receipt"
+36:     semanticConsumed := 0
+37:     semanticRemaining := 1
+38:     schedulingConsumed := 0
+39:     schedulingRemaining := 1
+40:     provenanceDigest := "positive-budget-provenance" }
+41: 
+42: theorem matchingRuntimeWatchdogThresholdDoesNotExhaustDeterministicBudget
+43:     (watchdog : SourceBoundRuntimeWatchdogObservation)
+44:     (thresholdExceeded :
+45:       watchdog.thresholdValue < watchdog.observedValue) :
+46:     watchdog.thresholdValue < watchdog.observedValue ∧
+47:       runtimeWatchdogBudgetCoordinatesMatch
+48:         watchdog (positiveBudgetReceiptForWatchdog watchdog) ∧
+49:       ¬ deterministicBudgetExhausted
+50:         (positiveBudgetReceiptForWatchdog watchdog) := by
+51:   refine ⟨thresholdExceeded, ?_, ?_⟩
+52:   · simp [
+53:       runtimeWatchdogBudgetCoordinatesMatch,
+54:       positiveBudgetReceiptForWatchdog
+55:     ]
+56:   · intro exhausted
+60:         deterministicBudgetRemaining,
+61:         positiveBudgetReceiptForWatchdog
+62:       ] at zero
+63: 
+64: def exhaustedBudgetReceiptForWatchdog
+65:     (watchdog : SourceBoundRuntimeWatchdogObservation) :
+66:     SourceBoundDeterministicBudgetReceipt :=
+67:   { receiptId := "exhausted-budget-receipt"
+68:     planId := "exhausted-budget-plan"
+69:     registryDigest := watchdog.registryDigest
+70:     fixedPointReceiptId := "independent-fixed-point-receipt"
+71:     generation := watchdog.generation
+72:     cycleObservationId := watchdog.cycleObservationId
+73:     continuationIdentity := watchdog.continuationIdentity
+74:     progressReceiptId := "independent-progress-receipt"
+75:     semanticConsumed := 1
+76:     semanticRemaining := 0
+77:     schedulingConsumed := 0
+78:     schedulingRemaining := 1
+79:     provenanceDigest := "exhausted-budget-provenance" }
+80: 
+81: def SourceBoundDeterministicBudgetRetryAuthority :=
+82:   SourceBoundDeterministicBudgetReceipt → Prop
+83: 
+84: theorem deterministicBudgetExhaustionDoesNotAuthorizeRetry
+85:     (watchdog : SourceBoundRuntimeWatchdogObservation) :
+86:     deterministicBudgetExhausted
+87:         (exhaustedBudgetReceiptForWatchdog watchdog) ∧
+88:       ¬(fun _budget => False)
+89:         (exhaustedBudgetReceiptForWatchdog watchdog) := by
+90:   constructor
+91:   · exact ⟨.semantic, rfl⟩
+93: 
+94: end PooFlowProof.Enterprise.SourceBoundRuntimeBudgetSeparationClosure
+
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean SHA256 47aea64e5a90812311f08aab30ebdbd36b9165a97837ffde373796d5adfb73a0
+11: /--
+12: A successor context on one authority path must preserve the authority identity
+13: and strictly advance the authority generation.  Strict advancement makes the
+14: generation an anti-ABA fence rather than a mutable version label.
+15: -/
+16: def validAuthorityContextTransition
+17:     (before after : ReceiptValidationContext) : Prop :=
+18:   before.authorityIdentity = after.authorityIdentity ∧
+19:     before.authorityGeneration < after.authorityGeneration
+20: 
+21: theorem validAuthorityContextTransitionChangesContext
+22:     {before after : ReceiptValidationContext}
+23:     (transitionValid : validAuthorityContextTransition before after) :
+24:     before ≠ after := by
+25:   intro contextsEqual
+26:   have generationsEqual :
+27:       before.authorityGeneration = after.authorityGeneration :=
+28:     congrArg ReceiptValidationContext.authorityGeneration contextsEqual
+29:   exact (Nat.ne_of_lt transitionValid.2) generationsEqual
+30: 
+32:     {before after : ReceiptValidationContext}
+33:     {receipt : ContextBoundAuthorityReceipt}
+34:     (acceptedBefore : acceptedAtContext before receipt)
+35:     (transitionValid : validAuthorityContextTransition before after) :
+36:     ¬ acceptedAtContext after receipt :=
+37:   exactContextAcceptanceRejectsChangedContext
+38:     acceptedBefore
+39:     (validAuthorityContextTransitionChangesContext transitionValid)
+40: 
+41: /--
+42: Countermodel: exact context equality rejects an old receipt while the current
+43: context is different, but accepts it again if the authority publishes the old
+44: context value as current.  Equality alone therefore does not prevent
+45: `C₀ → C₁ → C₀` rollback replay.
+46: -/
+47: theorem exactEqualityAlonePermitsRollbackReplay :
+48:     ∃
+49:       (contextZero contextOne : ReceiptValidationContext)
+50:       (receipt : ContextBoundAuthorityReceipt),
+51:       contextZero ≠ contextOne ∧
+52:         acceptedAtContext contextZero receipt ∧
+56:     {
+57:       authorityIdentity := 61
+58:       authorityGeneration := 5
+59:       policySnapshotIdentity := 67
+60:       authorizationSnapshotIdentity := 71
+64:     {
+65:       authorityIdentity := 61
+66:       authorityGeneration := 6
+67:       policySnapshotIdentity := 79
+68:       authorizationSnapshotIdentity := 83
+70:     }
+71:   let receipt : ContextBoundAuthorityReceipt :=
+72:     {
+73:       issuedContext := contextZero
+88: /--
+89: An authority context lineage is indexed by an authority-owned monotonically
+90: increasing position.  The structure directly records the semantic invariant
+91: needed by receipt validation; it does not derive freshness from wall-clock
+93: -/
+94: structure AuthorityContextLineage where
+95:   authorityIdentity : Nat
+96:   contextAt : Nat → ReceiptValidationContext
+97:   fixedAuthority :
+98:     ∀ position,
+99:       (contextAt position).authorityIdentity = authorityIdentity
+100:   generationStrict :
+101:     ∀ {earlier later},
+102:       earlier < later →
+103:         (contextAt earlier).authorityGeneration <
+104:           (contextAt later).authorityGeneration
+105: 
+106: theorem authorityContextLineageNeverReusesEarlierContext
+107:     (lineage : AuthorityContextLineage)
+108:     {earlier later : Nat}
+109:     (positionAdvanced : earlier < later) :
+112:   have generationsEqual :
+113:       (lineage.contextAt earlier).authorityGeneration =
+114:         (lineage.contextAt later).authorityGeneration :=
+115:     congrArg ReceiptValidationContext.authorityGeneration contextsEqual
+116:   exact
+117:     (Nat.ne_of_lt (lineage.generationStrict positionAdvanced))
+120: theorem receiptIssuedAtEarlierLineagePositionIsRejectedLater
+121:     (lineage : AuthorityContextLineage)
+122:     {earlier later : Nat}
+123:     {receipt : ContextBoundAuthorityReceipt}
+124:     (positionAdvanced : earlier < later)
+125:     (acceptedEarlier :
+129:     acceptedEarlier
+130:     (authorityContextLineageNeverReusesEarlierContext
+131:       lineage
+132:       positionAdvanced)
+133: 
+134: theorem lineagePositionsShareAuthorityIdentity
+135:     (lineage : AuthorityContextLineage)
+136:     (left right : Nat) :
+137:     (lineage.contextAt left).authorityIdentity =
+138:       (lineage.contextAt right).authorityIdentity := by
+139:   exact (lineage.fixedAuthority left).trans (lineage.fixedAuthority right).symm
+140: 
+141: /--
+149:       left ≠ right ∧
+150:         validAuthorityContextTransition before left ∧
+151:         validAuthorityContextTransition before right ∧
+152:         left.authorityGeneration = right.authorityGeneration := by
+153:   let before : ReceiptValidationContext :=
+154:     {
+155:       authorityIdentity := 97
+156:       authorityGeneration := 10
+157:       policySnapshotIdentity := 101
+158:       authorizationSnapshotIdentity := 103
+162:     {
+163:       authorityIdentity := 97
+164:       authorityGeneration := 11
+165:       policySnapshotIdentity := 109
+166:       authorizationSnapshotIdentity := 113
+170:     {
+171:       authorityIdentity := 97
+172:       authorityGeneration := 11
+173:       policySnapshotIdentity := 131
+174:       authorizationSnapshotIdentity := 137
+178:     decide
+179:   have leftValid : validAuthorityContextTransition before left := by
+180:     constructor
+181:     · rfl
+182:     · decide
+183:   have rightValid : validAuthorityContextTransition before right := by
+184:     constructor
+185:     · rfl
+195:       published right →
+196:         left.authorityIdentity = right.authorityIdentity →
+197:           left.authorityGeneration = right.authorityGeneration →
+198:             left = right
+199: 
+200: def publishedByLineage
+201:     (lineage : AuthorityContextLineage)
+202:     (context : ReceiptValidationContext) : Prop :=
+203:   ∃ position, lineage.contextAt position = context
+205: theorem lineagePublicationIsForkFree
+206:     (lineage : AuthorityContextLineage) :
+207:     ForkFreeContextPublication (publishedByLineage lineage) := by
+208:   intro left right leftPublished rightPublished _ generationsEqual
+233:     (rightPublished : published right)
+234:     (sameAuthority :
+235:       left.authorityIdentity = right.authorityIdentity)
+236:     (sameGeneration :
+237:       left.authorityGeneration = right.authorityGeneration) :
+238:     left = right :=
+239:   publicationForkFree
+241:     rightPublished
+242:     sameAuthority
+243:     sameGeneration
+244: 
+246: Countermodel: two locally valid monotone lineage views can disagree about the
+247: context published by one authority at the same generation.  Local monotonicity
+248: does not establish cross-view consistency.
+249: -/
+251:     ∃
+252:       (left right : AuthorityContextLineage),
+253:       left.authorityIdentity = right.authorityIdentity ∧
+254:         (left.contextAt 1).authorityGeneration =
+255:           (right.contextAt 1).authorityGeneration ∧
+256:         left.contextAt 1 ≠ right.contextAt 1 := by
+257:   let left : AuthorityContextLineage :=
+258:     {
+259:       authorityIdentity := 149
+260:       contextAt := fun position =>
+261:         {
+262:           authorityIdentity := 149
+263:           authorityGeneration := position
+264:           policySnapshotIdentity := 151
+265:           authorizationSnapshotIdentity := 157
+267:         }
+268:       fixedAuthority := by
+269:         intro position
+270:         rfl
+274:     }
+275:   let right : AuthorityContextLineage :=
+276:     {
+277:       authorityIdentity := 149
+278:       contextAt := fun position =>
+279:         {
+280:           authorityIdentity := 149
+281:           authorityGeneration := position
+282:           policySnapshotIdentity := 167
+283:           authorizationSnapshotIdentity := 173
+285:         }
+286:       fixedAuthority := by
+287:         intro position
+288:         rfl
+297: /--
+298: The shared authority-owned publication domain against which a verifier checks
+299: membership evidence.  The structure specifies semantics only; it does not
+300: select a database, log, or consensus implementation.
+301: -/
+302: structure AuthoritativeContextPublicationDomain where
+303:   domainIdentity : Nat
+304:   domainSemanticIdentity : Nat
+305:   authorityIdentity : Nat
+306:   published : ReceiptValidationContext → Prop
+307:   authorityBound :
+308:     ∀ {context},
+309:       published context →
+310:         context.authorityIdentity = authorityIdentity
+311:   forkFree : ForkFreeContextPublication published
+312: 
+313: structure ContextPublicationMembershipEvidence
+314:     (domain : AuthoritativeContextPublicationDomain) where
+315:   context : ReceiptValidationContext
+316:   member : domain.published context
+317: 
+318: theorem sharedPublicationDomainRejectsSplitViewEquivocation
+319:     (domain : AuthoritativeContextPublicationDomain)
+320:     (left right : ContextPublicationMembershipEvidence domain)
+321:     (sameGeneration :
+322:       left.context.authorityGeneration =
+323:         right.context.authorityGeneration) :
+324:     left.context = right.context := by
+325:   have sameAuthority :
+326:       left.context.authorityIdentity =
+327:         right.context.authorityIdentity :=
+328:     (domain.authorityBound left.member).trans
+329:       (domain.authorityBound right.member).symm
+330:   exact
+331:     domain.forkFree
+333:       right.member
+334:       sameAuthority
+335:       sameGeneration
+336: 
+
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean SHA256 11178fd01214c99ec7f9863169dc264cc68241a70398645fe026cba28b3e299c
+11: 
+12: structure AuthorityContextLineagePrefix where
+13:   lineage : AuthorityContextLineage
+14:   headPosition : Nat
+15: 
+16: def lineagePrefixAt
+17:     (lineage : AuthorityContextLineage)
+18:     (headPosition : Nat) : AuthorityContextLineagePrefix :=
+19:   { lineage := lineage, headPosition := headPosition }
+20: 
+21: def publishedByLineagePrefix
+22:     (lineagePrefix : AuthorityContextLineagePrefix)
+23:     (context : ReceiptValidationContext) : Prop :=
+24:   ∃ position,
+28: theorem lineagePrefixHeadIsPublished
+29:     (lineagePrefix : AuthorityContextLineagePrefix) :
+30:     publishedByLineagePrefix
+31:       lineagePrefix
+35: theorem lineagePositionAtOrBeforeHeadIsPublished
+36:     (lineagePrefix : AuthorityContextLineagePrefix)
+37:     {position : Nat}
+38:     (notAfterHead : position ≤ lineagePrefix.headPosition) :
+44: theorem lineagePositionAfterHeadIsNotPublished
+45:     (lineagePrefix : AuthorityContextLineagePrefix)
+46:     {position : Nat}
+47:     (afterHead : lineagePrefix.headPosition < position) :
+55:   exact
+56:     (authorityContextLineageNeverReusesEarlierContext
+57:       lineagePrefix.lineage publishedBeforeFuture)
+58:       contextsEqual
+60: theorem lineagePrefixPublicationIsForkFree
+61:     (lineagePrefix : AuthorityContextLineagePrefix) :
+62:     ForkFreeContextPublication (publishedByLineagePrefix lineagePrefix) := by
+63:   intro left right leftPublished rightPublished sameAuthority sameGeneration
+64:   apply lineagePublicationIsForkFree lineagePrefix.lineage
+65:   · rcases leftPublished with ⟨position, _, contextEqual⟩
+68:     exact ⟨position, contextEqual⟩
+69:   · exact sameAuthority
+70:   · exact sameGeneration
+71: 
+72: def AuthorityContextLineagePrefix.toPublicationDomain
+73:     (lineagePrefix : AuthorityContextLineagePrefix)
+74:     (domainIdentity domainSemanticIdentity : Nat) :
+75:     AuthoritativeContextPublicationDomain where
+76:   domainIdentity := domainIdentity
+77:   domainSemanticIdentity := domainSemanticIdentity
+78:   authorityIdentity := lineagePrefix.lineage.authorityIdentity
+79:   published := publishedByLineagePrefix lineagePrefix
+80:   authorityBound := by
+81:     intro context published
+82:     rcases published with ⟨position, _, contextEqual⟩
+83:     rw [← contextEqual]
+84:     exact lineagePrefix.lineage.fixedAuthority position
+85:   forkFree := lineagePrefixPublicationIsForkFree lineagePrefix
+86: 
+87: structure LineagePrefixPublicationDomainBinding
+88:     (lineagePrefix : AuthorityContextLineagePrefix)
+89:     (domain : AuthoritativeContextPublicationDomain) : Prop where
+90:   authorityIdentityBound :
+91:     domain.authorityIdentity = lineagePrefix.lineage.authorityIdentity
+92:   publishedExact :
+93:     ∀ context,
+97: theorem boundDomainPublishesPrefixHead
+98:     {lineagePrefix : AuthorityContextLineagePrefix}
+99:     {domain : AuthoritativeContextPublicationDomain}
+100:     (binding :
+101:       LineagePrefixPublicationDomainBinding lineagePrefix domain) :
+102:     domain.published
+103:       (lineagePrefix.lineage.contextAt lineagePrefix.headPosition) :=
+107: theorem boundDomainRejectsPositionAfterPrefixHead
+108:     {lineagePrefix : AuthorityContextLineagePrefix}
+109:     {domain : AuthoritativeContextPublicationDomain}
+110:     (binding :
+111:       LineagePrefixPublicationDomainBinding lineagePrefix domain)
+112:     {position : Nat}
+113:     (afterHead : lineagePrefix.headPosition < position) :
+
+P43 a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/session/funs-attempt.ss SHA256 2e7f2282ae2bb987a7122eb466b70fbf11c9fbfb5aa0bc52c0d42a01dac9de95
+4: ;;; Pure scheduling intents. A Host must resolve producer receipts and publish by CAS.
+5: ;;; Recovery reconciliation cannot be inferred from a provider completion.
+6: (import (only-in :clan/poo/object .o .ref .slot? object?)
+7:         (only-in :std/list/list every) "types.ss" "objects-attempt.ss")
+8: (export poo-flow-session-schedule poo-flow-session-claim poo-flow-session-complete
+9:         poo-flow-session-recover poo-flow-session-reconcile poo-flow-session-close)
+10: (def (name? value) (and (string? value) (< 0 (string-length value) 257)))
+11: (def (freeze-input value)
+12:   (let* ((consumer-value (string-copy (.ref value 'consumer-session)))
+13:          (turn-value (.ref value 'consumer-turn))
+14:          (fields (map (lambda (key) (string-copy (.ref value key)))
+15:       '(producer contract identity digest scope-digest source-vector-digest query-digest
+20:         restriction-digest: (list-ref fields 7) profile-digest: (list-ref fields 8)
+21:         receipt-ref: (list-ref fields 9) consumer-session: consumer-value
+22:         consumer-turn: turn-value complete?: #t)))
+23: (def (receipt accepted-value reason-value state-value)
+24:   (.o kind: 'poo-flow.session.transition-intent.v1 accepted?: accepted-value reason: reason-value
+25:       schedule: state-value runtime-published?: #f action-authorized?: #f durable?: #f))
+26: (def (guard state expected operation)
+27:   (cond ((not (poo-flow-session-schedule-shape? state)) (receipt #f 'invalid-schedule #f))
+45:                      (exact-integer? turn-value) (<= 0 turn-value 65535))) (receipt #f 'invalid-claim state))
+46:           ((or (not (equal? (.ref (.ref task-value 'input) 'consumer-session) (.ref state 'identity)))
+47:                (not (= (.ref (.ref task-value 'input) 'consumer-turn) turn-value)))
+48:            (receipt #f 'wrong-consumer state))
+49:           ((or (member attempt-id (.ref state 'completed)) (>= (length (.ref state 'completed)) 128))
+50:            (receipt #f 'attempt-reuse-or-capacity state))
+70:               '(producer contract identity digest scope-digest source-vector-digest query-digest
+71:                 restriction-digest profile-digest receipt-ref complete? consumer-session consumer-turn))))
+72: (def (poo-flow-session-complete state expected attempt-value)
+73:   (guard state expected (lambda ()
+77:       (receipt #f 'wrong-attempt state)))))
+78: (def (poo-flow-session-recover state expected)
+79:   (guard state expected (lambda ()
+80:     (let ((pending (if (.ref state 'active) (cons (.ref state 'active) (.ref state 'obligations))
+82:           (generation-value (+ 1 (.ref state 'generation))))
+83:       (receipt #t 'recovery-proposed (next-state state (if (null? pending) 'idle 'recovering)
+84:         #f pending (.ref state 'completed) generation-value))))))
+85: (def (poo-flow-session-reconcile state expected attempt-value)
+86:   ;; This is an intent for trusted terminal/isolation receipt resolution, never an acknowledgment by itself.
+87:   (guard state expected (lambda ()
+88:     (if (and (eq? (.ref state 'status) 'recovering)
+89:              (= (length (.ref state 'obligations)) 1)
+90:              (same-attempt? (car (.ref state 'obligations)) attempt-value))
+91:       (receipt #t 'reconciliation-proposed (next-state state 'idle #f '()
+92:         (cons (string-copy (.ref attempt-value 'identity)) (.ref state 'completed)) (.ref state 'generation)))
+93:       (receipt #f 'wrong-obligation state)))))
+
+C8 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5:CedarPooSpec/Admission/BoundOperation.lean SHA256 6105f4f0651886ee413f5edcea44df32323543de8825ca8f0e9f098205cf2afa
+5: model. The projection is fixed when the operation is constructed; a later Host
+6: must still authenticate the actual effect and state before execution.
+7: -/
+8: 
+22: 
+23: /-- Check a concrete operation against the actual effect and state supplied
+24:     by the caller. This equality check does not authenticate either input. -/
+25: def BoundOperation.matches {Effect State : Type}
+
+C10 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5:CedarPooSpec/CompoundAuthorization.lean SHA256 bd9c938f6986d6f01051d4fda067ffe1d7d106e5deae6956e88e5e9aa4ec3708
+26:     receipt.responses.all (fun response =>
+27:       response.decision == .allow && response.erroringPolicies.isEmpty)
+28: 
+29: /-- Compile once, then evaluate all requests against the same policy set. -/
+46: /-- All required layers must allow without policy evaluation errors. -/
+47: def layersAllowed {model : Model} {entities : Entities}
+48:     (receipts : List (LayerReceipt model entities)) : Bool :=
+49:   !receipts.isEmpty && receipts.all fun layer =>
+50:     layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty
+51: 
+52: /-- One exact compilation can serve several requests against the same root. -/
+
+C11 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5:CedarPooSpec/Composition.lean SHA256 3a6bd1ae53c74d9a6eebdcf56964e0f886b91ae82bb1af2c885b76ca15530be1
+1: import CedarPooSpec.Evaluation
+2: import CedarPooSpec.Validation
+3: import LeanPoo.Proof.Product
+4: import LeanPoo.Object.Debug
+5: 
+6: /-!
+7: Compose the independent Cedar evaluation and typechecking certificates.
+8: Keys remain disjoint, so an evaluation patch leaves typechecking obligations
+9: outside its invalidation footprint and conversely.
+10: -/
+11: 
+12: namespace CedarPooSpec.Composition
+13: 
+14: open LeanPoo.Proof
+15: 
+16: abbrev Key := Sum Evaluation.Key Validation.Key
+17: abbrev Value := SumValue Evaluation.Value Validation.Value
+18: 
+19: def proofObject (evaluation : Evaluation.Snapshot)
+20:     (validation : Validation.Snapshot) : ProofObject Key Value :=
+21:   evaluation.proofObject.pair validation.proofObject
+22: 
+23: theorem certificate (evaluation : Evaluation.Snapshot)
+24:     (validation : Validation.Snapshot)
+25:     (evaluationValid : evaluation.result =
+26:       Cedar.Spec.evaluate evaluation.expr evaluation.request evaluation.entities)
+27:     (validationValid : validation.result =
+28:       Cedar.Validation.typecheckPolicy validation.policy validation.environment) :
+29:     Certificate (proofObject evaluation validation) :=
+30:   Certificate.pair evaluation.proofObject validation.proofObject
+31:     (evaluation.certificate evaluationValid)
+32:     (validation.certificate validationValid)
+33: 
+34: def replaceExprPatch (evaluation : Evaluation.Snapshot)
+35:     (expr : Cedar.Spec.Expr) : Patch Key Value :=
+36:   (Evaluation.replaceExprPatch evaluation expr).left
+37: 
+38: def replacePolicyPatch (validation : Validation.Snapshot)
+39:     (policy : Cedar.Spec.Policy) : Patch Key Value :=
+40:   (Validation.replacePolicyPatch validation policy).right
+41: 
+42: /-- The evaluator input is the expression of the policy being checked. -/
+43: def alignmentObligation : Obligation Key Value where
+44:   dependencies := [.inl .expr, .inr .policy]
+45:   holds := fun state =>
+46:     state (.inl .expr) = (state (.inr .policy)).toExpr
+47:   stable := by
+48:     intro before after equal holds
+49:     have he : before (.inl .expr) = after (.inl .expr) :=
+50:       equal (.inl .expr) (by simp)
+51:     have hp : before (.inr .policy) = after (.inr .policy) :=
+52:       equal (.inr .policy) (by simp)
+53:     simpa [he, hp] using holds
+54: 
+55: def alignedProofObject (evaluation : Evaluation.Snapshot)
+56:     (validation : Validation.Snapshot) : ProofObject Key Value :=
+57:   (proofObject evaluation validation).withObligation alignmentObligation
+58: 
+59: theorem alignedCertificate (evaluation : Evaluation.Snapshot)
+60:     (validation : Validation.Snapshot)
+61:     (evaluationValid : evaluation.result =
+62:       Cedar.Spec.evaluate evaluation.expr evaluation.request evaluation.entities)
+63:     (validationValid : validation.result =
+64:       Cedar.Validation.typecheckPolicy validation.policy validation.environment)
+65:     (aligned : evaluation.expr = validation.policy.toExpr) :
+66:     Certificate (alignedProofObject evaluation validation) :=
+67:   Certificate.withObligation (proofObject evaluation validation)
+68:     (certificate evaluation validation evaluationValid validationValid)
+69:     alignmentObligation aligned

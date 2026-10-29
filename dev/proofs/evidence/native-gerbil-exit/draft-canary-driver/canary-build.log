@@ -1,0 +1,15 @@
+Undefined symbols for architecture arm64:
+  "___cxa_atexit", referenced from:
+      __sub_I_65535_0 in ccvjnOgu.o
+  "_fclose", referenced from:
+      _weaver_canary_event in ccvjnOgu.o
+  "_fopen", referenced from:
+      _weaver_canary_event in ccvjnOgu.o
+  "_fputc", referenced from:
+      _weaver_canary_event in ccvjnOgu.o
+  "_getenv", referenced from:
+      _weaver_canary_event in ccvjnOgu.o
+ld: symbol(s) not found for architecture arm64
+collect2: error: ld returned 1 exit status
+*** ERROR IN ##main -- target compilation or link failed while compiling
+"/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-2026...

@@ -1,0 +1,25 @@
+{
+  "role": "qualified",
+  "pid": 62577,
+  "exit": 0,
+  "seconds": 4.018242250022013,
+  "gateSeconds": 15,
+  "deadlineFailed": false,
+  "forcedExit": false,
+  "identityPreserved": true,
+  "observations": [
+    "INITIALIZE-A",
+    "AFTER-A",
+    "INITIALIZE-B",
+    "AFTER-B"
+  ],
+  "cleanup": {
+    "moduleOpens": 37,
+    "moduleCloses": 37,
+    "outstandingModuleRefs": 0,
+    "closeErrors": 0,
+    "overflow": 0,
+    "peakDyldImages": 83
+  },
+  "scope": "Native qualified-handle identity control; wrong alias is expected to fail identity even with successful native return"
+}

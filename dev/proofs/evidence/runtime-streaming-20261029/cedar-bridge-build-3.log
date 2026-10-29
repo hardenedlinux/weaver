@@ -1,0 +1,21 @@
+✖ [99/100] Building WeaverPolicyBridge (628ms)
+trace: .> LEAN_PATH=/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/packages/batteries/.lake/build/lib/lean:/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/packages/Cedar/cedar-lean/.lake/build/lib/lean:/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/packages/LeanPoo/.lake/build/lib/lean:/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/packages/CedarPooSpec/.lake/build/lib/lean:/Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/build/lib/lean /Users/guangtao/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/WeaverPolicyBridge.lean -o /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/build/lib/lean/WeaverPolicyBridge.olean -i /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/build/lib/lean/WeaverPolicyBridge.ilean -c /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/build/ir/WeaverPolicyBridge.c --setup /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/cedar/.lake/build/ir/WeaverPolicyBridge.setup.json --json
+error: WeaverPolicyBridge.lean:34:2: Type mismatch: After simplification, term
+  accepted
+ has type
+  ¬requests = [] ∧
+    ∀ (x : Response), x ∈ receipt.responses → x.decision = Decision.allow ∧ x.erroringPolicies.isEmpty = true
+but is expected to have type
+  ∀ (request : Request),
+    request ∈ requests →
+      (isAuthorized request entities receipt.policies).decision = Decision.allow ∧
+        (isAuthorized request entities receipt.policies).erroringPolicies.isEmpty = true
+info: WeaverPolicyBridge.lean:36:0: 'Weaver.PolicyBridge.matching_native_values_preserve_request' depends on axioms: [propext]
+info: WeaverPolicyBridge.lean:37:0: 'Weaver.PolicyBridge.changed_effect_rejects_bound_reuse' depends on axioms: [propext]
+info: WeaverPolicyBridge.lean:38:0: 'Weaver.PolicyBridge.compound_acceptance_requires_each_error_free_allow' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+Some required targets logged failures:
+- WeaverPolicyBridge
+error: build failed

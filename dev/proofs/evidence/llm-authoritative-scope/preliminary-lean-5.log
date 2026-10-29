@@ -1,0 +1,69 @@
+proofs/lean/LlmAuthoritativeScope.lean:17:14: warning: Variable name `source` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _source
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+proofs/lean/LlmAuthoritativeScope.lean:211:38: error: don't know how to synthesize placeholder for argument `s`
+context:
+source : GatewayHeadCAS.Config
+registry : Registry
+routing : LlmRouting.Config
+profile : LlmAttemptLedger.Profile
+rootOwner : GatewayHeadCAS.Owner
+childOwner : LlmAttemptLedger.Owner
+codec : LlmSemanticContract.Owner
+owner : Owner
+s b✝ : State
+prior : Run source registry routing profile rootOwner childOwner codec owner initial b✝
+ih : ∀ (u : Use), u ∈ b✝.uses → b✝.record = some u.record
+ticket : Ticket
+record : Record
+h : GatewayHeadCAS.Head
+call : LlmSemanticContract.ChildCall routing profile childOwner
+wire : LlmSemanticContract.Wire
+next : LlmSemanticContract.State
+registered : ticket ∈ b✝.tickets
+current : Current source registry routing rootOwner b✝ ticket record h
+escrow : routing.escrow = source.cost routing.root
+sameBefore : call.before = b✝.children
+sameChild : call.record = ticket.child
+worker : call.worker = b✝.boot
+bridge : LlmSemanticContract.EncodingBridge (scopeFor source registry routing.root ticket.child) codec call wire
+semPrior :
+  LlmSemanticContract.Run (scopeFor source registry routing.root ticket.child) codec LlmSemanticContract.initial
+    (b✝.semantic ticket.child.id)
+semEvent :
+  LlmSemanticContract.Step (scopeFor source registry routing.root ticket.child) codec (b✝.semantic ticket.child.id) next
+started : next.consumed ≠ (b✝.semantic ticket.child.id).consumed
+u : Use
+member :
+  u ∈
+    { roots := b✝.roots, children := call.after, record := b✝.record, boot := b✝.boot, recovered := b✝.recovered,
+        tickets := b✝.tickets, semantic := fun i => if i = ticket.child.id then next else b✝.semantic i,
+        uses := b✝.uses ++ [{ ticket := ticket, actual := image b✝ h, record := record }] }.uses
+fresh : u ∈ [{ ticket := ticket, actual := image b✝ h, record := record }]
+⊢ State
+'Weaver.LlmAuthoritativeScope.uses_keep_registered_record' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAuthoritativeScope.actual_wire_keeps_source_context' does not depend on any axioms
+'Weaver.LlmAuthoritativeScope.proposal_keeps_source_contract' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.equal_input_does_not_identify_response_contract' does not depend on any axioms
+'Weaver.LlmAuthoritativeScope.same_commitment_resolves_same_contract' depends on axioms: [propext]
+'Weaver.LlmAuthoritativeScope.missing_contract_blocks_use' does not depend on any axioms
+'Weaver.LlmAuthoritativeScope.allocations_fit_source_allowance' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.initialized_audit' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.all_uses_have_authoritative_scope' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.all_uses_keep_original_domains' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.all_uses_keep_response_mode' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.all_uses_keep_original_claim' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.record_cannot_be_replaced' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.current_scope_is_unique' does not depend on any axioms
+'Weaver.LlmAuthoritativeScope.stale_image_cannot_be_used' does not depend on any axioms
+'Weaver.LlmAuthoritativeScope.restricted_original_history_blocks_use' depends on axioms: [propext]
+'Weaver.LlmAuthoritativeScope.original_claim_stays_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmAuthoritativeScope.child_budget_stays_bounded' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.original_account_capacity_stays_booked' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LlmAuthoritativeScope.unknown_usage_blocks_root_settlement' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.child_total_fits_original_escrow' depends on axioms: [propext, Quot.sound]

@@ -1,0 +1,112 @@
+...@lib/theme
+# W07: facts about one spent claim, not a replayable send pipeline.
+direction: down
+claimed: DispatchClaimed\nOne possible invocation
+final_gate: Final broker gate\nBytes / target / credential / expiry
+retire: Pre-submission failure\nRetire handles and queues
+invoke: Invocation may have started\nCrash leaves uncertainty
+emitter: Potentially open emitter
+closed: ClosedWithEvidence\nNo future submissions
+no_submit: NoSubmissionProven\nClaim remains spent
+unknown: Business outcome Unknown
+result: Business result observed\nNot emitter closure
+exposure: Held / UnknownExposure\nRetain admitted maximum
+settle: Admit usage once\nAtomic fenced settlement
+conflict: Disclosure conflict gate\nClose only with emitter evidence
+claimed -> final_gate: Local handle
+claimed -> exposure: Claim reply lost / crash\nNo replacement handle
+final_gate -> retire: Local final check fails
+retire -> no_submit: No-submission proof
+final_gate -> invoke: Gate passes
+invoke -> emitter: Submit once
+invoke -> unknown: No attributable result
+emitter -> closed: Closure proof
+emitter -> result: Result can arrive before closure
+closed -> conflict: Close this emission only
+closed -> exposure: Usage may remain unknown
+no_submit -> conflict: Proven closed emitter
+no_submit -> settle: Release unused exposure only\nKeep claim spent
+result -> settle: Usage evidence required
+unknown -> exposure: No automatic refund
+exposure -> settle: Later qualified usage evidence
+rule: "result is not emitter closure; closure is not zero usage.\nObservation admission and settlement have distinct crash cuts.\nA timeout, error string or zero-byte counter is not no-submission proof." {
+  shape: text
+}
+
+# Shared role accents; brand marks are confined to architecture headers.
+claimed.class: runtime
+final_gate.class: policy
+retire.class: unknown
+invoke.class: runtime
+emitter.class: unknown
+closed.class: verified
+no_submit.class: verified
+unknown.class: unknown
+result.class: policy
+exposure.class: ledger
+settle.class: ledger
+conflict.class: semantic
+rule.class: note
+
+# Explicit reading order; presentation coordinates are not protocol events.
+claimed.left: 0
+claimed.top: 0
+claimed.width: 290
+claimed.height: 90
+claimed.label.near: center-center
+final_gate.left: 360
+final_gate.top: 0
+final_gate.width: 290
+final_gate.height: 90
+final_gate.label.near: center-center
+invoke.left: 720
+invoke.top: 0
+invoke.width: 290
+invoke.height: 90
+invoke.label.near: center-center
+emitter.left: 1080
+emitter.top: 0
+emitter.width: 290
+emitter.height: 90
+emitter.label.near: center-center
+closed.left: 1440
+closed.top: 0
+closed.width: 290
+closed.height: 90
+closed.label.near: center-center
+retire.left: 360
+retire.top: 230
+retire.width: 290
+retire.height: 90
+retire.label.near: center-center
+no_submit.left: 360
+no_submit.top: 500
+no_submit.width: 290
+no_submit.height: 90
+no_submit.label.near: center-center
+unknown.left: 720
+unknown.top: 230
+unknown.width: 290
+unknown.height: 90
+unknown.label.near: center-center
+result.left: 1080
+result.top: 230
+result.width: 290
+result.height: 90
+result.label.near: center-center
+exposure.left: 1080
+exposure.top: 500
+exposure.width: 290
+exposure.height: 90
+exposure.label.near: center-center
+conflict.left: 1440
+conflict.top: 500
+conflict.width: 290
+conflict.height: 90
+conflict.label.near: center-center
+settle.left: 1080
+settle.top: 760
+settle.width: 290
+settle.height: 90
+settle.label.near: center-center
+rule.near: bottom-center

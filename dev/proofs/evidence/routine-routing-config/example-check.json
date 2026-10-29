@@ -1,0 +1,24 @@
+{
+  "checks": [
+    "json-yaml-decoded-data-equal",
+    "finite-dag-contract-and-allowance-valid",
+    "duplicate-json-key",
+    "duplicate-yaml-key",
+    "executable-yaml-tag",
+    "yaml-alias-outside-profile",
+    "unknown-authority-root",
+    "boolean-is-not-cost",
+    "unknown-node-field",
+    "cycle-or-forward-reference",
+    "sum-exceeds-routine-envelope",
+    "unknown-route-reference",
+    "lost-response-contract",
+    "unknown-inline-credential",
+    "implicit-boolean-is-not-objective",
+    "dropped-required-capability"
+  ],
+  "count": 16,
+  "orgSha256": "e688a9b439a54e7e7b32a985fd471ace64b24ffa0f7f606aefec31c07a43b58f",
+  "canonicalExampleSha256": "b007b2729e505f56a0b686f15ea441749d3bcbcc53e3b60cecffd52f7993212a",
+  "boundary": "JSON/YAML finite fixture; Scheme block and native compiler are not executed"
+}

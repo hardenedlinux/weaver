@@ -1,0 +1,106 @@
+#+title: Weaver LLM Attempt Ledger Formal Evidence
+#+language: en
+#+options: toc:3
+
+* Scope and reproducibility
+
+This category extends the routing baseline with one task and arbitrarily many
+finite Lean child allocations. Quint uses four child slots, two eligible models
+and a fixed root allowance. Its finite fixtures do not establish unbounded model
+checking. The immutable profile and =Owner= predicates model trusted contract
+inputs, not a native Cedar evaluator or durable SDK implementation.
+
+Run [[file:../../../dev/proofs/check_llm_attempt_ledger.py][check_llm_attempt_ledger.py]]. Machine-readable results are in
+[[file:../../../dev/proofs/evidence/llm-attempt-ledger/commands.json][commands.json]]. Lean is compiled in a fresh isolated output directory; no
+dependency pins or Gateway code are modified. Historical manifests are checked
+without modifying their sealed artifacts.
+
+* Recorded local result
+
+The final runner completed 18 command routes: eight fresh Lean modules, Quint
+typechecking, 34 deterministic controls (28 guarded scenarios and six deliberate
+counterexamples), six focused trace exports, six initializer runs and the
+32-control routing regression. Each initializer uses ten samples with at most
+30 post-initializer steps and seed 151: 60 bounded samples in total. Fifteen new
+Lean statements were printed for axiom inspection; no =sorryAx= appears in the
+final module log. These are local formal checks, not operational acceptance.
+
+The document audit resolves ten four-artifact rows, checks 77 English Org files,
+39 D2/SVG pairs and 16 unchanged historical manifests. Tool identities, individual
+commands, source hashes and dependency pin hashes remain in evidence rather than
+core diagrams. Preliminary compiler diagnostics are retained separately from the
+final successful compilation; they are not relabeled as acceptance results.
+
+* Four-artifact mapping
+
+Each row links a design constraint to a deterministic scenario, checked Lean
+statement and declared core diagram node. Tests reject unsafe actions; the six
+counterexample controls deliberately remove a contract and check a violated
+invariant. These unsafe actions are excluded from =step=.
+
+| ID | Design constraint | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| AT1 | Root sponsorship and child operation authority | primaryKeepsOriginalRootTest | new_allocation_requires_sponsored_retry | control.sponsor |
+| AT2 | Unknown execution cannot default-failover | unknownDefaultCannotFailoverTest | new_allocation_requires_sponsored_retry | attempts.allocate |
+| AT3 | Explicit non-tool duplicate generation | toolProfileCannotDuplicateTest | new_allocation_requires_sponsored_retry | control.profile |
+| AT4 | All child maxima fit original escrow | sharedEscrowCannotExpandTest | child_total_fits_original_root | attempts.allowance |
+| AT5 | Current target and owner fence at invocation | oldUncalledChildCannotRelabelEpochTest | invocation_rechecks_current_route | broker.consume |
+| AT6 | SDK replay cannot call the same child twice | sdkRetryCannotReinvokeTest | each_child_invoked_at_most_once | broker.queue |
+| AT7 | One sticky stream winner | winnerCannotSwitchTest | winner_never_switches | stream.winner |
+| AT8 | Winner commitment stops new children | winnerStopsNewAttemptsTest | winner_locks_child_allocation | stream.ranges |
+| AT9 | Unknown loser usage retains original hold | loserUnknownPreventsClosureTest | unknown_usage_prevents_close | stream.usage |
+| AT10 | Final usage requires exact fresh observation | foreignAttemptReceiptRejectedTest | usage_change_requires_registered_fresh_evidence | broker.observations |
+
+* Proof assumptions and composition limits
+
+=initialized_safe= preserves maximum allocation, sum of maxima, one call per
+child, closure readiness, ready winner and bounded aggregate charge. The
+observed-charge bound follows from that invariant. RootSponsor explicitly binds
+the root allowance to an existing admitted claim and shared-account booking.
+The old root =sends <= 1= statement concerns the admitted root offer; it is not a
+claim that multiple remote provider generations execute exactly once.
+
+The new child ledger is a distinct extension: the previous routing dispatch
+transition remains disabled in its route wrapper. Child invocations use a new
+operation contract. The original root reservation must remain booked throughout the child run as
+a coupling assumption; the standalone child =Run= does not prove that an external
+account owner retains it or rejects rollback. A task sponsor predicate cannot be fabricated from a
+provider-specific old token. The source bridge composes abstract root authority
+and cost bounds; it does not prove that native storage, Cedar, SDKs or providers
+implement the predicates. Lean's charge theorem proves an aggregate upper bound;
+Quint additionally checks the exact sum of accepted usage slots. A general Lean
+sum-of-usage equality refinement remains future work, not an established result.
+
+Atomic allocation/consume, qualified negative/usage observations, current release
+policy, durable unique slots and rollback-safe owner epoch are explicit premises.
+Logical retirement is not proof of remote non-execution. The range model's
+consumption/fencing properties must be connected through exact root/winner/range
+bindings at runtime. This change does not mechanically verify the asynchronous
+product of child ledger, all range transitions and external settlement stores.
+No liveness or remote exactly-once result is claimed.
+
+* Counterexample obligations
+
+| Broken contract | Executable witness | Observable violation |
+|-----------------+--------------------+----------------------|
+| Reset allowance after alias/retry | resetAllowanceAttemptCounterexampleTest | Allocated zero with existing child maximum six |
+| Replay SDK handoff | sdkReplayAttemptCounterexampleTest | Same child call slot becomes two |
+| Switch winner after prefix | switchWinnerAttemptCounterexampleTest | Two committed winner identities |
+| Close while loser cost unknown | closeUnknownAttemptCounterexampleTest | Closed root with unknown usage slots |
+| Apply usage twice | duplicateUsageAttemptCounterexampleTest | Charge differs from single accepted usage slot |
+| Re-root a child | foreignRootAttemptCounterexampleTest | Child root differs from original root |
+
+Final trace files are retained in [[file:../../../dev/proofs/evidence/llm-attempt-ledger/itf][itf]]. Source identity and excerpts are
+in the [[file:../../../dev/proofs/evidence/llm-attempt-ledger/source-review.json][POO Flow / Cedar register]] and [[file:../../../dev/proofs/evidence/llm-attempt-ledger/agentgateway-source-review.json][agentgateway register]].
+The [[file:../../../dev/proofs/evidence/llm-attempt-ledger/receipt.json][final receipt]] records actual check outcomes and remaining qualification.
+The [[file:../../../dev/proofs/evidence/llm-attempt-ledger/SHA256SUMS][manifest]] seals this category and its evidence without rewriting earlier receipts.
+
+* Runtime acceptance still required
+
+Test every crash boundary with real durable stores and provider adapters: lost
+allocation/invoke acknowledgement; pre/post queue crash; automatic SDK retry;
+redirect; prefix race; partial stream failure; late receipt after owner restart;
+loser cancellation with continuing billing; duplicate final usage; root account
+commit loss and rollback. Preserve unknown holds and exact source identities.
+A finite model pass or successful Lean compilation is not native integration,
+operational recovery, throughput evidence or an end-to-end provider guarantee.

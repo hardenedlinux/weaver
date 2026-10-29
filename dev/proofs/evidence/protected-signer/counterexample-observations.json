@@ -1,0 +1,149 @@
+[
+  {
+    "path": "proofs/evidence/protected-signer/itf/cachedRecoveryQualificationCounterexampleTest-4.itf.json",
+    "states": 5,
+    "released": [],
+    "epoch": 1,
+    "qualified": true,
+    "qualifiedEpoch": -1,
+    "committed": []
+  },
+  {
+    "path": "proofs/evidence/protected-signer/itf/checkpointRestoresSigningAuthorityCounterexampleTest-3.itf.json",
+    "states": 12,
+    "released": [
+      {
+        "id": 0,
+        "voter": 0,
+        "epoch": 0,
+        "incarnation": 0,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 1
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "voter": 0,
+        "epoch": 0,
+        "incarnation": 0,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 2
+          }
+        ]
+      }
+    ],
+    "epoch": 0,
+    "qualified": true,
+    "qualifiedEpoch": 0,
+    "committed": [
+      1
+    ]
+  },
+  {
+    "path": "proofs/evidence/protected-signer/itf/concurrentDetachedCASCounterexampleTest-0.itf.json",
+    "states": 11,
+    "released": [
+      {
+        "id": 0,
+        "voter": 0,
+        "epoch": 0,
+        "incarnation": 0,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 1
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "voter": 0,
+        "epoch": 0,
+        "incarnation": 0,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 2
+          }
+        ]
+      }
+    ],
+    "epoch": 0,
+    "qualified": true,
+    "qualifiedEpoch": 0,
+    "committed": [
+      0,
+      1
+    ]
+  },
+  {
+    "path": "proofs/evidence/protected-signer/itf/oldRawKeyAfterRestartCounterexampleTest-2.itf.json",
+    "states": 9,
+    "released": [
+      {
+        "id": 0,
+        "voter": 0,
+        "epoch": 0,
+        "incarnation": 0,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 1
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "voter": 0,
+        "epoch": 0,
+        "incarnation": 0,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 2
+          }
+        ]
+      }
+    ],
+    "epoch": 1,
+    "qualified": false,
+    "qualifiedEpoch": -1,
+    "committed": [
+      0
+    ]
+  },
+  {
+    "path": "proofs/evidence/protected-signer/itf/signBeforeDurableCommitCounterexampleTest-1.itf.json",
+    "states": 5,
+    "released": [
+      {
+        "id": 0,
+        "voter": 0,
+        "epoch": 0,
+        "incarnation": 0,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 1
+          }
+        ]
+      }
+    ],
+    "epoch": 0,
+    "qualified": true,
+    "qualifiedEpoch": 0,
+    "committed": []
+  }
+]

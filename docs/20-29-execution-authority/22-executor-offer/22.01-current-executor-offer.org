@@ -1,0 +1,203 @@
+#+title: Weaver Current Executor Offer and Partial-Write Safety
+#+language: en
+#+options: toc:3
+
+* Decision and threat boundary
+
+A durable queue record authorizes lookup of the original operation. Dequeue does
+not authorize a provider call. Policy/history can change while a worker encodes a
+request, waits for a connection or holds a buffer. Source ownership can also move
+before the first transport offer. Every such path must meet a current final offer
+gate, including work already dequeued under an older owner.
+
+The selected profile separates dequeue, observation, durable affine dispatch burn
+and final possible-offer submission. The actual final gate checks the original
+queued operation, canonical slot, complete source/account join, current authority
+image, owner fence, effective Policy/history, and current logical range permit.
+Go and SDK workers hold proposals and opaque buffers; the Rust final transport
+owner owns the protected provider handoff. Go retains protocol ingress and
+cloud-native control-plane networking, with no direct protected-provider send path.
+
+This is a logical execution-authority design for an AI Agent Gateway. It assumes
+qualified non-forking storage and a trustworthy final effect owner. It introduces
+no physical-isolation or hardware security premise.
+
+* Original operation and dispatch state
+
+The executor is bound to one immutable canonical range operation from category 21.
+It checks both operation-key lookup and the original slot claim. The scope retains
+root/claim, budget/history domains, payload, manifest, route and exact range; the
+profile and original committed request are unchanged. A worker cannot load a new
+payload, route, logical key or tail under an old queue receipt.
+
+| State / transition | Authority consequence |
+|--------------------+-----------------------|
+| Durable queue lookup | Original admitted operation exists; no invocation |
+| Dequeued | Worker can prepare inert data; no invocation |
+| Range fenced and qualified | Original scope is associated with the current logical owner and lane generation |
+| Offer observation | Registered snapshot of current queue/source/Policy and range permit; still no invocation |
+| Durable burn | One original dispatch intent is reserved irrevocably; no invocation and no new funding |
+| Final possible-offer submission | Fresh gate and actual range invoke consume the original permit; mark submitted/unknown before release to I/O |
+| Partial progress or timeout | Original range may have executed; no fresh permission, refund or rearm |
+| Authentic full original receipt | Resolve that range's evidence only; no new invocation, slot or budget release |
+
+The burn and submission records bind the operation/slot, complete observation,
+original source result, global owner fence, logical range generation/revision,
+immutable wire/range context and eventual original invocation identity. They must
+remain in a non-rollback committed dispatch prefix with exact outcome lookup.
+
+* Complete executor recovery qualification
+
+Recovering the source and account projections is necessary but insufficient.
+The new execution qualification joins the original queue decision and slot claim
+with the dispatch burn, submitted marker, range invocation/frontier and attributable
+receipt log. A source-store snapshot cannot prove that a missing dispatch record
+means no execution. Native authoritative absence requires complete committed-prefix
+coverage, including tombstones and pending dispatch decisions.
+
+Owner retirement invalidates execution qualification immediately. A new worker
+must qualify the full execution ledger, then fence the range lane before obtaining
+an offer observation. Global source-owner fences and per-range generations are
+distinct coordinates; the native worker identity is authenticated against both.
+Changing a numeric field in a request does not establish either authority.
+
+The model preserves the complete executor state across restart and exposes a new
+whole-executor recovery predicate. It does not derive dispatch recovery from the
+older source-only predicate. An implementation may place typed source, queue and
+dispatch records in one canonical journal or qualify an equivalent commit protocol;
+independently restored stores must not each decide that the slot is free.
+
+The admission-plane source counters remain unchanged by separate executor events.
+Their zero value is not proof of no execution. Source reconciliation, no-execution
+evidence and any budget release must consult the qualified dispatch/range ledger.
+The state-aware background contract makes this additional cross-ledger obligation
+explicit; it must allow Policy/history changes while rejecting source-only refund
+or terminal decisions unsupported by execution evidence. This extension proves
+monotonic original exposure and does not implement the full settlement product.
+
+An unavailable dispatch body, uncertain prefix, rolled-back marker or unqualified
+old writer keeps execution closed. A new owner may recover an unused, unburned
+original range after fencing and reauthorization. This profile cannot create a
+new burn after an old burn became uncertain, even when no bytes are known to have
+been emitted. Availability is deliberately conservative; cancellation/reclamation
+requires separate qualified no-execution evidence and is not introduced here.
+
+* Current burn and final offer checks
+
+The observation contains the exact current category-21 view: original operation,
+journal position, source image, global owner, Policy/history generation and queue
+revision. It also binds the logical range epoch, revision and held range permit.
+Source commit, queue change, Policy publication, owner switch or range mutation
+can invalidate it. Replaying a current-looking transport/session ID cannot repair it.
+
+Burn requires current original binding, current observation and Code as Policy for
+=reserveRecordedDispatch=, with an unused original lane and durable burn evidence.
+It changes no invocation counter. After burn, the final submit checks currentness
+and actual original binding again, evaluates =offerRecordedRange=, requires the
+same immutable burn and an unused submitted marker, and performs the actual prior
+logical-range invoke transition. The final Policy predicate receives the complete
+executor state, including current source context, lane, burn and execution history.
+
+A fresh observation is not an allow receipt. Policy/history denial must still block
+burn or submission. If Policy returns to allow, monotonic generations prevent an
+old observation from becoming current again. The original source nonce is already
+spent; neither authorization action consumes it again or changes original funding.
+
+All final checks and the transition to a spent submission identity belong to one
+serialized final effect-owner decision. The SDK cannot schedule an unchecked call
+after a successful earlier validation. Every actual I/O path must refine this gate,
+including connection-pool callbacks, redirects, retries and stream reconnects.
+
+* Native handoff ordering and its limits
+
+The native dispatch marker is durable before an executor can release the possible
+offer. The last effect-capable owner rechecks the current cut and consumes the
+affine submission identity exactly once at its network handoff boundary. Policy
+and owner effectiveness must serialize with that boundary, not just with producer
+queue reads. An old worker or buffer cannot bypass it by retaining a callback or FD.
+Effect-capable handles remain private to the qualified final transport owner.
+
+An internal callback that is still cancelable is not an irrevocable offer. If a
+cut takes effect first, that callback must be rejected by the current owner. If
+irreversible handoff linearizes first, its possible bytes belong to the original
+pre-cut invocation and remain accounted as in flight. Retirement cannot retract
+kernel/TLS/remote buffers that already crossed that boundary.
+
+This is an authorization-ordering guarantee. It is not a guarantee of zero wire
+bytes after the wall-clock time of a Policy update. Native effectiveness receipts
+must use the earlier pending/published/effective protocol and qualify the final
+writer fence. A queue worker cannot announce immediate revocation effectiveness
+without that acknowledgment. If exclusive final-writer ownership cannot be
+established, do not activate a replacement writer on a timeout.
+
+Crash after durable marking but before actual I/O may produce zero bytes. Crash
+after handoff with a lost response may produce an unknown prefix. Both retain the
+original conservative possible-offer record; recovery never calls the provider to
+find out by trying again. Every real invocation must map to exactly one such
+original record, and native instrumentation must prove that mapping. Model counters
+are not evidence that a provider received or executed the request.
+
+* Partial writes, receipts and stream continuation
+
+The proof unit is one source-admitted possible-offer interval. On its first submit,
+the prior range model consumes the permit and marks the interval unknown. A short
+write, partial progress observation, timeout, reconnect or lost acknowledgment does
+not restore the permit. The selected profile blocks replay of the interval and
+blocks automatic rearming of its tail. The original reservation covers the entire
+unresolved possible-offer interval.
+
+A genuinely unoffered tail may be admitted only through the earlier qualified
+manifest/frontier protocol, with exact disjoint ownership and original claim/domain
+bindings. This extension provides no implicit split, new manifest or tail-adoption
+rule. Multiple already admitted disjoint intervals may use the selected-range
+proof pointwise; whole-manifest coverage and shared budget remain earlier product
+obligations. Partial-write resume is not granted by an SDK's progress counter.
+
+The fixture's partial receipt is nonterminal progress/incomplete evidence. An
+attributable full original receipt can arrive later if the same original invocation
+actually completed. A definitive terminal short-write result cannot be upgraded
+to full completion without consistent original-call evidence. The native receipt
+owner must distinguish those cases, reject contradictory totals and authenticate
+actual transport measurement; a matching byte count alone is insufficient.
+
+Full evidence must match the original invocation and complete admitted interval.
+It can be observed after owner change without becoming a new execution capability.
+It does not clear the burn, submitted marker or canonical slot. Duplicate/late
+receipts cannot count as additional interval coverage. A range completion is not
+whole-stream completion, terminal-account authority or final usage settlement.
+Unknown source exposure remains held until the earlier settlement protocol proves
+all of those separate conditions.
+
+* Representative interleavings
+
+| Interleaving | Safe result |
+|--------------+-------------|
+| Policy/history changes after dequeue or burn | Old observation fails; effective final action must allow even for a fresh observation |
+| New source commit while connection is prepared | Incomplete join closes execution; caught-up projections still do not revive the old view |
+| Owner changes with an old dequeued buffer | Old worker fails; new owner must qualify dispatch ledger and fence lane |
+| New owner obtains a fresh ticket for an unused range | Allowed only after original slot/binding and current range/Policy qualification |
+| Owner changes after uncertain burn | Preserve original burn; no replacement burn, funding or retry |
+| Partial write then SDK reconnect | No repeat interval or automatic new tail; preserve original unknown exposure |
+| Submitted marker response lost | Query original record; never recreate submission or reset the range |
+| Old range snapshot restored after a possible write | Fail recovery qualification; never set calls/submitted/unknown back to unused |
+| Late full original receipt after handover | Data can resolve the original interval; it cannot authorize another offer or refund |
+
+* Component boundaries and acceptance
+
+| Owner | Concrete role |
+|-------+---------------|
+| Scheme / POO Flow | Immutable source intent and scope, pure state transitions, action classification, current offer context and valid manifest/domain rules |
+| Cedar / cedar-poo-spec | Separate reserve/offer actions on authenticated complete current input; all required nonempty layers allow without errors |
+| Go | Cloud-native/protocol/SDK proposals and outcome lookup; no direct provider-send handle, self-assigned lane generation or autonomous reconnect resend |
+| Rust broker | Durable original operation/slot lookup, dispatch prefix and burn/submission deduplication; qualified executor recovery |
+| Rust final transport owner | Current last-handoff gate, logical global/lane fencing, one affine original offer and attributable callbacks |
+| Rust receipt/settlement owners | Verify original partial/full evidence and separate terminal/usage/account application; no callback-triggered budget release |
+
+Native acceptance must fault-inject at burn durability, last-gate validation,
+submitted-marker publication and transport handoff. Retain old worker buffers and
+queued callbacks while publishing Policy/history or moving ownership. Partial
+writes and lost responses must not cause duplicate calls or reduce unknown holds.
+Check canonical wire bytes and actual effect/state against Scheme/Cedar, not only
+matching request IDs. A model pass does not qualify native fsync, consensus, codecs,
+final-writer confinement, receipt consistency, fairness, remote exactly-once or
+performance. No Gateway runtime or dependency change is made here.

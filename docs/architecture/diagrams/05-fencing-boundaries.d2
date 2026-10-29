@@ -1,0 +1,49 @@
+...@lib/theme
+# W05: a store fence cannot recall an already accepted network operation.
+direction: down
+old_coord: Old coordinator\nOriginal instance and fence
+new_coord: New coordinator\nNew fenced owner
+store: Authoritative ledger\nCheck lineage / owner / fence\ninside EVERY mutation {
+  shape: cylinder
+  style.fill: "#e8f1ff"
+}
+gate: Final broker gate\nDeny new stale calls {
+  style.fill: "#e9f6ee"
+}
+old_broker: Paused old broker\nMay retain an accepted claim {
+  style.fill: "#fff4df"
+}
+barrier: Qualified physical stop / drain\nor receiver-enforced fence
+quiesce: Quiescing scope\nNo replacement emission right\nConflicting disclosure withheld {
+  style.fill: "#feecec"
+}
+upstream: Upstream / receiver
+old_coord -> store: Stale write / refund rejected {
+  style.stroke: "#b42318"
+}
+new_coord -> store: Acquire higher durable fence
+old_coord -> gate: New stale request rejected {
+  style.stroke: "#b42318"
+}
+store -> old_broker: Existing claim stays spent\nnever reset
+old_broker -> upstream: Accepted in-flight work may still occur {
+  style.stroke: "#b35c00"
+  style.stroke-dash: 5
+}
+new_coord -> quiesce: Stop / receiver evidence unavailable
+barrier -> quiesce: Required before stronger takeover guarantee
+gate -> barrier: Actual execution retirement evidence
+note: "Kubernetes election, lease expiry, or a new DB fence alone\ndo not stop old socket writes or undo an accepted remote effect." {
+  shape: text
+}
+
+# Shared role accents; brand marks are confined to architecture headers.
+old_coord.class: unknown
+new_coord.class: runtime
+store.class: ledger
+gate.class: verified
+old_broker.class: unknown
+barrier.class: verified
+quiesce.class: deny
+upstream.class: ledger
+note.class: note

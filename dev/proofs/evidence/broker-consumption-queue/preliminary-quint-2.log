@@ -1,0 +1,13 @@
+
+ Error [QNT000]: Expected [s,g,q] and [s,g] to be the same
+Trying to unify entities ['s', 'g', 'q'] and ['s', 'g']
+Trying to unify Read[_v11882] & Update['s', 'g', 'q'] and Read['g', 's'] & Update['s', 'g']
+Trying to unify (Read[_v11880] & Update[_v11881], Read[_v11882] & Update[_v11881]) => Read[_v11883] & Update[_v11881] and (Read[_v11879] & Update['s', 'g', 'q'], Read['g', 's'] & Update['s', 'g']) => _e2899
+Trying to infer effect for operator application in then(consumed, H::readJoin)
+
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/BrokerConsumptionQueue.qnt:84:46
+  84:   run nonceRetryCannotMintNewAdmissionTest = consumed.then(H::readJoin).then(H::send(H::decidedJob,0,0,8,0,10).fail())
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

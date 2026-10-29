@@ -1,0 +1,141 @@
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.02s
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-4838a742f9862365)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-1e47e54eda83f64c)
+
+running 1 test
+test decoder::duplicate_keys_unknown_fields_and_streams_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_execution-95b001cbff1658a0)
+
+running 12 tests
+test transport::https::tests::destination_aliases_credentials_and_http_are_rejected ... ok
+test provider::sse::tests::truncated_oversized_and_wrong_model_streams_are_not_completed ... ok
+test provider::sse::tests::arbitrary_network_fragmentation_preserves_sse_identity ... ok
+test broker::stream_session::tests::effective_revocation_stops_actual_next_range_and_prefix_reconnect ... ok
+test broker::stream_session::tests::revoke_after_range_consumption_proves_zero_call_and_recovers_original_message ... ok
+test broker::stream_session::tests::tls_flush_cannot_release_a_tail_after_effective_revocation ... ok
+test broker::stream_session::tests::recovered_old_worker_socket_cannot_use_new_custody ... ok
+test broker::stream_session::tests::actual_tcp_ranges_preserve_one_message_and_one_hold ... ok
+test enforce_asp_rust_gate ... ok
+test transport::https::tests::partial_transport_failure_is_unknown_and_never_retried ... ok
+test transport::https::tests::redirect_is_observed_without_following_or_refunding ... ok
+test broker::stream_session::tests::native_partial_write_freezes_tail_and_never_refunds ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.26s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_ledger-e3c47309a5669ea0)
+
+running 7 tests
+test publication::tests::connection_reuse_rejects_an_unresolved_explicit_transaction ... ok
+test publication::tests::outcome_insert_failure_rolls_back_policy_schema_and_result_together ... ok
+test publication::tests::concurrent_same_identity_commits_only_one_revision ... ok
+test publication::tests::concurrent_publications_serialize_one_winner_and_one_stable_conflict ... ok
+test publication::tests::historical_decisions_survive_restart_and_cannot_rebase_or_replace_original_id ... ok
+test enforce_asp_rust_gate ... ok
+test publication::tests::arbitrary_replay_restart_and_late_observation_schedules_keep_decisions ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.70s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-07ec3f8657968d63)
+
+running 15 tests
+test recovery::original_task_body_and_profile_cannot_be_replaced ... ok
+test recovery::authored_ceiling_cannot_underreserve_the_original_wire_cost ... ok
+test recovery::publication_between_consume_and_send_closes_old_permit ... ok
+test recovery::lost_enqueue_reply_recovers_same_hold_and_rejects_changed_wire ... ok
+test recovery::crash_after_consumption_never_reopens_or_refunds ... ok
+test recovery::token_cannot_move_to_a_second_ledger_handle ... ok
+test provider::affine_provider_dispatch_and_revoked_batch_never_repeat_or_refund ... ok
+test concurrency::concurrent_consumers_invoke_once ... ok
+test stream_properties::unknown_range_after_restart_blocks_new_nonce_and_authority ... ok
+test concurrency::concurrent_nodes_share_one_capacity ... ok
+test serialization::effective_publication_cannot_overtake_the_locked_send_boundary ... ok
+test stream_properties::concurrent_stream_registration_and_consumption_do_not_duplicate_holds_or_writes ... ok
+test stream_properties::arbitrary_stream_crashes_reauthorizations_and_ranges_preserve_identity ... ok
+test properties::arbitrary_replays_restarts_and_consumption_preserve_claims ... ok
+test provider::arbitrary_provider_replays_restarts_and_release_batches_keep_original_claim ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.52s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_policy-27646ae60a63197f)
+
+running 2 tests
+test compiled::tests::compiled_storage_caps_slots_and_exact_hits_do_not_allocate_new_entries ... ok
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-c5afc689a5ef3b0d)
+
+running 3 tests
+test decisions::default_deny_forbid_and_evaluation_error_are_fail_closed ... ok
+test stream_policy::specification_derived_policy_is_typed_and_constrains_actual_range_facts ... ok
+test compiled_cache::exact_source_cache_is_bounded_and_never_caches_permission ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_server-b4b261d087cf446e)
+
+running 13 tests
+test grpc::ingress_tests::aliased_or_empty_source_identity_is_rejected_before_serving ... ok
+test connections::tests::pending_listener_reservation_is_released_on_drop ... ok
+test runtime::tests::poisoned_admission_still_closes_and_drains ... ok
+test admission::tests::saturated_detached_execution_preserves_publication_and_observation_custody ... ok
+test source_owner::tests::startup_failure_closes_runtime_and_drains_native_owner ... ok
+test connections::tests::tcp_socket_owns_capacity_until_destruction_and_preserves_io_and_peer_identity ... ok
+test runtime::tests::detached_native_writer_keeps_slot_until_drain_acknowledges_completion ... ok
+test runtime::tests::arbitrary_disconnect_shutdown_and_drain_schedules_keep_native_custody ... ok
+test admission::tests::lane_interleavings_preserve_independent_bounds ... ok
+test source_owner::tests::storage_failure_does_not_acknowledge_a_reusable_result ... ok
+test source_owner::tests::reused_source_connection_observes_other_writer_and_preserves_historical_result ... ok
+test source_owner::tests::disconnected_source_caller_keeps_capacity_until_original_sql_work_finishes ... ok
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running unittests src/main.rs (target/debug/deps/weaver_server-7b9f78ba7a267643)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests weaver_contracts
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests weaver_execution
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests weaver_ledger
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests weaver_policy
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests weaver_server
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

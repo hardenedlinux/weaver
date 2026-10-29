@@ -1,0 +1,133 @@
+{
+  "status": "pass",
+  "boundary": "Named-reference consistency, not semantic equivalence or native extraction",
+  "contracts": [
+    {
+      "contract": "FC1 Original obligation retained",
+      "orgRule": "Root cannot be renamed or freed by recut",
+      "quint": [
+        "conserved",
+        "recutDoesNotFreeSlotTest"
+      ],
+      "lean": [
+        "initialized_conservation",
+        "recut_preserves_original_obligation"
+      ],
+      "d2": "semantic.obligation"
+    },
+    {
+      "contract": "FC2 Old decision immutable",
+      "orgRule": "Original fenced outcome remains history",
+      "quint": [
+        "uniqueDecision",
+        "lateOldAttemptCommitRejectedTest"
+      ],
+      "lean": [
+        "old_attempt_decisions_never_change",
+        "initialized_original_attempt_outcomes_unique"
+      ],
+      "d2": "ledger.history"
+    },
+    {
+      "contract": "FC3 Physical evidence extends scope",
+      "orgRule": "Same floor/service/profile and all original aliases",
+      "quint": [
+        "immutablePromise",
+        "originalAliasRosterRetainedTest"
+      ],
+      "lean": [
+        "Extends",
+        "recut_preserves_original_obligation"
+      ],
+      "d2": "native.cut"
+    },
+    {
+      "contract": "FC4 Admission is not observation",
+      "orgRule": "Authentic current full head read precedes isolation",
+      "quint": [
+        "noHeadObservationCannotBlockTest",
+        "staleHeadObservationRejectedTest"
+      ],
+      "lean": [
+        "Step.linkRead"
+      ],
+      "d2": "ledger.head"
+    },
+    {
+      "contract": "FC5 New fence retires eligibility",
+      "orgRule": "Successor names retired predecessor; no old-context commit",
+      "quint": [
+        "lineageBound",
+        "oldContinuationCannotCommitAfterResetTest"
+      ],
+      "lean": [
+        "retired_attempts_never_reactivate",
+        "late_active_link_cannot_cross_new_fence"
+      ],
+      "d2": "native.fence"
+    },
+    {
+      "contract": "FC6 One original-root completion",
+      "orgRule": "Original and resumed paths share root CAS",
+      "quint": [
+        "continuationUnique",
+        "duplicateResumeCommitRejectedTest"
+      ],
+      "lean": [
+        "initialized_unique_root",
+        "initialized_original_and_continuation_cannot_both_commit"
+      ],
+      "d2": "ledger.commit"
+    },
+    {
+      "contract": "FC7 Unknown budget remains held",
+      "orgRule": "Completion is not cancellation or refund",
+      "quint": [
+        "safety",
+        "originalPromiseContinuesTest"
+      ],
+      "lean": [
+        "original_budget_remains_conserved",
+        "unknown_original_reservation_stays_held"
+      ],
+      "d2": "semantic.unknown"
+    },
+    {
+      "contract": "FC8 Recovery progresses conditionally",
+      "orgRule": "Stable available fair milestones decrease rank",
+      "quint": [
+        "stableRecoveryDecreasesMilestonesTest",
+        "unfairStutterDoesNotFinishTest"
+      ],
+      "lean": [
+        "weakly_fair_available_recovery_becomes_enabled",
+        "unfair_stutter_has_no_recovery"
+      ],
+      "d2": "recovery.progress"
+    },
+    {
+      "contract": "FC9 Historical result is not readiness",
+      "orgRule": "Post-commit reset requires fresh qualification",
+      "quint": [
+        "historicalContinuationCannotActivateTest"
+      ],
+      "lean": [
+        "initialized_zero_phase_means_enabled",
+        "initialized_product_refines_key"
+      ],
+      "d2": "recovery.activate"
+    },
+    {
+      "contract": "FC10 Retained bytes remain mediated",
+      "orgRule": "New head cannot relabel old ticket/buffer",
+      "quint": [
+        "retainedOldBufferCannotReleaseTest",
+        "newHandleCannotRecreateConsumedJobTest"
+      ],
+      "lean": [
+        "initialized_product_refines_key"
+      ],
+      "d2": "native.release"
+    }
+  ]
+}

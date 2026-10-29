@@ -1,0 +1,26 @@
+proofs/lean/LlmResultProjection.lean:94:52: error: Application type mismatch: The argument
+  authentic
+has type
+  Q t✝.base
+of sort `Prop` but is expected to have type
+  LlmMultiKeyRegistry.State ?m.223
+of sort `Type` in the application
+  LlmMultiKeyRegistry.Step.recover authentic
+'Weaver.LlmResultProjection.authority_projection' depends on axioms: [propext, sorryAx]
+'Weaver.LlmResultProjection.result_retained' depends on axioms: [propext]
+'Weaver.LlmResultProjection.exact_source_result' depends on axioms: [propext]
+'Weaver.LlmResultProjection.exact_account_result' depends on axioms: [propext]
+'Weaver.LlmResultProjection.old_owner_blocks_application' depends on axioms: [propext]
+'Weaver.LlmResultProjection.wrong_before_blocks_application' depends on axioms: [propext]
+'Weaver.LlmResultProjection.duplicate_position_blocks_application' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmResultProjection.partial_projection_blocks_join' does not depend on any axioms
+'Weaver.LlmResultProjection.joined_source_is_authoritative' does not depend on any axioms
+'Weaver.LlmResultProjection.joined_account_holds_original_exposure' does not depend on any axioms
+'Weaver.LlmResultProjection.unknown_exposure_retained' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmResultProjection.original_spent_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmResultProjection.original_pending_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmResultProjection.original_origin_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmResultProjection.shared_exposure_bound' depends on axioms: [propext, sorryAx]
+'Weaver.LlmResultProjection.committed_request_cannot_repeat' depends on axioms: [propext]
+'Weaver.LlmResultProjection.source_application_has_no_authority_effect' does not depend on any axioms
+'Weaver.LlmResultProjection.account_application_has_no_authority_effect' does not depend on any axioms

@@ -1,0 +1,18 @@
+'Weaver.LlmExecutorOffer.queue_projection' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.range_projection' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.offer_at_most_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmExecutorOffer.original_burn_retained' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.submitted_never_reset' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.new_offer_checks_current_policy' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.offer_gate_has_current_view' does not depend on any axioms
+'Weaver.LlmExecutorOffer.old_worker_blocks_offer' does not depend on any axioms
+'Weaver.LlmExecutorOffer.unaligned_lane_blocks_offer' does not depend on any axioms
+'Weaver.LlmExecutorOffer.changed_view_blocks_offer' does not depend on any axioms
+'Weaver.LlmExecutorOffer.partial_or_timeout_has_no_authority' does not depend on any axioms
+'Weaver.LlmExecutorOffer.original_queue_binding_retained' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.original_slot_retained' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.original_exposure_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmExecutorOffer.dequeue_has_no_invocation' does not depend on any axioms
+'Weaver.LlmExecutorOffer.burn_has_no_invocation' does not depend on any axioms
+'Weaver.LlmExecutorOffer.actual_broker_initialized' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmExecutorOffer.unknown_retains_broker_hold' depends on axioms: [propext, Classical.choice, Quot.sound]

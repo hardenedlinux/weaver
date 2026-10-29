@@ -1,0 +1,77 @@
+#+TITLE: Committed Profile Proofs, Counterexamples and Qualification Gates
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Four-artifact correspondence
+| Core contract / D2 edge | Lean | Quint |
+|------------------------+------+-------|
+| Publication -> immutable descriptor | profile_retained; conflicting_profile_cannot_replace | lost publication reply; duplicate publish; replacement fault |
+| Original assignment -> binding | initialized_safe; resolved_binding_is_original | bind only original; unrelated profile insufficient |
+| Profile -> unique node | initialized_profiles_valid; resolved_node_unique | duplicate node identity rejected |
+| Node -> task constraints | original_record_covers_full_profile; external_template_cannot_replace_constraints | changed context/region/capability/node rejected |
+| Recovery -> same node | recovery_cannot_select_other_node | old read rejects; observe/rejoin progresses |
+| Normal -> actual route | actual_route_preserves_committed_capability | completeProfileReachesActualDispatchTest invokes prior dispatch |
+| Original semantic use -> schema | actual_semantic_use_keeps_published_schema | finite expected semantic profile; not actual provider codec proof |
+| Consumed identity -> unknown hold | Prior source/account/queue assumptions retained | forgotten consumption fault; unknown budget retained |
+
+Lean imports category 51 and its actual category 13/49 ancestors, with a fresh
+isolated thirteen-module source rebuild. Twenty-two new declarations print their
+axioms without =sorryAx=. The new append-only registry Step is an abstract
+publication/binding contract, not a native transaction. Actual-route and semantic
+use results compose existing constructors; native publication authenticity is
+still an explicit premise.
+
+Quint retains complete ancestor transitions while omitting only their historical
+run declarations in the execution bundle. Twenty-four current controls include
+twenty guarded/progress/rejection cases and four deliberately unsafe actions.
+They cover conflicting publication, replacement binding, lost publication state
+and forgotten consumption. Unsafe actions are excluded from the safe step.
+Full official type/effect analysis precedes fresh evaluator groups; the typed IR
+must remain unchanged. These finite controls are not exhaustive state checking.
+
+* Native qualification classification
+The native fixture emitted eleven contract check results and actual duplicate-key
+rejection, but a natural-exit timeout remains unresolved. Independent controls
+and instrumented diagnostics are separate observations. No receipt may promote
+the timed workload to a native pass because its final printed marker appeared.
+A source rebuild, full compiler/format parity, actual provider wire/SDK behavior,
+executor fencing, persistent account/store recovery and measurements remain open.
+
+* Source review and reuse
+Recheck the prior sixteen reviewed snapshots by HEAD and working bytes. Also
+inspect Core =modules/json-schema/contracts.ss=, =json-schema-source.ss=,
+=json-schema-constraints.ss= and =gerbil.pkg= plus the installed Gerbil JSON reader.
+The value-contract module explicitly separates value validation from Core
+admission; the source module explicitly owns decoding only. Reuse both without
+treating them as proof of authenticated publication or durable execution.
+
+POO Flow strict mediation still consumes a supplied validation context; its pure
+nonce/root transition is not a persistent CAS. Cedar BoundOperation still checks
+supplied effect/state equality and requires host authentication. The full-profile
+projection does not remove either boundary. No dependency pin or upstream source
+is changed, and no newest-version or external provider feature claim is made.
+
+* Failures retained
+The first Lean draft collided with the predefined =id= name and a reserved field
+name; its failed source and log are retained. Corrected typed binders compile.
+The initial native import failure and natural-exit timeout remain distinct from
+successful formal/model checks. Earlier sealed manifests and historical evidence
+are preserved, including failed drafts. Receipts do not relabel them as passes.
+
+* Receipts and remaining research
+[[file:../../../proofs/evidence/committed-profile-binding/receipt.json][Checkpoint receipt]],
+[[file:../../../proofs/evidence/committed-profile-binding/clean-proof-receipt.json][fresh Lean closure]],
+[[file:../../../proofs/evidence/committed-profile-binding/api-commands.json][Quint phases]],
+[[file:../../../proofs/evidence/committed-profile-binding/source-currentness.json][prior source-currentness checks]] and
+[[file:../../../proofs/evidence/committed-profile-binding/SHA256SUMS][byte seal]] record exact evidence.
+
+The highest remaining native gates are: explain and resolve the bounded natural
+exit failure; rebuild the exact reusable source closure; verify actual multi-format
+normalization and full-profile commitment admission; qualify the actual adapter,
+transport and storage boundaries. Keep the first task's one-attempt profile and
+unknown holds until these gates have evidence. No Gateway runtime implementation
+is added or authorized by this verification-only checkpoint.
+
+See [[file:../../../proofs/lean/CommittedSemanticProfile.lean][Lean source]],
+[[file:../../../proofs/qunit/CommittedSemanticProfile.qnt][Quint source]] and
+[[file:52.04-committed-profile.d2][core D2]] for the linked design artifacts.

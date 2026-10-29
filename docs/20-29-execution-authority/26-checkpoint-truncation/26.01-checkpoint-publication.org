@@ -1,0 +1,193 @@
+#+title: Weaver Account Checkpoint Publication and Safe WAL Truncation
+#+language: en
+#+options: toc:3
+
+* Decision and scope
+
+A checkpoint is a complete original account state at an authenticated committed
+prefix, not a balance-only snapshot. Local WAL prefix deletion is permitted only
+after durable complete-body retention, authoritative publication, current publication
+readback and an exact checkpoint-plus-suffix equivalence check. Publishing a
+checkpoint and deleting local bytes perform no financial transaction.
+
+This refinement prunes the local account WAL. It does not authorize deletion of
+the independent protected financial journal, original outcome archive, canonical
+source registry or unresolved candidate authority. Extending those authorities to
+compaction needs their own retained-state and lineage equivalence proofs. The
+selected contract continues to use them as the non-rollback recovery reference.
+
+The boundary is logical execution authority for an AI Agent Gateway. It requires
+no physical isolation. Checkpoint objects and publication records still need
+qualified durable ownership outside the worker/local-WAL rollback domain. A file
+named checkpoint or a hash stored beside the truncated WAL cannot supply that
+independence by itself.
+
+* Complete checkpoint content
+
+The published body binds its checkpoint ID and exact content, namespace/account
+scope, covered position and prefix lineage, publication parent, historical owner
+and source-generation context, canonical serialization and complete account image.
+The account image retains:
+
+- Every applied application ID and its immutable original transaction/result binding.
+- Original reservation consumption, independently of the caller's application ID.
+- Available, held and charged balances with the original accounting units.
+- Per-original-reservation holds, including every unresolved or unknown obligation.
+- Immutable references to original root/claim/profile and source/usage applications.
+
+No filtered "recent IDs" table, available-balance aggregate or watermark alone is
+sufficient. A missing key cannot silently decode to unused, unheld, zero cost or a
+fresh reservation. Native finite map/default semantics and namespace completeness
+must agree with the qualified source/account model.
+
+The independent original outcome archive remains available for exact historical
+application readback. A current aggregate checkpoint does not reconstruct each
+transaction's original before/after account image. Nor does a checkpoint copy make
+opaque source IDs authentic: original source registry, claim/profile commitment,
+budget/history domain and metering qualification remain required.
+
+The formal =covered= list is a proof witness for the logical prefix, not a requirement
+to serialize every deleted WAL frame inside the native checkpoint. The native
+checkpoint stores the complete account image plus authenticated coverage references.
+The executable models retain the reference history to check equivalence. They do
+not claim a measured storage reduction or a proof of a cryptographic encoding.
+
+* Ordered publication and truncation protocol
+
+1. Capture an authenticated committed prefix. Compute its complete account state,
+   preserving all immutable application/reservation entries and unconsumed holds.
+   A financial commit after capture becomes suffix work, not a reason to relabel
+   the captured image as the new current head.
+2. Persist a complete immutable checkpoint body and obtain qualified durability
+   evidence for a retrievable copy that survives the planned local prefix deletion.
+   A draft, upload start, local filename or content digest alone is insufficient.
+3. Publish the exact body/reference by an independent authority CAS against the
+   current publication parent. Bind the current publisher owner/source stamps,
+   require the covered floor to advance, and reject a previously published checkpoint
+   ID with a different body. Reusing an existing publication is readback, not append.
+4. On response loss, query the original checkpoint publication and full body through
+   current authority. Require the exact current publication generation, checkpoint
+   selection and current worker fence before issuing a local truncation operation.
+5. Verify that the selected checkpoint covers the exact local prefix and that the
+   remaining suffix preserves every later committed or uncommitted frame. Atomically
+   install the durable local checkpoint manifest and new suffix boundary, then
+   delete only the covered local prefix. No application or reservation is consumed.
+6. Before activation, recover the latest published checkpoint, replay its suffix to
+   the current protected account head, install the exact account image and pass both
+   the financial confirmation gate and current checkpoint publication/floor gate.
+
+The model treats local manifest/prefix installation as one logical storage step.
+Native implementations must recover its before or after representation across
+crash, retaining a verifiable copy until the replacement is durable. Actual unlink,
+rename, fsync and checkpoint-file framing are qualification gates, not implemented
+or proved storage primitives here.
+
+* Publication, floor and acknowledgment semantics
+
+Checkpoint coverage position, publication generation and financial head are separate
+coordinates. Position says which financial prefix is summarized. Generation orders
+checkpoint publications and rejects an old parent. The financial head can advance
+while an older published checkpoint still provides a valid recovery base. Native
+bounded counter/position encodings must reject exhaustion or overflow; wrapping a
+publication generation, floor or owner stamp is not a new namespace or permission
+to reuse original consumption state.
+
+The protected publication floor never decreases on local restore, worker restart or
+lost response. A new publication invalidates prior local activation/readback until
+the latest selected checkpoint is installed or repaired. Even an old checkpoint
+plus a complete logical WAL is not accepted as permission to lower that published
+baseline in this reference protocol.
+
+Checkpoint capture metadata is historical. Recovery never installs its old owner or
+source stamps as the current authority. Current publisher/truncator/activation
+workers are checked against independently protected current stamps. A current worker
+may recover an older published image and replay its suffix; an old worker cannot
+borrow a fresh readback to truncate or activate.
+
+A publication response lost after commit leaves the original publication committed.
+An old parent cannot replace it, and a late response for an earlier checkpoint
+cannot select a lower floor after a newer publication. Numeric position, body
+identity and current selection must all be checked; matching only one is insufficient.
+
+* Suffix, unresolved candidates and unknown budgets
+
+A checkpoint covers committed financial state only. Independent accepted candidates
+and original source obligations remain authoritative outside the local WAL snapshot.
+Local compaction cannot cancel a candidate, discard its original claim/history
+constraint or infer that it never committed.
+
+The selected truncation rule preserves the entire physical suffix, including
+uncommitted frames. It rejects deleting such a suffix merely because the checkpoint
+covers the current financial head. A candidate may commit after prefix deletion;
+its result is applied once by the existing account CAS and recovered through the
+suffix. The earlier checkpoint may still show the old hold, while the reconstructed
+current head correctly reflects the later original settlement. Replay stops at the
+independently confirmed financial commit boundary: a suffix frame that has not
+committed remains pending and cannot change available funds, charges or holds.
+Frame presence and valid serialization are not financial commit evidence.
+
+Unknown source usage cannot become a zero-cost checkpoint entry. Publishing or
+truncating cannot release its hold. A new application ID cannot bypass an original
+reservation already consumed before the checkpoint. The actual account/source
+binding and final usage predicate remain at the financial commit boundary, exactly
+as in the preceding products.
+
+* Snapshot rollback and missing bodies
+
+| Recovery input or race | Required behavior |
+|------------------------+-------------------|
+| Durable checkpoint body, publication unknown | Query original publication; no truncation on an assumed success |
+| Published checkpoint, acknowledgment lost | Read back exact original record and current selection before truncating |
+| Old checkpoint with complete old WAL after truncation | Keep closed until it satisfies the current published checkpoint/floor contract |
+| Checkpoint body omits an application/reservation/hold | Reject equivalence before publication; balance equality is insufficient |
+| Valid checkpoint, missing suffix records | Reject activation even if the account revision or local balance looks current |
+| Local snapshot rolls back after prefix deletion | Retain protected floor and original account authority; fetch latest checkpoint and suffix |
+| Published body unavailable after local loss | Remain closed; no empty-log fallback or replacement genesis |
+| Financial commit after checkpoint capture/publication | Keep the checkpoint at its historical prefix; recover the later result through suffix replay |
+| Old worker holds truncate descriptor or cached publication | Current owner/publication/floor checks reject its operation; arbitrary local corruption cannot rewrite authority |
+
+The native final financial consumer must serialize against current account and
+checkpoint/publication context. A remotely cached active flag is not authority.
+If an old descriptor corrupts local files outside the intended operation, the local
+representation is unqualified and must be repaired; the protected account journal
+and publication floor remain unchanged. The model's immediate closure on restore
+is a refinement obligation for that final gate, not a promise of instantaneous
+invalidation delivery to every process.
+
+* Scheme, Go, Rust and Code as Policy
+
+| Owner | Responsibility | Enforced boundary |
+|-------+----------------+-------------------|
+| Scheme / POO | Complete checkpoint schema, original identity/default/units semantics, replay equivalence and pending obligations | No balance-only checkpoint or implicit reset of missing application/reservation/hold |
+| Go | Kubernetes owner lifecycle, storage/recovery observations and original publication readback proposals | No independent prefix deletion, floor reset or balance authority |
+| Rust checkpoint owner | Capture complete prefix image, canonical framing and durable immutable body | Body completeness/durability before publication and deletion |
+| Rust independent publication authority | Parent CAS, exact ID/body registry, monotonic floor and current owner/source stamp | Lost responses and old publishers cannot rebind or lower published state |
+| Rust WAL/recovery broker | Verify selected body, preserve suffix, install manifest, repair current image and fence final activation/use | No old snapshot or descriptor bypass; no second financial delta |
+| Cedar / cedar-poo-spec | Code as Policy for publishAccountCheckpoint, truncateLocalWalPrefix and activateCheckpointProjection | Match exact actual body/prefix/parent/floor/worker context; all required layers allow without errors |
+| Quint / Lean | Missing-field, rollback, stale-parent/worker and suffix controls; actual WAL/account/source composition | Native durable publication and object retention remain qualification premises |
+
+Cedar authorizes the exact proposed publication, deletion interval or activation.
+It does not certify a flushed checkpoint, complete ID table, durable object copy or
+current publication head. The runtime must authenticate those facts and execute
+only the corresponding current, serialized operation.
+
+* Reuse and limits
+
+Reuse POO Flow's exact effect binding, conservative spent-state and pending retention,
+generation/revision CAS intents, source-bound recovery and explicit receipt lineage.
+Reuse its native store ownership for checkpoint IO, append, fsync, rebuild and repair.
+The existing Scheme checkpoint-store reference names a contract endpoint; it is not
+an implementation of this account-specific publication or safe deletion protocol.
+
+The Lean product refines the actual preceding WAL model. Physical prefix deletion
+preserves its logical replay history through a certified checkpoint representation.
+It does not pretend that deleted physical frames remain on disk, or permit a ghost
+proof witness to serve as native durability evidence. All source/account invariants
+are inherited through actual composed runs.
+
+The reference keeps publication records, complete logical history and application/
+reservation deduplication facts. It does not authorize publication-archive pruning,
+source registry reset, candidate garbage collection or deduplication retention expiry.
+Native storage and availability, arbitrary-many-provider composition, performance
+and bounded recovery liveness require separate evidence. No Gateway code or
+dependency pin is changed.

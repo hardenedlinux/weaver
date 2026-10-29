@@ -1,0 +1,36 @@
+{
+  "gateSeconds": 15,
+  "naturalExitRequired": true,
+  "terminateChild": false,
+  "matrix": {
+    "A": "broad independent",
+    "B": "narrow independent",
+    "C": "broad packed",
+    "D": "narrow packed"
+  },
+  "blocks": [
+    [
+      "A",
+      "B",
+      "D",
+      "C"
+    ],
+    [
+      "C",
+      "D",
+      "B",
+      "A"
+    ]
+  ],
+  "uses": [
+    "first",
+    "repeat"
+  ],
+  "sampleCount": 16,
+  "coldDefinition": "Freshly linked selected image generation, fresh inode/path, fresh process and GERBIL_PATH; first-use versus immediate repeat. UUID/content identity measured, not assumed fresh. Runtime/OS caches and remote observer state uncontrolled; no globally cold claim. Common library files reused. Builds finish before timing.",
+  "compiler": "Full configured installed gambuild-C options, identical generated C and objects for every matrix cell.",
+  "observer": "Same passive observer all matrix samples; real dlopen/dlclose exactly once; monotonic API duration. Unobserved original-launcher checks separately.",
+  "analysis": "Retain every scheduled result. Paired packing differences within import scope and block; paired import differences within packaging and block; first/repeat differences. No pooled cross-block causal ratio; no whole-host SLA.",
+  "hashing": "Input byte hashes before/after outside timed process; cache effects disclosed. No cache purge.",
+  "cellIsolation": "Each cell and block has separately linked image paths and inodes; no first-use cell reuses selected-image aliases from another cell. Common runtime and nonselected libraries remain shared."
+}

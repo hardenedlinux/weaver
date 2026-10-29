@@ -1,0 +1,169 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 14,
+    "sourceSha256": "b413b2ecf22ffdba4491ffcdc3d3454d7b3bd49816af740311647ad803e297da",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 5.471
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "ad67719e3e25bcf141a629e127f7147483165274442e2e83bb6ede9284874bc0",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 37.103
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "sharedWorkloadCannotCreateEntitlementTest",
+      "producerApprovalRequiredTest",
+      "rootHasNoBeneficiaryAuthorityTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.363
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "sharedIdentityCannotRegisterKeyTest",
+      "forwardedBearerWithOwnKeyRejectedTest",
+      "entitlementProofRequiredTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.969
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "beneficiaryPossessionRequiredTest",
+      "substitutedSessionRejectedTest",
+      "originalScopeCannotBeRewrittenTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.849
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "firstBindingDoesNotPublishTest",
+      "lostBindingReplyRetainsFirstKeyTest",
+      "authorizedSecondKeyCannotReplaceFirstTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.793
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "oldWorkerCannotRecoverEnrollmentTest",
+      "recoveryNeedsCurrentReadPolicyTest",
+      "newRootInvalidatesPublicationReadTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.814
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "currentPolicyRequiredAtPublicationTest",
+      "changedPayloadCannotPublishTest",
+      "lostPublicationReplyRetainsExactOutcomeTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.285
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "publicationCannotRepeatTest",
+      "rootRevocationBlocksPublicationTest",
+      "rootRevocationFencesPublishedConsumptionTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.418
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "actualActivationRetainsOriginalHoldTest",
+      "lostRootReplyRetainsEnrollmentPrincipalTest",
+      "rootCannotBeReplacedAfterRecoveryTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 3.458
+  },
+  {
+    "label": "api-controls-8",
+    "passed": [
+      "signatureForAnotherBeneficiaryKeyRejectedTest",
+      "sourceEpochChangeInvalidatesPublicationTest",
+      "sharedIdentityRegistrationCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.795
+  },
+  {
+    "label": "api-controls-9",
+    "passed": [
+      "replacedKeyRegistrationCounterexampleTest",
+      "missingOutcomeRegistrationCounterexampleTest",
+      "splitPublicationRegistrationCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.845
+  },
+  {
+    "label": "api-controls-10",
+    "passed": [
+      "rollbackFirstBindingRegistrationCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.442
+  }
+]

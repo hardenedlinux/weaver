@@ -1,0 +1,191 @@
+# Core ownership and protocol only. Qualification evidence stays in Org.
+...@lib/theme
+title: JOINT QUORUM / COMPLETE PREFIX INHERITANCE / ORIGINAL EXECUTION {
+  class: title
+  near: top-center
+}
+semantic: SEMANTICS / CLOUD LIFECYCLE {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  original: Scheme / original domain\nClaim / budget / account / history\nMembership creates no new funds {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  policy: Cedar / Code as Policy\nActual Governance change and effect\nAll required layers must allow {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  worker: Go / cloud-native orchestration\nDiscovery / learners / reconciliation\nResolve the committed stage {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  goBrand: "" {
+    shape: image
+    icon: assets/go.svg
+    top: 452
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: assets/kubernetes.svg
+    top: 452
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+root: ONE CONFIGURATION LINEAGE {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  old: Stable old configuration\nQualified old quorum authority\nOriginal operation tombstones {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  joint: Joint old and new configuration\nBoth quorums approve each append\nNew economic admission stays closed {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  new: Stable new configuration\nInherit complete joint prefix\nRetire old-only publication authority {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+broker: RUST / TRANSFER AND FINAL OWNER {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  copy: Qualified replica installation\nComplete deciding prefix and state\nNo runnable capability from a copy {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  old: Old broker before actual barrier\nOriginal confirmed I/O may submit once\nConfiguration commit is not isolation {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  activate: Current configuration activation\nActual barrier and committed fence\nComplete prefix / resolved burns {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  rustBrand: "" {
+    shape: image
+    icon: assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+outcome: PERSISTENCE / ORIGINAL OBLIGATION {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  prefix: One data and configuration prefix\nControl records and spent history\nOriginal source / budget / history roots {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  unknown: Lost response or unknown outcome\nRetain the original booked obligation\nNo replay / regrant / refund {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  result: Authentic original result\nArchive and resolve the same receipt\nNever create a second application {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+quint: QUINT\nOverlapping authorities / late replies / copied-prefix and fence races {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nQuorum bridges / append-only inheritance / original budget conservation {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+semantic.original -> root.old
+semantic.policy -> root.joint
+root.old -> root.joint: old and new quorums
+root.joint -> root.new: old and new quorums
+broker.copy -> root.joint
+broker.copy -> outcome.prefix
+root.joint -> broker.old
+broker.old -> outcome.unknown
+root.new -> broker.activate
+outcome.unknown -> outcome.result: authentic original receipt
+outcome.result -> broker.activate

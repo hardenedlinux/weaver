@@ -1,0 +1,87 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 1,
+    "sourceSha256": "ee9167e4ab8f903068a30a0b5caa344535d456769041ab5316c1449b6754cc59",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.437
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "98fb941ec1bf7982d92d5b667199a210e443344cf194a11ff5e6445227a0f455",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 0.372
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "replacedSourceRejectedTest",
+      "sourceCommitmentBypassCounterexampleTest",
+      "sameNameDifferentImagesTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.011
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "oneImageCollisionRejectedTest",
+      "incompleteProducerRejectedTest",
+      "foreignBodyRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.002
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "rewrittenEntryRejectedTest",
+      "wrongHandleRejectedTest",
+      "qualifiedHandleInitializesOwnerTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.003
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "mappingIsNotInitializationTest",
+      "closedReferenceCannotInitializeTest",
+      "duplicateInitializationRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.106
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "collisionBypassCounterexampleTest",
+      "missingCompletionCounterexampleTest",
+      "bareLookupWrongOwnerCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.003
+  }
+]

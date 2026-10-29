@@ -1,0 +1,100 @@
+[
+  {
+    "id": "MK1",
+    "design": "An admitted origin entry cannot be replaced",
+    "quint": "duplicateOriginDifferentTransactionTest",
+    "lean": "origin_immutable",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "MK2",
+    "design": "One family has one canonical origin",
+    "quint": "familyCollisionRejectedTest",
+    "lean": "same_family_same_origin",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "MK3",
+    "design": "One claim has one canonical origin",
+    "quint": "claimCollisionRejectedTest",
+    "lean": "same_claim_same_origin",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "MK4",
+    "design": "Aliases cannot rebind across origins",
+    "quint": "aliasCannotRebindAcrossOriginsTest",
+    "lean": "alias_immutable",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "MK5",
+    "design": "Lost commit response cannot reapply",
+    "quint": "lostReplyCannotApplyAgainTest",
+    "lean": "lost_reply_blocks_reapply",
+    "d2": "protocols.acp"
+  },
+  {
+    "id": "MK6",
+    "design": "Decision body and outcome remain immutable",
+    "quint": "reusedTransactionDifferentBodyTest",
+    "lean": "decision_immutable",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "MK7",
+    "design": "Old parent cannot win after concurrent commit",
+    "quint": "concurrentOldParentCannotCommitTest",
+    "lean": "stale_parent_blocks_commit",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "MK8",
+    "design": "Restart rejects old mutation permits",
+    "quint": "oldOwnerCannotCommitTest",
+    "lean": "stale_owner_blocks_commit",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "MK9",
+    "design": "Recovery cannot overwrite the original source",
+    "quint": "recoveryReplaysDecisionOnlyTest",
+    "lean": "recovery_cannot_replace_source",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "MK10",
+    "design": "Shared exposure remains bounded",
+    "quint": "sharedBudgetRejectsIndependentAllowanceTest",
+    "lean": "shared_budget_bound",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "MK11",
+    "design": "Unknown consumption cannot reset spent-state",
+    "quint": "freshReceiptStillSeesSpentClaimTest",
+    "lean": "spent_retained",
+    "d2": "broker.claim"
+  },
+  {
+    "id": "MK12",
+    "design": "Original pending survives recovery and conflicts",
+    "quint": "pendingSurvivesRestartTest",
+    "lean": "pending_intent_retained",
+    "d2": "registry.query"
+  },
+  {
+    "id": "MK13",
+    "design": "Actual source transitions compose with prior semantics",
+    "quint": "freshReceiptStillSeesHistoryDenialTest",
+    "lean": "canonical_source_composition",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "MK14",
+    "design": "Unknown exposure cannot be refunded by recovery",
+    "quint": "recoveryReplaysDecisionOnlyTest",
+    "lean": "unknown_hold_retained",
+    "d2": "broker.hold"
+  }
+]

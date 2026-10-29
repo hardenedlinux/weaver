@@ -1,0 +1,65 @@
+{
+  "owner": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/bin/gambuild-C",
+  "ownerSha256": "f9e3bc752ee38d7ad83d9c84049322029538a445cc431fa37995e09be0514ced",
+  "configuredDefaultOverrides": {
+    "CORCXXFLAGS_GAMBUILD": "-pipe -foptimize-sibling-calls ",
+    "LDFLAGS_GAMBUILD": ""
+  },
+  "options": {
+    "FLAGS_OPT": [
+      "-O1"
+    ],
+    "FLAGS_OBJ": [
+      "-pipe",
+      "-foptimize-sibling-calls",
+      "-ftrack-macro-expansion=0",
+      "-Wno-unused",
+      "-Wno-write-strings",
+      "-Wdisabled-optimization",
+      "-fwrapv",
+      "-fno-strict-aliasing",
+      "-fno-trapping-math",
+      "-fno-math-errno",
+      "-fschedule-insns2",
+      "-fmodulo-sched",
+      "-freschedule-modulo-scheduled-loops",
+      "-foptimize-sibling-calls",
+      "-fomit-frame-pointer",
+      "-fipa-ra",
+      "-fmove-loop-invariants",
+      "-fPIC",
+      "-fno-common"
+    ],
+    "FLAGS_DYN": [
+      "-pipe",
+      "-foptimize-sibling-calls",
+      "-bundle",
+      "-ftrack-macro-expansion=0",
+      "-Wno-unused",
+      "-Wno-write-strings",
+      "-Wdisabled-optimization",
+      "-fwrapv",
+      "-fno-strict-aliasing",
+      "-fno-trapping-math",
+      "-fno-math-errno",
+      "-fschedule-insns2",
+      "-fmodulo-sched",
+      "-freschedule-modulo-scheduled-loops",
+      "-foptimize-sibling-calls",
+      "-fomit-frame-pointer",
+      "-fipa-ra",
+      "-fmove-loop-invariants",
+      "-fPIC",
+      "-fno-common"
+    ],
+    "DEFS_DYN": [
+      "-D___SINGLE_HOST",
+      "-D___INLINE_JUMPS",
+      "-D___TRUST_C_TCO",
+      "-D___CAN_IMPORT_CLIB_DYNAMICALLY",
+      "-D___CAN_IMPORT_SETJMP_DYNAMICALLY",
+      "-D___DYNAMIC"
+    ]
+  },
+  "policy": "Compiler defaults extracted from the installed owner; dynamic ABI definitions with object compile flags and dynamic link flags; no semantic option omission"
+}

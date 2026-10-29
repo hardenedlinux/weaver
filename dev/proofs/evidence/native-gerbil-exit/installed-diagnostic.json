@@ -1,0 +1,32 @@
+{
+  "args": [
+    "gxi",
+    "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/committed-profile-binding/native-authoring.ss"
+  ],
+  "pid": 50004,
+  "nativeAcceptanceBudgetSeconds": 15,
+  "gate": {
+    "exit": null,
+    "withinBudget": false,
+    "at": 15.040789208025672
+  },
+  "diagnosticObservationLimitSeconds": 35,
+  "observedProcessExit": 0,
+  "seconds": 24.823,
+  "completionOutputAtSeconds": 17.7739228749997,
+  "events": [
+    {
+      "at": 11.018397958017886,
+      "event": "own-process-sample-started"
+    },
+    {
+      "at": 17.7739228749997,
+      "event": "completion-output-observed"
+    }
+  ],
+  "sampleExit": 255,
+  "stackAvailable": false,
+  "sourceSha256": "68a27a0b594fda7aedab994c2d230464ddb2907176e25d9b8fe5837e24203750",
+  "forcedNativeExit": false,
+  "qualification": "Late natural exit during post-failure diagnosis cannot satisfy unchanged 15-second acceptance gate"
+}

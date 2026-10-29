@@ -1,0 +1,20 @@
+{
+  "args": [
+    "quint",
+    "test",
+    "proofs/evidence/llm-bootstrap-invitation/bundle/LlmBootstrapInvitation.qnt",
+    "--main",
+    "LlmBootstrapInvitation",
+    "--backend",
+    "typescript",
+    "--max-samples",
+    "1",
+    "--match",
+    "Test$",
+    "--out-itf",
+    "proofs/evidence/llm-bootstrap-invitation/itf/{test}-{seq}.itf.json"
+  ],
+  "exit": 124,
+  "seconds": 55.03904841700569,
+  "watchdogSeconds": 55
+}

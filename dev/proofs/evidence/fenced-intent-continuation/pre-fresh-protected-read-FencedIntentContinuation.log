@@ -1,0 +1,52 @@
+proofs/lean/FencedIntentContinuation.lean:248:76: error: Type mismatch: After simplification, term
+  original
+ has type
+  FloorIntentDecision.Committed
+    {
+      base :=
+        { base := next, device := s.legacy.base.device, driver := s.legacy.base.driver,
+          profile := s.legacy.base.profile, serial := s.legacy.base.serial, aliases := s.legacy.base.aliases,
+          blocked := s.legacy.base.blocked, captured := s.legacy.base.captured, certified := s.legacy.base.certified,
+          journal := s.legacy.base.journal ++ [i.cut], submissions := s.legacy.base.submissions,
+          validated := s.legacy.base.validated, archived := s.legacy.base.archived },
+      worker := s.legacy.worker, fence := s.legacy.fence, accepted := s.legacy.accepted,
+      decisions := s.legacy.decisions, slot := s.legacy.slot, observed := s.legacy.observed }
+    i
+but is expected to have type
+  FloorIntentDecision.Committed s.legacy i
+'Weaver.FencedIntentContinuation.initialized_original_and_continuation_cannot_both_commit' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_original_attempt_outcomes_unique' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_zero_phase_means_enabled' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.stable_fair_recovery_becomes_enabled' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.late_active_link_cannot_cross_new_fence' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.retired_attempts_never_reactivate' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.recut_unlock_counterexample' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.duplicate_root_commit_counterexample' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.unfair_stutter_has_no_recovery' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.commits_never_roll_back' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.old_attempt_decisions_never_change' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.recut_preserves_original_obligation' does not depend on any axioms
+'Weaver.FencedIntentContinuation.only_current_unsettled_root_can_commit' does not depend on any axioms
+'Weaver.FencedIntentContinuation.initialized_conservation' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_unique_root' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.continuation_acknowledges_original_root' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.stable_rank_nonincreasing' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FencedIntentContinuation.fair_monotone_rank_eventually_zero' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.stable_fair_recovery_finishes' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_product_refines_key' does not depend on any axioms
+'Weaver.FencedIntentContinuation.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.original_budget_remains_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

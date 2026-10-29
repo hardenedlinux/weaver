@@ -1,0 +1,53 @@
+[
+  {
+    "label": "LlmIncarnationIssuance",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmIncarnationIssuance.olean",
+      "proofs/lean/LlmIncarnationIssuance.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmIncarnationIssuance.lean": "f976b245ca4aa7a9afb1891464609674e819ca54ef7246f4677e39c31ea6b3b4"
+    },
+    "exit": 0,
+    "seconds": 5.154,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "prepare-closure",
+    "args": [
+      "python3",
+      "proofs/prepare_llm_issuance_closure.py"
+    ],
+    "sourceSha256": {
+      "proofs/prepare_llm_issuance_closure.py": "3dbf64e75983d7202142efcfc9beeeddb60c5c18c759de981e6e16487e7e9d90"
+    },
+    "exit": 0,
+    "seconds": 6.536,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(issueDoesNotActivateCustodyTest|sharedWorkloadCannotIssueTest|independentLaunchApprovalRequiredTest|assignedKeyRequiredTest|lostIssueReplySameLaunchCannotRemintTest|reservedIncarnationCannotReissueTest|selfSelectedOldKeyCannotIssueTest|oldWorkerCannotProveNewKeyTest|invalidSignatureRejectedTest|substitutedKeyRejectedTest|wrongTranscriptChallengeRejectedTest|wrongFutureIncarnationRejectedTest|wrongBootstrapSessionRejectedTest|proofWithoutActivationHasNoGrantTest|issuedWithoutProofCannotActivateTest|currentBootstrapActivatesOriginalTest|lostActivationReplyCannotRepeatTest|oldWorkerCannotCollectNewTicketTest|redeliveryDoesNotRefreshActivationReadTest|issuerEpochChangeRejectsQueuedActivationTest|sourcePublicationRejectsOldIssueParentTest|twoLaunchesCannotBothUseOldParentTest|sharedIdentityIssuanceCounterexampleTest|noProofIssuanceCounterexampleTest|revokedProofIssuanceCounterexampleTest|keySubstitutionIssuanceCounterexampleTest|rollbackIssueIssuanceCounterexampleTest|lostActivationResultIssuanceCounterexampleTest)$"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt": "f2788609c9baa8c1d9f30cc852723b5e2b2e8a4a29aa24d7914d12d51899f32e"
+    },
+    "exit": 1,
+    "seconds": 22.289,
+    "watchdogSeconds": 55
+  }
+]

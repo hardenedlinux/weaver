@@ -1,0 +1,86 @@
+[
+  {
+    "id": "RP1",
+    "design": "Keep original pending binding sticky",
+    "quint": "pendingIntentIsStickyTest",
+    "lean": "intent_is_never_replaced",
+    "d2": "publication.intent"
+  },
+  {
+    "id": "RP2",
+    "design": "Journal publication follows exact intent",
+    "quint": "journalCannotPrecedeIntentTest",
+    "lean": "journal_requires_prior_intent",
+    "d2": "publication.journal"
+  },
+  {
+    "id": "RP3",
+    "design": "Lost append reply cannot duplicate root",
+    "quint": "emptyLocalSnapshotCannotRecommitTest",
+    "lean": "one_original_publication",
+    "d2": "publication.confirm"
+  },
+  {
+    "id": "RP4",
+    "design": "Certification names the exact root prefix",
+    "quint": "anchorCannotCertifyMissingRootTest",
+    "lean": "certified_requires_exact_journal",
+    "d2": "publication.confirm"
+  },
+  {
+    "id": "RP5",
+    "design": "Recovered profile resolves original contract",
+    "quint": "mismatchedSnapshotCannotActivateTest",
+    "lean": "publication_resolves_original_contract",
+    "d2": "profile.object"
+  },
+  {
+    "id": "RP6",
+    "design": "Missing exact blob prevents use",
+    "quint": "missingBlobCannotActivateTest",
+    "lean": "missing_exact_blob_blocks_use",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "RP7",
+    "design": "Snapshot does not replace execution ledger",
+    "quint": "oldExecutionSnapshotCannotResetSpendTest",
+    "lean": "snapshot_install_never_restores_execution",
+    "d2": "recovery.ledger"
+  },
+  {
+    "id": "RP8",
+    "design": "Old owner cannot use recovered permission",
+    "quint": "oldWorkerPermitCannotRecoverTest",
+    "lean": "stale_worker_cannot_use",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "RP9",
+    "design": "Current ledger revision invalidates old permit",
+    "quint": "duplicatePermitCannotReplayTest",
+    "lean": "stale_execution_snapshot_cannot_use",
+    "d2": "broker.consume"
+  },
+  {
+    "id": "RP10",
+    "design": "Recovery retains original account domains",
+    "quint": "freshImageCannotBypassOriginalHistoryTest",
+    "lean": "original_scope_domains_survive_recovery",
+    "d2": "broker.history"
+  },
+  {
+    "id": "RP11",
+    "design": "All child cost remains under original allowance",
+    "quint": "registryRecoveryPreservesUnknownBudgetTest",
+    "lean": "original_allowance_is_preserved",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "RP12",
+    "design": "Unknown usage blocks settlement",
+    "quint": "unknownUsageCannotSettleTest",
+    "lean": "unknown_usage_blocks_settlement",
+    "d2": "broker.hold"
+  }
+]

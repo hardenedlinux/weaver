@@ -1,0 +1,73 @@
+{
+  "status": "PAIRED_ATTRIBUTION_COMPLETE_COLD_DEADLINE_OPEN",
+  "samples": 32,
+  "passes": 14,
+  "failures": [
+    "stable-b0-A-first",
+    "stable-b0-A-repeat",
+    "stable-b0-B-first",
+    "stable-b0-B-repeat",
+    "stable-b0-C-first",
+    "stable-b0-C-repeat",
+    "uuid-b0-A-first",
+    "uuid-b0-A-repeat",
+    "uuid-b0-B-first",
+    "uuid-b0-D-first",
+    "uuid-b0-C-first",
+    "uuid-b1-C-first",
+    "uuid-b1-C-repeat",
+    "uuid-b1-D-first",
+    "uuid-b1-B-first",
+    "uuid-b1-A-first",
+    "stable-b1-B-first",
+    "stable-b1-A-first"
+  ],
+  "candidateFirstUse": [
+    {
+      "label": "stable-b0-D-first",
+      "seconds": 14.7943127079634,
+      "passed": true
+    },
+    {
+      "label": "uuid-b0-D-first",
+      "seconds": 15.953863916976843,
+      "passed": false
+    },
+    {
+      "label": "uuid-b1-D-first",
+      "seconds": 18.189279000042006,
+      "passed": false
+    },
+    {
+      "label": "stable-b1-D-first",
+      "seconds": 9.505977542023174,
+      "passed": true
+    }
+  ],
+  "gateSeconds": 15,
+  "allNaturalExit": true,
+  "allTrackedModuleRefsClosed": true,
+  "freshLeanModules": 17,
+  "newLeanDeclarations": 11,
+  "quintControls": 14,
+  "sourceReviewsCurrent": 16,
+  "olderManifestsUnchanged": 50,
+  "hostColdControlled": false,
+  "causalLatencySLA": false,
+  "gatewayImplemented": false,
+  "dependencyPinsChanged": false,
+  "auditDate": "2026-10-20",
+  "workspace": "/Users/guangtao/ghq/github.com/tao3k/weaver",
+  "head": "4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d",
+  "rootCause": "Distinct first-use F_CHECK_LV library-validation waits and dyld synchronous load/unload notification waits. Installed dyld UUID/instruction/SDK audit identifies the cold callsite; endpoint behind kernel validation remains unknown.",
+  "structuralBenefit": "Narrow imports reduce 315 logical native body loads to 260; sharing 98 independent entry images as seven mappings reduces peak images by 91 at fixed import scope. All original reference acquisitions/closes remain.",
+  "attributionLimit": "Within-block contrasts reverse sign in some cells; host caches/queueing/scheduling are uncontrolled. Wrapper intervals include observer bookkeeping. No exact host-independent latency share or stable speedup is claimed.",
+  "coldDefinition": "Fresh process and GERBIL_PATH, separately linked selected-image paths/inodes; distinct content-UUID and unique-UUID families. Common installed runtime and host caches remain shared.",
+  "inputBoundary": "New isolation artifacts and inherited narrowed native profile are pre/post hashed; broad-only installed stdlib bodies are a declared trusted prerequisite outside that narrowed byte closure. Single trusted owner assumed.",
+  "formalBoundary": "17 fresh Lean modules, 11 new declarations, 14 official finite Quint controls; faithful receipts, real unchanged loader semantics, quiescence and source/binding preservation remain premises. No compiler/OS/kernel or quantitative latency proof.",
+  "recoveryLesson": "Premature partial-build consumption rejected before native execution. Completion commitment required; local serialization is not a distributed atomic publication proof.",
+  "retainedFailures": "All 18 matrix deadline failures, one supplementary launcher deadline failure, both perturbed diagnostic failures, incomplete preparation, formal/type/parser/render failures and original historical manifests.",
+  "nextBoundary": "Close the selected new-image first-use budget under a stated host/library-validation service budget; investigate host validation and notification endpoints without disabling security or weakening cleanup.",
+  "ordinaryLauncherControls": "Exact original script, unchanged installed outer launcher, no observer or appended code; 3 of 4 process gates pass, separate from the matrix.",
+  "gatewayImplementation": false
+}

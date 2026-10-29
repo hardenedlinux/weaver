@@ -1,0 +1,102 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":14,"sourceSha256":"963766e0e348627332dee0298ac3ca132303fd82dac7ab6baf5cd3cef5961bb6"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"14f8337f841f4077b460ac6c3d61e3081abdbfc708b4e81a7e34ffe062dd529e"}
+@@START {"label":"api-controls-0","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok sharedWorkloadCannotCreateEntitlementTest passed 1 test(s)
+    ok producerApprovalRequiredTest passed 1 test(s)
+    ok rootHasNoBeneficiaryAuthorityTest passed 1 test(s)
+
+  3 passing (396ms)
+@@DONE {"label":"api-controls-0","passed":["sharedWorkloadCannotCreateEntitlementTest","producerApprovalRequiredTest","rootHasNoBeneficiaryAuthorityTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok sharedIdentityCannotRegisterKeyTest passed 1 test(s)
+    ok forwardedBearerWithOwnKeyRejectedTest passed 1 test(s)
+    ok entitlementProofRequiredTest passed 1 test(s)
+
+  3 passing (891ms)
+@@DONE {"label":"api-controls-1","passed":["sharedIdentityCannotRegisterKeyTest","forwardedBearerWithOwnKeyRejectedTest","entitlementProofRequiredTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok beneficiaryPossessionRequiredTest passed 1 test(s)
+    ok substitutedSessionRejectedTest passed 1 test(s)
+    ok originalScopeCannotBeRewrittenTest passed 1 test(s)
+
+  3 passing (707ms)
+@@DONE {"label":"api-controls-2","passed":["beneficiaryPossessionRequiredTest","substitutedSessionRejectedTest","originalScopeCannotBeRewrittenTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok firstBindingDoesNotPublishTest passed 1 test(s)
+    ok lostBindingReplyRetainsFirstKeyTest passed 1 test(s)
+    ok authorizedSecondKeyCannotReplaceFirstTest passed 1 test(s)
+
+  3 passing (424ms)
+@@DONE {"label":"api-controls-3","passed":["firstBindingDoesNotPublishTest","lostBindingReplyRetainsFirstKeyTest","authorizedSecondKeyCannotReplaceFirstTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok oldWorkerCannotRecoverEnrollmentTest passed 1 test(s)
+    ok recoveryNeedsCurrentReadPolicyTest passed 1 test(s)
+    ok newRootInvalidatesPublicationReadTest passed 1 test(s)
+
+  3 passing (1254ms)
+@@DONE {"label":"api-controls-4","passed":["oldWorkerCannotRecoverEnrollmentTest","recoveryNeedsCurrentReadPolicyTest","newRootInvalidatesPublicationReadTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-5","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok currentPolicyRequiredAtPublicationTest passed 1 test(s)
+    ok changedPayloadCannotPublishTest passed 1 test(s)
+    ok lostPublicationReplyRetainsExactOutcomeTest passed 1 test(s)
+
+  3 passing (530ms)
+@@DONE {"label":"api-controls-5","passed":["currentPolicyRequiredAtPublicationTest","changedPayloadCannotPublishTest","lostPublicationReplyRetainsExactOutcomeTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-6","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok publicationCannotRepeatTest passed 1 test(s)
+    ok rootRevocationBlocksPublicationTest passed 1 test(s)
+    ok rootRevocationFencesPublishedConsumptionTest passed 1 test(s)
+
+  3 passing (521ms)
+@@DONE {"label":"api-controls-6","passed":["publicationCannotRepeatTest","rootRevocationBlocksPublicationTest","rootRevocationFencesPublishedConsumptionTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-7","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok actualActivationRetainsOriginalHoldTest passed 1 test(s)
+    ok lostRootReplyRetainsEnrollmentPrincipalTest passed 1 test(s)
+    ok rootCannotBeReplacedAfterRecoveryTest passed 1 test(s)
+
+  3 passing (1397ms)
+@@DONE {"label":"api-controls-7","passed":["actualActivationRetainsOriginalHoldTest","lostRootReplyRetainsEnrollmentPrincipalTest","rootCannotBeReplacedAfterRecoveryTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-8","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok signatureForAnotherBeneficiaryKeyRejectedTest passed 1 test(s)
+    ok sourceEpochChangeInvalidatesPublicationTest passed 1 test(s)
+    ok sharedIdentityRegistrationCounterexampleTest passed 1 test(s)
+
+  3 passing (327ms)
+@@DONE {"label":"api-controls-8","passed":["signatureForAnotherBeneficiaryKeyRejectedTest","sourceEpochChangeInvalidatesPublicationTest","sharedIdentityRegistrationCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-9","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok replacedKeyRegistrationCounterexampleTest passed 1 test(s)
+    ok missingOutcomeRegistrationCounterexampleTest passed 1 test(s)
+    ok splitPublicationRegistrationCounterexampleTest passed 1 test(s)
+
+  3 passing (1051ms)
+@@DONE {"label":"api-controls-9","passed":["replacedKeyRegistrationCounterexampleTest","missingOutcomeRegistrationCounterexampleTest","splitPublicationRegistrationCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-10","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok rollbackFirstBindingRegistrationCounterexampleTest passed 1 test(s)
+    ok unjoinedImageCannotConsumeTest passed 1 test(s)
+
+  2 passing (793ms)
+@@DONE {"label":"api-controls-10","passed":["rollbackFirstBindingRegistrationCounterexampleTest","unjoinedImageCannotConsumeTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

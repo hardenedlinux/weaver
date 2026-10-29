@@ -1,0 +1,1468 @@
+[
+  {
+    "path": "proofs/evidence/llm-canonical-registry/itf/aliasRebindRegistryCounterexampleTest-1.itf.json",
+    "states": 4,
+    "authority": {
+      "aliasVisible": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        }
+      ],
+      "aliases": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        },
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 99
+          }
+        }
+      ],
+      "calls": 0,
+      "everSpent": false,
+      "families": [
+        10,
+        99
+      ],
+      "fence": 0,
+      "historyDenied": false,
+      "hold": 6,
+      "online": true,
+      "pending": true,
+      "policyGeneration": 0,
+      "registered": true,
+      "registration": {
+        "budget": 5,
+        "claim": 11,
+        "history": 9,
+        "input": 30,
+        "origin": {
+          "issuer": 8,
+          "operation": 10,
+          "principal": 7,
+          "tenant": 3
+        },
+        "profile": 20,
+        "root": 10
+      },
+      "registrationCount": 1,
+      "registryVisible": true,
+      "resolutions": [],
+      "revision": 2,
+      "sourceFence": 0,
+      "sourceRevision": 0,
+      "spent": false,
+      "usage": -1,
+      "uses": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-canonical-registry/itf/claimResetRegistryCounterexampleTest-6.itf.json",
+    "states": 7,
+    "authority": {
+      "aliasVisible": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        },
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 41,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 2,
+            "request": 70,
+            "session": 50,
+            "task": 61,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        }
+      ],
+      "aliases": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        },
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 41,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 2,
+            "request": 70,
+            "session": 50,
+            "task": 61,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        }
+      ],
+      "calls": 1,
+      "everSpent": true,
+      "families": [
+        10
+      ],
+      "fence": 0,
+      "historyDenied": false,
+      "hold": 0,
+      "online": true,
+      "pending": true,
+      "policyGeneration": 0,
+      "registered": true,
+      "registration": {
+        "budget": 5,
+        "claim": 11,
+        "history": 9,
+        "input": 30,
+        "origin": {
+          "issuer": 8,
+          "operation": 10,
+          "principal": 7,
+          "tenant": 3
+        },
+        "profile": 20,
+        "root": 10
+      },
+      "registrationCount": 1,
+      "registryVisible": true,
+      "resolutions": [
+        {
+          "id": 0,
+          "image": {
+            "alias": {
+              "key": {
+                "incarnation": 0,
+                "issuer": 8,
+                "peer": 40,
+                "principal": 7,
+                "profile": 1,
+                "protocol": 1,
+                "request": 70,
+                "session": 50,
+                "task": 60,
+                "tenant": 3
+              },
+              "target": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "input": 30,
+                "origin": {
+                  "issuer": 8,
+                  "operation": 10,
+                  "principal": 7,
+                  "tenant": 3
+                },
+                "profile": 20,
+                "root": 10
+              }
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 2,
+            "sourceFence": 0,
+            "sourceRevision": 0
+          }
+        }
+      ],
+      "revision": 4,
+      "sourceFence": 0,
+      "sourceRevision": 1,
+      "spent": false,
+      "usage": -1,
+      "uses": [
+        {
+          "actual": {
+            "alias": {
+              "key": {
+                "incarnation": 0,
+                "issuer": 8,
+                "peer": 40,
+                "principal": 7,
+                "profile": 1,
+                "protocol": 1,
+                "request": 70,
+                "session": 50,
+                "task": 60,
+                "tenant": 3
+              },
+              "target": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "input": 30,
+                "origin": {
+                  "issuer": 8,
+                  "operation": 10,
+                  "principal": 7,
+                  "tenant": 3
+                },
+                "profile": 20,
+                "root": 10
+              }
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 2,
+            "sourceFence": 0,
+            "sourceRevision": 0
+          },
+          "resolution": {
+            "id": 0,
+            "image": {
+              "alias": {
+                "key": {
+                  "incarnation": 0,
+                  "issuer": 8,
+                  "peer": 40,
+                  "principal": 7,
+                  "profile": 1,
+                  "protocol": 1,
+                  "request": 70,
+                  "session": 50,
+                  "task": 60,
+                  "tenant": 3
+                },
+                "target": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "input": 30,
+                  "origin": {
+                    "issuer": 8,
+                    "operation": 10,
+                    "principal": 7,
+                    "tenant": 3
+                  },
+                  "profile": 20,
+                  "root": 10
+                }
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 2,
+              "sourceFence": 0,
+              "sourceRevision": 0
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-canonical-registry/itf/droppedPendingRegistryCounterexampleTest-7.itf.json",
+    "states": 7,
+    "authority": {
+      "aliasVisible": [],
+      "aliases": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        },
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 41,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 2,
+            "request": 70,
+            "session": 50,
+            "task": 61,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        }
+      ],
+      "calls": 0,
+      "everSpent": false,
+      "families": [
+        10
+      ],
+      "fence": 0,
+      "historyDenied": false,
+      "hold": 6,
+      "online": true,
+      "pending": false,
+      "policyGeneration": 0,
+      "registered": true,
+      "registration": {
+        "budget": 5,
+        "claim": 11,
+        "history": 9,
+        "input": 30,
+        "origin": {
+          "issuer": 8,
+          "operation": 10,
+          "principal": 7,
+          "tenant": 3
+        },
+        "profile": 20,
+        "root": 10
+      },
+      "registrationCount": 1,
+      "registryVisible": true,
+      "resolutions": [],
+      "revision": 3,
+      "sourceFence": 0,
+      "sourceRevision": 0,
+      "spent": false,
+      "usage": -1,
+      "uses": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-canonical-registry/itf/lostRegistrationRegistryCounterexampleTest-0.itf.json",
+    "states": 4,
+    "authority": {
+      "aliasVisible": [],
+      "aliases": [],
+      "calls": 0,
+      "everSpent": false,
+      "families": [
+        10,
+        99
+      ],
+      "fence": 0,
+      "historyDenied": false,
+      "hold": 6,
+      "online": true,
+      "pending": true,
+      "policyGeneration": 0,
+      "registered": true,
+      "registration": {
+        "budget": 5,
+        "claim": 11,
+        "history": 9,
+        "input": 30,
+        "origin": {
+          "issuer": 8,
+          "operation": 10,
+          "principal": 7,
+          "tenant": 3
+        },
+        "profile": 20,
+        "root": 99
+      },
+      "registrationCount": 2,
+      "registryVisible": false,
+      "resolutions": [],
+      "revision": 1,
+      "sourceFence": 0,
+      "sourceRevision": 0,
+      "spent": false,
+      "usage": -1,
+      "uses": []
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-canonical-registry/itf/newTaskFamilyRegistryCounterexampleTest-2.itf.json",
+    "states": 6,
+    "authority": {
+      "aliasVisible": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        }
+      ],
+      "aliases": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        },
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 41,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 2,
+            "request": 70,
+            "session": 50,
+            "task": 61,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 61
+          }
+        }
+      ],
+      "calls": 1,
+      "everSpent": true,
+      "families": [
+        10,
+        61
+      ],
+      "fence": 0,
+      "historyDenied": false,
+      "hold": 6,
+      "online": true,
+      "pending": true,
+      "policyGeneration": 0,
+      "registered": true,
+      "registration": {
+        "budget": 5,
+        "claim": 11,
+        "history": 9,
+        "input": 30,
+        "origin": {
+          "issuer": 8,
+          "operation": 10,
+          "principal": 7,
+          "tenant": 3
+        },
+        "profile": 20,
+        "root": 10
+      },
+      "registrationCount": 1,
+      "registryVisible": true,
+      "resolutions": [
+        {
+          "id": 0,
+          "image": {
+            "alias": {
+              "key": {
+                "incarnation": 0,
+                "issuer": 8,
+                "peer": 40,
+                "principal": 7,
+                "profile": 1,
+                "protocol": 1,
+                "request": 70,
+                "session": 50,
+                "task": 60,
+                "tenant": 3
+              },
+              "target": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "input": 30,
+                "origin": {
+                  "issuer": 8,
+                  "operation": 10,
+                  "principal": 7,
+                  "tenant": 3
+                },
+                "profile": 20,
+                "root": 10
+              }
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 2,
+            "sourceFence": 0,
+            "sourceRevision": 0
+          }
+        }
+      ],
+      "revision": 3,
+      "sourceFence": 0,
+      "sourceRevision": 1,
+      "spent": true,
+      "usage": -1,
+      "uses": [
+        {
+          "actual": {
+            "alias": {
+              "key": {
+                "incarnation": 0,
+                "issuer": 8,
+                "peer": 40,
+                "principal": 7,
+                "profile": 1,
+                "protocol": 1,
+                "request": 70,
+                "session": 50,
+                "task": 60,
+                "tenant": 3
+              },
+              "target": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "input": 30,
+                "origin": {
+                  "issuer": 8,
+                  "operation": 10,
+                  "principal": 7,
+                  "tenant": 3
+                },
+                "profile": 20,
+                "root": 10
+              }
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 2,
+            "sourceFence": 0,
+            "sourceRevision": 0
+          },
+          "resolution": {
+            "id": 0,
+            "image": {
+              "alias": {
+                "key": {
+                  "incarnation": 0,
+                  "issuer": 8,
+                  "peer": 40,
+                  "principal": 7,
+                  "profile": 1,
+                  "protocol": 1,
+                  "request": 70,
+                  "session": 50,
+                  "task": 60,
+                  "tenant": 3
+                },
+                "target": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "input": 30,
+                  "origin": {
+                    "issuer": 8,
+                    "operation": 10,
+                    "principal": 7,
+                    "tenant": 3
+                  },
+                  "profile": 20,
+                  "root": 10
+                }
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 2,
+              "sourceFence": 0,
+              "sourceRevision": 0
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-canonical-registry/itf/oldOwnerRegistryCounterexampleTest-4.itf.json",
+    "states": 9,
+    "authority": {
+      "aliasVisible": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        }
+      ],
+      "aliases": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        }
+      ],
+      "calls": 0,
+      "everSpent": false,
+      "families": [
+        10
+      ],
+      "fence": 1,
+      "historyDenied": false,
+      "hold": 6,
+      "online": true,
+      "pending": true,
+      "policyGeneration": 0,
+      "registered": true,
+      "registration": {
+        "budget": 5,
+        "claim": 11,
+        "history": 9,
+        "input": 30,
+        "origin": {
+          "issuer": 8,
+          "operation": 10,
+          "principal": 7,
+          "tenant": 3
+        },
+        "profile": 20,
+        "root": 10
+      },
+      "registrationCount": 1,
+      "registryVisible": true,
+      "resolutions": [
+        {
+          "id": 0,
+          "image": {
+            "alias": {
+              "key": {
+                "incarnation": 0,
+                "issuer": 8,
+                "peer": 40,
+                "principal": 7,
+                "profile": 1,
+                "protocol": 1,
+                "request": 70,
+                "session": 50,
+                "task": 60,
+                "tenant": 3
+              },
+              "target": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "input": 30,
+                "origin": {
+                  "issuer": 8,
+                  "operation": 10,
+                  "principal": 7,
+                  "tenant": 3
+                },
+                "profile": 20,
+                "root": 10
+              }
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 2,
+            "sourceFence": 0,
+            "sourceRevision": 0
+          }
+        }
+      ],
+      "revision": 3,
+      "sourceFence": 0,
+      "sourceRevision": 0,
+      "spent": false,
+      "usage": -1,
+      "uses": [
+        {
+          "actual": {
+            "alias": {
+              "key": {
+                "incarnation": 0,
+                "issuer": 8,
+                "peer": 40,
+                "principal": 7,
+                "profile": 1,
+                "protocol": 1,
+                "request": 70,
+                "session": 50,
+                "task": 60,
+                "tenant": 3
+              },
+              "target": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "input": 30,
+                "origin": {
+                  "issuer": 8,
+                  "operation": 10,
+                  "principal": 7,
+                  "tenant": 3
+                },
+                "profile": 20,
+                "root": 10
+              }
+            },
+            "fence": 1,
+            "policyGeneration": 0,
+            "revision": 3,
+            "sourceFence": 0,
+            "sourceRevision": 0
+          },
+          "resolution": {
+            "id": 0,
+            "image": {
+              "alias": {
+                "key": {
+                  "incarnation": 0,
+                  "issuer": 8,
+                  "peer": 40,
+                  "principal": 7,
+                  "profile": 1,
+                  "protocol": 1,
+                  "request": 70,
+                  "session": 50,
+                  "task": 60,
+                  "tenant": 3
+                },
+                "target": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "input": 30,
+                  "origin": {
+                    "issuer": 8,
+                    "operation": 10,
+                    "principal": 7,
+                    "tenant": 3
+                  },
+                  "profile": 20,
+                  "root": 10
+                }
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 2,
+              "sourceFence": 0,
+              "sourceRevision": 0
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-canonical-registry/itf/snapshotRollbackRegistryCounterexampleTest-3.itf.json",
+    "states": 7,
+    "authority": {
+      "aliasVisible": [],
+      "aliases": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        }
+      ],
+      "calls": 0,
+      "everSpent": true,
+      "families": [
+        10
+      ],
+      "fence": 0,
+      "historyDenied": false,
+      "hold": 0,
+      "online": true,
+      "pending": true,
+      "policyGeneration": 0,
+      "registered": true,
+      "registration": {
+        "budget": 5,
+        "claim": 11,
+        "history": 9,
+        "input": 30,
+        "origin": {
+          "issuer": 8,
+          "operation": 10,
+          "principal": 7,
+          "tenant": 3
+        },
+        "profile": 20,
+        "root": 10
+      },
+      "registrationCount": 1,
+      "registryVisible": false,
+      "resolutions": [
+        {
+          "id": 0,
+          "image": {
+            "alias": {
+              "key": {
+                "incarnation": 0,
+                "issuer": 8,
+                "peer": 40,
+                "principal": 7,
+                "profile": 1,
+                "protocol": 1,
+                "request": 70,
+                "session": 50,
+                "task": 60,
+                "tenant": 3
+              },
+              "target": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "input": 30,
+                "origin": {
+                  "issuer": 8,
+                  "operation": 10,
+                  "principal": 7,
+                  "tenant": 3
+                },
+                "profile": 20,
+                "root": 10
+              }
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 2,
+            "sourceFence": 0,
+            "sourceRevision": 0
+          }
+        }
+      ],
+      "revision": 3,
+      "sourceFence": 0,
+      "sourceRevision": 0,
+      "spent": false,
+      "usage": -1,
+      "uses": [
+        {
+          "actual": {
+            "alias": {
+              "key": {
+                "incarnation": 0,
+                "issuer": 8,
+                "peer": 40,
+                "principal": 7,
+                "profile": 1,
+                "protocol": 1,
+                "request": 70,
+                "session": 50,
+                "task": 60,
+                "tenant": 3
+              },
+              "target": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "input": 30,
+                "origin": {
+                  "issuer": 8,
+                  "operation": 10,
+                  "principal": 7,
+                  "tenant": 3
+                },
+                "profile": 20,
+                "root": 10
+              }
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 2,
+            "sourceFence": 0,
+            "sourceRevision": 0
+          },
+          "resolution": {
+            "id": 0,
+            "image": {
+              "alias": {
+                "key": {
+                  "incarnation": 0,
+                  "issuer": 8,
+                  "peer": 40,
+                  "principal": 7,
+                  "profile": 1,
+                  "protocol": 1,
+                  "request": 70,
+                  "session": 50,
+                  "task": 60,
+                  "tenant": 3
+                },
+                "target": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "input": 30,
+                  "origin": {
+                    "issuer": 8,
+                    "operation": 10,
+                    "principal": 7,
+                    "tenant": 3
+                  },
+                  "profile": 20,
+                  "root": 10
+                }
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 2,
+              "sourceFence": 0,
+              "sourceRevision": 0
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-canonical-registry/itf/staleResolutionRegistryCounterexampleTest-5.itf.json",
+    "states": 6,
+    "authority": {
+      "aliasVisible": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        },
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 41,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 2,
+            "request": 70,
+            "session": 50,
+            "task": 61,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        }
+      ],
+      "aliases": [
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 40,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 1,
+            "request": 70,
+            "session": 50,
+            "task": 60,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        },
+        {
+          "key": {
+            "incarnation": 0,
+            "issuer": 8,
+            "peer": 41,
+            "principal": 7,
+            "profile": 1,
+            "protocol": 2,
+            "request": 70,
+            "session": 50,
+            "task": 61,
+            "tenant": 3
+          },
+          "target": {
+            "budget": 5,
+            "claim": 11,
+            "history": 9,
+            "input": 30,
+            "origin": {
+              "issuer": 8,
+              "operation": 10,
+              "principal": 7,
+              "tenant": 3
+            },
+            "profile": 20,
+            "root": 10
+          }
+        }
+      ],
+      "calls": 0,
+      "everSpent": false,
+      "families": [
+        10
+      ],
+      "fence": 0,
+      "historyDenied": false,
+      "hold": 6,
+      "online": true,
+      "pending": true,
+      "policyGeneration": 0,
+      "registered": true,
+      "registration": {
+        "budget": 5,
+        "claim": 11,
+        "history": 9,
+        "input": 30,
+        "origin": {
+          "issuer": 8,
+          "operation": 10,
+          "principal": 7,
+          "tenant": 3
+        },
+        "profile": 20,
+        "root": 10
+      },
+      "registrationCount": 1,
+      "registryVisible": true,
+      "resolutions": [
+        {
+          "id": 0,
+          "image": {
+            "alias": {
+              "key": {
+                "incarnation": 0,
+                "issuer": 8,
+                "peer": 40,
+                "principal": 7,
+                "profile": 1,
+                "protocol": 1,
+                "request": 70,
+                "session": 50,
+                "task": 60,
+                "tenant": 3
+              },
+              "target": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "input": 30,
+                "origin": {
+                  "issuer": 8,
+                  "operation": 10,
+                  "principal": 7,
+                  "tenant": 3
+                },
+                "profile": 20,
+                "root": 10
+              }
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 2,
+            "sourceFence": 0,
+            "sourceRevision": 0
+          }
+        }
+      ],
+      "revision": 3,
+      "sourceFence": 0,
+      "sourceRevision": 0,
+      "spent": false,
+      "usage": -1,
+      "uses": [
+        {
+          "actual": {
+            "alias": {
+              "key": {
+                "incarnation": 0,
+                "issuer": 8,
+                "peer": 40,
+                "principal": 7,
+                "profile": 1,
+                "protocol": 1,
+                "request": 70,
+                "session": 50,
+                "task": 60,
+                "tenant": 3
+              },
+              "target": {
+                "budget": 5,
+                "claim": 11,
+                "history": 9,
+                "input": 30,
+                "origin": {
+                  "issuer": 8,
+                  "operation": 10,
+                  "principal": 7,
+                  "tenant": 3
+                },
+                "profile": 20,
+                "root": 10
+              }
+            },
+            "fence": 0,
+            "policyGeneration": 0,
+            "revision": 3,
+            "sourceFence": 0,
+            "sourceRevision": 0
+          },
+          "resolution": {
+            "id": 0,
+            "image": {
+              "alias": {
+                "key": {
+                  "incarnation": 0,
+                  "issuer": 8,
+                  "peer": 40,
+                  "principal": 7,
+                  "profile": 1,
+                  "protocol": 1,
+                  "request": 70,
+                  "session": 50,
+                  "task": 60,
+                  "tenant": 3
+                },
+                "target": {
+                  "budget": 5,
+                  "claim": 11,
+                  "history": 9,
+                  "input": 30,
+                  "origin": {
+                    "issuer": 8,
+                    "operation": 10,
+                    "principal": 7,
+                    "tenant": 3
+                  },
+                  "profile": 20,
+                  "root": 10
+                }
+              },
+              "fence": 0,
+              "policyGeneration": 0,
+              "revision": 2,
+              "sourceFence": 0,
+              "sourceRevision": 0
+            }
+          }
+        }
+      ]
+    }
+  }
+]

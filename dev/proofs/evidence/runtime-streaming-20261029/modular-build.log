@@ -1,0 +1,21 @@
+    Checking weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+error[E0425]: cannot find value `permit` in this scope
+   --> crates/weaver-ledger/src/stream_ranges.rs:175:152
+    |
+175 | ...ND message=?3 AND sequence=?4",rusqlite::params![permit.family,permit.node,permit.message,p.sequence as i64],|r|r.get(0)).map_er...
+    |                                                     ^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `permit` in this scope
+   --> crates/weaver-ledger/src/stream_ranges.rs:175:166
+    |
+175 | ...AND sequence=?4",rusqlite::params![permit.family,permit.node,permit.message,p.sequence as i64],|r|r.get(0)).map_err(db)?;
+    |                                                     ^^^^^^ not found in this scope
+
+error[E0425]: cannot find value `permit` in this scope
+   --> crates/weaver-ledger/src/stream_ranges.rs:175:178
+    |
+175 | ...=?4",rusqlite::params![permit.family,permit.node,permit.message,p.sequence as i64],|r|r.get(0)).map_err(db)?;
+    |                                                     ^^^^^^ not found in this scope
+
+For more information about this error, try `rustc --explain E0425`.
+error: could not compile `weaver-ledger` (lib) due to 3 previous errors

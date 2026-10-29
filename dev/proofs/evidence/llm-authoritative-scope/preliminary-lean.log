@@ -1,0 +1,329 @@
+proofs/lean/LlmAuthoritativeScope.lean:3:12: error: unexpected token ':='; expected command
+proofs/lean/LlmAuthoritativeScope.lean:4:12: error: unexpected token ':='; expected command
+proofs/lean/LlmAuthoritativeScope.lean:5:12: error: unexpected token ':='; expected command
+proofs/lean/LlmAuthoritativeScope.lean:6:12: error: unexpected token ':='; expected command
+proofs/lean/LlmAuthoritativeScope.lean:10:18: error(lean.unknownIdentifier): Unknown identifier `S.Payload`
+proofs/lean/LlmAuthoritativeScope.lean:16:24: error(lean.unknownIdentifier): Unknown identifier `H.Config`
+proofs/lean/LlmAuthoritativeScope.lean:16:70: error(lean.unknownIdentifier): Unknown identifier `S.Semantics`
+proofs/lean/LlmAuthoritativeScope.lean:20:23: error(lean.unknownIdentifier): Unknown identifier `H.Config`
+proofs/lean/LlmAuthoritativeScope.lean:20:72: error(lean.unknownIdentifier): Unknown identifier `A.Attempt`
+proofs/lean/LlmAuthoritativeScope.lean:20:85: error(lean.unknownIdentifier): Unknown identifier `S.Scope`
+proofs/lean/LlmAuthoritativeScope.lean:28:14: error(lean.unknownIdentifier): Unknown identifier `S.Semantics`
+proofs/lean/LlmAuthoritativeScope.lean:32:11: warning: declaration uses `sorry`
+proofs/lean/LlmAuthoritativeScope.lean:32:11: warning: declaration uses `sorry`
+proofs/lean/LlmAuthoritativeScope.lean:34:24: error(lean.unknownIdentifier): Unknown identifier `H.Config`
+proofs/lean/LlmAuthoritativeScope.lean:34:73: error(lean.unknownIdentifier): Unknown identifier `H.Head`
+proofs/lean/LlmAuthoritativeScope.lean:39:9: error(lean.unknownIdentifier): Unknown identifier `H.View`
+proofs/lean/LlmAuthoritativeScope.lean:41:10: error(lean.unknownIdentifier): Unknown identifier `R.View`
+proofs/lean/LlmAuthoritativeScope.lean:44:10: error(lean.unknownIdentifier): Unknown identifier `A.Attempt`
+proofs/lean/LlmAuthoritativeScope.lean:45:10: error(lean.unknownIdentifier): Unknown identifier `S.Scope`
+proofs/lean/LlmAuthoritativeScope.lean:52:10: error(lean.unknownIdentifier): Unknown identifier `H.State`
+proofs/lean/LlmAuthoritativeScope.lean:53:13: error(lean.unknownIdentifier): Unknown identifier `A.State`
+proofs/lean/LlmAuthoritativeScope.lean:58:19: error(lean.unknownIdentifier): Unknown identifier `S.State`
+proofs/lean/LlmAuthoritativeScope.lean:52:21: error(lean.unknownIdentifier): Unknown identifier `H.initial`
+proofs/lean/LlmAuthoritativeScope.lean:53:24: error(lean.unknownIdentifier): Unknown identifier `A.initial`
+proofs/lean/LlmAuthoritativeScope.lean:58:39: error(lean.unknownIdentifier): Unknown identifier `S.initial`
+proofs/lean/LlmAuthoritativeScope.lean:61:23: error: overloaded, errors 
+  failed to synthesize instance of type class
+    EmptyCollection State
+  
+  Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+  
+  Fields missing: `roots`, `children`, `semantic`
+  
+  Hint: Add missing fields:
+     ̲r̲o̲o̲t̲s̲ ̲:̲=̲ ̲_̲
+    ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲c̲h̲i̲l̲d̲r̲e̲n̲ ̲:̲=̲ ̲_̲
+    ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲s̲e̲m̲a̲n̲t̲i̲c̲ ̲:̲=̲ ̲_̲ ̲
+proofs/lean/LlmAuthoritativeScope.lean:62:27: error(lean.unknownIdentifier): Unknown identifier `H.Head`
+proofs/lean/LlmAuthoritativeScope.lean:62:47: error(lean.unknownIdentifier): Unknown identifier `H.view`
+proofs/lean/LlmAuthoritativeScope.lean:62:71: error(lean.unknownIdentifier): Unknown identifier `R.view`
+proofs/lean/LlmAuthoritativeScope.lean:64:21: error(lean.unknownIdentifier): Unknown identifier `H.Config`
+proofs/lean/LlmAuthoritativeScope.lean:64:100: error(lean.unknownIdentifier): Unknown identifier `H.Head`
+proofs/lean/LlmAuthoritativeScope.lean:65:65: error(lean.unknownIdentifier): Unknown identifier `H.Canonical`
+proofs/lean/LlmAuthoritativeScope.lean:68:22: error(lean.unknownIdentifier): Unknown identifier `H.Config`
+proofs/lean/LlmAuthoritativeScope.lean:68:65: error(lean.unknownIdentifier): Unknown identifier `R.Config`
+proofs/lean/LlmAuthoritativeScope.lean:68:88: error(lean.unknownIdentifier): Unknown identifier `H.Owner`
+proofs/lean/LlmAuthoritativeScope.lean:69:52: error(lean.unknownIdentifier): Unknown identifier `H.Head`
+proofs/lean/LlmAuthoritativeScope.lean:79:23: error(lean.unknownIdentifier): Unknown identifier `H.Config`
+proofs/lean/LlmAuthoritativeScope.lean:83:20: error(lean.unknownIdentifier): Unknown identifier `H.Config`
+proofs/lean/LlmAuthoritativeScope.lean:86:4: warning: declaration uses `sorry`
+proofs/lean/LlmAuthoritativeScope.lean:86:14: warning: Variable name `current` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _current
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+proofs/lean/LlmAuthoritativeScope.lean:86:0: warning: Definition `useBound` is a proposition; use `theorem` instead of `def`
+
+Note: This linter can be disabled with `set_option linter.defProp false`
+proofs/lean/LlmAuthoritativeScope.lean:94:25: error(lean.unknownIdentifier): Unknown identifier `H.Config`
+proofs/lean/LlmAuthoritativeScope.lean:94:68: error(lean.unknownIdentifier): Unknown identifier `R.Config`
+proofs/lean/LlmAuthoritativeScope.lean:94:89: error(lean.unknownIdentifier): Unknown identifier `A.Profile`
+proofs/lean/LlmAuthoritativeScope.lean:95:17: error(lean.unknownIdentifier): Unknown identifier `H.Owner`
+proofs/lean/LlmAuthoritativeScope.lean:95:40: error(lean.unknownIdentifier): Unknown identifier `A.Owner`
+proofs/lean/LlmAuthoritativeScope.lean:95:58: error(lean.unknownIdentifier): Unknown identifier `S.Owner`
+proofs/lean/LlmAuthoritativeScope.lean:96:34: error(lean.unknownIdentifier): Unknown identifier `H.Step`
+proofs/lean/LlmAuthoritativeScope.lean:99:35: error(lean.unknownIdentifier): Unknown identifier `A.Step`
+proofs/lean/LlmAuthoritativeScope.lean:103:19: error(lean.unknownIdentifier): Unknown identifier `H.Canonical`
+proofs/lean/LlmAuthoritativeScope.lean:110:15: error(lean.unknownIdentifier): Unknown identifier `S.Step`
+proofs/lean/LlmAuthoritativeScope.lean:114:44: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `id`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `id`
+  • `Function.LeftInverse.id`
+  • `Function.RightInverse.id`
+  • `Std.CancellationContext.id`
+  • `Std.CancellationContext.State.id`
+  • `Std.Internal.LawfulMonadLiftBindFunction.id`
+  • `GatewayHeadCAS.Head.id`
+  • `GatewayHeadCAS.Job.id`
+  • `LlmAttemptLedger.Attempt.id`
+  • `Ticket.id`
+proofs/lean/LlmAuthoritativeScope.lean:111:47: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `id`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `id`
+  • `Function.LeftInverse.id`
+  • `Function.RightInverse.id`
+  • `Std.CancellationContext.id`
+  • `Std.CancellationContext.State.id`
+  • `Std.Internal.LawfulMonadLiftBindFunction.id`
+  • `GatewayHeadCAS.Head.id`
+  • `GatewayHeadCAS.Job.id`
+  • `LlmAttemptLedger.Attempt.id`
+  • `Ticket.id`
+proofs/lean/LlmAuthoritativeScope.lean:112:45: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `id`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `id`
+  • `Function.LeftInverse.id`
+  • `Function.RightInverse.id`
+  • `Std.CancellationContext.id`
+  • `Std.CancellationContext.State.id`
+  • `Std.Internal.LawfulMonadLiftBindFunction.id`
+  • `GatewayHeadCAS.Head.id`
+  • `GatewayHeadCAS.Job.id`
+  • `LlmAttemptLedger.Attempt.id`
+  • `Ticket.id`
+proofs/lean/LlmAuthoritativeScope.lean:112:103: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `id`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `id`
+  • `Function.LeftInverse.id`
+  • `Function.RightInverse.id`
+  • `Std.CancellationContext.id`
+  • `Std.CancellationContext.State.id`
+  • `Std.Internal.LawfulMonadLiftBindFunction.id`
+  • `GatewayHeadCAS.Head.id`
+  • `GatewayHeadCAS.Job.id`
+  • `LlmAttemptLedger.Attempt.id`
+  • `Ticket.id`
+proofs/lean/LlmAuthoritativeScope.lean:118:16: error(lean.unknownIdentifier): Unknown identifier `S.EncodingBridge`
+proofs/lean/LlmAuthoritativeScope.lean:119:15: error(lean.unknownIdentifier): Unknown identifier `S.Run`
+proofs/lean/LlmAuthoritativeScope.lean:120:23: error(lean.unknownIdentifier): Unknown identifier `S.Step`
+proofs/lean/LlmAuthoritativeScope.lean:117:20: error(lean.invalidField): Invalid field notation: Type of
+  call
+is not known; cannot resolve field `before`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `BrokerConsumptionQueue.Admission.before`
+  • `LlmRouting.AdmissionBridge.before`
+  • `LlmSemanticContract.ChildCall.before`
+proofs/lean/LlmAuthoritativeScope.lean:117:59: error(lean.invalidField): Invalid field notation: Type of
+  call
+is not known; cannot resolve field `record`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `LlmSemanticContract.ChildCall.record`
+  • `State.record`
+  • `Use.record`
+proofs/lean/LlmAuthoritativeScope.lean:117:92: error(lean.invalidField): Invalid field notation: Type of
+  call
+is not known; cannot resolve field `worker`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `FiniteDomainMigration.Ticket.worker`
+  • `GatewayHeadCAS.State.worker`
+  • `GatewayHeadCAS.View.worker`
+  • `LlmSemanticContract.ChildCall.worker`
+proofs/lean/LlmAuthoritativeScope.lean:123:20: error(lean.invalidField): Invalid field notation: Type of
+  call
+is not known; cannot resolve field `after`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `BrokerConsumptionQueue.Admission.after`
+  • `LlmRouting.AdmissionBridge.after`
+  • `LlmSemanticContract.ChildCall.after`
+proofs/lean/LlmAuthoritativeScope.lean:129:15: error(lean.unknownIdentifier): Unknown identifier `S.Run`
+proofs/lean/LlmAuthoritativeScope.lean:130:15: error(lean.unknownIdentifier): Unknown identifier `S.Step`
+proofs/lean/LlmAuthoritativeScope.lean:137:18: error: `sorryAx` is not a structure
+proofs/lean/LlmAuthoritativeScope.lean:138:27: error: `sorryAx` is not a structure
+proofs/lean/LlmAuthoritativeScope.lean:143:24: error(lean.unknownIdentifier): Unknown identifier `H.Config`
+proofs/lean/LlmAuthoritativeScope.lean:143:67: error(lean.unknownIdentifier): Unknown identifier `R.Config`
+proofs/lean/LlmAuthoritativeScope.lean:143:88: error(lean.unknownIdentifier): Unknown identifier `A.Profile`
+proofs/lean/LlmAuthoritativeScope.lean:144:17: error(lean.unknownIdentifier): Unknown identifier `H.Owner`
+proofs/lean/LlmAuthoritativeScope.lean:144:40: error(lean.unknownIdentifier): Unknown identifier `A.Owner`
+proofs/lean/LlmAuthoritativeScope.lean:144:58: error(lean.unknownIdentifier): Unknown identifier `S.Owner`
+proofs/lean/LlmAuthoritativeScope.lean:147:6: error: Function expected at
+  Step
+but this term has type
+  ?m.4
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAuthoritativeScope.lean:151:4: error(lean.unknownIdentifier): Unknown identifier `H.Run`
+proofs/lean/LlmAuthoritativeScope.lean:150:31: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAuthoritativeScope.lean:160:4: error(lean.unknownIdentifier): Unknown identifier `A.Run`
+proofs/lean/LlmAuthoritativeScope.lean:159:32: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAuthoritativeScope.lean:173:49: error(lean.unknownIdentifier): Unknown identifier `routing.root`
+proofs/lean/LlmAuthoritativeScope.lean:174:112: error(lean.unknownIdentifier): Unknown identifier `routing.root`
+proofs/lean/LlmAuthoritativeScope.lean:174:13: error: Function expected at
+  Step
+but this term has type
+  ?m.4
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAuthoritativeScope.lean:189:26: error(lean.unknownIdentifier): Unknown identifier `routing.root`
+proofs/lean/LlmAuthoritativeScope.lean:188:33: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAuthoritativeScope.lean:195:18: error(lean.unknownIdentifier): Unknown identifier `s.uses`
+proofs/lean/LlmAuthoritativeScope.lean:195:70: error(lean.unknownIdentifier): Unknown identifier `routing.root`
+proofs/lean/LlmAuthoritativeScope.lean:194:49: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAuthoritativeScope.lean:195:28: error(lean.invalidField): Invalid field notation: Type of
+  u
+is not known; cannot resolve field `ticket`
+
+Hint: Consider replacing the field projection `.ticket` with a call to the function `Use.ticket`.
+proofs/lean/LlmAuthoritativeScope.lean:195:83: error(lean.invalidField): Invalid field notation: Type of
+  u
+is not known; cannot resolve field `ticket`
+
+Hint: Consider replacing the field projection `.ticket` with a call to the function `Use.ticket`.
+proofs/lean/LlmAuthoritativeScope.lean:196:25: error: Application type mismatch: The argument
+  u
+has type
+  α✝
+of sort `Type u_2` but is expected to have type
+  Use
+of sort `Type` in the application
+  initialized_audit run u
+proofs/lean/LlmAuthoritativeScope.lean:199:18: error(lean.unknownIdentifier): Unknown identifier `s.uses`
+proofs/lean/LlmAuthoritativeScope.lean:200:44: error(lean.unknownIdentifier): Unknown identifier `source.budget`
+proofs/lean/LlmAuthoritativeScope.lean:201:45: error(lean.unknownIdentifier): Unknown identifier `source.history`
+proofs/lean/LlmAuthoritativeScope.lean:198:46: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAuthoritativeScope.lean:200:4: error(lean.invalidField): Invalid field notation: Type of
+  u
+is not known; cannot resolve field `ticket`
+
+Hint: Consider replacing the field projection `.ticket` with a call to the function `Use.ticket`.
+proofs/lean/LlmAuthoritativeScope.lean:201:4: error(lean.invalidField): Invalid field notation: Type of
+  u
+is not known; cannot resolve field `ticket`
+
+Hint: Consider replacing the field projection `.ticket` with a call to the function `Use.ticket`.
+proofs/lean/LlmAuthoritativeScope.lean:202:6: error(lean.unknownIdentifier): Unknown identifier `all_uses_have_authoritative_scope`
+proofs/lean/LlmAuthoritativeScope.lean:201:90: error: unsolved goals
+x✝ : Sort u_1
+Run : x✝
+α✝ : Type u_2
+u : α✝
+run : sorry
+member : u ∈ sorry
+⊢ sorry = sorry ∧ sorry = sorry
+proofs/lean/LlmAuthoritativeScope.lean:205:18: error(lean.unknownIdentifier): Unknown identifier `s.uses`
+proofs/lean/LlmAuthoritativeScope.lean:205:73: error(lean.unknownIdentifier): Unknown identifier `registry.document`
+proofs/lean/LlmAuthoritativeScope.lean:204:43: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAuthoritativeScope.lean:205:28: error(lean.invalidField): Invalid field notation: Type of
+  u
+is not known; cannot resolve field `ticket`
+
+Hint: Consider replacing the field projection `.ticket` with a call to the function `Use.ticket`.
+proofs/lean/LlmAuthoritativeScope.lean:206:6: error(lean.unknownIdentifier): Unknown identifier `all_uses_have_authoritative_scope`
+proofs/lean/LlmAuthoritativeScope.lean:205:107: error: unsolved goals
+x✝ : Sort u_1
+Run : x✝
+α✝ : Type u_2
+u : α✝
+run : sorry
+member : u ∈ sorry
+⊢ sorry = sorry
+proofs/lean/LlmAuthoritativeScope.lean:209:18: error(lean.unknownIdentifier): Unknown identifier `s.uses`
+proofs/lean/LlmAuthoritativeScope.lean:208:44: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  source
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/LlmAuthoritativeScope.lean:210:4: error(lean.invalidField): Invalid field notation: Type of
+  u
+is not known; cannot resolve field `record`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `LlmSemanticContract.ChildCall.record`
+  • `State.record`
+  • `Use.record`
+proofs/lean/LlmAuthoritativeScope.lean:210:26: error: maximum number of errors (100; from option `maxErrors`) reached, exiting

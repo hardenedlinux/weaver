@@ -1,0 +1,106 @@
+P12 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/authorized-effect-token.ss ef9abd5335f478d15b5b5a782be5ece07380995b009f504c3d5ae41a618281fb
+P13 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/strict-mediation.ss fbb3bfbb16964b382352d1f3afe6aa319caea25adfc92d06c094942b26864916
+P15 cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc modules/assurance/effect-host.ss 0972fd28c7e66c0c4173f8b4116cec29e6c6608a348e7b694ed8f7ead9162de1
+P17 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store-backend.ss 6d15089fbe7e6101b478869db230fdec3282a60d781c551483849ec29a15ed8b
+P18 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean 3b6df2df1bdafe0f90445f46a99a94aed4ef9d79552b5435b257f83880529822
+P19 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean 0c28396b16e390a97a1a8491fb29f7d88e4a84b49e11a740a2610ec04bfb459e
+P20 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean 3b1b645f0f9cbdd4b698d19a6a9852c251b60ee1c5194d10af276f8a8a02d629
+P22 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store.ss ce4fb7cc049d3a5f6395deec31db3130cd87796241506d252a07bcfc73391f1f
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean-poo/SessionAttempt.lean af885ce7b6f3a91f8ab4079a56a7ba439b16a1fc853c3432adfd1b2391b12543
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/quint/SessionAttempt.qnt 2857ad1bc556179f034255a93537a136f08dcc21cd46458a6af18fef206f58b4
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean 560be0ea351e03ab3907f62248c37f9957a02e150ee6ebb32856440a9f2b8a46
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean 4e311cd509f144e842e4bd20293c91da2b4d70534592e9e1b986290692cb9810
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean 47aea64e5a90812311f08aab30ebdbd36b9165a97837ffde373796d5adfb73a0
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean 11178fd01214c99ec7f9863169dc264cc68241a70398645fe026cba28b3e299c
+P43 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/session/funs-attempt.ss 2e7f2282ae2bb987a7122eb466b70fbf11c9fbfb5aa0bc52c0d42a01dac9de95
+C8 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Admission/BoundOperation.lean 6105f4f0651886ee413f5edcea44df32323543de8825ca8f0e9f098205cf2afa
+5: model. The projection is fixed when the operation is constructed; a later Host
+6: must still authenticate the actual effect and state before execution.
+7: -/
+8: 
+22: 
+23: /-- Check a concrete operation against the actual effect and state supplied
+24:     by the caller. This equality check does not authenticate either input. -/
+25: def BoundOperation.matches {Effect State : Type}
+C10 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/CompoundAuthorization.lean bd9c938f6986d6f01051d4fda067ffe1d7d106e5deae6956e88e5e9aa4ec3708
+26:     receipt.responses.all (fun response =>
+27:       response.decision == .allow && response.erroringPolicies.isEmpty)
+28: 
+29: /-- Compile once, then evaluate all requests against the same policy set. -/
+46: /-- All required layers must allow without policy evaluation errors. -/
+47: def layersAllowed {model : Model} {entities : Entities}
+48:     (receipts : List (LayerReceipt model entities)) : Bool :=
+49:   !receipts.isEmpty && receipts.all fun layer =>
+50:     layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty
+51: 
+52: /-- One exact compilation can serve several requests against the same root. -/
+C11 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Composition.lean 3a6bd1ae53c74d9a6eebdcf56964e0f886b91ae82bb1af2c885b76ca15530be1
+1: import CedarPooSpec.Evaluation
+2: import CedarPooSpec.Validation
+3: import LeanPoo.Proof.Product
+4: import LeanPoo.Object.Debug
+5: 
+6: /-!
+7: Compose the independent Cedar evaluation and typechecking certificates.
+8: Keys remain disjoint, so an evaluation patch leaves typechecking obligations
+9: outside its invalidation footprint and conversely.
+10: -/
+11: 
+12: namespace CedarPooSpec.Composition
+13: 
+14: open LeanPoo.Proof
+15: 
+16: abbrev Key := Sum Evaluation.Key Validation.Key
+17: abbrev Value := SumValue Evaluation.Value Validation.Value
+18: 
+19: def proofObject (evaluation : Evaluation.Snapshot)
+20:     (validation : Validation.Snapshot) : ProofObject Key Value :=
+21:   evaluation.proofObject.pair validation.proofObject
+22: 
+23: theorem certificate (evaluation : Evaluation.Snapshot)
+24:     (validation : Validation.Snapshot)
+25:     (evaluationValid : evaluation.result =
+26:       Cedar.Spec.evaluate evaluation.expr evaluation.request evaluation.entities)
+27:     (validationValid : validation.result =
+28:       Cedar.Validation.typecheckPolicy validation.policy validation.environment) :
+29:     Certificate (proofObject evaluation validation) :=
+30:   Certificate.pair evaluation.proofObject validation.proofObject
+31:     (evaluation.certificate evaluationValid)
+32:     (validation.certificate validationValid)
+33: 
+34: def replaceExprPatch (evaluation : Evaluation.Snapshot)
+35:     (expr : Cedar.Spec.Expr) : Patch Key Value :=
+36:   (Evaluation.replaceExprPatch evaluation expr).left
+37: 
+38: def replacePolicyPatch (validation : Validation.Snapshot)
+39:     (policy : Cedar.Spec.Policy) : Patch Key Value :=
+40:   (Validation.replacePolicyPatch validation policy).right
+41: 
+42: /-- The evaluator input is the expression of the policy being checked. -/
+43: def alignmentObligation : Obligation Key Value where
+44:   dependencies := [.inl .expr, .inr .policy]
+45:   holds := fun state =>
+46:     state (.inl .expr) = (state (.inr .policy)).toExpr
+47:   stable := by
+48:     intro before after equal holds
+49:     have he : before (.inl .expr) = after (.inl .expr) :=
+50:       equal (.inl .expr) (by simp)
+51:     have hp : before (.inr .policy) = after (.inr .policy) :=
+52:       equal (.inr .policy) (by simp)
+53:     simpa [he, hp] using holds
+54: 
+55: def alignedProofObject (evaluation : Evaluation.Snapshot)
+56:     (validation : Validation.Snapshot) : ProofObject Key Value :=
+57:   (proofObject evaluation validation).withObligation alignmentObligation
+58: 
+59: theorem alignedCertificate (evaluation : Evaluation.Snapshot)
+60:     (validation : Validation.Snapshot)
+61:     (evaluationValid : evaluation.result =
+62:       Cedar.Spec.evaluate evaluation.expr evaluation.request evaluation.entities)
+63:     (validationValid : validation.result =
+64:       Cedar.Validation.typecheckPolicy validation.policy validation.environment)
+65:     (aligned : evaluation.expr = validation.policy.toExpr) :
+66:     Certificate (alignedProofObject evaluation validation) :=
+67:   Certificate.withObligation (proofObject evaluation validation)
+68:     (certificate evaluation validation evaluationValid validationValid)
+69:     alignmentObligation aligned

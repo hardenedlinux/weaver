@@ -1,0 +1,114 @@
+Analysis of sampling gxi (pid 45041) every 10 milliseconds
+Process:         gerbil [45041]
+Path:            /opt/homebrew/*/gerbil
+Load Address:    0x10468c000
+Identifier:      gerbil
+Version:         0
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  python3.13 [45040]
+Target Type:     live task
+
+Date/Time:       2026-10-20 15:05:57.531 +0800
+Launch Time:     2026-10-20 15:05:54.424 +0800
+OS Version:      macOS 26.6.1 (25G76)
+Report Version:  7
+Analysis Tool:   /usr/bin/sample
+
+Physical footprint:         29.9M
+Physical footprint (peak):  30.1M
+Idle exit:                  untracked
+----
+
+Call graph:
+    96 Thread_35324337   DispatchQueue_1: com.apple.main-thread  (serial)
+      96 ___dynamic_load  (in gerbil) + 568  [0x104a83538]
+        96 observe_open  (in observer.dylib) + 80  [0x1059637d4]
+          96 dyld4::APIs::dlopen(char const*, int)  (in dyld) + 120  [0x18d09bb04]
+            96 dyld4::APIs::dlopen_from(char const*, int, void*)  (in dyld) + 1116  [0x18d09c004]
+              96 dyld4::APIs::dlopen_from(char const*, int, void*)::$_0::operator()() const  (in dyld) + 796  [0x18d0a7cd8]
+                96 dyld4::RuntimeLocks::withLoadersWriteLockAndProtectedStack<dyld4::APIs::dlopen_from(char const*, int, void*)::$_0::operator()() const::'lambda'()>(dyld4::APIs::dlopen_from(char const*, int, void*)::$_0::operator()() const::'lambda'())::'lambda'()::operator()() const  (in dyld) + 184  [0x18d0a8a6c]
+                  96 dyld4::APIs::dlopen_from(char const*, int, void*)::$_0::operator()() const::'lambda'()::operator()() const  (in dyld) + 308  [0x18d0a8c0c]
+                    96 dyld4::Loader::getLoader(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&)  (in dyld) + 1020  [0x18d0d5720]
+                      96 dyld4::Loader::forEachPath(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, void (char const*, dyld4::ProcessConfig::PathOverrides::Type, bool&) block_pointer)  (in dyld) + 260  [0x18d0d4e2c]
+                        96 dyld4::ProcessConfig::PathOverrides::forEachPathVariant(char const*, mach_o::Platform, bool, bool, bool&, void (char const*, dyld4::ProcessConfig::PathOverrides::Type, bool&) block_pointer) const  (in dyld) + 1816  [0x18d0b4014]
+                          96 dyld4::Loader::forEachResolvedAtPathVar(dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, dyld4::ProcessConfig::PathOverrides::Type, bool&, void (char const*, dyld4::ProcessConfig::PathOverrides::Type, bool&) block_pointer)  (in dyld) + 756  [0x18d0d52e4]
+                            96 invocation function for block in dyld4::Loader::getLoader(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&)  (in dyld) + 3136  [0x18d0d6764]
+                              96 dyld4::Loader::makeDiskLoader(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, bool, unsigned int, mach_o::Layout const*)  (in dyld) + 176  [0x18d0d4bc4]
+                                96 dyld4::JustInTimeLoader::makeJustInTimeLoaderDisk(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, bool, unsigned int, mach_o::Layout const*)  (in dyld) + 1152  [0x18d0d3378]
+                                  96 dyld4::JustInTimeLoader::withRegions(dyld3::MachOFile const*, void (dyld3::Array<dyld4::Loader::Region> const&) block_pointer)  (in dyld) + 308  [0x18d0d2bbc]
+                                    96 invocation function for block in dyld4::JustInTimeLoader::makeJustInTimeLoaderDisk(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, bool, unsigned int, mach_o::Layout const*)  (in dyld) + 76  [0x18d0d33f4]
+                                      96 dyld4::Loader::mapSegments(Diagnostics&, dyld4::RuntimeState&, char const*, int, unsigned long long, dyld4::Loader::CodeSignatureInFile const&, bool, dyld3::Array<dyld4::Loader::Region> const&, bool, bool, dyld4::Loader::FileValidationInfo const&)  (in dyld) + 312  [0x18d0d721c]
+                                        96 dyld4::SyscallDelegate::fcntl(int, int, void*) const  (in dyld) + 32  [0x18d0adbbc]
+                                          96 fcntl  (in dyld) + 88  [0x18d093f80]
+                                            96 __fcntl  (in dyld) + 8  [0x18d0940d8]
+
+Total number in stack (recursive counted multiple, when >=5):
+
+Sort by top of stack, same collapsed (when >= 5):
+        __fcntl  (in dyld)        96
+
+Binary Images:
+       0x10468c000 -        0x104d86e6f +gerbil (0) <2AAD5BDF-7963-3654-889C-6C02430DBA94> /opt/homebrew/*/gerbil
+       0x105584000 -        0x105587fff +expander~1.o1 (0) <89D090CF-C042-436A-9AB8-70B77DB1EDFE> /Users/*/expander~1.o1
+       0x105590000 -        0x105593fff +sugar~4.o1 (0) <EAD72E2C-C612-4E48-B8DF-D58292B82D17> /Users/*/sugar~4.o1
+       0x1055a0000 -        0x1055a7fff +expander~2.o1 (0) <E4516F8F-6127-4098-AA4A-AD3064E11085> /Users/*/expander~2.o1
+       0x1055b0000 -        0x1055b7fff +sugar~3.o1 (0) <4C2AAF0D-494B-4E47-8ECD-BFB1AB6F6729> /Users/*/sugar~3.o1
+       0x1055c0000 -        0x1055c3fff +sugar~5.o1 (0) <959C1EF9-2A47-49C8-9373-58A42ED746E6> /Users/*/sugar~5.o1
+       0x1055d0000 -        0x1055e3fff +sugar~1.o1 (0) <25B2D695-42E4-4A47-A6D1-79E8A199CBE9> /Users/*/sugar~1.o1
+       0x1055f0000 -        0x1055f3fff +macro-object~1.o1 (0) <2B37579E-4ABA-48D1-B4AD-BFC7B8479C9D> /Users/*/macro-object~1.o1
+       0x105604000 -        0x10560ffff +sugar~QuasiquoteExpander~0.o1 (0) <1157B22F-1D1A-4BB1-BEE2-C8EEE6CC20FB> /Users/*/sugar~QuasiquoteExpander~0.o1
+       0x105618000 -        0x105623fff +mop~1.o1 (0) <8CC67225-433F-48FB-AE48-30FADF9D474B> /Users/*/mop~1.o1
+       0x105630000 -        0x10563bfff +mop~MOP-2~0.o1 (0) <3BFF694D-823D-4ECC-94C2-002C982E2507> /Users/*/mop~MOP-2~0.o1
+       0x105644000 -        0x10564bfff +mop~4.o1 (0) <AA19726C-BAF5-4374-9496-3417D07CDE2F> /Users/*/mop~4.o1
+       0x10565c000 -        0x10566bfff +mop~2.o1 (0) <1233C3F7-DA08-46D1-B41D-7CD4F6C89BAC> /Users/*/mop~2.o1
+       0x105674000 -        0x1056cffff +sugar~2.o1 (0) <51B74543-2339-4C23-BBD2-340DB19B1759> /Users/*/sugar~2.o1
+       0x1056f8000 -        0x1056fbfff +macro-object~0.o1 (0) <7043AFA5-B423-42C8-9A7C-02F75DB09A6A> /Users/*/macro-object~0.o1
+       0x105724000 -        0x10573ffff +mop~3.o1 (0) <08E3001B-03E9-43CE-967C-959509B3CE14> /Users/*/mop~3.o1
+       0x105784000 -        0x1057ab8f7 +mop~5.o1 (0) <1B5FE924-3FBA-32DD-A5D0-0622DCBF434C> /opt/homebrew/*/mop~5.o1
+       0x105960000 -        0x105963fff +observer.dylib (0) <A27AD0D6-0239-309B-89DB-ACEC8E757157> /Users/*/observer.dylib
+       0x18d008000 -        0x18d05ab4b  libobjc.A.dylib (951.7) <40277974-D20C-3EC8-B25C-43AE30D8CC60> /usr/lib/libobjc.A.dylib
+       0x18d05b000 -        0x18d08fd58  libdyld.dylib (1387) <634959D0-592E-349C-B549-B91F2FF09858> /usr/lib/system/libdyld.dylib
+       0x18d090000 -        0x18d1434ff  dyld (1.0.0 - 1387) <DF42DD9D-AD11-33A7-8849-9AD5DF30A274> /usr/lib/dyld
+       0x18d144000 -        0x18d147228  libsystem_blocks.dylib (96) <A712B95E-BCEE-3F12-9F9B-58E6C2060E53> /usr/lib/system/libsystem_blocks.dylib
+       0x18d148000 -        0x18d19c55f  libxpc.dylib (3102.160.5) <40BBE226-77D4-332E-9DA8-F0B5BACFB86D> /usr/lib/system/libxpc.dylib
+       0x18d19d000 -        0x18d1bd9ff  libsystem_trace.dylib (1861.160.4) <E043667E-AD01-3228-837F-A381F32F2B30> /usr/lib/system/libsystem_trace.dylib
+       0x18d1be000 -        0x18d26c5f7  libcorecrypto.dylib (1922.160.10) <D54389FC-4078-370D-A863-9FEF16E00DFD> /usr/lib/system/libcorecrypto.dylib
+       0x18d26d000 -        0x18d2bd257  libsystem_malloc.dylib (812.160.5) <971CDCFE-4D20-300E-A1D6-EC8672FDD258> /usr/lib/system/libsystem_malloc.dylib
+       0x18d2be000 -        0x18d30523f  libdispatch.dylib (1542.160.2) <243E06A0-7BFF-3C3F-8A9B-D7732729B361> /usr/lib/system/libdispatch.dylib
+       0x18d306000 -        0x18d308ffb  libsystem_featureflags.dylib (103) <5E7CDBD5-44AB-34C0-A0F5-FC72F6116CDC> /usr/lib/system/libsystem_featureflags.dylib
+       0x18d309000 -        0x18d38a1e7  libsystem_c.dylib (1752.160.4) <FDC4E366-5C14-3A1E-BC35-D933D28CDCF3> /usr/lib/system/libsystem_c.dylib
+       0x18d38b000 -        0x18d41bae7  libc++.1.dylib (2100.43) <C6DC2145-7B94-3E01-ADE5-96A6C2D078BC> /usr/lib/libc++.1.dylib
+       0x18d41c000 -        0x18d43675f  libc++abi.dylib (2100.43) <DDE77B06-5E25-380B-85B7-BA1A27D09021> /usr/lib/libc++abi.dylib
+       0x18d437000 -        0x18d4742e7  libsystem_kernel.dylib (12377.161.13) <7CFB3A10-ADB2-32C4-99B5-922A111B3224> /usr/lib/system/libsystem_kernel.dylib
+       0x18d475000 -        0x18d481b3b  libsystem_pthread.dylib (539.100.4) <12342372-0084-37A5-9EA6-2E4DC940C685> /usr/lib/system/libsystem_pthread.dylib
+       0x18d482000 -        0x18d48a963  libsystem_platform.dylib (375.120.2) <4C6BD0FE-25F2-38D8-BE5C-24DAC1DEDCFB> /usr/lib/system/libsystem_platform.dylib
+       0x18d48b000 -        0x18d4ba6eb  libsystem_info.dylib (600) <7402662E-F235-3F48-BB65-F64C8CF0F2BB> /usr/lib/system/libsystem_info.dylib
+       0x191458000 -        0x191461e5f  libsystem_darwin.dylib (1752.160.4) <A095E4FE-0EE1-34DF-B00A-7D349FBC55E0> /usr/lib/system/libsystem_darwin.dylib
+       0x1918c3000 -        0x1918d51b6  libsystem_notify.dylib (348.160.3) <F9B1BAFF-4D09-3A1F-839B-189C21EB5FBB> /usr/lib/system/libsystem_notify.dylib
+       0x193b94000 -        0x193baef7b  libsystem_networkextension.dylib (2226.160.6) <01D14A9E-16DC-372C-8AA8-CC7AD39E797F> /usr/lib/system/libsystem_networkextension.dylib
+       0x193c31000 -        0x193c48fdf  libsystem_asl.dylib (406) <FF57F6FA-F3A1-343D-815D-57B769D31445> /usr/lib/system/libsystem_asl.dylib
+       0x1957ea000 -        0x1957f2387  libsystem_symptoms.dylib (2169.160.3) <CE07A0DF-31B6-3528-B7CE-91CAD89AA519> /usr/lib/system/libsystem_symptoms.dylib
+       0x199a8f000 -        0x199ac75b7  libsystem_containermanager.dylib (725.160.3) <2E14025A-52C2-361D-8A8F-5DD45825A2C9> /usr/lib/system/libsystem_containermanager.dylib
+       0x19aea1000 -        0x19aea55d7  libsystem_configuration.dylib (1405.160.3) <A14ED142-2F56-33A6-A23C-EEB8417DC90E> /usr/lib/system/libsystem_configuration.dylib
+       0x19aea6000 -        0x19aeac99f  libsystem_sandbox.dylib (2680.160.6) <6592D3CE-38C6-3C08-9EA5-75D64F37993F> /usr/lib/system/libsystem_sandbox.dylib
+       0x19c501000 -        0x19c5041fb  libquarantine.dylib (196.160.2) <78C5B827-8152-358D-90E9-B02F02A68B17> /usr/lib/system/libquarantine.dylib
+       0x19cca0000 -        0x19cca6d03  libsystem_coreservices.dylib (191.5.1) <F335DA14-69E8-336E-85A3-11EE239255F0> /usr/lib/system/libsystem_coreservices.dylib
+       0x19d22f000 -        0x19d26ca77  libsystem_m.dylib (3312.100.1) <3739A40F-2C17-3503-92D6-098141E56E89> /usr/lib/system/libsystem_m.dylib
+       0x19d26e000 -        0x19d271527  libmacho.dylib (1387) <3E43AF47-AD89-3BB4-82B9-A9533F4334DF> /usr/lib/system/libmacho.dylib
+       0x19d28b000 -        0x19d2983a7  libcommonCrypto.dylib (600035) <72D94140-1281-3886-971B-37C810403C03> /usr/lib/system/libcommonCrypto.dylib
+       0x19d299000 -        0x19d2a2ca3  libunwind.dylib (2100.2) <B21A1015-83D4-31D8-BA41-88688962D9A6> /usr/lib/system/libunwind.dylib
+       0x19d2ab000 -        0x19d2b5bef  libcopyfile.dylib (240.160.2.0.1) <58F425CF-7D4F-34FD-9620-706A2A7F8BDC> /usr/lib/system/libcopyfile.dylib
+       0x19d2b6000 -        0x19d2b9987  libcompiler_rt.dylib (103.3) <D60A9B54-A909-3FD5-93B9-3F38BE0A2BE8> /usr/lib/system/libcompiler_rt.dylib
+       0x19d2ba000 -        0x19d2be78b  libsystem_collections.dylib (1752.160.4) <BDA28F78-F479-3C22-B9C7-4ABCB6801592> /usr/lib/system/libsystem_collections.dylib
+       0x19d2bf000 -        0x19d2c24cf  libsystem_secinit.dylib (168.100.7) <C85AF062-AA9B-35BB-904C-C055B2C21602> /usr/lib/system/libsystem_secinit.dylib
+       0x19d2c3000 -        0x19d2c5bf7  libremovefile.dylib (85.100.6) <DA9C2B48-7A9C-32EA-888D-6C7AEB5250E6> /usr/lib/system/libremovefile.dylib
+       0x19d2c6000 -        0x19d2c6f27  libkeymgr.dylib (31) <18EFA1CE-C535-3EAC-BC2C-7955593B7382> /usr/lib/system/libkeymgr.dylib
+       0x19d2c7000 -        0x19d2cfe37  libsystem_dnssd.dylib (2881.160.4) <2C4C3043-008E-3BD8-BC29-AB9AD235DBA9> /usr/lib/system/libsystem_dnssd.dylib
+       0x19d2d0000 -        0x19d2d509b  libcache.dylib (95) <EA7C2E0B-52BF-3D45-9A33-38F54A535452> /usr/lib/system/libcache.dylib
+       0x19d2d6000 -        0x19d2d7ce3  libSystem.B.dylib (1356) <4CC4CAD6-45A6-361E-9343-DE636A0B5C02> /usr/lib/libSystem.B.dylib
+       0x29127f000 -        0x291286349  libRosetta.dylib (367.9) <F41D814B-FE1F-311A-A778-5F0699628188> /usr/lib/libRosetta.dylib
+       0x292e92000 -        0x292e95a4b  libsystem_darwindirectory.dylib (122) <6C03D78B-BFAB-3C7A-B713-50881791EE08> /usr/lib/system/libsystem_darwindirectory.dylib
+       0x292e96000 -        0x292ea039b  libsystem_eligibility.dylib (319.160.17) <A279E124-8499-3FFC-A788-655070028F97> /usr/lib/system/libsystem_eligibility.dylib
+       0x292ea1000 -        0x292ea888b  libsystem_sanitizers.dylib (26.1) <C92FAEE5-DAED-3340-96B3-0C42B005ADF9> /usr/lib/system/libsystem_sanitizers.dylib
+       0x292ea9000 -        0x292ea9bb7  libsystem_trial.dylib (474.2.18.2) <2FF186A6-F448-38CD-9A30-8B5B1AEFCA10> /usr/lib/system/libsystem_trial.dylib

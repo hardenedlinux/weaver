@@ -1,0 +1,50 @@
+//! Error-free Cedar evaluation over authoritative task and wire facts.
+use cedar_policy::{Authorizer, Context, Decision, Entities, EntityUid, Request};
+use weaver_contracts::{Error, Proposal, Result, Task};
+
+/// Reject malformed contracts before admission.
+pub fn validate(source: &str) -> Result<()> {
+    crate::compiled::with_policy(source, |_| ())
+}
+
+/// Require an error-free allow decision for the actual operation.
+pub fn authorize(source: &str, task: &Task, proposal: &Proposal) -> Result<()> {
+    let context = serde_json::json!({
+        "family":task.family,"node":proposal.node,"profile":task.profile,
+        "model":proposal.model,"endpoint":proposal.endpoint,"wire_digest":proposal.digest()?,
+        "ceiling":proposal.ceiling,"revision":proposal.revision,"fence":proposal.fence
+    });
+    evaluate(source, &task.principal, &proposal.target, "invoke", context)
+}
+
+pub(crate) fn evaluate(
+    source: &str,
+    principal: &str,
+    target: &str,
+    action: &str,
+    context: serde_json::Value,
+) -> Result<()> {
+    let uid = |kind: &str, id: &str| -> Result<EntityUid> {
+        format!("Weaver::{kind}::{}", serde_json::to_string(id)?)
+            .parse()
+            .map_err(|_| Error::Invalid("entity identity"))
+    };
+    let context = Context::from_json_value(context, None)
+        .map_err(|_| Error::Policy("invalid authoritative context".into()))?;
+    let request = Request::new(
+        uid("Principal", principal)?,
+        uid("Action", action)?,
+        uid("Target", target)?,
+        context,
+        None,
+    )
+    .map_err(|_| Error::Policy("invalid request".into()))?;
+    let response = crate::compiled::with_policy(source, |policies| {
+        Authorizer::new().is_authorized(&request, policies, &Entities::empty())
+    })?;
+    // Cedar's default can ignore errors in unrelated policies. This host requires error-free evaluation.
+    if response.decision() != Decision::Allow || response.diagnostics().errors().next().is_some() {
+        return Err(Error::Denied);
+    }
+    Ok(())
+}

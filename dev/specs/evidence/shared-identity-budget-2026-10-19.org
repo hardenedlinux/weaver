@@ -1,0 +1,147 @@
+#+title: Cross-Message Identity and Shared Budget Validation Receipt
+#+language: en
+#+date: 2026-10-19
+#+options: toc:2
+
+* Exact checked inputs and scope
+
+Local tools: Quint 0.33.0, TypeScript simulator, Lean 4.34.1 through elan.
+The base message proof was compiled from source into an isolated temporary
+output directory, then imported by SharedMessageBudget.lean through LEAN_PATH.
+The final consumer compiled with exit zero. No existing dependency pin, owner
+package or gateway runtime was changed. The earlier single-message receipt
+remains intact.
+
+| Input | SHA-256 |
+|-------+---------|
+| SharedMessageBudget.qnt | fd249a9df9e7990a69bc7846b11e57391b55f060ccb2c2653542e2e33ca4e516 |
+| SharedMessageBudget.lean | be3f2237e83c6d1ecf824795919d7278654aa05012d30a8c5363f1bc24a3904f |
+| LogicalMessageAuthority.lean | 649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca |
+
+The [[file:../README.org][formal guide]] provides the exact commands and
+[[file:../../../docs/architecture/17-shared-identity-budget-proof.org][the source/semantic dossier]] provides the full property/premise mapping.
+The Lean theorem covers arbitrary finite traces of a two-intent product,
+arbitrary raw aliases, costs, capacity and owner/worker coordinates. It does
+not quantify over arbitrary intent cardinality or prove input/domain
+classification, source refinement, storage or physical network correctness.
+
+* Executed checks
+
+- Quint typecheck: exit zero.
+- Quint test: thirteen deterministic controls passed; six valid lifecycle or rejection controls, seven expected counterexamples.
+- Normal pool: 3,000 sampled traces, at most 120 transitions each, seed 20261019, cost weights 1 and 2, capacity 3; safety found no violation.
+- Tight pool: 1,000 sampled traces, at most 100 transitions each, seed 20261020, the same costs, capacity 2; safety found no violation.
+- Lean: imported base and product proof compiled; printed axiom inventories contain no sorryAx or custom axiom.
+
+Both Quint runs use the final source bytes above. They are sampled simulation,
+not exhaustive TLC/Apalache checking. The Lean invariant is proved by initial/
+step induction, independently of sampling. Normal Lean propext, Classical.choice
+and Quot.sound are logical axioms, not unfinished proof holes. Simulator timing
+below is not a gateway performance measurement. No full FM row or deployed
+protected profile is admitted by this receipt.
+
+* Evidence interpretation and retained authoring failure
+
+The key-bypass mutants preserve individually valid local records and stay
+within the funded pool, while independent semantic claim and offer counters
+reach two for one admitted intent. They fail the alias/semantic invariant.
+The capacity mutants overbook a sum of unequal costs; the history mutant
+actually offers after a common restriction. Successful negative tests mean
+those expected violations were observed, not that the invalid design is safe.
+
+wrongPayloadTest uses Quint's terminal fail combinator to assert that the
+actual enroll action rejects an incorrect immutable payload. Its terminal ITF
+entry has no s value because the rejected action supplies no successor state;
+the preceding state is the last ledger state. This is simulator/test semantics,
+not a record of a gateway losing or resetting persistent state.
+
+An earlier authoring attempt inspected s after that fail combinator and produced
+QNT502 (Variable s not set). An attempted explicit stutter then produced QNT202
+(Multiple updates of variable s). The control was corrected to finish at fail,
+as specified by Quint. The normal transition relation was not weakened, and
+neither failed harness attempt is counted as a safety pass. The retained raw
+failure below predates the final source identity table and is diagnostic only.
+
+#+begin_example
+SharedMessageBudget
+    1) wrongPayloadTest failed after 1 test(s)
+
+  1 failed
+
+  1) wrongPayloadTest:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SharedMessageBudget.qnt:34:22
+        34:   def canonical(a) = s.aliases.get(a)
+                                 ^
+    Use --seed=0x1e0ce6d82f2376 --match=wrongPayloadTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 dev/specs/quint/SharedMessageBudget.qnt
+error: Tests failed
+#+end_example
+
+* Actual test output
+
+#+begin_example
+SharedMessageBudget
+    ok distinctMessagesTest passed 1 test(s)
+    ok aliasRefreshTest passed 1 test(s)
+    ok sharedHistoryTest passed 1 test(s)
+    ok sharedContentionTest passed 1 test(s)
+    ok settlementKeepsChargeTest passed 1 test(s)
+    ok wrongPayloadTest passed 1 test(s)
+    ok freshNonceKeyCounterexampleTest passed 1 test(s)
+    ok freshAuthorityKeyCounterexampleTest passed 1 test(s)
+    ok reconnectKeyCounterexampleTest passed 1 test(s)
+    ok concurrentBudgetCounterexampleTest passed 1 test(s)
+    ok privateBudgetCounterexampleTest passed 1 test(s)
+    ok freshKeyHistoryCounterexampleTest passed 1 test(s)
+    ok settlementBudgetCounterexampleTest passed 1 test(s)
+
+  13 passing (61ms)
+#+end_example
+
+* Normal-pool sampled run
+
+#+begin_example
+[ok] No violation found (30512ms at 98 traces/second).
+Use --seed=0x135289b --backend=typescript to reproduce.
+#+end_example
+
+* Tight-pool sampled run
+
+#+begin_example
+[ok] No violation found (8465ms at 118 traces/second).
+Use --seed=0x135289c --backend=typescript to reproduce.
+#+end_example
+
+* Lean axiom inventory
+
+#+begin_example
+'Weaver.SharedMessageBudget.reachable_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.SharedMessageBudget.aliases_share_claim_budget_and_history' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SharedMessageBudget.shared_free_held_charged_conservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SharedMessageBudget.original_claim_survives_all_global_steps' depends on axioms: [propext, Quot.sound]
+'Weaver.SharedMessageBudget.passive_update_does_not_replenish' depends on axioms: [propext, Quot.sound]
+#+end_example
+
+* Retained traces
+
+- [[file:shared-traces/aliasRefreshTest-1.itf.json][aliasRefreshTest-1.itf]]
+- [[file:shared-traces/concurrentBudgetCounterexampleTest-9.itf.json][concurrentBudgetCounterexampleTest-9.itf]]
+- [[file:shared-traces/distinctMessagesTest-0.itf.json][distinctMessagesTest-0.itf]]
+- [[file:shared-traces/freshAuthorityKeyCounterexampleTest-7.itf.json][freshAuthorityKeyCounterexampleTest-7.itf]]
+- [[file:shared-traces/freshKeyHistoryCounterexampleTest-11.itf.json][freshKeyHistoryCounterexampleTest-11.itf]]
+- [[file:shared-traces/freshNonceKeyCounterexampleTest-6.itf.json][freshNonceKeyCounterexampleTest-6.itf]]
+- [[file:shared-traces/privateBudgetCounterexampleTest-10.itf.json][privateBudgetCounterexampleTest-10.itf]]
+- [[file:shared-traces/reconnectKeyCounterexampleTest-8.itf.json][reconnectKeyCounterexampleTest-8.itf]]
+- [[file:shared-traces/settlementBudgetCounterexampleTest-12.itf.json][settlementBudgetCounterexampleTest-12.itf]]
+- [[file:shared-traces/settlementKeepsChargeTest-4.itf.json][settlementKeepsChargeTest-4.itf]]
+- [[file:shared-traces/sharedContentionTest-3.itf.json][sharedContentionTest-3.itf]]
+- [[file:shared-traces/sharedHistoryTest-2.itf.json][sharedHistoryTest-2.itf]]
+- [[file:shared-traces/wrongPayloadTest-5.itf.json][wrongPayloadTest-5.itf]]

@@ -1,0 +1,186 @@
+# Core design only. Source identities and check receipts stay in Org.
+...@lib/theme
+title: ORIGINAL WRITER / CANONICAL DECISION / FINAL SETTLEMENT {
+  class: title
+  near: top-center
+}
+semantics: SEMANTICS / CLOUD LIFECYCLE {
+  top: 0
+  left: 0
+  width: 340
+  height: 680
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  intent: Scheme / original semantic scope\nClaim / account / history / closure\nComplete effect and writer inventory {
+    top: 90
+    left: 25
+    width: 290
+    height: 120
+    class: semantic
+  }
+  policy: Cedar / Code as Policy\nActual effect and state binding\nNew admission needs current allow {
+    top: 290
+    left: 25
+    width: 290
+    height: 120
+    class: policy
+  }
+  goBrand: "" {
+    shape: image
+    icon: assets/go.svg
+    top: 450
+    left: 25
+    width: 46
+    height: 22
+  }
+  kubeBrand: "" {
+    shape: image
+    icon: assets/kubernetes.svg
+    top: 447
+    left: 85
+    width: 28
+    height: 28
+  }
+  cloud: Go / agent and Kubernetes lifecycle\nResolve exact original operations\nRetries never recreate effects {
+    top: 490
+    left: 25
+    width: 290
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+}
+writer: RUST / ACTUAL WRITER {
+  top: 0
+  left: 460
+  width: 360
+  height: 680
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  brand: "" {
+    shape: image
+    icon: assets/rust.svg
+    top: 48
+    left: 25
+    width: 28
+    height: 28
+  }
+  capability: Original affine range capability\nConsume before bounded API offer\nFull frontier retains occupancy {
+    top: 90
+    left: 25
+    width: 310
+    height: 120
+    class: runtime
+  }
+  evidence: Authentic completion or isolation\nAll writer and buffer aliases covered\nAccepted work may still drain {
+    top: 290
+    left: 25
+    width: 310
+    height: 120
+    class: runtime
+  }
+  unknown: Old FD / restored buffer / unknown\nNo adopted tail or inferred shutdown\nIsolation quarantines original stream {
+    top: 490
+    left: 25
+    width: 310
+    height: 120
+    class: unknown
+  }
+}
+stores: RUST / DURABLE AUTHORITY {
+  top: 0
+  left: 940
+  width: 380
+  height: 680
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  blob: Immutable typed evidence slots\nCompletion and isolation kept separately\nEvidence alone grants no release {
+    top: 90
+    left: 25
+    width: 330
+    height: 120
+    class: ledger
+  }
+  decision: One canonical terminal decision\nExact original range / selected evidence\nDurable ownership linearization {
+    top: 290
+    left: 25
+    width: 330
+    height: 120
+    class: ledger
+  }
+  view: Exact decision and evidence readback\nConservative local publication\nUnpublished blocks same-stream admission {
+    top: 490
+    left: 25
+    width: 330
+    height: 120
+    class: runtime
+  }
+}
+finance: ORIGINAL ACCOUNT / SETTLEMENT {
+  top: 0
+  left: 1440
+  width: 390
+  height: 680
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  closure: Original message retired and frozen\nAll accepted work has published terminal\nNo future original-range admission {
+    top: 90
+    left: 25
+    width: 340
+    height: 120
+    class: ledger
+  }
+  usage: Authentic final usage / original scope\nExact claim / closure / account / unit\nLate usage cannot release a stream {
+    top: 290
+    left: 25
+    width: 340
+    height: 120
+    class: ledger
+  }
+  settlement: Immutable original settlement\nSame decision materializes in the ledger\nUnknown retains escrow / conflicts stop {
+    top: 490
+    left: 25
+    width: 340
+    height: 120
+    class: ledger
+  }
+}
+quint: QUINT\nCross-store reply loss / old writer / late receipt races {
+  top: 800
+  left: 310
+  width: 550
+  height: 100
+  class: policy
+}
+lean: LEAN\nOriginal evidence / terminal coverage / shared escrow conservation {
+  top: 800
+  left: 1030
+  width: 620
+  height: 100
+  class: semantic
+}
+semantics.intent -> semantics.policy
+semantics.policy -> writer.capability: admitted original scope
+writer.capability -> writer.evidence
+writer.evidence -> stores.blob: durable original evidence
+stores.blob -> stores.decision: commit once
+stores.decision -> stores.view: exact publication
+stores.view -> finance.closure: terminal inventory
+finance.closure -> finance.usage
+finance.usage -> finance.settlement: same original record
+writer.unknown -> stores.decision: isolated branch only
+semantics.cloud -> stores.view: same-operation status
+quint -> writer.unknown: explore failures {
+  style.stroke-dash: 5
+}
+lean -> finance.settlement: preserve original resources {
+  style.stroke-dash: 5
+}

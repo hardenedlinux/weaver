@@ -1,0 +1,18 @@
+    Checking weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-contracts)
+    Checking weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-policy)
+    Checking weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+error: field `next_sequence` is never read
+  --> crates/weaver-ledger/src/stream_state.rs:16:9
+   |
+ 9 | pub(crate) struct MessageRecord {
+   |                   ------------- field in this struct
+...
+16 |     pub next_sequence:u64,
+   |         ^^^^^^^^^^^^^
+   |
+   = note: `-D dead-code` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[expect(dead_code)]` or `#[allow(dead_code)]`
+
+error: could not compile `weaver-ledger` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `weaver-ledger` (lib) due to 1 previous error

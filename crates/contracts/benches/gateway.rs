@@ -1,0 +1,33 @@
+use criterion::{BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
+use std::{hint::black_box, time::Duration};
+#[path = "../../../dev/benchmarks/contracts.rs"]
+mod fixtures;
+fn commitments(c: &mut Criterion) {
+    let mut group = c.benchmark_group("contracts/provider_commitment");
+    for bytes in [128, 16384, 524288] {
+        let (task, plan) =
+            fixtures::task_plan(bytes, "https://provider.invalid/v1/chat/completions");
+        assert!(plan.matches(&task).expect("original task"));
+        group.throughput(Throughput::Bytes(plan.body.len() as u64));
+        group.bench_with_input(BenchmarkId::from_parameter(bytes), &plan, |b, p| {
+            b.iter(|| black_box(p.digest().expect("commitment")))
+        });
+    }
+    group.finish();
+    let publication = weaver_contracts::Publication {
+        operation_id: "benchmark".into(),
+        expected_revision: Some(0),
+        fence: 2,
+        policy: format!(
+            "//{}\n{}",
+            "x".repeat(16384),
+            include_str!("../../../dev/policies/provider/provider.cedar")
+        ),
+        schema: include_str!("../../../dev/policies/provider/schema.json").into(),
+    };
+    c.bench_function("contracts/publication_commitment", |b| {
+        b.iter(|| black_box(publication.digest().expect("publication commitment")))
+    });
+}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=commitments}
+criterion_main!(benches);

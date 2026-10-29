@@ -1,0 +1,107 @@
+#+TITLE: 59.07 Reserved Authority Admission Under Execution Saturation
+#+LANGUAGE: en
+
+* Problem and implementation
+
+The previous global native semaphore admitted stream execution, source publication
+and canonical observation from the same pool. Long response reads could occupy
+every permit. Even after headers released the SQLite deciding lock, a valid
+PublishAuthority RPC could fail before attempting its CAS. A retry loop is not
+revocation authority and does not repair this capacity coupling.
+
+Rust now owns three independent fail-fast native lanes in =server/src/admission.rs=.
+Execution uses the existing configured bound; publication reserves one permit;
+observation reserves two. The maximum number of admitted native workers is the
+configured execution bound plus three. These are admission reservations rather
+than separate transport or database trust domains. Authentication precedes lane
+selection, and no request can select a different lane through metadata or a
+proposed role. RegisterTask and PublishAuthority share the source lane so source
+publication is itself bounded. Go does not retry capacity rejection automatically.
+
+RuntimeOwner retains the RAII permit in its tracked blocking closure. Disconnect,
+deadline expiry or dropping a JoinHandle does not create free capacity while the
+native worker remains alive. Shutdown closes runtime admission for every lane
+and waits for tracked completion. Slot availability after shutdown does not
+reopen the owner. Capacity separation neither consumes a new grant nor refunds
+an unknown operation. Cedar, claim, fence, shared hold and row guards are unchanged.
+
+Scheme remains responsible for the original task and semantic Policy contracts.
+Go compiles source-bound plans, manages RPC cancellation and interprets canonical
+receipts. Rust assigns authenticated methods to lanes, owns durable consumption,
+serializes final guards and controls all provider I/O. Publication capacity is not
+delegated to an agent credential or to a routing hint.
+
+* Four-way correspondence
+
+| Artifact | Checkable obligation | Boundary |
+|----------+----------------------+----------|
+| SysML ReservedAuthorityAdmission | Independent bounded native lanes; role before selection; tracked permit custody | Structure and witness mapping, not scheduler verification |
+| Quint NativeAdmission | Per-lane bounds, publication enabled despite saturated execution, closed admission, caller loss without capacity return | Three worker identities and finite execution capacity abstraction; sampled schedules |
+| Lean ProviderRpc | lane_step_preserves_bounds, execution_saturation_preserves_publication_admission, execution_and_admission_composition | Arbitrary natural execution bound, faithful authenticated lane assignment and RAII refinement premises |
+| Rust unit/PBT and Go mTLS integration | Independent limits under arbitrary lane schedules, detached native custody, actual saturated publication and subsequent tail denial | Local deciding-store profile, real loopback TLS/RPC and compatible provider fixture |
+
+Quint contains an explicit unsafe shared-lane transition. Two active execution
+workers then make an otherwise free publication lane unavailable. The resulting
+trace violates reserved admission without needing a duplicated send. This is an
+availability defect that can delay the authority change on which future release
+safety depends; it is not evidence that an uncommitted revocation already took
+effect. Rejected-action tests stop at the rejection: they do not invent a next
+state after Quint's failure assertion.
+
+Lean proves boundedness for every lane transition and publication admission
+independent of execution occupancy. Composition preserves the existing provider
+claim/hold invariant alongside those bounds. The theorem is conditional enabledness,
+not eventual completion or constant-time revocation. It does not prove native
+TLS, kernel scheduling, SQLite fairness or storage anti-rollback.
+
+* Native counterexample and acceptance evidence
+
+The integration test registers sixteen distinct nodes under one original family,
+with committed bodies/routes and a shared sixty-four-credit reservation domain.
+Every provider sends one authorized prefix and waits outside the deciding lock.
+After all sixteen callbacks arrive, a seventeenth execution must report
+ResourceExhausted. Inspect must still return the original unknown receipt and
+shared held budget. PublishAuthority must then commit a forbid policy with the
+next revision and fence before the fixture releases any tails. Every stream must
+reject its tail, retain unknown execution and leave the shared hold unchanged.
+Only the sixteen original provider calls may occur; backup invocation remains zero.
+
+The regression test was also run against a deliberate native mutation that routed
+both source methods back to the full execution lane. It failed at publication
+with ResourceExhausted. The mutation was restored immediately. The retained
+[[file:../../../dev/proofs/evidence/native-admission-20261030/shared-publication-counterexample.log][counterexample excerpt]] records the expected failure; it is not a passing receipt.
+Early malformed Quint and Lean checks are retained separately in the same evidence
+directory. Their errors were repaired before qualification; no timeout, lane
+capacity, sample count, ASP rule or failure expectation was relaxed.
+
+The restored implementation passes the
+[[file:../../../dev/proofs/evidence/native-admission-20261030/verification-current/receipt.json][unified verification receipt]]: twenty-six stages, with 134 unchanged SHA-256
+inputs and no failed stage. Rust reports forty-one passing tests, including all
+five ASP deny gates, the detached-custody regression and sixty-four generated
+lane schedules. Go race checks include the actual saturation test, which passes
+in the retained full integration run. NativeAdmission has nine executable controls;
+its sampled safety check retains 1000 traces and sixty-step bounds. ProviderRpc
+now prints twelve checked Lean declarations, including the three new admission
+properties, with no sorryAx. The strict in-process SysML SDK and trace gate also
+pass. D2 was rendered to SVG/PNG and the updated core diagram was visually checked.
+
+* Availability and performance limits
+
+Source and observation workers still share the Tokio blocking scheduler and
+SQLite store with execution. Request dispatch holds the deciding lock through
+upstream response headers. One source task registration can occupy the source
+lane. Per-connection HTTP/2 ceilings can also delay a new stream on a saturated
+connection; separate connections still require the same approved identities.
+This increment claims independent native admission capacity only. Global
+connection/body admission, source-operation scheduling and matched concurrent
+load qualification remain required before a production-wide availability claim.
+
+The five package benchmarks remain executable and workspace-managed. Earlier
+codec/provider timing samples remain attached to their original source hashes;
+they are not a performance comparison of the admission change. A matched load
+study must report authority-commit latency, observation latency, active execution,
+SQLite lock occupancy and unknown-held credits separately from provider token rate.
+
+The subsequent [[file:59.08-connection-custody.org][connection-custody increment]] adds a per-process accepted-socket
+bound and TLS handshake deadline. Global body-memory qualification, new source
+connection availability and SQLite scheduling remain distinct open obligations.

@@ -1,0 +1,249 @@
+[
+  {
+    "id": "OriginalTaskBinding",
+    "witnesses": [
+      {
+        "file": "crates/ledger/tests/unit/recovery.rs",
+        "pattern": "fn original_task_body_and_profile_cannot_be_replaced"
+      },
+      {
+        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
+        "pattern": "run originalBindingTest"
+      }
+    ]
+  },
+  {
+    "id": "SharedBudget",
+    "witnesses": [
+      {
+        "file": "crates/ledger/tests/unit/properties.rs",
+        "pattern": "fn arbitrary_replays_restarts_and_consumption_preserve_claims"
+      },
+      {
+        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
+        "pattern": "run sharedBudgetTest"
+      },
+      {
+        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
+        "pattern": "run originalCostBoundTest"
+      },
+      {
+        "file": "crates/ledger/tests/unit/recovery.rs",
+        "pattern": "fn authored_ceiling_cannot_underreserve_the_original_wire_cost"
+      }
+    ]
+  },
+  {
+    "id": "ConsumeBeforeSend",
+    "witnesses": [
+      {
+        "file": "crates/ledger/tests/unit/recovery.rs",
+        "pattern": "fn crash_after_consumption_never_reopens_or_refunds"
+      },
+      {
+        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
+        "pattern": "run consumeBeforeSendTest"
+      }
+    ]
+  },
+  {
+    "id": "CurrentFinalGuard",
+    "witnesses": [
+      {
+        "file": "crates/ledger/tests/unit/serialization.rs",
+        "pattern": "fn effective_publication_cannot_overtake_the_locked_send_boundary"
+      },
+      {
+        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
+        "pattern": "run stalePermitTest"
+      }
+    ]
+  },
+  {
+    "id": "UnknownRetainsHold",
+    "witnesses": [
+      {
+        "file": "crates/execution/tests/unit/https_transport.rs",
+        "pattern": "fn partial_transport_failure_is_unknown_and_never_retried"
+      },
+      {
+        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
+        "pattern": "run unknownRefundCounterexampleTest"
+      }
+    ]
+  },
+  {
+    "id": "NoImplicitRetry",
+    "witnesses": [
+      {
+        "file": "crates/ledger/tests/unit/concurrency.rs",
+        "pattern": "fn concurrent_consumers_invoke_once"
+      },
+      {
+        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
+        "pattern": "run duplicateRetryCounterexampleTest"
+      }
+    ]
+  },
+  {
+    "id": "DevelopmentPolicy",
+    "witnesses": [
+      {
+        "file": "crates/contracts/src/lib.rs",
+        "pattern": "mode = deny"
+      }
+    ]
+  },
+  {
+    "id": "MessageScopedAuthority",
+    "witnesses": [
+      {
+        "file": "crates/ledger/tests/unit/stream_properties.rs",
+        "pattern": "fn unknown_range_after_restart_blocks_new_nonce_and_authority"
+      },
+      {
+        "file": "crates/policy/tests/unit/stream_policy.rs",
+        "pattern": "fn specification_derived_policy_is_typed_and_constrains_actual_range_facts"
+      }
+    ]
+  },
+  {
+    "id": "RangeFinalGuard",
+    "witnesses": [
+      {
+        "file": "crates/execution/tests/unit/stream_wire.rs",
+        "pattern": "fn effective_revocation_stops_actual_next_range_and_prefix_reconnect"
+      },
+      {
+        "file": "dev/proofs/quint/StreamingExecution.qnt",
+        "pattern": "run revokedBetweenBurnAndWriteTest"
+      }
+    ]
+  },
+  {
+    "id": "UnknownPrefixRecovery",
+    "witnesses": [
+      {
+        "file": "crates/execution/tests/unit/stream_wire.rs",
+        "pattern": "fn native_partial_write_freezes_tail_and_never_refunds"
+      },
+      {
+        "file": "dev/proofs/lean/StreamingExecution.lean",
+        "pattern": "theorem unknown_cannot_resume"
+      }
+    ]
+  },
+  {
+    "id": "PrivateBufferCustody",
+    "witnesses": [
+      {
+        "file": "crates/execution/tests/unit/stream_wire.rs",
+        "pattern": "fn tls_flush_cannot_release_a_tail_after_effective_revocation"
+      },
+      {
+        "file": "crates/execution/tests/unit/stream_wire.rs",
+        "pattern": "fn recovered_old_worker_socket_cannot_use_new_custody"
+      }
+    ]
+  },
+  {
+    "id": "BoundedPerformanceWork",
+    "witnesses": [
+      {
+        "file": "crates/policy/tests/unit/cache_storage.rs",
+        "pattern": "fn compiled_storage_caps_slots_and_exact_hits_do_not_allocate_new_entries"
+      },
+      {
+        "file": "dev/proofs/lean/StreamingExecution.lean",
+        "pattern": "theorem bounded_range_copy_work"
+      }
+    ]
+  },
+  {
+    "id": "TrackedWriterDrain",
+    "witnesses": [
+      {
+        "file": "crates/server/tests/unit/runtime_lifecycle.rs",
+        "pattern": "async fn detached_native_writer_keeps_slot_until_drain_acknowledges_completion"
+      },
+      {
+        "file": "crates/server/tests/unit/runtime_lifecycle.rs",
+        "pattern": "fn arbitrary_disconnect_shutdown_and_drain_schedules_keep_native_custody"
+      },
+      {
+        "file": "go/dev/provider_grpc_test.go",
+        "pattern": "func TestProviderClientCancellationCannotReplay"
+      },
+      {
+        "file": "dev/proofs/quint/RuntimeLifecycle.qnt",
+        "pattern": "run prematureAckCounterexampleTest"
+      },
+      {
+        "file": "dev/proofs/lean/StreamingExecution.lean",
+        "pattern": "theorem execution_and_drain_composition"
+      }
+    ]
+  },
+  {"id":"GrpcCallerBinding","witnesses":[
+    {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderRPCIdentityAndCancellation"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_name_is_not_key_authority"}]},
+  {"id":"CommittedProviderRouting","witnesses":[
+    {"file":"go/internal/routing/provider_test.go","pattern":"func TestProviderRoutingCannotRewriteOriginalContract"},
+    {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderGRPCStreamingAndArrowOption"}]},
+  {"id":"AffineProviderAttempt","witnesses":[
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn arbitrary_provider_replays_restarts_and_release_batches_keep_original_claim"},
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run sdkRetryCannotConsumeAgainTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem consumed_unknown_retains_original_hold"}]},
+  {"id":"EncodingAuthorityEquivalence","witnesses":[
+    {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderArrowChecksEveryRow"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem arrow_cannot_weaken_row_authority"}]},
+  {"id":"ProviderUnknownRetention","witnesses":[
+    {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderPartialRequestAndRestartRetainUnknownClaim"},
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run unknownRefundCounterexampleTest"}]},
+  {"id":"ReservedAuthorityAdmission","witnesses":[
+    {"file":"crates/server/tests/unit/admission.rs","pattern":"async fn saturated_detached_execution_preserves_publication_and_observation_custody"},
+    {"file":"go/dev/provider_capacity_test.go","pattern":"func TestProviderSaturatedExecutionPreservesRevocationAndObservation"},
+    {"file":"dev/proofs/quint/NativeAdmission.qnt","pattern":"run sharedLaneStarvationCounterexampleTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem execution_and_admission_composition"}]},
+  {"id":"ConnectionCustodyBound","witnesses":[
+    {"file":"crates/server/tests/unit/connections.rs","pattern":"async fn tcp_socket_owns_capacity_until_destruction_and_preserves_io_and_peer_identity"},
+    {"file":"go/dev/provider_connections_test.go","pattern":"func TestProviderPreTLSConnectionsAreBoundedAndExpire"},
+    {"file":"go/dev/provider_connections_test.go","pattern":"func TestProviderShutdownDestroysStalledTLSBeforeAcknowledgingExit"},
+    {"file":"dev/proofs/quint/ConnectionAdmission.qnt","pattern":"run earlyReturnCounterexampleTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem provider_and_connection_composition"}]},
+  {"id":"SourceIngressBinding","witnesses":[
+    {"file":"go/dev/provider_source_test.go","pattern":"func TestProviderSourceIngressBindsCertificateCredentialAndMethod"},
+    {"file":"go/dev/provider_capacity_test.go","pattern":"full operation ingress blocked new source session"},
+    {"file":"crates/server/tests/unit/grpc_ingress.rs","pattern":"async fn aliased_or_empty_source_identity_is_rejected_before_serving"},
+    {"file":"dev/proofs/quint/SourceIngress.qnt","pattern":"run forwardedCredentialCounterexampleTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem ingress_step_preserves_independent_custody"}]},
+  {"id":"DurablePublicationDecision","witnesses":[
+    {"file":"crates/ledger/tests/unit/publication.rs","pattern":"fn outcome_insert_failure_rolls_back_policy_schema_and_result_together"},
+    {"file":"crates/ledger/tests/unit/publication.rs","pattern":"fn concurrent_same_identity_commits_only_one_revision"},
+    {"file":"go/dev/publication_recovery_test.go","pattern":"func TestProviderPublicationLostReplyRestartAndHistoricalDecision"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run deletedOutcomeCounterexampleTest"},
+    {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem recovery_and_provider_accounting_composition"}]},
+  {"id":"OwnedSourceConnection","witnesses":[
+    {"file":"crates/server/tests/unit/source_owner.rs","pattern":"async fn reused_source_connection_observes_other_writer_and_preserves_historical_result"},
+    {"file":"crates/server/tests/unit/source_owner.rs","pattern":"async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finishes"},
+    {"file":"crates/ledger/tests/unit/publication.rs","pattern":"fn connection_reuse_rejects_an_unresolved_explicit_transaction"},
+    {"file":"dev/proofs/quint/SourceOwner.qnt","pattern":"run swallowedCloseErrorCounterexampleTest"},
+    {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem owned_worker_and_publication_composition"}]},
+  {"id":"FinalInvocationCancellation","witnesses":[
+    {"file":"crates/execution/tests/unit/provider_dispatch.rs","pattern":"fn cancellation_during_sql_wait_blocks_transport_and_keeps_spent_claim"},
+    {"file":"crates/execution/tests/unit/provider_dispatch.rs","pattern":"fn uncancelled_control_reaches_real_https_transport_once"},
+    {"file":"dev/proofs/quint/DispatchCancellation.qnt","pattern":"run skippedRecheckCounterexampleTest"},
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run missingFinalCancellationCheckCounterexampleTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem cancellation_and_original_hold_composition"}]},
+  {"id":"OriginalReleaseCapability","witnesses":[
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn equal_batch_digests_cannot_transfer_release_between_original_nodes"},
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn release_encoding_cannot_change_after_preparation"},
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn release_capabilities_bind_plan_encoding_and_restart_session"},
+    {"file":"dev/proofs/quint/ReleaseBinding.qnt","pattern":"run crossPlanCounterexampleTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem release_binding_and_execution_composition"}]},
+  {"id":"NativeBenchmarkCoverage","witnesses":[
+    {"file":"go/internal/devrunner/benchmark_test.go","pattern":"func TestBenchmarkEvidenceRequiresEveryCase"},
+    {"file":"go/dev/workspace_test.go","pattern":"func TestCargoWorkspaceAndDevelopmentGates"},
+    {"file":"crates/execution/benches/gateway.rs","pattern":"fn guarded_provider"},
+    {"file":"go/dev/provider_bench_test.go","pattern":"func BenchmarkGatewayInspect"}]}
+]

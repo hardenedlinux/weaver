@@ -1,0 +1,191 @@
+# Core ownership and protocol only. Qualification evidence stays in Org.
+...@lib/theme
+title: ORIGINAL OBLIGATION / INDEPENDENT CONSUMPTION / CONSERVATIVE RECOVERY {
+  class: title
+  near: top-center
+}
+semantic: SEMANTICS / CLOUD LIFECYCLE {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  original: Scheme / original obligation\nClaim / budget / account / history\nSame key across nonce and reconnect {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  policy: Cedar / Code as Policy\nActual operation and state binding\nAll required layers must allow {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  worker: Go / Agent and Kubernetes lifecycle\nReconcile exact original status\nNo capability from status readback {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  goBrand: "" {
+    shape: image
+    icon: assets/go.svg
+    top: 452
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: assets/kubernetes.svg
+    top: 452
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+root: RUST / INDEPENDENT ROOT {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  issued: Original seal and grant tombstone\nDurable before capability exposure\nNo regrant after a lost response {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  burn: Final epoch check and one burn\nDurable before original effect\nSerialized with the owner barrier {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  result: Authenticated original result\nExact burn and settlement binding\nNo confirmation from absence {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+broker: RUST / ACTUAL EFFECT OWNER {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  barrier: Qualified writer barrier\nOld FD / callback / buffer aliases\nNo new stale submissions {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  application: Original affine accepted I/O\nAccount mutation and real receipt\nAt most that original completion {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  receipt: Late original receipt resolution\nSurviving owner or authentic copy\nNever recreate pending execution {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  rustBrand: "" {
+    shape: image
+    icon: assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+recovery: RECOVERY / DERIVED JOURNAL {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  loss: Journal lost or mixed snapshot\nReadiness closes before recovery\nIndependent root must survive {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  unknown: Burned with unknown outcome\nRetain original booked obligation\nNo replay / refund / new permit {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  rebuild: Complete current root and source\nRebuild copies and account category\nNo new application or send right {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+quint: QUINT\nLost replies / journal rollback / stale held capabilities {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nOriginal joins / one use / retained shared reservations {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+semantic.original -> root.issued
+semantic.policy -> root.burn
+root.issued -> root.burn
+broker.barrier -> root.burn
+root.burn -> broker.application
+broker.application -> broker.receipt
+broker.receipt -> root.result
+root.burn -> recovery.unknown
+recovery.loss -> recovery.unknown
+recovery.unknown -> recovery.rebuild: all burns resolved
+root.result -> recovery.rebuild

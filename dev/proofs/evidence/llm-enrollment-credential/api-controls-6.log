@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-6","limit":20}
+
+  LlmEnrollmentCredential
+    ok signatureWithoutRequestRejectedTest passed 1 test(s)
+    ok lostSignerReplyRetainsExactIntentTest passed 1 test(s)
+    ok wrongBodyCallbackRejectedTest passed 1 test(s)
+
+  3 passing (728ms)
+@@DONE {"label":"api-controls-6","passed":["signatureWithoutRequestRejectedTest","lostSignerReplyRetainsExactIntentTest","wrongBodyCallbackRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

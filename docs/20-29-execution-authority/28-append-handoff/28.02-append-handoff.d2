@@ -1,0 +1,192 @@
+# Core design only; source identities and proof receipts remain in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / LIVE APPEND / CHECKPOINT HANDOFF {
+  class: title
+  near: top-center
+}
+protocols: GO / ORIGINAL OUTCOME RECOVERY {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  mcp: Append or cut response lost\nQuery the original operation\nNo fresh key or inferred abort {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  a2a: Original account observations\nClaim / profile / reservation lineage\nUnknown usage retains its hold {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  acp: Cloud native owner recovery\nOld callbacks grant no authority\nRetain unresolved original work {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+registry: SCHEME / ORDERED COVERAGE {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  origin: Original account and source binding\nApplications / reservations / holds\nStable semantic and budget identity {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  alias: Cedar Code as Policy\nAppend / cut / switch / delete\nCurrent owner / generation / frontier {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  query: Committed head limits replay\nLate commit uses the original gate\nPending tail grants no refund {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+}
+recovery: RUST / ADMISSION AND CUT {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  projection: Admit exact durable frame\nCAS current generation and frontier\nPreserve original operation identity {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  join: Seal cut in retained control log\nKeep pending closed segments\nOpen one successor append lane {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  fence: Stage exact captured replacement\nNew appends enter the live tail\nOld generation cannot reopen {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+broker: RUST / SWITCH AND RETAIN {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  cas: CAS the current handoff bundle\nNew base and current live descriptor\nRecheck owner and append frontier {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  alias: Serialize exact-object deletion\nProtect base / closed / live / candidate\nNo old descriptor bypass {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  hold: Recover base and admitted tail\nVerify independent admission minimum\nUnknown work keeps its original hold {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+quint: QUINT\nBefore and after cut / late commit / response loss\nStale generation / frontier / worker / tail deletion {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nActual flush / checkpoint / account composition\nCaptured prefix and live tail / original unknown holds {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+protocols.mcp -> registry.origin
+protocols.a2a -> registry.alias
+protocols.acp -> registry.query
+registry.origin -> recovery.projection
+registry.alias -> recovery.join
+registry.query -> recovery.fence { style.stroke-dash: 4 }
+recovery.projection -> recovery.join
+recovery.join -> recovery.fence
+recovery.fence -> broker.cas
+broker.cas -> broker.alias
+broker.alias -> broker.hold
+broker.hold -> broker.cas: Refresh frontier { style.stroke-dash: 4 }

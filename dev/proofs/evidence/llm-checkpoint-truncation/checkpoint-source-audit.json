@@ -1,0 +1,6956 @@
+[
+  {
+    "id": "P12",
+    "path": "modules/governance/policy/authorized-effect-token.ss",
+    "lines": [
+      {
+        "line": 48,
+        "text": "           (.ref token-object 'durability)"
+      },
+      {
+        "line": 92,
+        "text": "         (cons 'validity token-validity) (cons 'durability profile)"
+      },
+      {
+        "line": 130,
+        "text": "     ((eq? (.ref token 'durability) 'diagnostic) 'diagnostic-cannot-execute)"
+      },
+      {
+        "line": 135,
+        "text": "    (.o (kind 'poo-flow-token-validation-receipt)"
+      },
+      {
+        "line": 140,
+        "text": "        (durability (.ref token 'durability)))))"
+      },
+      {
+        "line": 151,
+        "text": "    (.o (kind 'poo-flow-token-consumption-receipt)"
+      },
+      {
+        "line": 152,
+        "text": "        (outcome 'committed) (token-id (.ref token 'token-id))"
+      },
+      {
+        "line": 158,
+        "text": "        (durability (.ref token 'durability)))))"
+      }
+    ]
+  },
+  {
+    "id": "P13",
+    "path": "modules/governance/policy/strict-mediation.ss",
+    "lines": [
+      {
+        "line": 13,
+        "text": "        poo-flow-strict-mediation-result-receipt)"
+      },
+      {
+        "line": 19,
+        "text": "      (durability 'strict)))"
+      },
+      {
+        "line": 21,
+        "text": "(def (transition current-state receipt-value)"
+      },
+      {
+        "line": 23,
+        "text": "      (state current-state) (receipt receipt-value)))"
+      },
+      {
+        "line": 25,
+        "text": "(def (negative-receipt reason current-state effect-token)"
+      },
+      {
+        "line": 26,
+        "text": "  (.o (kind 'poo-flow-strict-mediation-receipt)"
+      },
+      {
+        "line": 31,
+        "text": "      (durability 'strict)))"
+      },
+      {
+        "line": 37,
+        "text": "    (transition state (negative-receipt 'execution-root-fork state token)))"
+      },
+      {
+        "line": 42,
+        "text": "        (transition state (negative-receipt (.ref validation 'code) state token))"
+      },
+      {
+        "line": 50,
+        "text": "                 (receipt"
+      },
+      {
+        "line": 51,
+        "text": "                  (.o (kind 'poo-flow-strict-mediation-receipt)"
+      },
+      {
+        "line": 57,
+        "text": "                      (durability 'strict))))"
+      },
+      {
+        "line": 58,
+        "text": "            (transition next-state receipt))"
+      },
+      {
+        "line": 59,
+        "text": "          (let* ((consumption-receipt"
+      },
+      {
+        "line": 65,
+        "text": "                   (.ref consumption-receipt 'execution-root)"
+      },
+      {
+        "line": 69,
+        "text": "                 (receipt"
+      },
+      {
+        "line": 70,
+        "text": "                  (.o (kind 'poo-flow-strict-mediation-receipt)"
+      },
+      {
+        "line": 71,
+        "text": "                      (accepted? #t) (outcome 'committed) (code 'root-committed)"
+      },
+      {
+        "line": 74,
+        "text": "                      (after-root (.ref consumption-receipt 'execution-root))"
+      },
+      {
+        "line": 75,
+        "text": "                      (consumption consumption-receipt) (durability 'strict))))"
+      },
+      {
+        "line": 76,
+        "text": "            (transition next-state receipt)))))))"
+      },
+      {
+        "line": 82,
+        "text": "(def (poo-flow-strict-mediation-result-receipt result)"
+      },
+      {
+        "line": 83,
+        "text": "  (.ref result 'receipt))"
+      }
+    ]
+  },
+  {
+    "id": "P15",
+    "path": "modules/assurance/effect-host.ss",
+    "lines": [
+      {
+        "line": 6,
+        "text": ";;; Runtime Host. Only configured runtime operations evaluate policy / deliver."
+      },
+      {
+        "line": 9,
+        "text": "        :poo-flow/lambda-aitia/modules/assurance/host"
+      },
+      {
+        "line": 15,
+        "text": "(export assurance-effect-host assurance-effect-host-epoch"
+      },
+      {
+        "line": 16,
+        "text": "        assurance-effect-host-authorize! assurance-effect-host-grant-current?"
+      },
+      {
+        "line": 17,
+        "text": "        assurance-effect-host-reserve! assurance-effect-host-deliver!"
+      },
+      {
+        "line": 18,
+        "text": "        assurance-effect-host-revoke!)"
+      },
+      {
+        "line": 20,
+        "text": "(def hosts (make-hash-table-eq weak-keys: #t))"
+      },
+      {
+        "line": 24,
+        "text": "(def (entry host)"
+      },
+      {
+        "line": 25,
+        "text": "  (let (state (hash-get hosts host))"
+      },
+      {
+        "line": 27,
+        "text": "      (error \"effect Host requires its exact serialized owner\"))"
+      },
+      {
+        "line": 28,
+        "text": "    (when (vector-ref state 7) (error \"effect Host mutation during runtime handoff\"))"
+      },
+      {
+        "line": 33,
+        "text": "      (error \"effect Host clock must be monotonic and nonnegative\"))"
+      },
+      {
+        "line": 45,
+        "text": "(def (assurance-effect-host authorize deliver clock lease)"
+      },
+      {
+        "line": 48,
+        "text": "    (error \"invalid effect Host runtime configuration\"))"
+      },
+      {
+        "line": 49,
+        "text": "  (let (host (.o kind: 'aitia.effect-host.v1))"
+      },
+      {
+        "line": 50,
+        "text": "    (hash-put! hosts host (vector (current-thread) authorize deliver clock lease 0 0 #f 0))"
+      },
+      {
+        "line": 51,
+        "text": "    host))"
+      },
+      {
+        "line": 52,
+        "text": "(def (assurance-effect-host-epoch host) (vector-ref (entry host) 5))"
+      },
+      {
+        "line": 53,
+        "text": "(def (assurance-effect-host-revoke! host)"
+      },
+      {
+        "line": 54,
+        "text": "  (let (state (entry host))"
+      },
+      {
+        "line": 57,
+        "text": "(def (grant-entry host grant)"
+      },
+      {
+        "line": 59,
+        "text": "    (and issued (eq? host (vector-ref issued 0))"
+      },
+      {
+        "line": 68,
+        "text": "       (assurance-host-cedar-request-current? (vector-ref issued 1) (vector-ref issued 2))"
+      },
+      {
+        "line": 80,
+        "text": "(def (assurance-effect-host-grant-current? host grant)"
+      },
+      {
+        "line": 81,
+        "text": "  (let (state (entry host))"
+      },
+      {
+        "line": 82,
+        "text": "    (and (current? state (grant-entry host grant)) #t)))"
+      },
+      {
+        "line": 84,
+        "text": "(def (assurance-effect-host-authorize! host verification-host request)"
+      },
+      {
+        "line": 85,
+        "text": "  (let* ((state (entry host)) (now (instant state)) (epoch (vector-ref state 5)))"
+      },
+      {
+        "line": 86,
+        "text": "    (and (assurance-host-cedar-request-current? verification-host request)"
+      },
+      {
+        "line": 91,
+        "text": "                (assurance-host-cedar-request-current? verification-host request)"
+      },
+      {
+        "line": 111,
+        "text": "                             (vector host verification-host request token epoch until"
+      },
+      {
+        "line": 116,
+        "text": "(def (assurance-effect-host-reserve! host grant)"
+      },
+      {
+        "line": 117,
+        "text": "  (let* ((state (entry host)) (issued (grant-entry host grant)))"
+      },
+      {
+        "line": 121,
+        "text": "           (hash-put! reservations reservation (vector host grant issued #f))"
+      },
+      {
+        "line": 124,
+        "text": "(def (delivery-receipt outcome-value invoked?)"
+      },
+      {
+        "line": 126,
+        "text": "      delivered?: (eq? outcome-value 'delivered) durable?: #f distributed-authority?: #f))"
+      },
+      {
+        "line": 127,
+        "text": "(def (assurance-effect-host-deliver! host reservation)"
+      },
+      {
+        "line": 128,
+        "text": "  (let* ((state (entry host)) (issued (hash-get reservations reservation)))"
+      },
+      {
+        "line": 130,
+        "text": "     ((or (not issued) (not (eq? host (vector-ref issued 0))) (vector-ref issued 3))"
+      },
+      {
+        "line": 131,
+        "text": "      (delivery-receipt 'rejected #f))"
+      },
+      {
+        "line": 136,
+        "text": "        (if (and (grant-entry host (vector-ref issued 1)) (current? state grant-state))"
+      },
+      {
+        "line": 143,
+        "text": "            (delivery-receipt outcome #t))"
+      },
+      {
+        "line": 144,
+        "text": "          (delivery-receipt 'rejected #f)))))))"
+      }
+    ]
+  },
+  {
+    "id": "P17",
+    "path": "modules/ai-agentic-context/features/memory/durable/store-backend.ss",
+    "lines": [
+      {
+        "line": 6,
+        "text": ";;; Boundary: durable runtime store backend negotiation and Marlin handoff ABI."
+      },
+      {
+        "line": 8,
+        "text": ";;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs."
+      },
+      {
+        "line": 16,
+        "text": "        :poo-flow/modules/ai-agentic-context/features/memory/durable/store)"
+      },
+      {
+        "line": 18,
+        "text": "(export +poo-flow-durable-runtime-store-backend-kind+"
+      },
+      {
+        "line": 19,
+        "text": "        +poo-flow-durable-runtime-store-backend-schema+"
+      },
+      {
+        "line": 20,
+        "text": "        +poo-flow-durable-runtime-store-backend-receipt-schema+"
+      },
+      {
+        "line": 21,
+        "text": "        +poo-flow-durable-runtime-store-backend-diagnostic-schema+"
+      },
+      {
+        "line": 22,
+        "text": "        +poo-flow-durable-runtime-store-negotiation-schema+"
+      },
+      {
+        "line": 23,
+        "text": "        +poo-flow-durable-runtime-store-handoff-schema+"
+      },
+      {
+        "line": 24,
+        "text": "        +poo-flow-durable-runtime-store-backend-protocols+"
+      },
+      {
+        "line": 25,
+        "text": "        +poo-flow-durable-runtime-store-handoff-required-fields+"
+      },
+      {
+        "line": 26,
+        "text": "        make-poo-flow-durable-runtime-store-backend-receipt"
+      },
+      {
+        "line": 27,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt?"
+      },
+      {
+        "line": 28,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-backend-id"
+      },
+      {
+        "line": 29,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-backend-kind"
+      },
+      {
+        "line": 30,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-runtime-owner"
+      },
+      {
+        "line": 31,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-executable"
+      },
+      {
+        "line": 32,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-protocol"
+      },
+      {
+        "line": 33,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-supported-ledger-kinds"
+      },
+      {
+        "line": 34,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-supported-capability-flags"
+      },
+      {
+        "line": 35,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-operation-kinds"
+      },
+      {
+        "line": 36,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-valid?"
+      },
+      {
+        "line": 37,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-diagnostics"
+      },
+      {
+        "line": 38,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt-metadata"
+      },
+      {
+        "line": 39,
+        "text": "        make-poo-flow-durable-runtime-store-negotiation-receipt"
+      },
+      {
+        "line": 40,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt?"
+      },
+      {
+        "line": 41,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-store-id"
+      },
+      {
+        "line": 42,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-backend-id"
+      },
+      {
+        "line": 43,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-backend-kind"
+      },
+      {
+        "line": 44,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-selected?"
+      },
+      {
+        "line": 45,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-handoff-ready?"
+      },
+      {
+        "line": 46,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-contract-row"
+      },
+      {
+        "line": 47,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-backend-row"
+      },
+      {
+        "line": 48,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-required-ledger-kinds"
+      },
+      {
+        "line": 49,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-supported-ledger-kinds"
+      },
+      {
+        "line": 50,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-missing-ledger-kinds"
+      },
+      {
+        "line": 51,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-required-capability-flags"
+      },
+      {
+        "line": 52,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-supported-capability-flags"
+      },
+      {
+        "line": 53,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-missing-capability-flags"
+      },
+      {
+        "line": 54,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-operation-kinds"
+      },
+      {
+        "line": 55,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-unsupported-operation-kinds"
+      },
+      {
+        "line": 56,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-manifest-operation"
+      },
+      {
+        "line": 57,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-valid?"
+      },
+      {
+        "line": 58,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-diagnostics"
+      },
+      {
+        "line": 59,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt-metadata"
+      },
+      {
+        "line": 60,
+        "text": " poo-flow-durable-runtime-store-backend"
+      },
+      {
+        "line": 61,
+        "text": " poo-flow-durable-runtime-store-backend/default"
+      },
+      {
+        "line": 62,
+        "text": " +poo-flow-turso-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 63,
+        "text": " poo-flow-durable-runtime-store-backend/turso"
+      },
+      {
+        "line": 64,
+        "text": " poo-flow-durable-runtime-store-backend?"
+      },
+      {
+        "line": 65,
+        "text": "        poo-flow-durable-runtime-store-backend->receipt"
+      },
+      {
+        "line": 66,
+        "text": "        poo-flow-durable-runtime-store-backend-receipt->alist"
+      },
+      {
+        "line": 67,
+        "text": "        poo-flow-durable-runtime-store-backend-negotiation"
+      },
+      {
+        "line": 68,
+        "text": "        poo-flow-durable-runtime-store-negotiation-receipt->alist"
+      },
+      {
+        "line": 69,
+        "text": "        poo-flow-durable-runtime-store-negotiation->marlin-handoff"
+      },
+      {
+        "line": 70,
+        "text": "        poo-flow-durable-runtime-store-negotiations->alists)"
+      },
+      {
+        "line": 72,
+        "text": "(def +poo-flow-durable-runtime-store-backend-kind+"
+      },
+      {
+        "line": 73,
+        "text": "  'poo-flow.durable.runtime-store-backend)"
+      },
+      {
+        "line": 75,
+        "text": "(def +poo-flow-durable-runtime-store-backend-schema+"
+      },
+      {
+        "line": 76,
+        "text": "  'poo-flow.module-system.durable-runtime-store-backend.v1)"
+      },
+      {
+        "line": 78,
+        "text": "(def +poo-flow-durable-runtime-store-backend-receipt-schema+"
+      },
+      {
+        "line": 79,
+        "text": "  'poo-flow.module-system.durable-runtime-store-backend.receipt.v1)"
+      },
+      {
+        "line": 81,
+        "text": "(def +poo-flow-durable-runtime-store-backend-diagnostic-schema+"
+      },
+      {
+        "line": 82,
+        "text": "  'poo-flow.module-system.durable-runtime-store-backend.diagnostic.v1)"
+      },
+      {
+        "line": 84,
+        "text": "(def +poo-flow-durable-runtime-store-negotiation-schema+"
+      },
+      {
+        "line": 85,
+        "text": "  'poo-flow.module-system.durable-runtime-store-negotiation.v1)"
+      },
+      {
+        "line": 87,
+        "text": "(def +poo-flow-durable-runtime-store-handoff-schema+"
+      },
+      {
+        "line": 88,
+        "text": "  'poo-flow.module-system.durable-runtime-store.marlin-handoff.v1)"
+      },
+      {
+        "line": 90,
+        "text": "(def +poo-flow-durable-runtime-store-backend-protocols+"
+      },
+      {
+        "line": 93,
+        "text": "(def +poo-flow-durable-runtime-store-handoff-required-fields+"
+      },
+      {
+        "line": 105,
+        "text": "(def (poo-flow-durable-runtime-backend-option options key default-value)"
+      },
+      {
+        "line": 110,
+        "text": "(def (poo-flow-durable-runtime-backend-slot object key default-value)"
+      },
+      {
+        "line": 116,
+        "text": "(def (poo-flow-durable-runtime-backend-alist-ref row key default-value)"
+      },
+      {
+        "line": 123,
+        "text": "(def (poo-flow-durable-runtime-backend-every? predicate values)"
+      },
+      {
+        "line": 127,
+        "text": "    (poo-flow-durable-runtime-backend-every? predicate (cdr values)))"
+      },
+      {
+        "line": 131,
+        "text": "(def (poo-flow-durable-runtime-backend-member? value values)"
+      },
+      {
+        "line": 135,
+        "text": "(def (poo-flow-durable-runtime-backend-symbol-list? values)"
+      },
+      {
+        "line": 137,
+        "text": "       (poo-flow-durable-runtime-backend-every? symbol? values)))"
+      },
+      {
+        "line": 140,
+        "text": "(def (poo-flow-durable-runtime-backend-diagnostic code slot severity payload)"
+      },
+      {
+        "line": 142,
+        "text": "   (cons 'kind +poo-flow-durable-runtime-store-backend-diagnostic-schema+)"
+      },
+      {
+        "line": 143,
+        "text": "   (cons 'schema +poo-flow-durable-runtime-store-backend-diagnostic-schema+)"
+      },
+      {
+        "line": 145,
+        "text": "   (cons 'phase 'durable-runtime-store-backend)"
+      },
+      {
+        "line": 149,
+        "text": "   (cons 'recoverable?"
+      },
+      {
+        "line": 150,
+        "text": "         (poo-flow-durable-runtime-backend-option"
+      },
+      {
+        "line": 152,
+        "text": "          'recoverable?"
+      },
+      {
+        "line": 157,
+        "text": "(def (poo-flow-durable-runtime-backend-required-symbol-diagnostics code slot value)"
+      },
+      {
+        "line": 161,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 167,
+        "text": "            (cons 'recoverable? #t))))))"
+      },
+      {
+        "line": 170,
+        "text": "(def (poo-flow-durable-runtime-backend-required-string-diagnostics code slot value)"
+      },
+      {
+        "line": 174,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 180,
+        "text": "            (cons 'recoverable? #t))))))"
+      },
+      {
+        "line": 183,
+        "text": "(def (poo-flow-durable-runtime-backend-symbol-list-diagnostics code"
+      },
+      {
+        "line": 185,
+        "text": "                                                               allowed"
+      },
+      {
+        "line": 189,
+        "text": "   ((not (poo-flow-durable-runtime-backend-symbol-list? values))"
+      },
+      {
+        "line": 191,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 198,
+        "text": "            (cons 'allowed allowed)"
+      },
+      {
+        "line": 199,
+        "text": "            (cons 'recoverable? #t)))))"
+      },
+      {
+        "line": 200,
+        "text": "   ((poo-flow-durable-runtime-backend-every?"
+      },
+      {
+        "line": 202,
+        "text": "       (poo-flow-durable-runtime-backend-member? value allowed))"
+      },
+      {
+        "line": 207,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 213,
+        "text": "            (cons 'allowed allowed)"
+      },
+      {
+        "line": 214,
+        "text": "            (cons 'recoverable? #t)))))))"
+      },
+      {
+        "line": 217,
+        "text": "(def (poo-flow-durable-runtime-backend-missing-symbols required supported)"
+      },
+      {
+        "line": 220,
+        "text": "   ((poo-flow-durable-runtime-backend-member? (car required) supported)"
+      },
+      {
+        "line": 221,
+        "text": "    (poo-flow-durable-runtime-backend-missing-symbols (cdr required)"
+      },
+      {
+        "line": 225,
+        "text": "          (poo-flow-durable-runtime-backend-missing-symbols (cdr required)"
+      },
+      {
+        "line": 229,
+        "text": "(def (poo-flow-durable-runtime-store-backend backend-id"
+      },
+      {
+        "line": 239,
+        "text": "          (poo-flow-durable-runtime-backend-option"
+      },
+      {
+        "line": 244,
+        "text": "          (poo-flow-durable-runtime-backend-option options 'metadata '())))"
+      },
+      {
+        "line": 247,
+        "text": "      (cons 'durable-runtime-store-backend-kind"
+      },
+      {
+        "line": 248,
+        "text": "            +poo-flow-durable-runtime-store-backend-kind+)"
+      },
+      {
+        "line": 249,
+        "text": "      (cons 'durable-runtime-store-backend-schema"
+      },
+      {
+        "line": 250,
+        "text": "            +poo-flow-durable-runtime-store-backend-schema+)"
+      },
+      {
+        "line": 262,
+        "text": "(def poo-flow-durable-runtime-store-backend/default"
+      },
+      {
+        "line": 263,
+        "text": "  (poo-flow-durable-runtime-store-backend"
+      },
+      {
+        "line": 268,
+        "text": "   +poo-flow-durable-runtime-store-ledger-kinds+"
+      },
+      {
+        "line": 269,
+        "text": "   +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 270,
+        "text": "   +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 274,
+        "text": "(def +poo-flow-turso-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 275,
+        "text": "  (append +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 282,
+        "text": "(def poo-flow-durable-runtime-store-backend/turso"
+      },
+      {
+        "line": 283,
+        "text": "  (poo-flow-durable-runtime-store-backend"
+      },
+      {
+        "line": 288,
+        "text": "   +poo-flow-durable-runtime-store-ledger-kinds+"
+      },
+      {
+        "line": 289,
+        "text": "   +poo-flow-turso-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 290,
+        "text": "   +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 302,
+        "text": "(def (poo-flow-durable-runtime-store-backend? value)"
+      },
+      {
+        "line": 304,
+        "text": "       (.slot? value 'durable-runtime-store-backend-kind)"
+      },
+      {
+        "line": 305,
+        "text": "       (eq? (.ref value 'durable-runtime-store-backend-kind)"
+      },
+      {
+        "line": 306,
+        "text": "            +poo-flow-durable-runtime-store-backend-kind+)))"
+      },
+      {
+        "line": 308,
+        "text": ";; : (-> PooDurableRuntimeStoreBackend [Alist])"
+      },
+      {
+        "line": 309,
+        "text": "(def (poo-flow-durable-runtime-store-backend-diagnostics backend)"
+      },
+      {
+        "line": 311,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'backend-id #f))"
+      },
+      {
+        "line": 313,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'backend-kind #f))"
+      },
+      {
+        "line": 315,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'executable #f))"
+      },
+      {
+        "line": 317,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'protocol #f))"
+      },
+      {
+        "line": 319,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'runtime-owner #f))"
+      },
+      {
+        "line": 321,
+        "text": "         (poo-flow-durable-runtime-backend-slot"
+      },
+      {
+        "line": 326,
+        "text": "         (poo-flow-durable-runtime-backend-slot"
+      },
+      {
+        "line": 331,
+        "text": "         (poo-flow-durable-runtime-backend-slot backend 'operation-kinds #f)))"
+      },
+      {
+        "line": 332,
+        "text": "    (if (poo-flow-durable-runtime-store-backend? backend)"
+      },
+      {
+        "line": 333,
+        "text": "      (append"
+      },
+      {
+        "line": 334,
+        "text": "       (poo-flow-durable-runtime-backend-required-symbol-diagnostics"
+      },
+      {
+        "line": 338,
+        "text": "       (poo-flow-durable-runtime-backend-required-symbol-diagnostics"
+      },
+      {
+        "line": 342,
+        "text": "       (poo-flow-durable-runtime-backend-required-string-diagnostics"
+      },
+      {
+        "line": 346,
+        "text": "       (poo-flow-durable-runtime-backend-required-symbol-diagnostics"
+      },
+      {
+        "line": 350,
+        "text": "       (if (poo-flow-durable-runtime-backend-member?"
+      },
+      {
+        "line": 352,
+        "text": "            +poo-flow-durable-runtime-store-backend-protocols+)"
+      },
+      {
+        "line": 355,
+        "text": "          (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 361,
+        "text": "                 (cons 'allowed"
+      },
+      {
+        "line": 362,
+        "text": "                       +poo-flow-durable-runtime-store-backend-protocols+)"
+      },
+      {
+        "line": 363,
+        "text": "                 (cons 'recoverable? #t)))))"
+      },
+      {
+        "line": 367,
+        "text": "          (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 374,
+        "text": "                 (cons 'recoverable? #t)))))"
+      },
+      {
+        "line": 375,
+        "text": "       (poo-flow-durable-runtime-backend-symbol-list-diagnostics"
+      },
+      {
+        "line": 378,
+        "text": "        +poo-flow-durable-runtime-store-ledger-kinds+"
+      },
+      {
+        "line": 381,
+        "text": "       (poo-flow-durable-runtime-backend-symbol-list-diagnostics"
+      },
+      {
+        "line": 384,
+        "text": "        +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 387,
+        "text": "       (poo-flow-durable-runtime-backend-symbol-list-diagnostics"
+      },
+      {
+        "line": 390,
+        "text": "        +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 394,
+        "text": "       (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 399,
+        "text": "              (cons 'recoverable? #t)))))))"
+      },
+      {
+        "line": 401,
+        "text": ";;; Runtime store backend receipts stay fixed structs before alist projection."
+      },
+      {
+        "line": 402,
+        "text": "(defstruct poo-flow-durable-runtime-store-backend-receipt"
+      },
+      {
+        "line": 416,
+        "text": ";; : (-> PooDurableRuntimeStoreBackend PooDurableRuntimeStoreBackendReceipt)"
+      },
+      {
+        "line": 417,
+        "text": "(def (poo-flow-durable-runtime-store-backend->receipt backend)"
+      },
+      {
+        "line": 419,
+        "text": "          (poo-flow-durable-runtime-store-backend-diagnostics backend))"
+      },
+      {
+        "line": 421,
+        "text": "    (make-poo-flow-durable-runtime-store-backend-receipt"
+      },
+      {
+        "line": 422,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'backend-id #f)"
+      },
+      {
+        "line": 423,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'backend-kind #f)"
+      },
+      {
+        "line": 424,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'runtime-owner #f)"
+      },
+      {
+        "line": 425,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'executable #f)"
+      },
+      {
+        "line": 426,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'protocol #f)"
+      },
+      {
+        "line": 427,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend"
+      },
+      {
+        "line": 430,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend"
+      },
+      {
+        "line": 433,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend 'operation-kinds '())"
+      },
+      {
+        "line": 436,
+        "text": "     (poo-flow-durable-runtime-backend-slot backend"
+      },
+      {
+        "line": 440,
+        "text": ";; : (-> PooDurableRuntimeStoreBackendReceipt Alist)"
+      },
+      {
+        "line": 442,
+        "text": "  poo-flow-durable-runtime-store-backend-receipt->alist (receipt)"
+      },
+      {
+        "line": 444,
+        "text": "              (poo-flow-durable-runtime-store-backend-receipt-diagnostics"
+      },
+      {
+        "line": 445,
+        "text": "               receipt))))"
+      },
+      {
+        "line": 446,
+        "text": "  (fields ((kind 'poo-flow.durable.runtime-store-backend-receipt)"
+      },
+      {
+        "line": 447,
+        "text": "           (schema +poo-flow-durable-runtime-store-backend-receipt-schema+)"
+      },
+      {
+        "line": 449,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-backend-id receipt))"
+      },
+      {
+        "line": 451,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-backend-kind"
+      },
+      {
+        "line": 452,
+        "text": "             receipt))"
+      },
+      {
+        "line": 454,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-runtime-owner"
+      },
+      {
+        "line": 455,
+        "text": "             receipt))"
+      },
+      {
+        "line": 457,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-executable"
+      },
+      {
+        "line": 458,
+        "text": "             receipt))"
+      },
+      {
+        "line": 460,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-protocol receipt))"
+      },
+      {
+        "line": 462,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-supported-ledger-kinds"
+      },
+      {
+        "line": 463,
+        "text": "             receipt))"
+      },
+      {
+        "line": 465,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-supported-capability-flags"
+      },
+      {
+        "line": 466,
+        "text": "             receipt))"
+      },
+      {
+        "line": 468,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-operation-kinds"
+      },
+      {
+        "line": 469,
+        "text": "             receipt))"
+      },
+      {
+        "line": 471,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-valid? receipt))"
+      },
+      {
+        "line": 475,
+        "text": "            (poo-flow-durable-runtime-store-backend-receipt-metadata receipt))"
+      },
+      {
+        "line": 479,
+        "text": "(def (poo-flow-durable-runtime-store-contract-receipt-row receipt)"
+      },
+      {
+        "line": 481,
+        "text": "   ((poo-flow-durable-runtime-store-contract-receipt? receipt)"
+      },
+      {
+        "line": 482,
+        "text": "    (poo-flow-durable-runtime-store-contract-receipt->alist receipt))"
+      },
+      {
+        "line": 483,
+        "text": "   ((list? receipt) receipt)"
+      },
+      {
+        "line": 484,
+        "text": "   (else receipt)))"
+      },
+      {
+        "line": 487,
+        "text": "(def (poo-flow-durable-runtime-store-backend-receipt-row receipt)"
+      },
+      {
+        "line": 489,
+        "text": "   ((poo-flow-durable-runtime-store-backend-receipt? receipt)"
+      },
+      {
+        "line": 490,
+        "text": "    (poo-flow-durable-runtime-store-backend-receipt->alist receipt))"
+      },
+      {
+        "line": 491,
+        "text": "   ((list? receipt) receipt)"
+      },
+      {
+        "line": 492,
+        "text": "   (else receipt)))"
+      },
+      {
+        "line": 495,
+        "text": "(def (poo-flow-durable-runtime-store-contract-row-diagnostics row)"
+      },
+      {
+        "line": 499,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 500,
+        "text": "      'invalid-runtime-store-contract-receipt"
+      },
+      {
+        "line": 504,
+        "text": "            (cons 'recoverable? #t)))))"
+      },
+      {
+        "line": 505,
+        "text": "   ((not (eq? (poo-flow-durable-runtime-backend-alist-ref row 'valid? #f)"
+      },
+      {
+        "line": 508,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 513,
+        "text": "                  (poo-flow-durable-runtime-backend-alist-ref row"
+      },
+      {
+        "line": 517,
+        "text": "                  (poo-flow-durable-runtime-backend-alist-ref row"
+      },
+      {
+        "line": 520,
+        "text": "            (cons 'recoverable? #t)))))"
+      },
+      {
+        "line": 524,
+        "text": "(def (poo-flow-durable-runtime-store-backend-row-diagnostics row)"
+      },
+      {
+        "line": 528,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 529,
+        "text": "      'invalid-runtime-store-backend-receipt"
+      },
+      {
+        "line": 533,
+        "text": "            (cons 'recoverable? #t)))))"
+      },
+      {
+        "line": 534,
+        "text": "   ((not (eq? (poo-flow-durable-runtime-backend-alist-ref row 'valid? #f)"
+      },
+      {
+        "line": 537,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 542,
+        "text": "                  (poo-flow-durable-runtime-backend-alist-ref row"
+      },
+      {
+        "line": 546,
+        "text": "                  (poo-flow-durable-runtime-backend-alist-ref row"
+      },
+      {
+        "line": 549,
+        "text": "            (cons 'recoverable? #t)))))"
+      },
+      {
+        "line": 553,
+        "text": "(def (poo-flow-durable-runtime-store-missing-diagnostics code values slot)"
+      },
+      {
+        "line": 557,
+        "text": "     (poo-flow-durable-runtime-backend-diagnostic"
+      },
+      {
+        "line": 562,
+        "text": "            (cons 'recoverable? #t))))))"
+      },
+      {
+        "line": 564,
+        "text": ";; : PooDurableRuntimeStoreNegotiationReceipt"
+      },
+      {
+        "line": 565,
+        "text": "(defstruct poo-flow-durable-runtime-store-negotiation-receipt"
+      },
+      {
+        "line": 590,
+        "text": ";; : (-> PooDurableRuntimeStoreContractReceipt PooDurableRuntimeStoreBackendReceipt [Alist] PooDurableRuntimeStoreNegotiationReceipt)"
+      },
+      {
+        "line": 591,
+        "text": "(def (poo-flow-durable-runtime-store-backend-negotiation contract-receipt"
+      },
+      {
+        "line": 592,
+        "text": "                                                          backend-receipt"
+      },
+      {
+        "line": 596,
+        "text": "          (poo-flow-durable-runtime-store-contract-receipt-row"
+      },
+      {
+        "line": 597,
+        "text": "           contract-receipt))"
+      },
+      {
+        "line": 599,
+        "text": "          (poo-flow-durable-runtime-store-backend-receipt-row backend-receipt))"
+      },
+      {
+        "line": 601,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref"
+      },
+      {
+        "line": 606,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref"
+      },
+      {
+        "line": 611,
+        "text": "          (poo-flow-durable-runtime-backend-missing-symbols"
+      },
+      {
+        "line": 615,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref"
+      },
+      {
+        "line": 620,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref"
+      },
+      {
+        "line": 625,
+        "text": "          (poo-flow-durable-runtime-backend-missing-symbols"
+      },
+      {
+        "line": 629,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref backend-row"
+      },
+      {
+        "line": 633,
+        "text": "          (poo-flow-durable-runtime-backend-missing-symbols"
+      },
+      {
+        "line": 637,
+        "text": "          (poo-flow-durable-runtime-backend-option"
+      },
+      {
+        "line": 640,
+        "text": "           'durable-runtime-store-negotiate))"
+      },
+      {
+        "line": 642,
+        "text": "          (poo-flow-durable-runtime-backend-option options 'metadata '()))"
+      },
+      {
+        "line": 644,
+        "text": "          (append"
+      },
+      {
+        "line": 645,
+        "text": "           (poo-flow-durable-runtime-store-contract-row-diagnostics"
+      },
+      {
+        "line": 647,
+        "text": "           (poo-flow-durable-runtime-store-backend-row-diagnostics"
+      },
+      {
+        "line": 649,
+        "text": "           (poo-flow-durable-runtime-store-missing-diagnostics"
+      },
+      {
+        "line": 653,
+        "text": "           (poo-flow-durable-runtime-store-missing-diagnostics"
+      },
+      {
+        "line": 657,
+        "text": "           (poo-flow-durable-runtime-store-missing-diagnostics"
+      },
+      {
+        "line": 662,
+        "text": "    (make-poo-flow-durable-runtime-store-negotiation-receipt"
+      },
+      {
+        "line": 663,
+        "text": "     (poo-flow-durable-runtime-backend-alist-ref contract-row 'store-id #f)"
+      },
+      {
+        "line": 664,
+        "text": "     (poo-flow-durable-runtime-backend-alist-ref backend-row 'backend-id #f)"
+      },
+      {
+        "line": 665,
+        "text": "     (poo-flow-durable-runtime-backend-alist-ref backend-row"
+      },
+      {
+        "line": 684,
+        "text": "     (poo-flow-durable-runtime-backend-alist-ref backend-row"
+      },
+      {
+        "line": 690,
+        "text": ";; : (-> PooDurableRuntimeStoreNegotiationReceipt Alist)"
+      },
+      {
+        "line": 692,
+        "text": "  poo-flow-durable-runtime-store-negotiation-receipt->alist (receipt)"
+      },
+      {
+        "line": 694,
+        "text": "              (poo-flow-durable-runtime-store-negotiation-receipt-diagnostics"
+      },
+      {
+        "line": 695,
+        "text": "               receipt))))"
+      },
+      {
+        "line": 696,
+        "text": "  (fields ((kind 'poo-flow.durable.runtime-store-negotiation-receipt)"
+      },
+      {
+        "line": 697,
+        "text": "           (schema +poo-flow-durable-runtime-store-negotiation-schema+)"
+      },
+      {
+        "line": 699,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-store-id"
+      },
+      {
+        "line": 700,
+        "text": "             receipt))"
+      },
+      {
+        "line": 702,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-backend-id"
+      },
+      {
+        "line": 703,
+        "text": "             receipt))"
+      },
+      {
+        "line": 705,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-backend-kind"
+      },
+      {
+        "line": 706,
+        "text": "             receipt))"
+      },
+      {
+        "line": 708,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-selected?"
+      },
+      {
+        "line": 709,
+        "text": "             receipt))"
+      },
+      {
+        "line": 711,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-handoff-ready?"
+      },
+      {
+        "line": 712,
+        "text": "             receipt))"
+      },
+      {
+        "line": 714,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-contract-row"
+      },
+      {
+        "line": 715,
+        "text": "             receipt))"
+      },
+      {
+        "line": 717,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-backend-row"
+      },
+      {
+        "line": 718,
+        "text": "             receipt))"
+      },
+      {
+        "line": 720,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-required-ledger-kinds"
+      },
+      {
+        "line": 721,
+        "text": "             receipt))"
+      },
+      {
+        "line": 723,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-supported-ledger-kinds"
+      },
+      {
+        "line": 724,
+        "text": "             receipt))"
+      },
+      {
+        "line": 726,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-missing-ledger-kinds"
+      },
+      {
+        "line": 727,
+        "text": "             receipt))"
+      },
+      {
+        "line": 729,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-required-capability-flags"
+      },
+      {
+        "line": 730,
+        "text": "             receipt))"
+      },
+      {
+        "line": 732,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-supported-capability-flags"
+      },
+      {
+        "line": 733,
+        "text": "             receipt))"
+      },
+      {
+        "line": 735,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-missing-capability-flags"
+      },
+      {
+        "line": 736,
+        "text": "             receipt))"
+      },
+      {
+        "line": 738,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-operation-kinds"
+      },
+      {
+        "line": 739,
+        "text": "             receipt))"
+      },
+      {
+        "line": 741,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-unsupported-operation-kinds"
+      },
+      {
+        "line": 742,
+        "text": "             receipt))"
+      },
+      {
+        "line": 744,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-manifest-operation"
+      },
+      {
+        "line": 745,
+        "text": "             receipt))"
+      },
+      {
+        "line": 747,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-valid?"
+      },
+      {
+        "line": 748,
+        "text": "             receipt))"
+      },
+      {
+        "line": 752,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-metadata"
+      },
+      {
+        "line": 753,
+        "text": "             receipt))"
+      },
+      {
+        "line": 755,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner"
+      },
+      {
+        "line": 756,
+        "text": "             receipt))"
+      },
+      {
+        "line": 758,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-handoff-required"
+      },
+      {
+        "line": 759,
+        "text": "             receipt))"
+      },
+      {
+        "line": 761,
+        "text": "            (poo-flow-durable-runtime-store-negotiation-receipt-runtime-executed"
+      },
+      {
+        "line": 762,
+        "text": "             receipt)))))"
+      },
+      {
+        "line": 764,
+        "text": ";; : (-> PooDurableRuntimeStoreNegotiationReceipt Alist)"
+      },
+      {
+        "line": 765,
+        "text": "(def (poo-flow-durable-runtime-store-negotiation->marlin-handoff receipt"
+      },
+      {
+        "line": 768,
+        "text": "         (row (poo-flow-durable-runtime-store-negotiation-receipt->alist"
+      },
+      {
+        "line": 769,
+        "text": "               receipt))"
+      },
+      {
+        "line": 771,
+        "text": "          (poo-flow-durable-runtime-store-negotiation-receipt-backend-row"
+      },
+      {
+        "line": 772,
+        "text": "           receipt))"
+      },
+      {
+        "line": 774,
+        "text": "          (poo-flow-durable-runtime-store-negotiation-receipt-manifest-operation"
+      },
+      {
+        "line": 775,
+        "text": "           receipt))"
+      },
+      {
+        "line": 777,
+        "text": "          (poo-flow-durable-runtime-backend-option"
+      },
+      {
+        "line": 780,
+        "text": "           (poo-flow-durable-runtime-backend-alist-ref backend-row"
+      },
+      {
+        "line": 784,
+        "text": "          (poo-flow-durable-runtime-backend-option"
+      },
+      {
+        "line": 787,
+        "text": "           '(\"durable-runtime-store\" \"negotiate\")))"
+      },
+      {
+        "line": 789,
+        "text": "          (poo-flow-durable-runtime-backend-alist-ref backend-row"
+      },
+      {
+        "line": 793,
+        "text": "          (list (cons 'source 'poo-flow.durable.runtime-store)"
+      },
+      {
+        "line": 795,
+        "text": "                      (poo-flow-durable-runtime-store-negotiation-receipt-backend-id"
+      },
+      {
+        "line": 796,
+        "text": "                       receipt))"
+      },
+      {
+        "line": 798,
+        "text": "                      (poo-flow-durable-runtime-store-negotiation-receipt-store-id"
+      },
+      {
+        "line": 799,
+        "text": "                       receipt))"
+      },
+      {
+        "line": 806,
+        "text": "                      (list 'poo-flow.durable.runtime-store"
+      },
+      {
+        "line": 807,
+        "text": "                            (poo-flow-durable-runtime-store-negotiation-receipt-store-id"
+      },
+      {
+        "line": 808,
+        "text": "                             receipt)"
+      },
+      {
+        "line": 809,
+        "text": "                            (poo-flow-durable-runtime-store-negotiation-receipt-backend-id"
+      },
+      {
+        "line": 810,
+        "text": "                             receipt)))"
+      },
+      {
+        "line": 816,
+        "text": "                             (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner"
+      },
+      {
+        "line": 817,
+        "text": "                              receipt))"
+      },
+      {
+        "line": 822,
+        "text": "                      (poo-flow-durable-runtime-store-negotiation-receipt-store-id"
+      },
+      {
+        "line": 823,
+        "text": "                       receipt))"
+      },
+      {
+        "line": 834,
+        "text": "     (cons 'kind 'poo-flow.durable.runtime-store.marlin-handoff)"
+      },
+      {
+        "line": 835,
+        "text": "     (cons 'schema +poo-flow-durable-runtime-store-handoff-schema+)"
+      },
+      {
+        "line": 839,
+        "text": "           (poo-flow-durable-runtime-backend-alist-ref"
+      },
+      {
+        "line": 844,
+        "text": "           (poo-flow-durable-runtime-store-negotiation-receipt-runtime-owner"
+      },
+      {
+        "line": 845,
+        "text": "            receipt))"
+      },
+      {
+        "line": 847,
+        "text": "           (poo-flow-durable-runtime-store-negotiation-receipt-handoff-ready?"
+      },
+      {
+        "line": 848,
+        "text": "            receipt))"
+      },
+      {
+        "line": 850,
+        "text": "           +poo-flow-durable-runtime-store-handoff-required-fields+)"
+      },
+      {
+        "line": 857,
+        "text": ";; : (-> [PooDurableRuntimeStoreNegotiationReceipt] [Alist])"
+      },
+      {
+        "line": 859,
+        "text": "  poo-flow-durable-runtime-store-negotiations->alists (receipts)"
+      },
+      {
+        "line": 860,
+        "text": "  (projector poo-flow-durable-runtime-store-negotiation-receipt->alist)"
+      },
+      {
+        "line": 861,
+        "text": "  (error-message \"durable runtime store negotiation serialization requires a list\"))"
+      }
+    ]
+  },
+  {
+    "id": "P18",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean",
+    "lines": [
+      {
+        "line": 5,
+        "text": "import PooFlowProof.Enterprise.PromotionTransactionAtomicity"
+      },
+      {
+        "line": 7,
+        "text": "namespace PooFlowProof.Enterprise.PromotionTransactionRecovery"
+      },
+      {
+        "line": 9,
+        "text": "open PromotionTransactionAtomicity"
+      },
+      {
+        "line": 13,
+        "text": "abbrev RecoveryReceiptId := String"
+      },
+      {
+        "line": 16,
+        "text": "  request : PromotionCommitRequest"
+      },
+      {
+        "line": 31,
+        "text": "def conflictingCommitRequest : PromotionCommitRequest :="
+      },
+      {
+        "line": 32,
+        "text": "  { commitRequestA with"
+      },
+      {
+        "line": 35,
+        "text": "def conflictingCommittedReceipt : PromotionCommitReceipt :="
+      },
+      {
+        "line": 36,
+        "text": "  { committedReceiptA with"
+      },
+      {
+        "line": 37,
+        "text": "    receiptId := \"commit-conflicting\""
+      },
+      {
+        "line": 40,
+        "text": "theorem conflictingCommitAlsoClosesIndividually :"
+      },
+      {
+        "line": 41,
+        "text": "    promotionCommitEvidenceClosed"
+      },
+      {
+        "line": 42,
+        "text": "      (fun _receipt => True)"
+      },
+      {
+        "line": 43,
+        "text": "      (fun _receipt => True)"
+      },
+      {
+        "line": 46,
+        "text": "      conflictingCommitRequest"
+      },
+      {
+        "line": 47,
+        "text": "      conflictingCommittedReceipt := by"
+      },
+      {
+        "line": 49,
+        "text": "    promotionCommitEvidenceClosed,"
+      },
+      {
+        "line": 50,
+        "text": "    commitSubjectMatchesSnapshot,"
+      },
+      {
+        "line": 51,
+        "text": "    outcomePreservesAtomicState,"
+      },
+      {
+        "line": 56,
+        "text": "    conflictingCommitRequest,"
+      },
+      {
+        "line": 57,
+        "text": "    conflictingCommittedReceipt,"
+      },
+      {
+        "line": 58,
+        "text": "    commitRequestA,"
+      },
+      {
+        "line": 59,
+        "text": "    committedReceiptA"
+      },
+      {
+        "line": 63,
+        "text": "  request := commitRequestA"
+      },
+      {
+        "line": 66,
+        "text": "  request := conflictingCommitRequest"
+      },
+      {
+        "line": 68,
+        "text": "theorem individualCommitClosureDoesNotEnforceTransactionIdUniqueness :"
+      },
+      {
+        "line": 69,
+        "text": "    promotionCommitEvidenceClosed"
+      },
+      {
+        "line": 70,
+        "text": "        (fun _receipt => True)"
+      },
+      {
+        "line": 71,
+        "text": "        (fun _receipt => True)"
+      },
+      {
+        "line": 74,
+        "text": "        commitRequestA"
+      },
+      {
+        "line": 75,
+        "text": "        committedReceiptA \u2227"
+      },
+      {
+        "line": 76,
+        "text": "      promotionCommitEvidenceClosed"
+      },
+      {
+        "line": 77,
+        "text": "        (fun _receipt => True)"
+      },
+      {
+        "line": 78,
+        "text": "        (fun _receipt => True)"
+      },
+      {
+        "line": 81,
+        "text": "        conflictingCommitRequest"
+      },
+      {
+        "line": 82,
+        "text": "        conflictingCommittedReceipt \u2227"
+      },
+      {
+        "line": 83,
+        "text": "      commitRequestA.transactionId ="
+      },
+      {
+        "line": 84,
+        "text": "        conflictingCommitRequest.transactionId \u2227"
+      },
+      {
+        "line": 85,
+        "text": "      commitRequestA \u2260 conflictingCommitRequest \u2227"
+      },
+      {
+        "line": 88,
+        "text": "  refine \u27e8commitEvidenceClosedAtAdmissionSnapshot,"
+      },
+      {
+        "line": 89,
+        "text": "    conflictingCommitAlsoClosesIndividually, ?_\u27e9"
+      },
+      {
+        "line": 95,
+        "text": "    conflictingCommitRequest,"
+      },
+      {
+        "line": 96,
+        "text": "    commitRequestA"
+      },
+      {
+        "line": 99,
+        "text": "def receiptBindsCanonicalRequest"
+      },
+      {
+        "line": 100,
+        "text": "    (request : PromotionCommitRequest)"
+      },
+      {
+        "line": 101,
+        "text": "    (receipt : PromotionCommitReceipt) : Prop :="
+      },
+      {
+        "line": 102,
+        "text": "  receipt.transactionId = request.transactionId \u2227"
+      },
+      {
+        "line": 103,
+        "text": "    receipt.admissionReceiptId = request.admissionReceiptId \u2227"
+      },
+      {
+        "line": 104,
+        "text": "    receipt.subject = request.subject \u2227"
+      },
+      {
+        "line": 105,
+        "text": "    receipt.preStateDigest = request.expectedPreStateDigest \u2227"
+      },
+      {
+        "line": 106,
+        "text": "    receipt.postStateDigest = request.targetPostStateDigest"
+      },
+      {
+        "line": 108,
+        "text": "def priorCommitExists"
+      },
+      {
+        "line": 109,
+        "text": "    (commitValid : CommitReceiptValid)"
+      },
+      {
+        "line": 110,
+        "text": "    (ledger : List PromotionCommitReceipt)"
+      },
+      {
+        "line": 111,
+        "text": "    (request : PromotionCommitRequest) : Prop :="
+      },
+      {
+        "line": 113,
+        "text": "    commitValid prior \u2227"
+      },
+      {
+        "line": 114,
+        "text": "      prior.outcome = .committed \u2227"
+      },
+      {
+        "line": 115,
+        "text": "      receiptBindsCanonicalRequest request prior"
+      },
+      {
+        "line": 117,
+        "text": "def orphanDuplicateReceipt : PromotionCommitReceipt :="
+      },
+      {
+        "line": 118,
+        "text": "  { committedReceiptA with"
+      },
+      {
+        "line": 119,
+        "text": "    receiptId := \"duplicate-without-prior-commit\""
+      },
+      {
+        "line": 122,
+        "text": "theorem duplicateOutcomeDoesNotProvePriorCommit :"
+      },
+      {
+        "line": 123,
+        "text": "    outcomePreservesAtomicState commitRequestA orphanDuplicateReceipt \u2227"
+      },
+      {
+        "line": 124,
+        "text": "      \u00ac priorCommitExists"
+      },
+      {
+        "line": 125,
+        "text": "        (fun _receipt => True)"
+      },
+      {
+        "line": 127,
+        "text": "        commitRequestA := by"
+      },
+      {
+        "line": 130,
+        "text": "      outcomePreservesAtomicState,"
+      },
+      {
+        "line": 131,
+        "text": "      orphanDuplicateReceipt,"
+      },
+      {
+        "line": 132,
+        "text": "      committedReceiptA,"
+      },
+      {
+        "line": 133,
+        "text": "      commitRequestA"
+      },
+      {
+        "line": 135,
+        "text": "  \u00b7 simp [priorCommitExists]"
+      },
+      {
+        "line": 137,
+        "text": "theorem matchingPriorCommitFieldsDoNotProveCommitValidity :"
+      },
+      {
+        "line": 138,
+        "text": "    receiptBindsCanonicalRequest commitRequestA committedReceiptA \u2227"
+      },
+      {
+        "line": 139,
+        "text": "      \u00ac priorCommitExists"
+      },
+      {
+        "line": 140,
+        "text": "        (fun _receipt => False)"
+      },
+      {
+        "line": 141,
+        "text": "        [committedReceiptA]"
+      },
+      {
+        "line": 142,
+        "text": "        commitRequestA := by"
+      },
+      {
+        "line": 145,
+        "text": "      receiptBindsCanonicalRequest,"
+      },
+      {
+        "line": 146,
+        "text": "      committedReceiptA,"
+      },
+      {
+        "line": 147,
+        "text": "      commitRequestA"
+      },
+      {
+        "line": 149,
+        "text": "  \u00b7 simp [priorCommitExists]"
+      },
+      {
+        "line": 162,
+        "text": "def leakedRollbackObservation : EffectObservation where"
+      },
+      {
+        "line": 167,
+        "text": "def rolledBackReceiptWithLeakedEffect : PromotionCommitReceipt :="
+      },
+      {
+        "line": 168,
+        "text": "  { committedReceiptA with"
+      },
+      {
+        "line": 169,
+        "text": "    receiptId := \"rollback-with-leaked-effect\""
+      },
+      {
+        "line": 173,
+        "text": "theorem runtimeDigestRollbackCanHideExternalEffect :"
+      },
+      {
+        "line": 174,
+        "text": "    promotionCommitEvidenceClosed"
+      },
+      {
+        "line": 175,
+        "text": "        (fun _receipt => True)"
+      },
+      {
+        "line": 176,
+        "text": "        (fun _receipt => True)"
+      },
+      {
+        "line": 179,
+        "text": "        commitRequestA"
+      },
+      {
+        "line": 180,
+        "text": "        rolledBackReceiptWithLeakedEffect \u2227"
+      },
+      {
+        "line": 182,
+        "text": "        leakedRollbackObservation.runtimeStateDigest \u2227"
+      },
+      {
+        "line": 183,
+        "text": "      preEffectObservation \u2260 leakedRollbackObservation := by"
+      },
+      {
+        "line": 186,
+        "text": "      promotionCommitEvidenceClosed,"
+      },
+      {
+        "line": 187,
+        "text": "      commitSubjectMatchesSnapshot,"
+      },
+      {
+        "line": 188,
+        "text": "      outcomePreservesAtomicState,"
+      },
+      {
+        "line": 193,
+        "text": "      commitRequestA,"
+      },
+      {
+        "line": 194,
+        "text": "      rolledBackReceiptWithLeakedEffect,"
+      },
+      {
+        "line": 195,
+        "text": "      committedReceiptA"
+      },
+      {
+        "line": 199,
+        "text": "structure AtomicEffectReceipt where"
+      },
+      {
+        "line": 200,
+        "text": "  base : PromotionCommitReceipt"
+      },
+      {
+        "line": 205,
+        "text": "def receiptIdentityMatchesRequest"
+      },
+      {
+        "line": 206,
+        "text": "    (request : PromotionCommitRequest)"
+      },
+      {
+        "line": 207,
+        "text": "    (receipt : PromotionCommitReceipt) : Prop :="
+      },
+      {
+        "line": 208,
+        "text": "  receipt.transactionId = request.transactionId \u2227"
+      },
+      {
+        "line": 209,
+        "text": "    receipt.admissionReceiptId = request.admissionReceiptId \u2227"
+      },
+      {
+        "line": 210,
+        "text": "    receipt.subject = request.subject \u2227"
+      },
+      {
+        "line": 211,
+        "text": "    receipt.preStateDigest = request.expectedPreStateDigest"
+      },
+      {
+        "line": 214,
+        "text": "    (commitValid : CommitReceiptValid)"
+      },
+      {
+        "line": 215,
+        "text": "    (ledger : List PromotionCommitReceipt)"
+      },
+      {
+        "line": 216,
+        "text": "    (request : PromotionCommitRequest)"
+      },
+      {
+        "line": 217,
+        "text": "    (receipt : AtomicEffectReceipt) : Prop :="
+      },
+      {
+        "line": 218,
+        "text": "  receiptIdentityMatchesRequest request receipt.base \u2227"
+      },
+      {
+        "line": 219,
+        "text": "    receipt.preEffect.runtimeStateDigest = receipt.base.preStateDigest \u2227"
+      },
+      {
+        "line": 220,
+        "text": "    receipt.postEffect.runtimeStateDigest = receipt.base.postStateDigest \u2227"
+      },
+      {
+        "line": 221,
+        "text": "    match receipt.base.outcome with"
+      },
+      {
+        "line": 222,
+        "text": "    | .committed =>"
+      },
+      {
+        "line": 223,
+        "text": "        receipt.base.postStateDigest = request.targetPostStateDigest \u2227"
+      },
+      {
+        "line": 224,
+        "text": "          receipt.preEffect.uncompensatedApplicationCount = 0 \u2227"
+      },
+      {
+        "line": 225,
+        "text": "          receipt.postEffect.uncompensatedApplicationCount = 1"
+      },
+      {
+        "line": 227,
+        "text": "        receipt.base.postStateDigest = request.targetPostStateDigest \u2227"
+      },
+      {
+        "line": 228,
+        "text": "          priorCommitExists commitValid ledger request \u2227"
+      },
+      {
+        "line": 229,
+        "text": "          receipt.postEffect = receipt.preEffect \u2227"
+      },
+      {
+        "line": 230,
+        "text": "          receipt.postEffect.uncompensatedApplicationCount = 1"
+      },
+      {
+        "line": 232,
+        "text": "        receipt.postEffect = receipt.preEffect"
+      },
+      {
+        "line": 234,
+        "text": "        receipt.postEffect = receipt.preEffect"
+      },
+      {
+        "line": 236,
+        "text": "def committedEffectObservation : EffectObservation where"
+      },
+      {
+        "line": 241,
+        "text": "def committedAtomicEffectReceipt : AtomicEffectReceipt where"
+      },
+      {
+        "line": 242,
+        "text": "  base := committedReceiptA"
+      },
+      {
+        "line": 244,
+        "text": "  postEffect := committedEffectObservation"
+      },
+      {
+        "line": 246,
+        "text": "theorem committedAtomicEffectCloses :"
+      },
+      {
+        "line": 248,
+        "text": "      (fun _receipt => True)"
+      },
+      {
+        "line": 250,
+        "text": "      commitRequestA"
+      },
+      {
+        "line": 251,
+        "text": "      committedAtomicEffectReceipt := by"
+      },
+      {
+        "line": 254,
+        "text": "    receiptIdentityMatchesRequest,"
+      },
+      {
+        "line": 255,
+        "text": "    committedAtomicEffectReceipt,"
+      },
+      {
+        "line": 256,
+        "text": "    committedEffectObservation,"
+      },
+      {
+        "line": 258,
+        "text": "    committedReceiptA,"
+      },
+      {
+        "line": 259,
+        "text": "    commitRequestA"
+      },
+      {
+        "line": 262,
+        "text": "theorem closedDuplicateRequiresPriorCommit"
+      },
+      {
+        "line": 263,
+        "text": "    (ledger : List PromotionCommitReceipt)"
+      },
+      {
+        "line": 264,
+        "text": "    (commitValid : CommitReceiptValid)"
+      },
+      {
+        "line": 265,
+        "text": "    (request : PromotionCommitRequest)"
+      },
+      {
+        "line": 266,
+        "text": "    (receipt : AtomicEffectReceipt)"
+      },
+      {
+        "line": 267,
+        "text": "    (closed : effectOutcomeClosed commitValid ledger request receipt)"
+      },
+      {
+        "line": 268,
+        "text": "    (duplicate : receipt.base.outcome = .duplicate) :"
+      },
+      {
+        "line": 269,
+        "text": "    priorCommitExists commitValid ledger request := by"
+      },
+      {
+        "line": 274,
+        "text": "theorem closedRollbackRestoresCompleteEffectObservation"
+      },
+      {
+        "line": 275,
+        "text": "    (ledger : List PromotionCommitReceipt)"
+      },
+      {
+        "line": 276,
+        "text": "    (commitValid : CommitReceiptValid)"
+      },
+      {
+        "line": 277,
+        "text": "    (request : PromotionCommitRequest)"
+      },
+      {
+        "line": 278,
+        "text": "    (receipt : AtomicEffectReceipt)"
+      },
+      {
+        "line": 279,
+        "text": "    (closed : effectOutcomeClosed commitValid ledger request receipt)"
+      },
+      {
+        "line": 280,
+        "text": "    (rolledBack : receipt.base.outcome = .rolledBack) :"
+      },
+      {
+        "line": 281,
+        "text": "    receipt.postEffect = receipt.preEffect := by"
+      },
+      {
+        "line": 286,
+        "text": "inductive DurablePhase"
+      },
+      {
+        "line": 289,
+        "text": "  | committed"
+      },
+      {
+        "line": 294,
+        "text": "def isTerminalPhase : DurablePhase \u2192 Prop"
+      },
+      {
+        "line": 297,
+        "text": "  | .committed => True"
+      },
+      {
+        "line": 301,
+        "text": "structure DurableTransactionRecord where"
+      },
+      {
+        "line": 302,
+        "text": "  request : PromotionCommitRequest"
+      },
+      {
+        "line": 303,
+        "text": "  phase : DurablePhase"
+      },
+      {
+        "line": 308,
+        "text": "def DurableRecordValid :="
+      },
+      {
+        "line": 309,
+        "text": "  DurableTransactionRecord \u2192 Prop"
+      },
+      {
+        "line": 312,
+        "text": "  durableRecord : Option DurableTransactionRecord"
+      },
+      {
+        "line": 317,
+        "text": "  durableRecord : Option DurableTransactionRecord"
+      },
+      {
+        "line": 324,
+        "text": "  durableRecord := world.durableRecord"
+      },
+      {
+        "line": 328,
+        "text": "  durableRecord := none"
+      },
+      {
+        "line": 333,
+        "text": "  durableRecord := none"
+      },
+      {
+        "line": 337,
+        "text": "theorem missingDurableIntentAndEffectObservationAreAmbiguous :"
+      },
+      {
+        "line": 345,
+        "text": "def applyingRecordA : DurableTransactionRecord where"
+      },
+      {
+        "line": 346,
+        "text": "  request := commitRequestA"
+      },
+      {
+        "line": 351,
+        "text": "def unfencedRecoveryEligible"
+      },
+      {
+        "line": 352,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 356,
+        "text": "theorem unfencedApplyingRecordAllowsConcurrentWorkers :"
+      },
+      {
+        "line": 357,
+        "text": "    unfencedRecoveryEligible applyingRecordA \"worker-a\" \u2227"
+      },
+      {
+        "line": 358,
+        "text": "      unfencedRecoveryEligible applyingRecordA \"worker-b\" \u2227"
+      },
+      {
+        "line": 360,
+        "text": "  simp [unfencedRecoveryEligible, applyingRecordA]"
+      },
+      {
+        "line": 362,
+        "text": "structure RecoveryClaim where"
+      },
+      {
+        "line": 369,
+        "text": "def recoveryClaimFieldsMatch"
+      },
+      {
+        "line": 370,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 371,
+        "text": "    (claim : RecoveryClaim) : Prop :="
+      },
+      {
+        "line": 376,
+        "text": "def claimA : RecoveryClaim where"
+      },
+      {
+        "line": 382,
+        "text": "def claimB : RecoveryClaim where"
+      },
+      {
+        "line": 389,
+        "text": "    recoveryClaimFieldsMatch applyingRecordA claimA \u2227"
+      },
+      {
+        "line": 390,
+        "text": "      recoveryClaimFieldsMatch applyingRecordA claimB \u2227"
+      },
+      {
+        "line": 393,
+        "text": "    recoveryClaimFieldsMatch,"
+      },
+      {
+        "line": 395,
+        "text": "    commitRequestA,"
+      },
+      {
+        "line": 400,
+        "text": "def RecoveryClaimValid :="
+      },
+      {
+        "line": 401,
+        "text": "  DurableTransactionRecord \u2192 RecoveryClaim \u2192 Prop"
+      },
+      {
+        "line": 403,
+        "text": "def recoveryClaimAuthorityExclusive"
+      },
+      {
+        "line": 404,
+        "text": "    (valid : RecoveryClaimValid) : Prop :="
+      },
+      {
+        "line": 411,
+        "text": "    (_record : DurableTransactionRecord)"
+      },
+      {
+        "line": 412,
+        "text": "    (claim : RecoveryClaim) : Prop :="
+      },
+      {
+        "line": 416,
+        "text": "    recoveryClaimAuthorityExclusive claimAValid := by"
+      },
+      {
+        "line": 421,
+        "text": "    (phase : DurablePhase)"
+      },
+      {
+        "line": 422,
+        "text": "    (outcome : CommitOutcome) : Prop :="
+      },
+      {
+        "line": 424,
+        "text": "  | .committed => phase = .committed"
+      },
+      {
+        "line": 425,
+        "text": "  | .duplicate => phase = .committed"
+      },
+      {
+        "line": 429,
+        "text": "structure RecoveryReceipt where"
+      },
+      {
+        "line": 430,
+        "text": "  receiptId : RecoveryReceiptId"
+      },
+      {
+        "line": 433,
+        "text": "  recoveredFromPhase : DurablePhase"
+      },
+      {
+        "line": 434,
+        "text": "  terminalPhase : DurablePhase"
+      },
+      {
+        "line": 435,
+        "text": "  effectReceipt : AtomicEffectReceipt"
+      },
+      {
+        "line": 438,
+        "text": "def RecoveryReceiptValid :="
+      },
+      {
+        "line": 439,
+        "text": "  RecoveryReceipt \u2192 Prop"
+      },
+      {
+        "line": 443,
+        "text": "    (request : PromotionCommitRequest) : Prop :="
+      },
+      {
+        "line": 446,
+        "text": "structure RecoveryEvidenceClosed"
+      },
+      {
+        "line": 449,
+        "text": "    (recordValid : DurableRecordValid)"
+      },
+      {
+        "line": 450,
+        "text": "    (commitValid : CommitReceiptValid)"
+      },
+      {
+        "line": 451,
+        "text": "    (claimValid : RecoveryClaimValid)"
+      },
+      {
+        "line": 452,
+        "text": "    (receiptValid : RecoveryReceiptValid)"
+      },
+      {
+        "line": 453,
+        "text": "    (ledger : List PromotionCommitReceipt)"
+      },
+      {
+        "line": 454,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 455,
+        "text": "    (claim : RecoveryClaim)"
+      },
+      {
+        "line": 456,
+        "text": "    (receipt : RecoveryReceipt) : Prop where"
+      },
+      {
+        "line": 462,
+        "text": "  claimAuthorityExclusive : recoveryClaimAuthorityExclusive claimValid"
+      },
+      {
+        "line": 463,
+        "text": "  claimMatches : recoveryClaimFieldsMatch record claim"
+      },
+      {
+        "line": 465,
+        "text": "  receiptTransactionMatches :"
+      },
+      {
+        "line": 466,
+        "text": "    receipt.transactionId = record.request.transactionId"
+      },
+      {
+        "line": 467,
+        "text": "  receiptFenceMatches :"
+      },
+      {
+        "line": 468,
+        "text": "    receipt.fenceToken = claim.acquiredFenceToken"
+      },
+      {
+        "line": 469,
+        "text": "  receiptRecoversApplying :"
+      },
+      {
+        "line": 470,
+        "text": "    receipt.recoveredFromPhase = record.phase"
+      },
+      {
+        "line": 471,
+        "text": "  receiptIsTerminal :"
+      },
+      {
+        "line": 472,
+        "text": "    isTerminalPhase receipt.terminalPhase"
+      },
+      {
+        "line": 473,
+        "text": "  receiptPhaseMatchesOutcome :"
+      },
+      {
+        "line": 475,
+        "text": "      receipt.terminalPhase"
+      },
+      {
+        "line": 476,
+        "text": "      receipt.effectReceipt.base.outcome"
+      },
+      {
+        "line": 479,
+        "text": "      commitValid"
+      },
+      {
+        "line": 482,
+        "text": "      receipt.effectReceipt"
+      },
+      {
+        "line": 483,
+        "text": "  receiptValidates : receiptValid receipt"
+      },
+      {
+        "line": 485,
+        "text": "def recoveryReceiptA : RecoveryReceipt where"
+      },
+      {
+        "line": 486,
+        "text": "  receiptId := \"recovery-a\""
+      },
+      {
+        "line": 489,
+        "text": "  recoveredFromPhase := .applying"
+      },
+      {
+        "line": 490,
+        "text": "  terminalPhase := .committed"
+      },
+      {
+        "line": 491,
+        "text": "  effectReceipt := committedAtomicEffectReceipt"
+      },
+      {
+        "line": 493,
+        "text": "theorem recoveryEvidenceClosesForExclusiveClaim :"
+      },
+      {
+        "line": 494,
+        "text": "    RecoveryEvidenceClosed"
+      },
+      {
+        "line": 498,
+        "text": "      (fun _receipt => True)"
+      },
+      {
+        "line": 500,
+        "text": "      (fun _receipt => True)"
+      },
+      {
+        "line": 504,
+        "text": "      recoveryReceiptA := by"
+      },
+      {
+        "line": 520,
+        "text": "      recoveryClaimFieldsMatch,"
+      },
+      {
+        "line": 522,
+        "text": "      commitRequestA,"
+      },
+      {
+        "line": 529,
+        "text": "  \u00b7 simp [isTerminalPhase, recoveryReceiptA]"
+      },
+      {
+        "line": 532,
+        "text": "      recoveryReceiptA,"
+      },
+      {
+        "line": 533,
+        "text": "      committedAtomicEffectReceipt,"
+      },
+      {
+        "line": 534,
+        "text": "      committedReceiptA"
+      },
+      {
+        "line": 536,
+        "text": "  \u00b7 exact committedAtomicEffectCloses"
+      },
+      {
+        "line": 550,
+        "text": "theorem matchingDurableRecordFieldsDoNotProveRecordAuthority :"
+      },
+      {
+        "line": 552,
+        "text": "      \u00ac (fun _record : DurableTransactionRecord => False)"
+      },
+      {
+        "line": 556,
+        "text": "theorem closedRecoveryProvidesExclusiveFence"
+      },
+      {
+        "line": 559,
+        "text": "    (recordValid : DurableRecordValid)"
+      },
+      {
+        "line": 560,
+        "text": "    (commitValid : CommitReceiptValid)"
+      },
+      {
+        "line": 561,
+        "text": "    (claimValid : RecoveryClaimValid)"
+      },
+      {
+        "line": 562,
+        "text": "    (receiptValid : RecoveryReceiptValid)"
+      },
+      {
+        "line": 563,
+        "text": "    (ledger : List PromotionCommitReceipt)"
+      },
+      {
+        "line": 564,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 565,
+        "text": "    (claim other : RecoveryClaim)"
+      },
+      {
+        "line": 566,
+        "text": "    (receipt : RecoveryReceipt)"
+      },
+      {
+        "line": 568,
+        "text": "      RecoveryEvidenceClosed"
+      },
+      {
+        "line": 572,
+        "text": "        commitValid"
+      },
+      {
+        "line": 574,
+        "text": "        receiptValid"
+      },
+      {
+        "line": 578,
+        "text": "        receipt)"
+      },
+      {
+        "line": 588,
+        "text": "theorem closedRecoveryEndsInTerminalPhase"
+      },
+      {
+        "line": 591,
+        "text": "    (recordValid : DurableRecordValid)"
+      },
+      {
+        "line": 592,
+        "text": "    (commitValid : CommitReceiptValid)"
+      },
+      {
+        "line": 593,
+        "text": "    (claimValid : RecoveryClaimValid)"
+      },
+      {
+        "line": 594,
+        "text": "    (receiptValid : RecoveryReceiptValid)"
+      },
+      {
+        "line": 595,
+        "text": "    (ledger : List PromotionCommitReceipt)"
+      },
+      {
+        "line": 596,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 597,
+        "text": "    (claim : RecoveryClaim)"
+      },
+      {
+        "line": 598,
+        "text": "    (receipt : RecoveryReceipt)"
+      },
+      {
+        "line": 600,
+        "text": "      RecoveryEvidenceClosed"
+      },
+      {
+        "line": 604,
+        "text": "        commitValid"
+      },
+      {
+        "line": 606,
+        "text": "        receiptValid"
+      },
+      {
+        "line": 610,
+        "text": "        receipt) :"
+      },
+      {
+        "line": 611,
+        "text": "    isTerminalPhase receipt.terminalPhase :="
+      },
+      {
+        "line": 612,
+        "text": "  closed.receiptIsTerminal"
+      },
+      {
+        "line": 614,
+        "text": "theorem matchingRecoveryFieldsDoNotProveRecoveryAuthority :"
+      },
+      {
+        "line": 615,
+        "text": "    recoveryClaimFieldsMatch applyingRecordA claimA \u2227"
+      },
+      {
+        "line": 616,
+        "text": "      \u00ac RecoveryEvidenceClosed"
+      },
+      {
+        "line": 620,
+        "text": "        (fun _receipt => True)"
+      },
+      {
+        "line": 622,
+        "text": "        (fun _receipt => True)"
+      },
+      {
+        "line": 626,
+        "text": "        recoveryReceiptA := by"
+      },
+      {
+        "line": 629,
+        "text": "      recoveryClaimFieldsMatch,"
+      },
+      {
+        "line": 631,
+        "text": "      commitRequestA,"
+      },
+      {
+        "line": 637,
+        "text": "end PooFlowProof.Enterprise.PromotionTransactionRecovery"
+      }
+    ]
+  },
+  {
+    "id": "P19",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean",
+    "lines": [
+      {
+        "line": 5,
+        "text": "import PooFlowProof.Enterprise.PromotionTransactionRecovery"
+      },
+      {
+        "line": 6,
+        "text": "import PooFlowProof.Enterprise.SourceBoundEffectCompletionCrashRecoveryClosure"
+      },
+      {
+        "line": 7,
+        "text": "import PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore"
+      },
+      {
+        "line": 9,
+        "text": "namespace PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore"
+      },
+      {
+        "line": 13,
+        "text": "open PromotionTransactionAtomicity"
+      },
+      {
+        "line": 14,
+        "text": "open PromotionTransactionRecovery"
+      },
+      {
+        "line": 15,
+        "text": "open SourceBoundCheckpointRestoreAuthorizationClosure"
+      },
+      {
+        "line": 16,
+        "text": "open SourceBoundEffectCompletionCrashRecoveryClosure"
+      },
+      {
+        "line": 17,
+        "text": "open SourceBoundEffectCompletionRecoveryCedarAuthorizationLifecycleCore"
+      },
+      {
+        "line": 18,
+        "text": "open SourceBoundEffectCompletionRecoveryCedarAuthorizationSubjectBridgeCore"
+      },
+      {
+        "line": 19,
+        "text": "open SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore"
+      },
+      {
+        "line": 21,
+        "text": "abbrev SourceBoundEffectCompletionRecoveryExpectationRequestBindingValid :="
+      },
+      {
+        "line": 22,
+        "text": "  SourceBoundLatestCheckpointRestoreRequest \u2192"
+      },
+      {
+        "line": 23,
+        "text": "    PromotionCommitRequest \u2192"
+      },
+      {
+        "line": 26,
+        "text": "abbrev SourceBoundEffectCompletionRecoveryAuthorizationRequestBindingValid :="
+      },
+      {
+        "line": 28,
+        "text": "    PromotionCommitRequest \u2192"
+      },
+      {
+        "line": 29,
+        "text": "      RecoveryClaim \u2192"
+      },
+      {
+        "line": 32,
+        "text": "abbrev SourceBoundEffectCompletionRecoveryRecoveryIdentityBindingValid :="
+      },
+      {
+        "line": 34,
+        "text": "    RecoveryReceiptId \u2192"
+      },
+      {
+        "line": 37,
+        "text": "abbrev SourceBoundEffectCompletionRecoveryProviderWorkerBindingValid :="
+      },
+      {
+        "line": 42,
+        "text": "abbrev SourceBoundEffectCompletionRecoveryRecoveryProvenanceBindingValid :="
+      },
+      {
+        "line": 45,
+        "text": "      DurableTransactionRecord \u2192"
+      },
+      {
+        "line": 46,
+        "text": "        RecoveryClaim \u2192"
+      },
+      {
+        "line": 47,
+        "text": "          RecoveryReceipt \u2192"
+      },
+      {
+        "line": 50,
+        "text": "abbrev SourceBoundEffectCompletionRecoveryRecoveryAuthorityAssignmentValid :="
+      },
+      {
+        "line": 54,
+        "text": "        PromotionCommitSubject \u2192"
+      },
+      {
+        "line": 55,
+        "text": "          RecoveryClaim \u2192"
+      },
+      {
+        "line": 58,
+        "text": "def sourceBoundEffectCompletionTransactionRecoveryRequired"
+      },
+      {
+        "line": 59,
+        "text": "    (state : SourceBoundEffectCompletionCrashRecoveryState) : Prop :="
+      },
+      {
+        "line": 60,
+        "text": "  state = SourceBoundEffectCompletionCrashRecoveryState.executedUncommitted \u2228"
+      },
+      {
+        "line": 61,
+        "text": "    state = SourceBoundEffectCompletionCrashRecoveryState.indeterminate"
+      },
+      {
+        "line": 63,
+        "text": "theorem transactionRecoveryRequiredIsNotCommitted"
+      },
+      {
+        "line": 64,
+        "text": "    {state : SourceBoundEffectCompletionCrashRecoveryState}"
+      },
+      {
+        "line": 65,
+        "text": "    (required : sourceBoundEffectCompletionTransactionRecoveryRequired state) :"
+      },
+      {
+        "line": 66,
+        "text": "    state \u2260 SourceBoundEffectCompletionCrashRecoveryState.committed := by"
+      },
+      {
+        "line": 67,
+        "text": "  intro committed"
+      },
+      {
+        "line": 69,
+        "text": "  \u00b7 cases executed.symm.trans committed"
+      },
+      {
+        "line": 70,
+        "text": "  \u00b7 cases indeterminate.symm.trans committed"
+      },
+      {
+        "line": 72,
+        "text": "structure SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridge"
+      },
+      {
+        "line": 74,
+        "text": "      SourceBoundEffectCompletionRecoveryCedarSnapshotSubjectBindingValid)"
+      },
+      {
+        "line": 76,
+        "text": "    (decisionReceiptValid : DecisionReceiptValid)"
+      },
+      {
+        "line": 78,
+        "text": "      SourceBoundEffectCompletionRecoveryCedarDualDecisionIdentityValid)"
+      },
+      {
+        "line": 81,
+        "text": "    (expectedAuthority expectedCommitment : String)"
+      },
+      {
+        "line": 83,
+        "text": "    (authorityReceiptValid : AuthorityReceiptValid)"
+      },
+      {
+        "line": 84,
+        "text": "    (admissionReceiptValid : AdmissionReceiptValid)"
+      },
+      {
+        "line": 85,
+        "text": "    (commitReceiptValid : CommitReceiptValid)"
+      },
+      {
+        "line": 87,
+        "text": "      SourceBoundEffectCompletionRecoveryDualDecisionEngineRolesValid)"
+      },
+      {
+        "line": 89,
+        "text": "      SourceBoundEffectCompletionRecoveryHumanAuthoritySnapshotBindingValid)"
+      },
+      {
+        "line": 91,
+        "text": "      SourceBoundEffectCompletionRecoveryAccountabilityAssignmentValid)"
+      },
+      {
+        "line": 93,
+        "text": "      SourceBoundEffectCompletionRecoveryResponsibilityScopeCoversPlanValid)"
+      },
+      {
+        "line": 95,
+        "text": "      SourceBoundEffectCompletionRecoveryMaterializationPlanValid)"
+      },
+      {
+        "line": 96,
+        "text": "    (commitLifecycle : SourceBoundEffectCompletionRecoveryCedarAuthorizationEvidence)"
+      },
+      {
+        "line": 98,
+        "text": "    (left right : DecisionReceipt)"
+      },
+      {
+        "line": 101,
+        "text": "    (humanReceipt : BoundAuthorityReceipt)"
+      },
+      {
+        "line": 103,
+        "text": "    (admission : PromotionAdmissionReceipt)"
+      },
+      {
+        "line": 104,
+        "text": "    (request : PromotionCommitRequest)"
+      },
+      {
+        "line": 105,
+        "text": "    (commitReceipt : PromotionCommitReceipt)"
+      },
+      {
+        "line": 106,
+        "text": "    (recoveryAuthorityIdentity : String)"
+      },
+      {
+        "line": 107,
+        "text": "    (recoveryLifecycle : SourceBoundEffectCompletionRecoveryCedarAuthorizationEvidence)"
+      },
+      {
+        "line": 108,
+        "text": "    (expectation : SourceBoundEffectCompletionRecoveryExpectation)"
+      },
+      {
+        "line": 111,
+        "text": "    (recordValid : DurableRecordValid)"
+      },
+      {
+        "line": 112,
+        "text": "    (claimValid : RecoveryClaimValid)"
+      },
+      {
+        "line": 113,
+        "text": "    (receiptValid : RecoveryReceiptValid)"
+      },
+      {
+        "line": 114,
+        "text": "    (ledger : List PromotionCommitReceipt)"
+      },
+      {
+        "line": 115,
+        "text": "    (record : DurableTransactionRecord)"
+      },
+      {
+        "line": 116,
+        "text": "    (claim : RecoveryClaim)"
+      },
+      {
+        "line": 117,
+        "text": "    (recoveryReceipt : RecoveryReceipt)"
+      },
+      {
+        "line": 119,
+        "text": "      SourceBoundEffectCompletionRecoveryExpectationRequestBindingValid)"
+      },
+      {
+        "line": 121,
+        "text": "      SourceBoundEffectCompletionRecoveryAuthorizationRequestBindingValid)"
+      },
+      {
+        "line": 122,
+        "text": "    (recoveryIdentityBindingValid :"
+      },
+      {
+        "line": 123,
+        "text": "      SourceBoundEffectCompletionRecoveryRecoveryIdentityBindingValid)"
+      },
+      {
+        "line": 125,
+        "text": "      SourceBoundEffectCompletionRecoveryProviderWorkerBindingValid)"
+      },
+      {
+        "line": 126,
+        "text": "    (recoveryProvenanceBindingValid :"
+      },
+      {
+        "line": 127,
+        "text": "      SourceBoundEffectCompletionRecoveryRecoveryProvenanceBindingValid)"
+      },
+      {
+        "line": 128,
+        "text": "    (recoveryAuthorityAssignmentValid :"
+      },
+      {
+        "line": 129,
+        "text": "      SourceBoundEffectCompletionRecoveryRecoveryAuthorityAssignmentValid) : Prop where"
+      },
+      {
+        "line": 130,
+        "text": "  humanAtomicBridge :"
+      },
+      {
+        "line": 131,
+        "text": "    SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridge"
+      },
+      {
+        "line": 134,
+        "text": "      decisionReceiptValid"
+      },
+      {
+        "line": 139,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 141,
+        "text": "      authorityReceiptValid"
+      },
+      {
+        "line": 142,
+        "text": "      admissionReceiptValid"
+      },
+      {
+        "line": 143,
+        "text": "      commitReceiptValid"
+      },
+      {
+        "line": 149,
+        "text": "      commitLifecycle"
+      },
+      {
+        "line": 155,
+        "text": "      humanReceipt"
+      },
+      {
+        "line": 159,
+        "text": "      commitReceipt"
+      },
+      {
+        "line": 160,
+        "text": "  recoveryAuthorizationAdmitted :"
+      },
+      {
+        "line": 161,
+        "text": "    recoveryLifecycle.Admitted"
+      },
+      {
+        "line": 164,
+        "text": "      recoveryAuthorityIdentity"
+      },
+      {
+        "line": 165,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 166,
+        "text": "  recoveryRuntimeEpochMatches :"
+      },
+      {
+        "line": 167,
+        "text": "    recoveryLifecycle.runtimeEpoch = expectation.runtimeEpoch"
+      },
+      {
+        "line": 168,
+        "text": "  recoveryLifecycleFenceMatches :"
+      },
+      {
+        "line": 169,
+        "text": "    recoveryLifecycle.activeFenceToken = expectation.activeFenceToken"
+      },
+      {
+        "line": 170,
+        "text": "  recoveryClaimFenceMatches :"
+      },
+      {
+        "line": 175,
+        "text": "    authorizationRequestBindingValid recoveryLifecycle.snapshot.request record.request claim"
+      },
+      {
+        "line": 176,
+        "text": "  recoveryIdentityBinds :"
+      },
+      {
+        "line": 177,
+        "text": "    recoveryIdentityBindingValid expectation.recoveryId recoveryReceipt.receiptId"
+      },
+      {
+        "line": 180,
+        "text": "  recoveryProvenanceBinds :"
+      },
+      {
+        "line": 181,
+        "text": "    recoveryProvenanceBindingValid"
+      },
+      {
+        "line": 182,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 186,
+        "text": "      recoveryReceipt"
+      },
+      {
+        "line": 187,
+        "text": "  recoveryAuthorityAssigns :"
+      },
+      {
+        "line": 188,
+        "text": "    recoveryAuthorityAssignmentValid"
+      },
+      {
+        "line": 189,
+        "text": "      recoveryLifecycle.authorityIdentity"
+      },
+      {
+        "line": 190,
+        "text": "      recoveryLifecycle.accountabilityIdentity"
+      },
+      {
+        "line": 194,
+        "text": "  recoveryScopeCoversPlan :"
+      },
+      {
+        "line": 196,
+        "text": "      recoveryLifecycle.responsibilityScopeDigest"
+      },
+      {
+        "line": 198,
+        "text": "  recordRequestMatchesAtomic :"
+      },
+      {
+        "line": 200,
+        "text": "  recoveryBaseReceiptMatchesAtomic :"
+      },
+      {
+        "line": 201,
+        "text": "    recoveryReceipt.effectReceipt.base = commitReceipt"
+      },
+      {
+        "line": 202,
+        "text": "  recoveryCloses :"
+      },
+      {
+        "line": 203,
+        "text": "    RecoveryEvidenceClosed"
+      },
+      {
+        "line": 207,
+        "text": "      commitReceiptValid"
+      },
+      {
+        "line": 209,
+        "text": "      receiptValid"
+      },
+      {
+        "line": 213,
+        "text": "      recoveryReceipt"
+      },
+      {
+        "line": 215,
+        "text": "theorem closedAuthorizedRecoveryProvidesHumanAtomicBridge"
+      },
+      {
+        "line": 218,
+        "text": "    {decisionReceiptValid}"
+      },
+      {
+        "line": 222,
+        "text": "    {expectedAuthority expectedCommitment}"
+      },
+      {
+        "line": 224,
+        "text": "    {authorityReceiptValid}"
+      },
+      {
+        "line": 225,
+        "text": "    {admissionReceiptValid}"
+      },
+      {
+        "line": 226,
+        "text": "    {commitReceiptValid}"
+      },
+      {
+        "line": 232,
+        "text": "    {commitLifecycle}"
+      },
+      {
+        "line": 237,
+        "text": "    {humanReceipt}"
+      },
+      {
+        "line": 241,
+        "text": "    {commitReceipt}"
+      },
+      {
+        "line": 242,
+        "text": "    {recoveryAuthorityIdentity}"
+      },
+      {
+        "line": 243,
+        "text": "    {recoveryLifecycle}"
+      },
+      {
+        "line": 249,
+        "text": "    {receiptValid}"
+      },
+      {
+        "line": 253,
+        "text": "    {recoveryReceipt}"
+      },
+      {
+        "line": 256,
+        "text": "    {recoveryIdentityBindingValid}"
+      },
+      {
+        "line": 258,
+        "text": "    {recoveryProvenanceBindingValid}"
+      },
+      {
+        "line": 259,
+        "text": "    {recoveryAuthorityAssignmentValid}"
+      },
+      {
+        "line": 261,
+        "text": "      SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridge"
+      },
+      {
+        "line": 264,
+        "text": "        decisionReceiptValid"
+      },
+      {
+        "line": 269,
+        "text": "        expectedCommitment"
+      },
+      {
+        "line": 271,
+        "text": "        authorityReceiptValid"
+      },
+      {
+        "line": 272,
+        "text": "        admissionReceiptValid"
+      },
+      {
+        "line": 273,
+        "text": "        commitReceiptValid"
+      },
+      {
+        "line": 279,
+        "text": "        commitLifecycle"
+      },
+      {
+        "line": 285,
+        "text": "        humanReceipt"
+      },
+      {
+        "line": 289,
+        "text": "        commitReceipt"
+      },
+      {
+        "line": 290,
+        "text": "        recoveryAuthorityIdentity"
+      },
+      {
+        "line": 291,
+        "text": "        recoveryLifecycle"
+      },
+      {
+        "line": 297,
+        "text": "        receiptValid"
+      },
+      {
+        "line": 301,
+        "text": "        recoveryReceipt"
+      },
+      {
+        "line": 304,
+        "text": "        recoveryIdentityBindingValid"
+      },
+      {
+        "line": 306,
+        "text": "        recoveryProvenanceBindingValid"
+      },
+      {
+        "line": 307,
+        "text": "        recoveryAuthorityAssignmentValid) :"
+      },
+      {
+        "line": 308,
+        "text": "    SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridge"
+      },
+      {
+        "line": 311,
+        "text": "      decisionReceiptValid"
+      },
+      {
+        "line": 316,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 318,
+        "text": "      authorityReceiptValid"
+      },
+      {
+        "line": 319,
+        "text": "      admissionReceiptValid"
+      },
+      {
+        "line": 320,
+        "text": "      commitReceiptValid"
+      },
+      {
+        "line": 326,
+        "text": "      commitLifecycle"
+      },
+      {
+        "line": 332,
+        "text": "      humanReceipt"
+      },
+      {
+        "line": 336,
+        "text": "      commitReceipt :="
+      },
+      {
+        "line": 337,
+        "text": "  closed.humanAtomicBridge"
+      },
+      {
+        "line": 339,
+        "text": "theorem closedAuthorizedRecoveryProvidesRecoveryEvidence"
+      },
+      {
+        "line": 342,
+        "text": "    {decisionReceiptValid}"
+      },
+      {
+        "line": 346,
+        "text": "    {expectedAuthority expectedCommitment}"
+      },
+      {
+        "line": 348,
+        "text": "    {authorityReceiptValid}"
+      },
+      {
+        "line": 349,
+        "text": "    {admissionReceiptValid}"
+      },
+      {
+        "line": 350,
+        "text": "    {commitReceiptValid}"
+      },
+      {
+        "line": 356,
+        "text": "    {commitLifecycle}"
+      },
+      {
+        "line": 361,
+        "text": "    {humanReceipt}"
+      },
+      {
+        "line": 365,
+        "text": "    {commitReceipt}"
+      },
+      {
+        "line": 366,
+        "text": "    {recoveryAuthorityIdentity}"
+      },
+      {
+        "line": 367,
+        "text": "    {recoveryLifecycle}"
+      },
+      {
+        "line": 373,
+        "text": "    {receiptValid}"
+      },
+      {
+        "line": 377,
+        "text": "    {recoveryReceipt}"
+      },
+      {
+        "line": 380,
+        "text": "    {recoveryIdentityBindingValid}"
+      },
+      {
+        "line": 382,
+        "text": "    {recoveryProvenanceBindingValid}"
+      },
+      {
+        "line": 383,
+        "text": "    {recoveryAuthorityAssignmentValid}"
+      },
+      {
+        "line": 385,
+        "text": "      SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridge"
+      },
+      {
+        "line": 388,
+        "text": "        decisionReceiptValid"
+      },
+      {
+        "line": 393,
+        "text": "        expectedCommitment"
+      },
+      {
+        "line": 395,
+        "text": "        authorityReceiptValid"
+      },
+      {
+        "line": 396,
+        "text": "        admissionReceiptValid"
+      },
+      {
+        "line": 397,
+        "text": "        commitReceiptValid"
+      },
+      {
+        "line": 403,
+        "text": "        commitLifecycle"
+      },
+      {
+        "line": 409,
+        "text": "        humanReceipt"
+      },
+      {
+        "line": 413,
+        "text": "        commitReceipt"
+      },
+      {
+        "line": 414,
+        "text": "        recoveryAuthorityIdentity"
+      },
+      {
+        "line": 415,
+        "text": "        recoveryLifecycle"
+      },
+      {
+        "line": 421,
+        "text": "        receiptValid"
+      },
+      {
+        "line": 425,
+        "text": "        recoveryReceipt"
+      },
+      {
+        "line": 428,
+        "text": "        recoveryIdentityBindingValid"
+      },
+      {
+        "line": 430,
+        "text": "        recoveryProvenanceBindingValid"
+      },
+      {
+        "line": 431,
+        "text": "        recoveryAuthorityAssignmentValid) :"
+      },
+      {
+        "line": 432,
+        "text": "    RecoveryEvidenceClosed"
+      },
+      {
+        "line": 436,
+        "text": "      commitReceiptValid"
+      },
+      {
+        "line": 438,
+        "text": "      receiptValid"
+      },
+      {
+        "line": 442,
+        "text": "      recoveryReceipt :="
+      },
+      {
+        "line": 443,
+        "text": "  closed.recoveryCloses"
+      },
+      {
+        "line": 445,
+        "text": "theorem staleRecoveryEpochRejectsAuthorizedBridge"
+      },
+      {
+        "line": 448,
+        "text": "    {decisionReceiptValid}"
+      },
+      {
+        "line": 452,
+        "text": "    {expectedAuthority expectedCommitment}"
+      },
+      {
+        "line": 454,
+        "text": "    {authorityReceiptValid}"
+      },
+      {
+        "line": 455,
+        "text": "    {admissionReceiptValid}"
+      },
+      {
+        "line": 456,
+        "text": "    {commitReceiptValid}"
+      },
+      {
+        "line": 462,
+        "text": "    {commitLifecycle}"
+      },
+      {
+        "line": 467,
+        "text": "    {humanReceipt}"
+      },
+      {
+        "line": 471,
+        "text": "    {commitReceipt}"
+      },
+      {
+        "line": 472,
+        "text": "    {recoveryAuthorityIdentity}"
+      },
+      {
+        "line": 473,
+        "text": "    {recoveryLifecycle}"
+      },
+      {
+        "line": 479,
+        "text": "    {receiptValid}"
+      },
+      {
+        "line": 483,
+        "text": "    {recoveryReceipt}"
+      },
+      {
+        "line": 486,
+        "text": "    {recoveryIdentityBindingValid}"
+      },
+      {
+        "line": 488,
+        "text": "    {recoveryProvenanceBindingValid}"
+      },
+      {
+        "line": 489,
+        "text": "    {recoveryAuthorityAssignmentValid}"
+      },
+      {
+        "line": 490,
+        "text": "    (stale : recoveryLifecycle.runtimeEpoch \u2260 expectation.runtimeEpoch) :"
+      },
+      {
+        "line": 491,
+        "text": "    \u00ac SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridge"
+      },
+      {
+        "line": 494,
+        "text": "      decisionReceiptValid"
+      },
+      {
+        "line": 499,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 501,
+        "text": "      authorityReceiptValid"
+      },
+      {
+        "line": 502,
+        "text": "      admissionReceiptValid"
+      },
+      {
+        "line": 503,
+        "text": "      commitReceiptValid"
+      },
+      {
+        "line": 509,
+        "text": "      commitLifecycle"
+      },
+      {
+        "line": 515,
+        "text": "      humanReceipt"
+      },
+      {
+        "line": 519,
+        "text": "      commitReceipt"
+      },
+      {
+        "line": 520,
+        "text": "      recoveryAuthorityIdentity"
+      },
+      {
+        "line": 521,
+        "text": "      recoveryLifecycle"
+      },
+      {
+        "line": 527,
+        "text": "      receiptValid"
+      },
+      {
+        "line": 531,
+        "text": "      recoveryReceipt"
+      },
+      {
+        "line": 534,
+        "text": "      recoveryIdentityBindingValid"
+      },
+      {
+        "line": 536,
+        "text": "      recoveryProvenanceBindingValid"
+      },
+      {
+        "line": 537,
+        "text": "      recoveryAuthorityAssignmentValid := by"
+      },
+      {
+        "line": 539,
+        "text": "  exact stale closed.recoveryRuntimeEpochMatches"
+      },
+      {
+        "line": 541,
+        "text": "theorem wrongAtomicReceiptRejectsAuthorizedBridge"
+      },
+      {
+        "line": 544,
+        "text": "    {decisionReceiptValid}"
+      },
+      {
+        "line": 548,
+        "text": "    {expectedAuthority expectedCommitment}"
+      },
+      {
+        "line": 550,
+        "text": "    {authorityReceiptValid}"
+      },
+      {
+        "line": 551,
+        "text": "    {admissionReceiptValid}"
+      },
+      {
+        "line": 552,
+        "text": "    {commitReceiptValid}"
+      },
+      {
+        "line": 558,
+        "text": "    {commitLifecycle}"
+      },
+      {
+        "line": 563,
+        "text": "    {humanReceipt}"
+      },
+      {
+        "line": 567,
+        "text": "    {commitReceipt}"
+      },
+      {
+        "line": 568,
+        "text": "    {recoveryAuthorityIdentity}"
+      },
+      {
+        "line": 569,
+        "text": "    {recoveryLifecycle}"
+      },
+      {
+        "line": 575,
+        "text": "    {receiptValid}"
+      },
+      {
+        "line": 579,
+        "text": "    {recoveryReceipt}"
+      },
+      {
+        "line": 582,
+        "text": "    {recoveryIdentityBindingValid}"
+      },
+      {
+        "line": 584,
+        "text": "    {recoveryProvenanceBindingValid}"
+      },
+      {
+        "line": 585,
+        "text": "    {recoveryAuthorityAssignmentValid}"
+      },
+      {
+        "line": 586,
+        "text": "    (wrong : recoveryReceipt.effectReceipt.base \u2260 commitReceipt) :"
+      },
+      {
+        "line": 587,
+        "text": "    \u00ac SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridge"
+      },
+      {
+        "line": 590,
+        "text": "      decisionReceiptValid"
+      },
+      {
+        "line": 595,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 597,
+        "text": "      authorityReceiptValid"
+      },
+      {
+        "line": 598,
+        "text": "      admissionReceiptValid"
+      },
+      {
+        "line": 599,
+        "text": "      commitReceiptValid"
+      },
+      {
+        "line": 605,
+        "text": "      commitLifecycle"
+      },
+      {
+        "line": 611,
+        "text": "      humanReceipt"
+      },
+      {
+        "line": 615,
+        "text": "      commitReceipt"
+      },
+      {
+        "line": 616,
+        "text": "      recoveryAuthorityIdentity"
+      },
+      {
+        "line": 617,
+        "text": "      recoveryLifecycle"
+      },
+      {
+        "line": 623,
+        "text": "      receiptValid"
+      },
+      {
+        "line": 627,
+        "text": "      recoveryReceipt"
+      },
+      {
+        "line": 630,
+        "text": "      recoveryIdentityBindingValid"
+      },
+      {
+        "line": 632,
+        "text": "      recoveryProvenanceBindingValid"
+      },
+      {
+        "line": 633,
+        "text": "      recoveryAuthorityAssignmentValid := by"
+      },
+      {
+        "line": 635,
+        "text": "  exact wrong closed.recoveryBaseReceiptMatchesAtomic"
+      },
+      {
+        "line": 637,
+        "text": "end PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore"
+      }
+    ]
+  },
+  {
+    "id": "P20",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean",
+    "lines": [
+      {
+        "line": 7,
+        "text": "namespace PooFlowProof.Enterprise.CommittedEffectApplicationExactlyOnce"
+      },
+      {
+        "line": 15,
+        "text": "    (traceReceipt : SourceBoundEffectExecutionTraceReceipt) : Nat :="
+      },
+      {
+        "line": 16,
+        "text": "  (traceReceipt.events.map SourceBoundEffectExecutionEvent.effectId).count effectId"
+      },
+      {
+        "line": 20,
+        "text": "    (traceReceipt : SourceBoundEffectExecutionTraceReceipt) : Prop :="
+      },
+      {
+        "line": 23,
+        "text": "      sourceBoundEffectOccurrenceCount effectId traceReceipt = 1"
+      },
+      {
+        "line": 25,
+        "text": "structure SourceBoundCommittedEffectExactlyOnceClosed"
+      },
+      {
+        "line": 31,
+        "text": "    (resolutionReceiptValid : ResolutionReceiptValid)"
+      },
+      {
+        "line": 36,
+        "text": "    (resolutionReceipts : List ResolutionReceipt)"
+      },
+      {
+        "line": 37,
+        "text": "    (traceReceipt : SourceBoundEffectExecutionTraceReceipt) : Prop where"
+      },
+      {
+        "line": 45,
+        "text": "      resolutionReceiptValid"
+      },
+      {
+        "line": 50,
+        "text": "      resolutionReceipts"
+      },
+      {
+        "line": 51,
+        "text": "      traceReceipt"
+      },
+      {
+        "line": 53,
+        "text": "    sourceBoundTraceExecutesUniverseExactlyOnce witness traceReceipt"
+      },
+      {
+        "line": 55,
+        "text": "structure SourceBoundCommittedEffectExactlyOnceEvidence where"
+      },
+      {
+        "line": 61,
+        "text": "  resolutionReceiptValid : ResolutionReceiptValid"
+      },
+      {
+        "line": 66,
+        "text": "  resolutionReceipts : List ResolutionReceipt"
+      },
+      {
+        "line": 67,
+        "text": "  traceReceipt : SourceBoundEffectExecutionTraceReceipt"
+      },
+      {
+        "line": 69,
+        "text": "    SourceBoundCommittedEffectExactlyOnceClosed"
+      },
+      {
+        "line": 75,
+        "text": "      resolutionReceiptValid"
+      },
+      {
+        "line": 80,
+        "text": "      resolutionReceipts"
+      },
+      {
+        "line": 81,
+        "text": "      traceReceipt"
+      },
+      {
+        "line": 83,
+        "text": "theorem closedCommittedEffectsPreserveSourceBoundComposition"
+      },
+      {
+        "line": 89,
+        "text": "    {resolutionReceiptValid : ResolutionReceiptValid}"
+      },
+      {
+        "line": 94,
+        "text": "    {resolutionReceipts : List ResolutionReceipt}"
+      },
+      {
+        "line": 95,
+        "text": "    {traceReceipt : SourceBoundEffectExecutionTraceReceipt}"
+      },
+      {
+        "line": 97,
+        "text": "      SourceBoundCommittedEffectExactlyOnceClosed"
+      },
+      {
+        "line": 103,
+        "text": "        resolutionReceiptValid"
+      },
+      {
+        "line": 108,
+        "text": "        resolutionReceipts"
+      },
+      {
+        "line": 109,
+        "text": "        traceReceipt) :"
+      },
+      {
+        "line": 116,
+        "text": "      resolutionReceiptValid"
+      },
+      {
+        "line": 121,
+        "text": "      resolutionReceipts"
+      },
+      {
+        "line": 122,
+        "text": "      traceReceipt :="
+      },
+      {
+        "line": 131,
+        "text": "    {resolutionReceiptValid : ResolutionReceiptValid}"
+      },
+      {
+        "line": 136,
+        "text": "    {resolutionReceipts : List ResolutionReceipt}"
+      },
+      {
+        "line": 137,
+        "text": "    {traceReceipt : SourceBoundEffectExecutionTraceReceipt}"
+      },
+      {
+        "line": 139,
+        "text": "      SourceBoundCommittedEffectExactlyOnceClosed"
+      },
+      {
+        "line": 145,
+        "text": "        resolutionReceiptValid"
+      },
+      {
+        "line": 150,
+        "text": "        resolutionReceipts"
+      },
+      {
+        "line": 151,
+        "text": "        traceReceipt) :"
+      },
+      {
+        "line": 153,
+        "text": "      sourceBoundEffectOccurrenceCount effectId traceReceipt = 1 :="
+      },
+      {
+        "line": 157,
+        "text": "    (evidence : SourceBoundCommittedEffectExactlyOnceEvidence) :"
+      },
+      {
+        "line": 159,
+        "text": "      sourceBoundEffectOccurrenceCount effectId evidence.traceReceipt = 1 :="
+      },
+      {
+        "line": 168,
+        "text": "    {resolutionReceiptValid : ResolutionReceiptValid}"
+      },
+      {
+        "line": 173,
+        "text": "    {resolutionReceipts : List ResolutionReceipt}"
+      },
+      {
+        "line": 174,
+        "text": "    {traceReceipt : SourceBoundEffectExecutionTraceReceipt}"
+      },
+      {
+        "line": 176,
+        "text": "      SourceBoundCommittedEffectExactlyOnceClosed"
+      },
+      {
+        "line": 182,
+        "text": "        resolutionReceiptValid"
+      },
+      {
+        "line": 187,
+        "text": "        resolutionReceipts"
+      },
+      {
+        "line": 188,
+        "text": "        traceReceipt)"
+      },
+      {
+        "line": 190,
+        "text": "    (eventInTrace : event \u2208 traceReceipt.events) :"
+      },
+      {
+        "line": 198,
+        "text": "    resolutionReceiptValid"
+      },
+      {
+        "line": 203,
+        "text": "    resolutionReceipts"
+      },
+      {
+        "line": 204,
+        "text": "    traceReceipt"
+      },
+      {
+        "line": 209,
+        "text": "end PooFlowProof.Enterprise.CommittedEffectApplicationExactlyOnce"
+      }
+    ]
+  },
+  {
+    "id": "P22",
+    "path": "modules/ai-agentic-context/features/memory/durable/store.ss",
+    "lines": [
+      {
+        "line": 6,
+        "text": ";;; Boundary: durable runtime store contract receipts for Rust/Marlin handoff."
+      },
+      {
+        "line": 8,
+        "text": ";;; owns storage, locking, leases, fsync, backfill, replay, and side effects."
+      },
+      {
+        "line": 11,
+        "text": "        :poo-flow/modules/ai-agentic-context/features/memory/durable/policy"
+      },
+      {
+        "line": 14,
+        "text": "(export +poo-flow-durable-runtime-store-contract-kind+"
+      },
+      {
+        "line": 15,
+        "text": "        +poo-flow-durable-runtime-store-contract-schema+"
+      },
+      {
+        "line": 16,
+        "text": "        +poo-flow-durable-runtime-store-contract-receipt-schema+"
+      },
+      {
+        "line": 17,
+        "text": "        +poo-flow-durable-runtime-store-diagnostic-schema+"
+      },
+      {
+        "line": 18,
+        "text": "        +poo-flow-durable-runtime-store-ledger-kinds+"
+      },
+      {
+        "line": 19,
+        "text": "        +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 20,
+        "text": "        make-poo-flow-durable-runtime-store-contract-receipt"
+      },
+      {
+        "line": 21,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt?"
+      },
+      {
+        "line": 22,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-store-id"
+      },
+      {
+        "line": 23,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-store-owner"
+      },
+      {
+        "line": 24,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-durable-policy-ref"
+      },
+      {
+        "line": 25,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-project-id"
+      },
+      {
+        "line": 26,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-root-session-id"
+      },
+      {
+        "line": 27,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-session-id"
+      },
+      {
+        "line": 28,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-runtime-owner"
+      },
+      {
+        "line": 29,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-schema-version"
+      },
+      {
+        "line": 30,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-fact-log-ref"
+      },
+      {
+        "line": 31,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref"
+      },
+      {
+        "line": 32,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-derived-index-ref"
+      },
+      {
+        "line": 33,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-job-store-ref"
+      },
+      {
+        "line": 34,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-repair-journal-ref"
+      },
+      {
+        "line": 35,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-artifact-store-ref"
+      },
+      {
+        "line": 36,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-communication-ledger-ref"
+      },
+      {
+        "line": 37,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-sandbox-ledger-ref"
+      },
+      {
+        "line": 38,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-ledger-kinds"
+      },
+      {
+        "line": 39,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-capability-flags"
+      },
+      {
+        "line": 40,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-valid?"
+      },
+      {
+        "line": 41,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-diagnostics"
+      },
+      {
+        "line": 42,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt-metadata"
+      },
+      {
+        "line": 43,
+        "text": "        poo-flow-durable-runtime-store-contract"
+      },
+      {
+        "line": 44,
+        "text": "        poo-flow-durable-runtime-store-contract/default"
+      },
+      {
+        "line": 45,
+        "text": "        poo-flow-durable-runtime-store-contract?"
+      },
+      {
+        "line": 46,
+        "text": "        poo-flow-durable-runtime-store-contract-name"
+      },
+      {
+        "line": 47,
+        "text": "        poo-flow-durable-runtime-store-contract-diagnostics"
+      },
+      {
+        "line": 48,
+        "text": "        poo-flow-durable-runtime-store-contract-valid?"
+      },
+      {
+        "line": 49,
+        "text": "        poo-flow-durable-runtime-store-contract->receipt"
+      },
+      {
+        "line": 50,
+        "text": "        poo-flow-durable-runtime-store-contract-receipt->alist"
+      },
+      {
+        "line": 51,
+        "text": "        poo-flow-durable-runtime-store-contracts->receipts"
+      },
+      {
+        "line": 52,
+        "text": "        poo-flow-durable-runtime-store-contract-receipts->alists)"
+      },
+      {
+        "line": 54,
+        "text": ";; : PooFlowDurableRuntimeStoreContractKind"
+      },
+      {
+        "line": 55,
+        "text": "(def +poo-flow-durable-runtime-store-contract-kind+"
+      },
+      {
+        "line": 56,
+        "text": "  'poo-flow.durable.runtime-store-contract)"
+      },
+      {
+        "line": 58,
+        "text": ";; : PooFlowDurableRuntimeStoreContractSchemaId"
+      },
+      {
+        "line": 59,
+        "text": "(def +poo-flow-durable-runtime-store-contract-schema+"
+      },
+      {
+        "line": 60,
+        "text": "  'poo-flow.module-system.durable-runtime-store-contract.v1)"
+      },
+      {
+        "line": 62,
+        "text": ";; : PooFlowDurableRuntimeStoreContractReceiptSchemaId"
+      },
+      {
+        "line": 63,
+        "text": "(def +poo-flow-durable-runtime-store-contract-receipt-schema+"
+      },
+      {
+        "line": 64,
+        "text": "  'poo-flow.module-system.durable-runtime-store-contract.receipt.v1)"
+      },
+      {
+        "line": 66,
+        "text": ";; : PooFlowDurableRuntimeStoreDiagnosticSchemaId"
+      },
+      {
+        "line": 67,
+        "text": "(def +poo-flow-durable-runtime-store-diagnostic-schema+"
+      },
+      {
+        "line": 68,
+        "text": "  'poo-flow.module-system.durable-runtime-store-contract.diagnostic.v1)"
+      },
+      {
+        "line": 70,
+        "text": ";; : [PooFlowDurableRuntimeStoreLedgerKind]"
+      },
+      {
+        "line": 71,
+        "text": "(def +poo-flow-durable-runtime-store-ledger-kinds+"
+      },
+      {
+        "line": 72,
+        "text": "  '(fact-log checkpoint derived-index job repair artifact communication sandbox))"
+      },
+      {
+        "line": 74,
+        "text": ";; : [PooFlowDurableRuntimeStoreCapabilityFlag]"
+      },
+      {
+        "line": 75,
+        "text": "(def +poo-flow-durable-runtime-store-capability-flags+"
+      },
+      {
+        "line": 76,
+        "text": "  '(append-fact"
+      },
+      {
+        "line": 77,
+        "text": "    write-checkpoint"
+      },
+      {
+        "line": 80,
+        "text": "    append-repair-event"
+      },
+      {
+        "line": 82,
+        "text": "    append-communication-event"
+      },
+      {
+        "line": 85,
+        "text": ";; : (forall (a) (-> PooDurableRuntimeStoreOptionRows PooDurableRuntimeStoreOptionKey a a))"
+      },
+      {
+        "line": 86,
+        "text": "(def (poo-flow-durable-runtime-store-option options key default-value)"
+      },
+      {
+        "line": 90,
+        "text": ";; : (forall (a) (-> PooDurableRuntimeStoreSourceObject PooDurableRuntimeStoreSlotKey a a))"
+      },
+      {
+        "line": 91,
+        "text": "(def (poo-flow-durable-runtime-store-slot object key default-value)"
+      },
+      {
+        "line": 96,
+        "text": ";; : (forall (a) (-> PooDurableRuntimeStoreIdentityRows PooDurableRuntimeStoreIdentityKey a a))"
+      },
+      {
+        "line": 97,
+        "text": "(def (poo-flow-durable-runtime-store-identity-ref identity key default-value)"
+      },
+      {
+        "line": 101,
+        "text": ";; : (-> PooDurableRuntimeStorePredicate PooDurableRuntimeStoreValueList Bool)"
+      },
+      {
+        "line": 102,
+        "text": "(def (poo-flow-durable-runtime-store-every? predicate values)"
+      },
+      {
+        "line": 106,
+        "text": "    (poo-flow-durable-runtime-store-every? predicate (cdr values)))"
+      },
+      {
+        "line": 110,
+        "text": "(def (poo-flow-durable-runtime-store-member? value values)"
+      },
+      {
+        "line": 114,
+        "text": "(def (poo-flow-durable-runtime-store-symbol-list? values)"
+      },
+      {
+        "line": 116,
+        "text": "       (poo-flow-durable-runtime-store-every? symbol? values)))"
+      },
+      {
+        "line": 118,
+        "text": ";; : (-> PooDurableRuntimeStoreDiagnosticCode PooDurableRuntimeStoreDiagnosticSlot PooDurableRuntimeStoreDiagnosticSeverity PooDurableRuntimeStoreDiagnosticPayload PooDurableRuntimeStoreDiagnosticRow)"
+      },
+      {
+        "line": 119,
+        "text": "(def (poo-flow-durable-runtime-store-diagnostic code slot severity payload)"
+      },
+      {
+        "line": 121,
+        "text": "   (cons 'kind +poo-flow-durable-runtime-store-diagnostic-schema+)"
+      },
+      {
+        "line": 122,
+        "text": "   (cons 'schema +poo-flow-durable-runtime-store-diagnostic-schema+)"
+      },
+      {
+        "line": 124,
+        "text": "   (cons 'phase 'durable-runtime-store-contract)"
+      },
+      {
+        "line": 128,
+        "text": "   (cons 'recoverable?"
+      },
+      {
+        "line": 129,
+        "text": "         (poo-flow-durable-runtime-store-option"
+      },
+      {
+        "line": 131,
+        "text": "          'recoverable?"
+      },
+      {
+        "line": 134,
+        "text": ";; : (-> PooDurableRuntimeStoreDiagnosticCode PooDurableRuntimeStoreDiagnosticSlot PooDurableRuntimeStoreDiagnosticValue PooDurableRuntimeStoreDiagnosticRow)"
+      },
+      {
+        "line": 135,
+        "text": "(def (poo-flow-durable-runtime-store-value-diagnostic code slot value)"
+      },
+      {
+        "line": 136,
+        "text": "  (poo-flow-durable-runtime-store-diagnostic"
+      },
+      {
+        "line": 141,
+        "text": "         (cons 'recoverable? #t))))"
+      },
+      {
+        "line": 144,
+        "text": ";;; defaults before backend negotiation while keeping validation and receipt"
+      },
+      {
+        "line": 146,
+        "text": ";; : (-> PooDurableRuntimeStoreId PooDurableRuntimeOwner PooDurablePolicy [PooDurableRuntimeStoreOptionRow] PooDurableRuntimeStoreContract)"
+      },
+      {
+        "line": 147,
+        "text": "(def (poo-flow-durable-runtime-store-contract store-id"
+      },
+      {
+        "line": 149,
+        "text": "                                              durable-policy"
+      },
+      {
+        "line": 153,
+        "text": "          (poo-flow-durable-runtime-store-option options 'schema-version 1))"
+      },
+      {
+        "line": 155,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 158,
+        "text": "         (checkpoint-store-ref"
+      },
+      {
+        "line": 159,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 160,
+        "text": "                                                'checkpoint-store-ref"
+      },
+      {
+        "line": 161,
+        "text": "                                                'runtime/checkpoint-store))"
+      },
+      {
+        "line": 163,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 167,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 170,
+        "text": "         (repair-journal-ref"
+      },
+      {
+        "line": 171,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 172,
+        "text": "                                                'repair-journal-ref"
+      },
+      {
+        "line": 173,
+        "text": "                                                'runtime/repair-journal))"
+      },
+      {
+        "line": 175,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 179,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 183,
+        "text": "          (poo-flow-durable-runtime-store-option options"
+      },
+      {
+        "line": 187,
+        "text": "          (poo-flow-durable-runtime-store-option"
+      },
+      {
+        "line": 190,
+        "text": "           +poo-flow-durable-runtime-store-ledger-kinds+))"
+      },
+      {
+        "line": 192,
+        "text": "          (poo-flow-durable-runtime-store-option"
+      },
+      {
+        "line": 195,
+        "text": "           +poo-flow-durable-runtime-store-capability-flags+))"
+      },
+      {
+        "line": 197,
+        "text": "          (poo-flow-durable-runtime-store-option options 'metadata '())))"
+      },
+      {
+        "line": 200,
+        "text": "      (cons 'durable-runtime-store-kind"
+      },
+      {
+        "line": 201,
+        "text": "            +poo-flow-durable-runtime-store-contract-kind+)"
+      },
+      {
+        "line": 202,
+        "text": "      (cons 'durable-runtime-store-schema"
+      },
+      {
+        "line": 203,
+        "text": "            +poo-flow-durable-runtime-store-contract-schema+)"
+      },
+      {
+        "line": 206,
+        "text": "      (cons 'runtime-store-durable-policy durable-policy)"
+      },
+      {
+        "line": 209,
+        "text": "      (cons 'runtime-store-checkpoint-store-ref checkpoint-store-ref)"
+      },
+      {
+        "line": 212,
+        "text": "      (cons 'runtime-store-repair-journal-ref repair-journal-ref)"
+      },
+      {
+        "line": 221,
+        "text": ";; : PooDurableRuntimeStoreContract"
+      },
+      {
+        "line": 222,
+        "text": "(def poo-flow-durable-runtime-store-contract/default"
+      },
+      {
+        "line": 223,
+        "text": "  (poo-flow-durable-runtime-store-contract"
+      },
+      {
+        "line": 226,
+        "text": "   poo-flow-durable-policy/default"
+      },
+      {
+        "line": 231,
+        "text": "(def (poo-flow-durable-runtime-store-contract? value)"
+      },
+      {
+        "line": 233,
+        "text": "       (.slot? value 'durable-runtime-store-kind)"
+      },
+      {
+        "line": 234,
+        "text": "       (eq? (.ref value 'durable-runtime-store-kind)"
+      },
+      {
+        "line": 235,
+        "text": "            +poo-flow-durable-runtime-store-contract-kind+)))"
+      },
+      {
+        "line": 237,
+        "text": ";; : (-> PooDurableRuntimeStoreContract PooDurableRuntimeStoreContractName)"
+      },
+      {
+        "line": 238,
+        "text": "(def (poo-flow-durable-runtime-store-contract-name contract)"
+      },
+      {
+        "line": 239,
+        "text": "  (poo-flow-durable-runtime-store-slot contract 'runtime-store-id #f))"
+      },
+      {
+        "line": 241,
+        "text": ";; : (-> PooDurableRuntimeStoreContract PooDurableRuntimeStoreRequiredSlot PooDurableRuntimeStoreRequiredValue [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 242,
+        "text": "(def (poo-flow-durable-runtime-store-required-symbol-diagnostics contract"
+      },
+      {
+        "line": 250,
+        "text": "     (poo-flow-durable-runtime-store-diagnostic"
+      },
+      {
+        "line": 255,
+        "text": "                  (poo-flow-durable-runtime-store-contract-name contract))"
+      },
+      {
+        "line": 258,
+        "text": "            (cons 'recoverable? #t)))))))"
+      },
+      {
+        "line": 260,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 261,
+        "text": "(def (poo-flow-durable-runtime-store-ledger-kind-diagnostics contract)"
+      },
+      {
+        "line": 263,
+        "text": "        (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 268,
+        "text": "     ((not (poo-flow-durable-runtime-store-symbol-list? ledger-kinds))"
+      },
+      {
+        "line": 270,
+        "text": "       (poo-flow-durable-runtime-store-value-diagnostic"
+      },
+      {
+        "line": 274,
+        "text": "     ((poo-flow-durable-runtime-store-every?"
+      },
+      {
+        "line": 276,
+        "text": "         (poo-flow-durable-runtime-store-member?"
+      },
+      {
+        "line": 278,
+        "text": "          +poo-flow-durable-runtime-store-ledger-kinds+))"
+      },
+      {
+        "line": 283,
+        "text": "       (poo-flow-durable-runtime-store-diagnostic"
+      },
+      {
+        "line": 288,
+        "text": "                    (poo-flow-durable-runtime-store-contract-name contract))"
+      },
+      {
+        "line": 290,
+        "text": "              (cons 'allowed +poo-flow-durable-runtime-store-ledger-kinds+)"
+      },
+      {
+        "line": 291,
+        "text": "              (cons 'recoverable? #t))))))))"
+      },
+      {
+        "line": 293,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 294,
+        "text": "(def (poo-flow-durable-runtime-store-capability-diagnostics contract)"
+      },
+      {
+        "line": 296,
+        "text": "        (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 301,
+        "text": "     ((not (poo-flow-durable-runtime-store-symbol-list? capability-flags))"
+      },
+      {
+        "line": 303,
+        "text": "       (poo-flow-durable-runtime-store-value-diagnostic"
+      },
+      {
+        "line": 307,
+        "text": "     ((poo-flow-durable-runtime-store-every?"
+      },
+      {
+        "line": 309,
+        "text": "         (poo-flow-durable-runtime-store-member?"
+      },
+      {
+        "line": 311,
+        "text": "          +poo-flow-durable-runtime-store-capability-flags+))"
+      },
+      {
+        "line": 316,
+        "text": "       (poo-flow-durable-runtime-store-diagnostic"
+      },
+      {
+        "line": 321,
+        "text": "                    (poo-flow-durable-runtime-store-contract-name contract))"
+      },
+      {
+        "line": 323,
+        "text": "              (cons 'allowed"
+      },
+      {
+        "line": 324,
+        "text": "                    +poo-flow-durable-runtime-store-capability-flags+)"
+      },
+      {
+        "line": 325,
+        "text": "              (cons 'recoverable? #t))))))))"
+      },
+      {
+        "line": 327,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 328,
+        "text": "(def (poo-flow-durable-runtime-store-required-contract-diagnostics contract)"
+      },
+      {
+        "line": 329,
+        "text": "  (append"
+      },
+      {
+        "line": 330,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 334,
+        "text": "    (poo-flow-durable-runtime-store-slot contract 'runtime-store-id #f))"
+      },
+      {
+        "line": 335,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 339,
+        "text": "    (poo-flow-durable-runtime-store-slot contract 'runtime-store-owner #f))"
+      },
+      {
+        "line": 340,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 344,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 348,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 350,
+        "text": "    'checkpoint-store-ref"
+      },
+      {
+        "line": 351,
+        "text": "    'missing-checkpoint-store-ref"
+      },
+      {
+        "line": 352,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 354,
+        "text": "     'runtime-store-checkpoint-store-ref"
+      },
+      {
+        "line": 356,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 360,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 364,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 368,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 372,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 374,
+        "text": "    'repair-journal-ref"
+      },
+      {
+        "line": 375,
+        "text": "    'missing-repair-journal-ref"
+      },
+      {
+        "line": 376,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 378,
+        "text": "     'runtime-store-repair-journal-ref"
+      },
+      {
+        "line": 380,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 384,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 388,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 392,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 396,
+        "text": "   (poo-flow-durable-runtime-store-required-symbol-diagnostics"
+      },
+      {
+        "line": 400,
+        "text": "    (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 405,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 406,
+        "text": "(def (poo-flow-durable-runtime-store-schema-version-diagnostics contract)"
+      },
+      {
+        "line": 408,
+        "text": "        (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 415,
+        "text": "       (poo-flow-durable-runtime-store-value-diagnostic"
+      },
+      {
+        "line": 420,
+        "text": ";; : (-> PooDurableRuntimeStoreContract PooDurablePolicyValue [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 421,
+        "text": "(def (poo-flow-durable-runtime-store-policy-diagnostics contract durable-policy)"
+      },
+      {
+        "line": 422,
+        "text": "  (append"
+      },
+      {
+        "line": 423,
+        "text": "   (if (poo-flow-durable-policy? durable-policy)"
+      },
+      {
+        "line": 426,
+        "text": "      (poo-flow-durable-runtime-store-value-diagnostic"
+      },
+      {
+        "line": 427,
+        "text": "       'invalid-durable-policy"
+      },
+      {
+        "line": 428,
+        "text": "       'durable-policy"
+      },
+      {
+        "line": 429,
+        "text": "       durable-policy)))"
+      },
+      {
+        "line": 430,
+        "text": "   (if (and (poo-flow-durable-policy? durable-policy)"
+      },
+      {
+        "line": 431,
+        "text": "            (poo-flow-durable-policy-valid? durable-policy))"
+      },
+      {
+        "line": 434,
+        "text": "      (poo-flow-durable-runtime-store-diagnostic"
+      },
+      {
+        "line": 435,
+        "text": "       'invalid-durable-policy-receipt"
+      },
+      {
+        "line": 436,
+        "text": "       'durable-policy"
+      },
+      {
+        "line": 439,
+        "text": "                   (poo-flow-durable-runtime-store-contract-name"
+      },
+      {
+        "line": 441,
+        "text": "             (cons 'recoverable? #t)))))))"
+      },
+      {
+        "line": 443,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])"
+      },
+      {
+        "line": 444,
+        "text": "(def (poo-flow-durable-runtime-store-contract-diagnostics contract)"
+      },
+      {
+        "line": 445,
+        "text": "  (if (poo-flow-durable-runtime-store-contract? contract)"
+      },
+      {
+        "line": 446,
+        "text": "    (let ((durable-policy"
+      },
+      {
+        "line": 447,
+        "text": "           (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 449,
+        "text": "            'runtime-store-durable-policy"
+      },
+      {
+        "line": 451,
+        "text": "      (append"
+      },
+      {
+        "line": 452,
+        "text": "       (poo-flow-durable-runtime-store-required-contract-diagnostics contract)"
+      },
+      {
+        "line": 453,
+        "text": "       (poo-flow-durable-runtime-store-schema-version-diagnostics contract)"
+      },
+      {
+        "line": 454,
+        "text": "       (poo-flow-durable-runtime-store-policy-diagnostics contract"
+      },
+      {
+        "line": 455,
+        "text": "                                                          durable-policy)"
+      },
+      {
+        "line": 456,
+        "text": "       (poo-flow-durable-runtime-store-ledger-kind-diagnostics contract)"
+      },
+      {
+        "line": 457,
+        "text": "       (poo-flow-durable-runtime-store-capability-diagnostics contract)))"
+      },
+      {
+        "line": 459,
+        "text": "     (poo-flow-durable-runtime-store-value-diagnostic"
+      },
+      {
+        "line": 464,
+        "text": ";; : (-> PooDurableRuntimeStoreContract Bool)"
+      },
+      {
+        "line": 465,
+        "text": "(def (poo-flow-durable-runtime-store-contract-valid? contract)"
+      },
+      {
+        "line": 466,
+        "text": "  (null? (poo-flow-durable-runtime-store-contract-diagnostics contract)))"
+      },
+      {
+        "line": 468,
+        "text": ";; poo-flow-durable-runtime-store-contract-receipt"
+      },
+      {
+        "line": 469,
+        "text": ";;   : PooDurableRuntimeStoreContractReceiptStruct"
+      },
+      {
+        "line": 471,
+        "text": ";;       Runtime store contract receipts stay fixed structs; projection helpers"
+      },
+      {
+        "line": 474,
+        "text": "(defstruct poo-flow-durable-runtime-store-contract-receipt"
+      },
+      {
+        "line": 477,
+        "text": "   durable-policy-ref"
+      },
+      {
+        "line": 484,
+        "text": "   checkpoint-store-ref"
+      },
+      {
+        "line": 487,
+        "text": "   repair-journal-ref"
+      },
+      {
+        "line": 498,
+        "text": ";; : (forall (a) (-> a PooDurableRuntimeStoreIdentityRows (U #f PooDurablePolicyReceipt)))"
+      },
+      {
+        "line": 499,
+        "text": "(def (poo-flow-durable-runtime-store-policy->receipt durable-policy identity)"
+      },
+      {
+        "line": 500,
+        "text": "  (and (poo-flow-durable-policy? durable-policy)"
+      },
+      {
+        "line": 501,
+        "text": "       (poo-flow-durable-policy->receipt durable-policy identity)))"
+      },
+      {
+        "line": 503,
+        "text": ";; : (-> (U #f PooDurablePolicyReceipt) (U #f PooDurablePolicyId))"
+      },
+      {
+        "line": 504,
+        "text": "(def (poo-flow-durable-runtime-store-policy-receipt-policy-id receipt)"
+      },
+      {
+        "line": 505,
+        "text": "  (and receipt"
+      },
+      {
+        "line": 506,
+        "text": "       (poo-flow-durable-policy-receipt-policy-id receipt)))"
+      },
+      {
+        "line": 508,
+        "text": ";; : (-> (U #f PooDurablePolicyReceipt) (U #f PooDurableRuntimeOwner))"
+      },
+      {
+        "line": 509,
+        "text": "(def (poo-flow-durable-runtime-store-policy-receipt-runtime-owner receipt)"
+      },
+      {
+        "line": 510,
+        "text": "  (and receipt"
+      },
+      {
+        "line": 511,
+        "text": "       (poo-flow-durable-policy-receipt-runtime-owner receipt)))"
+      },
+      {
+        "line": 513,
+        "text": ";; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreIdentityRow] PooDurableRuntimeStoreContractReceipt)"
+      },
+      {
+        "line": 514,
+        "text": "(def (poo-flow-durable-runtime-store-contract->receipt contract"
+      },
+      {
+        "line": 517,
+        "text": "         (durable-policy"
+      },
+      {
+        "line": 518,
+        "text": "          (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 520,
+        "text": "           'runtime-store-durable-policy"
+      },
+      {
+        "line": 522,
+        "text": "         (durable-policy-receipt"
+      },
+      {
+        "line": 523,
+        "text": "          (poo-flow-durable-runtime-store-policy->receipt durable-policy"
+      },
+      {
+        "line": 526,
+        "text": "          (poo-flow-durable-runtime-store-contract-diagnostics contract))"
+      },
+      {
+        "line": 528,
+        "text": "    (make-poo-flow-durable-runtime-store-contract-receipt"
+      },
+      {
+        "line": 529,
+        "text": "     (poo-flow-durable-runtime-store-slot contract 'runtime-store-id #f)"
+      },
+      {
+        "line": 530,
+        "text": "     (poo-flow-durable-runtime-store-slot contract 'runtime-store-owner #f)"
+      },
+      {
+        "line": 531,
+        "text": "     (poo-flow-durable-runtime-store-policy-receipt-policy-id"
+      },
+      {
+        "line": 532,
+        "text": "      durable-policy-receipt)"
+      },
+      {
+        "line": 533,
+        "text": "     (poo-flow-durable-runtime-store-identity-ref identity 'project-id #f)"
+      },
+      {
+        "line": 534,
+        "text": "     (poo-flow-durable-runtime-store-identity-ref identity"
+      },
+      {
+        "line": 537,
+        "text": "     (poo-flow-durable-runtime-store-identity-ref identity 'session-id #f)"
+      },
+      {
+        "line": 538,
+        "text": "     (poo-flow-durable-runtime-store-policy-receipt-runtime-owner"
+      },
+      {
+        "line": 539,
+        "text": "      durable-policy-receipt)"
+      },
+      {
+        "line": 540,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 544,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 548,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 550,
+        "text": "      'runtime-store-checkpoint-store-ref"
+      },
+      {
+        "line": 552,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 556,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 560,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 562,
+        "text": "      'runtime-store-repair-journal-ref"
+      },
+      {
+        "line": 564,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 568,
+        "text": "     (poo-flow-durable-runtime-store-slot contract"
+      },
+      {
+        "line": 571,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 575,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 579,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 585,
+        "text": "     (poo-flow-durable-runtime-store-slot"
+      },
+      {
+        "line": 590,
+        "text": ";; : (-> PooDurableRuntimeStoreContractReceipt PooDurableRuntimeStoreContractReceiptRow)"
+      },
+      {
+        "line": 592,
+        "text": "  poo-flow-durable-runtime-store-contract-receipt->alist (receipt)"
+      },
+      {
+        "line": 594,
+        "text": "              (poo-flow-durable-runtime-store-contract-receipt-diagnostics"
+      },
+      {
+        "line": 595,
+        "text": "               receipt))))"
+      },
+      {
+        "line": 596,
+        "text": "  (fields ((kind 'poo-flow.durable.runtime-store-contract-receipt)"
+      },
+      {
+        "line": 597,
+        "text": "           (schema +poo-flow-durable-runtime-store-contract-receipt-schema+)"
+      },
+      {
+        "line": 599,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-store-id receipt))"
+      },
+      {
+        "line": 601,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-store-owner"
+      },
+      {
+        "line": 602,
+        "text": "             receipt))"
+      },
+      {
+        "line": 603,
+        "text": "           (durable-policy-ref"
+      },
+      {
+        "line": 604,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-durable-policy-ref"
+      },
+      {
+        "line": 605,
+        "text": "             receipt))"
+      },
+      {
+        "line": 607,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-project-id receipt))"
+      },
+      {
+        "line": 609,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-root-session-id"
+      },
+      {
+        "line": 610,
+        "text": "             receipt))"
+      },
+      {
+        "line": 612,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-session-id"
+      },
+      {
+        "line": 613,
+        "text": "             receipt))"
+      },
+      {
+        "line": 615,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-runtime-owner"
+      },
+      {
+        "line": 616,
+        "text": "             receipt))"
+      },
+      {
+        "line": 618,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-schema-version"
+      },
+      {
+        "line": 619,
+        "text": "             receipt))"
+      },
+      {
+        "line": 621,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-fact-log-ref"
+      },
+      {
+        "line": 622,
+        "text": "             receipt))"
+      },
+      {
+        "line": 623,
+        "text": "           (checkpoint-store-ref"
+      },
+      {
+        "line": 624,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref"
+      },
+      {
+        "line": 625,
+        "text": "             receipt))"
+      },
+      {
+        "line": 627,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-derived-index-ref"
+      },
+      {
+        "line": 628,
+        "text": "             receipt))"
+      },
+      {
+        "line": 630,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-job-store-ref"
+      },
+      {
+        "line": 631,
+        "text": "             receipt))"
+      },
+      {
+        "line": 632,
+        "text": "           (repair-journal-ref"
+      },
+      {
+        "line": 633,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-repair-journal-ref"
+      },
+      {
+        "line": 634,
+        "text": "             receipt))"
+      },
+      {
+        "line": 636,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-artifact-store-ref"
+      },
+      {
+        "line": 637,
+        "text": "             receipt))"
+      },
+      {
+        "line": 639,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-communication-ledger-ref"
+      },
+      {
+        "line": 640,
+        "text": "             receipt))"
+      },
+      {
+        "line": 642,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-sandbox-ledger-ref"
+      },
+      {
+        "line": 643,
+        "text": "             receipt))"
+      },
+      {
+        "line": 645,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-ledger-kinds"
+      },
+      {
+        "line": 646,
+        "text": "             receipt))"
+      },
+      {
+        "line": 648,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-capability-flags"
+      },
+      {
+        "line": 649,
+        "text": "             receipt))"
+      },
+      {
+        "line": 651,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-valid? receipt))"
+      },
+      {
+        "line": 655,
+        "text": "            (poo-flow-durable-runtime-store-contract-receipt-metadata receipt))"
+      },
+      {
+        "line": 658,
+        "text": ";; : (-> [PooDurableRuntimeStoreContract] [PooDurableRuntimeStoreContractReceipt])"
+      },
+      {
+        "line": 659,
+        "text": "(def (poo-flow-durable-runtime-store-contracts->receipts contracts)"
+      },
+      {
+        "line": 663,
+        "text": "    (cons (poo-flow-durable-runtime-store-contract->receipt (car contracts))"
+      },
+      {
+        "line": 664,
+        "text": "          (poo-flow-durable-runtime-store-contracts->receipts"
+      },
+      {
+        "line": 667,
+        "text": "    (error \"durable runtime store contract batch projection requires a list\""
+      },
+      {
+        "line": 670,
+        "text": ";; : (-> [PooDurableRuntimeStoreContractReceipt] [PooDurableRuntimeStoreContractReceiptRow])"
+      },
+      {
+        "line": 672,
+        "text": "  poo-flow-durable-runtime-store-contract-receipts->alists (receipts)"
+      },
+      {
+        "line": 673,
+        "text": "  (projector poo-flow-durable-runtime-store-contract-receipt->alist)"
+      },
+      {
+        "line": 675,
+        "text": "   \"durable runtime store contract receipt serialization requires a list\"))"
+      }
+    ]
+  },
+  {
+    "id": "P31",
+    "path": "packages/proofs/lean-poo/SessionAttempt.lean",
+    "lines": [
+      {
+        "line": 6,
+        "text": "def quintInvariantNames : List String := [\"ExactAttempt\", \"RecoveryPreservesObligation\", \"ClosedIsTerminal\"]"
+      },
+      {
+        "line": 8,
+        "text": "-- Producer receipt resolution and runtime publication are outside these laws."
+      },
+      {
+        "line": 14,
+        "text": "  pending : List (Nat \u00d7 \u03b1)"
+      },
+      {
+        "line": 16,
+        "text": "def recover (s : Schedule \u03b1) : Option (Schedule \u03b1) :="
+      },
+      {
+        "line": 19,
+        "text": "                  active := none, pending := s.active.toList ++ s.pending }"
+      },
+      {
+        "line": 27,
+        "text": "theorem closed_recovery_refused (s : Schedule \u03b1) (closed : s.closed = true) :"
+      },
+      {
+        "line": 28,
+        "text": "    recover s = none := by simp [recover, closed]"
+      },
+      {
+        "line": 29,
+        "text": "theorem recovery_generation_advances (s : Schedule \u03b1) (openState : s.closed = false) :"
+      },
+      {
+        "line": 30,
+        "text": "    (recover s).map Schedule.generation = some (s.generation + 1) := by"
+      },
+      {
+        "line": 31,
+        "text": "  simp [recover, openState]"
+      },
+      {
+        "line": 32,
+        "text": "theorem recovery_revision_advances (s : Schedule \u03b1) (openState : s.closed = false) :"
+      },
+      {
+        "line": 33,
+        "text": "    (recover s).map Schedule.revision = some (s.revision + 1) := by"
+      },
+      {
+        "line": 34,
+        "text": "  simp [recover, openState]"
+      },
+      {
+        "line": 35,
+        "text": "theorem recovery_keeps_obligations (s : Schedule \u03b1) (openState : s.closed = false) :"
+      },
+      {
+        "line": 36,
+        "text": "    (recover s).map Schedule.pending = some (s.active.toList ++ s.pending) := by"
+      },
+      {
+        "line": 37,
+        "text": "  simp [recover, openState]"
+      },
+      {
+        "line": 38,
+        "text": "theorem recovery_fences_active (s : Schedule \u03b1) (openState : s.closed = false) :"
+      },
+      {
+        "line": 39,
+        "text": "    (recover s).map Schedule.active = some none := by simp [recover, openState]"
+      },
+      {
+        "line": 58,
+        "text": "  let allowed := #[`propext, `Classical.choice, `Quot.sound]"
+      },
+      {
+        "line": 61,
+        "text": "    if (`PooFlowSessionAttemptProof).isPrefixOf name then"
+      },
+      {
+        "line": 64,
+        "text": "        unless allowed.contains axiomName do"
+      },
+      {
+        "line": 65,
+        "text": "          throwError \"{name} depends on disallowed axiom {axiomName}\""
+      },
+      {
+        "line": 66,
+        "text": "  for required in #[`PooFlowSessionAttemptProof.closed_recovery_refused,"
+      },
+      {
+        "line": 67,
+        "text": "      `PooFlowSessionAttemptProof.recovery_generation_advances,"
+      },
+      {
+        "line": 68,
+        "text": "      `PooFlowSessionAttemptProof.recovery_revision_advances,"
+      },
+      {
+        "line": 69,
+        "text": "      `PooFlowSessionAttemptProof.recovery_keeps_obligations,"
+      },
+      {
+        "line": 70,
+        "text": "      `PooFlowSessionAttemptProof.recovery_fences_active,"
+      }
+    ]
+  },
+  {
+    "id": "P31",
+    "path": "packages/proofs/quint/SessionAttempt.qnt",
+    "lines": [
+      {
+        "line": 7,
+        "text": "  var pending: int"
+      },
+      {
+        "line": 11,
+        "text": "  var recoveries: List[(int,int)]"
+      },
+      {
+        "line": 12,
+        "text": "  action init = all { generation' = 0, active' = -1, pending' = -1,"
+      },
+      {
+        "line": 13,
+        "text": "    closed' = false, everClosed' = false, routed' = List(), recoveries' = List() }"
+      },
+      {
+        "line": 15,
+        "text": "    not(closed), active == -1, pending == -1, generation < 3,"
+      },
+      {
+        "line": 17,
+        "text": "    pending' = pending, closed' = closed, everClosed' = everClosed, routed' = routed, recoveries' = recoveries"
+      },
+      {
+        "line": 22,
+        "text": "    routed' = routed.append((requestGeneration,active)), active' = -1,"
+      },
+      {
+        "line": 23,
+        "text": "    generation' = generation, pending' = pending, closed' = closed, everClosed' = everClosed, recoveries' = recoveries"
+      },
+      {
+        "line": 25,
+        "text": "  action recover = all {"
+      },
+      {
+        "line": 26,
+        "text": "    (not(closed) or BUG == \"resumeClosed\"), generation < 3, recoveries.length() < 2,"
+      },
+      {
+        "line": 28,
+        "text": "    pending' = if (BUG == \"dropObligation\") -1 else if (active >= 0) active else pending,"
+      },
+      {
+        "line": 29,
+        "text": "    recoveries' = recoveries.append((if (active >= 0) active else pending,"
+      },
+      {
+        "line": 30,
+        "text": "      if (BUG == \"dropObligation\") -1 else if (active >= 0) active else pending)),"
+      },
+      {
+        "line": 34,
+        "text": "    pending >= 0, pending' = -1, active' = active, generation' = generation,"
+      },
+      {
+        "line": 35,
+        "text": "    closed' = closed, everClosed' = everClosed, routed' = routed, recoveries' = recoveries"
+      },
+      {
+        "line": 38,
+        "text": "    not(closed), active == -1, pending == -1, closed' = true, everClosed' = true,"
+      },
+      {
+        "line": 39,
+        "text": "    generation' = generation, active' = active, pending' = pending,"
+      },
+      {
+        "line": 40,
+        "text": "    routed' = routed, recoveries' = recoveries"
+      },
+      {
+        "line": 44,
+        "text": "    any { claim, complete(requestGeneration), recover, reconcile, close }"
+      },
+      {
+        "line": 47,
+        "text": "  val RecoveryPreservesObligation = recoveries.foldl(true, (ok,r) => ok and (r._1 < 0 or r._1 == r._2))"
+      },
+      {
+        "line": 49,
+        "text": "  val safety = ExactAttempt and RecoveryPreservesObligation and ClosedIsTerminal"
+      }
+    ]
+  },
+  {
+    "id": "P33",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean",
+    "lines": [
+      {
+        "line": 16,
+        "text": "abbrev DeterministicBudgetReceiptId := String"
+      },
+      {
+        "line": 24,
+        "text": "A deterministic budget plan is authorized for one fixed-point receipt and one"
+      },
+      {
+        "line": 30,
+        "text": "  fixedPointReceiptId : String"
+      },
+      {
+        "line": 39,
+        "text": "A budget receipt records conservation, not merely a pair of unowned remaining"
+      },
+      {
+        "line": 40,
+        "text": "values.  Its coordinates bind the accounting to a progress receipt and cycle"
+      },
+      {
+        "line": 43,
+        "text": "structure SourceBoundDeterministicBudgetReceipt where"
+      },
+      {
+        "line": 44,
+        "text": "  receiptId : DeterministicBudgetReceiptId"
+      },
+      {
+        "line": 47,
+        "text": "  fixedPointReceiptId : String"
+      },
+      {
+        "line": 51,
+        "text": "  progressReceiptId : String"
+      },
+      {
+        "line": 62,
+        "text": "def SourceBoundDeterministicBudgetReceiptValid :="
+      },
+      {
+        "line": 63,
+        "text": "  SourceBoundDeterministicBudgetReceipt \u2192 Prop"
+      },
+      {
+        "line": 72,
+        "text": "    (receipt : SourceBoundDeterministicBudgetReceipt) :"
+      },
+      {
+        "line": 74,
+        "text": "  | .semantic => receipt.semanticConsumed"
+      },
+      {
+        "line": 75,
+        "text": "  | .scheduling => receipt.schedulingConsumed"
+      },
+      {
+        "line": 78,
+        "text": "    (receipt : SourceBoundDeterministicBudgetReceipt) :"
+      },
+      {
+        "line": 80,
+        "text": "  | .semantic => receipt.semanticRemaining"
+      },
+      {
+        "line": 81,
+        "text": "  | .scheduling => receipt.schedulingRemaining"
+      },
+      {
+        "line": 85,
+        "text": "    (receipt : SourceBoundDeterministicBudgetReceipt) : Prop :="
+      },
+      {
+        "line": 87,
+        "text": "    deterministicBudgetConsumed receipt kind +"
+      },
+      {
+        "line": 88,
+        "text": "        deterministicBudgetRemaining receipt kind ="
+      },
+      {
+        "line": 92,
+        "text": "    (receipt : SourceBoundDeterministicBudgetReceipt) : Prop :="
+      },
+      {
+        "line": 93,
+        "text": "  \u2203 kind, deterministicBudgetRemaining receipt kind = 0"
+      },
+      {
+        "line": 102,
+        "text": "    (receiptValid : SourceBoundDeterministicBudgetReceiptValid)"
+      },
+      {
+        "line": 103,
+        "text": "    (fixedPoint : SourceBoundFixedPointReceipt)"
+      },
+      {
+        "line": 105,
+        "text": "    (progress : SourceBoundProgressReceipt)"
+      },
+      {
+        "line": 107,
+        "text": "    (receipt : SourceBoundDeterministicBudgetReceipt) : Prop where"
+      },
+      {
+        "line": 109,
+        "text": "  receiptValidates : receiptValid receipt"
+      },
+      {
+        "line": 111,
+        "text": "  planFixedPointMatches : plan.fixedPointReceiptId = fixedPoint.receiptId"
+      },
+      {
+        "line": 113,
+        "text": "  receiptPlanMatches : receipt.planId = plan.planId"
+      },
+      {
+        "line": 114,
+        "text": "  receiptRegistryMatches : receipt.registryDigest = progress.registryDigest"
+      },
+      {
+        "line": 115,
+        "text": "  receiptFixedPointMatches : receipt.fixedPointReceiptId = fixedPoint.receiptId"
+      },
+      {
+        "line": 116,
+        "text": "  receiptGenerationMatches : receipt.generation = progress.generation"
+      },
+      {
+        "line": 117,
+        "text": "  receiptGenerationBound : receipt.generation \u2264 plan.maxGeneration"
+      },
+      {
+        "line": 118,
+        "text": "  receiptCycleMatches : receipt.cycleObservationId = cycle.observationId"
+      },
+      {
+        "line": 119,
+        "text": "  receiptContinuationMatches :"
+      },
+      {
+        "line": 120,
+        "text": "    receipt.continuationIdentity = cycle.continuationIdentity"
+      },
+      {
+        "line": 121,
+        "text": "  receiptProgressMatches : receipt.progressReceiptId = progress.receiptId"
+      },
+      {
+        "line": 122,
+        "text": "  accountingCloses : deterministicBudgetAccountingClosed plan receipt"
+      },
+      {
+        "line": 124,
+        "text": "    progress.semanticBudgetRemaining = receipt.semanticRemaining"
+      },
+      {
+        "line": 126,
+        "text": "    progress.schedulingBudgetRemaining = receipt.schedulingRemaining"
+      },
+      {
+        "line": 129,
+        "text": "      deterministicBudgetExhausted receipt"
+      },
+      {
+        "line": 138,
+        "text": "    (progressValid : SourceBoundProgressReceiptValid)"
+      },
+      {
+        "line": 141,
+        "text": "    (receiptValid : SourceBoundDeterministicBudgetReceiptValid)"
+      },
+      {
+        "line": 144,
+        "text": "    (fixedPoint : SourceBoundFixedPointReceipt)"
+      },
+      {
+        "line": 146,
+        "text": "    (progress : SourceBoundProgressReceipt)"
+      },
+      {
+        "line": 148,
+        "text": "    (receipt : SourceBoundDeterministicBudgetReceipt) : Prop where"
+      },
+      {
+        "line": 155,
+        "text": "      planValid receiptValid fixedPoint cycle progress plan receipt"
+      },
+      {
+        "line": 159,
+        "text": "    {progressValid : SourceBoundProgressReceiptValid}"
+      },
+      {
+        "line": 162,
+        "text": "    {receiptValid : SourceBoundDeterministicBudgetReceiptValid}"
+      },
+      {
+        "line": 165,
+        "text": "    {fixedPoint : SourceBoundFixedPointReceipt}"
+      },
+      {
+        "line": 167,
+        "text": "    {progress : SourceBoundProgressReceipt}"
+      },
+      {
+        "line": 169,
+        "text": "    {receipt : SourceBoundDeterministicBudgetReceipt}"
+      },
+      {
+        "line": 176,
+        "text": "        planValid receiptValid fixedPoint cycle progress plan receipt) :"
+      },
+      {
+        "line": 178,
+        "text": "      contractValid progressValid cycleValid planValid receiptValid"
+      },
+      {
+        "line": 179,
+        "text": "      contract registry fixedPoint cycle progress plan receipt :="
+      },
+      {
+        "line": 196,
+        "text": "    {receiptValid : SourceBoundDeterministicBudgetReceiptValid}"
+      },
+      {
+        "line": 197,
+        "text": "    {fixedPoint : SourceBoundFixedPointReceipt}"
+      },
+      {
+        "line": 199,
+        "text": "    {progress : SourceBoundProgressReceipt}"
+      },
+      {
+        "line": 201,
+        "text": "    {receipt : SourceBoundDeterministicBudgetReceipt}"
+      },
+      {
+        "line": 204,
+        "text": "        planValid receiptValid fixedPoint cycle progress plan receipt)"
+      },
+      {
+        "line": 206,
+        "text": "    \u2203 kind, deterministicBudgetRemaining receipt kind = 0 :="
+      },
+      {
+        "line": 211,
+        "text": "    {receiptValid : SourceBoundDeterministicBudgetReceiptValid}"
+      },
+      {
+        "line": 212,
+        "text": "    {fixedPoint : SourceBoundFixedPointReceipt}"
+      },
+      {
+        "line": 214,
+        "text": "    {progress : SourceBoundProgressReceipt}"
+      },
+      {
+        "line": 216,
+        "text": "    {receipt : SourceBoundDeterministicBudgetReceipt}"
+      },
+      {
+        "line": 219,
+        "text": "        planValid receiptValid fixedPoint cycle progress plan receipt) :"
+      },
+      {
+        "line": 221,
+        "text": "      deterministicBudgetConsumed receipt kind +"
+      },
+      {
+        "line": 222,
+        "text": "          deterministicBudgetRemaining receipt kind ="
+      },
+      {
+        "line": 227,
+        "text": "    (fixedPoint : SourceBoundFixedPointReceipt) :"
+      },
+      {
+        "line": 231,
+        "text": "    fixedPointReceiptId := fixedPoint.receiptId"
+      },
+      {
+        "line": 239,
+        "text": "    (fixedPoint : SourceBoundFixedPointReceipt) :"
+      },
+      {
+        "line": 243,
+        "text": "    fixedPointReceiptId := fixedPoint.receiptId"
+      },
+      {
+        "line": 250,
+        "text": "theorem fixedPointReceiptDoesNotDetermineBudgetPlanIdentity"
+      },
+      {
+        "line": 251,
+        "text": "    (fixedPoint : SourceBoundFixedPointReceipt) :"
+      },
+      {
+        "line": 252,
+        "text": "    (firstBudgetPlanFor fixedPoint).fixedPointReceiptId = fixedPoint.receiptId \u2227"
+      },
+      {
+        "line": 253,
+        "text": "      (secondBudgetPlanFor fixedPoint).fixedPointReceiptId ="
+      },
+      {
+        "line": 254,
+        "text": "        fixedPoint.receiptId \u2227"
+      }
+    ]
+  },
+  {
+    "id": "P33",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean",
+    "lines": [
+      {
+        "line": 14,
+        "text": "Runtime and deterministic-budget receipts may share source coordinates without"
+      },
+      {
+        "line": 19,
+        "text": "    (budget : SourceBoundDeterministicBudgetReceipt) : Prop :="
+      },
+      {
+        "line": 25,
+        "text": "def positiveBudgetReceiptForWatchdog"
+      },
+      {
+        "line": 27,
+        "text": "    SourceBoundDeterministicBudgetReceipt :="
+      },
+      {
+        "line": 28,
+        "text": "  { receiptId := \"positive-budget-receipt\""
+      },
+      {
+        "line": 31,
+        "text": "    fixedPointReceiptId := \"independent-fixed-point-receipt\""
+      },
+      {
+        "line": 35,
+        "text": "    progressReceiptId := \"independent-progress-receipt\""
+      },
+      {
+        "line": 48,
+        "text": "        watchdog (positiveBudgetReceiptForWatchdog watchdog) \u2227"
+      },
+      {
+        "line": 50,
+        "text": "        (positiveBudgetReceiptForWatchdog watchdog) := by"
+      },
+      {
+        "line": 54,
+        "text": "      positiveBudgetReceiptForWatchdog"
+      },
+      {
+        "line": 61,
+        "text": "        positiveBudgetReceiptForWatchdog"
+      },
+      {
+        "line": 64,
+        "text": "def exhaustedBudgetReceiptForWatchdog"
+      },
+      {
+        "line": 66,
+        "text": "    SourceBoundDeterministicBudgetReceipt :="
+      },
+      {
+        "line": 67,
+        "text": "  { receiptId := \"exhausted-budget-receipt\""
+      },
+      {
+        "line": 70,
+        "text": "    fixedPointReceiptId := \"independent-fixed-point-receipt\""
+      },
+      {
+        "line": 74,
+        "text": "    progressReceiptId := \"independent-progress-receipt\""
+      },
+      {
+        "line": 82,
+        "text": "  SourceBoundDeterministicBudgetReceipt \u2192 Prop"
+      },
+      {
+        "line": 87,
+        "text": "        (exhaustedBudgetReceiptForWatchdog watchdog) \u2227"
+      },
+      {
+        "line": 89,
+        "text": "        (exhaustedBudgetReceiptForWatchdog watchdog) := by"
+      }
+    ]
+  },
+  {
+    "id": "P35",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean",
+    "lines": [
+      {
+        "line": 5,
+        "text": "import PooFlowProof.Enterprise.ReceiptContextFreshnessClosure"
+      },
+      {
+        "line": 7,
+        "text": "namespace PooFlowProof.Enterprise.ReceiptContextMonotonicityClosure"
+      },
+      {
+        "line": 9,
+        "text": "open PooFlowProof.Enterprise.ReceiptContextFreshnessClosure"
+      },
+      {
+        "line": 17,
+        "text": "    (before after : ReceiptValidationContext) : Prop :="
+      },
+      {
+        "line": 22,
+        "text": "    {before after : ReceiptValidationContext}"
+      },
+      {
+        "line": 28,
+        "text": "    congrArg ReceiptValidationContext.authorityGeneration contextsEqual"
+      },
+      {
+        "line": 31,
+        "text": "theorem validTransitionRejectsReceiptIssuedBeforeTransition"
+      },
+      {
+        "line": 32,
+        "text": "    {before after : ReceiptValidationContext}"
+      },
+      {
+        "line": 33,
+        "text": "    {receipt : ContextBoundAuthorityReceipt}"
+      },
+      {
+        "line": 34,
+        "text": "    (acceptedBefore : acceptedAtContext before receipt)"
+      },
+      {
+        "line": 36,
+        "text": "    \u00ac acceptedAtContext after receipt :="
+      },
+      {
+        "line": 42,
+        "text": "Countermodel: exact context equality rejects an old receipt while the current"
+      },
+      {
+        "line": 45,
+        "text": "`C\u2080 \u2192 C\u2081 \u2192 C\u2080` rollback replay."
+      },
+      {
+        "line": 47,
+        "text": "theorem exactEqualityAlonePermitsRollbackReplay :"
+      },
+      {
+        "line": 49,
+        "text": "      (contextZero contextOne : ReceiptValidationContext)"
+      },
+      {
+        "line": 50,
+        "text": "      (receipt : ContextBoundAuthorityReceipt),"
+      },
+      {
+        "line": 52,
+        "text": "        acceptedAtContext contextZero receipt \u2227"
+      },
+      {
+        "line": 53,
+        "text": "        \u00ac acceptedAtContext contextOne receipt \u2227"
+      },
+      {
+        "line": 54,
+        "text": "        acceptedAtContext contextZero receipt := by"
+      },
+      {
+        "line": 55,
+        "text": "  let contextZero : ReceiptValidationContext :="
+      },
+      {
+        "line": 63,
+        "text": "  let contextOne : ReceiptValidationContext :="
+      },
+      {
+        "line": 71,
+        "text": "  let receipt : ContextBoundAuthorityReceipt :="
+      },
+      {
+        "line": 78,
+        "text": "  have acceptedAtZero : acceptedAtContext contextZero receipt := by"
+      },
+      {
+        "line": 81,
+        "text": "    \u27e8contextZero, contextOne, receipt, contextsDiffer, acceptedAtZero, ?_,"
+      },
+      {
+        "line": 89,
+        "text": "An authority context lineage is indexed by an authority-owned monotonically"
+      },
+      {
+        "line": 91,
+        "text": "needed by receipt validation; it does not derive freshness from wall-clock"
+      },
+      {
+        "line": 94,
+        "text": "structure AuthorityContextLineage where"
+      },
+      {
+        "line": 96,
+        "text": "  contextAt : Nat \u2192 ReceiptValidationContext"
+      },
+      {
+        "line": 106,
+        "text": "theorem authorityContextLineageNeverReusesEarlierContext"
+      },
+      {
+        "line": 107,
+        "text": "    (lineage : AuthorityContextLineage)"
+      },
+      {
+        "line": 110,
+        "text": "    lineage.contextAt earlier \u2260 lineage.contextAt later := by"
+      },
+      {
+        "line": 113,
+        "text": "      (lineage.contextAt earlier).authorityGeneration ="
+      },
+      {
+        "line": 114,
+        "text": "        (lineage.contextAt later).authorityGeneration :="
+      },
+      {
+        "line": 115,
+        "text": "    congrArg ReceiptValidationContext.authorityGeneration contextsEqual"
+      },
+      {
+        "line": 117,
+        "text": "    (Nat.ne_of_lt (lineage.generationStrict positionAdvanced))"
+      },
+      {
+        "line": 120,
+        "text": "theorem receiptIssuedAtEarlierLineagePositionIsRejectedLater"
+      },
+      {
+        "line": 121,
+        "text": "    (lineage : AuthorityContextLineage)"
+      },
+      {
+        "line": 123,
+        "text": "    {receipt : ContextBoundAuthorityReceipt}"
+      },
+      {
+        "line": 126,
+        "text": "      acceptedAtContext (lineage.contextAt earlier) receipt) :"
+      },
+      {
+        "line": 127,
+        "text": "    \u00ac acceptedAtContext (lineage.contextAt later) receipt :="
+      },
+      {
+        "line": 130,
+        "text": "    (authorityContextLineageNeverReusesEarlierContext"
+      },
+      {
+        "line": 131,
+        "text": "      lineage"
+      },
+      {
+        "line": 134,
+        "text": "theorem lineagePositionsShareAuthorityIdentity"
+      },
+      {
+        "line": 135,
+        "text": "    (lineage : AuthorityContextLineage)"
+      },
+      {
+        "line": 137,
+        "text": "    (lineage.contextAt left).authorityIdentity ="
+      },
+      {
+        "line": 138,
+        "text": "      (lineage.contextAt right).authorityIdentity := by"
+      },
+      {
+        "line": 139,
+        "text": "  exact (lineage.fixedAuthority left).trans (lineage.fixedAuthority right).symm"
+      },
+      {
+        "line": 148,
+        "text": "      (before left right : ReceiptValidationContext),"
+      },
+      {
+        "line": 153,
+        "text": "  let before : ReceiptValidationContext :="
+      },
+      {
+        "line": 161,
+        "text": "  let left : ReceiptValidationContext :="
+      },
+      {
+        "line": 169,
+        "text": "  let right : ReceiptValidationContext :="
+      },
+      {
+        "line": 192,
+        "text": "    (published : ReceiptValidationContext \u2192 Prop) : Prop :="
+      },
+      {
+        "line": 200,
+        "text": "def publishedByLineage"
+      },
+      {
+        "line": 201,
+        "text": "    (lineage : AuthorityContextLineage)"
+      },
+      {
+        "line": 202,
+        "text": "    (context : ReceiptValidationContext) : Prop :="
+      },
+      {
+        "line": 203,
+        "text": "  \u2203 position, lineage.contextAt position = context"
+      },
+      {
+        "line": 205,
+        "text": "theorem lineagePublicationIsForkFree"
+      },
+      {
+        "line": 206,
+        "text": "    (lineage : AuthorityContextLineage) :"
+      },
+      {
+        "line": 207,
+        "text": "    ForkFreeContextPublication (publishedByLineage lineage) := by"
+      },
+      {
+        "line": 217,
+        "text": "        lineage.generationStrict positionBefore"
+      },
+      {
+        "line": 221,
+        "text": "        lineage.generationStrict positionAfter"
+      },
+      {
+        "line": 229,
+        "text": "    {published : ReceiptValidationContext \u2192 Prop}"
+      },
+      {
+        "line": 231,
+        "text": "    {left right : ReceiptValidationContext}"
+      },
+      {
+        "line": 246,
+        "text": "Countermodel: two locally valid monotone lineage views can disagree about the"
+      },
+      {
+        "line": 250,
+        "text": "theorem individuallyValidLineagesCanDisagreeAtSameGeneration :"
+      },
+      {
+        "line": 252,
+        "text": "      (left right : AuthorityContextLineage),"
+      },
+      {
+        "line": 257,
+        "text": "  let left : AuthorityContextLineage :="
+      },
+      {
+        "line": 275,
+        "text": "  let right : AuthorityContextLineage :="
+      },
+      {
+        "line": 306,
+        "text": "  published : ReceiptValidationContext \u2192 Prop"
+      },
+      {
+        "line": 315,
+        "text": "  context : ReceiptValidationContext"
+      },
+      {
+        "line": 337,
+        "text": "end PooFlowProof.Enterprise.ReceiptContextMonotonicityClosure"
+      }
+    ]
+  },
+  {
+    "id": "P35",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean",
+    "lines": [
+      {
+        "line": 5,
+        "text": "import PooFlowProof.Enterprise.ReceiptContextMonotonicityClosure"
+      },
+      {
+        "line": 7,
+        "text": "namespace PooFlowProof.Enterprise.ReceiptContextLineagePrefixClosure"
+      },
+      {
+        "line": 9,
+        "text": "open PooFlowProof.Enterprise.ReceiptContextFreshnessClosure"
+      },
+      {
+        "line": 10,
+        "text": "open PooFlowProof.Enterprise.ReceiptContextMonotonicityClosure"
+      },
+      {
+        "line": 12,
+        "text": "structure AuthorityContextLineagePrefix where"
+      },
+      {
+        "line": 13,
+        "text": "  lineage : AuthorityContextLineage"
+      },
+      {
+        "line": 16,
+        "text": "def lineagePrefixAt"
+      },
+      {
+        "line": 17,
+        "text": "    (lineage : AuthorityContextLineage)"
+      },
+      {
+        "line": 18,
+        "text": "    (headPosition : Nat) : AuthorityContextLineagePrefix :="
+      },
+      {
+        "line": 19,
+        "text": "  { lineage := lineage, headPosition := headPosition }"
+      },
+      {
+        "line": 21,
+        "text": "def publishedByLineagePrefix"
+      },
+      {
+        "line": 22,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 23,
+        "text": "    (context : ReceiptValidationContext) : Prop :="
+      },
+      {
+        "line": 25,
+        "text": "    position \u2264 lineagePrefix.headPosition \u2227"
+      },
+      {
+        "line": 26,
+        "text": "      lineagePrefix.lineage.contextAt position = context"
+      },
+      {
+        "line": 28,
+        "text": "theorem lineagePrefixHeadIsPublished"
+      },
+      {
+        "line": 29,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix) :"
+      },
+      {
+        "line": 30,
+        "text": "    publishedByLineagePrefix"
+      },
+      {
+        "line": 31,
+        "text": "      lineagePrefix"
+      },
+      {
+        "line": 32,
+        "text": "      (lineagePrefix.lineage.contextAt lineagePrefix.headPosition) :="
+      },
+      {
+        "line": 33,
+        "text": "  \u27e8lineagePrefix.headPosition, Nat.le_refl _, rfl\u27e9"
+      },
+      {
+        "line": 35,
+        "text": "theorem lineagePositionAtOrBeforeHeadIsPublished"
+      },
+      {
+        "line": 36,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 38,
+        "text": "    (notAfterHead : position \u2264 lineagePrefix.headPosition) :"
+      },
+      {
+        "line": 39,
+        "text": "    publishedByLineagePrefix"
+      },
+      {
+        "line": 40,
+        "text": "      lineagePrefix"
+      },
+      {
+        "line": 41,
+        "text": "      (lineagePrefix.lineage.contextAt position) :="
+      },
+      {
+        "line": 44,
+        "text": "theorem lineagePositionAfterHeadIsNotPublished"
+      },
+      {
+        "line": 45,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 47,
+        "text": "    (afterHead : lineagePrefix.headPosition < position) :"
+      },
+      {
+        "line": 48,
+        "text": "    \u00ac publishedByLineagePrefix"
+      },
+      {
+        "line": 49,
+        "text": "        lineagePrefix"
+      },
+      {
+        "line": 50,
+        "text": "        (lineagePrefix.lineage.contextAt position) := by"
+      },
+      {
+        "line": 56,
+        "text": "    (authorityContextLineageNeverReusesEarlierContext"
+      },
+      {
+        "line": 57,
+        "text": "      lineagePrefix.lineage publishedBeforeFuture)"
+      },
+      {
+        "line": 60,
+        "text": "theorem lineagePrefixPublicationIsForkFree"
+      },
+      {
+        "line": 61,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix) :"
+      },
+      {
+        "line": 62,
+        "text": "    ForkFreeContextPublication (publishedByLineagePrefix lineagePrefix) := by"
+      },
+      {
+        "line": 64,
+        "text": "  apply lineagePublicationIsForkFree lineagePrefix.lineage"
+      },
+      {
+        "line": 72,
+        "text": "def AuthorityContextLineagePrefix.toPublicationDomain"
+      },
+      {
+        "line": 73,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 78,
+        "text": "  authorityIdentity := lineagePrefix.lineage.authorityIdentity"
+      },
+      {
+        "line": 79,
+        "text": "  published := publishedByLineagePrefix lineagePrefix"
+      },
+      {
+        "line": 84,
+        "text": "    exact lineagePrefix.lineage.fixedAuthority position"
+      },
+      {
+        "line": 85,
+        "text": "  forkFree := lineagePrefixPublicationIsForkFree lineagePrefix"
+      },
+      {
+        "line": 87,
+        "text": "structure LineagePrefixPublicationDomainBinding"
+      },
+      {
+        "line": 88,
+        "text": "    (lineagePrefix : AuthorityContextLineagePrefix)"
+      },
+      {
+        "line": 91,
+        "text": "    domain.authorityIdentity = lineagePrefix.lineage.authorityIdentity"
+      },
+      {
+        "line": 95,
+        "text": "        publishedByLineagePrefix lineagePrefix context"
+      },
+      {
+        "line": 97,
+        "text": "theorem boundDomainPublishesPrefixHead"
+      },
+      {
+        "line": 98,
+        "text": "    {lineagePrefix : AuthorityContextLineagePrefix}"
+      },
+      {
+        "line": 101,
+        "text": "      LineagePrefixPublicationDomainBinding lineagePrefix domain) :"
+      },
+      {
+        "line": 103,
+        "text": "      (lineagePrefix.lineage.contextAt lineagePrefix.headPosition) :="
+      },
+      {
+        "line": 105,
+        "text": "    (lineagePrefixHeadIsPublished lineagePrefix)"
+      },
+      {
+        "line": 107,
+        "text": "theorem boundDomainRejectsPositionAfterPrefixHead"
+      },
+      {
+        "line": 108,
+        "text": "    {lineagePrefix : AuthorityContextLineagePrefix}"
+      },
+      {
+        "line": 111,
+        "text": "      LineagePrefixPublicationDomainBinding lineagePrefix domain)"
+      },
+      {
+        "line": 113,
+        "text": "    (afterHead : lineagePrefix.headPosition < position) :"
+      },
+      {
+        "line": 114,
+        "text": "    \u00ac domain.published (lineagePrefix.lineage.contextAt position) := by"
+      },
+      {
+        "line": 117,
+        "text": "    (lineagePositionAfterHeadIsNotPublished lineagePrefix afterHead)"
+      },
+      {
+        "line": 120,
+        "text": "end PooFlowProof.Enterprise.ReceiptContextLineagePrefixClosure"
+      }
+    ]
+  },
+  {
+    "id": "P43",
+    "path": "modules/session/funs-attempt.ss",
+    "lines": [
+      {
+        "line": 4,
+        "text": ";;; Pure scheduling intents. A Host must resolve producer receipts and publish by CAS."
+      },
+      {
+        "line": 5,
+        "text": ";;; Recovery reconciliation cannot be inferred from a provider completion."
+      },
+      {
+        "line": 9,
+        "text": "        poo-flow-session-recover poo-flow-session-reconcile poo-flow-session-close)"
+      },
+      {
+        "line": 16,
+        "text": "        restriction-digest profile-digest receipt-ref))))"
+      },
+      {
+        "line": 21,
+        "text": "        receipt-ref: (list-ref fields 9) consumer-session: consumer-value"
+      },
+      {
+        "line": 23,
+        "text": "(def (receipt accepted-value reason-value state-value)"
+      },
+      {
+        "line": 25,
+        "text": "      schedule: state-value runtime-published?: #f action-authorized?: #f durable?: #f))"
+      },
+      {
+        "line": 27,
+        "text": "  (cond ((not (poo-flow-session-schedule-shape? state)) (receipt #f 'invalid-schedule #f))"
+      },
+      {
+        "line": 28,
+        "text": "        ((not (equal? expected (.ref state 'revision))) (receipt #f 'stale-revision state))"
+      },
+      {
+        "line": 29,
+        "text": "        ((eq? (.ref state 'status) 'closed) (receipt #f 'closed state))"
+      },
+      {
+        "line": 31,
+        "text": "         (receipt #f 'coordinate-exhausted state))"
+      },
+      {
+        "line": 33,
+        "text": "(def (next-state state status-value active-value obligations-value completed-value generation-value)"
+      },
+      {
+        "line": 37,
+        "text": "        obligations: obligations-value completed: completed-value)))"
+      },
+      {
+        "line": 43,
+        "text": "    (cond ((not (eq? (.ref state 'status) 'idle)) (receipt #f 'not-idle state))"
+      },
+      {
+        "line": 45,
+        "text": "                     (exact-integer? turn-value) (<= 0 turn-value 65535))) (receipt #f 'invalid-claim state))"
+      },
+      {
+        "line": 48,
+        "text": "           (receipt #f 'wrong-consumer state))"
+      },
+      {
+        "line": 50,
+        "text": "           (receipt #f 'attempt-reuse-or-capacity state))"
+      },
+      {
+        "line": 62,
+        "text": "              (receipt #t 'claimed (next-state state 'running attempt-value '()"
+      },
+      {
+        "line": 71,
+        "text": "                restriction-digest profile-digest receipt-ref complete? consumer-session consumer-turn))))"
+      },
+      {
+        "line": 75,
+        "text": "      (receipt #t 'completion-proposed (next-state state 'idle #f '()"
+      },
+      {
+        "line": 77,
+        "text": "      (receipt #f 'wrong-attempt state)))))"
+      },
+      {
+        "line": 78,
+        "text": "(def (poo-flow-session-recover state expected)"
+      },
+      {
+        "line": 80,
+        "text": "    (let ((pending (if (.ref state 'active) (cons (.ref state 'active) (.ref state 'obligations))"
+      },
+      {
+        "line": 81,
+        "text": "                      (.ref state 'obligations)))"
+      },
+      {
+        "line": 83,
+        "text": "      (receipt #t 'recovery-proposed (next-state state (if (null? pending) 'idle 'recovering)"
+      },
+      {
+        "line": 84,
+        "text": "        #f pending (.ref state 'completed) generation-value))))))"
+      },
+      {
+        "line": 86,
+        "text": "  ;; This is an intent for trusted terminal/isolation receipt resolution, never an acknowledgment by itself."
+      },
+      {
+        "line": 88,
+        "text": "    (if (and (eq? (.ref state 'status) 'recovering)"
+      },
+      {
+        "line": 89,
+        "text": "             (= (length (.ref state 'obligations)) 1)"
+      },
+      {
+        "line": 90,
+        "text": "             (same-attempt? (car (.ref state 'obligations)) attempt-value))"
+      },
+      {
+        "line": 91,
+        "text": "      (receipt #t 'reconciliation-proposed (next-state state 'idle #f '()"
+      },
+      {
+        "line": 93,
+        "text": "      (receipt #f 'wrong-obligation state)))))"
+      },
+      {
+        "line": 97,
+        "text": "      (receipt #t 'close-proposed (next-state state 'closed #f '() (.ref state 'completed) (.ref state 'generation)))"
+      },
+      {
+        "line": 98,
+        "text": "      (receipt #f 'pending-obligation state)))))"
+      }
+    ]
+  },
+  {
+    "id": "C8",
+    "path": "CedarPooSpec/Admission/BoundOperation.lean",
+    "lines": [
+      {
+        "line": 5,
+        "text": "model. The projection is fixed when the operation is constructed; a later Host"
+      },
+      {
+        "line": 40,
+        "text": "    reusing the proof-bearing Cedar evaluation of its request. The Host must"
+      },
+      {
+        "line": 49,
+        "text": "      (CompoundAuthorization.Receipt model root [operation.request] entities) :="
+      }
+    ]
+  },
+  {
+    "id": "C10",
+    "path": "CedarPooSpec/CompoundAuthorization.lean",
+    "lines": [
+      {
+        "line": 7,
+        "text": "responsible for atomic business execution and authentic input facts."
+      },
+      {
+        "line": 14,
+        "text": "/-- A compound receipt binds all responses to one exact POO compilation. -/"
+      },
+      {
+        "line": 15,
+        "text": "structure Receipt (model : Model) (root : String) (requests : List Request)"
+      },
+      {
+        "line": 22,
+        "text": "/-- Every query must allow, and no query may have a policy evaluation error. -/"
+      },
+      {
+        "line": 23,
+        "text": "def Receipt.allowed {model : Model} {root : String} {requests : List Request}"
+      },
+      {
+        "line": 24,
+        "text": "    {entities : Entities} (receipt : Receipt model root requests entities) : Bool :="
+      },
+      {
+        "line": 26,
+        "text": "    receipt.responses.all (fun response =>"
+      },
+      {
+        "line": 27,
+        "text": "      response.decision == .allow && response.erroringPolicies.isEmpty)"
+      },
+      {
+        "line": 31,
+        "text": "    (entities : Entities) : Except PolicyModules.Error (Receipt model root requests entities) :="
+      },
+      {
+        "line": 38,
+        "text": "structure LayerReceipt (model : Model) (entities : Entities) where"
+      },
+      {
+        "line": 46,
+        "text": "/-- All required layers must allow without policy evaluation errors. -/"
+      },
+      {
+        "line": 47,
+        "text": "def layersAllowed {model : Model} {entities : Entities}"
+      },
+      {
+        "line": 48,
+        "text": "    (receipts : List (LayerReceipt model entities)) : Bool :="
+      },
+      {
+        "line": 49,
+        "text": "  !receipts.isEmpty && receipts.all fun layer =>"
+      },
+      {
+        "line": 50,
+        "text": "    layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty"
+      },
+      {
+        "line": 85,
+        "text": "    (entities : Entities) : Except PolicyModules.Error (List (LayerReceipt model entities)) :="
+      },
+      {
+        "line": 89,
+        "text": "      Except PolicyModules.Error (List (LayerReceipt model entities)) := do"
+      }
+    ]
+  },
+  {
+    "id": "C11",
+    "path": "CedarPooSpec/Composition.lean",
+    "lines": [
+      {
+        "line": 8,
+        "text": "Keys remain disjoint, so an evaluation patch leaves typechecking obligations"
+      },
+      {
+        "line": 43,
+        "text": "def alignmentObligation : Obligation Key Value where"
+      },
+      {
+        "line": 55,
+        "text": "def alignedProofObject (evaluation : Evaluation.Snapshot)"
+      },
+      {
+        "line": 57,
+        "text": "  (proofObject evaluation validation).withObligation alignmentObligation"
+      },
+      {
+        "line": 59,
+        "text": "theorem alignedCertificate (evaluation : Evaluation.Snapshot)"
+      },
+      {
+        "line": 65,
+        "text": "    (aligned : evaluation.expr = validation.policy.toExpr) :"
+      },
+      {
+        "line": 66,
+        "text": "    Certificate (alignedProofObject evaluation validation) :="
+      },
+      {
+        "line": 67,
+        "text": "  Certificate.withObligation (proofObject evaluation validation)"
+      },
+      {
+        "line": 69,
+        "text": "    alignmentObligation aligned"
+      },
+      {
+        "line": 74,
+        "text": "    changedDependencies alignmentObligation"
+      },
+      {
+        "line": 76,
+        "text": "  simp [changedDependencies, alignmentObligation, replaceExprPatch,"
+      },
+      {
+        "line": 82,
+        "text": "    changedDependencies alignmentObligation"
+      },
+      {
+        "line": 84,
+        "text": "  simp [changedDependencies, alignmentObligation, replacePolicyPatch,"
+      },
+      {
+        "line": 95,
+        "text": "    Validation.typecheckObligation.right.holds"
+      },
+      {
+        "line": 96,
+        "text": "      (append (proofObject evaluation validation)"
+      },
+      {
+        "line": 101,
+        "text": "    Validation.typecheckObligation.right"
+      },
+      {
+        "line": 103,
+        "text": "  \u00b7 exact Obligation.right_unaffected_left"
+      },
+      {
+        "line": 104,
+        "text": "      Validation.typecheckObligation (Evaluation.replaceExprPatch evaluation expr)"
+      },
+      {
+        "line": 114,
+        "text": "    Evaluation.evaluationObligation.left.holds"
+      },
+      {
+        "line": 115,
+        "text": "      (append (proofObject evaluation validation)"
+      },
+      {
+        "line": 120,
+        "text": "    Evaluation.evaluationObligation.left"
+      },
+      {
+        "line": 122,
+        "text": "  \u00b7 exact Obligation.left_unaffected_right"
+      },
+      {
+        "line": 123,
+        "text": "      Evaluation.evaluationObligation (Validation.replacePolicyPatch validation policy)"
+      }
+    ]
+  },
+  {
+    "id": "P44",
+    "path": "modules/session/objects-attempt.ss",
+    "lines": [
+      {
+        "line": 11,
+        "text": "      receipt-ref: #f consumer-session: #f consumer-turn: 0 complete?: #f))"
+      },
+      {
+        "line": 20,
+        "text": "      generation: 0 status: 'idle active: #f obligations: '() completed: '()))"
+      }
+    ]
+  }
+]

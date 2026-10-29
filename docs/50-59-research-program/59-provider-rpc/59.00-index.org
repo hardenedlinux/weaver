@@ -1,0 +1,62 @@
+#+TITLE: 59.00 Default gRPC Provider Gateway
+#+LANGUAGE: en
+
+* Current implementation
+
+Go and Rust communicate through the shared typed gRPC service in
+[[file:../../../api/gateway/v1/gateway.proto][gateway.proto]]. The Rust server executable starts this service by default.
+The previous operation CLI, proposal CLI, HTTP ingress and command-based replay
+are retired under [[file:../../../dev/proofs/evidence/provider-routing-20261030/retired-interfaces/][historical interface evidence]]. They are not alternate production
+paths. A Go test may start a Rust daemon, but all task registration, publication,
+execution and observation traffic uses authenticated gRPC.
+
+The current provider profile is an actual HTTPS client for OpenAI-compatible Chat
+Completions SSE. The owner admits one original operation, selects an authorized
+configured route before consumption, burns dispatch durably, and sends once.
+The response travels through a private bounded release queue and the same RPC.
+Protobuf is the default response encoding. Arrow IPC is an implemented optional
+encoding, enabled by the Rust server's =arrow= feature and selected per stream.
+It does not introduce another permission or transport owner.
+
+| Component | Placement and responsibility |
+|-----------+------------------------------|
+| Go routing | =go/internal/routing=: source-bound request and ordered route proposal |
+| Go RPC client | =go/internal/gatewayclient=: explicit mTLS, no application retry, sequence and receipt checks |
+| Shared wire contract | =api/gateway/v1/gateway.proto=: typed proposals, roles, observations and encoding choice |
+| Rust contracts | =crates/contracts=: immutable provider commitments and closed native event/outcome types |
+| Rust Policy | =crates/policy=: original-fact binding and fresh error-free Cedar decisions |
+| Rust ledger | =crates/ledger=: shared holds, canonical consumption and affine dispatch/release records |
+| Rust execution | =crates/execution=: private HTTPS/SSE owner, bounded decoding and guarded publication |
+| Rust server | =crates/server=: default mTLS gRPC ingress, caller binding, roles, tracked work and encoding |
+| Development assurance | =dev=: SysML, Cedar fixtures, Quint, Lean, benchmark fixtures and retained evidence |
+
+* Reading order
+
+- [[file:59.01-rpc-security.org][gRPC security and ownership]]
+- [[file:59.02-provider-stream-protocol.org][Provider routing, streaming and recovery protocol]]
+- [[file:59.03-provider-rpc-core.svg][Core architecture]]
+- [[file:59.04-proof-and-validation.org][Model, proof and native correspondence]]
+- [[file:59.05-benchmarks.org][Per-package benchmarks and performance interpretation]]
+- [[file:59.06-checked-results.org][Checked results and remaining boundaries]]
+- [[file:59.07-reserved-authority-admission.org][Reserved authority admission and saturation evidence]]
+- [[file:59.08-connection-custody.org][Pre-TLS connection custody, bounded acceptance and recovery]]
+- [[file:59.09-source-ingress.org][Independent source ingress, identity binding and joint drain]]
+- [[file:59.10-publication-recovery.org][Atomic publication decisions, lost-response recovery and historical receipts]]
+- [[file:59.11-owned-source-worker.org][Owned source connection, cancellation custody and matched performance evidence]]
+- [[file:59.12-final-invocation-cancellation.org][Final invocation cancellation after deciding-lock waits]]
+- [[file:59.13-original-release-capability.org][Original plan, encoding and session bound response release]]
+- [[file:59.14-go-fuzz-coordinator.org][Go fuzz parent-deadline repair and native failure integrity]]
+
+* Development commands
+
+#+begin_example
+ go run ./go/cmd/weaver-dev generate-rpc
+ go run ./go/cmd/weaver-dev check
+ go run ./go/cmd/weaver-dev bench
+#+end_example
+
+These commands execute fixed tool argument vectors directly. Python and shell
+scripts are not the verification or interprocess request architecture. All Rust
+packages inherit dependencies from the Cargo workspace; Criterion and ASP Rust
+remain development-only. Every current Rust package declares a =gateway=
+benchmark target.

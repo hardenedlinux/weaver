@@ -1,0 +1,43 @@
+proofs/lean/StreamingExecution.lean:48:62: error: typeclass instance problem is stuck
+  DecidableEq ?m.6
+
+Note: Lean will not try to resolve this typeclass instance problem because the type argument to `DecidableEq` is a metavariable. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+proofs/lean/StreamingExecution.lean:79:66: error: typeclass instance problem is stuck
+  DecidableEq ?m.6
+
+Note: Lean will not try to resolve this typeclass instance problem because the type argument to `DecidableEq` is a metavariable. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+proofs/lean/StreamingExecution.lean:86:4: error(lean.invalidField): Invalid field notation: Type of
+  t
+is not known; cannot resolve field `held`
+
+Hint: Consider replacing the field projection `.held` with a call to the function `State.held`.
+proofs/lean/StreamingExecution.lean:86:29: error(lean.invalidField): Invalid field notation: Type of
+  t
+is not known; cannot resolve field `calls`
+
+Hint: Consider replacing the field projection `.calls` with a call to the function `State.calls`.
+proofs/lean/StreamingExecution.lean:85:56: error: Application type mismatch: The argument
+  t
+has type
+  ?m.1
+but is expected to have type
+  State (Fin n)
+in the application
+  Run budget { } t
+proofs/lean/StreamingExecution.lean:97:53: error: typeclass instance problem is stuck
+  DecidableEq ?m.11
+
+Note: Lean will not try to resolve this typeclass instance problem because the type argument to `DecidableEq` is a metavariable. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+proofs/lean/StreamingExecution.lean:112:14: error(lean.unknownIdentifier): Unknown constant `safe_step`
+proofs/lean/StreamingExecution.lean:113:14: error(lean.unknownIdentifier): Unknown constant `safe_run`
+proofs/lean/StreamingExecution.lean:114:14: error(lean.unknownIdentifier): Unknown constant `arbitrary_finite_messages_and_ranges`
+'Weaver.StreamingExecution.unknown_cannot_resume' depends on axioms: [propext]
+'Weaver.StreamingExecution.old_generation_cannot_pass' does not depend on any axioms
+proofs/lean/StreamingExecution.lean:117:14: error(lean.unknownIdentifier): Unknown constant `held_never_decreases`
+'Weaver.StreamingExecution.bounded_range_copy_work' depends on axioms: [propext, Quot.sound]

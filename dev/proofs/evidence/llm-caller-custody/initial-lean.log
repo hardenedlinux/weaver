@@ -1,0 +1,81 @@
+proofs/lean/LlmCallerCustody.lean:96:3: error: unexpected token 'local'; expected '_' or identifier
+proofs/lean/LlmCallerCustody.lean:96:2: error: Missing alternative name: Expected `local`, `publish`, `tick`, or `redeliver`
+proofs/lean/LlmCallerCustody.lean:95:2: error: Alternative `local` has not been provided
+proofs/lean/LlmCallerCustody.lean:95:2: error: Alternative `publish` has not been provided
+proofs/lean/LlmCallerCustody.lean:95:2: error: Alternative `tick` has not been provided
+proofs/lean/LlmCallerCustody.lean:95:2: error: Alternative `redeliver` has not been provided
+proofs/lean/LlmCallerCustody.lean:96:9: error: unexpected identifier; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+proofs/lean/LlmCallerCustody.lean:139:27: error: unsolved goals
+case worker
+o : Owner
+s : State
+c : Context
+presented grant : Capability
+next : LlmCustodyPublication.State
+bound : Bound s c presented o
+same : grant = s.grant
+fits : Fits grant next
+⊢ s.grant.serial ≤ s.grant.serial
+proofs/lean/LlmCallerCustody.lean:157:3: error: unexpected token 'local'; expected '_' or identifier
+proofs/lean/LlmCallerCustody.lean:157:2: error: Missing alternative name: Expected `local`, `tick`, or `redeliver`
+proofs/lean/LlmCallerCustody.lean:156:2: error: Too many variable names provided at alternative `publish`: 9 provided, but 8 expected
+proofs/lean/LlmCallerCustody.lean:156:66: error: Application type mismatch: The argument
+  c
+has type
+  Capability
+but is expected to have type
+  Context
+in the application
+  Exists.intro c
+proofs/lean/LlmCallerCustody.lean:156:85: error(lean.unknownIdentifier): Unknown identifier `durable`
+proofs/lean/LlmCallerCustody.lean:155:2: error: Alternative `local` has not been provided
+proofs/lean/LlmCallerCustody.lean:155:2: error: Alternative `tick` has not been provided
+proofs/lean/LlmCallerCustody.lean:155:2: error: Alternative `redeliver` has not been provided
+proofs/lean/LlmCallerCustody.lean:157:9: error: unexpected identifier; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+proofs/lean/LlmCallerCustody.lean:163:2: error: Too many variable names provided at alternative `publish`: 9 provided, but 8 expected
+proofs/lean/LlmCallerCustody.lean:163:77: error: Function expected at
+  h
+but this term has type
+  Permit o s✝ next c presented s
+
+Note: Expected a function because this term is being applied to the argument
+  unchanged
+proofs/lean/LlmCallerCustody.lean:167:45: error: unsolved goals
+case publish
+ao : LlmAccountCommit.Owner
+wo : LlmWalActivation.Owner
+co : LlmCheckpointTruncation.Owner
+ho : LlmAppendHandoff.Owner
+fo : LlmAdmissionFloor.Owner
+jo : LlmSourceJoin.Owner
+semantic : LlmAdmissionFloor.Proposal → LlmAdmissionFloor.Proposal → Prop
+po : LlmCustodyPublication.Owner
+o : Owner
+genesis : LlmAccountCommit.Image
+s : State
+inc : Nat
+known : inc ∈ s.used
+next✝ : LlmCustodyPublication.State
+c✝ : Context
+presented✝ grant✝ : Capability
+event✝ : LlmCustodyPublication.Step ao wo co ho fo jo semantic po genesis s.logical next✝
+appended✝ : ¬next✝.journal.length = s.logical.journal.length
+permit✝ : Permit o s c✝ presented✝ grant✝ next✝
+durable✝ : o.envelopeDurable s next✝ grant✝
+⊢ inc ∈ if grant✝.incarnation ∈ s.used then s.used else s.used ++ [grant✝.incarnation]
+'Weaver.LlmCallerCustody.projection' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCallerCustody.composition' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCallerCustody.workload_is_insufficient' does not depend on any axioms
+'Weaver.LlmCallerCustody.old_key_rejected' does not depend on any axioms
+'Weaver.LlmCallerCustody.old_capability_rejected' does not depend on any axioms
+'Weaver.LlmCallerCustody.expired_rejected' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCallerCustody.scope_retained' does not depend on any axioms
+'Weaver.LlmCallerCustody.serial_monotone' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCallerCustody.incarnation_change_requires_recovery' does not depend on any axioms
+'Weaver.LlmCallerCustody.final_append_requires_permit' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCallerCustody.no_detached_mint' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCallerCustody.used_incarnations_retained' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCallerCustody.redelivery_preserves_authority' does not depend on any axioms
+'Weaver.LlmCallerCustody.original_result_unique' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCallerCustody.original_reservation_once' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCallerCustody.unknown_original_hold_retained' depends on axioms: [propext, sorryAx, Quot.sound]

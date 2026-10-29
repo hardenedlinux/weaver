@@ -1,0 +1,65 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":15,"sourceSha256":"699cdbc97e2b29a374acf876f82812089c2085ff15cff749a948ecd78baf664e"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"02453f105332c62ad44f8ab03d02b16f0460f56d3d0f87e081c734472e318c28"}
+@@START {"label":"api-controls-0","limit":20}
+
+  LlmEnrollmentCredential
+    ok sharedWorkloadCannotAssignSubjectTest passed 1 test(s)
+    ok producerAssignmentRequiredTest passed 1 test(s)
+    ok sharedWorkloadCannotIssueTest passed 1 test(s)
+
+  3 passing (1305ms)
+@@DONE {"label":"api-controls-0","passed":["sharedWorkloadCannotAssignSubjectTest","producerAssignmentRequiredTest","sharedWorkloadCannotIssueTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  LlmEnrollmentCredential
+    ok forwardedSubjectCredentialRejectedTest passed 1 test(s)
+    ok authenticatedSubjectCannotNominateKeyTest passed 1 test(s)
+    ok subjectAuthenticationRequiredTest passed 1 test(s)
+
+  3 passing (308ms)
+@@DONE {"label":"api-controls-1","passed":["forwardedSubjectCredentialRejectedTest","authenticatedSubjectCannotNominateKeyTest","subjectAuthenticationRequiredTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  LlmEnrollmentCredential
+    ok enrollmentPossessionRequiredTest passed 1 test(s)
+    ok issuanceSessionBoundTest passed 1 test(s)
+    ok currentIssuancePolicyRequiredTest passed 1 test(s)
+
+  3 passing (1566ms)
+@@DONE {"label":"api-controls-2","passed":["enrollmentPossessionRequiredTest","issuanceSessionBoundTest","currentIssuancePolicyRequiredTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  LlmEnrollmentCredential
+    1) commitDoesNotSignOrEnrollTest failed after 1 test(s)
+    2) lostIssueReplyRecoversSameCredentialTest failed after 1 test(s)
+    3) oldWorkerCannotRecoverSubjectTest failed after 1 test(s)
+
+  3 failed
+
+  1) commitDoesNotSignOrEnrollTest:
+       Error [QNT507]: Called 'set' with a non-existing key
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-enrollment-credential/bundle/LlmEnrollmentCredential.qnt:1523:518
+        1523:     all {invariant,ledger.plans.contains(k),ledger.planRows.nth(k)==c.plan,not(ledger.credentials.contains(k)),c.id==ledger.nextId,not(ledger.ids.contains(c.id)),c.epoch==ledger.epoch,c.plan.root.epoch==B::enrollment.epoch,B::blueprint(c.plan.root.template),ledger.seen==ledger.revision,approved,subjectAuth,keyProof,c.peer==peer(ch),issueBinding(c),idle,ledger'=ledger.with("credentials",ledger.credentials.union(Set(k))).with("rows",ledger.rows.replaceAt(k,c)).with("ids",ledger.ids.union(Set(c.id))).with("owners",ledger.owners.set(c.id,k)).with("nextId",ledger.nextId+1).with("revision",ledger.revision+1).with("seen",-1).with("reply",deliver)}}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+    Use --seed=0x125 --match=commitDoesNotSignOrEnrollTest to repeat.
+  2) lostIssueReplyRecoversSameCredentialTest:
+       Error [QNT507]: Called 'set' with a non-existing key
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-enrollment-credential/bundle/LlmEnrollmentCredential.qnt:1523:518
+        1523:     all {invariant,ledger.plans.contains(k),ledger.planRows.nth(k)==c.plan,not(ledger.credentials.contains(k)),c.id==ledger.nextId,not(ledger.ids.contains(c.id)),c.epoch==ledger.epoch,c.plan.root.epoch==B::enrollment.epoch,B::blueprint(c.plan.root.template),ledger.seen==ledger.revision,approved,subjectAuth,keyProof,c.peer==peer(ch),issueBinding(c),idle,ledger'=ledger.with("credentials",ledger.credentials.union(Set(k))).with("rows",ledger.rows.replaceAt(k,c)).with("ids",ledger.ids.union(Set(c.id))).with("owners",ledger.owners.set(c.id,k)).with("nextId",ledger.nextId+1).with("revision",ledger.revision+1).with("seen",-1).with("reply",deliver)}}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+    Use --seed=0x125 --match=lostIssueReplyRecoversSameCredentialTest to repeat.
+  3) oldWorkerCannotRecoverSubjectTest:
+       Error [QNT507]: Called 'set' with a non-existing key
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-enrollment-credential/bundle/LlmEnrollmentCredential.qnt:1523:518
+        1523:     all {invariant,ledger.plans.contains(k),ledger.planRows.nth(k)==c.plan,not(ledger.credentials.contains(k)),c.id==ledger.nextId,not(ledger.ids.contains(c.id)),c.epoch==ledger.epoch,c.plan.root.epoch==B::enrollment.epoch,B::blueprint(c.plan.root.template),ledger.seen==ledger.revision,approved,subjectAuth,keyProof,c.peer==peer(ch),issueBinding(c),idle,ledger'=ledger.with("credentials",ledger.credentials.union(Set(k))).with("rows",ledger.rows.replaceAt(k,c)).with("ids",ledger.ids.union(Set(c.id))).with("owners",ledger.owners.set(c.id,k)).with("nextId",ledger.nextId+1).with("revision",ledger.revision+1).with("seen",-1).with("reply",deliver)}}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+    Use --seed=0x125 --match=oldWorkerCannotRecoverSubjectTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 proofs/evidence/llm-enrollment-credential/bundle/LlmEnrollmentCredential.qnt
+Error: Tests failed
+    at unwrap (/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/run_enrollment_credential.cjs:10:38)
+    at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/run_enrollment_credential.cjs:27:16

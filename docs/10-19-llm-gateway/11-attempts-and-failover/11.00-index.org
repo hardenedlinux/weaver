@@ -1,0 +1,22 @@
+#+title: Weaver LLM Attempts and Failover Index
+#+language: en
+#+options: toc:2
+
+* Task-aware inference reliability
+
+Area =10-19 LLM Gateway=; category =11 Attempts and failover=.
+Read this delta with [[file:../10-routing-and-inference/10.00-index.org][10 Routing and inference]]. It extends the initial
+single-provider profile with sponsored child attempts under one original task.
+It preserves the Gateway's logical execution authority and unknown-cost holds.
+Earlier sealed documents remain historical receipts.
+
+| ID | Artifact |
+|----+----------|
+| 11.00 | This index |
+| 11.01 | [[file:11.01-attempts-budget-and-stream-winner.org][Task sponsorship, child attempts, budget and stream winner]] |
+| 11.02 | [[file:11.02-attempt-ledger.d2][Core D2]] / [[file:11.02-attempt-ledger.svg][SVG]] |
+| 11.03 | [[file:11.03-validation-evidence.org][Proofs, counterexamples, source comparison and evidence]] |
+
+Formal sources: [[file:../../../dev/proofs/lean/LlmAttemptLedger.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmAttemptLedger.qnt][Quint]].
+Reproduction: [[file:../../../dev/proofs/check_llm_attempt_ledger.py][bounded local check runner]].
+No Gateway runtime or dependency pin is changed.

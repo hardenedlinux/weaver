@@ -1,0 +1,86 @@
+[
+  {
+    "id": "PP1",
+    "design": "Pending is not effective confirmation",
+    "quint": "pendingCannotAcknowledgeTest",
+    "lean": "acknowledgements_name_committed_publications",
+    "d2": "producer.pending"
+  },
+  {
+    "id": "PP2",
+    "design": "Publication uses the exact staged identity",
+    "quint": "changeIdentityCannotRebindTest",
+    "lean": "publication_is_from_staged_change",
+    "d2": "producer.subject"
+  },
+  {
+    "id": "PP3",
+    "design": "Effective generation follows durable log",
+    "quint": "noAckIsNeededForDenialTest",
+    "lean": "generation_matches_durable_prefix",
+    "d2": "authority.publish"
+  },
+  {
+    "id": "PP4",
+    "design": "Effective value is the committed tip",
+    "quint": "publicationImmediatelyInvalidatesPermitTest",
+    "lean": "effective_value_matches_durable_prefix",
+    "d2": "authority.publish"
+  },
+  {
+    "id": "PP5",
+    "design": "Lost reply cannot publish twice",
+    "quint": "lostPublishReplyDoesNotReapplyTest",
+    "lean": "one_publication_per_change",
+    "d2": "authority.query"
+  },
+  {
+    "id": "PP6",
+    "design": "Exact parent prevents silent rebase",
+    "quint": "staleParentCannotPublishTest",
+    "lean": "exact_parent_chain",
+    "d2": "authority.parent"
+  },
+  {
+    "id": "PP7",
+    "design": "Prefix recovery cannot discard committed history",
+    "quint": "exactQueryRecoversLostReplyTest",
+    "lean": "published_prefix_is_inherited",
+    "d2": "recovery.prefix"
+  },
+  {
+    "id": "PP8",
+    "design": "Historical confirmation cannot reset current state",
+    "quint": "lateAckCannotRestoreOldAllowTest",
+    "lean": "late_acknowledgement_preserves_authority",
+    "d2": "recovery.ack"
+  },
+  {
+    "id": "PP9",
+    "design": "Producer snapshot does not assign authority",
+    "quint": "producerSnapshotCannotResetOwnerTest",
+    "lean": "producer_projection_loss_preserves_authority",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "PP10",
+    "design": "Old worker and permit remain fenced",
+    "quint": "oldPublisherCannotResumeTest",
+    "lean": "old_fence_cannot_consume",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "PP11",
+    "design": "New generation invalidates old permission",
+    "quint": "restoredAllowDoesNotReviveGenerationTest",
+    "lean": "stale_generation_cannot_consume",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "PP12",
+    "design": "Original unknown cost and domains remain bound",
+    "quint": "originalUnknownHoldSurvivesPublicationTest",
+    "lean": "unknown_usage_retains_hold",
+    "d2": "broker.hold"
+  }
+]

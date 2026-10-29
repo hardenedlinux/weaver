@@ -1,0 +1,66 @@
+{
+  "status": "PASS",
+  "scope": "Local debug-profile mTLS source publication comparison; not production performance admission",
+  "sourceInputs": 154,
+  "changedInputs": [],
+  "order": [
+    "A1-reopen",
+    "B1-owned",
+    "B2-owned",
+    "A2-reopen",
+    "A3-reopen",
+    "B3-owned"
+  ],
+  "commitsPerCase": 256,
+  "rows": [
+    {
+      "name": "A1-reopen",
+      "commits": 256,
+      "nsPerOp": 3850953,
+      "goBytesPerOp": 6835,
+      "goAllocsPerOp": 114
+    },
+    {
+      "name": "B1-owned",
+      "commits": 256,
+      "nsPerOp": 2917728,
+      "goBytesPerOp": 6637,
+      "goAllocsPerOp": 114
+    },
+    {
+      "name": "B2-owned",
+      "commits": 256,
+      "nsPerOp": 3223091,
+      "goBytesPerOp": 6635,
+      "goAllocsPerOp": 114
+    },
+    {
+      "name": "A2-reopen",
+      "commits": 256,
+      "nsPerOp": 4522816,
+      "goBytesPerOp": 6710,
+      "goAllocsPerOp": 114
+    },
+    {
+      "name": "A3-reopen",
+      "commits": 256,
+      "nsPerOp": 5127083,
+      "goBytesPerOp": 6631,
+      "goAllocsPerOp": 114
+    },
+    {
+      "name": "B3-owned",
+      "commits": 256,
+      "nsPerOp": 3543445,
+      "goBytesPerOp": 6590,
+      "goAllocsPerOp": 114
+    }
+  ],
+  "baselineMeanOfRunMeansNs": 4500284,
+  "ownedMeanOfRunMeansNs": 3228088,
+  "descriptiveReductionPercent": 28.269238119194252,
+  "binaryHashes": [
+    "dde7a7514e319e9766d8eb3d08d4c78ab252eff7ade7973b6d37e1fa6182d506  .data/source-owner-baseline/weaver-server",
+    "3e726f8724cc9b4bb758d9f27a16a9fc0398a914c230838bc842e01dda69977f  target/debug/weaver-server"
+  ]
+}

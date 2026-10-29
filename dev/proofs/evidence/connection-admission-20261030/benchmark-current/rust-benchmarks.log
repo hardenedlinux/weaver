@@ -1,0 +1,187 @@
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `bench` profile [optimized] target(s) in 15.73s
+     Running benches/gateway.rs (target/release/deps/gateway-0597803dbbafedcb)
+Benchmarking contracts/provider_commitment/128
+Benchmarking contracts/provider_commitment/128: Warming up for 1.0000 s
+Benchmarking contracts/provider_commitment/128: Collecting 30 samples in estimated 2.0010 s (508k iterations)
+Benchmarking contracts/provider_commitment/128: Analyzing
+contracts/provider_commitment/128
+                        time:   [3.7888 µs 3.9867 µs 4.2504 µs]
+                        thrpt:  [51.606 MiB/s 55.019 MiB/s 57.893 MiB/s]
+                 change:
+                        time:   [−79.619% −70.017% −53.958%] (p = 0.00 < 0.05)
+                        thrpt:  [+117.19% +233.52% +390.64%]
+                        Performance has improved.
+Found 2 outliers among 30 measurements (6.67%)
+  2 (6.67%) high severe
+Benchmarking contracts/provider_commitment/16384
+Benchmarking contracts/provider_commitment/16384: Warming up for 1.0000 s
+Benchmarking contracts/provider_commitment/16384: Collecting 30 samples in estimated 2.0202 s (37k iterations)
+Benchmarking contracts/provider_commitment/16384: Analyzing
+contracts/provider_commitment/16384
+                        time:   [52.819 µs 55.395 µs 58.423 µs]
+                        thrpt:  [269.11 MiB/s 283.82 MiB/s 297.66 MiB/s]
+                 change:
+                        time:   [−66.150% −58.435% −47.497%] (p = 0.00 < 0.05)
+                        thrpt:  [+90.467% +140.59% +195.42%]
+                        Performance has improved.
+Found 5 outliers among 30 measurements (16.67%)
+  2 (6.67%) high mild
+  3 (10.00%) high severe
+Benchmarking contracts/provider_commitment/524288
+Benchmarking contracts/provider_commitment/524288: Warming up for 1.0000 s
+Benchmarking contracts/provider_commitment/524288: Collecting 30 samples in estimated 2.3105 s (1395 iterations)
+Benchmarking contracts/provider_commitment/524288: Analyzing
+contracts/provider_commitment/524288
+                        time:   [1.6398 ms 1.7160 ms 1.8128 ms]
+                        thrpt:  [275.87 MiB/s 291.44 MiB/s 304.97 MiB/s]
+                 change:
+                        time:   [−53.569% −44.142% −33.064%] (p = 0.00 < 0.05)
+                        thrpt:  [+49.397% +79.025% +115.37%]
+                        Performance has improved.
+Found 3 outliers among 30 measurements (10.00%)
+  3 (10.00%) high mild
+
+     Running benches/gateway.rs (target/release/deps/gateway-ab3cf705b53ec1ca)
+Benchmarking execution/https_guarded_sse_three_events
+Benchmarking execution/https_guarded_sse_three_events: Warming up for 1.0000 s
+Benchmarking execution/https_guarded_sse_three_events: Collecting 30 samples in estimated 2.0904 s (240 iterations)
+Benchmarking execution/https_guarded_sse_three_events: Analyzing
+execution/https_guarded_sse_three_events
+                        time:   [3.8615 ms 4.4615 ms 5.2876 ms]
+                        change: [−43.203% −23.782% +1.4010%] (p = 0.10 > 0.05)
+                        No change in performance detected.
+Found 3 outliers among 30 measurements (10.00%)
+  1 (3.33%) high mild
+  2 (6.67%) high severe
+
+     Running benches/gateway.rs (target/release/deps/gateway-5ec11ca7d099bf42)
+Benchmarking ledger/fresh_admission
+Benchmarking ledger/fresh_admission: Warming up for 1.0000 s
+
+Warning: Unable to complete 30 samples in 2.0s. You may wish to increase target time to 2.2s, enable flat sampling, or reduce sample count to 20.
+Benchmarking ledger/fresh_admission: Collecting 30 samples in estimated 2.1929 s (465 iterations)
+Benchmarking ledger/fresh_admission: Analyzing
+ledger/fresh_admission  time:   [274.04 µs 309.97 µs 363.64 µs]
+                        change: [−38.362% −20.520% +2.3305%] (p = 0.10 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 30 measurements (6.67%)
+  2 (6.67%) high severe
+
+Benchmarking ledger/consume_and_dispatch_burn
+Benchmarking ledger/consume_and_dispatch_burn: Warming up for 1.0000 s
+
+Warning: Unable to complete 30 samples in 2.0s. You may wish to increase target time to 2.3s, enable flat sampling, or reduce sample count to 10.
+Benchmarking ledger/consume_and_dispatch_burn: Collecting 30 samples in estimated 2.2650 s (465 iterations)
+Benchmarking ledger/consume_and_dispatch_burn: Analyzing
+ledger/consume_and_dispatch_burn
+                        time:   [511.18 µs 573.39 µs 630.74 µs]
+                        change: [−5.4426% +7.8358% +22.547%] (p = 0.27 > 0.05)
+                        No change in performance detected.
+Found 5 outliers among 30 measurements (16.67%)
+  5 (16.67%) high mild
+
+Benchmarking ledger/idempotent_admission
+Benchmarking ledger/idempotent_admission: Warming up for 1.0000 s
+Benchmarking ledger/idempotent_admission: Collecting 30 samples in estimated 2.0436 s (20k iterations)
+Benchmarking ledger/idempotent_admission: Analyzing
+ledger/idempotent_admission
+                        time:   [95.112 µs 101.28 µs 110.33 µs]
+                        change: [−15.190% −6.1379% +4.6475%] (p = 0.26 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 30 measurements (6.67%)
+  1 (3.33%) high mild
+  1 (3.33%) high severe
+
+     Running benches/gateway.rs (target/release/deps/gateway-41dba354183262f2)
+Benchmarking policy/typed_schema_validation
+Benchmarking policy/typed_schema_validation: Warming up for 1.0000 s
+Benchmarking policy/typed_schema_validation: Collecting 30 samples in estimated 2.0745 s (12k iterations)
+Benchmarking policy/typed_schema_validation: Analyzing
+policy/typed_schema_validation
+                        time:   [174.91 µs 178.23 µs 181.96 µs]
+                        change: [−11.076% −5.7633% −1.0224%] (p = 0.03 < 0.05)
+                        Performance has improved.
+Found 3 outliers among 30 measurements (10.00%)
+  3 (10.00%) high mild
+
+Benchmarking policy/warm_compilation_current_decision
+Benchmarking policy/warm_compilation_current_decision: Warming up for 1.0000 s
+Benchmarking policy/warm_compilation_current_decision: Collecting 30 samples in estimated 2.0134 s (38k iterations)
+Benchmarking policy/warm_compilation_current_decision: Analyzing
+policy/warm_compilation_current_decision
+                        time:   [51.484 µs 54.484 µs 59.610 µs]
+                        change: [−8.8565% +1.6462% +11.884%] (p = 0.78 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 30 measurements (6.67%)
+  1 (3.33%) high mild
+  1 (3.33%) high severe
+
+Benchmarking policy/compilation_cache_churn
+Benchmarking policy/compilation_cache_churn: Warming up for 1.0000 s
+Benchmarking policy/compilation_cache_churn: Collecting 30 samples in estimated 2.0057 s (21k iterations)
+Benchmarking policy/compilation_cache_churn: Analyzing
+policy/compilation_cache_churn
+                        time:   [81.292 µs 83.158 µs 85.795 µs]
+                        change: [−23.935% −13.519% −3.8776%] (p = 0.02 < 0.05)
+                        Performance has improved.
+Found 2 outliers among 30 measurements (6.67%)
+  1 (3.33%) high mild
+  1 (3.33%) high severe
+
+     Running benches/gateway.rs (target/release/deps/gateway-66a2d9c43724b81b)
+Benchmarking server/response_encoding/protobuf_frames/1
+Benchmarking server/response_encoding/protobuf_frames/1: Warming up for 1.0000 s
+Benchmarking server/response_encoding/protobuf_frames/1: Collecting 30 samples in estimated 2.0001 s (11M iterations)
+Benchmarking server/response_encoding/protobuf_frames/1: Analyzing
+server/response_encoding/protobuf_frames/1
+                        time:   [163.73 ns 173.01 ns 184.68 ns]
+                        thrpt:  [5.4147 Melem/s 5.7801 Melem/s 6.1078 Melem/s]
+                 change:
+                        time:   [−53.648% −44.265% −31.931%] (p = 0.00 < 0.05)
+                        thrpt:  [+46.911% +79.420% +115.74%]
+                        Performance has improved.
+Found 4 outliers among 30 measurements (13.33%)
+  1 (3.33%) high mild
+  3 (10.00%) high severe
+Benchmarking server/response_encoding/arrow_batch/1
+Benchmarking server/response_encoding/arrow_batch/1: Warming up for 1.0000 s
+Benchmarking server/response_encoding/arrow_batch/1: Collecting 30 samples in estimated 2.0018 s (442k iterations)
+Benchmarking server/response_encoding/arrow_batch/1: Analyzing
+server/response_encoding/arrow_batch/1
+                        time:   [4.3252 µs 4.4355 µs 4.5866 µs]
+                        thrpt:  [218.03 Kelem/s 225.46 Kelem/s 231.21 Kelem/s]
+                 change:
+                        time:   [−72.236% −66.338% −58.211%] (p = 0.00 < 0.05)
+                        thrpt:  [+139.30% +197.07% +260.17%]
+                        Performance has improved.
+Found 4 outliers among 30 measurements (13.33%)
+  2 (6.67%) high mild
+  2 (6.67%) high severe
+Benchmarking server/response_encoding/protobuf_frames/32
+Benchmarking server/response_encoding/protobuf_frames/32: Warming up for 1.0000 s
+Benchmarking server/response_encoding/protobuf_frames/32: Collecting 30 samples in estimated 2.0008 s (398k iterations)
+Benchmarking server/response_encoding/protobuf_frames/32: Analyzing
+server/response_encoding/protobuf_frames/32
+                        time:   [5.0307 µs 5.3228 µs 5.7438 µs]
+                        thrpt:  [5.5712 Melem/s 6.0119 Melem/s 6.3610 Melem/s]
+                 change:
+                        time:   [−53.686% −44.827% −33.570%] (p = 0.00 < 0.05)
+                        thrpt:  [+50.535% +81.248% +115.92%]
+                        Performance has improved.
+Found 4 outliers among 30 measurements (13.33%)
+  4 (13.33%) high severe
+Benchmarking server/response_encoding/arrow_batch/32
+Benchmarking server/response_encoding/arrow_batch/32: Warming up for 1.0000 s
+Benchmarking server/response_encoding/arrow_batch/32: Collecting 30 samples in estimated 2.0009 s (381k iterations)
+Benchmarking server/response_encoding/arrow_batch/32: Analyzing
+server/response_encoding/arrow_batch/32
+                        time:   [5.0282 µs 5.1298 µs 5.2726 µs]
+                        thrpt:  [6.0692 Melem/s 6.2381 Melem/s 6.3640 Melem/s]
+                 change:
+                        time:   [−19.342% −9.7719% +2.1232%] (p = 0.10 > 0.05)
+                        thrpt:  [−2.0790% +10.830% +23.980%]
+                        No change in performance detected.
+Found 6 outliers among 30 measurements (20.00%)
+  6 (20.00%) high severe
+

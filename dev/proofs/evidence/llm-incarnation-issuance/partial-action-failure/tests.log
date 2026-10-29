@@ -1,0 +1,99 @@
+
+  LlmIncarnationIssuance
+    ok issueDoesNotActivateCustodyTest passed 1 test(s)
+    ok sharedWorkloadCannotIssueTest passed 1 test(s)
+    ok independentLaunchApprovalRequiredTest passed 1 test(s)
+    ok assignedKeyRequiredTest passed 1 test(s)
+    ok lostIssueReplySameLaunchCannotRemintTest passed 1 test(s)
+    ok reservedIncarnationCannotReissueTest passed 1 test(s)
+    ok selfSelectedOldKeyCannotIssueTest passed 1 test(s)
+    ok oldWorkerCannotProveNewKeyTest passed 1 test(s)
+    ok invalidSignatureRejectedTest passed 1 test(s)
+    ok substitutedKeyRejectedTest passed 1 test(s)
+    ok wrongTranscriptChallengeRejectedTest passed 1 test(s)
+    ok wrongFutureIncarnationRejectedTest passed 1 test(s)
+    ok wrongBootstrapSessionRejectedTest passed 1 test(s)
+    ok proofWithoutActivationHasNoGrantTest passed 1 test(s)
+    1) issuedWithoutProofCannotActivateTest failed after 1 test(s)
+    2) currentBootstrapActivatesOriginalTest failed after 1 test(s)
+    3) lostActivationReplyCannotRepeatTest failed after 1 test(s)
+    ok oldWorkerCannotCollectNewTicketTest passed 1 test(s)
+    ok redeliveryDoesNotRefreshActivationReadTest passed 1 test(s)
+    4) issuerEpochChangeRejectsQueuedActivationTest failed after 1 test(s)
+    5) sourcePublicationRejectsOldIssueParentTest failed after 1 test(s)
+    6) twoLaunchesCannotBothUseOldParentTest failed after 1 test(s)
+    7) sharedIdentityIssuanceCounterexampleTest failed after 1 test(s)
+    8) noProofIssuanceCounterexampleTest failed after 1 test(s)
+    9) revokedProofIssuanceCounterexampleTest failed after 1 test(s)
+    ok keySubstitutionIssuanceCounterexampleTest passed 1 test(s)
+    ok rollbackIssueIssuanceCounterexampleTest passed 1 test(s)
+    10) lostActivationResultIssuanceCounterexampleTest failed after 1 test(s)
+
+  18 passing (2567ms)
+  10 failed
+
+  1) issuedWithoutProofCannotActivateTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt:35:45
+        35:   action prepare(t)=all {stage(t),registry'=registry.with("revision",registry.revision+1).with("seen",-1)}
+                                                        ^^^^^^^^
+    Use --seed=0xc327f16af2473 --match=issuedWithoutProofCannotActivateTest to repeat.
+  2) currentBootstrapActivatesOriginalTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt:35:45
+        35:   action prepare(t)=all {stage(t),registry'=registry.with("revision",registry.revision+1).with("seen",-1)}
+                                                        ^^^^^^^^
+    Use --seed=0xc327f16af2473 --match=currentBootstrapActivatesOriginalTest to repeat.
+  3) lostActivationReplyCannotRepeatTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt:35:45
+        35:   action prepare(t)=all {stage(t),registry'=registry.with("revision",registry.revision+1).with("seen",-1)}
+                                                        ^^^^^^^^
+    Use --seed=0xc327f16af2473 --match=lostActivationReplyCannotRepeatTest to repeat.
+  4) issuerEpochChangeRejectsQueuedActivationTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt:35:45
+        35:   action prepare(t)=all {stage(t),registry'=registry.with("revision",registry.revision+1).with("seen",-1)}
+                                                        ^^^^^^^^
+    Use --seed=0xc327f16af2473 --match=issuerEpochChangeRejectsQueuedActivationTest to repeat.
+  5) sourcePublicationRejectsOldIssueParentTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt:39:105
+        39:   action sourceMove=all {C::read.then(C::stage(0,0,0,0)).then(C::publish(0,C::first,0,false)),registry'=registry.with("revision",registry.revision+1).with("seen",-1)}
+                                                                                                                    ^^^^^^^^
+    Use --seed=0xc327f16af2473 --match=sourcePublicationRejectsOldIssueParentTest to repeat.
+  6) twoLaunchesCannotBothUseOldParentTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt:35:45
+        35:   action prepare(t)=all {stage(t),registry'=registry.with("revision",registry.revision+1).with("seen",-1)}
+                                                        ^^^^^^^^
+    Use --seed=0xc327f16af2478 --match=twoLaunchesCannotBothUseOldParentTest to repeat.
+  7) sharedIdentityIssuanceCounterexampleTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt:35:45
+        35:   action prepare(t)=all {stage(t),registry'=registry.with("revision",registry.revision+1).with("seen",-1)}
+                                                        ^^^^^^^^
+    Use --seed=0xc327f16af2478 --match=sharedIdentityIssuanceCounterexampleTest to repeat.
+  8) noProofIssuanceCounterexampleTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt:35:45
+        35:   action prepare(t)=all {stage(t),registry'=registry.with("revision",registry.revision+1).with("seen",-1)}
+                                                        ^^^^^^^^
+    Use --seed=0xc327f16af2478 --match=noProofIssuanceCounterexampleTest to repeat.
+  9) revokedProofIssuanceCounterexampleTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt:35:45
+        35:   action prepare(t)=all {stage(t),registry'=registry.with("revision",registry.revision+1).with("seen",-1)}
+                                                        ^^^^^^^^
+    Use --seed=0xc327f16af2478 --match=revokedProofIssuanceCounterexampleTest to repeat.
+  10) lostActivationResultIssuanceCounterexampleTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt:35:45
+        35:   action prepare(t)=all {stage(t),registry'=registry.with("revision",registry.revision+1).with("seen",-1)}
+                                                        ^^^^^^^^
+    Use --seed=0xc327f16af2478 --match=lostActivationResultIssuanceCounterexampleTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt
+error: Tests failed

@@ -1,0 +1,14 @@
+'Weaver.GatewayHeadCAS.decisions_never_roll_back' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.initialized_unique_roots' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.initialized_rows_are_committed' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.initialized_cas_audit' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.every_new_decision_rechecks_current_head' does not depend on any axioms
+'Weaver.GatewayHeadCAS.version_never_decreases' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.changed_fence_clears_cached_authority' does not depend on any axioms
+'Weaver.GatewayHeadCAS.new_send_requires_exact_current_join' does not depend on any axioms
+'Weaver.GatewayHeadCAS.initialized_product_refines_semantics' does not depend on any axioms
+'Weaver.GatewayHeadCAS.original_claim_and_history_survive' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.original_executor_survives' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.shared_budget_is_bounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.GatewayHeadCAS.original_claim_and_offer_once' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.GatewayHeadCAS.free_held_charged_conservation' depends on axioms: [propext, Classical.choice, Quot.sound]

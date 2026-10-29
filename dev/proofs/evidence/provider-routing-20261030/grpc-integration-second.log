@@ -1,0 +1,25 @@
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+warning: method `cancelled` is never used
+  --> crates/server/src/runtime.rs:29:25
+   |
+16 | impl RuntimeOwner {
+   | ----------------- method in this implementation
+...
+29 |     pub(crate) async fn cancelled(&self) {
+   |                         ^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `weaver-server` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.87s
+=== RUN   TestProviderGRPCStreamingAndArrowOption
+=== RUN   TestProviderGRPCStreamingAndArrowOption/PROTOBUF
+=== RUN   TestProviderGRPCStreamingAndArrowOption/ARROW_IPC
+--- PASS: TestProviderGRPCStreamingAndArrowOption (3.59s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/PROTOBUF (2.53s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/ARROW_IPC (1.07s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	10.994s

@@ -1,0 +1,4888 @@
+An example execution:
+
+[State 0]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 1]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 2]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 3]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 4]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 5]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 6]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 7]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 8]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 9]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 10]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 11]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 12]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 13]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 14]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 15]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 16]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 17]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 18]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 19]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 20]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 21]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 22]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 23]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 24]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 25]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 26]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 27]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 28]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 29]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 30]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 31]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 32]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 33]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 34]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 35]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 36]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 37]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 38]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 39]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 40]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 41]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 42]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 43]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 44]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 45]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 46]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 47]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 48]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 49]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 50]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 51]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 52]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 53]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 54]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 55]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 56]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 57]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 58]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 59]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 60]
+{
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log:
+        [
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 0,
+                payload: 0,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 0
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 0,
+                requestedFence: 3,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 2
+          },
+          {
+            decision:
+              {
+                outcome: 2,
+                parent: 1,
+                payload: 1,
+                requestedFence: 1,
+                resultFence: 1,
+                resultHead: -1
+              },
+            id: 1
+          }
+        ],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 2,
+              parent: 0,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 1,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 2,
+              parent: 1,
+              payload: 0,
+              requestedFence: 3,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[ok] No violation found (935ms at 1070 traces/second).
+Trace length statistics: max=61, min=61, average=61.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0x75245 --backend=rust to reproduce.

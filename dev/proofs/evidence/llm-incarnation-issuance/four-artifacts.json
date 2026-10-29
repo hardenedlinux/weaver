@@ -1,0 +1,163 @@
+[
+  {
+    "id": "EI1",
+    "theorem": "projection",
+    "test": "issueDoesNotActivateCustodyTest",
+    "node": "recovery.projection",
+    "meaning": "Issuance and proof stutter the actual custody state"
+  },
+  {
+    "id": "EI2",
+    "theorem": "composition",
+    "test": "currentBootstrapActivatesOriginalTest",
+    "node": "broker.alias",
+    "meaning": "Every finite enrollment run composes actual predecessor custody transitions"
+  },
+  {
+    "id": "EI3",
+    "theorem": "issued_retained",
+    "test": "lostIssueReplySameLaunchCannotRemintTest",
+    "node": "recovery.projection",
+    "meaning": "One issue ID never replaces its complete stored ticket"
+  },
+  {
+    "id": "EI4",
+    "theorem": "issued_was_authorized",
+    "test": "independentLaunchApprovalRequiredTest",
+    "node": "registry.alias",
+    "meaning": "From an empty registry every issued ticket originates at an authenticated independent launcher"
+  },
+  {
+    "id": "EI5",
+    "theorem": "launch_retained",
+    "test": "lostIssueReplyRecoveredByLaunchLookupTest",
+    "node": "protocols.acp",
+    "meaning": "The canonical launch index cannot be renamed by a retry"
+  },
+  {
+    "id": "EI6",
+    "theorem": "outcome_retained",
+    "test": "lostActivationReplyCannotRepeatTest",
+    "node": "broker.alias",
+    "meaning": "An existing activation result survives a later transition"
+  },
+  {
+    "id": "EI7",
+    "theorem": "issued_run",
+    "test": "wrongTranscriptChallengeRejectedTest",
+    "node": "recovery.fence",
+    "meaning": "Every finite run retains an issued transcript binding"
+  },
+  {
+    "id": "EI8",
+    "theorem": "outcome_run",
+    "test": "lostActivationReplyCannotRepeatTest",
+    "node": "broker.alias",
+    "meaning": "Every finite run retains known activation results"
+  },
+  {
+    "id": "EI9",
+    "theorem": "reserved_retained",
+    "test": "reservedIncarnationCannotReissueTest",
+    "node": "recovery.fence",
+    "meaning": "Each step retains already reserved identities"
+  },
+  {
+    "id": "EI10",
+    "theorem": "launch_run",
+    "test": "lostIssueReplyRecoveredByLaunchLookupTest",
+    "node": "protocols.acp",
+    "meaning": "Every finite run retains the original launch-to-issuance mapping"
+  },
+  {
+    "id": "EI11",
+    "theorem": "reserved_run",
+    "test": "reservedIncarnationCannotReissueTest",
+    "node": "recovery.fence",
+    "meaning": "Every finite run retains issued-identity tombstones"
+  },
+  {
+    "id": "EI12",
+    "theorem": "challenge_monotone",
+    "test": "wrongTranscriptChallengeRejectedTest",
+    "node": "recovery.projection",
+    "meaning": "Authority challenge allocation never decreases in a step"
+  },
+  {
+    "id": "EI13",
+    "theorem": "wrong_key_not_possession",
+    "test": "oldWorkerCannotProveNewKeyTest",
+    "node": "recovery.join",
+    "meaning": "Shared workload eligibility cannot replace proof of the frozen key"
+  },
+  {
+    "id": "EI14",
+    "theorem": "wrong_session_not_possession",
+    "test": "wrongBootstrapSessionRejectedTest",
+    "node": "recovery.join",
+    "meaning": "A signature cannot be replayed under a different bootstrap recipient session"
+  },
+  {
+    "id": "EI15",
+    "theorem": "stale_epoch_rejected",
+    "test": "issuerEpochChangeRejectsQueuedActivationTest",
+    "node": "broker.cas",
+    "meaning": "Retired issuer epochs cannot activate queued tickets"
+  },
+  {
+    "id": "EI16",
+    "theorem": "stale_parent_rejected",
+    "test": "sourcePublicationRejectsOldIssueParentTest",
+    "node": "broker.cas",
+    "meaning": "Current source/custody publication invalidates an old predecessor parent"
+  },
+  {
+    "id": "EI17",
+    "theorem": "known_outcome_cannot_activate",
+    "test": "lostActivationReplyCannotRepeatTest",
+    "node": "broker.alias",
+    "meaning": "Known activation result excludes another activation"
+  },
+  {
+    "id": "EI18",
+    "theorem": "activation_requires_issued_proof",
+    "test": "issuedWithoutProofCannotActivateTest",
+    "node": "broker.cas",
+    "meaning": "Actual incarnation change requires exact issued row, full stored proof and current read"
+  },
+  {
+    "id": "EI19",
+    "theorem": "activation_from_authorized_launch",
+    "test": "selfSelectedOldKeyCannotIssueTest",
+    "node": "registry.alias",
+    "meaning": "Initial-registry provenance and exact bootstrap possession jointly constrain activation"
+  },
+  {
+    "id": "EI20",
+    "theorem": "scope_run",
+    "test": "twoLaunchesCannotBothUseOldParentTest",
+    "node": "registry.origin",
+    "meaning": "Every finite run retains original domain/workload/task/purpose/deadline"
+  },
+  {
+    "id": "EI21",
+    "theorem": "original_result_unique",
+    "test": "twoLaunchesCannotBothUseOldParentTest",
+    "node": "broker.alias",
+    "meaning": "Initialized actual floor prefix preserves unique original operation results"
+  },
+  {
+    "id": "EI22",
+    "theorem": "original_reservation_once",
+    "test": "currentBootstrapActivatesOriginalTest",
+    "node": "registry.query",
+    "meaning": "Safe initialized actual account prefix applies an original reservation at most once"
+  },
+  {
+    "id": "EI23",
+    "theorem": "unknown_original_hold_retained",
+    "test": "proofWithoutActivationHasNoGrantTest",
+    "node": "broker.hold",
+    "meaning": "Unmetered original execution with authentic source binding retains its original hold"
+  }
+]

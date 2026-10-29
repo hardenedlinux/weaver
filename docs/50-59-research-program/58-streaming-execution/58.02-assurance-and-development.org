@@ -1,0 +1,85 @@
+#+TITLE: 58.02 Assurance and Go Development Integration
+#+LANGUAGE: en
+
+* Development ownership
+
+The active runtime gate is =go run ./go/cmd/weaver-dev check= and uses direct
+process execution with fixed argument vectors, independent log files and an
+atomically replaced JSON receipt. It never evaluates a shell command string.
+Failed, interrupted and missing-tool stages cannot produce a passing receipt.
+Go assurance and integration stages use =-count=1=: a prior Go test cache entry
+cannot stand in for checking changed Rust code, model sources or Cargo metadata.
+Go development tests in
+=go/dev= replace the three Python runtime helpers: requirement/dependency
+checking, original-task proposal replay and streaming proposal-to-wire replay.
+Rust tests continue to own ledger safety assertions and actual executor
+behavior. Go exercises their public command interfaces and observes local wire
+effects; it does not reproduce the deciding ledger in another language.
+
+OpenSysML is imported through its public
+=github.com/Open-MBEE/OpenSysML/client/opensysml= Go package, using the in-process
+client. The model test requests strict conformance, checks both call errors and
+model diagnostics, traverses actual symbols to inventory requirements, and joins
+them to named native/formal witnesses through the public query API. An unresolved-type negative control must
+fail model acceptance even when parsing returns no Go error.
+
+Go has no Cargo-style dev-dependencies section. The SDK is pinned in =go/go.mod=
+and =go/go.sum=, imported only by =_test.go= files in =go/dev=. A separate test
+checks the production command dependency graph excludes OpenSysML. There is one
+Go module, selected by root =go.work=, rather than a second tools module.
+The SDK's module sums and supported toolchain are checked during integration.
+Its public API is described in the [[https://runtime.opensysml.org/reference/api/][official OpenSysML reference]].
+
+Historical Python/shell source and failed receipts remain archived evidence, not
+current runtime entrypoints. Their old commands and verdicts are not rewritten
+into successful Go receipts. This migration does not claim to rerun every
+historical research script.
+
+* Proof responsibilities
+
+| Mechanism | Responsibility and limit |
+|-----------+--------------------------|
+| SysML v2 through the Go SDK | Typed model structure, strict diagnostics, requirement inventory and trace completeness; no behavioral refinement theorem |
+| Rust native tests and PBT | Persisted identity, shared holds, real TCP/TLS effects, current final guards, task ownership and generated lifecycle schedules |
+| Go tests and fuzzing | Strict proposal decoding, route/manifest constraints, SDK integration and command-to-wire replay |
+| Quint RuntimeLifecycle | Composition with StreamingExecution, disconnect/close/drain interleavings, allowed in-flight completion, unknown holds and unsafe early-untracking/ack counterexamples |
+| Lean StreamingExecution.Lifecycle | Parametric composition of execution safety with quiescence at drain, assuming faithful running-to-tracked registration and an empty tracker |
+| cedar-poo-spec bridge | Imported native-value/effect binding and error-free permit foundations; does not prove the Rust compiler, SQLite or network stack |
+
+The Lean disconnect lemma explicitly states that caller disappearance leaves
+tracking unchanged. It is a preservation obligation, not a discovery of native
+task behavior. The native detached-writer test checks this implementation link:
+it drops the caller handle, observes the held admission slot, polls drain while
+the writer is blocked, and verifies drain completes only after releasing the
+writer. The PBT varies submit/disconnect/close/yield/drain schedules.
+
+* Resource and performance contract
+
+Payloads are committed once at message admission. Range processing reads bounded
+immutable BLOB slices and allocates range sequence numbers without rescanning the
+entire range history. A bounded exact-source cache stores Cedar compilations;
+it never caches an allow decision. Each actual send still rejoins current
+Policy, original claims, reservation and custody under the deciding transaction.
+
+The local reference profile holds the SQLite deciding lock through bounded I/O.
+This deliberately serializes safety-critical effects; it is not a throughput or
+tail-latency claim. Resource ceilings and copy-work theorems do not bound Cedar
+evaluation CPU time or filesystem latency. Production sharding, upstream provider
+stream parsing, usage settlement and snapshot rollback protection remain separate
+implementation and qualification work.
+
+* Verification entrypoint
+
+Run =go run ./go/cmd/weaver-dev check= from the repository root. It retains separate
+native, Go, Quint, Lean and Cedar-bridge logs and fails if any gate fails.
+Integration tests use =go test -tags=integration ./go/dev=; ordinary model and
+workspace checks use =go test ./go/dev=. Existing Gerbil timing gates and
+negative controls are unchanged.
+
+* Diagram presentation
+
+The core view uses D2's built-in Flagship Terrastruct theme, a shared card
+typography, explicit centered labels and local Go/Rust logos. Requirement counts,
+dependency versions and verification outcomes remain in Org and evidence. The
+SVG is rendered and visually inspected; cylinder and icon labels are explicitly
+placed inside their cards to avoid the layout defaults moving them into edges.

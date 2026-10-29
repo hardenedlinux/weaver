@@ -1,0 +1,7 @@
+COMMAND ['git', '-C', '/Users/guangtao/ghq/github.com/tao3k/poo-flow', 'grep', '-n', '-i', '-E', 'quorum|fsync|promise|lease|fencing|rollback', 'a74fc2fd63437252175b5a67649ee54b886d3bf4', '--', 'modules/ai-agentic-context/features/memory/durable/store-backend.ss', 'modules/ai-agentic-context/features/memory/durable/store.ss', 'packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean', 'packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean']
+EXIT 0
+a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/ai-agentic-context/features/memory/durable/store-backend.ss:8:;;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs.
+a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/ai-agentic-context/features/memory/durable/store.ss:8:;;; owns storage, locking, leases, fsync, backfill, replay, and side effects.
+a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/ai-agentic-context/features/memory/durable/store.ss:79:    claim-job-lease
+a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean:45:`C₀ → C₁ → C₀` rollback replay.
+a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean:47:theorem exactEqualityAlonePermitsRollbackReplay :

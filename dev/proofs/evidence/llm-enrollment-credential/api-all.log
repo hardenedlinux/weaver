@@ -1,0 +1,128 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":15,"sourceSha256":"b40dd508bb86bca42c1a4350d4eacd0f307ebf4b3f2c120326915d25fabca32e"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"4b2446b56ae1f6216856bb45d12dc00815ce203c5ad6206f63fc6c3e08115204"}
+@@START {"label":"api-controls-0","limit":20}
+
+  LlmEnrollmentCredential
+    ok sharedWorkloadCannotAssignSubjectTest passed 1 test(s)
+    ok producerAssignmentRequiredTest passed 1 test(s)
+    ok sharedWorkloadCannotIssueTest passed 1 test(s)
+
+  3 passing (736ms)
+@@DONE {"label":"api-controls-0","passed":["sharedWorkloadCannotAssignSubjectTest","producerAssignmentRequiredTest","sharedWorkloadCannotIssueTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  LlmEnrollmentCredential
+    ok forwardedSubjectCredentialRejectedTest passed 1 test(s)
+    ok authenticatedSubjectCannotNominateKeyTest passed 1 test(s)
+    ok subjectAuthenticationRequiredTest passed 1 test(s)
+
+  3 passing (1850ms)
+@@DONE {"label":"api-controls-1","passed":["forwardedSubjectCredentialRejectedTest","authenticatedSubjectCannotNominateKeyTest","subjectAuthenticationRequiredTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  LlmEnrollmentCredential
+    ok enrollmentPossessionRequiredTest passed 1 test(s)
+    ok issuanceSessionBoundTest passed 1 test(s)
+    ok currentIssuancePolicyRequiredTest passed 1 test(s)
+
+  3 passing (1753ms)
+@@DONE {"label":"api-controls-2","passed":["enrollmentPossessionRequiredTest","issuanceSessionBoundTest","currentIssuancePolicyRequiredTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  LlmEnrollmentCredential
+    ok commitDoesNotSignOrEnrollTest passed 1 test(s)
+    ok lostIssueReplyRecoversSameCredentialTest passed 1 test(s)
+    ok oldWorkerCannotRecoverSubjectTest passed 1 test(s)
+
+  3 passing (888ms)
+@@DONE {"label":"api-controls-3","passed":["commitDoesNotSignOrEnrollTest","lostIssueReplyRecoversSameCredentialTest","oldWorkerCannotRecoverSubjectTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  LlmEnrollmentCredential
+    ok recoveryAuthenticationRequiredTest passed 1 test(s)
+    ok recoveryPolicyRequiredTest passed 1 test(s)
+    ok canonicalLaunchCannotReissueTest passed 1 test(s)
+
+  3 passing (800ms)
+@@DONE {"label":"api-controls-4","passed":["recoveryAuthenticationRequiredTest","recoveryPolicyRequiredTest","canonicalLaunchCannotReissueTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-5","limit":20}
+
+  LlmEnrollmentCredential
+    ok crossLaunchIdCannotBeReusedTest passed 1 test(s)
+    ok secondSubjectGetsDistinctIdTest passed 1 test(s)
+    ok uncommittedBodyCannotReachSignerTest passed 1 test(s)
+
+  3 passing (1224ms)
+@@DONE {"label":"api-controls-5","passed":["crossLaunchIdCannotBeReusedTest","secondSubjectGetsDistinctIdTest","uncommittedBodyCannotReachSignerTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-6","limit":20}
+
+  LlmEnrollmentCredential
+    ok signatureWithoutRequestRejectedTest passed 1 test(s)
+    ok lostSignerReplyRetainsExactIntentTest passed 1 test(s)
+    ok wrongBodyCallbackRejectedTest passed 1 test(s)
+
+  3 passing (728ms)
+@@DONE {"label":"api-controls-6","passed":["signatureWithoutRequestRejectedTest","lostSignerReplyRetainsExactIntentTest","wrongBodyCallbackRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-7","limit":20}
+
+  LlmEnrollmentCredential
+    ok authenticSignatureRequiredTest passed 1 test(s)
+    ok lateCallbackAfterRevocationRejectedTest passed 1 test(s)
+    ok interveningCommitInvalidatesReadTest passed 1 test(s)
+
+  3 passing (1670ms)
+@@DONE {"label":"api-controls-7","passed":["authenticSignatureRequiredTest","lateCallbackAfterRevocationRejectedTest","interveningCommitInvalidatesReadTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-8","limit":20}
+
+  LlmEnrollmentCredential
+    ok releasedCredentialStillNeedsHolderTest passed 1 test(s)
+    ok forwardedCredentialCannotActivateTest passed 1 test(s)
+    ok recoveredConnectionCannotActivateTest passed 1 test(s)
+
+  3 passing (1513ms)
+@@DONE {"label":"api-controls-8","passed":["releasedCredentialStillNeedsHolderTest","forwardedCredentialCannotActivateTest","recoveredConnectionCannotActivateTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-9","limit":20}
+
+  LlmEnrollmentCredential
+    ok oldEpochCannotActivateTest passed 1 test(s)
+    ok activationNeedsCurrentPolicyTest passed 1 test(s)
+    ok rootActivationDoesNotBindBeneficiaryTest passed 1 test(s)
+
+  3 passing (998ms)
+@@DONE {"label":"api-controls-9","passed":["oldEpochCannotActivateTest","activationNeedsCurrentPolicyTest","rootActivationDoesNotBindBeneficiaryTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-10","limit":20}
+
+  LlmEnrollmentCredential
+    ok activationCannotRepeatTest passed 1 test(s)
+    ok recoveryCannotReplaceFirstKeyTest passed 1 test(s)
+    ok actualActivationPreservesOriginalBudgetTest passed 1 test(s)
+
+  3 passing (3669ms)
+@@DONE {"label":"api-controls-10","passed":["activationCannotRepeatTest","recoveryCannotReplaceFirstKeyTest","actualActivationPreservesOriginalBudgetTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-11","limit":20}
+
+  LlmEnrollmentCredential
+    ok revocationFencesPublishedInvitationTest passed 1 test(s)
+    ok forgedSubjectCounterexampleTest passed 1 test(s)
+    ok erasedCredentialCounterexampleTest passed 1 test(s)
+
+  3 passing (2267ms)
+@@DONE {"label":"api-controls-11","passed":["revocationFencesPublishedInvitationTest","forgedSubjectCounterexampleTest","erasedCredentialCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-12","limit":20}
+
+  LlmEnrollmentCredential
+    ok erasedReleaseCounterexampleTest passed 1 test(s)
+    ok missingActivationOutcomeCounterexampleTest passed 1 test(s)
+    ok phantomActivationOutcomeCounterexampleTest passed 1 test(s)
+
+  3 passing (901ms)
+@@DONE {"label":"api-controls-12","passed":["erasedReleaseCounterexampleTest","missingActivationOutcomeCounterexampleTest","phantomActivationOutcomeCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-13","limit":20}
+
+  LlmEnrollmentCredential
+    ok splitRecoveryCannotBindFirstKeyTest passed 1 test(s)
+
+  1 passing (1239ms)
+@@DONE {"label":"api-controls-13","passed":["splitRecoveryCannotBindFirstKeyTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

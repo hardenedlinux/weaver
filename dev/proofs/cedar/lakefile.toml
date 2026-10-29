@@ -1,0 +1,11 @@
+name = "WeaverPolicyBridge"
+version = "0.1.0"
+defaultTargets = ["WeaverPolicyBridge"]
+
+[[require]]
+name = "CedarPooSpec"
+git = "https://github.com/HardenedLinux/cedar-poo-spec.git"
+rev = "38af276ffbd17a378408bb7886e8122faadcbcfd"
+
+[[lean_lib]]
+name = "WeaverPolicyBridge"

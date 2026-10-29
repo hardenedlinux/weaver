@@ -1,0 +1,92 @@
+proofs/lean/LlmAppendHandoff.lean:109:6: error: Type mismatch: After simplification, term
+  congrArg (fun xs => xs ++ [LlmWalActivation.frame p]) represented
+ has type
+  @Eq (List LlmAccountCommit.Record)
+    (snapshot s ++ (List.flatMap LlmManifestSwitch.Segment.records s.live ++ [LlmWalActivation.frame p]))
+    (s.logical.logical.wal ++ [LlmWalActivation.frame p])
+but is expected to have type
+  @Eq (List LlmAccountCommit.Record)
+    (snapshot
+        {
+          logical :=
+            {
+              logical :=
+                { core := s.logical.logical.core, wal := s.logical.logical.wal ++ [LlmWalActivation.frame p],
+                  submitted := s.logical.logical.submitted, receipt := s.logical.logical.receipt,
+                  active := s.logical.logical.active },
+              published := s.logical.published, blobs := s.logical.blobs, localCheckpoint := s.logical.localCheckpoint,
+              suffix := s.logical.suffix ++ [LlmWalActivation.frame p], observed := s.logical.observed },
+          root := s.root, closed := s.closed, live := s.live ++ [seg], objects := s.objects ++ [seg],
+          allocated := s.allocated ++ [seg], rootGeneration := s.rootGeneration, appendGeneration := s.appendGeneration,
+          frontier := s.frontier + 1, sequence := s.sequence, cut := s.cut, candidate := s.candidate,
+          observed := none } ++
+      (List.flatMap LlmManifestSwitch.Segment.records s.live ++ [LlmWalActivation.frame p]))
+    (s.logical.logical.wal ++ [LlmWalActivation.frame p])
+proofs/lean/LlmAppendHandoff.lean:119:13: error: unsolved goals
+o : Owner
+s : State
+ao : LlmAccountCommit.Owner
+wo : LlmWalActivation.Owner
+co : LlmCheckpointTruncation.Owner
+genesis : LlmAccountCommit.Image
+available : ∀ (seg : LlmManifestSwitch.Segment), seg ∈ refs s → seg ∈ s.objects ∧ o.segmentDurable seg
+represented : replay s = s.logical.logical.wal
+checkpointEq : s.root.checkpoint = s.logical.localCheckpoint
+suffixEq : suffix s = s.logical.suffix
+aligned : Aligned s
+candidate : Candidate s
+worker generation frontier : Nat
+none : s.cut = Option.none
+noCandidate : s.candidate = Option.none
+confirmed : Confirmed s
+owner : worker = s.logical.logical.core.epoch
+epoch : generation = s.appendGeneration
+cas : frontier = s.frontier
+durable : o.cutDurable (freshCut s)
+h :
+  { logical := s.logical, root := s.root, closed := s.closed ++ s.live, live := [], objects := s.objects,
+        allocated := s.allocated, rootGeneration := s.rootGeneration, appendGeneration := s.appendGeneration + 1,
+        frontier := s.frontier, sequence := s.sequence + 1, cut := some (freshCut s), candidate := s.candidate,
+        observed := Option.none }.cut =
+    some (freshCut s)
+⊢ replay s =
+    snapshot
+      { logical := s.logical, root := s.root, closed := s.closed ++ s.live, live := [], objects := s.objects,
+        allocated := s.allocated, rootGeneration := s.rootGeneration, appendGeneration := s.appendGeneration + 1,
+        frontier := s.frontier, sequence := s.sequence + 1,
+        cut :=
+          some
+            { id := s.sequence + 1, parent := s.root.id, rootGeneration := s.rootGeneration,
+              appendGeneration := s.appendGeneration + 1, records := replay s },
+        candidate := s.candidate, observed := Option.none }
+proofs/lean/LlmAppendHandoff.lean:120:17: error: Dependent elimination failed: Failed to solve equation
+  some m = s.12
+proofs/lean/LlmAppendHandoff.lean:124:86: error: Type mismatch: After simplification, term
+  member
+ has type
+  x ∈ s.root.segments ∨ x ∈ s.closed ∨ x ∈ s.live ∨ x ∈ m.segments
+but is expected to have type
+  (x ∈ s.root.segments ∨ x ∈ s.closed ∨ x ∈ s.live) ∨ x ∈ m.segments
+proofs/lean/LlmAppendHandoff.lean:140:6: error: 'change' tactic failed, pattern
+  LlmManifestSwitch.replay m ++ flat s.live = s.logical.logical.wal
+is not definitionally equal to target
+  replay (switched s m cp) = (switched s m cp).logical.logical.wal
+proofs/lean/LlmAppendHandoff.lean:119:31: warning: This simp argument is unused:
+  cut_snapshot
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [freshCut]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Weaver.LlmAppendHandoff.recovery_copy_retained' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAppendHandoff.logical_projection' depends on axioms: [propext]
+'Weaver.LlmAppendHandoff.actual_checkpoint_composition' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAppendHandoff.original_reservation_once' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAppendHandoff.unknown_original_hold_retained' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAppendHandoff.append_prefix_retained' depends on axioms: [propext]
+'Weaver.LlmAppendHandoff.switched_live_tail_retained' does not depend on any axioms
+'Weaver.LlmAppendHandoff.current_tail_not_collectible' depends on axioms: [propext]
+'Weaver.LlmAppendHandoff.append_generation_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAppendHandoff.root_generation_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAppendHandoff.durable_cut_required' does not depend on any axioms
+'Weaver.LlmAppendHandoff.cut_records_retained' depends on axioms: [propext, sorryAx, Quot.sound]

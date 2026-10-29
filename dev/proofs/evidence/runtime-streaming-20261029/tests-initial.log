@@ -1,0 +1,35 @@
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-contracts)
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+   Compiling weaver-broker v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-broker)
+   Compiling weaver-cli v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.11s
+     Running unittests src/lib.rs (target/debug/deps/weaver_broker-33104d5c17e1cfa5)
+
+running 8 tests
+test https::tests::destination_aliases_credentials_and_http_are_rejected ... ok
+test stream_session::tests::effective_revocation_stops_actual_next_range_and_prefix_reconnect ... ok
+test stream_session::tests::revoke_after_range_consumption_proves_zero_call_and_recovers_original_message ... ok
+test stream_session::tests::actual_tcp_ranges_preserve_one_message_and_one_hold ... ok
+test enforce_asp_rust_gate ... ok
+test stream_session::tests::native_partial_write_freezes_tail_and_never_refunds ... FAILED
+test https::tests::partial_transport_failure_is_unknown_and_never_retried ... ok
+test https::tests::redirect_is_observed_without_following_or_refunding ... ok
+
+failures:
+
+---- stream_session::tests::native_partial_write_freezes_tail_and_never_refunds stdout ----
+
+thread 'stream_session::tests::native_partial_write_freezes_tail_and_never_refunds' (17034398) panicked at crates/weaver-broker/src/../tests/unit/stream_wire.rs:213:5:
+assertion `left != right` failed
+  left: Complete
+ right: Complete
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    stream_session::tests::native_partial_write_freezes_tail_and_never_refunds
+
+test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.01s
+
+error: test failed, to rerun pass `-p weaver-broker --lib`

@@ -1,0 +1,20 @@
+#+title: Weaver WAL to Balance Activation Index
+#+language: en
+#+options: toc:2
+
+* Durable candidate, protected decision and current balance visibility
+
+Area =20-29 Execution authority=; category =25 WAL activation=.
+This refines [[file:../24-account-commit/24.00-index.org][24 Account commit]] with explicit local WAL, independent candidate retention,
+protected commit confirmation and complete projection activation stages.
+
+| ID | Artifact |
+|----+----------|
+| 25.00 | This index |
+| 25.01 | [[file:25.01-wal-anchor-activation.org][WAL, anchor decision, replay and final visibility contract]] |
+| 25.02 | [[file:25.02-wal-activation.d2][Core D2]] / [[file:25.02-wal-activation.svg][SVG]] |
+| 25.03 | [[file:25.03-proof-and-source-evidence.org][Composition proofs, source audit and executable counterexamples]] |
+
+Models: [[file:../../../dev/proofs/lean/LlmWalActivation.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmWalActivation.qnt][Quint]].
+Run [[file:../../../dev/proofs/check_llm_wal_activation.py][the isolated runner]]. English only; no Gateway code, dependency pin,
+upstream source or earlier sealed artifact is changed.

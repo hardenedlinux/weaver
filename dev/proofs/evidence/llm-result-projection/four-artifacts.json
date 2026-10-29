@@ -1,0 +1,100 @@
+[
+  {
+    "id": "RP1",
+    "design": "Committed result is retained across lost responses",
+    "quint": "lostCommitReplyQueriesOriginalTest",
+    "lean": "result_retained",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "RP2",
+    "design": "Result belongs to the original decision",
+    "quint": "lostCommitReplyCannotConsumeAgainTest",
+    "lean": "initialized_result_index",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "RP3",
+    "design": "New result cannot reuse an old transaction identity",
+    "quint": "newTransactionCannotReuseNonceTest",
+    "lean": "fresh_decision_has_no_old_result",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "RP4",
+    "design": "Result positions follow one append order",
+    "quint": "twoResultsApplyInOrderTest",
+    "lean": "initialized_positions_ordered",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "RP5",
+    "design": "Source CAS binds the exact body and before image",
+    "quint": "exactSourceCASPublishesCommittedBodyTest",
+    "lean": "exact_source_result",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "RP6",
+    "design": "Account CAS binds the exact body and before image",
+    "quint": "accountLostReplyQueryChangesNoExposureTest",
+    "lean": "exact_account_result",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "RP7",
+    "design": "Duplicate result cannot be applied as another delta",
+    "quint": "accountLostReplyCannotApplyDeltaAgainTest",
+    "lean": "duplicate_position_blocks_application",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "RP8",
+    "design": "Retired worker cannot apply a valid historical result",
+    "quint": "oldOwnerCannotApplyAfterRecoveryTest",
+    "lean": "old_owner_blocks_application",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "RP9",
+    "design": "Partial participant progress cannot activate",
+    "quint": "sourceOnlyCannotActivateTest",
+    "lean": "partial_projection_blocks_join",
+    "d2": "broker.claim"
+  },
+  {
+    "id": "RP10",
+    "design": "Complete join retains authoritative unknown exposure",
+    "quint": "exactReplayAfterProjectionRollbackTest",
+    "lean": "joined_account_holds_original_exposure",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "RP11",
+    "design": "Projection recovery cannot repeat source consumption",
+    "quint": "replayNeverSendsAgainTest",
+    "lean": "authority_projection",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "RP12",
+    "design": "Application is data materialization, not authority mutation",
+    "quint": "exactSourceCASPublishesCommittedBodyTest",
+    "lean": "source_application_has_no_authority_effect",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "RP13",
+    "design": "Unknown exposure is never released by this protocol",
+    "quint": "unknownAccountLagCannotRefundTest",
+    "lean": "unknown_exposure_retained",
+    "d2": "registry.query"
+  },
+  {
+    "id": "RP14",
+    "design": "Original spent-state survives old-owner recovery",
+    "quint": "currentOwnerMayApplyOldCommittedResultTest",
+    "lean": "original_spent_retained",
+    "d2": "broker.hold"
+  }
+]

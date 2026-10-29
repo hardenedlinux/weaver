@@ -1,0 +1,448 @@
+Analysis of sampling gxi (pid 45041) every 10 milliseconds
+Process:         gerbil [45041]
+Path:            /opt/homebrew/*/gerbil
+Load Address:    0x10468c000
+Identifier:      gerbil
+Version:         0
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  python3.13 [45040]
+Target Type:     live task
+
+Date/Time:       2026-10-20 15:06:47.971 +0800
+Launch Time:     2026-10-20 15:05:54.424 +0800
+OS Version:      macOS 26.6.1 (25G76)
+Report Version:  7
+Analysis Tool:   /usr/bin/sample
+
+Physical footprint:         260.9M
+Physical footprint (peak):  267.5M
+Idle exit:                  untracked
+----
+
+Call graph:
+    95 Thread_35324337   DispatchQueue_1: com.apple.main-thread  (serial)
+      95 ___cleanup_dyn_module  (in gerbil) + 60  [0x104a8377c]
+        95 observe_close  (in observer.dylib) + 156  [0x105963ab0]
+          95 dyld4::APIs::dlclose(void*)  (in dyld) + 224  [0x18d09c1a4]
+            94 dyld4::RuntimeState::decDlRefCount(dyld4::Loader const*)  (in dyld) + 732  [0x18d0be9d0]
+            + 94 dyld4::RuntimeLocks::withLoadersWriteLockAndProtectedStack<dyld4::RuntimeState::decDlRefCount(dyld4::Loader const*)::$_0>(dyld4::RuntimeState::decDlRefCount(dyld4::Loader const*)::$_0)::'lambda'()::operator()() const  (in dyld) + 184  [0x18d0c6628]
+            +   94 invocation function for block in void lsl::MemoryManager::withProtectedStack<void dyld4::RuntimeLocks::withLoadersWriteLockAndProtectedStack<dyld4::RuntimeState::decDlRefCount(dyld4::Loader const*)::$_0>(dyld4::RuntimeState::decDlRefCount(dyld4::Loader const*)::$_0)::'lambda'()::operator()() const::'lambda'()>(dyld4::RuntimeState::decDlRefCount(dyld4::Loader const*)::$_0)  (in dyld) + 240  [0x18d0c6850]
+            +     94 dyld4::RuntimeState::garbageCollectInner()  (in dyld) + 584  [0x18d0bf4fc]
+            +       94 dyld4::RuntimeState::notifyUnload(std::span<dyld4::Loader const*, 18446744073709551615ul> const&)  (in dyld) + 4068  [0x18d0c06bc]
+            +         94 dyld4::RuntimeState::notifyDebuggerUnload(std::span<dyld4::Loader const*, 18446744073709551615ul> const&)  (in dyld) + 256  [0x18d0c1008]
+            +           85 dyld4::ExternallyViewableState::removeImages(lsl::Allocator&, lsl::Allocator&, std::span<mach_header const*, 18446744073709551615ul>&)  (in dyld) + 1236  [0x18d0cc3bc]
+            +           ! 68 dyld4::ExternallyViewableState::triggerNotifications(dyld_image_mode, unsigned int, dyld_image_info const*)  (in dyld) + 296  [0x18d0cb524]
+            +           ! : 68 dyld4::RemoteNotificationResponder::blockOnSynchronousEvent(unsigned int)  (in dyld) + 48  [0x18d111c90]
+            +           ! :   68 dyld4::RemoteNotificationResponder::sendMessage(int, unsigned int, mach_msg_header_t*)  (in dyld) + 244  [0x18d111904]
+            +           ! :     68 mach_msg_overwrite  (in dyld) + 244  [0x18d12b18c]
+            +           ! :       68 mach_msg2_internal  (in dyld) + 76  [0x18d12afe4]
+            +           ! :         68 mach_msg2_trap  (in dyld) + 8  [0x18d09172c]
+            +           ! 16 dyld4::ExternallyViewableState::triggerNotifications(dyld_image_mode, unsigned int, dyld_image_info const*)  (in dyld) + 844  [0x18d0cb748]
+            +           ! : 16 dyld4::RemoteNotificationResponder::notifyMonitorOfImageListChanges(bool, unsigned int, mach_header const**, char const**, unsigned long long)  (in dyld) + 484  [0x18d111ba4]
+            +           ! :   16 dyld4::RemoteNotificationResponder::sendMessage(int, unsigned int, mach_msg_header_t*)  (in dyld) + 244  [0x18d111904]
+            +           ! :     16 mach_msg_overwrite  (in dyld) + 244  [0x18d12b18c]
+            +           ! :       16 mach_msg2_internal  (in dyld) + 76  [0x18d12afe4]
+            +           ! :         16 mach_msg2_trap  (in dyld) + 8  [0x18d09172c]
+            +           ! 1 dyld4::ExternallyViewableState::triggerNotifications(dyld_image_mode, unsigned int, dyld_image_info const*)  (in dyld) + 504  [0x18d0cb5f4]
+            +           !   1 <deduplicated_symbol>  (in dyld) + 232  [0x18d0a88c8]
+            +           !     1 lsl::Allocator::aligned_alloc(unsigned long long, unsigned long long)  (in dyld) + 220  [0x18d10fd30]
+            +           !       1 lsl::Allocator::Pool::Pool(lsl::Allocator*, lsl::Allocator::Pool*, unsigned long long, bool)  (in dyld) + 132  [0x18d110610]
+            +           !         1 lsl::Allocator::Pool::Pool(lsl::Allocator*, lsl::Allocator::Pool*, lsl::MemoryManager::Buffer, lsl::MemoryManager::Buffer, bool, bool)  (in dyld) + 92  [0x18d110694]
+            +           9 dyld4::ExternallyViewableState::removeImages(lsl::Allocator&, lsl::Allocator&, std::span<mach_header const*, 18446744073709551615ul>&)  (in dyld) + 720  [0x18d0cc1b8]
+            +             6 dyld4::ExternallyViewableState::generateAtlas(lsl::Allocator&)  (in dyld) + 1268  [0x18d0c9da4]
+            +             : 5 PropertyList::~PropertyList()  (in dyld) + 108  [0x18d0ff848]
+            +             : | 5 lsl::Allocator::free(void*)  (in dyld) + 100  [0x18d1101c4]
+            +             : |   5 lsl::Allocator::AllocationMetadata::deallocate()  (in dyld) + 36  [0x18d110220]
+            +             : |     5 lsl::Allocator::AllocationMetadata::pool(bool) const  (in dyld) + 44,104  [0x18d110100,0x18d11013c]
+            +             : 1 PropertyList::~PropertyList()  (in dyld) + 192  [0x18d0ff89c]
+            +             :   1 PropertyList::Object::deallocate()  (in dyld) + 216  [0x18d0ffb28]
+            +             :     1 lsl::Allocator::free(void*)  (in dyld) + 12  [0x18d11016c]
+            +             2 dyld4::ExternallyViewableState::generateAtlas(lsl::Allocator&)  (in dyld) + 896  [0x18d0c9c30]
+            +             : 2 PropertyList::encode(ByteStream&)  (in dyld) + 204  [0x18d0ffc2c]
+            +             :   1 (anonymous namespace)::quickSort<PropertyList::String**>(PropertyList::String**, PropertyList::String**)  (in dyld) + 292  [0x18d100da4]
+            +             :   | 1 (anonymous namespace)::quickSort<PropertyList::String**>(PropertyList::String**, PropertyList::String**)  (in dyld) + 112  [0x18d100cf0]
+            +             :   1 (anonymous namespace)::quickSort<PropertyList::String**>(PropertyList::String**, PropertyList::String**)  (in dyld) + 224  [0x18d100d60]
+            +             1 dyld4::ExternallyViewableState::generateAtlas(lsl::Allocator&)  (in dyld) + 508  [0x18d0c9aac]
+            +               1 dyld4::ExternallyViewableState::atlasAddImage(PropertyList::Dictionary&, unsigned long long, char const*)  (in dyld) + 356  [0x18d0cb3c4]
+            +                 1 mach_o::UnsafeHeader::forEachSegment(void (mach_o::UnsafeHeader::SegmentInfo const&, bool&) block_pointer) const  (in dyld) + 124  [0x18d129bac]
+            +                   1 mach_o::UnsafeHeader::forEachLoadCommand(void (load_command const*, bool&) block_pointer) const  (in dyld) + 208  [0x18d1269a4]
+            +                     1 invocation function for block in mach_o::UnsafeHeader::forEachSegment(void (mach_o::UnsafeHeader::SegmentInfo const&, bool&) block_pointer) const  (in dyld) + 248  [0x18d129e48]
+            +                       1 invocation function for block in dyld4::ExternallyViewableState::atlasAddImage(PropertyList::Dictionary&, unsigned long long, char const*)  (in dyld) + 168  [0x18d0ccc64]
+            +                         1 PropertyList::Dictionary::addObjectForKey<PropertyList::String, std::basic_string_view<char> const&>(std::basic_string_view<char>, std::basic_string_view<char> const&)  (in dyld) + 200  [0x18d0ccdc8]
+            +                           1 <deduplicated_symbol>  (in dyld) + 232  [0x18d0a88c8]
+            +                             1 lsl::Allocator::aligned_alloc(unsigned long long, unsigned long long)  (in dyld) + 160  [0x18d10fcf4]
+            +                               1 lsl::Allocator::Pool::aligned_alloc(unsigned long long, unsigned long long)  (in dyld) + 200  [0x18d10ffb4]
+            +                                 1 lsl::Allocator::AllocationMetadata::setPoolHint(lsl::Allocator::Pool*)  (in dyld) + 180  [0x18d11097c]
+            1 dyld4::RuntimeState::decDlRefCount(dyld4::Loader const*)  (in dyld) + 772  [0x18d0be9f8]
+              1 lsl::MemoryManager::writeProtect(bool)  (in dyld) + 848  [0x18d10f880]
+                1 lsl::Allocator::forEachVMAllocatedBuffer(void (lsl::MemoryManager::Buffer const&) block_pointer)  (in dyld) + 116  [0x18d10fbe8]
+                  1 invocation function for block in lsl::Allocator::forEachVMAllocatedBuffer(void (lsl::MemoryManager::Buffer const&) block_pointer)  (in dyld) + 56  [0x18d10fc38]
+                    1 vm_protect  (in dyld) + 52  [0x18d0953ec]
+                      1 _kernelrpc_mach_vm_protect_trap  (in dyld) + 8  [0x18d0915b8]
+
+Total number in stack (recursive counted multiple, when >=5):
+
+Sort by top of stack, same collapsed (when >= 5):
+        mach_msg2_trap  (in dyld)        84
+        lsl::Allocator::AllocationMetadata::pool(bool) const  (in dyld)        5
+
+Binary Images:
+       0x10468c000 -        0x104d86e6f +gerbil (0) <2AAD5BDF-7963-3654-889C-6C02430DBA94> /opt/homebrew/*/gerbil
+       0x105584000 -        0x105587fff +expander~1.o1 (0) <89D090CF-C042-436A-9AB8-70B77DB1EDFE> /Users/*/expander~1.o1
+       0x105590000 -        0x105593fff +sugar~4.o1 (0) <EAD72E2C-C612-4E48-B8DF-D58292B82D17> /Users/*/sugar~4.o1
+       0x1055a0000 -        0x1055a7fff +expander~2.o1 (0) <E4516F8F-6127-4098-AA4A-AD3064E11085> /Users/*/expander~2.o1
+       0x1055b0000 -        0x1055b7fff +sugar~3.o1 (0) <4C2AAF0D-494B-4E47-8ECD-BFB1AB6F6729> /Users/*/sugar~3.o1
+       0x1055c0000 -        0x1055c3fff +sugar~5.o1 (0) <959C1EF9-2A47-49C8-9373-58A42ED746E6> /Users/*/sugar~5.o1
+       0x1055d0000 -        0x1055e3fff +sugar~1.o1 (0) <25B2D695-42E4-4A47-A6D1-79E8A199CBE9> /Users/*/sugar~1.o1
+       0x1055f0000 -        0x1055f3fff +macro-object~1.o1 (0) <2B37579E-4ABA-48D1-B4AD-BFC7B8479C9D> /Users/*/macro-object~1.o1
+       0x105604000 -        0x10560ffff +sugar~QuasiquoteExpander~0.o1 (0) <1157B22F-1D1A-4BB1-BEE2-C8EEE6CC20FB> /Users/*/sugar~QuasiquoteExpander~0.o1
+       0x105618000 -        0x105623fff +mop~1.o1 (0) <8CC67225-433F-48FB-AE48-30FADF9D474B> /Users/*/mop~1.o1
+       0x105630000 -        0x10563bfff +mop~MOP-2~0.o1 (0) <3BFF694D-823D-4ECC-94C2-002C982E2507> /Users/*/mop~MOP-2~0.o1
+       0x105644000 -        0x10564bfff +mop~4.o1 (0) <AA19726C-BAF5-4374-9496-3417D07CDE2F> /Users/*/mop~4.o1
+       0x10565c000 -        0x10566bfff +mop~2.o1 (0) <1233C3F7-DA08-46D1-B41D-7CD4F6C89BAC> /Users/*/mop~2.o1
+       0x105674000 -        0x1056cffff +sugar~2.o1 (0) <51B74543-2339-4C23-BBD2-340DB19B1759> /Users/*/sugar~2.o1
+       0x1056f8000 -        0x1056fbfff +macro-object~0.o1 (0) <7043AFA5-B423-42C8-9A7C-02F75DB09A6A> /Users/*/macro-object~0.o1
+       0x105704000 -        0x105707fff +match~2.o1 (0) <192727F3-B08D-4B87-8BD9-79CBC9F5FF93> /Users/*/match~2.o1
+       0x105710000 -        0x105713fff +more-sugar~2.o1 (0) <8085A8C8-AB18-429C-9C1D-E70708BE8755> /Users/*/more-sugar~2.o1
+       0x105724000 -        0x10573ffff +mop~3.o1 (0) <08E3001B-03E9-43CE-967C-959509B3CE14> /Users/*/mop~3.o1
+       0x105750000 -        0x105753fff +contract~2.o1 (0) <1A795356-605D-4FEC-8289-75AFCDCD4546> /Users/*/contract~2.o1
+       0x105764000 -        0x10576ffff +more-syntax-sugar~1.o1 (0) <0DC3B0DC-BDDB-4C32-B4AB-B272A39EB94A> /Users/*/more-syntax-sugar~1.o1
+       0x105778000 -        0x10577bfff +contract~3.o1 (0) <B88D3F94-B90B-439E-94D6-56AB70E737E3> /Users/*/contract~3.o1
+       0x105784000 -        0x1057ab8f7 +mop~5.o1 (0) <1B5FE924-3FBA-32DD-A5D0-0622DCBF434C> /opt/homebrew/*/mop~5.o1
+       0x1057bc000 -        0x1057d7fff +module-sugar~1.o1 (0) <0375F0AC-EA5A-4609-84D7-0CAB664A5891> /Users/*/module-sugar~1.o1
+       0x1057e8000 -        0x1057f3fff +contract~1.o1 (0) <E1B019C5-9BB6-4FE9-A6A5-ABD62A260509> /Users/*/contract~1.o1
+       0x1057fc000 -        0x105803fff +contract~InterfaceInfo~0.o1 (0) <2BAE2215-F101-4936-9A59-FE4439707DA4> /Users/*/contract~InterfaceInfo~0.o1
+       0x10580c000 -        0x10580ffff +contract~5.o1 (0) <9AC72D64-6300-45E0-A947-2E27EEB87499> /Users/*/contract~5.o1
+       0x105818000 -        0x10581bfff +contract~TypeEnv~0.o1 (0) <ADF212CA-B922-4004-BC03-F94AB714F551> /Users/*/contract~TypeEnv~0.o1
+       0x10582c000 -        0x105857fff +more-sugar~1.o1 (0) <3E64B655-CED0-4D99-A664-C19F3D2B0F8F> /Users/*/more-sugar~1.o1
+       0x105870000 -        0x105883fff +contract~4.o1 (0) <DD1D61C4-792B-4AD4-8C74-471114FE2986> /Users/*/contract~4.o1
+       0x105890000 -        0x105893fff +contract~7.o1 (0) <3C1551C2-030F-4B87-9AC3-2100252326AC> /Users/*/contract~7.o1
+       0x10589c000 -        0x10589ffff +contract~ClassMeta~0.o1 (0) <F2BDD6C1-BC59-418A-8A21-8995404C70A3> /Users/*/contract~ClassMeta~0.o1
+       0x1058ac000 -        0x1058b3fff +contract~8.o1 (0) <FFA8F9D1-8338-450C-8209-43CE788D0982> /Users/*/contract~8.o1
+       0x1058bc000 -        0x1058bffff +object-syntax~1.o1 (0) <A427425F-14D7-4AB9-B28C-352601FAD05C> /Users/*/object-syntax~1.o1
+       0x1058c8000 -        0x1058cbfff +mop-system-classes~1.o1 (0) <9132955D-C1C3-4FC5-8882-DC35931CE23B> /Users/*/mop-system-classes~1.o1
+       0x1058d8000 -        0x1058dffff +control~1.o1 (0) <B0B4B964-869B-45AE-B3DE-B88A223C65FC> /Users/*/control~1.o1
+       0x1058e8000 -        0x1058ebfff +object-state~1.o1 (0) <DF39795B-BD1E-4D8C-9490-8E17C9EC8A84> /Users/*/object-state~1.o1
+       0x105960000 -        0x105963fff +observer.dylib (0) <A27AD0D6-0239-309B-89DB-ACEC8E757157> /Users/*/observer.dylib
+       0x1062c8000 -        0x1062cffff +system~1.o1 (0) <E4186779-0FC2-4A77-808B-42C90FAD099B> /Users/*/system~1.o1
+       0x1062d8000 -        0x1062dbfff +prototype-map~1.o1 (0) <CF3B4D6D-93A4-4A82-B84A-5919B931128E> /Users/*/prototype-map~1.o1
+       0x1062ec000 -        0x1062f7fff +syntax~1.o1 (0) <3A5761AE-3E0C-4EE1-B10A-B951ED2B979F> /Users/*/syntax~1.o1
+       0x10aa60000 -        0x10aacffff +match~1.o1 (0) <F07514DC-08FA-4D4D-84D0-7B25BE7E70F5> /Users/*/match~1.o1
+       0x10ab00000 -        0x10ab3ffff +contract~6.o1 (0) <9A495FE6-1A7B-41EB-B87A-BEDDB546F4D0> /Users/*/contract~6.o1
+       0x10abdc000 -        0x10abebfff +error~1.o1 (0) <1789552C-8488-48AF-9D14-AC2EE6969882> /Users/*/error~1.o1
+       0x10abf8000 -        0x10ac63fff +contract~9.o1 (0) <ED6E556D-4491-4E62-AC61-655BD01E9659> /Users/*/contract~9.o1
+       0x10ac94000 -        0x10acb3fff +table~1.o1 (0) <7A7EB09E-202F-4D33-A2DF-466AE4C24241> /Users/*/table~1.o1
+       0x10acc4000 -        0x10acdbfff +interface~1.o1 (0) <00DA8056-3045-49E4-98FA-B9EFB5452E2A> /Users/*/interface~1.o1
+       0x10acec000 -        0x10ad03fff +thread~1.o1 (0) <A9EEC8AB-72EC-4FB8-A843-B90735A5BB7D> /Users/*/thread~1.o1
+       0x10ad14000 -        0x10ad1bfff +eval~1.o1 (0) <947E6B8D-90CA-4AE0-B614-3F947B527643> /Users/*/eval~1.o1
+       0x10ad24000 -        0x10ad2bfff +loader~1.o1 (0) <D6259C01-70CA-448B-85FF-EF7BFC88544B> /Users/*/loader~1.o1
+       0x10ad34000 -        0x10ad3bfff +common~1.o1 (0) <95190376-00FB-4CDB-8B23-FEE40110BF6F> /Users/*/common~1.o1
+       0x10ad44000 -        0x10ad4bfff +stx~1.o1 (0) <CFF144DF-4634-439A-8066-DFFBEE50CBF4> /Users/*/stx~1.o1
+       0x10ad54000 -        0x10ad5bfff +stxcase~1.o1 (0) <73BC454C-D94F-4309-B2AF-CF9EE26756C3> /Users/*/stxcase~1.o1
+       0x10ad6c000 -        0x10ae03fff +contract~10.o1 (0) <B0C24B13-9F03-4745-B697-CEE3CE2D1A65> /Users/*/contract~10.o1
+       0x10ae48000 -        0x10aeabfff +util~1.o1 (0) <019EE689-7804-4C03-8624-F2F4122F31C1> /Users/*/util~1.o1
+       0x10aed8000 -        0x10af4ffff +mop~1.o1 (0) <C748C553-EE4C-48E9-B641-C564B840A4F0> /Users/*/mop~1.o1
+       0x10af84000 -        0x10af8f287 +interface~1.o1 (0) <F9B8D725-A531-32FA-B4D3-0BADB1FCDC1F> /opt/homebrew/*/interface~1.o1
+       0x10afa8000 -        0x10afb7fff +module~1.o1 (0) <2D3A4FE8-5684-46D8-80E1-F4D2F2D5EB3C> /Users/*/module~1.o1
+       0x10afc0000 -        0x10afc3597 +list-builder~1.o1 (0) <CFA21A02-CF02-3868-98E1-9E11E52CCC8B> /opt/homebrew/*/list-builder~1.o1
+       0x10afd8000 -        0x10afe3fff +thread~0.o1 (0) <733CE044-731D-455F-9B7B-F0D7D55BE430> /Users/*/thread~0.o1
+       0x10aff0000 -        0x10aff7fff +slot-observation~1.o1 (0) <120CE912-454D-4506-B21D-9E18B5AB74BB> /Users/*/slot-observation~1.o1
+       0x10b000000 -        0x10b002297 +interface~0.o1 (0) <E3828D7E-B256-37C5-B769-E7FE02403BE7> /opt/homebrew/*/interface~0.o1
+       0x10b010000 -        0x10b017eff +list~1.o1 (0) <09656951-9A43-3132-BEED-78C2A020F207> /opt/homebrew/*/list~1.o1
+       0x10b038000 -        0x10b0bbfff +hash~1.o1 (0) <C006AE96-94EA-4214-AECB-0F4EF8222F6A> /Users/*/hash~1.o1
+       0x10b0f0000 -        0x10b10ce9f +interface~1.o1 (0) <9C2E5E9E-E129-312F-B0C2-9EFB127B9AEA> /opt/homebrew/*/interface~1.o1
+       0x10b16c000 -        0x10b1affff +core~1.o1 (0) <12E2E8B8-CE5A-477F-87F5-8206E89EA2E9> /Users/*/core~1.o1
+       0x10b1c8000 -        0x10b1cffff +slot-layout~1.o1 (0) <7E88C9AC-15B3-4979-B7B0-71CBE32F06BA> /Users/*/slot-layout~1.o1
+       0x10b1d8000 -        0x10b1db3df +stxparam~2.o1 (0) <211CF6BA-762A-36B2-86C7-736EA52B3D1C> /opt/homebrew/*/stxparam~2.o1
+       0x10b1e8000 -        0x10b1e90c7 +interface~0.o1 (0) <4282EDC1-20AA-3CB7-8298-BD442114E01D> /opt/homebrew/*/interface~0.o1
+       0x10b1fc000 -        0x10b1ff507 +values~1.o1 (0) <742209BD-560A-3680-AF4F-C5EFDFA1D05A> /opt/homebrew/*/values~1.o1
+       0x10b210000 -        0x10b210a6f +list-builder~0.o1 (0) <BAB4FB77-8592-3047-8005-A5E9CECDB3FD> /opt/homebrew/*/list-builder~0.o1
+       0x10b21c000 -        0x10b22ed8f +symbol~1.o1 (0) <E051A491-7136-3AE0-98DA-6BC9686F7CB9> /opt/homebrew/*/symbol~1.o1
+       0x10b260000 -        0x10b2670d7 +stxparam~1.o1 (0) <31AB3371-8F2C-388D-BAD3-ED81AFC91FE0> /opt/homebrew/*/stxparam~1.o1
+       0x10b288000 -        0x10b2c525f +error~1.o1 (0) <95D952CB-D424-3926-8CD5-FBC96E52CB89> /opt/homebrew/*/error~1.o1
+       0x10b348000 -        0x10b36aec7 +iterators~1.o1 (0) <668443AB-58A9-3200-84C5-E6198450FBAF> /opt/homebrew/*/iterators~1.o1
+       0x10b3b4000 -        0x10b3d66f7 +macros~1.o1 (0) <76EBC495-77B1-371C-897F-CBFCEC60A630> /opt/homebrew/*/macros~1.o1
+       0x10b448000 -        0x10b46f307 +misc~1.o1 (0) <4782240E-0B66-3F2C-A5D0-6E57FFEC2309> /opt/homebrew/*/misc~1.o1
+       0x10b4f4000 -        0x10b527877 +rbtree~1.o1 (0) <3327B41F-9373-3204-BD5F-FC55D9218E3E> /opt/homebrew/*/rbtree~1.o1
+       0x10b598000 -        0x10b5996cf +ffi~1.o1 (0) <D740B6D0-0C8A-317D-B5A0-004CDC5C62A1> /opt/homebrew/*/ffi~1.o1
+       0x10b5a4000 -        0x10b5a4ef7 +ffi~C-struct~0.o1 (0) <66F8DBA5-DE71-3943-B2FE-E02C6A8B0AE0> /opt/homebrew/*/ffi~C-struct~0.o1
+       0x10b5b8000 -        0x10b5cbfff +base~1.o1 (0) <174E3B6F-8F74-4C01-BFE4-B93E3B2B9678> /Users/*/base~1.o1
+       0x10b5d8000 -        0x10b5e4e8f +func~1.o1 (0) <1E6E1719-5D8C-3BA3-9796-5615319B366C> /opt/homebrew/*/func~1.o1
+       0x10b618000 -        0x10b625507 +error~0.o1 (0) <9FDC1F16-887C-32E0-977E-FB072211A787> /opt/homebrew/*/error~0.o1
+       0x10b638000 -        0x10b6407ef +plist~1.o1 (0) <84C5C4F2-A7E6-3B92-98FD-CBAB73D493C2> /opt/homebrew/*/plist~1.o1
+       0x10b658000 -        0x10b660a17 +alist~1.o1 (0) <950BA312-F4D2-3843-A696-2ABA6B8D8171> /opt/homebrew/*/alist~1.o1
+       0x10b678000 -        0x10b68abaf +iterators~0.o1 (0) <FB78788F-13C7-3997-8D49-812219868B65> /opt/homebrew/*/iterators~0.o1
+       0x10b6bc000 -        0x10b6cbc8f +list~0.o1 (0) <08EC6114-6F07-301E-A28A-F650A8E66698> /opt/homebrew/*/list~0.o1
+       0x10b6fc000 -        0x10b6fe557 +ffi~2.o1 (0) <21C07AEB-F9B1-32CB-84FF-A502B75CA0D6> /opt/homebrew/*/ffi~2.o1
+       0x10b70c000 -        0x10b70e3ff +time~1.o1 (0) <7F2929A1-BD40-35ED-9CEA-9553CE64CE5C> /opt/homebrew/*/time~1.o1
+       0x10b718000 -        0x10b71a517 +types~1.o1 (0) <A72CFA70-C3CA-3225-9B22-C058670716F1> /opt/homebrew/*/types~1.o1
+       0x10b724000 -        0x10b72497f +env~integer-conversions~0.o1 (0) <81A7498C-3295-3018-8927-E995682D2ED9> /opt/homebrew/*/env~integer-conversions~0.o1
+       0x10b738000 -        0x10b7404c7 +timeout~1.o1 (0) <15449F4D-037E-30E8-A350-14E083819C4D> /opt/homebrew/*/timeout~1.o1
+       0x10b758000 -        0x10b75c667 +utf8~1.o1 (0) <73EFF635-65DD-3DD1-9856-09D1C8585FA8> /opt/homebrew/*/utf8~1.o1
+       0x10b770000 -        0x10b7bffff +object~1.o1 (0) <D472BE1D-01AD-48CD-B2D3-688343A26830> /Users/*/object~1.o1
+       0x10b7e4000 -        0x10b807caf +base~1.o1 (0) <D0BE161D-07A4-3B8E-8712-5D4EB1F3606E> /opt/homebrew/*/base~1.o1
+       0x10b854000 -        0x10b86b6e7 +error~1.o1 (0) <66E1C53A-6AA0-3BCA-BD3D-C916C250D6D1> /opt/homebrew/*/error~1.o1
+       0x10b8b0000 -        0x10b8b95e7 +cache~1.o1 (0) <096AE4C9-C368-33D1-AB5C-D0F8181F9E22> /opt/homebrew/*/cache~1.o1
+       0x10b8d8000 -        0x10b8e23f7 +fcntl~1.o1 (0) <03B8289D-6869-346F-B378-83B67A7FA322> /opt/homebrew/*/fcntl~1.o1
+       0x10b900000 -        0x10b900dc7 +dummy~1.o1 (0) <B9466088-8BC1-3707-B196-0E1E3411B226> /opt/homebrew/*/dummy~1.o1
+       0x10b90c000 -        0x10b9678af +walist~1.o1 (0) <C3213D45-3E5B-307D-9ADD-ACDC8935EC3A> /opt/homebrew/*/walist~1.o1
+       0x10ba38000 -        0x10ba5a94f +ffi~3.o1 (0) <1555F1E2-8967-3E57-B56E-C91A0D6D2746> /opt/homebrew/*/ffi~3.o1
+       0x10bac8000 -        0x10bad72f7 +types~1.o1 (0) <95B2D691-39B5-3BEF-9ED9-5E1AB0769C3C> /opt/homebrew/*/types~1.o1
+       0x10baf4000 -        0x10baff94f +time~1.o1 (0) <7DE829E9-9802-3491-82A9-832B79DFA81C> /opt/homebrew/*/time~1.o1
+       0x10bb20000 -        0x10bb29a87 +spinlock~1.o1 (0) <61E0DD26-1C99-361A-9BD9-F0E9C04E3788> /opt/homebrew/*/spinlock~1.o1
+       0x10bb48000 -        0x10bba0237 +bio~1.o1 (0) <55822013-9A9F-3920-AC67-4D40BDD1E37D> /opt/homebrew/*/bio~1.o1
+       0x10bc5c000 -        0x10bc7989f +device~1.o1 (0) <6851A639-1FC7-38AD-8223-46F75109FD08> /opt/homebrew/*/device~1.o1
+       0x10bccc000 -        0x10bce8f2f +sockaddr~1.o1 (0) <3A73926D-4106-3F69-BBCC-5AFE19D98802> /opt/homebrew/*/sockaddr~1.o1
+       0x10bd30000 -        0x10bd35347 +scanner~1.o1 (0) <AEEC7820-358B-38D8-9373-A67E934B83EF> /opt/homebrew/*/scanner~1.o1
+       0x10bd4c000 -        0x10bd4dfa7 +random~1.o1 (0) <3BE0DDFF-3815-37C5-833E-F55BD8FEE713> /opt/homebrew/*/random~1.o1
+       0x10bd5c000 -        0x10bd64867 +macros~1.o1 (0) <14D28764-491D-386D-AAC9-2D14DEB7D51F> /opt/homebrew/*/macros~1.o1
+       0x10bd8c000 -        0x10bdb9f0f +types~1.o1 (0) <78810DCF-33B7-30CD-B23A-340435C36380> /opt/homebrew/*/types~1.o1
+       0x10bdf4000 -        0x10be30707 +socket~1.o1 (0) <AB168451-64F3-39D8-8571-3475E496042D> /opt/homebrew/*/socket~1.o1
+       0x10beb8000 -        0x10beed277 +sockopt~1.o1 (0) <36FF60FE-BFA0-3F42-977E-D794A339F21C> /opt/homebrew/*/sockopt~1.o1
+       0x10bf6c000 -        0x10bf87697 +buffer~1.o1 (0) <9DC6CBA2-1F03-357F-A0BC-B79A9F477F00> /opt/homebrew/*/buffer~1.o1
+       0x10bfc4000 -        0x10bfdde07 +cache~1.o1 (0) <BE9792F5-C092-391D-A031-E3ECA16D7B56> /opt/homebrew/*/cache~1.o1
+       0x10c01c000 -        0x10c0256cf +output~1.o1 (0) <4D410F7C-F494-3D1B-BF11-EE26D3F3F204> /opt/homebrew/*/output~1.o1
+       0x10c044000 -        0x10c046837 +pregexp~1.o1 (0) <7B0ED7B5-DC0C-3301-A7CF-60126E261E3B> /opt/homebrew/*/pregexp~1.o1
+       0x10c054000 -        0x10c055fef +server~1.o1 (0) <5833D1AE-00BE-3B4E-B01C-883DDC21091D> /opt/homebrew/*/server~1.o1
+       0x10c064000 -        0x10c06538f +libcrypto~1.o1 (0) <C1F5E51D-523F-3BBA-BC0E-FAB42B3C0340> /opt/homebrew/*/libcrypto~1.o1
+       0x10c070000 -        0x10c086caf +input~1.o1 (0) <2044EBE1-E730-3B10-9CCF-4C71E0DA47B8> /opt/homebrew/*/input~1.o1
+       0x10c0c4000 -        0x10c0d66ef +delimited~1.o1 (0) <5A71CF25-C709-3EC6-A149-B41B0668B441> /opt/homebrew/*/delimited~1.o1
+       0x10c108000 -        0x10c10cc9f +util~1.o1 (0) <8890F662-5193-3256-9927-8D78BD224EC0> /opt/homebrew/*/util~1.o1
+       0x10c120000 -        0x10c126907 +env~1.o1 (0) <EB1AC9E5-5D47-315D-9B87-198BF863DD4B> /opt/homebrew/*/env~1.o1
+       0x10c138000 -        0x10c1471f7 +scan~1.o1 (0) <433B90FB-BE17-3938-AEEF-DFA2AEC5685D> /opt/homebrew/*/scan~1.o1
+       0x10c168000 -        0x10c1817c7 +memory~1.o1 (0) <92FFA05A-2E1F-36EB-B140-0420CB393767> /opt/homebrew/*/memory~1.o1
+       0x10c1c8000 -        0x10c1d89b7 +api~1.o1 (0) <78166E0A-C8AA-3143-8811-9122994C7162> /opt/homebrew/*/api~1.o1
+       0x10c228000 -        0x10c23476f +ascii~1.o1 (0) <112ACDE1-9064-3546-BFEE-1DEB644562A5> /opt/homebrew/*/ascii~1.o1
+       0x10c254000 -        0x10c25b85f +interned~1.o1 (0) <B1D8D3E0-B3EB-38A4-9F12-798E018EB33F> /opt/homebrew/*/interned~1.o1
+       0x10c26c000 -        0x10c272b37 +writer~1.o1 (0) <9EF746CD-BB11-3425-93FB-AABBD742A84C> /opt/homebrew/*/writer~1.o1
+       0x10c288000 -        0x10c290cf7 +io~1.o1 (0) <FD2AB6A2-4BC5-3548-B634-E8C06BE8D454> /opt/homebrew/*/io~1.o1
+       0x10c2ac000 -        0x10c2b71ef +ascii~0.o1 (0) <6731C46C-529D-34B0-8759-1AEBDA906D2A> /opt/homebrew/*/ascii~0.o1
+       0x10c2cc000 -        0x10c3ee01f +socket~1.o1 (0) <581CD522-575F-338A-A921-90004E41905A> /opt/homebrew/*/socket~1.o1
+       0x10c638000 -        0x10c6a871f +reader~1.o1 (0) <03EF114C-5200-3897-ACB3-F0297CC4F177> /opt/homebrew/*/reader~1.o1
+       0x10c7a0000 -        0x10c80303f +writer~1.o1 (0) <C6F0CED6-D714-36B2-8642-F8889FFA1ECF> /opt/homebrew/*/writer~1.o1
+       0x10c8d4000 -        0x10c8f302f +srcsnk~1.o1 (0) <009F7ABD-01A1-36C1-85E9-FD7EE4CB2FF5> /opt/homebrew/*/srcsnk~1.o1
+       0x10c944000 -        0x10c972b67 +deserialize~1.o1 (0) <630579F7-7747-33A9-B230-5A8E63CC4F7F> /opt/homebrew/*/deserialize~1.o1
+       0x10c9c4000 -        0x10c9dca1f +env~2.o1 (0) <BC52FCCE-1DD9-37CD-B34A-C39E97F5F9D5> /opt/homebrew/*/env~2.o1
+       0x10ca24000 -        0x10ca29e27 +stringer~1.o1 (0) <AF9B56E6-2EB0-308E-9B2E-647F6DAACD70> /opt/homebrew/*/stringer~1.o1
+       0x10ca3c000 -        0x10ca8a18f +port~1.o1 (0) <1FD59EA6-056B-30C2-90A8-74B18D32B222> /opt/homebrew/*/port~1.o1
+       0x10cb38000 -        0x10cb45da7 +writer~1.o1 (0) <EAE316FB-64BA-3177-8C57-F0B0AFA6F6C8> /opt/homebrew/*/writer~1.o1
+       0x10cb6c000 -        0x10cb76687 +format~1.o1 (0) <75C5BCA4-EB8B-3812-B605-6A82B54BA9FE> /opt/homebrew/*/format~1.o1
+       0x10cb94000 -        0x10cb98d5f +sockaddr~1.o1 (0) <86E6E3FA-9393-35BC-8ED4-700D542CB9A8> /opt/homebrew/*/sockaddr~1.o1
+       0x10cbac000 -        0x10cbbec6f +format-string~1.o1 (0) <435D50FC-6BCE-371D-A6A1-1576D6C66057> /opt/homebrew/*/format-string~1.o1
+       0x10cbec000 -        0x10cbf5d17 +assert~1.o1 (0) <87DED08F-4ACF-336D-A0F5-BFDE08199C11> /opt/homebrew/*/assert~1.o1
+       0x10cc14000 -        0x10cc17fff +role-forms~0.o1 (0) <C23C8BA3-7083-47E3-8AF3-957853AE31CF> /Users/*/role-forms~0.o1
+       0x10cc20000 -        0x10cc2c04f +format-string~0.o1 (0) <26CB1251-078B-3C12-B79A-16B16E1A0286> /opt/homebrew/*/format-string~0.o1
+       0x10cc54000 -        0x10cc57fff +object-state~0.o1 (0) <08CB1225-C32F-4FE1-BA7C-1FB593A306FB> /Users/*/object-state~0.o1
+       0x10cc68000 -        0x10ccc3b6f +misc~1.o1 (0) <18AC9B1E-D0F3-357E-B929-2687E2719B2D> /opt/homebrew/*/misc~1.o1
+       0x10cd9c000 -        0x10cda09a7 +socket~1.o1 (0) <17ECC3DD-0F45-3EBC-8E41-B3D25F1E0E1A> /opt/homebrew/*/socket~1.o1
+       0x10cdb4000 -        0x10cdb8cb7 +client~1.o1 (0) <101C33D6-4FE1-3A26-8F30-3128F05BCFF1> /opt/homebrew/*/client~1.o1
+       0x10cdd4000 -        0x10cde3487 +hex~1.o1 (0) <3A4B7EFA-1268-3141-93E3-FF202DB62204> /opt/homebrew/*/hex~1.o1
+       0x10ce0c000 -        0x10ce13c0f +stringer~1.o1 (0) <21FF3CDB-45E7-3DD5-BAB8-1DC671CCCA25> /opt/homebrew/*/stringer~1.o1
+       0x10ce2c000 -        0x10cf2d89f +interface~1.o1 (0) <D77E4E83-8AA2-3378-BF89-622894C18B82> /opt/homebrew/*/interface~1.o1
+       0x10d12c000 -        0x10d1f0917 +serialize~1.o1 (0) <FFA1AB4C-7C47-3C70-91B2-AB0A14AC5C75> /opt/homebrew/*/serialize~1.o1
+       0x10d3a0000 -        0x10d3ccaff +char-set~1.o1 (0) <62589E59-3947-3669-BC8A-425EC6BB9648> /opt/homebrew/*/char-set~1.o1
+       0x10d440000 -        0x10d47f9d7 +reader~1.o1 (0) <BF4C32B8-EDF7-305A-96D1-B92398B4641E> /opt/homebrew/*/reader~1.o1
+       0x10d518000 -        0x10d52ab77 +api~1.o1 (0) <8BE3B3F5-975A-35E1-B947-35E7C4355930> /opt/homebrew/*/api~1.o1
+       0x10d568000 -        0x10d5741b7 +parser~1.o1 (0) <1FCDA019-86CB-38D6-81B2-28C09EA2E8BA> /opt/homebrew/*/parser~1.o1
+       0x10d59c000 -        0x10d59fb97 +random~1.o1 (0) <CBFE2E38-E3C9-3F62-BB53-805A18C444EF> /opt/homebrew/*/random~1.o1
+       0x10d5ac000 -        0x10d5af5ff +ports~1.o1 (0) <2FB18FA3-3BD7-3720-9F2C-98C409B02F74> /opt/homebrew/*/ports~1.o1
+       0x10d5c0000 -        0x10d5d49ff +u8vector~1.o1 (0) <AF6D4BFD-359D-3DB0-BB1F-AACFE9127248> /opt/homebrew/*/u8vector~1.o1
+       0x10d618000 -        0x10d62917f +resolver~1.o1 (0) <A6B5F215-85E2-3531-9AF9-E241BFE21368> /opt/homebrew/*/resolver~1.o1
+       0x10d654000 -        0x10d65aca7 +datagram~1.o1 (0) <6DAD196E-7EC9-3D0F-88AB-62AD0867365B> /opt/homebrew/*/datagram~1.o1
+       0x10d670000 -        0x10d675d3f +delimited~1.o1 (0) <3B1ED171-D4CE-3C7D-8C80-2895968EE7D8> /opt/homebrew/*/delimited~1.o1
+       0x10d688000 -        0x10d6941cf +stream~1.o1 (0) <AE95D254-8917-314F-A89E-CB34E1ECD576> /opt/homebrew/*/stream~1.o1
+       0x10d6bc000 -        0x10d778e3f +ioutil~1.o1 (0) <E1808BAD-DFB8-335E-861C-94DF3000B018> /opt/homebrew/*/ioutil~1.o1
+       0x10d944000 -        0x10d965baf +env~1.o1 (0) <DA9205D9-6395-3ACA-B23C-7AD9A82A49E7> /opt/homebrew/*/env~1.o1
+       0x10d9b0000 -        0x10d9c04d7 +rwlock~1.o1 (0) <21599108-CFD4-3451-99E0-960377245A53> /opt/homebrew/*/rwlock~1.o1
+       0x10d9f0000 -        0x10d9ff6ff +basic~1.o1 (0) <6175FA2A-162E-343A-8B6E-0B6624293867> /opt/homebrew/*/basic~1.o1
+       0x10da2c000 -        0x10da34b17 +detachable~1.o1 (0) <D0BFE5A8-8443-31F8-BC7C-20B435B2926E> /opt/homebrew/*/detachable~1.o1
+       0x10da4c000 -        0x10da4fd0f +util~1.o1 (0) <96C54C87-997A-3D59-8985-CD44506B964B> /opt/homebrew/*/util~1.o1
+       0x10da60000 -        0x10da89ddf +types~1.o1 (0) <00FE348A-3074-3DBC-BCE7-DE0EB0E60BD0> /opt/homebrew/*/types~1.o1
+       0x10dad4000 -        0x10dadb7ff +util~1.o1 (0) <85B3ED89-712B-34D6-8642-247C927BBE48> /opt/homebrew/*/util~1.o1
+       0x10daf4000 -        0x10dafbfff +syntax~1.o1 (0) <40B7FE65-DEC9-4C68-B557-6F791BF8B6E4> /Users/*/syntax~1.o1
+       0x10db0c000 -        0x10db1ab8f +api~1.o1 (0) <A894A45E-D0FB-3257-9167-FF9715F2D37A> /opt/homebrew/*/api~1.o1
+       0x10db44000 -        0x10db5103f +file~1.o1 (0) <91F2174A-FD9C-3986-A175-9F701C6F319D> /opt/homebrew/*/file~1.o1
+       0x10db78000 -        0x10db7941f +values~0.o1 (0) <E73CA459-54D1-3B01-8E85-6791BE6A04E4> /opt/homebrew/*/values~0.o1
+       0x10db84000 -        0x10db96487 +counter~1.o1 (0) <01C8290B-210B-3710-916B-B41B82BA7ADB> /opt/homebrew/*/counter~1.o1
+       0x10dc44000 -        0x10dc4a5a7 +error~1.o1 (0) <32DCF9E7-C82A-308F-A899-E513793096FC> /opt/homebrew/*/error~1.o1
+       0x10dc60000 -        0x10dc67fff +json-schema-diagnostics~1.o1 (0) <B035F28A-0C37-44F4-8E37-F00DD7978B09> /Users/*/json-schema-diagnostics~1.o1
+       0x10dc70000 -        0x10dc73fff +value-diagnostics~0.o1 (0) <CCD0E705-81B8-4C4F-AE72-8B39644FE86F> /Users/*/value-diagnostics~0.o1
+       0x10dc7c000 -        0x10dc8526f +base~1.o1 (0) <C552DD6A-00C5-37FD-BC64-B5B176D1274B> /opt/homebrew/*/base~1.o1
+       0x10dc98000 -        0x10dcafd77 +flock~1.o1 (0) <C893FC31-FF59-3E67-A5F7-400B891E0757> /opt/homebrew/*/flock~1.o1
+       0x10dcec000 -        0x10dcf6e27 +tempfile~1.o1 (0) <A67D1150-FF50-32FD-801D-3768032CBEB6> /opt/homebrew/*/tempfile~1.o1
+       0x10dd14000 -        0x10dd23fff +json-schema-ir~1.o1 (0) <8C48BCD7-0FB9-4B8D-865E-B92480E18B43> /Users/*/json-schema-ir~1.o1
+       0x10dd34000 -        0x10dd3c237 +io~1.o1 (0) <24D0743E-488E-3DC1-977C-392676F5A67D> /opt/homebrew/*/io~1.o1
+       0x10dd58000 -        0x10dd7ab3f +file~1.o1 (0) <608EAD20-F21A-3FE4-B807-24AAA9742501> /opt/homebrew/*/file~1.o1
+       0x10ddc8000 -        0x10ddde137 +base64~1.o1 (0) <05C60B5D-FA9D-32AC-A57D-A46E0381AA3A> /opt/homebrew/*/base64~1.o1
+       0x10de20000 -        0x10de2848f +ll1~1.o1 (0) <DE61CC5D-BE05-3579-9562-2C895CFDD741> /opt/homebrew/*/ll1~1.o1
+       0x10de48000 -        0x10de5bfff +declaration~1.o1 (0) <DBC72B2F-4671-4A0D-B7B8-5F7E04E944BC> /Users/*/declaration~1.o1
+       0x10de70000 -        0x10de868d7 +writer~1.o1 (0) <04B45B8C-F441-3E38-92A2-F1FA926FCE22> /opt/homebrew/*/writer~1.o1
+       0x10dec0000 -        0x10dec7d97 +alist~0.o1 (0) <E8BAEAAA-244A-3F58-8D70-71F175AEE4C2> /opt/homebrew/*/alist~0.o1
+       0x10def0000 -        0x10def87d7 +plist~0.o1 (0) <B9081FE2-D6CC-3F8E-B977-F3C9D1AF6232> /opt/homebrew/*/plist~0.o1
+       0x10df20000 -        0x10df23fff +validation-rebinding~0.o1 (0) <5BAF40CD-529C-4F5B-A0D9-D8961A953DE6> /Users/*/validation-rebinding~0.o1
+       0x10df2c000 -        0x10df47c0f +misc~0.o1 (0) <041ADDA1-2624-3DEA-9B5D-2B99A037434F> /opt/homebrew/*/misc~0.o1
+       0x10df9c000 -        0x10dfb60ff +reader~1.o1 (0) <AA436C25-98A0-3C5E-A934-F5A1F1505466> /opt/homebrew/*/reader~1.o1
+       0x10dffc000 -        0x10e007fff +slot-observation~0.o1 (0) <7A0E972E-7137-4018-A70F-4A04618BF940> /Users/*/slot-observation~0.o1
+       0x10e010000 -        0x10e013fff +class-validation~0.o1 (0) <3D6961E4-981F-4A23-BDCC-6F6458E00F07> /Users/*/class-validation~0.o1
+       0x10e01c000 -        0x10e01def7 +ffi~0.o1 (0) <6B6730EC-64DA-39CF-A915-C267D96C3638> /opt/homebrew/*/ffi~0.o1
+       0x10e028000 -        0x10e043fff +mop~1.o1 (0) <F8D4D610-B37B-4B40-A469-77D75E8A21C6> /Users/*/mop~1.o1
+       0x10e054000 -        0x10e05bfff +prototype-map~0.o1 (0) <3FA314C7-967D-4DEB-B6BD-80C60D4BD3EA> /Users/*/prototype-map~0.o1
+       0x10e064000 -        0x10e06bfff +slot-layout~0.o1 (0) <58C179BD-D44C-490C-B339-17C392D4663B> /Users/*/slot-layout~0.o1
+       0x10e074000 -        0x10e077d7f +symbol~0.o1 (0) <F3BEE08B-3E5C-34B6-932F-D8FF9BF59A17> /opt/homebrew/*/symbol~0.o1
+       0x10e088000 -        0x10e08ffff +base~0.o1 (0) <9340743E-FAF7-4F04-97E2-4BDBD592386A> /Users/*/base~0.o1
+       0x10e098000 -        0x10e09ffff +function-signature~0.o1 (0) <FB494C26-F1BF-4D1B-A5B3-788477F3417C> /Users/*/function-signature~0.o1
+       0x10e0a8000 -        0x10e0a9a67 +time~0.o1 (0) <6173A78C-6938-3E56-9B9C-79DDD29DD486> /opt/homebrew/*/time~0.o1
+       0x10e0b8000 -        0x10e0cf037 +misc~0.o1 (0) <55BDA453-170C-3ADF-AA89-2DF5006E17C5> /opt/homebrew/*/misc~0.o1
+       0x10e11c000 -        0x10e1245bf +func~0.o1 (0) <D9237FBD-8C09-3743-B6E0-62528AC26C06> /opt/homebrew/*/func~0.o1
+       0x10e144000 -        0x10e146ccf +error~0.o1 (0) <01F3942C-2591-3FD9-9D18-D4371074D72F> /opt/homebrew/*/error~0.o1
+       0x10e154000 -        0x10e154bb7 +random~0.o1 (0) <A392F27D-553E-30E9-A1C0-7A42164417D8> /opt/homebrew/*/random~0.o1
+       0x10e164000 -        0x10e16b467 +base~0.o1 (0) <AD3F0F45-7260-3C0D-A535-E39811F49B4B> /opt/homebrew/*/base~0.o1
+       0x10e184000 -        0x10e1abfff +object~0.o1 (0) <5312135D-91A0-4696-9D8E-64C6F60F5EEC> /Users/*/object~0.o1
+       0x10e228000 -        0x10e229eb7 +utf8~0.o1 (0) <FE3D59FD-20E7-3827-9411-E1592A011A9E> /opt/homebrew/*/utf8~0.o1
+       0x10e240000 -        0x10e2458ff +timeout~0.o1 (0) <0FF14B24-6F02-38D9-A562-F0502FB0F521> /opt/homebrew/*/timeout~0.o1
+       0x10e258000 -        0x10e25a45f +spinlock~0.o1 (0) <2DD9108B-A6AF-3B2C-B971-C79DABB22E07> /opt/homebrew/*/spinlock~0.o1
+       0x10e290000 -        0x10e291ed7 +util~0.o1 (0) <0B828F22-0C03-3FBA-95F2-AB07B249DDAA> /opt/homebrew/*/util~0.o1
+       0x10e2a0000 -        0x10e2a335f +interned~0.o1 (0) <F01B668E-4591-3548-9FEE-EF1A2EBDD9B4> /opt/homebrew/*/interned~0.o1
+       0x10e2d4000 -        0x10e2d953f +fcntl~0.o1 (0) <DCACDC26-B22D-36BA-9047-95EB4E7A9786> /opt/homebrew/*/fcntl~0.o1
+       0x10e318000 -        0x10e391487 +misc~1.o1 (0) <6485207B-CD68-33A7-B6D2-3061C637D028> /opt/homebrew/*/misc~1.o1
+       0x10e49c000 -        0x10e4a2047 +time~0.o1 (0) <A5A6E4A9-6079-30BA-8145-4CA64A313EC4> /opt/homebrew/*/time~0.o1
+       0x10e500000 -        0x10e50b8f7 +bio~0.o1 (0) <DF78D0AC-0D32-31DF-BA34-9A49234F0C61> /opt/homebrew/*/bio~0.o1
+       0x10e534000 -        0x10e53c1ef +types~0.o1 (0) <E683FCCE-A735-34D0-AA6E-4AD647D5506A> /opt/homebrew/*/types~0.o1
+       0x10e550000 -        0x10e556fc7 +cache~0.o1 (0) <CC7A58BF-0863-3736-A2E4-EB8DEB1A2A63> /opt/homebrew/*/cache~0.o1
+       0x10e58c000 -        0x10e58f447 +input~0.o1 (0) <3114F7D9-140C-3376-8B73-A3A6B5A9DFC3> /opt/homebrew/*/input~0.o1
+       0x10e5a0000 -        0x10e5a329f +stringer~0.o1 (0) <11464C17-D702-35B8-9664-718D9A681D21> /opt/homebrew/*/stringer~0.o1
+       0x10e5f0000 -        0x10e60bef7 +rbtree~0.o1 (0) <E99ED3E1-89D3-3F1E-9A0D-FD41121A84E8> /opt/homebrew/*/rbtree~0.o1
+       0x10e684000 -        0x10e68a917 +delimited~0.o1 (0) <6983B01B-0BD1-3A16-ABCA-314531FE9068> /opt/homebrew/*/delimited~0.o1
+       0x10e6e8000 -        0x10e6ef65f +scan~0.o1 (0) <34832E8E-0024-3720-A73C-9EF66ABDA29F> /opt/homebrew/*/scan~0.o1
+       0x10e74c000 -        0x10e750c67 +scanner~0.o1 (0) <F5EE8808-4352-3B24-9D64-AB658FAE42D8> /opt/homebrew/*/scanner~0.o1
+       0x10e7b0000 -        0x10e7b8777 +device~0.o1 (0) <536D210F-1A2A-3182-A8E6-EB3BAC6ED23F> /opt/homebrew/*/device~0.o1
+       0x10e7dc000 -        0x10e7dfda7 +assert~0.o1 (0) <CAB4A395-C36E-3243-807A-951460ED137D> /opt/homebrew/*/assert~0.o1
+       0x10e838000 -        0x10e83bd97 +io~0.o1 (0) <C42FDB65-BB2E-32BA-BAF1-6FDF624A6A69> /opt/homebrew/*/io~0.o1
+       0x10e84c000 -        0x10e84d81f +dummy~0.o1 (0) <7BD51095-DFBF-3C62-A332-CB91F8B4AF54> /opt/homebrew/*/dummy~0.o1
+       0x10e8c0000 -        0x10e8db047 +walist~0.o1 (0) <ECCAA1C7-C733-3AAA-B7BE-0458ADE0849F> /opt/homebrew/*/walist~0.o1
+       0x10e928000 -        0x10e9310ef +env~0.o1 (0) <3F5002A4-570D-3C74-A85B-E58B54AFFC54> /opt/homebrew/*/env~0.o1
+       0x10e96c000 -        0x10e96fcef +api~0.o1 (0) <E151481C-E16C-382F-80F7-50B6F3E7741E> /opt/homebrew/*/api~0.o1
+       0x10e980000 -        0x10e9825ff +server~0.o1 (0) <202E61A0-F45E-3F83-8E9A-F1ECDA92307E> /opt/homebrew/*/server~0.o1
+       0x10e9b0000 -        0x10e9baa6f +sockaddr~0.o1 (0) <FE2B388A-68D1-3A6C-B7BC-1C4382E6C265> /opt/homebrew/*/sockaddr~0.o1
+       0x10e9e0000 -        0x10e9e2027 +error~0.o1 (0) <E7BF8345-8C09-3598-A7E5-91DD6A17CA2B> /opt/homebrew/*/error~0.o1
+       0x10e9ec000 -        0x10e9ed417 +io~0.o1 (0) <3EE43C89-BCC0-3731-A9E3-61EED0E9E5BB> /opt/homebrew/*/io~0.o1
+       0x10ea38000 -        0x10ea3ffff +io~0.o1 (0) <F616BA7B-9F90-4927-8F40-EBA1CA1100B0> /Users/*/io~0.o1
+       0x10ea4c000 -        0x10ea4fb37 +delimited~0.o1 (0) <CE305E1E-3E76-3AC8-BD5B-21E0E48B4023> /opt/homebrew/*/delimited~0.o1
+       0x10ea9c000 -        0x10eaa0fef +hex~0.o1 (0) <761E3909-4231-377F-A84D-BC8842738371> /opt/homebrew/*/hex~0.o1
+       0x10eab8000 -        0x10eabbf17 +serde~0.o1 (0) <556F24D3-6E71-30B7-BE8F-8A043F906BAF> /opt/homebrew/*/serde~0.o1
+       0x10ead0000 -        0x10ead3c8f +sockaddr~0.o1 (0) <B9EDB698-DBD1-3F8A-BFB0-B752276C6B39> /opt/homebrew/*/sockaddr~0.o1
+       0x10eb04000 -        0x10eb17f5f +types~0.o1 (0) <6FD98F90-7E71-3E31-A88D-AD6345787F32> /opt/homebrew/*/types~0.o1
+       0x10eb30000 -        0x10eb34d3f +stringer~0.o1 (0) <7504D15E-E215-3178-97C6-88AE3252A0B2> /opt/homebrew/*/stringer~0.o1
+       0x10eb6c000 -        0x10eb7601f +env~0.o1 (0) <8453224A-04DF-375C-8228-8AF662D16D85> /opt/homebrew/*/env~0.o1
+       0x10ebb0000 -        0x10ebbee0f +buffer~0.o1 (0) <09E44E06-4C2B-30EB-AD62-220CB96E61B0> /opt/homebrew/*/buffer~0.o1
+       0x10ec38000 -        0x10ec3fa7f +resolver~0.o1 (0) <2680E5A3-E26C-3FE6-AE97-C54445D0DFAD> /opt/homebrew/*/resolver~0.o1
+       0x10ec80000 -        0x10ec986df +socket~0.o1 (0) <D524D006-0BB6-3206-AEA5-9B9C859D0E6A> /opt/homebrew/*/socket~0.o1
+       0x10ed2c000 -        0x10ed2faaf +socket~0.o1 (0) <76F5A16B-1911-3C82-BB01-C6C29C2648D7> /opt/homebrew/*/socket~0.o1
+       0x10ed40000 -        0x10ed43fff +json~0.o1 (0) <9B52C192-FA19-4DD4-9CED-99ADAB698A41> /Users/*/json~0.o1
+       0x10ed70000 -        0x10ed7268f +random~0.o1 (0) <3A73C9BC-9A22-36AB-859B-85513AAA73FC> /opt/homebrew/*/random~0.o1
+       0x10ed80000 -        0x10edb2b5f +sockopt~0.o1 (0) <B5D7A4B6-E315-3E3E-9FB7-0A26D8F19500> /opt/homebrew/*/sockopt~0.o1
+       0x10ee18000 -        0x10ee1dd1f +rwlock~0.o1 (0) <4EB1F4FA-E4AF-381C-81FE-72E830D38DDA> /opt/homebrew/*/rwlock~0.o1
+       0x10ee5c000 -        0x10ee65137 +cache~0.o1 (0) <3DFEABBA-7286-3240-AD50-8FA6ACC15053> /opt/homebrew/*/cache~0.o1
+       0x10ee84000 -        0x10ee87c8f +client~0.o1 (0) <9E8182F9-BD47-3782-BEC1-2E9740EFFA7C> /opt/homebrew/*/client~0.o1
+       0x10ee98000 -        0x10ee9bfff +repr~0.o1 (0) <0D7C6101-3EB5-4FF2-88CA-C056AB5B0826> /Users/*/repr~0.o1
+       0x10eea4000 -        0x10eec7427 +socket~0.o1 (0) <1E4D07D4-E0F5-3E15-946E-721AB5A03CA9> /opt/homebrew/*/socket~0.o1
+       0x10ef54000 -        0x10ef5c6df +memory~0.o1 (0) <DB8E75B9-FDC1-371F-B6C4-29C78F676DD9> /opt/homebrew/*/memory~0.o1
+       0x10ef7c000 -        0x10ef833af +basic~0.o1 (0) <36D72B91-BF8B-3004-AF91-86E0F9FC4B4B> /opt/homebrew/*/basic~0.o1
+       0x10efdc000 -        0x10efe8f17 +types~0.o1 (0) <48E686B4-6A3C-3CBA-A0FB-59D1681D5D92> /opt/homebrew/*/types~0.o1
+       0x10f040000 -        0x10f04419f +stream~0.o1 (0) <105769A6-BEBB-3CD2-ABDA-195DBBA4DCC1> /opt/homebrew/*/stream~0.o1
+       0x10f058000 -        0x10f05bfff +declaration~0.o1 (0) <0ED604E0-924D-4A70-B852-4EFE27555317> /Users/*/declaration~0.o1
+       0x10f084000 -        0x10f08dce7 +srcsnk~0.o1 (0) <B66B0FA0-F50D-33C6-9D75-F9155D0AA011> /opt/homebrew/*/srcsnk~0.o1
+       0x10f0b8000 -        0x10f0c18cf +api~0.o1 (0) <AFD89808-BCCE-348A-A66A-05C458483FF2> /opt/homebrew/*/api~0.o1
+       0x10f0e4000 -        0x10f0e7fff +object-diagnostics~0.o1 (0) <422D8275-69AD-4EF1-AEEE-E284B217F622> /Users/*/object-diagnostics~0.o1
+       0x10f150000 -        0x10f15518f +detachable~0.o1 (0) <4E56E514-078E-3DB2-902F-87D3F7972472> /opt/homebrew/*/detachable~0.o1
+       0x10f190000 -        0x10f1ab91f +reader~0.o1 (0) <DC1CDAE2-0930-3049-82DC-F69988FCCDD8> /opt/homebrew/*/reader~0.o1
+       0x10f214000 -        0x10f22859f +writer~0.o1 (0) <7E4AE468-6049-3C29-ABAA-1424C7E2E169> /opt/homebrew/*/writer~0.o1
+       0x10f298000 -        0x10f2a2167 +char-set~0.o1 (0) <112BE592-5BF0-3AAA-B5A8-61AF13DC012B> /opt/homebrew/*/char-set~0.o1
+       0x10f2c8000 -        0x10f2cbfff +object-contract-validation~0.o1 (0) <190B92FC-10AC-4BB6-94E6-6B2D56B53652> /Users/*/object-contract-validation~0.o1
+       0x10f2d4000 -        0x10f2d7fff +functional~0.o1 (0) <6EB5E51F-28E7-4B9E-B0AA-5A95D988F4A2> /Users/*/functional~0.o1
+       0x10f320000 -        0x10f32525f +datagram~0.o1 (0) <4ED466B9-A855-3AB4-8813-6C204EAF59E4> /opt/homebrew/*/datagram~0.o1
+       0x10f360000 -        0x10f374f9f +port~0.o1 (0) <302D9834-DFDB-31CE-8F20-835CF2495184> /opt/homebrew/*/port~0.o1
+       0x10f3c0000 -        0x10f3c692f +counter~0.o1 (0) <B688FFE7-99A2-3431-992A-0481AC33BFD0> /opt/homebrew/*/counter~0.o1
+       0x10f468000 -        0x10f46bfff +json-schema-normalize~0.o1 (0) <33673697-CA6D-4C20-9545-8319610B8FF0> /Users/*/json-schema-normalize~0.o1
+       0x10f474000 -        0x10f477fff +json-schema-values~0.o1 (0) <6E14D440-01EE-44D8-A1CB-0B08CE330D72> /Users/*/json-schema-values~0.o1
+       0x10f480000 -        0x10f4a0b6f +interface~0.o1 (0) <598151B3-69BB-3177-BCB0-831AEDC6E0CD> /opt/homebrew/*/interface~0.o1
+       0x10f520000 -        0x10f5266df +file~0.o1 (0) <7A80305F-EFEA-3059-A398-C0929235225B> /opt/homebrew/*/file~0.o1
+       0x10f564000 -        0x10f56cbaf +writer~0.o1 (0) <0038DE4F-E860-3683-930F-941B0C191687> /opt/homebrew/*/writer~0.o1
+       0x10f58c000 -        0x10f593fff +object-contract~0.o1 (0) <D645E7A7-D1BE-4758-A6BF-7FEE879CC028> /Users/*/object-contract~0.o1
+       0x10f59c000 -        0x10f5c0eb7 +deserialize~0.o1 (0) <D646E96C-4871-33BF-8E7B-9F52331D108C> /opt/homebrew/*/deserialize~0.o1
+       0x10f640000 -        0x10f6817d7 +serialize~0.o1 (0) <FAB2DAA6-E9F9-3416-A0AB-51A921179E1F> /opt/homebrew/*/serialize~0.o1
+       0x10f7ac000 -        0x10f7b418f +format~0.o1 (0) <E855F832-7D7D-3792-93AC-A2AA9ABA3C65> /opt/homebrew/*/format~0.o1
+       0x10f7d4000 -        0x10f7da35f +tempfile~0.o1 (0) <25F0D687-5367-34DA-A54F-6555603B6C43> /opt/homebrew/*/tempfile~0.o1
+       0x10f814000 -        0x10f81c987 +base~0.o1 (0) <E62A4B2C-EB97-3E5F-8FC8-FE2E83F00DE8> /opt/homebrew/*/base~0.o1
+       0x10f8b8000 -        0x10f8be327 +ports~0.o1 (0) <4B61BF7B-C4F5-33E9-BD51-9A9607A52F86> /opt/homebrew/*/ports~0.o1
+       0x10f8d4000 -        0x10f8e67a7 +writer~0.o1 (0) <E8018D5D-1673-33A6-A1EC-9226064F9ACB> /opt/homebrew/*/writer~0.o1
+       0x10f930000 -        0x10f937fff +json-schema-normalize-resolve~0.o1 (0) <5FBFB3C0-CE26-4977-9DDA-A3173044167F> /Users/*/json-schema-normalize-resolve~0.o1
+       0x10f940000 -        0x10f96cdb7 +ioutil~0.o1 (0) <6908DEC2-4505-3FC7-838D-79960F04EB59> /opt/homebrew/*/ioutil~0.o1
+       0x10fa2c000 -        0x10fa37fff +json-schema-normalize-core~0.o1 (0) <789C541B-1D1D-4D76-B881-04705ECCE0F9> /Users/*/json-schema-normalize-core~0.o1
+       0x10fa48000 -        0x10fa57fff +json-schema-ir~0.o1 (0) <A75E81CB-8F75-473E-B39C-9E296C6E11D3> /Users/*/json-schema-ir~0.o1
+       0x10fa94000 -        0x10fa9ef0f +parser~0.o1 (0) <57B5993C-EFF5-38C2-90A0-F279AD391EE1> /opt/homebrew/*/parser~0.o1
+       0x10fad4000 -        0x10fafae47 +reader~0.o1 (0) <96B9FD67-0587-3245-9C26-83C943F7342D> /opt/homebrew/*/reader~0.o1
+       0x10fba0000 -        0x10fbabfff +json-schema-normalize-parse~0.o1 (0) <A9F1D5D8-58D2-4DFB-919C-18F4578DD583> /Users/*/json-schema-normalize-parse~0.o1
+       0x10fbb4000 -        0x10fbbbfff +json-schema-constraints~0.o1 (0) <A8FA2FF6-071A-48F9-B8B6-469233160E38> /Users/*/json-schema-constraints~0.o1
+       0x10fc68000 -        0x10fc77b07 +api~0.o1 (0) <257C26E7-69A5-3AEE-AD91-C40104E9A32D> /opt/homebrew/*/api~0.o1
+       0x10fcf8000 -        0x10fd23007 +u8vector~0.o1 (0) <DF52A420-A6F7-3460-82B4-E949BED5250D> /opt/homebrew/*/u8vector~0.o1
+       0x10fdcc000 -        0x10fdda907 +flock~0.o1 (0) <F213ACDE-BF00-3226-A169-F51CAC612E29> /opt/homebrew/*/flock~0.o1
+       0x10fe1c000 -        0x10fe3b19f +pregexp~0.o1 (0) <8E0E1B20-2750-3102-A4D0-350805EE8A6D> /opt/homebrew/*/pregexp~0.o1
+       0x10feac000 -        0x10feb7fff +json-schema-valid~0.o1 (0) <15DA512F-029F-4AB2-8286-20B6ABF50E88> /Users/*/json-schema-valid~0.o1
+       0x10fffc000 -        0x11000433f +util~0.o1 (0) <9D223B28-91C7-35F3-8790-0C0B1FBC6D7E> /opt/homebrew/*/util~0.o1
+       0x1101f8000 -        0x11020fb47 +libcrypto~0.o1 (0) <90BD31B8-7CF9-3C05-80CC-A4D5CA401B2D> /opt/homebrew/*/libcrypto~0.o1
+       0x110328000 -        0x110337687 +base64~0.o1 (0) <8D63C93E-9006-36DB-B281-BED1412CF2C0> /opt/homebrew/*/base64~0.o1
+       0x1103f4000 -        0x1103fe04f +util~0.o1 (0) <DBBF62D9-E7F8-3C58-8C0E-09543BE6D73E> /opt/homebrew/*/util~0.o1
+       0x11042c000 -        0x110443897 +file~0.o1 (0) <BED6E828-F124-38AE-83A9-766867EEF433> /opt/homebrew/*/file~0.o1
+       0x1104c8000 -        0x1104d4407 +writer~0.o1 (0) <6D8009F5-01FE-3788-BE79-55678041BE6E> /opt/homebrew/*/writer~0.o1
+       0x110570000 -        0x11058060f +ll1~0.o1 (0) <954DAF4F-24C9-3064-9749-85FBF2F03727> /opt/homebrew/*/ll1~0.o1
+       0x11061c000 -        0x110628d77 +reader~0.o1 (0) <A0E9D12F-75D7-393C-99FA-04BFD986C345> /opt/homebrew/*/reader~0.o1
+       0x1106c8000 -        0x1106effff +mop~0.o1 (0) <2CEC804B-C9EE-40E0-845F-2633BB4BB129> /Users/*/mop~0.o1
+       0x110970000 -        0x110cb1647 +libcrypto.3.dylib (0) <A942504F-407F-380E-AA0A-98ADF35692A1> /opt/homebrew/*/libcrypto.3.dylib
+       0x110fe4000 -        0x11103a3d7 +misc~0.o1 (0) <524202D0-DFA0-3887-B1BA-C14CF9AA7FFE> /opt/homebrew/*/misc~0.o1
+       0x18d008000 -        0x18d05ab4b  libobjc.A.dylib (951.7) <40277974-D20C-3EC8-B25C-43AE30D8CC60> /usr/lib/libobjc.A.dylib
+       0x18d05b000 -        0x18d08fd58  libdyld.dylib (1387) <634959D0-592E-349C-B549-B91F2FF09858> /usr/lib/system/libdyld.dylib
+       0x18d090000 -        0x18d1434ff  dyld (1.0.0 - 1387) <DF42DD9D-AD11-33A7-8849-9AD5DF30A274> /usr/lib/dyld
+       0x18d144000 -        0x18d147228  libsystem_blocks.dylib (96) <A712B95E-BCEE-3F12-9F9B-58E6C2060E53> /usr/lib/system/libsystem_blocks.dylib
+       0x18d148000 -        0x18d19c55f  libxpc.dylib (3102.160.5) <40BBE226-77D4-332E-9DA8-F0B5BACFB86D> /usr/lib/system/libxpc.dylib
+       0x18d19d000 -        0x18d1bd9ff  libsystem_trace.dylib (1861.160.4) <E043667E-AD01-3228-837F-A381F32F2B30> /usr/lib/system/libsystem_trace.dylib
+       0x18d1be000 -        0x18d26c5f7  libcorecrypto.dylib (1922.160.10) <D54389FC-4078-370D-A863-9FEF16E00DFD> /usr/lib/system/libcorecrypto.dylib
+       0x18d26d000 -        0x18d2bd257  libsystem_malloc.dylib (812.160.5) <971CDCFE-4D20-300E-A1D6-EC8672FDD258> /usr/lib/system/libsystem_malloc.dylib
+       0x18d2be000 -        0x18d30523f  libdispatch.dylib (1542.160.2) <243E06A0-7BFF-3C3F-8A9B-D7732729B361> /usr/lib/system/libdispatch.dylib
+       0x18d306000 -        0x18d308ffb  libsystem_featureflags.dylib (103) <5E7CDBD5-44AB-34C0-A0F5-FC72F6116CDC> /usr/lib/system/libsystem_featureflags.dylib
+       0x18d309000 -        0x18d38a1e7  libsystem_c.dylib (1752.160.4) <FDC4E366-5C14-3A1E-BC35-D933D28CDCF3> /usr/lib/system/libsystem_c.dylib
+       0x18d38b000 -        0x18d41bae7  libc++.1.dylib (2100.43) <C6DC2145-7B94-3E01-ADE5-96A6C2D078BC> /usr/lib/libc++.1.dylib
+       0x18d41c000 -        0x18d43675f  libc++abi.dylib (2100.43) <DDE77B06-5E25-380B-85B7-BA1A27D09021> /usr/lib/libc++abi.dylib
+       0x18d437000 -        0x18d4742e7  libsystem_kernel.dylib (12377.161.13) <7CFB3A10-ADB2-32C4-99B5-922A111B3224> /usr/lib/system/libsystem_kernel.dylib
+       0x18d475000 -        0x18d481b3b  libsystem_pthread.dylib (539.100.4) <12342372-0084-37A5-9EA6-2E4DC940C685> /usr/lib/system/libsystem_pthread.dylib
+       0x18d482000 -        0x18d48a963  libsystem_platform.dylib (375.120.2) <4C6BD0FE-25F2-38D8-BE5C-24DAC1DEDCFB> /usr/lib/system/libsystem_platform.dylib
+       0x18d48b000 -        0x18d4ba6eb  libsystem_info.dylib (600) <7402662E-F235-3F48-BB65-F64C8CF0F2BB> /usr/lib/system/libsystem_info.dylib
+       0x191458000 -        0x191461e5f  libsystem_darwin.dylib (1752.160.4) <A095E4FE-0EE1-34DF-B00A-7D349FBC55E0> /usr/lib/system/libsystem_darwin.dylib
+       0x1918c3000 -        0x1918d51b6  libsystem_notify.dylib (348.160.3) <F9B1BAFF-4D09-3A1F-839B-189C21EB5FBB> /usr/lib/system/libsystem_notify.dylib
+       0x193b94000 -        0x193baef7b  libsystem_networkextension.dylib (2226.160.6) <01D14A9E-16DC-372C-8AA8-CC7AD39E797F> /usr/lib/system/libsystem_networkextension.dylib
+       0x193c31000 -        0x193c48fdf  libsystem_asl.dylib (406) <FF57F6FA-F3A1-343D-815D-57B769D31445> /usr/lib/system/libsystem_asl.dylib
+       0x1957ea000 -        0x1957f2387  libsystem_symptoms.dylib (2169.160.3) <CE07A0DF-31B6-3528-B7CE-91CAD89AA519> /usr/lib/system/libsystem_symptoms.dylib
+       0x199a8f000 -        0x199ac75b7  libsystem_containermanager.dylib (725.160.3) <2E14025A-52C2-361D-8A8F-5DD45825A2C9> /usr/lib/system/libsystem_containermanager.dylib
+       0x19aea1000 -        0x19aea55d7  libsystem_configuration.dylib (1405.160.3) <A14ED142-2F56-33A6-A23C-EEB8417DC90E> /usr/lib/system/libsystem_configuration.dylib
+       0x19aea6000 -        0x19aeac99f  libsystem_sandbox.dylib (2680.160.6) <6592D3CE-38C6-3C08-9EA5-75D64F37993F> /usr/lib/system/libsystem_sandbox.dylib
+       0x19c501000 -        0x19c5041fb  libquarantine.dylib (196.160.2) <78C5B827-8152-358D-90E9-B02F02A68B17> /usr/lib/system/libquarantine.dylib
+       0x19cca0000 -        0x19cca6d03  libsystem_coreservices.dylib (191.5.1) <F335DA14-69E8-336E-85A3-11EE239255F0> /usr/lib/system/libsystem_coreservices.dylib
+       0x19d22f000 -        0x19d26ca77  libsystem_m.dylib (3312.100.1) <3739A40F-2C17-3503-92D6-098141E56E89> /usr/lib/system/libsystem_m.dylib
+       0x19d26e000 -        0x19d271527  libmacho.dylib (1387) <3E43AF47-AD89-3BB4-82B9-A9533F4334DF> /usr/lib/system/libmacho.dylib
+       0x19d28b000 -        0x19d2983a7  libcommonCrypto.dylib (600035) <72D94140-1281-3886-971B-37C810403C03> /usr/lib/system/libcommonCrypto.dylib
+       0x19d299000 -        0x19d2a2ca3  libunwind.dylib (2100.2) <B21A1015-83D4-31D8-BA41-88688962D9A6> /usr/lib/system/libunwind.dylib
+       0x19d2ab000 -        0x19d2b5bef  libcopyfile.dylib (240.160.2.0.1) <58F425CF-7D4F-34FD-9620-706A2A7F8BDC> /usr/lib/system/libcopyfile.dylib
+       0x19d2b6000 -        0x19d2b9987  libcompiler_rt.dylib (103.3) <D60A9B54-A909-3FD5-93B9-3F38BE0A2BE8> /usr/lib/system/libcompiler_rt.dylib
+       0x19d2ba000 -        0x19d2be78b  libsystem_collections.dylib (1752.160.4) <BDA28F78-F479-3C22-B9C7-4ABCB6801592> /usr/lib/system/libsystem_collections.dylib
+       0x19d2bf000 -        0x19d2c24cf  libsystem_secinit.dylib (168.100.7) <C85AF062-AA9B-35BB-904C-C055B2C21602> /usr/lib/system/libsystem_secinit.dylib
+       0x19d2c3000 -        0x19d2c5bf7  libremovefile.dylib (85.100.6) <DA9C2B48-7A9C-32EA-888D-6C7AEB5250E6> /usr/lib/system/libremovefile.dylib
+       0x19d2c6000 -        0x19d2c6f27  libkeymgr.dylib (31) <18EFA1CE-C535-3EAC-BC2C-7955593B7382> /usr/lib/system/libkeymgr.dylib
+       0x19d2c7000 -        0x19d2cfe37  libsystem_dnssd.dylib (2881.160.4) <2C4C3043-008E-3BD8-BC29-AB9AD235DBA9> /usr/lib/system/libsystem_dnssd.dylib
+       0x19d2d0000 -        0x19d2d509b  libcache.dylib (95) <EA7C2E0B-52BF-3D45-9A33-38F54A535452> /usr/lib/system/libcache.dylib
+       0x19d2d6000 -        0x19d2d7ce3  libSystem.B.dylib (1356) <4CC4CAD6-45A6-361E-9343-DE636A0B5C02> /usr/lib/libSystem.B.dylib
+       0x29127f000 -        0x291286349  libRosetta.dylib (367.9) <F41D814B-FE1F-311A-A778-5F0699628188> /usr/lib/libRosetta.dylib
+       0x292e92000 -        0x292e95a4b  libsystem_darwindirectory.dylib (122) <6C03D78B-BFAB-3C7A-B713-50881791EE08> /usr/lib/system/libsystem_darwindirectory.dylib
+       0x292e96000 -        0x292ea039b  libsystem_eligibility.dylib (319.160.17) <A279E124-8499-3FFC-A788-655070028F97> /usr/lib/system/libsystem_eligibility.dylib
+       0x292ea1000 -        0x292ea888b  libsystem_sanitizers.dylib (26.1) <C92FAEE5-DAED-3340-96B3-0C42B005ADF9> /usr/lib/system/libsystem_sanitizers.dylib
+       0x292ea9000 -        0x292ea9bb7  libsystem_trial.dylib (474.2.18.2) <2FF186A6-F448-38CD-9A30-8B5B1AEFCA10> /usr/lib/system/libsystem_trial.dylib

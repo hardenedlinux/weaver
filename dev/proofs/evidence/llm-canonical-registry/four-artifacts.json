@@ -1,0 +1,86 @@
+[
+  {
+    "id": "CR1",
+    "design": "Register only exact source origin and original",
+    "quint": "rawWireIDCannotRegisterRootTest",
+    "lean": "registration_is_original",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "CR2",
+    "design": "Lost reply cannot replace the registration",
+    "quint": "lostRegistrationReplyCannotCreateAgainTest",
+    "lean": "registration_is_never_replaced",
+    "d2": "registry.query"
+  },
+  {
+    "id": "CR3",
+    "design": "Alias keys are immutable authoritative bindings",
+    "quint": "aliasCannotReplaceCanonicalTargetTest",
+    "lean": "alias_keys_cannot_rebind",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "CR4",
+    "design": "Reconnect resolves the same canonical family",
+    "quint": "mcpReconnectKeepsOriginalFamilyTest",
+    "lean": "alias_targets_original_family",
+    "d2": "protocols.mcp"
+  },
+  {
+    "id": "CR5",
+    "design": "New remote task does not create another family",
+    "quint": "a2aNewTaskKeepsOriginalFamilyTest",
+    "lean": "aliases_resolve_registered_original",
+    "d2": "protocols.a2a"
+  },
+  {
+    "id": "CR6",
+    "design": "Session resume retains original pending",
+    "quint": "acpSessionResumeKeepsOriginalFamilyTest",
+    "lean": "registered_origin_retains_pending",
+    "d2": "protocols.acp"
+  },
+  {
+    "id": "CR7",
+    "design": "Projection recovery cannot assign authority",
+    "quint": "oldSnapshotProjectionCannotResetLedgerTest",
+    "lean": "projection_restore_never_assigns_authority",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "CR8",
+    "design": "Missing authoritative identity projection closes use",
+    "quint": "missingProjectionCannotResolveTest",
+    "lean": "missing_registry_projection_blocks_use",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "CR9",
+    "design": "Owner restart rejects old resolution",
+    "quint": "oldResolutionCannotConsumeAfterOwnerRestartTest",
+    "lean": "stale_registry_fence_blocks_use",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "CR10",
+    "design": "Concurrent alias/registry writes reject old resolution",
+    "quint": "newAliasInvalidatesOldResolutionTest",
+    "lean": "stale_registry_revision_blocks_use",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "CR11",
+    "design": "New valid task resolution cannot consume spent claim",
+    "quint": "freshNewTaskResolutionCannotResetClaimTest",
+    "lean": "original_claim_stays_unique",
+    "d2": "broker.claim"
+  },
+  {
+    "id": "CR12",
+    "design": "Unknown cost and original accounts survive aliases",
+    "quint": "unknownUsageSurvivesNewA2ATaskTest",
+    "lean": "unknown_usage_retains_hold",
+    "d2": "broker.hold"
+  }
+]

@@ -1,0 +1,8 @@
+
+ Error [QNT101]: Built-in name 'head' is redefined in module 'AnchorBrokerCommit'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/AnchorBrokerCommit.qnt:63:27
+  63:   action readCurrent(term,head,image,authentic) = all {authentic,term == n.term,head == n.head,image == G::g.root,baseStay,
+                                ^^^^
+
+error: parsing failed

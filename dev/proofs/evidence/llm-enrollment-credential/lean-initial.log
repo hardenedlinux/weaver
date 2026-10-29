@@ -1,0 +1,1547 @@
+proofs/lean/LlmEnrollmentCredential.lean:178:23: error: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  h.right.right.right
+has type
+  p.session = c.plan.root.template.ticket.session
+which has no fields.
+proofs/lean/LlmEnrollmentCredential.lean:200:54: error: unsolved goals
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Valid o s
+k : Nat
+new : Credential
+qualified : Qualified o s
+plan : s.plans new.plan.root.template.ticket.launch = some new.plan
+fresh : s.credentials new.plan.root.template.ticket.launch = none
+id : new.id = s.nextId
+unused : s.ids new.id = none
+epoch : new.epoch = s.epoch
+binding : IssueBinding o new
+current :
+  new.plan.root.epoch = s.inner.epoch ∧
+    LlmBeneficiaryRegistration.Blueprint s.inner new.plan.root.template ∧
+      s.seen = some s.revision ∧ o.currentAllows s new
+durable :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials new.plan.root.template.ticket.launch new,
+      ids := put s.ids new.id new.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+eq : k = new.plan.root.template.ticket.launch
+known :
+  { inner := s.inner, plans := s.plans, credentials := put s.credentials new.plan.root.template.ticket.launch new,
+          ids := put s.ids new.id new.plan.root.template.ticket.launch, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1,
+          revision := s.revision + 1, seen := none }.credentials
+      k =
+    some new
+⊢ new.plan.root.template.ticket.launch = k
+proofs/lean/LlmEnrollmentCredential.lean:200:71: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 0
+  c ≥ 0
+  b ≥ 0
+  a ≥ 0
+  a - e ≥ 0
+where
+ a := ↑s.nextId
+ b := ↑s.epoch
+ c := ↑s.inner.epoch
+ d := ↑new.plan.root.template.ticket.launch
+ e := ↑{ inner := s.inner, plans := s.plans, credentials := put s.credentials new.plan.root.template.ticket.launch new,
+      ids := put s.ids new.id new.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1,
+      seen := none }.nextId
+proofs/lean/LlmEnrollmentCredential.lean:203:73: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  h ≥ 0
+  g ≥ 0
+  f ≥ 0
+  f - g ≥ 0
+  e ≥ 0
+  e - h ≤ -1
+  d ≥ 0
+  b ≥ 0
+  a ≥ 0
+  a - f ≥ 1
+where
+ a := ↑s.nextId
+ b := ↑s.epoch
+ d := ↑s.inner.epoch
+ e := ↑k
+ f := ↑c.id
+ g := ↑{ inner := s.inner, plans := s.plans, credentials := put s.credentials new.plan.root.template.ticket.launch new,
+      ids := put s.ids new.id new.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1,
+      seen := none }.nextId
+ h := ↑new.plan.root.template.ticket.launch
+proofs/lean/LlmEnrollmentCredential.lean:226:39: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Requested s
+k : Nat
+c : Credential
+p✝ : Plan
+authorized✝ : o.planAuthorized p✝
+fresh✝ : s.plans p✝.root.template.ticket.launch = none
+epoch✝ : p✝.root.epoch = s.inner.epoch
+canonical✝ : LlmBeneficiaryRegistration.eraseKey p✝.root.template = p✝.root.template
+audience✝ : p✝.audience = p✝.root.template.ticket.target.domain
+purpose✝ : p✝.purpose = 2
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+          ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.requested
+      k =
+    some c
+⊢ Step ?m.139 ?m.140 s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:226:39: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Requested s
+k : Nat
+c c✝ : Credential
+qualified✝ : Qualified o s
+plan✝ : s.plans c✝.plan.root.template.ticket.launch = some c✝.plan
+fresh✝ : s.credentials c✝.plan.root.template.ticket.launch = none
+id✝ : c✝.id = s.nextId
+unused✝ : s.ids c✝.id = none
+epoch✝ : c✝.epoch = s.epoch
+binding✝ : IssueBinding o c✝
+current✝ :
+  c✝.plan.root.epoch = s.inner.epoch ∧
+    LlmBeneficiaryRegistration.Blueprint s.inner c✝.plan.root.template ∧ s.seen = some s.revision ∧ o.currentAllows s c✝
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+          ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+          activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1,
+          seen := none }.requested
+      k =
+    some c
+⊢ Step ?m.169 ?m.170 s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:226:39: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Requested s
+k : Nat
+c c✝ : Credential
+ready✝ : Current o s c✝
+requested✝ : s.requested c✝.plan.root.template.ticket.launch = some c✝
+signature✝ : o.signature c✝
+fresh✝ : s.released c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.requested
+      k =
+    some c
+⊢ Step ?m.199 ?m.200 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:226:39: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Requested s
+k : Nat
+c : Credential
+next✝ : BState
+c✝ : Credential
+p✝ : Holder
+ready✝ : Current o s c✝
+released✝ : s.released c✝.plan.root.template.ticket.launch = some c✝
+holder✝ : UseBinding o c✝ p✝
+fresh✝ : s.inner.roots c✝.plan.root.template.ticket.launch = none
+actual✝ : edge s.inner next✝
+root✝ : next✝.roots = put s.inner.roots c✝.plan.root.template.ticket.launch c✝.plan.root
+pendingOnly✝ : next✝.inner = s.inner.inner
+durable✝ :
+  o.durable s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := put s.activated c✝.plan.root.template.ticket.launch c✝, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := put s.activated c✝.plan.root.template.ticket.launch c✝, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.requested
+      k =
+    some c
+⊢ Step ?m.229 ?m.230 s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := put s.activated c✝.plan.root.template.ticket.launch c✝, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:226:39: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Requested s
+k : Nat
+c : Credential
+next✝ : BState
+qualified✝ : Qualified o s
+actual✝ : edge s.inner next✝
+noRoot✝ : next✝.roots = s.inner.roots
+durable✝ :
+  o.durable s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+known :
+  { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision + 1, seen := none }.requested
+      k =
+    some c
+⊢ Step ?m.259 ?m.260 s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:226:39: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Requested s
+k : Nat
+c : Credential
+next✝ : BState
+actual✝ : edge s.inner next✝
+noRoot✝ : next✝.roots = s.inner.roots
+fence✝ : next✝.epoch = s.inner.epoch + 1
+durable✝ :
+  o.durable s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch + 1, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+known :
+  { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch + 1, nextId := s.nextId,
+          revision := s.revision + 1, seen := none }.requested
+      k =
+    some c
+⊢ Step ?m.289 ?m.290 s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch + 1, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:226:39: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Requested s
+k : Nat
+c : Credential
+authentic✝ : o.readCurrent s
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision, seen := some s.revision }.requested
+      k =
+    some c
+⊢ Step ?m.319 ?m.320 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := some s.revision }
+proofs/lean/LlmEnrollmentCredential.lean:226:39: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Requested s
+k : Nat
+c : Credential
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision, seen := none }.requested
+      k =
+    some c
+⊢ Step ?m.347 ?m.348 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:226:39: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Requested s
+k : Nat
+c : Credential
+k✝ : Nat
+p✝ : Plan
+reader✝ : Nat
+known✝ : s.plans k✝ = some p✝
+allowed✝ : o.recover p✝ reader✝
+known : s.requested k = some c
+⊢ Step ?m.377 ?m.378 s s
+proofs/lean/LlmEnrollmentCredential.lean:237:37: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+p✝ : Plan
+authorized✝ : o.planAuthorized p✝
+fresh✝ : s.plans p✝.root.template.ticket.launch = none
+epoch✝ : p✝.root.epoch = s.inner.epoch
+canonical✝ : LlmBeneficiaryRegistration.eraseKey p✝.root.template = p✝.root.template
+audience✝ : p✝.audience = p✝.root.template.ticket.target.domain
+purpose✝ : p✝.purpose = 2
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+          ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.released
+      k =
+    some c
+⊢ Step ?m.151 ?m.152 s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:93: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+p✝ : Plan
+authorized✝ : o.planAuthorized p✝
+fresh✝ : s.plans p✝.root.template.ticket.launch = none
+epoch✝ : p✝.root.epoch = s.inner.epoch
+canonical✝ : LlmBeneficiaryRegistration.eraseKey p✝.root.template = p✝.root.template
+audience✝ : p✝.audience = p✝.root.template.ticket.target.domain
+purpose✝ : p✝.purpose = 2
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+          ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.released
+      k =
+    some c
+⊢ Step ?m.160 ?m.161 s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:37: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c c✝ : Credential
+qualified✝ : Qualified o s
+plan✝ : s.plans c✝.plan.root.template.ticket.launch = some c✝.plan
+fresh✝ : s.credentials c✝.plan.root.template.ticket.launch = none
+id✝ : c✝.id = s.nextId
+unused✝ : s.ids c✝.id = none
+epoch✝ : c✝.epoch = s.epoch
+binding✝ : IssueBinding o c✝
+current✝ :
+  c✝.plan.root.epoch = s.inner.epoch ∧
+    LlmBeneficiaryRegistration.Blueprint s.inner c✝.plan.root.template ∧ s.seen = some s.revision ∧ o.currentAllows s c✝
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+          ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+          activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1,
+          seen := none }.released
+      k =
+    some c
+⊢ Step ?m.194 ?m.195 s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:93: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c c✝ : Credential
+qualified✝ : Qualified o s
+plan✝ : s.plans c✝.plan.root.template.ticket.launch = some c✝.plan
+fresh✝ : s.credentials c✝.plan.root.template.ticket.launch = none
+id✝ : c✝.id = s.nextId
+unused✝ : s.ids c✝.id = none
+epoch✝ : c✝.epoch = s.epoch
+binding✝ : IssueBinding o c✝
+current✝ :
+  c✝.plan.root.epoch = s.inner.epoch ∧
+    LlmBeneficiaryRegistration.Blueprint s.inner c✝.plan.root.template ∧ s.seen = some s.revision ∧ o.currentAllows s c✝
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+          ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+          activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1,
+          seen := none }.released
+      k =
+    some c
+⊢ Step ?m.203 ?m.204 s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:37: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c c✝ : Credential
+ready✝ : Current o s c✝
+fresh✝ : s.requested c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+          requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+          activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1,
+          seen := none }.released
+      k =
+    some c
+⊢ Step ?m.237 ?m.238 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:93: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c c✝ : Credential
+ready✝ : Current o s c✝
+fresh✝ : s.requested c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+          requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+          activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1,
+          seen := none }.released
+      k =
+    some c
+⊢ Step ?m.246 ?m.247 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:37: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+next✝ : BState
+c✝ : Credential
+p✝ : Holder
+ready✝ : Current o s c✝
+released✝ : s.released c✝.plan.root.template.ticket.launch = some c✝
+holder✝ : UseBinding o c✝ p✝
+fresh✝ : s.inner.roots c✝.plan.root.template.ticket.launch = none
+actual✝ : edge s.inner next✝
+root✝ : next✝.roots = put s.inner.roots c✝.plan.root.template.ticket.launch c✝.plan.root
+pendingOnly✝ : next✝.inner = s.inner.inner
+durable✝ :
+  o.durable s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := put s.activated c✝.plan.root.template.ticket.launch c✝, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := put s.activated c✝.plan.root.template.ticket.launch c✝, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.released
+      k =
+    some c
+⊢ Step ?m.280 ?m.281 s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := put s.activated c✝.plan.root.template.ticket.launch c✝, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:93: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+next✝ : BState
+c✝ : Credential
+p✝ : Holder
+ready✝ : Current o s c✝
+released✝ : s.released c✝.plan.root.template.ticket.launch = some c✝
+holder✝ : UseBinding o c✝ p✝
+fresh✝ : s.inner.roots c✝.plan.root.template.ticket.launch = none
+actual✝ : edge s.inner next✝
+root✝ : next✝.roots = put s.inner.roots c✝.plan.root.template.ticket.launch c✝.plan.root
+pendingOnly✝ : next✝.inner = s.inner.inner
+durable✝ :
+  o.durable s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := put s.activated c✝.plan.root.template.ticket.launch c✝, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := put s.activated c✝.plan.root.template.ticket.launch c✝, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.released
+      k =
+    some c
+⊢ Step ?m.289 ?m.290 s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := put s.activated c✝.plan.root.template.ticket.launch c✝, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:37: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+next✝ : BState
+qualified✝ : Qualified o s
+actual✝ : edge s.inner next✝
+noRoot✝ : next✝.roots = s.inner.roots
+durable✝ :
+  o.durable s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+known :
+  { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision + 1, seen := none }.released
+      k =
+    some c
+⊢ Step ?m.323 ?m.324 s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:93: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+next✝ : BState
+qualified✝ : Qualified o s
+actual✝ : edge s.inner next✝
+noRoot✝ : next✝.roots = s.inner.roots
+durable✝ :
+  o.durable s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+known :
+  { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision + 1, seen := none }.released
+      k =
+    some c
+⊢ Step ?m.332 ?m.333 s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:37: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+next✝ : BState
+actual✝ : edge s.inner next✝
+noRoot✝ : next✝.roots = s.inner.roots
+fence✝ : next✝.epoch = s.inner.epoch + 1
+durable✝ :
+  o.durable s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch + 1, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+known :
+  { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch + 1, nextId := s.nextId,
+          revision := s.revision + 1, seen := none }.released
+      k =
+    some c
+⊢ Step ?m.366 ?m.367 s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch + 1, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:93: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+next✝ : BState
+actual✝ : edge s.inner next✝
+noRoot✝ : next✝.roots = s.inner.roots
+fence✝ : next✝.epoch = s.inner.epoch + 1
+durable✝ :
+  o.durable s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch + 1, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+known :
+  { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch + 1, nextId := s.nextId,
+          revision := s.revision + 1, seen := none }.released
+      k =
+    some c
+⊢ Step ?m.375 ?m.376 s
+    { inner := next✝, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch + 1, nextId := s.nextId,
+      revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:37: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+authentic✝ : o.readCurrent s
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision, seen := some s.revision }.released
+      k =
+    some c
+⊢ Step ?m.409 ?m.410 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := some s.revision }
+proofs/lean/LlmEnrollmentCredential.lean:237:93: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+authentic✝ : o.readCurrent s
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision, seen := some s.revision }.released
+      k =
+    some c
+⊢ Step ?m.418 ?m.419 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := some s.revision }
+proofs/lean/LlmEnrollmentCredential.lean:237:37: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision, seen := none }.released
+      k =
+    some c
+⊢ Step ?m.450 ?m.451 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:93: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision, seen := none }.released
+      k =
+    some c
+⊢ Step ?m.459 ?m.460 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:237:37: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+k✝ : Nat
+p✝ : Plan
+reader✝ : Nat
+known✝ : s.plans k✝ = some p✝
+allowed✝ : o.recover p✝ reader✝
+known : s.released k = some c
+⊢ Step ?m.493 ?m.494 s s
+proofs/lean/LlmEnrollmentCredential.lean:237:93: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Released s
+k : Nat
+c : Credential
+k✝ : Nat
+p✝ : Plan
+reader✝ : Nat
+known✝ : s.plans k✝ = some p✝
+allowed✝ : o.recover p✝ reader✝
+known : s.released k = some c
+⊢ Step ?m.502 ?m.503 s s
+proofs/lean/LlmEnrollmentCredential.lean:254:45: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+p✝ : Plan
+authorized✝ : o.planAuthorized p✝
+fresh✝ : s.plans p✝.root.template.ticket.launch = none
+epoch✝ : p✝.root.epoch = s.inner.epoch
+canonical✝ : LlmBeneficiaryRegistration.eraseKey p✝.root.template = p✝.root.template
+audience✝ : p✝.audience = p✝.root.template.ticket.target.domain
+purpose✝ : p✝.purpose = 2
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+            ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+            nextId := s.nextId, revision := s.revision + 1, seen := none }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.307 ?m.308 s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:254:90: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+p✝ : Plan
+authorized✝ : o.planAuthorized p✝
+fresh✝ : s.plans p✝.root.template.ticket.launch = none
+epoch✝ : p✝.root.epoch = s.inner.epoch
+canonical✝ : LlmBeneficiaryRegistration.eraseKey p✝.root.template = p✝.root.template
+audience✝ : p✝.audience = p✝.root.template.ticket.target.domain
+purpose✝ : p✝.purpose = 2
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+            ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+            nextId := s.nextId, revision := s.revision + 1, seen := none }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.316 ?m.317 s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:254:45: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+c✝ : Credential
+qualified✝ : Qualified o s
+plan✝ : s.plans c✝.plan.root.template.ticket.launch = some c✝.plan
+fresh✝ : s.credentials c✝.plan.root.template.ticket.launch = none
+id✝ : c✝.id = s.nextId
+unused✝ : s.ids c✝.id = none
+epoch✝ : c✝.epoch = s.epoch
+binding✝ : IssueBinding o c✝
+current✝ :
+  c✝.plan.root.epoch = s.inner.epoch ∧
+    LlmBeneficiaryRegistration.Blueprint s.inner c✝.plan.root.template ∧ s.seen = some s.revision ∧ o.currentAllows s c✝
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+            ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested,
+            released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1,
+            revision := s.revision + 1, seen := none }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.383 ?m.384 s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:254:90: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+c✝ : Credential
+qualified✝ : Qualified o s
+plan✝ : s.plans c✝.plan.root.template.ticket.launch = some c✝.plan
+fresh✝ : s.credentials c✝.plan.root.template.ticket.launch = none
+id✝ : c✝.id = s.nextId
+unused✝ : s.ids c✝.id = none
+epoch✝ : c✝.epoch = s.epoch
+binding✝ : IssueBinding o c✝
+current✝ :
+  c✝.plan.root.epoch = s.inner.epoch ∧
+    LlmBeneficiaryRegistration.Blueprint s.inner c✝.plan.root.template ∧ s.seen = some s.revision ∧ o.currentAllows s c✝
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+            ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested,
+            released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1,
+            revision := s.revision + 1, seen := none }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.392 ?m.393 s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:254:45: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+c✝ : Credential
+ready✝ : Current o s c✝
+fresh✝ : s.requested c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+            requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+            activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1,
+            seen := none }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.459 ?m.460 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:254:90: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+c✝ : Credential
+ready✝ : Current o s c✝
+fresh✝ : s.requested c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+            requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+            activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1,
+            seen := none }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.468 ?m.469 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:254:45: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+c✝ : Credential
+ready✝ : Current o s c✝
+requested✝ : s.requested c✝.plan.root.template.ticket.launch = some c✝
+signature✝ : o.signature c✝
+fresh✝ : s.released c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+            released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated,
+            epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.535 ?m.536 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:254:90: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+c✝ : Credential
+ready✝ : Current o s c✝
+requested✝ : s.requested c✝.plan.root.template.ticket.launch = some c✝
+signature✝ : o.signature c✝
+fresh✝ : s.released c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+            released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated,
+            epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.544 ?m.545 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:254:45: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+authentic✝ : o.readCurrent s
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+            released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+            revision := s.revision, seen := some s.revision }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.611 ?m.612 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := some s.revision }
+proofs/lean/LlmEnrollmentCredential.lean:254:90: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+authentic✝ : o.readCurrent s
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+            released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+            revision := s.revision, seen := some s.revision }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.620 ?m.621 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := some s.revision }
+proofs/lean/LlmEnrollmentCredential.lean:254:45: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+            released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+            revision := s.revision, seen := none }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.685 ?m.686 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:254:90: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+            released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+            revision := s.revision, seen := none }.inner.roots
+      k =
+    some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.694 ?m.695 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:254:45: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+k✝ : Nat
+p✝ : Plan
+reader✝ : Nat
+known✝ : s.plans k✝ = some p✝
+allowed✝ : o.recover p✝ reader✝
+known : s.inner.roots k = some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.761 ?m.762 s s
+proofs/lean/LlmEnrollmentCredential.lean:254:90: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Joined s
+k : Nat
+r : LlmBeneficiaryRegistration.Root
+k✝ : Nat
+p✝ : Plan
+reader✝ : Nat
+known✝ : s.plans k✝ = some p✝
+allowed✝ : o.recover p✝ reader✝
+known : s.inner.roots k = some r
+c : Credential
+activation : s.activated k = some c
+released : s.released k = some c
+credential : s.credentials k = some c
+same : c.plan.root = r
+⊢ Step ?m.770 ?m.771 s s
+proofs/lean/LlmEnrollmentCredential.lean:270:57: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c : Credential
+p✝ : Plan
+authorized✝ : o.planAuthorized p✝
+fresh✝ : s.plans p✝.root.template.ticket.launch = none
+epoch✝ : p✝.root.epoch = s.inner.epoch
+canonical✝ : LlmBeneficiaryRegistration.eraseKey p✝.root.template = p✝.root.template
+audience✝ : p✝.audience = p✝.root.template.ticket.target.domain
+purpose✝ : p✝.purpose = 2
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+          ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.activated
+      k =
+    some c
+⊢ Step ?m.249 ?m.250 s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:270:115: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c : Credential
+p✝ : Plan
+authorized✝ : o.planAuthorized p✝
+fresh✝ : s.plans p✝.root.template.ticket.launch = none
+epoch✝ : p✝.root.epoch = s.inner.epoch
+canonical✝ : LlmBeneficiaryRegistration.eraseKey p✝.root.template = p✝.root.template
+audience✝ : p✝.audience = p✝.root.template.ticket.target.domain
+purpose✝ : p✝.purpose = 2
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+          ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.activated
+      k =
+    some c
+⊢ Step ?m.260 ?m.261 s
+    { inner := s.inner, plans := put s.plans p✝.root.template.ticket.launch p✝, credentials := s.credentials,
+      ids := s.ids, requested := s.requested, released := s.released, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:270:57: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c c✝ : Credential
+qualified✝ : Qualified o s
+plan✝ : s.plans c✝.plan.root.template.ticket.launch = some c✝.plan
+fresh✝ : s.credentials c✝.plan.root.template.ticket.launch = none
+id✝ : c✝.id = s.nextId
+unused✝ : s.ids c✝.id = none
+epoch✝ : c✝.epoch = s.epoch
+binding✝ : IssueBinding o c✝
+current✝ :
+  c✝.plan.root.epoch = s.inner.epoch ∧
+    LlmBeneficiaryRegistration.Blueprint s.inner c✝.plan.root.template ∧ s.seen = some s.revision ∧ o.currentAllows s c✝
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+          ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+          activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1,
+          seen := none }.activated
+      k =
+    some c
+⊢ Step ?m.300 ?m.301 s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:270:115: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c c✝ : Credential
+qualified✝ : Qualified o s
+plan✝ : s.plans c✝.plan.root.template.ticket.launch = some c✝.plan
+fresh✝ : s.credentials c✝.plan.root.template.ticket.launch = none
+id✝ : c✝.id = s.nextId
+unused✝ : s.ids c✝.id = none
+epoch✝ : c✝.epoch = s.epoch
+binding✝ : IssueBinding o c✝
+current✝ :
+  c✝.plan.root.epoch = s.inner.epoch ∧
+    LlmBeneficiaryRegistration.Blueprint s.inner c✝.plan.root.template ∧ s.seen = some s.revision ∧ o.currentAllows s c✝
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+          ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+          activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1,
+          seen := none }.activated
+      k =
+    some c
+⊢ Step ?m.311 ?m.312 s
+    { inner := s.inner, plans := s.plans, credentials := put s.credentials c✝.plan.root.template.ticket.launch c✝,
+      ids := put s.ids c✝.id c✝.plan.root.template.ticket.launch, requested := s.requested, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId + 1, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:270:57: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c c✝ : Credential
+ready✝ : Current o s c✝
+fresh✝ : s.requested c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+          requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+          activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1,
+          seen := none }.activated
+      k =
+    some c
+⊢ Step ?m.351 ?m.352 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:270:115: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c c✝ : Credential
+ready✝ : Current o s c✝
+fresh✝ : s.requested c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+          requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+          activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1,
+          seen := none }.activated
+      k =
+    some c
+⊢ Step ?m.362 ?m.363 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids,
+      requested := put s.requested c✝.plan.root.template.ticket.launch c✝, released := s.released,
+      activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:270:57: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c c✝ : Credential
+ready✝ : Current o s c✝
+requested✝ : s.requested c✝.plan.root.template.ticket.launch = some c✝
+signature✝ : o.signature c✝
+fresh✝ : s.released c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.activated
+      k =
+    some c
+⊢ Step ?m.402 ?m.403 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:270:115: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c c✝ : Credential
+ready✝ : Current o s c✝
+requested✝ : s.requested c✝.plan.root.template.ticket.launch = some c✝
+signature✝ : o.signature c✝
+fresh✝ : s.released c✝.plan.root.template.ticket.launch = none
+durable✝ :
+  o.durable s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+          nextId := s.nextId, revision := s.revision + 1, seen := none }.activated
+      k =
+    some c
+⊢ Step ?m.413 ?m.414 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := put s.released c✝.plan.root.template.ticket.launch c✝, activated := s.activated, epoch := s.epoch,
+      nextId := s.nextId, revision := s.revision + 1, seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:270:57: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c : Credential
+authentic✝ : o.readCurrent s
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision, seen := some s.revision }.activated
+      k =
+    some c
+⊢ Step ?m.453 ?m.454 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := some s.revision }
+proofs/lean/LlmEnrollmentCredential.lean:270:115: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c : Credential
+authentic✝ : o.readCurrent s
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision, seen := some s.revision }.activated
+      k =
+    some c
+⊢ Step ?m.464 ?m.465 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := some s.revision }
+proofs/lean/LlmEnrollmentCredential.lean:270:57: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c : Credential
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision, seen := none }.activated
+      k =
+    some c
+⊢ Step ?m.502 ?m.503 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:270:115: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c : Credential
+known :
+  { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+          released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId,
+          revision := s.revision, seen := none }.activated
+      k =
+    some c
+⊢ Step ?m.513 ?m.514 s
+    { inner := s.inner, plans := s.plans, credentials := s.credentials, ids := s.ids, requested := s.requested,
+      released := s.released, activated := s.activated, epoch := s.epoch, nextId := s.nextId, revision := s.revision,
+      seen := none }
+proofs/lean/LlmEnrollmentCredential.lean:270:57: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c : Credential
+k✝ : Nat
+p✝ : Plan
+reader✝ : Nat
+known✝ : s.plans k✝ = some p✝
+allowed✝ : o.recover p✝ reader✝
+known : s.activated k = some c
+⊢ Step ?m.553 ?m.554 s s
+proofs/lean/LlmEnrollmentCredential.lean:270:115: error: Tactic `assumption` failed
+
+edge : BState → BState → Prop
+o : Owner
+s : State
+valid : Outcome s
+k : Nat
+c : Credential
+k✝ : Nat
+p✝ : Plan
+reader✝ : Nat
+known✝ : s.plans k✝ = some p✝
+allowed✝ : o.recover p✝ reader✝
+known : s.activated k = some c
+⊢ Step ?m.564 ?m.565 s s
+'Weaver.LlmEnrollmentCredential.plan_retained' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.credential_retained' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.id_retained' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.request_retained' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.release_retained' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.activation_retained' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.credential_run' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.no_subject_or_key_replacement' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.forwarded_subject_rejected' does not depend on any axioms
+'Weaver.LlmEnrollmentCredential.nominated_enrollment_key_rejected' does not depend on any axioms
+'Weaver.LlmEnrollmentCredential.issue_session_bound' does not depend on any axioms
+'Weaver.LlmEnrollmentCredential.holder_session_bound' depends on axioms: [sorryAx]
+'Weaver.LlmEnrollmentCredential.stale_issuer_rejected' does not depend on any axioms
+'Weaver.LlmEnrollmentCredential.stale_read_rejected' does not depend on any axioms
+'Weaver.LlmEnrollmentCredential.valid_step' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmEnrollmentCredential.valid_run' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmEnrollmentCredential.credential_id_unique' does not depend on any axioms
+'Weaver.LlmEnrollmentCredential.requested_step' depends on axioms: [propext, sorryAx]
+'Weaver.LlmEnrollmentCredential.released_step' depends on axioms: [propext, sorryAx]
+'Weaver.LlmEnrollmentCredential.joined_step' depends on axioms: [propext, sorryAx]
+'Weaver.LlmEnrollmentCredential.outcome_step' depends on axioms: [propext, sorryAx]
+'Weaver.LlmEnrollmentCredential.qualified_step' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmEnrollmentCredential.qualified_run' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmEnrollmentCredential.inconsistent_image_rejected' does not depend on any axioms
+'Weaver.LlmEnrollmentCredential.plan_origin' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.issuance_authorized' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.composition' does not depend on any axioms
+'Weaver.LlmEnrollmentCredential.first_key_retained' depends on axioms: [propext]
+'Weaver.LlmEnrollmentCredential.original_reservation_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmEnrollmentCredential.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]

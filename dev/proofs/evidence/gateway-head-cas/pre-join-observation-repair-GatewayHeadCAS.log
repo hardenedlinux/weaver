@@ -1,0 +1,32 @@
+proofs/lean/GatewayHeadCAS.lean:302:30: error(lean.unknownIdentifier): Unknown identifier `exact`
+proofs/lean/GatewayHeadCAS.lean:302:49: error: Application type mismatch: The argument
+  authentic
+has type
+  owner.joinValid (joinedView s head)
+but is expected to have type
+  owner.joinValid receipt
+in the application
+  ⟨materialized, authentic⟩
+'Weaver.GatewayHeadCAS.nonce_consumption_once' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.GatewayHeadCAS.new_join_requires_authentic_current_images' depends on axioms: [propext, sorryAx]
+'Weaver.GatewayHeadCAS.unknown_original_reservation_survives' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.newly_committed_job_has_current_scope' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.prepared_row_is_not_committed_counterexample' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.duplicate_root_decision_counterexample' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.GatewayHeadCAS.stale_fence_decision_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.GatewayHeadCAS.decisions_never_roll_back' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.initialized_unique_roots' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.initialized_rows_are_committed' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.initialized_cas_audit' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.every_new_decision_rechecks_current_head' does not depend on any axioms
+'Weaver.GatewayHeadCAS.version_never_decreases' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.changed_fence_clears_cached_authority' does not depend on any axioms
+'Weaver.GatewayHeadCAS.new_send_requires_exact_current_join' does not depend on any axioms
+'Weaver.GatewayHeadCAS.initialized_product_refines_semantics' does not depend on any axioms
+'Weaver.GatewayHeadCAS.original_claim_and_history_survive' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.original_executor_survives' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.shared_budget_is_bounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.GatewayHeadCAS.original_claim_and_offer_once' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.GatewayHeadCAS.free_held_charged_conservation' depends on axioms: [propext, Classical.choice, Quot.sound]

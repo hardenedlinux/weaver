@@ -1,0 +1,19 @@
+'Weaver.LlmPolicyPublication.exact_parent_chain' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.cas_projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.generation_matches_durable_prefix' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.effective_value_matches_durable_prefix' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.acknowledgements_name_committed_publications' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.one_publication_per_change' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.published_changes_have_parent_successor' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.published_prefix_is_inherited' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.publication_is_from_staged_change' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.original_change_domain_is_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.late_acknowledgement_preserves_authority' does not depend on any axioms
+'Weaver.LlmPolicyPublication.producer_projection_loss_preserves_authority' does not depend on any axioms
+'Weaver.LlmPolicyPublication.stale_generation_cannot_consume' does not depend on any axioms
+'Weaver.LlmPolicyPublication.old_fence_cannot_consume' does not depend on any axioms
+'Weaver.LlmPolicyPublication.original_claim_stays_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmPolicyPublication.original_profile_stays_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.original_allowance_stays_bounded' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.original_domains_stay_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.unknown_usage_retains_hold' depends on axioms: [propext, Quot.sound]

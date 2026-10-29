@@ -1,0 +1,56 @@
+module LlmExecutionReconciliation {
+  type Key = { root: int, claim: int, profile: int, budget: int, history: int, slot: int, lo: int, hi: int }
+  pure val key = Rec("root", 10, "claim", 11, "profile", 30, "budget", 5, "history", 9, "slot", 11, "lo", 0, "hi", 4)
+  pure val initial = Rec("epoch", 0, "qualified", true, "sealed", false, "decisions", List(), "source", List(), "usage", iuminus(1), "payments", List(), "released", 0, "terminalEvidence", false, "usageEvidence", false, "conflict", false, "dispatchView", 0, "sourceView", 0, "accountView", 0)
+  import LlmExecutorOffer as X from "./LlmExecutorOffer"
+  type Decision = { key: Key, kind: int, cut: int, burns: int, calls: int, submitted: bool }
+  pure val absent = Rec("key", key, "kind", 1, "cut", 0, "burns", 0, "calls", 0, "submitted", false)
+  pure val executed = Rec("key", key, "kind", 2, "cut", 0, "burns", 1, "calls", 1, "submitted", true)
+  type Application = { decision: Decision, worker: int, epoch: int }
+  type Payment = { decision: Decision, amount: int, released: int, worker: int, epoch: int }
+  type Reconciliation = { epoch: int, qualified: bool, sealed: bool, decisions: List[Decision], source: List[Application], usage: int, payments: List[Payment], released: int, terminalEvidence: bool, usageEvidence: bool, conflict: bool, dispatchView: int, sourceView: int, accountView: int }
+  var e: Reconciliation
+  def current = ((kind) => Rec("key", key, "kind", kind, "cut", field(e, "epoch"), "burns", size(field(X::s, "burns")), "calls", field(X::s, "laneCalls"), "submitted", field(X::s, "submitted")))
+  action init = actionAll(X::enqueued, assign(e, initial))
+  action inert = actionAll(X::timeout, assign(e, e))
+  action seal = ((worker, complete) => actionAll(eq(worker, field(e, "epoch")), field(e, "qualified"), not(field(e, "conflict")), complete, X::timeout, assign(e, with(e, "sealed", true))))
+  action sourceCAS = ((d, worker) => actionAll(field(e, "qualified"), not(field(e, "conflict")), eq(worker, field(e, "epoch")), eq(field(e, "decisions"), List(d)), eq(length(field(e, "source")), 0), X::timeout, assign(e, with(with(e, "source", List(Rec("decision", d, "worker", worker, "epoch", field(e, "epoch")))), "sourceView", 1))))
+  action usageCAS = ((d, amount, worker, authentic) => actionAll(eq(worker, field(e, "epoch")), field(e, "qualified"), not(field(e, "conflict")), eq(field(e, "decisions"), List(d)), eq(length(field(e, "source")), 1), ilt(field(e, "usage"), 0), igte(amount, 0), ilte(amount, 3), authentic, ite(eq(field(d, "kind"), 1), eq(amount, 0), field(e, "usageEvidence")), X::timeout, assign(e, with(e, "usage", amount))))
+  action accountCAS = ((d, worker, authentic) => actionAll(field(e, "qualified"), not(field(e, "conflict")), eq(worker, field(e, "epoch")), eq(field(e, "decisions"), List(d)), eq(length(field(e, "source")), 1), eq(field(nth(field(e, "source"), 0), "decision"), d), igte(field(e, "usage"), 0), eq(length(field(e, "payments")), 0), authentic, X::timeout, assign(e, with(with(with(e, "payments", List(Rec("decision", d, "amount", field(e, "usage"), "released", isub(3, field(e, "usage")), "worker", worker, "epoch", field(e, "epoch")))), "released", isub(3, field(e, "usage"))), "accountView", 1))))
+  action terminalReceipt = ((authentic) => actionAll(authentic, field(X::s, "submitted"), eq(field(X::s, "laneCalls"), 1), X::timeout, assign(e, with(e, "terminalEvidence", true))))
+  action finalUsageReceipt = ((authentic) => actionAll(authentic, field(e, "terminalEvidence"), X::timeout, assign(e, with(e, "usageEvidence", true))))
+  action lateFull = actionAll(X::fullReceipt(X::t0, 4, true), assign(e, e))
+  action latePartial = actionAll(X::partial(X::t0, 2), assign(e, e))
+  action conflict = actionAll(X::timeout, assign(e, with(with(e, "qualified", false), "conflict", true)))
+  action restart = actionAll(X::restart, assign(e, with(with(with(with(with(e, "epoch", iadd(field(e, "epoch"), 1)), "qualified", false), "dispatchView", iuminus(1)), "sourceView", iuminus(1)), "accountView", iuminus(1))))
+  action recover = ((dispatchExact, sourceExact, accountExact) => actionAll(not(field(e, "qualified")), not(field(e, "conflict")), dispatchExact, sourceExact, accountExact, eq(field(e, "dispatchView"), length(field(e, "decisions"))), eq(field(e, "sourceView"), length(field(e, "source"))), eq(field(e, "accountView"), length(field(e, "payments"))), X::timeout, assign(e, with(e, "qualified", true))))
+  action restoreDispatch = ((pos) => actionAll(not(field(e, "qualified")), igte(pos, 0), ilte(pos, length(field(e, "decisions"))), X::timeout, assign(e, with(e, "dispatchView", pos))))
+  action restoreSource = ((pos) => actionAll(not(field(e, "qualified")), igte(pos, 0), ilte(pos, length(field(e, "source"))), X::timeout, assign(e, with(e, "sourceView", pos))))
+  action restoreAccount = ((pos) => actionAll(not(field(e, "qualified")), igte(pos, 0), ilte(pos, length(field(e, "payments"))), X::timeout, assign(e, with(e, "accountView", pos))))
+  action drive = actionAll(not(field(e, "sealed")), X::step, assign(e, e))
+  action burned = actionAll(X::burned, assign(e, initial))
+  action offered = actionAll(X::offered, assign(e, initial))
+  val unique = and(and(ilte(length(field(e, "decisions")), 1), ilte(length(field(e, "source")), 1)), ilte(length(field(e, "payments")), 1))
+  val original = and(and(forall(indices(field(e, "decisions")), ((i) => eq(field(nth(field(e, "decisions"), i), "key"), key))), forall(indices(field(e, "source")), ((i) => eq(field(e, "decisions"), List(field(nth(field(e, "source"), i), "decision")))))), forall(indices(field(e, "payments")), ((i) => eq(field(e, "decisions"), List(field(nth(field(e, "payments"), i), "decision"))))))
+  val evidence = or(ilt(field(e, "usage"), 0), and(and(eq(length(field(e, "source")), 1), eq(length(field(e, "decisions")), 1)), ite(eq(field(nth(field(e, "decisions"), 0), "kind"), 1), eq(field(e, "usage"), 0), field(e, "usageEvidence"))))
+  val held = implies(eq(length(field(e, "payments")), 0), eq(field(e, "released"), 0))
+  val qualifiedViews = implies(field(e, "qualified"), and(and(eq(field(e, "dispatchView"), length(field(e, "decisions"))), eq(field(e, "sourceView"), length(field(e, "source")))), eq(field(e, "accountView"), length(field(e, "payments")))))
+  action unsafeRefund = actionAll(X::timeout, assign(e, with(e, "released", 3)))
+  action unsafeSource = ((d) => actionAll(X::timeout, assign(e, with(e, "source", append(field(e, "source"), Rec("decision", d, "worker", 0, "epoch", field(e, "epoch")))))))
+  action unsafeUsage = actionAll(X::timeout, assign(e, with(e, "usage", 0)))
+  action unsafePay = actionAll(X::timeout, assign(e, with(with(e, "payments", append(field(e, "payments"), Rec("decision", executed, "amount", 0, "released", 3, "worker", 0, "epoch", field(e, "epoch")))), "released", 3)))
+  action decide = ((kind, worker, complete) => actionAll(field(e, "sealed"), field(e, "qualified"), not(field(e, "conflict")), eq(worker, field(e, "epoch")), complete, eq(length(field(e, "decisions")), 0), ite(eq(kind, 1), and(and(eq(size(field(X::s, "burns")), 0), not(field(X::s, "submitted"))), eq(field(X::s, "laneCalls"), 0)), and(and(and(eq(kind, 2), field(X::s, "submitted")), eq(field(X::s, "laneCalls"), 1)), field(e, "terminalEvidence"))), X::timeout, assign(e, with(with(e, "decisions", List(current(kind))), "dispatchView", 1))))
+  action restoreAll = then(then(restoreDispatch(length(field(e, "decisions"))), restoreSource(length(field(e, "source")))), restoreAccount(length(field(e, "payments"))))
+  val negativeSound = forall(indices(field(e, "decisions")), ((i) => val d = nth(field(e, "decisions"), i) { or(neq(field(d, "kind"), 1), and(and(and(and(eq(field(d, "burns"), 0), eq(field(d, "calls"), 0)), not(field(d, "submitted"))), eq(size(field(X::s, "burns")), 0)), eq(field(X::s, "laneCalls"), 0))) }))
+  val positiveSound = forall(indices(field(e, "decisions")), ((i) => val d = nth(field(e, "decisions"), i) { or(neq(field(d, "kind"), 2), and(and(eq(field(d, "calls"), 1), field(d, "submitted")), field(e, "terminalEvidence"))) }))
+  val settled = forall(indices(field(e, "payments")), ((i) => val p = nth(field(e, "payments"), i) { and(and(and(and(and(eq(field(p, "worker"), field(p, "epoch")), eq(length(field(e, "source")), 1)), igte(field(e, "usage"), 0)), eq(field(p, "amount"), field(e, "usage"))), eq(iadd(field(p, "released"), field(e, "usage")), 3)), eq(field(e, "released"), field(p, "released"))) }))
+  action unsafeNegative = actionAll(X::timeout, assign(e, with(with(e, "sealed", true), "decisions", List(current(1)))))
+  action unsafeTerminal = actionAll(X::timeout, assign(e, with(e, "decisions", List(current(2)))))
+  action negativeDecision = then(then(init, seal(0, true)), decide(1, 0, true))
+  action terminalDecision = then(then(then(offered, seal(0, true)), terminalReceipt(true)), decide(2, 0, true))
+  val safety = and(and(and(and(and(and(and(and(qualifiedViews, X::safety), unique), negativeSound), positiveSound), original), evidence), held), settled)
+  action step = nondet kind = oneOf(Set(1, 2)) { nondet amount = oneOf(Set(0, 2, 3)) { nondet d = oneOf(union(map(indices(field(e, "decisions")), ((i) => nth(field(e, "decisions"), i))), Set(absent, executed))) { actionAny(drive, seal(field(e, "epoch"), true), decide(kind, field(e, "epoch"), true), sourceCAS(d, field(e, "epoch")), usageCAS(d, amount, field(e, "epoch"), true), accountCAS(d, field(e, "epoch"), true), terminalReceipt(true), finalUsageReceipt(true), lateFull, latePartial, restart, restoreDispatch(length(field(e, "decisions"))), restoreSource(length(field(e, "source"))), restoreAccount(length(field(e, "payments"))), recover(true, true, true), conflict, inert) } } }
+  action sourceApplied = then(terminalDecision, sourceCAS(executed, 0))
+  action usageApplied = then(then(sourceApplied, finalUsageReceipt(true)), usageCAS(executed, 2, 0, true))
+  action paid = then(usageApplied, accountCAS(executed, 0, true))
+}

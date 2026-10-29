@@ -1,0 +1,138 @@
+#+title: Weaver Registry Publication Proofs and Recovery Evidence
+#+language: en
+#+options: toc:3
+
+* Scope and reproduction
+
+Run [[file:../../../proofs/check_llm_registry_publication.py][the isolated check runner]]. [[file:../../../proofs/lean/LlmRegistryPublication.lean][Lean]] wraps actual
+LlmAuthoritativeScope transitions and constructs an explicit execution projection.
+[[file:../../../proofs/qunit/LlmRegistryPublication.qnt][Quint]] models one original binding, immutable object storage, sticky intent,
+root publication, confirmation, recovery projections and consuming permits.
+Its original-claim/ledger fixture abstracts source setup, which is covered by the
+Lean projection into the prior initialized model.
+
+Raw results are in [[file:../../../proofs/evidence/llm-registry-publication/commands.json][commands.json]] and [[file:../../../proofs/evidence/llm-registry-publication/receipt.json][receipt.json]]. Preliminary compiler and
+scenario diagnostics remain separate from final acceptance. Old-permit scenarios
+use literal, actually issued fixture receipts; decoded traces verify their exact
+identity and prior issuance. A stale/invalid placeholder is not accepted as
+evidence of an old-worker race.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| RP1 | Keep original pending binding sticky | pendingIntentIsStickyTest | intent_is_never_replaced | publication.intent |
+| RP2 | Journal publication follows exact intent | journalCannotPrecedeIntentTest | journal_requires_prior_intent | publication.journal |
+| RP3 | Lost append reply cannot duplicate root | emptyLocalSnapshotCannotRecommitTest | one_original_publication | publication.confirm |
+| RP4 | Certification names the exact root prefix | anchorCannotCertifyMissingRootTest | certified_requires_exact_journal | publication.confirm |
+| RP5 | Recovered profile resolves original contract | mismatchedSnapshotCannotActivateTest | publication_resolves_original_contract | profile.object |
+| RP6 | Missing exact blob prevents use | missingBlobCannotActivateTest | missing_exact_blob_blocks_use | recovery.join |
+| RP7 | Snapshot does not replace execution ledger | oldExecutionSnapshotCannotResetSpendTest | snapshot_install_never_restores_execution | recovery.ledger |
+| RP8 | Old owner cannot use recovered permission | oldWorkerPermitCannotRecoverTest | stale_worker_cannot_use | recovery.fence |
+| RP9 | Current ledger revision invalidates old permit | duplicatePermitCannotReplayTest | stale_execution_snapshot_cannot_use | broker.consume |
+| RP10 | Recovery retains original account domains | freshImageCannotBypassOriginalHistoryTest | original_scope_domains_survive_recovery | broker.history |
+| RP11 | All child cost remains under original allowance | registryRecoveryPreservesUnknownBudgetTest | original_allowance_is_preserved | broker.hold |
+| RP12 | Unknown usage blocks settlement | unknownUsageCannotSettleTest | unknown_usage_blocks_settlement | broker.hold |
+
+* Source review and reuse boundary
+
+The [[file:../../../proofs/evidence/llm-registry-publication/source-review.json][POO Flow / Cedar source register]] and [[file:../../../proofs/evidence/llm-registry-publication/agentgateway-source-review.json][agentgateway register]] contain
+freshly verified pinned blobs and excerpts. These snapshots are not assertions
+about an uninspected latest release or native ABI compatibility. No upstream
+source or dependency pin is changed.
+
+| Source | Observed contract | Reuse / required extension |
+|--------+-------------------+----------------------------|
+| P12 authorized-effect-token | Exact root/operation subject, pure immutable consumption | Reuse subject equality; add original profile publication identity and current recovery join |
+| P13 strict mediation | Unknown result advances nonce/root state | Retain spent state and stable operation identity; do not infer fresh root from reply loss |
+| P15 effect host | Exact serialized owner, consume before delivery, local/non-durable limitation | Reuse owner boundary; distributed publication/ledger transaction remains an extension |
+| P17 runtime store backend | Runtime owns append, fsync, leases, checkpoint IO, index rebuild and repair; Scheme negotiates backend/handoff | Reuse ownership and receipt contracts; capability declarations are not proof that the root/profile/anchor protocol executed durably |
+| P22 durable store | Fact-log/checkpoint/index/repair references and validated contract receipts | Reuse typed store identities and diagnostics; current prefix/claim/profile cross-store joins need new receipts and atomicity qualification |
+| P18 promotion transaction recovery | Source-bound prior transaction evidence | Reconcile the original decision, never substitute another profile after loss |
+| P19 authorized recovery bridge | Completion recovery remains bound to actual source authorization | Carry original claim, profile and ledger checkpoint through recovery |
+| P31 SessionAttempt | Generation/CAS and unresolved-attempt obligations | Preserve old obligations across restart; no fresh execution from callback success |
+| P35 monotonicity / lineage prefix | Local monotonic views can fork; shared publication-domain membership and exact prefix binding are explicit | Require one authenticated independent intent/confirmation domain and current execution prefix; cached counters do not establish fork freedom |
+| P43/P44 attempt input references | Frozen source/scope/profile digests, inert proposal objects, explicit lack of runtime/action/durability authority | Reuse source subject material; native root-to-profile publication and recovery membership remain new contracts |
+| P20 effect exactly-once / P33 budget separation | Runtime occurrence/coverage evidence and budget closure have explicit premises | No inference of remote exactly-once, native account credit or timeout refund |
+| C8 BoundOperation | Matching supplied effect/state does not authenticate them; Host must bind execution to actual values | Construct the operation only after the authoritative publication/execution join |
+| C10 CompoundAuthorization | Every required nonempty layer must allow without evaluation errors | Publication, recovery and execution actions need the appropriate actual-operation layers |
+| C11 Composition | Validation and evaluation input alignment is an obligation | Reuse typed alignment; it is not a native cross-store commit or recovery proof |
+| Agentgateway pinned conversion/controller sources | Provider adaptation and cloud-native configuration patterns | Reuse ecosystem roles; adapter configuration/cache is not original task publication authority |
+
+* Proof premises and limits
+
+=Safe= preserves intent validity, exact journal-to-intent binding, one original
+root publication, certification membership and current active recovery join.
+=intent_is_never_replaced= and =journal_cannot_be_replaced= exclude replacement
+through any safe transition. =publication_resolves_original_contract= connects
+the published original-key lookup to category 13's admitted contract interpretation.
+No caller-provided registry view is accepted as that lookup.
+
+=execution_projection= maps every execution-changing transition to an actual
+prior model step. Snapshot installation cannot assign execution state. Source
+claims, allowance, history-domain bindings, response mode and unknown-usage
+settlement constraints follow from that projection. The profile registry does
+not independently implement account application or replace the original ledger.
+
+The stable intent, durable journal, immutable object receipts, non-rollback owner
+floor and qualified current execution-prefix read are explicit storage/owner
+contracts. Local projection loss is modeled separately from authoritative state.
+The model does not prove consensus, cryptographic hashing, native fsync, full
+byte-range/account interleavings, transport quiescence, provider execution or
+liveness. If every trusted log/witness rolls back together, these premises fail;
+no successful recovery is claimed for that deployment.
+
+The intent reserves only the original semantic binding and does not issue a send
+grant. Certification acknowledges only an exact publication. A later gate joins
+the current ledger and fence. Native implementation must enforce this ordering
+with authenticated conditional writes; separate stores do not become atomic
+merely because the model presents a single transition.
+
+* Executable negative controls
+
+| Removed contract | Counterexample | Observable violation |
+|------------------+----------------+----------------------|
+| Sticky pending intent | replacedIntentPublicationCounterexampleTest | Original task switches to a different profile commitment/mode |
+| Authoritative journal lookup | localAbsenceReplayPublicationCounterexampleTest | Empty local projection causes a second original publication |
+| Exact committed-prefix confirmation | prematureCertificatePublicationCounterexampleTest | Certificate exists with no root journal record |
+| Binding-matched recovery projection | foreignSnapshotPublicationCounterexampleTest | Active projection carries another binding |
+| Final owner fence | oldWorkerPublicationCounterexampleTest | Previously issued old-owner permit is used under a newer fence |
+| Current execution checkpoint | staleExecutionPublicationCounterexampleTest | Correct profile activates an older execution revision |
+| Exact readable profile object | missingBlobPublicationCounterexampleTest | Activation succeeds without the committed object |
+| Unknown budget hold | unknownRefundPublicationCounterexampleTest | Parent is charged/settled while child usage remains unknown |
+
+Unsafe actions are excluded from =step=. Their [[file:../../../proofs/evidence/llm-registry-publication/itf][ITF traces]] are independently
+decoded. Guarded scenarios also cover profile-key conflicts, wrong source vector,
+foreign claim, publication Policy denial, late commit/certification after fencing,
+source recovery evidence, repeated permits and late final usage.
+
+* Runtime acceptance still required
+
+Inject durable-object reply loss, intent-CAS reply loss, root append/confirmation
+reply loss and delayed callbacks across owner changes. Restore independently old
+object, journal, cache and execution snapshots. Verify exact committed-prefix
+membership and current source namespace, with no local-absence fallback. Keep
+old queued permits alive and prove they fail the final conditional gate. Restrict
+history while refreshing a recovery image; the new image must still deny use.
+Preserve unknown holds until attributable terminal/usage reconciliation and the
+existing account application protocol completes.
+
+Collect native source-bound receipts and matched latency/memory controls. The
+[[file:../../../proofs/evidence/llm-registry-publication/SHA256SUMS][manifest]] seals current artifacts while leaving historical receipts unchanged.
+Model verification is not deployed acceptance or a performance result.
+
+* Local validation result
+
+The final runner completed 22 command routes with exit zero: 11 Lean modules,
+Quint typechecking, 43 scenario controls (35 guarded cases and eight negative
+controls), eight exported counterexample traces, seven bounded sampling routes
+and 41 category-13 regression controls. Each sampling route used ten samples
+and at most 30 post-initializer steps with seed 167. This is bounded simulation,
+not exhaustive temporal verification.
+
+Lean checked 20 printed declarations in the new module without =sorryAx=. The
+independent trace decoder checks actual old-permit issuance and the later
+authority image, as well as the seven other observable contract violations.
+Twelve correspondence rows connect exact Org obligations, passing Quint cases,
+printed Lean statements and existing core D2 nodes. Earlier diagnostics are
+retained; their failed scenarios are not counted as final acceptance.

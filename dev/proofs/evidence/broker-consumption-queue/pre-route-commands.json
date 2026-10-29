@@ -1,0 +1,330 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-broker-consumption-queue-sptlq_gb/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.676,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-broker-consumption-queue-sptlq_gb/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.62,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-broker-consumption-queue-sptlq_gb/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.716,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "GatewayHeadCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-broker-consumption-queue-sptlq_gb/GatewayHeadCAS.olean",
+      "proofs/lean/GatewayHeadCAS.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.766,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "BrokerConsumptionQueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-broker-consumption-queue-sptlq_gb/BrokerConsumptionQueue.olean",
+      "proofs/lean/BrokerConsumptionQueue.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.746,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "typecheck",
+    "args": [
+      "quint",
+      "typecheck",
+      "proofs/qunit/BrokerConsumptionQueue.qnt"
+    ],
+    "exit": 0,
+    "seconds": 1.975,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/BrokerConsumptionQueue.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 3.049,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/BrokerConsumptionQueue.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "(sdkReplay|timeoutRefund|overlappingTail|restartedSpentLoss|enqueueBeforeIntent|unboundLateReceipt)CounterexampleTest$",
+      "--out-itf",
+      "proofs/evidence/broker-consumption-queue/itf/{test}-{seq}.itf.json"
+    ],
+    "exit": 0,
+    "seconds": 2.3,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "init",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/BrokerConsumptionQueue.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "137",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 2.07,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "consumed",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/BrokerConsumptionQueue.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "consumed",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "137",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 2.001,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "queued",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/BrokerConsumptionQueue.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "queued",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "137",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 2.032,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "reserved",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/BrokerConsumptionQueue.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "reserved",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "137",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 2.268,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "uncertain",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/BrokerConsumptionQueue.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "uncertain",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "137",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 2.301,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "firstDone",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/BrokerConsumptionQueue.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "firstDone",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "137",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 2.033,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "complete",
+    "args": [
+      "quint",
+      "run",
+      "proofs/qunit/BrokerConsumptionQueue.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "complete",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "30",
+      "--seed",
+      "137",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 0,
+    "seconds": 2.068,
+    "watchdogSeconds": 30
+  },
+  {
+    "label": "gateway-head-regression",
+    "args": [
+      "quint",
+      "test",
+      "proofs/qunit/GatewayHeadCAS.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$"
+    ],
+    "exit": 0,
+    "seconds": 2.447,
+    "watchdogSeconds": 55
+  }
+]

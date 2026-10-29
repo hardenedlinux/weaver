@@ -1,0 +1,135 @@
+#+title: Weaver Source Custody Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Evidence boundary
+
+This review adds actual executable [[file:../../../proofs/lean/LlmSourceCustody.lean][Lean]] and [[file:../../../proofs/qunit/LlmSourceCustody.qnt][Quint]] artifacts. It imports the
+existing source-join/floor/account chain instead of substituting an independent
+counter model. Source identities belong in this evidence document and its JSON
+receipts; the [[file:41.02-source-custody.d2][core diagram]] contains only design responsibilities.
+
+The model treats durable arm, fence publication, authentic outcome resolution,
+semantic intent equivalence and atomic determining outcome as owner contracts.
+It does not implement a storage engine, prove distributed consensus, test native
+ABI compatibility, or establish provider-side exactly-once delivery. All upstream
+sources and dependency pins remain unchanged.
+
+* Source comparison and reuse decisions
+
+The 19 pinned source files and every recorded excerpt are freshly verified in
+[[file:../../../proofs/evidence/llm-source-custody/source-review.json][source-review.json]]. The [[file:../../../proofs/evidence/llm-source-custody/custody-source-audit.json][focused source audit]] records matching source lines.
+Current working hashes are checked separately: 18 match reviewed bytes; P17 has
+only the two already recorded control-plane import-path changes. This source
+comparison does not relabel those local bytes as a qualified native deployment.
+
+| Source | Reuse | Required extension or premise |
+|--------+-------+------------------------------|
+| P12 authorized-effect-token | Exact effect/root/nonce/context binding | Bind the original custody intent and actual current authority at final CAS |
+| P13 strict-mediation | Pure root and spent-nonce transitions; unknown observation consumes | Persist authoritative consumption and original-result recovery; pure returned state is not a durable fence |
+| P15 lambda-aitia effect-host | Thread ownership, epoch/current grant checks and handoff mutation exclusion | Durable/distributed authority is explicitly absent; persist transferable custody through final CAS |
+| P17 durable store-backend | Store contracts and typed receipts | Qualify actual durable fence/result atomicity; capability declarations alone are insufficient |
+| P18 PromotionTransactionRecovery | Bind recovery to atomic pre/post and effect observations | Couple floor result to the original custody outcome through actual storage authority |
+| P19 authorized transaction recovery bridge | Original authority, claim and recovery binding | Carry custody holder/fence through the determining admission operation |
+| P20 CommittedEffectApplicationExactlyOnce | Conditional trace/runtime-universe application uniqueness | Do not infer native durability or transport delivery from the theorem |
+| P22 durable store | Runtime locking, replay and persistence mechanisms | Establish protection against stale worker and inconsistent snapshot restore at the publication authority |
+| P31 SessionAttempt Lean | Generation/revision and active-to-pending recovery obligations | Preserve those obligations through persistent handoff, not a new schedule identity |
+| P31 SessionAttempt Quint | Executable session scheduling controls | Add crash/lost-response/final-CAS custody races |
+| P33 budget proof | Deterministic semantic budget bound | Retain original reservation on unknown result |
+| P33 runtime watchdog | Operational execution limits | Timeout cannot prove non-execution or authorize refund |
+| P35 context invalidation | Strict authority generation invalidates older context | Qualify persistent current context at actual CAS |
+| P35 lineage prefix closure | Published context belongs to the committed prefix | Recovery must obtain the authoritative current prefix rather than a co-restored stale snapshot |
+| P43 session/funs-attempt | Expected-revision CAS, pending reconciliation, bounded coordinate exhaustion | Receipt says durable?, runtime-published? and action-authorized? are false; add durable authority, fail closed on exhaustion |
+| P44 session/objects-attempt | Explicit task revision, attempt generation and anchor references | Freeze original semantic bindings and retain recovery pins across transfer |
+| C8 Admission/BoundOperation | Exact typed effect/state projection and mismatch rejection | Equality does not authenticate either input; actual source and custody facts must be authentic |
+| C10 CompoundAuthorization | Nonempty required layer allows with no policy errors | Runtime owns atomic business execution and authentic facts; Cedar allow is not a persistent commit permit |
+| C11 Composition | Evaluation/validation dependency preservation and invalidation | Add native custody ordering and final floor CAS refinement |
+
+POO Flow proof modules are compared as source evidence, not imported as newly
+compiled native dependencies. The actual local Lean composition imports Weaver's
+existing source-join/account model chain. These are different evidence scopes.
+
+* Four-artifact property mapping
+
+Every row names an actual printed Lean declaration, a passing Quint control and
+an existing core D2 node. The machine-readable mapping is checked independently.
+
+| ID | Lean declaration | Quint control | D2 node | Meaning and premise |
+|----+------------------+---------------+---------+---------------------|
+| SC1 | join_projection | exactCustodyPublishesTest | broker.cas | A custody event projects to the actual source join or stutter |
+| SC2 | actual_join_composition | recoveredHolderPublishesTest | recovery.join | Arbitrary finite custody run extends an initialized actual join run |
+| SC3 | final_cas_requires_current_custody | oldCustodyCannotPublishTest | broker.cas | Final publication compares current custody and actual current join |
+| SC4 | fence_monotone | unprotectedTransferRejectedTest | recovery.join | Abstract durable transfer advances the fence; native rollback protection is a premise |
+| SC5 | transfer_preserves_original | lostCommitResolvedAfterTransferTest | registry.origin | Transfer retains original intent and outcome |
+| SC6 | old_fence_rejected | oldCustodyCannotResolveTest | broker.alias | Old tuple cannot resolve/commit through the current authority |
+| SC7 | determined_outcome_retained | knownResultCannotPublishAgainTest | broker.alias | A known original outcome cannot be replaced by later custody events |
+| SC8 | unresolved_cannot_close | unknownResultCannotCloseTest | broker.hold | No outcome means no determined custody close |
+| SC9 | source_mutation_blocked_while_armed | armedMutationBlockedTest | recovery.projection | Conservative mutation serialization while armed |
+| SC10 | publication_no_financial_effect | closeOnlyCustodyTest | registry.query | Floor/custody publication does not apply money; account settlement remains separate |
+| SC11 | original_reservation_once | recoveredHolderPublishesTest | broker.hold | Initialized actual account prefix and owner Safe premise imply reservation application at most once |
+| SC12 | unknown_original_hold_retained | unknownResultCannotCloseTest | broker.hold | Unmetered original source plus authentic OriginalReady binding retains original hold |
+| SC13 | original_result_unique | knownResultCannotPublishAgainTest | broker.cas | Existing floor operation identity permits one result |
+
+The new finite Quint fixture starts with an actual pending account hold and an
+unadmitted tail. It is not a fabricated provider unknown-usage receipt. The Lean
+unknown-hold theorem separately states the unmetered source/original reservation
+binding needed to compose that stronger execution property.
+
+* Counterexamples and their limits
+
+| Mutation | Observable failure | Repair |
+|----------+--------------------+--------|
+| oldPermitCustodyCounterexampleTest | Actual inherited append accepts a fresh source join while the outer custody tuple is stale | Check custody tuple at the determining CAS, in the same ordering as transfer |
+| unknownCloseCustodyCounterexampleTest | Restarted armed operation closes without outcome | Retain unknown obligations and resolve under a new fence |
+| unresolvedCloseCustodyCounterexampleTest | Committed but unconfirmed result closes before authoritative resolution | Resolve original result first |
+| droppedIntentCustodyCounterexampleTest | Transfer drops original intent/recovery obligation | Preserve root and pending pins durably |
+| wrongResultCustodyCounterexampleTest | Resolution substitutes another proposal absent from the original committed result | Exact original result binding |
+| armedMutationCustodyCounterexampleTest | Source revision changes during the modeled custody critical section | Serialize or repeat equivalent atomic final comparison |
+| rolledBackFenceCustodyCounterexampleTest | Restored older custody fence violates protected authority continuity | Read current independent authority before resuming |
+
+The last mutation uses a ghost violation marker. It demonstrates the missing
+recovery obligation; it does not prove that a local monitor detects co-rollback
+of itself and the authority. The old-permit mutation really invokes the inherited
+append transition; the remaining descriptor/control mutations do not claim an
+actual provider send or duplicate financial settlement. The ITF decoder checks
+original source execution and account holds independently of the ghost marker.
+
+* Guarded-model diagnostic
+
+Initial random exploration found that the monitor incorrectly required a local
+resolution flag to remain true after an already valid durable close. Restart
+legitimately clears local knowledge while retaining the committed outcome. The
+retained preliminary model and closed-restart ITF witness reproduce that false
+rejection. The corrected invariant preserves the outcome; the close action still
+requires current resolution, and the broken close monitor records violation of
+that transition precondition. =closedRestartRetainsOutcomeTest= guards this case.
+A separate verbose simulator trace attempt hit a Quint trace-recorder assertion;
+it is retained as tool failure evidence, not counted as a safety result.
+
+* Reproducible acceptance
+
+Run [[file:../../../proofs/check_llm_source_custody.py][the isolated checker]]; see [[file:../../../proofs/evidence/llm-source-custody/commands.json][command receipts]] and [[file:../../../proofs/evidence/llm-source-custody/receipt.json][final receipt]].
+The checker compiles the complete local Lean import closure, prints new theorem
+axioms, typechecks Quint, runs guarded and mutation controls, exports ITF traces,
+samples nine recovery initializers and regresses the preceding source-join model.
+The Quint model imports the actual source-join module and selects six floor
+members (the proposal/result types, floor state and three immutable fixtures).
+This avoids duplicating a complete second floor namespace. Its 23 new controls
+run separately from the preceding model's 103-control regression, which includes
+the parent join, floor and account controls. The ITF decoder checks the actual
+floor log and handoff tail together, as well as account holds and provider state.
+Typechecking still covers the complete model.
+
+Typecheck attempts and a full-control attempt exceeded their unchanged watchdogs;
+these are retained alongside the guarded-monitor diagnostic. The isolated checker
+can resume already successful Lean compilation only after verifying every source
+hash and compiled output exists. This saves repeated compilation without treating
+a timed-out route as successful. All failures remain in preliminary logs; they
+are not overwritten as passes.
+
+Acceptance requires all command exits zero, no sorryAx in new Lean declarations,
+independent ITF decoding, four-artifact links, English Org link/export validation,
+D2 validation/render inspection, unchanged prior sealed evidence and dependency
+hashes. Finite sampling is bounded evidence rather than exhaustive model checking.
+Native custody/outcome atomicity, availability, anti-rollback authority and actual
+provider send fencing remain implementation qualification requirements.

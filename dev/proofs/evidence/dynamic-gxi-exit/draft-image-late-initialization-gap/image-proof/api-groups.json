@@ -1,0 +1,27 @@
+[
+  [
+    "twoLogicalRefsOneImageTest",
+    "oneCloseCannotUnmapTest",
+    "finalCloseAllowsUnmapTest"
+  ],
+  [
+    "duplicateAcquisitionRejectedTest",
+    "duplicateCloseRejectedTest",
+    "shutdownRejectsAcquisitionTest"
+  ],
+  [
+    "mappingDoesNotInitializeTest",
+    "requestedEntriesStayLazyTest",
+    "foreignInitializerRejectedTest"
+  ],
+  [
+    "duplicateEntryRejectedTest",
+    "independentImageCanReleaseTest",
+    "earlyUnmapCounterexampleTest"
+  ],
+  [
+    "forgottenReferenceCounterexampleTest",
+    "eagerForeignCtorCounterexampleTest",
+    "collapsedEntryCounterexampleTest"
+  ]
+]

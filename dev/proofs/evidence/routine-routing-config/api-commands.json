@@ -1,0 +1,170 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 2,
+    "sourceSha256": "ca542a7130cc462612500657dc6d2b898467e759726b2ff733b72dca8a8dc18f",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.379
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "4892899477a078aa7250d23b736a504f3a974feabd385886064b123b5c4935b4",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 0.342
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "schemeSurfaceUsesSameNormalTest",
+      "jsonSurfaceUsesSameNormalTest",
+      "yamlSurfaceUsesSameNormalTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.028
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "typedConfigRequiredTest",
+      "fullSourceClosureRequiredTest",
+      "publisherAdmissionRequiredTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.007
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "droppedCapabilityRejectedTest",
+      "largerBudgetRejectedTest",
+      "forgedProfileRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.018
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "changedResponseModeRejectedTest",
+      "forgedRootRejectedTest",
+      "unsupportedCheapRouteRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.021
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "configuredTargetIsNotPermissionTest",
+      "emptyCandidateSetFailsClosedTest",
+      "narrowedAllowanceConstrainsRouteTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.017
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "allowedAlternativeKeepsOriginalRootTest",
+      "newDefaultDoesNotRewritePinnedRoutineTest",
+      "hardWithdrawalInvalidatesOldSelectionTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.009
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "softTelemetryPreservesHardAuthorityTest",
+      "newSelectionUsesCurrentRankingTest",
+      "historyRestrictionRecheckedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.021
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "currentCompilerArtifactRequiredTest",
+      "finalPolicyRequiredTest",
+      "configCannotRewriteWireTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.02
+  },
+  {
+    "label": "api-controls-8",
+    "passed": [
+      "unknownOutcomeKeepsOriginalAdmissionTest",
+      "routineCannotSpliceResponseSourcesTest",
+      "strengthenedContractFiltersPrimaryTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.0
+  },
+  {
+    "label": "api-controls-9",
+    "passed": [
+      "strengthenedContractChoosesCapableBackupTest",
+      "weakenedConfigCounterexampleTest",
+      "replacedRoutineCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.012
+  },
+  {
+    "label": "api-controls-10",
+    "passed": [
+      "rewrittenRootCounterexampleTest",
+      "hiddenRetryCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.0
+  }
+]

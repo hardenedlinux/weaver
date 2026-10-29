@@ -1,0 +1,156 @@
+#+TITLE: 59.13 Original Plan and Encoding Bound Response Release
+#+LANGUAGE: en
+
+* Defect and implemented boundary
+
+ProviderRelease previously carried only its ledger session, batch digest,
+sequence and length. Two consumed plans in the same ledger session can produce
+identical response payload digests and intervals. A token prepared for one could
+then be passed to release_provider with the other plan's dispatch handle. The
+matching pending row and fresh Cedar decision did not prove ownership of the
+particular token. The supplied encoding could also change after preparation.
+
+The retained [[file:../../../dev/proofs/evidence/release-binding-20261030/unbound-release-counterexamples.log][unmodified-runtime counterexamples]] show both cases entering the
+callback. This is an internal Rust capability-interface defect: public gRPC
+accepts plans, not ProviderRelease values. It does not establish a remotely
+exploitable ticket-forgery path.
+
+The private token now additionally carries the original plan commitment and
+prepared encoding. Before acquiring a release transaction, Rust checks both
+against the supplied dispatch handle and requested encoding. Existing checks
+remain mandatory: ledger session, active original consumption, current
+revision/fence and task binding, every-row Cedar permission, and the exact
+durable unknown batch row. The plan commitment includes family, node, profile,
+model, body digest, ordered routes and ceiling; an equal response batch digest
+does not identify the same plan. Comparing an already captured commitment adds
+no new hashing, network call or database transaction on this path.
+
+* Failure and recovery contract
+
+| Situation | Result |
+|-----------+--------|
+| Matching original plan, encoding, session, row and current authority | Existing bounded callback may run once |
+| Equal batch digest under another original node | Reject before callback; original pending releases remain unknown |
+| Prepared Arrow token supplied as Protobuf, or the converse | Reject even when Cedar permits both formats |
+| Ledger restart with an old dispatch/release handle | Existing session checks reject; handles are not reconstructed |
+| Rejected token moved and discarded | No unburn, implicit reprepare, new claim or refund |
+| Other plan's legitimate pending token | Remains independently usable under its own current guard |
+| Queue admission followed by lost commit response | Preserve original unknown accounting; do not replay the release |
+
+The encoding is captured in the process-private token, not added to a durable
+schema. This is sufficient only because the current owner never reconstructs
+release handles after restart. Distributed token transfer or release recovery
+requires a separately durable complete binding and cannot reuse this local
+assumption. Existing database schema and dependency pins are unchanged.
+
+Queue admission is the local effect boundary. Neither the new check nor a
+released row proves peer receipt or retracts bytes already admitted to transport.
+Completion and usage observations still cannot release an unknown reservation.
+
+* Language ownership and source correspondence
+
+Scheme/POO Governance remains responsible for source task and semantic
+commitments. Go proposes only the original committed routing/profile and consumes
+ordered RPC data; it neither constructs release capabilities nor grants authority
+by decoding Protobuf or Arrow. Rust owns durable consumption, the private affine
+release token, current Cedar/SQL checks and the sole bounded queue callback.
+
+The reviewed POO Flow module
+=modules/session/policy-tool-grant.ss= explicitly separates grant slot validation
+and matching from execution. Its runtime-executed marker is not a Rust queue
+admission receipt. This increment preserves that separation; it does not claim a
+new Scheme native-execution bridge.
+
+In cedar-poo-spec, =Admission/BoundOperation.lean= fixes the effect/state projection
+and rejects changed effect or state before proof reuse.
+=Admission/AuthorityConsumption.lean= checks exact effect under a stable grant ID
+and explicitly leaves transactional persistence to the Host. The existing
+imported =WeaverPolicyBridge.changed_effect_rejects_bound_reuse= is reusable at
+that semantic boundary. Rust's new checks discharge part of its concrete host
+obligation; upstream pure evaluation does not prove SQLite, Rust ownership or
+transport durability. No dependency revision was changed.
+
+* Native, Quint and Lean correspondence
+
+The two deterministic Rust regressions use two original nodes sharing one
+eight-credit budget, the same batch digest and equal sequence intervals. They
+check zero foreign callbacks, one legitimate independent callback, retained
+pending state, restart and the unchanged shared hold. A sixty-four-case PBT varies
+one to thirty-two rows, both encodings, the selected plan and process session.
+It admits a callback exactly when plan, encoding and session all match.
+
+=ReleaseBinding.qnt= projects one pending batch per each of three already
+consumed plans. It deliberately makes payload digests and intervals equal, so
+their accidental equality cannot stand in for identity. Thirteen controls cover
+matching release, transfer rejection, encoding rejection, independent progress,
+restart before and after preparation, discarded pending tokens, duplicate/revoked
+release, two unsafe binding-omission counterexamples and an unsafe dispatch
+session refresh. Original dispatch handles belong to session zero: restart may
+not mint a replacement token even for an original batch not yet prepared.
+This guard matches check_provider_session before native preparation. Sampled
+safety is bounded; it does not model
+the complete account or every native batch in one state machine.
+
+The ProviderRpc Lean extension uses an arbitrary plan-key type and arbitrary
+finite release histories. It proves preservation of plan/encoding/session
+binding, unique admitted token serials and the original shared hold, and composes
+these with invocation safety and cancellation history. The native refinement
+must provide an injective serial for each durable logical release interval;
+local sequence zero alone is not globally unique. Cryptographic commitment
+integrity, opaque token construction, original admission and adequate cost
+bounds, durable non-rollback storage and faithful callbacks remain explicit
+premises. The proof is not a compiler or device-isolation proof.
+
+SysML =OriginalReleaseCapability= maps to the two native regressions, the PBT,
+Quint counterexample and Lean composition theorem. The core D2 carries only the
+plan/encoding token and current release guard; evidence belongs here.
+
+* Validation evidence
+
+The original native failures are retained, rather than replaced by passing logs.
+The first Quint attempt also exposed an invalid test composition: inspecting
+state after a failing action produced QNT502. The expectation now precedes the
+failing action; no invariant, sample count or timeout was weakened.
+
+The [[file:../../../dev/proofs/evidence/release-binding-20261030/verification-current/receipt.json][final unified verification receipt]] retains 158 unchanged input hashes;
+thirty-eight of thirty-nine stages pass. Its native suite reports fifty-nine passing Rust tests, including
+all five ASP deny gates, the new sixty-four-case capability PBT and both original
+regressions. Default/all-feature compilation, Clippy, Go race tests, real
+TLS/gRPC integration, strict SysML/trace analysis and the imported Cedar bridge
+pass. The dedicated provider-routing fuzz stage fails at its unchanged three-second
+window with =context deadline exceeded= and no reported failing input. An exact
+argument retry passes, but does not clear the full-run failure. Its discovery
+cache has grown from forty to forty-two baseline inputs, so this is not a paired
+identical-corpus experiment. ReleaseBinding checks thirteen controls and 1000 sampled traces with a sixty-step
+bound. ProviderRpc prints thirty-one checked Lean declarations, including the
+six new release-binding declarations, with no sorryAx.
+
+The separate [[file:59.05-benchmarks.org][per-package benchmark contract]] requires all eighteen cases
+from the current run. Earlier timing evidence remains attached to its own source
+hashes; safety checks alone cannot qualify performance.
+
+The [[file:../../../dev/proofs/evidence/release-binding-20261030/benchmark-current/receipt.json][complete measured receipt]] records all eighteen Rust cases and all three
+Go RPC benchmark families. Twelve Rust cases report improvement and six report
+no significant change against the local Criterion cache. That is not a matched
+causal experiment or a production performance qualification. Earlier regression
+warnings remain retained under their original source receipts.
+
+The [[file:../../../dev/proofs/evidence/release-binding-20261030/verification-before-session-model-alignment/receipt.json][earlier unified receipt]] and the measured receipt use identical inputs.
+That earlier unified receipt passes all thirty-nine stages.
+The subsequent alignment changes only =ReleaseBinding.qnt=: an old dispatch must
+not prepare a new token after owner restart. The final unified check uses that
+new model hash; runtime, benchmark fixtures and dependency inputs remain the
+same. Timing evidence is not relabeled as an execution of the later model.
+
+The isolated [[file:../../../dev/proofs/evidence/release-binding-20261030/context-propagation-probe.go][Go context propagation probe]] observes three parent-deadline/
+child-error ordering windows in 10000 fixed trials. The installed Go source
+closes the parent's Done channel before cancelling children; its fuzz coordinator
+compares a returned context error with the derived fuzz context's current error.
+This supports a cancellation-ordering hypothesis for the fuzz failure but does
+not reproduce the exact failed fuzz coordinator execution. The unresolved
+verification failure remains an admission gap, with no timeout increase, error
+suppression or automatic passing retry.
+
+The later [[file:59.14-go-fuzz-coordinator.org][Go fuzz coordinator increment]] identifies the corresponding upstream
+source repair and adds independent development-toolchain admission and native
+property-failure controls. This historical failed receipt remains unchanged.

@@ -1,0 +1,217 @@
+P12 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/authorized-effect-token.ss
+152:         (outcome 'committed) (token-id (.ref token 'token-id))
+P13 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/strict-mediation.ss
+5: ;;; Boundary: Strict mediation owns pure nonce/root state transitions.
+10: (export poo-flow-strict-mediation-state
+12:         poo-flow-strict-mediation-result-state
+15: (def (poo-flow-strict-mediation-state root seq spent revocation)
+16:   (.o (kind 'poo-flow-strict-mediation-state)
+21: (def (transition current-state receipt-value)
+23:       (state current-state) (receipt receipt-value)))
+25: (def (negative-receipt reason current-state effect-token)
+29:       (before-root (.ref current-state 'execution-root))
+30:       (after-root (.ref current-state 'execution-root))
+33: (def (poo-flow-strict-mediate state token validation-context expected-root
+36:    ((not (equal? expected-root (.ref state 'execution-root)))
+37:     (transition state (negative-receipt 'execution-root-fork state token)))
+42:         (transition state (negative-receipt (.ref validation 'code) state token))
+45:                  (next-state
+46:                   (poo-flow-strict-mediation-state
+47:                    (.ref state 'execution-root) (+ 1 (.ref state 'sequence))
+48:                    (cons token-nonce (.ref state 'consumed-nonces))
+P15 cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc modules/assurance/effect-host.ss
+25:   (let (state (hash-get hosts host))
+26:     (unless (and state (eq? (vector-ref state 0) (current-thread)))
+28:     (when (vector-ref state 7) (error "effect Host mutation during runtime handoff"))
+29:     state))
+30: (def (instant state)
+31:   (let (now ((vector-ref state 3)))
+32:     (unless (and (exact-integer? now) (>= now (vector-ref state 8)))
+34:     (vector-set! state 8 now)
+36: (def (handoff state operation)
+38:     (lambda () (vector-set! state 7 #t))
+40:     (lambda () (vector-set! state 7 #f))))
+42: ;;; Runtime authorize: Request -> CedarDecision or #f (deny/indeterminate).
+43: ;;; Runtime deliver: Request Token -> delivered / failed / indeterminate.
+54:   (let (state (entry host))
+55:     (vector-set! state 5 (+ 1 (vector-ref state 5)))))
+64: (def (current? state issued)
+66:        (= (vector-ref state 5) (vector-ref issued 4))
+67:        (< (instant state) (vector-ref issued 5))
+P17 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store-backend.ss
+8: ;;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs.
+P18 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean
+7: namespace PooFlowProof.Enterprise.PromotionTransactionRecovery
+13: abbrev RecoveryReceiptId := String
+16:   request : PromotionCommitRequest
+31: def conflictingCommitRequest : PromotionCommitRequest :=
+32:   { commitRequestA with
+33:     targetPostStateDigest := "sha256:runtime-conflicting-target" }
+35: def conflictingCommittedReceipt : PromotionCommitReceipt :=
+36:   { committedReceiptA with
+37:     receiptId := "commit-conflicting"
+38:     postStateDigest := "sha256:runtime-conflicting-target" }
+40: theorem conflictingCommitAlsoClosesIndividually :
+41:     promotionCommitEvidenceClosed
+46:       conflictingCommitRequest
+47:       conflictingCommittedReceipt := by
+49:     promotionCommitEvidenceClosed,
+50:     commitSubjectMatchesSnapshot,
+51:     outcomePreservesAtomicState,
+56:     conflictingCommitRequest,
+P19 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean
+5: import PooFlowProof.Enterprise.PromotionTransactionRecovery
+6: import PooFlowProof.Enterprise.SourceBoundEffectCompletionCrashRecoveryClosure
+7: import PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore
+9: namespace PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore
+14: open PromotionTransactionRecovery
+15: open SourceBoundCheckpointRestoreAuthorizationClosure
+16: open SourceBoundEffectCompletionCrashRecoveryClosure
+17: open SourceBoundEffectCompletionRecoveryCedarAuthorizationLifecycleCore
+18: open SourceBoundEffectCompletionRecoveryCedarAuthorizationSubjectBridgeCore
+19: open SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore
+21: abbrev SourceBoundEffectCompletionRecoveryExpectationRequestBindingValid :=
+22:   SourceBoundLatestCheckpointRestoreRequest →
+23:     PromotionCommitRequest →
+26: abbrev SourceBoundEffectCompletionRecoveryAuthorizationRequestBindingValid :=
+28:     PromotionCommitRequest →
+29:       RecoveryClaim →
+32: abbrev SourceBoundEffectCompletionRecoveryRecoveryIdentityBindingValid :=
+34:     RecoveryReceiptId →
+P20 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean
+7: namespace PooFlowProof.Enterprise.CommittedEffectApplicationExactlyOnce
+18: def sourceBoundTraceExecutesUniverseExactlyOnce
+25: structure SourceBoundCommittedEffectExactlyOnceClosed
+27:     (activeFenceToken : Nat)
+41:       activeFenceToken
+52:   effectUniverseExecutesExactlyOnce :
+53:     sourceBoundTraceExecutesUniverseExactlyOnce witness traceReceipt
+55: structure SourceBoundCommittedEffectExactlyOnceEvidence where
+57:   activeFenceToken : Nat
+69:     SourceBoundCommittedEffectExactlyOnceClosed
+71:       activeFenceToken
+83: theorem closedCommittedEffectsPreserveSourceBoundComposition
+85:     {activeFenceToken : Nat}
+97:       SourceBoundCommittedEffectExactlyOnceClosed
+99:         activeFenceToken
+112:       activeFenceToken
+125: theorem everyDeclaredEffectExecutesExactlyOnce
+127:     {activeFenceToken : Nat}
+P22 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store.ss
+8: ;;; owns storage, locking, leases, fsync, backfill, replay, and side effects.
+31:         poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref
+72:   '(fact-log checkpoint derived-index job repair artifact communication sandbox))
+77:     write-checkpoint
+158:          (checkpoint-store-ref
+160:                                                 'checkpoint-store-ref
+161:                                                 'runtime/checkpoint-store))
+209:       (cons 'runtime-store-checkpoint-store-ref checkpoint-store-ref)
+350:     'checkpoint-store-ref
+351:     'missing-checkpoint-store-ref
+354:      'runtime-store-checkpoint-store-ref
+484:    checkpoint-store-ref
+550:       'runtime-store-checkpoint-store-ref
+623:            (checkpoint-store-ref
+624:             (poo-flow-durable-runtime-store-contract-receipt-checkpoint-store-ref
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean-poo/SessionAttempt.lean
+6: def quintInvariantNames : List String := ["ExactAttempt", "RecoveryPreservesObligation", "ClosedIsTerminal"]
+14:   pending : List (Nat × α)
+19:                   active := none, pending := s.active.toList ++ s.pending }
+27: theorem closed_recovery_refused (s : Schedule α) (closed : s.closed = true) :
+29: theorem recovery_generation_advances (s : Schedule α) (openState : s.closed = false) :
+31:   simp [recover, openState]
+32: theorem recovery_revision_advances (s : Schedule α) (openState : s.closed = false) :
+34:   simp [recover, openState]
+35: theorem recovery_keeps_obligations (s : Schedule α) (openState : s.closed = false) :
+36:     (recover s).map Schedule.pending = some (s.active.toList ++ s.pending) := by
+37:   simp [recover, openState]
+38: theorem recovery_fences_active (s : Schedule α) (openState : s.closed = false) :
+39:     (recover s).map Schedule.active = some none := by simp [recover, openState]
+61:     if (`PooFlowSessionAttemptProof).isPrefixOf name then
+66:   for required in #[`PooFlowSessionAttemptProof.closed_recovery_refused,
+67:       `PooFlowSessionAttemptProof.recovery_generation_advances,
+68:       `PooFlowSessionAttemptProof.recovery_revision_advances,
+69:       `PooFlowSessionAttemptProof.recovery_keeps_obligations,
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/quint/SessionAttempt.qnt
+7:   var pending: int
+12:   action init = all { generation' = 0, active' = -1, pending' = -1,
+15:     not(closed), active == -1, pending == -1, generation < 3,
+17:     pending' = pending, closed' = closed, everClosed' = everClosed, routed' = routed, recoveries' = recoveries
+23:     generation' = generation, pending' = pending, closed' = closed, everClosed' = everClosed, recoveries' = recoveries
+28:     pending' = if (BUG == "dropObligation") -1 else if (active >= 0) active else pending,
+29:     recoveries' = recoveries.append((if (active >= 0) active else pending,
+30:       if (BUG == "dropObligation") -1 else if (active >= 0) active else pending)),
+34:     pending >= 0, pending' = -1, active' = active, generation' = generation,
+38:     not(closed), active == -1, pending == -1, closed' = true, everClosed' = true,
+39:     generation' = generation, active' = active, pending' = pending,
+47:   val RecoveryPreservesObligation = recoveries.foldl(true, (ok,r) => ok and (r._1 < 0 or r._1 == r._2))
+49:   val safety = ExactAttempt and RecoveryPreservesObligation and ClosedIsTerminal
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean
+14: generation an anti-ABA fence rather than a mutable version label.
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean
+7: namespace PooFlowProof.Enterprise.ReceiptContextLineagePrefixClosure
+12: structure AuthorityContextLineagePrefix where
+16: def lineagePrefixAt
+18:     (headPosition : Nat) : AuthorityContextLineagePrefix :=
+21: def publishedByLineagePrefix
+22:     (lineagePrefix : AuthorityContextLineagePrefix)
+25:     position ≤ lineagePrefix.headPosition ∧
+26:       lineagePrefix.lineage.contextAt position = context
+28: theorem lineagePrefixHeadIsPublished
+29:     (lineagePrefix : AuthorityContextLineagePrefix) :
+30:     publishedByLineagePrefix
+31:       lineagePrefix
+32:       (lineagePrefix.lineage.contextAt lineagePrefix.headPosition) :=
+33:   ⟨lineagePrefix.headPosition, Nat.le_refl _, rfl⟩
+36:     (lineagePrefix : AuthorityContextLineagePrefix)
+38:     (notAfterHead : position ≤ lineagePrefix.headPosition) :
+39:     publishedByLineagePrefix
+40:       lineagePrefix
+P43 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/session/funs-attempt.ss
+5: ;;; Recovery reconciliation cannot be inferred from a provider completion.
+23: (def (receipt accepted-value reason-value state-value)
+25:       schedule: state-value runtime-published?: #f action-authorized?: #f durable?: #f))
+26: (def (guard state expected operation)
+27:   (cond ((not (poo-flow-session-schedule-shape? state)) (receipt #f 'invalid-schedule #f))
+28:         ((not (equal? expected (.ref state 'revision))) (receipt #f 'stale-revision state))
+29:         ((eq? (.ref state 'status) 'closed) (receipt #f 'closed state))
+30:         ((or (= (.ref state 'revision) 65535) (= (.ref state 'generation) 65535))
+31:          (receipt #f 'coordinate-exhausted state))
+33: (def (next-state state status-value active-value obligations-value completed-value generation-value)
+34:   (let ((id-value (string-copy (.ref state 'identity))) (revision-value (+ 1 (.ref state 'revision))))
+41: (def (poo-flow-session-claim state expected task-value attempt-id request-id turn-value)
+42:   (guard state expected (lambda ()
+43:     (cond ((not (eq? (.ref state 'status) 'idle)) (receipt #f 'not-idle state))
+45:                      (exact-integer? turn-value) (<= 0 turn-value 65535))) (receipt #f 'invalid-claim state))
+46:           ((or (not (equal? (.ref (.ref task-value 'input) 'consumer-session) (.ref state 'identity)))
+48:            (receipt #f 'wrong-consumer state))
+49:           ((or (member attempt-id (.ref state 'completed)) (>= (length (.ref state 'completed)) 128))
+C8 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Admission/BoundOperation.lean
+4: A typed operation projects the effect and observed state into Cedar's request
+6: must still authenticate the actual effect and state before execution.
+13: structure BoundOperation (Effect State : Type)
+14:     (project : Effect → State → Request) where
+16:   state : State
+18: def BoundOperation.request {Effect State : Type}
+19:     {project : Effect → State → Request}
+20:     (operation : BoundOperation Effect State project) : Request :=
+21:   project operation.effect operation.state
+23: /-- Check a concrete operation against the actual effect and state supplied
+25: def BoundOperation.matches {Effect State : Type}
+26:     {project : Effect → State → Request}
+27:     [DecidableEq Effect] [DecidableEq State]
+28:     (operation : BoundOperation Effect State project)
+29:     (effect : Effect) (state : State) : Bool :=
+30:   decide (operation.effect = effect ∧ operation.state = state)
+35:   | stateMismatch
+42: def BoundOperation.authorize {Effect State : Type}
+C10 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/CompoundAuthorization.lean
+27:       response.decision == .allow && response.erroringPolicies.isEmpty)
+50:     layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty
+C11 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Composition.lean
+45:   holds := fun state =>
+46:     state (.inl .expr) = (state (.inr .policy)).toExpr
+97:         (replaceExprPatch evaluation expr)).state := by
+116:         (replacePolicyPatch validation policy)).state := by

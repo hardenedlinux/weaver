@@ -1,0 +1,233 @@
+[
+  {
+    "id": "SA1",
+    "lean": "task_retained",
+    "obligation": "Original task and intended subject/producer remain fixed",
+    "quint": "taskOriginCannotComeFromSharedWorkloadTest",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "SA2",
+    "lean": "assignment_retained",
+    "obligation": "Canonical assignment cannot be replaced",
+    "quint": "existingAssignmentCannotBeReplacedTest",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "SA3",
+    "lean": "assignment_run",
+    "obligation": "Recovery retains the same original pending intent",
+    "quint": "lostAssignmentReplyRetainsOriginalTest",
+    "d2": "protocols.acp"
+  },
+  {
+    "id": "SA4",
+    "lean": "no_enrollment_replacement",
+    "obligation": "Rotation/recovery cannot replace the enrollment key",
+    "quint": "existingAssignmentCannotBeReplacedTest",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "SA5",
+    "lean": "original_enrollment_bound",
+    "obligation": "Original Task fixes the enrollment key",
+    "quint": "originalEnrollmentKeyCannotChangeTest",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "SA6",
+    "lean": "shared_identity_rejected",
+    "obligation": "Shared workload material is not an independent subject proof",
+    "quint": "sharedIdentityCannotAssignTest",
+    "d2": "protocols.mcp"
+  },
+  {
+    "id": "SA7",
+    "lean": "other_authority_rejected",
+    "obligation": "Another issuer is not the configured subject authority",
+    "quint": "otherIdentityIssuerRejectedTest",
+    "d2": "protocols.mcp"
+  },
+  {
+    "id": "SA8",
+    "lean": "other_tenant_rejected",
+    "obligation": "Subject tenant must match the original Task",
+    "quint": "tenantSubstitutionRejectedTest",
+    "d2": "protocols.a2a"
+  },
+  {
+    "id": "SA9",
+    "lean": "wrong_producer_rejected",
+    "obligation": "Producer principal is fixed by the original Task",
+    "quint": "producerSubstitutionRejectedTest",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "SA10",
+    "lean": "rotation_preserves_identity",
+    "obligation": "Credential rotation cannot rename the subject",
+    "quint": "rotationCannotRenameSubjectTest",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "SA11",
+    "lean": "rotation_advances_generation",
+    "obligation": "Credential generation cannot be reopened",
+    "quint": "generationCannotBeReopenedTest",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "SA12",
+    "lean": "stale_subject_rejected",
+    "obligation": "Old subject approval cannot cross rotation",
+    "quint": "subjectRotationInvalidatesOldApprovalTest",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "SA13",
+    "lean": "stale_producer_rejected",
+    "obligation": "Old producer approval cannot cross rotation",
+    "quint": "producerRotationInvalidatesOldApprovalTest",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "SA14",
+    "lean": "stale_read_rejected",
+    "obligation": "Source changes invalidate the observed outer revision",
+    "quint": "oldSourceReadCannotPublishTest",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "SA15",
+    "lean": "sources_step",
+    "obligation": "Source records require authentic configured authority facts",
+    "quint": "forgedAuthorityCounterexampleTest",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "SA16",
+    "lean": "valid_step",
+    "obligation": "Every assignment preserves the original Task template",
+    "quint": "replacedEnrollmentCounterexampleTest",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "SA17",
+    "lean": "joined_step",
+    "obligation": "Every predecessor Plan needs its original assignment and outcome",
+    "quint": "missingPlanOutcomeCounterexampleTest",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "SA18",
+    "lean": "outcome_step",
+    "obligation": "A publication outcome must identify an actual exact Plan",
+    "quint": "phantomPlanOutcomeCounterexampleTest",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "SA19",
+    "lean": "qualified_step",
+    "obligation": "Legal updates preserve complete source/assignment/Plan joins",
+    "quint": "sameKeyCredentialRotationCanReauthorizeTest",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "SA20",
+    "lean": "qualified_run",
+    "obligation": "Finite recovery cannot erase original assignment provenance",
+    "quint": "erasedAssignmentCounterexampleTest",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "SA21",
+    "lean": "inconsistent_image_rejected",
+    "obligation": "Fresh raw reads cannot repair split recovery",
+    "quint": "splitRecoveryCannotIssueTest",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "SA22",
+    "lean": "task_origin",
+    "obligation": "Task authority comes from the configured original producer source",
+    "quint": "taskOriginCannotComeFromSharedWorkloadTest",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "SA23",
+    "lean": "assignment_from_original_task",
+    "obligation": "Assignment derives from an authoritative original Task",
+    "quint": "assignmentDoesNotPublishOrIssueTest",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "SA24",
+    "lean": "new_plan_has_current_assignment",
+    "obligation": "Final publication needs current subject and producer approval",
+    "quint": "sameKeyCredentialRotationCanReauthorizeTest",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "SA25",
+    "lean": "new_plan_has_no_credential_effect",
+    "obligation": "Plan commit cannot issue credentials or send",
+    "quint": "planPublicationHasNoCredentialEffectTest",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "SA26",
+    "lean": "new_credential_rechecks_subject",
+    "obligation": "Later credential issuance rechecks rotated identity",
+    "quint": "rotatedIdentityRecheckedAtNewIssueTest",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "SA27",
+    "lean": "composition",
+    "obligation": "Authority updates project to actual predecessor traces",
+    "quint": "actualActivationPreservesOriginalHoldTest",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "SA28",
+    "lean": "credential_retained",
+    "obligation": "Existing enrollment credentials retain their immutable identity",
+    "quint": "renewalRetainsIssuedCredentialTest",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "SA29",
+    "lean": "first_key_retained",
+    "obligation": "Identity recovery cannot replace the first beneficiary key",
+    "quint": "recoveredWorkerCannotReplaceFirstKeyTest",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "SA30",
+    "lean": "original_reservation_once",
+    "obligation": "Original account application remains conditionally unique",
+    "quint": "actualActivationPreservesOriginalHoldTest",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "SA31",
+    "lean": "unknown_original_hold_retained",
+    "obligation": "Unknown original use retains its exact hold",
+    "quint": "actualActivationPreservesOriginalHoldTest",
+    "d2": "registry.query"
+  },
+  {
+    "id": "SA32",
+    "lean": "missing_current_credential_rejected",
+    "obligation": "A copied public generation is not a current credential",
+    "quint": "exactJointProofRequiredTest",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "SA33",
+    "lean": "missing_issue_identity_rejected",
+    "obligation": "Current approval cannot substitute for this issue caller credential",
+    "quint": "oldCredentialCannotBorrowNewGenerationTest",
+    "d2": "broker.alias"
+  }
+]

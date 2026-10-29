@@ -1,0 +1,177 @@
+[
+  {
+    "label": "LlmBootstrapInvitation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmBootstrapInvitation.olean",
+      "proofs/lean/LlmBootstrapInvitation.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmBootstrapInvitation.lean": "80baeb073fc1c410daa5e6c6510834fce29eb21b25df5ccf923a6770f8e31244"
+    },
+    "exit": 0,
+    "seconds": 7.477,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "verify-bundle",
+    "args": [
+      "python3",
+      "proofs/evidence/llm-bootstrap-invitation/check-bundle.py"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-bootstrap-invitation/check-bundle.py": "9430401676a28928c504b438633c9eb85654829435591755a9e1c27cc26c5c96"
+    },
+    "exit": 0,
+    "seconds": 0.421,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "bundle-controls-0",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-0/LlmBootstrapInvitation.qnt",
+      "--main",
+      "LlmBootstrapInvitation",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "Test$",
+      "--out-itf",
+      "proofs/evidence/llm-bootstrap-invitation/itf/{test}-{seq}.itf.json"
+    ],
+    "exit": 0,
+    "seconds": 37.66821554204216,
+    "watchdogSeconds": 55,
+    "sourceSha256": {
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-0/LlmBootstrapInvitation.qnt": "848b5b6e6e859a2e08cad2e9ac914f087d2faf3c8b5873e1b9f864b4eafd013c"
+    }
+  },
+  {
+    "label": "bundle-controls-1",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-1/LlmBootstrapInvitation.qnt",
+      "--main",
+      "LlmBootstrapInvitation",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(unregisteredInvitationRejectedTest|splitCommitInvitationCounterexampleTest|sharedKubernetesIdentityRejectedTest|forwardedInvitationNoKeyRejectedTest)$",
+      "--out-itf",
+      "proofs/evidence/llm-bootstrap-invitation/itf/{test}-{seq}.itf.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-1/LlmBootstrapInvitation.qnt": "e924e06b4be7ad8b2379b2308d0031e9fc301d20c18036ddba1cbab08cff0f33"
+    },
+    "exit": 0,
+    "seconds": 32.102,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "bundle-controls-2",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-2/LlmBootstrapInvitation.qnt",
+      "--main",
+      "LlmBootstrapInvitation",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(invalidPossessionRejectedTest|substitutedSessionRejectedTest|exactBindingRequiredTest|concurrentReadInvalidatedTest)$",
+      "--out-itf",
+      "proofs/evidence/llm-bootstrap-invitation/itf/{test}-{seq}.itf.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-2/LlmBootstrapInvitation.qnt": "00d199a199d76b06a11e9215e28b1889dca3d2c040d7efb97d502b4851e5c27c"
+    },
+    "exit": 0,
+    "seconds": 44.155,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "bundle-controls-3",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-3/LlmBootstrapInvitation.qnt",
+      "--main",
+      "LlmBootstrapInvitation",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(revokedEpochRejectedTest|bearerOnlyInvitationCounterexampleTest|consumptionCommitsExactResultTest|lostReplyCannotConsumeTwiceTest)$",
+      "--out-itf",
+      "proofs/evidence/llm-bootstrap-invitation/itf/{test}-{seq}.itf.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-3/LlmBootstrapInvitation.qnt": "4a8c15377a267d83b720934f2f54b2a44a29321fb9879599dc440cd3f119d038"
+    },
+    "exit": 0,
+    "seconds": 50.765,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "bundle-controls-4",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-4/LlmBootstrapInvitation.qnt",
+      "--main",
+      "LlmBootstrapInvitation",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(lostReplyRecoversSameResultTest|oldWorkerCannotRecoverTest|recoveryReadPolicyRequiredTest|lostConsumptionRecordInvitationCounterexampleTest)$",
+      "--out-itf",
+      "proofs/evidence/llm-bootstrap-invitation/itf/{test}-{seq}.itf.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-4/LlmBootstrapInvitation.qnt": "93262dd23b1379c94a0d3dddb8ee0b6b97cee4278e4f43917f8ad63362e20bda"
+    },
+    "exit": 0,
+    "seconds": 26.474,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "bundle-controls-5",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-5/LlmBootstrapInvitation.qnt",
+      "--main",
+      "LlmBootstrapInvitation",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(replacedKeyBindingInvitationCounterexampleTest|recoveryDoesNotReactivateTest|originalUnknownBudgetRetainedTest)$",
+      "--out-itf",
+      "proofs/evidence/llm-bootstrap-invitation/itf/{test}-{seq}.itf.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-bootstrap-invitation/bundle-controls-5/LlmBootstrapInvitation.qnt": "c50939b9f96dd6d0915351bd231312d386e41872f6f94c0bfbb1038fc24a1473"
+    },
+    "exit": 0,
+    "seconds": 21.497,
+    "watchdogSeconds": 55
+  }
+]

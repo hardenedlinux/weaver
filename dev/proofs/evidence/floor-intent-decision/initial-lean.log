@@ -1,0 +1,104 @@
+proofs/lean/FloorIntentDecision.lean:53:89: error: unexpected identifier; expected '}'
+proofs/lean/FloorIntentDecision.lean:59:23: error: unexpected identifier; expected ':'
+proofs/lean/FloorIntentDecision.lean:60:26: error: unexpected token '='; expected ':'
+proofs/lean/FloorIntentDecision.lean:73:20: error: Type mismatch
+  List.prefix_append ?m.76 ?m.77
+has type
+  ?m.76 <+: ?m.76 ++ ?m.77
+but is expected to have type
+  s.decisions <+:
+    { base := next✝, worker := s.worker + 1, fence := s.fence + 1, accepted := s.accepted, decisions := s.decisions,
+        slot := s.slot, observed := s.observed }.decisions
+proofs/lean/FloorIntentDecision.lean:85:19: error: don't know how to synthesize implicit argument `i`
+  @commitment_survives baseStep s t ?m.9 e
+context:
+s : State
+baseStep : DeviceState → DeviceState → Prop
+t : State
+h : Conserved s
+e : Step baseStep s t
+⊢ Intent
+proofs/lean/FloorIntentDecision.lean:85:7: error: failed to infer `have` declaration type
+proofs/lean/FloorIntentDecision.lean:84:85: error: unsolved goals
+s : State
+baseStep : DeviceState → DeviceState → Prop
+t : State
+h : Conserved s
+e : Step baseStep s t
+⊢ Conserved t
+proofs/lean/FloorIntentDecision.lean:127:21: error(lean.invalidField): Invalid field `symm`: The environment does not contain `List.Mem.symm`, so it is not possible to project the field `symm` from an expression
+  hb
+of type
+  List.Mem b [{ intent := i, outcome := outcome }]
+proofs/lean/FloorIntentDecision.lean:132:56: error: Type mismatch
+  append_fresh_decision_unique h undecided Outcome.fenced
+has type
+  Unique
+    { base := s.base, worker := s.worker, fence := s.fence, accepted := s.accepted,
+      decisions := s.decisions ++ [{ intent := i, outcome := Outcome.fenced }], slot := s.slot, observed := s.observed }
+but is expected to have type
+  Unique
+    { base := next, worker := s.worker + 1, fence := s.fence + 1, accepted := s.accepted, decisions := s.decisions,
+      slot := s.slot, observed := s.observed }
+proofs/lean/FloorIntentDecision.lean:148:2: error: Invalid alternative name `acknowledge`: Expected `delegate`, `sealCut`, `accept`, `commit`, or `fencePending`
+proofs/lean/FloorIntentDecision.lean:151:13: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  s.slot
+in the target expression
+  { base := next✝, worker := s.worker, fence := s.fence, accepted := s.accepted ++ [i✝], decisions := s.decisions,
+        slot := some i✝ }.slot =
+    none
+
+case accept
+baseStep : DeviceState → DeviceState → Prop
+s : State
+i : Intent
+held : s.slot = some i
+next✝ : DeviceState
+i✝ : Intent
+source✝ : baseStep s.base next✝
+free✝ : s.slot = none
+identity✝ : i✝.id = s.accepted.length ∧ i✝.worker = s.worker ∧ i✝.fence = s.fence
+fresh✝ : ¬i✝ ∈ s.accepted
+undecided✝ : ∀ (r : Resolution), r ∈ s.decisions → r.intent ≠ i✝
+effect✝ : next✝.pendingFloor = some i✝.cut ∧ next✝.journal = s.base.journal ∧ next✝.base.enabled = false
+free :
+  { base := next✝, worker := s.worker, fence := s.fence, accepted := s.accepted ++ [i✝], decisions := s.decisions,
+        slot := some i✝ }.slot =
+    none
+⊢ s.observed = some { intent := i, outcome := Outcome.committed } ∧ Committed s i
+proofs/lean/FloorIntentDecision.lean:165:102: error: Application type mismatch: The argument
+  eq
+has type
+  { base := next, worker := s.worker + 1, fence := s.fence + 1, accepted := s.accepted, decisions := s.decisions,
+        slot := s.slot, observed := s.observed }.decisions =
+    s.decisions ++ [{ intent := j, outcome := Outcome.committed }]
+but is expected to have type
+  ?m.114 ++ [{ intent := i, outcome := Outcome.fenced }] = ?m.114 ++ [{ intent := j, outcome := Outcome.committed }]
+in the application
+  List.append_cancel_left eq
+proofs/lean/FloorIntentDecision.lean:172:2: error: Invalid alternative name `observe`: Expected `delegate`, `sealCut`, `accept`, `commit`, or `fencePending`
+proofs/lean/FloorIntentDecision.lean:171:2: error: Alternative `delegate` has not been provided
+proofs/lean/FloorIntentDecision.lean:171:2: error: Alternative `sealCut` has not been provided
+proofs/lean/FloorIntentDecision.lean:171:2: error: Alternative `accept` has not been provided
+proofs/lean/FloorIntentDecision.lean:171:2: error: Alternative `commit` has not been provided
+proofs/lean/FloorIntentDecision.lean:171:2: error: Alternative `fencePending` has not been provided
+proofs/lean/FloorIntentDecision.lean:172:25: error: unexpected identifier; expected ':'
+proofs/lean/FloorIntentDecision.lean:189:2: error: Invalid alternative name `fenceResolved`: There are no unhandled alternatives
+proofs/lean/FloorIntentDecision.lean:190:2: error: Wildcard alternative is not needed
+'Weaver.FloorIntentDecision.decisions_never_roll_back' depends on axioms: [propext, sorryAx]
+'Weaver.FloorIntentDecision.accepted_intents_never_disappear' depends on axioms: [propext]
+'Weaver.FloorIntentDecision.commitment_survives' depends on axioms: [propext, sorryAx]
+'Weaver.FloorIntentDecision.initialized_conservation' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.FloorIntentDecision.initialized_unique_decision' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.FloorIntentDecision.only_original_commit_unlocks' depends on axioms: [sorryAx]
+'Weaver.FloorIntentDecision.fence_is_not_a_commit' does not depend on any axioms
+'Weaver.FloorIntentDecision.old_worker_cannot_newly_commit' depends on axioms: [sorryAx]
+'Weaver.FloorIntentDecision.observation_is_exact' depends on axioms: [sorryAx]
+'Weaver.FloorIntentDecision.initialized_product_refines_device' does not depend on any axioms
+'Weaver.FloorIntentDecision.original_consumption_and_settlement_remain_unique' depends on axioms: [propext, Quot.sound]
+'Weaver.FloorIntentDecision.original_budget_remains_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FloorIntentDecision.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

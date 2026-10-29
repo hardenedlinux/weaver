@@ -1,0 +1,677 @@
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `register` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `seal` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `block` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `readFloor` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `start` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `complete` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `emit` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `resetDevice` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `restartDriver` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `archiveCallback` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:171:2: error: Alternative `loseResponse` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:170:164: error: unsolved goals
+case delegate
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next✝ : KeyBoundaryQueue.State
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next✝
+frame✝ : Frame s.base next✝
+⊢ s.base =
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base ∨
+    KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner
+      eligible s.base
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base
+
+case certify
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next✝ : KeyBoundaryQueue.State
+cut✝ : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next✝
+quiet✝ : Quiet s.base next✝
+held✝ : s.captured = some cut✝
+current✝ : Context s cut✝
+before✝ : Before s cut✝
+coverage✝ : AllBlocked s cut✝
+authentic✝ : nativeOwner.certificateValid root cut✝
+effect✝ : next✝.isolation = some (cut✝.oldFloor + 1) ∧ next✝.enabled = false
+⊢ s.base =
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := some cut✝,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base ∨
+    KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner
+      eligible s.base
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := some cut✝,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base
+
+case barrier
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next✝ : KeyBoundaryQueue.State
+cut✝ : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next✝
+quiet✝ : Quiet s.base next✝
+proof✝ : s.certified = some cut✝
+current✝ : Context s cut✝
+before✝ : Before s cut✝
+coverage✝ : AllBlocked s cut✝
+effect✝ : next✝.barrierKnown = true
+⊢ s.base =
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base ∨
+    KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner
+      eligible s.base
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base
+
+case advance
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next✝ : KeyBoundaryQueue.State
+cut✝ : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next✝
+proof✝ : s.certified = some cut✝
+current✝ : Context s cut✝
+before✝ : Before s cut✝
+coverage✝ : AllBlocked s cut✝
+effect✝ : next✝.epoch = s.base.epoch + 1 ∧ next✝.exports = s.base.exports
+⊢ s.base =
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal ++ [cut✝], submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base ∨
+    KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner
+      eligible s.base
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal ++ [cut✝], submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base
+
+case liveFloor
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next✝ : KeyBoundaryQueue.State
+cut✝ : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next✝
+quiet✝ : Quiet s.base next✝
+proof✝ : s.certified = some cut✝
+current✝ : Context s cut✝
+afterCut✝ : After s cut✝
+coverage✝ : AllBlocked s cut✝
+view✝ : CurrentView s
+effect✝ : next✝.floorKnown = true
+⊢ s.base =
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base ∨
+    KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner
+      eligible s.base
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base
+
+case activate
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next✝ : KeyBoundaryQueue.State
+cut✝ : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next✝
+quiet✝ : Quiet s.base next✝
+proof✝ : s.certified = some cut✝
+current✝ : Context s cut✝
+afterCut✝ : After s cut✝
+coverage✝ : AllBlocked s cut✝
+view✝ : CurrentView s
+effect✝ : next✝.enabled = true
+authentic✝ : nativeOwner.activeValid root cut✝ s.device s.driver s.profile
+⊢ s.base =
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base ∨
+    KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner
+      eligible s.base
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base
+
+case enqueue
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next✝ : KeyBoundaryQueue.State
+job✝ : Nat
+q✝ : Submission
+source✝ :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next✝
+quiet✝ : Quiet s.base next✝
+hardware✝ : HardwareReady s
+current✝ : CurrentSubmission s q✝
+unused✝ : s.submissions job✝ = none
+effect✝ : next✝.queued job✝ = some q✝.ticket
+⊢ s.base =
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := update s.submissions job✝ (some q✝),
+          validated := s.validated, archived := s.archived }.base ∨
+    KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner
+      eligible s.base
+      { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := update s.submissions job✝ (some q✝),
+          validated := s.validated, archived := s.archived }.base
+proofs/lean/DeviceIsolationRecovery.lean:173:12: error: unexpected token '_'; expected command
+proofs/lean/DeviceIsolationRecovery.lean:179:2: error: unsolved goals
+case inl
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s t : State
+event :
+  Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t
+eq : s.base = t.base
+⊢ t.base.epoch ≤ t.base.epoch
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `register` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `seal` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `block` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `advance` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `readFloor` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `start` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `complete` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `emit` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `resetDevice` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `restartDriver` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `archiveCallback` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:191:2: error: Alternative `loseResponse` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:190:153: error: unsolved goals
+case certify
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+inv : JournalAligned s
+next : KeyBoundaryQueue.State
+cut : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next
+quiet : Quiet s.base next
+held✝ : s.captured = some cut
+current✝ : Context s cut
+before✝ : Before s cut
+coverage✝ : AllBlocked s cut
+authentic✝ : nativeOwner.certificateValid root cut
+effect✝ : next.isolation = some (cut.oldFloor + 1) ∧ next.enabled = false
+⊢ JournalAligned
+    { base := next, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+      aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := some cut, journal := s.journal,
+      view := s.view, submissions := s.submissions, validated := s.validated, archived := s.archived }
+
+case barrier
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+inv : JournalAligned s
+next : KeyBoundaryQueue.State
+cut : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next
+quiet : Quiet s.base next
+proof✝ : s.certified = some cut
+current✝ : Context s cut
+before✝ : Before s cut
+coverage✝ : AllBlocked s cut
+effect✝ : next.barrierKnown = true
+⊢ JournalAligned
+    { base := next, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+      aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+      journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+      archived := s.archived }
+
+case liveFloor
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+inv : JournalAligned s
+next : KeyBoundaryQueue.State
+cut : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next
+quiet : Quiet s.base next
+proof✝ : s.certified = some cut
+current✝ : Context s cut
+afterCut✝ : After s cut
+coverage✝ : AllBlocked s cut
+view✝ : CurrentView s
+effect✝ : next.floorKnown = true
+⊢ JournalAligned
+    { base := next, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+      aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+      journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+      archived := s.archived }
+
+case activate
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+inv : JournalAligned s
+next : KeyBoundaryQueue.State
+cut : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next
+quiet : Quiet s.base next
+proof✝ : s.certified = some cut
+current✝ : Context s cut
+afterCut✝ : After s cut
+coverage✝ : AllBlocked s cut
+view✝ : CurrentView s
+effect✝ : next.enabled = true
+authentic✝ : nativeOwner.activeValid root cut s.device s.driver s.profile
+⊢ JournalAligned
+    { base := next, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+      aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+      journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+      archived := s.archived }
+
+case enqueue
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+inv : JournalAligned s
+next✝ : KeyBoundaryQueue.State
+job✝ : Nat
+q✝ : Submission
+source✝ :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next✝
+quiet✝ : Quiet s.base next✝
+hardware✝ : HardwareReady s
+current✝ : CurrentSubmission s q✝
+unused✝ : s.submissions job✝ = none
+effect✝ : next✝.queued job✝ = some q✝.ticket
+⊢ JournalAligned
+    { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+      aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+      journal := s.journal, view := s.view, submissions := update s.submissions job✝ (some q✝),
+      validated := s.validated, archived := s.archived }
+proofs/lean/DeviceIsolationRecovery.lean:194:12: error: unexpected identifier; expected command
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `register` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `seal` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `block` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `advance` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `readFloor` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `start` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `complete` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `resetDevice` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `restartDriver` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `archiveCallback` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:202:2: error: Alternative `loseResponse` has not been provided
+proofs/lean/DeviceIsolationRecovery.lean:201:121: error: unsolved goals
+case certify
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next : KeyBoundaryQueue.State
+cut : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next
+quiet : Quiet s.base next
+held✝ : s.captured = some cut
+current✝ : Context s cut
+before✝ : Before s cut
+coverage✝ : AllBlocked s cut
+authentic✝ : nativeOwner.certificateValid root cut
+effect✝ : next.isolation = some (cut.oldFloor + 1) ∧ next.enabled = false
+changed :
+  { base := next, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := some cut,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base.exports ≠
+    s.base.exports
+⊢ ∃ job q cut,
+    s.submissions job = some q ∧
+      s.validated job = some q ∧
+        CurrentSubmission s q ∧ s.certified = some cut ∧ Context s cut ∧ After s cut ∧ AllBlocked s cut ∧ CurrentView s
+
+case barrier
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next : KeyBoundaryQueue.State
+cut : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next
+quiet : Quiet s.base next
+proof✝ : s.certified = some cut
+current✝ : Context s cut
+before✝ : Before s cut
+coverage✝ : AllBlocked s cut
+effect✝ : next.barrierKnown = true
+changed :
+  { base := next, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base.exports ≠
+    s.base.exports
+⊢ ∃ job q cut,
+    s.submissions job = some q ∧
+      s.validated job = some q ∧
+        CurrentSubmission s q ∧ s.certified = some cut ∧ Context s cut ∧ After s cut ∧ AllBlocked s cut ∧ CurrentView s
+
+case liveFloor
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next : KeyBoundaryQueue.State
+cut : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next
+quiet : Quiet s.base next
+proof✝ : s.certified = some cut
+current✝ : Context s cut
+afterCut✝ : After s cut
+coverage✝ : AllBlocked s cut
+view✝ : CurrentView s
+effect✝ : next.floorKnown = true
+changed :
+  { base := next, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base.exports ≠
+    s.base.exports
+⊢ ∃ job q cut,
+    s.submissions job = some q ∧
+      s.validated job = some q ∧
+        CurrentSubmission s q ∧ s.certified = some cut ∧ Context s cut ∧ After s cut ∧ AllBlocked s cut ∧ CurrentView s
+
+case activate
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next : KeyBoundaryQueue.State
+cut : Cut
+source :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next
+quiet : Quiet s.base next
+proof✝ : s.certified = some cut
+current✝ : Context s cut
+afterCut✝ : After s cut
+coverage✝ : AllBlocked s cut
+view✝ : CurrentView s
+effect✝ : next.enabled = true
+authentic✝ : nativeOwner.activeValid root cut s.device s.driver s.profile
+changed :
+  { base := next, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := s.submissions, validated := s.validated,
+          archived := s.archived }.base.exports ≠
+    s.base.exports
+⊢ ∃ job q cut,
+    s.submissions job = some q ∧
+      s.validated job = some q ∧
+        CurrentSubmission s q ∧ s.certified = some cut ∧ Context s cut ∧ After s cut ∧ AllBlocked s cut ∧ CurrentView s
+
+case enqueue
+c : FiniteDomainMigration.Config
+m : FiniteStreamManifest.Manifest c
+p : WriterSettlementClosure.Profile c m
+lineage root namespaceId : Nat
+owner : GateConsumptionPersistence.EvidenceOwner
+projectionStore : AnchorBrokerCommit.RootOwner
+family : AnchorReconfiguration.Family
+store : AnchorReconfiguration.Store
+signerOwner : ProtectedSignerRelease.SignerOwner
+keyOwner : KeyBoundaryQueue.KeyOwner
+nativeOwner : NativeOwner
+eligible : AnchorReconfiguration.Scope → Nat → Prop
+s : State
+next✝ : KeyBoundaryQueue.State
+job✝ : Nat
+q✝ : Submission
+source✝ :
+  KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
+    s.base next✝
+quiet✝ : Quiet s.base next✝
+hardware✝ : HardwareReady s
+current✝ : CurrentSubmission s q✝
+unused✝ : s.submissions job✝ = none
+effect✝ : next✝.queued job✝ = some q✝.ticket
+changed :
+  { base := next✝, device := s.device, driver := s.driver, profile := s.profile, serial := s.serial,
+          aliases := s.aliases, blocked := s.blocked, captured := s.captured, certified := s.certified,
+          journal := s.journal, view := s.view, submissions := update s.submissions job✝ (some q✝),
+          validated := s.validated, archived := s.archived }.base.exports ≠
+    s.base.exports
+⊢ ∃ job q cut,
+    s.submissions job = some q ∧
+      s.validated job = some q ∧
+        CurrentSubmission s q ∧ s.certified = some cut ∧ Context s cut ∧ After s cut ∧ AllBlocked s cut ∧ CurrentView s
+proofs/lean/DeviceIsolationRecovery.lean:206:12: error: unexpected identifier; expected command
+'Weaver.DeviceIsolationRecovery.protected_floor_never_rolls_back' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.DeviceIsolationRecovery.committed_floor_log_never_shrinks' depends on axioms: [propext]
+'Weaver.DeviceIsolationRecovery.journal_tracks_every_floor_commit' depends on axioms: [sorryAx]
+'Weaver.DeviceIsolationRecovery.every_new_export_requires_current_hardware' depends on axioms: [sorryAx]
+'Weaver.DeviceIsolationRecovery.validated_callback_has_original_current_envelope' does not depend on any axioms
+'Weaver.DeviceIsolationRecovery.initialized_product_refines_key_boundary' depends on axioms: [sorryAx]
+'Weaver.DeviceIsolationRecovery.initialized_floor_log_is_complete' depends on axioms: [sorryAx]
+'Weaver.DeviceIsolationRecovery.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.DeviceIsolationRecovery.original_budget_remains_conserved' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.DeviceIsolationRecovery.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

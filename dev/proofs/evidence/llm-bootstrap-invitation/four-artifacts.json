@@ -1,0 +1,135 @@
+[
+  {
+    "id": "BI1",
+    "lean": "invitation_retained",
+    "quint": "registrationDoesNotIssueTest",
+    "d2": "recovery.projection",
+    "obligation": "Registered assignment is immutable"
+  },
+  {
+    "id": "BI2",
+    "lean": "launch_retained",
+    "quint": "duplicateCanonicalLaunchRejectedTest",
+    "d2": "protocols.mcp",
+    "obligation": "Canonical launch cannot be reminted"
+  },
+  {
+    "id": "BI3",
+    "lean": "consumed_retained",
+    "quint": "lostReplyCannotConsumeTwiceTest",
+    "d2": "recovery.fence",
+    "obligation": "Consumption result survives every guarded step"
+  },
+  {
+    "id": "BI4",
+    "lean": "consumed_run",
+    "quint": "lostReplyRecoversSameResultTest",
+    "d2": "protocols.acp",
+    "obligation": "Finite-run recovery retains the same result"
+  },
+  {
+    "id": "BI5",
+    "lean": "no_second_consume",
+    "quint": "lostReplyCannotConsumeTwiceTest",
+    "d2": "recovery.join",
+    "obligation": "Known outcome rejects another consumption"
+  },
+  {
+    "id": "BI6",
+    "lean": "forwarded_bearer_wrong_key",
+    "quint": "forwardedInvitationNoKeyRejectedTest",
+    "d2": "protocols.a2a",
+    "obligation": "Bearer forwarding does not establish assigned-key possession"
+  },
+  {
+    "id": "BI7",
+    "lean": "wrong_session",
+    "quint": "substitutedSessionRejectedTest",
+    "d2": "protocols.a2a",
+    "obligation": "Transcript session remains frozen"
+  },
+  {
+    "id": "BI8",
+    "lean": "stale_read",
+    "quint": "concurrentReadInvalidatedTest",
+    "d2": "broker.cas",
+    "obligation": "Intervening publication invalidates the observation"
+  },
+  {
+    "id": "BI9",
+    "lean": "new_issue_has_bound_consumption",
+    "quint": "consumptionCommitsExactResultTest",
+    "d2": "recovery.join",
+    "obligation": "New issuance has the same-event exact outcome and credential"
+  },
+  {
+    "id": "BI10",
+    "lean": "covered_step",
+    "quint": "bearerOnlyInvitationCounterexampleTest",
+    "d2": "recovery.join",
+    "obligation": "No issuance outside consumed-result coverage"
+  },
+  {
+    "id": "BI11",
+    "lean": "covered_run",
+    "quint": "lostConsumptionRecordInvitationCounterexampleTest",
+    "d2": "recovery.fence",
+    "obligation": "Recovery cannot erase consumption while retaining issuance"
+  },
+  {
+    "id": "BI12",
+    "lean": "registration_origin",
+    "quint": "independentAssignmentRequiredTest",
+    "d2": "registry.alias",
+    "obligation": "Empty-registry trace gives producer-assignment provenance"
+  },
+  {
+    "id": "BI13",
+    "lean": "original_result_unique",
+    "quint": "lostReplyRecoversSameResultTest",
+    "d2": "protocols.acp",
+    "obligation": "The consumed result is immutable across finite runs"
+  },
+  {
+    "id": "BI14",
+    "lean": "composition",
+    "quint": "recoveryDoesNotReactivateTest",
+    "d2": "broker.alias",
+    "obligation": "Actual predecessor run retained; no new activation path"
+  },
+  {
+    "id": "BI15",
+    "lean": "spent_bound_step",
+    "quint": "splitCommitInvitationCounterexampleTest",
+    "d2": "recovery.join",
+    "obligation": "Spent outcome names its registered exact ticket"
+  },
+  {
+    "id": "BI16",
+    "lean": "spent_bound_run",
+    "quint": "replacedKeyBindingInvitationCounterexampleTest",
+    "d2": "recovery.fence",
+    "obligation": "Binding survives recovery and late responses"
+  },
+  {
+    "id": "BI17",
+    "lean": "issued_from_registered_assignment",
+    "quint": "selfSelectedKeyRejectedTest",
+    "d2": "registry.origin",
+    "obligation": "Issued ticket comes from the independent assignment"
+  },
+  {
+    "id": "BI18",
+    "lean": "original_reservation_once",
+    "quint": "originalUnknownBudgetRetainedTest",
+    "d2": "broker.hold",
+    "obligation": "Conditional account-prefix composition prevents duplicate application"
+  },
+  {
+    "id": "BI19",
+    "lean": "unknown_original_hold_retained",
+    "quint": "originalUnknownBudgetRetainedTest",
+    "d2": "registry.query",
+    "obligation": "Unknown original use does not authorize a refund"
+  }
+]

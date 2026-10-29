@@ -1,0 +1,8 @@
+
+ Error [QNT101]: Built-in name 'append' is redefined in module 'QuorumDurablePromises'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/QuorumDurablePromises.qnt:14:12
+  14:   pure def append(h,value) = h.with("size",h.size+1).with("rows",h.rows.set(h.size,value))
+                 ^^^^^^
+
+error: parsing failed

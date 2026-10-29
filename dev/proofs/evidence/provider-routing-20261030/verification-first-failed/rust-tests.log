@@ -1,0 +1,133 @@
+   Compiling same-file v1.0.6
+   Compiling alloca v0.4.0
+   Compiling clap_lex v1.1.1
+   Compiling ciborium-io v0.2.2
+   Compiling anstyle v1.0.14
+   Compiling itertools v0.13.0
+   Compiling cast v0.3.0
+   Compiling tinytemplate v1.2.1
+   Compiling page_size v0.6.0
+   Compiling oorandom v11.1.5
+   Compiling anes v0.1.6
+   Compiling walkdir v2.5.0
+   Compiling ciborium-ll v0.2.2
+   Compiling clap_builder v4.6.7
+   Compiling lalrpop v0.22.2
+   Compiling ciborium v0.2.2
+   Compiling criterion-plot v0.8.2
+   Compiling clap v4.6.7
+   Compiling criterion v0.8.2
+   Compiling cedar-policy-core v4.12.0
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+   Compiling cedar-policy-formatter v4.12.0
+   Compiling cedar-policy v4.12.0
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 50.26s
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-4838a742f9862365)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-1e47e54eda83f64c)
+
+running 1 test
+test decoder::duplicate_keys_unknown_fields_and_streams_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_execution-95b001cbff1658a0)
+
+running 12 tests
+test transport::https::tests::destination_aliases_credentials_and_http_are_rejected ... ok
+test provider::sse::tests::truncated_oversized_and_wrong_model_streams_are_not_completed ... ok
+test provider::sse::tests::arbitrary_network_fragmentation_preserves_sse_identity ... ok
+test broker::stream_session::tests::effective_revocation_stops_actual_next_range_and_prefix_reconnect ... ok
+test broker::stream_session::tests::revoke_after_range_consumption_proves_zero_call_and_recovers_original_message ... ok
+test broker::stream_session::tests::recovered_old_worker_socket_cannot_use_new_custody ... ok
+test broker::stream_session::tests::actual_tcp_ranges_preserve_one_message_and_one_hold ... ok
+test broker::stream_session::tests::tls_flush_cannot_release_a_tail_after_effective_revocation ... ok
+test enforce_asp_rust_gate ... ok
+test transport::https::tests::redirect_is_observed_without_following_or_refunding ... ok
+test transport::https::tests::partial_transport_failure_is_unknown_and_never_retried ... ok
+test broker::stream_session::tests::native_partial_write_freezes_tail_and_never_refunds ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.44s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_ledger-e3c47309a5669ea0)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-07ec3f8657968d63)
+
+running 15 tests
+test recovery::original_task_body_and_profile_cannot_be_replaced ... ok
+test recovery::authored_ceiling_cannot_underreserve_the_original_wire_cost ... ok
+test recovery::publication_between_consume_and_send_closes_old_permit ... ok
+test recovery::lost_enqueue_reply_recovers_same_hold_and_rejects_changed_wire ... ok
+test recovery::crash_after_consumption_never_reopens_or_refunds ... ok
+test recovery::token_cannot_move_to_a_second_ledger_handle ... ok
+test provider::affine_provider_dispatch_and_revoked_batch_never_repeat_or_refund ... ok
+test stream_properties::unknown_range_after_restart_blocks_new_nonce_and_authority ... ok
+test concurrency::concurrent_consumers_invoke_once ... ok
+test serialization::effective_publication_cannot_overtake_the_locked_send_boundary ... ok
+test concurrency::concurrent_nodes_share_one_capacity ... ok
+test stream_properties::concurrent_stream_registration_and_consumption_do_not_duplicate_holds_or_writes ... ok
+test stream_properties::arbitrary_stream_crashes_reauthorizations_and_ranges_preserve_identity ... ok
+test properties::arbitrary_replays_restarts_and_consumption_preserve_claims ... ok
+test provider::arbitrary_provider_replays_restarts_and_release_batches_keep_original_claim ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.96s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_policy-27646ae60a63197f)
+
+running 2 tests
+test compiled::tests::compiled_storage_caps_slots_and_exact_hits_do_not_allocate_new_entries ... ok
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-c5afc689a5ef3b0d)
+
+running 3 tests
+test decisions::default_deny_forbid_and_evaluation_error_are_fail_closed ... ok
+test stream_policy::specification_derived_policy_is_typed_and_constrains_actual_range_facts ... ok
+test compiled_cache::exact_source_cache_is_bounded_and_never_caches_permission ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_server-45ffcc2d8b68e5ec)
+
+running 4 tests
+test runtime::tests::poisoned_admission_still_closes_and_drains ... ok
+test runtime::tests::detached_native_writer_keeps_slot_until_drain_acknowledges_completion ... ok
+test runtime::tests::arbitrary_disconnect_shutdown_and_drain_schedules_keep_native_custody ... ok
+test enforce_asp_rust_gate ... FAILED
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (20969560) panicked at crates/server/src/lib.rs:16:1:
+[RUST-AGENT-CFG-PUBLIC-016] Info: Public function owns a broad linear algorithm surface
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc.rs:59:1
+fix: split this broad function into named algorithm steps
+line: 59 | pub async fn serve_grpc(
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc.rs public function `serve_grpc` spans 65 lines with 19 statements and a 14-statement block. Criteria: software-criterion/control-flow.broad-linear-phase.
+Contract: Split broad public Rust functions into small named helpers or pipeline steps so agents can edit one algorithm responsibility at a time.
+
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+error: test failed, to rerun pass `-p weaver-server --lib`

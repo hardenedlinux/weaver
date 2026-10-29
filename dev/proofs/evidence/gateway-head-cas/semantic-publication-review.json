@@ -1,0 +1,81 @@
+{
+  "review": [
+    {
+      "path": "specs/lean/FiniteDomainMigration.lean",
+      "sha256": "89a16ca38a6b6e21e4fd4892c26043c0d4f68881c7c4626a2e648cadaabf1c2d",
+      "excerpts": [
+        {
+          "line": 169,
+          "text": "  | restrict (s h) : Transition c s { s with restricted := update s.restricted h true, revision := s.revision + 1 }"
+        },
+        {
+          "line": 170,
+          "text": "  | sealRoot (s r) (existsRoot : s.created r = true) : Transition c s"
+        },
+        {
+          "line": 171,
+          "text": "      { s with active := update s.active r false, fences := update s.fences r (s.fences r + 1), revision := s.revision + 1 }"
+        },
+        {
+          "line": 172,
+          "text": "  | activate (s e slot t) (ticket : s.tickets slot = some t) (current : TransferCurrent s t)"
+        },
+        {
+          "line": 281,
+          "text": "  | restrict => exact \u27e8h.messages, h.aliases, h.endpoints, h.capacity, h.history\u27e9"
+        },
+        {
+          "line": 282,
+          "text": "  | sealRoot => exact \u27e8h.messages, h.aliases, h.endpoints, h.capacity, h.history\u27e9"
+        },
+        {
+          "line": 283,
+          "text": "  | activate e slot t ticket current identity compatible =>"
+        },
+        {
+          "line": 284,
+          "text": "    refine \u27e8h.messages, h.aliases, ?_, h.capacity, h.history\u27e9"
+        },
+        {
+          "line": 357,
+          "text": "  | restrict h => by_cases eq : b = h <;> simp_all [update]"
+        },
+        {
+          "line": 358,
+          "text": "  | _ => exact hr"
+        },
+        {
+          "line": 359,
+          "text": ""
+        },
+        {
+          "line": 360,
+          "text": "theorem aliases_share_canonical_record (h : Reachable c s)"
+        }
+      ]
+    },
+    {
+      "path": "specs/quint/FiniteDomainMigration.qnt",
+      "sha256": "ffa97e53967b763840369d6af6b110f989eda82dde82d1017d884749cb06b454",
+      "excerpts": [
+        {
+          "line": 165,
+          "text": "  action restrict(h) = s' = s.with(\"restricted\",s.restricted.union(Set(h)))"
+        },
+        {
+          "line": 166,
+          "text": "    .with(\"auditRestricted\",s.auditRestricted.union(Set(h))).with(\"revision\",s.revision+1)"
+        },
+        {
+          "line": 167,
+          "text": "  action sealRoot(r) = all { s.created.contains(r), s.active.contains(r),"
+        },
+        {
+          "line": 168,
+          "text": "    s' = s.with(\"active\",s.active.exclude(Set(r))).with(\"fences\",s.fences.set(r,s.fences.get(r)+1))"
+        }
+      ]
+    }
+  ],
+  "decision": "Use explicit Gateway publication revision for every semantic publication; preserve both historical parent models unchanged."
+}

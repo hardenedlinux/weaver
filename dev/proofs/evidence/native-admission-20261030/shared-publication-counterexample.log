@@ -1,0 +1,7 @@
+Negative control: RegisterTask and PublishAuthority deliberately selected the execution lane.
+Command: go test -count=1 -race -tags=integration ./go/dev -run TestProviderSaturated -v
+=== RUN   TestProviderSaturatedExecutionPreservesRevocationAndObservation
+    provider_capacity_test.go:115: saturated execution blocked revocation: rpc error: code = ResourceExhausted desc = native lane full
+--- FAIL: TestProviderSaturatedExecutionPreservesRevocationAndObservation (3.32s)
+FAIL github.com/HardenedLinux/weaver/go/dev 6.589s
+The mutation was restored immediately after this terminal failure. The final receipt must identify the restored sources.

@@ -1,0 +1,237 @@
+[
+  {
+    "id": "P13",
+    "path": "modules/governance/policy/strict-mediation.ss",
+    "revision": "a74fc2fd63437252175b5a67649ee54b886d3bf4",
+    "checks": [
+      {
+        "line": 15,
+        "text": "(def (poo-flow-strict-mediation-state root seq spent revocation)"
+      },
+      {
+        "line": 18,
+        "text": "      (consumed-nonces spent) (revocation-epoch revocation)"
+      },
+      {
+        "line": 33,
+        "text": "(def (poo-flow-strict-mediate state token validation-context expected-root"
+      },
+      {
+        "line": 36,
+        "text": "   ((not (equal? expected-root (.ref state 'execution-root)))"
+      },
+      {
+        "line": 40,
+        "text": "          (poo-flow-authorized-effect-token-validate token validation-context))"
+      }
+    ]
+  },
+  {
+    "id": "P19",
+    "path": "packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean",
+    "revision": "a74fc2fd63437252175b5a67649ee54b886d3bf4",
+    "checks": [
+      {
+        "line": 81,
+        "text": "    (expectedAuthority expectedCommitment : String)"
+      },
+      {
+        "line": 82,
+        "text": "    (expectedBundle : BundleEvidenceBinding.BundleDigest)"
+      },
+      {
+        "line": 138,
+        "text": "      expectedAuthority"
+      },
+      {
+        "line": 139,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 140,
+        "text": "      expectedBundle"
+      },
+      {
+        "line": 165,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 166,
+        "text": "  recoveryRuntimeEpochMatches :"
+      },
+      {
+        "line": 168,
+        "text": "  recoveryLifecycleFenceMatches :"
+      },
+      {
+        "line": 170,
+        "text": "  recoveryClaimFenceMatches :"
+      },
+      {
+        "line": 182,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 198,
+        "text": "  recordRequestMatchesAtomic :"
+      },
+      {
+        "line": 200,
+        "text": "  recoveryBaseReceiptMatchesAtomic :"
+      },
+      {
+        "line": 222,
+        "text": "    {expectedAuthority expectedCommitment}"
+      },
+      {
+        "line": 223,
+        "text": "    {expectedBundle}"
+      },
+      {
+        "line": 268,
+        "text": "        expectedAuthority"
+      },
+      {
+        "line": 269,
+        "text": "        expectedCommitment"
+      },
+      {
+        "line": 270,
+        "text": "        expectedBundle"
+      },
+      {
+        "line": 315,
+        "text": "      expectedAuthority"
+      },
+      {
+        "line": 316,
+        "text": "      expectedCommitment"
+      },
+      {
+        "line": 317,
+        "text": "      expectedBundle"
+      },
+      {
+        "line": 346,
+        "text": "    {expectedAuthority expectedCommitment}"
+      },
+      {
+        "line": 347,
+        "text": "    {expectedBundle}"
+      },
+      {
+        "line": 392,
+        "text": "        expectedAuthority"
+      },
+      {
+        "line": 393,
+        "text": "        expectedCommitment"
+      }
+    ]
+  },
+  {
+    "id": "P43",
+    "path": "modules/session/funs-attempt.ss",
+    "revision": "a74fc2fd63437252175b5a67649ee54b886d3bf4",
+    "checks": [
+      {
+        "line": 5,
+        "text": ";;; Recovery reconciliation cannot be inferred from a provider completion."
+      },
+      {
+        "line": 9,
+        "text": "        poo-flow-session-recover poo-flow-session-reconcile poo-flow-session-close)"
+      },
+      {
+        "line": 26,
+        "text": "(def (guard state expected operation)"
+      },
+      {
+        "line": 28,
+        "text": "        ((not (equal? expected (.ref state 'revision))) (receipt #f 'stale-revision state))"
+      },
+      {
+        "line": 41,
+        "text": "(def (poo-flow-session-claim state expected task-value attempt-id request-id turn-value)"
+      },
+      {
+        "line": 42,
+        "text": "  (guard state expected (lambda ()"
+      },
+      {
+        "line": 72,
+        "text": "(def (poo-flow-session-complete state expected attempt-value)"
+      },
+      {
+        "line": 73,
+        "text": "  (guard state expected (lambda ()"
+      },
+      {
+        "line": 78,
+        "text": "(def (poo-flow-session-recover state expected)"
+      },
+      {
+        "line": 79,
+        "text": "  (guard state expected (lambda ()"
+      },
+      {
+        "line": 85,
+        "text": "(def (poo-flow-session-reconcile state expected attempt-value)"
+      },
+      {
+        "line": 86,
+        "text": "  ;; This is an intent for trusted terminal/isolation receipt resolution, never an acknowledgment by itself."
+      },
+      {
+        "line": 87,
+        "text": "  (guard state expected (lambda ()"
+      },
+      {
+        "line": 91,
+        "text": "      (receipt #t 'reconciliation-proposed (next-state state 'idle #f '()"
+      },
+      {
+        "line": 94,
+        "text": "(def (poo-flow-session-close state expected)"
+      },
+      {
+        "line": 95,
+        "text": "  (guard state expected (lambda ()"
+      }
+    ]
+  },
+  {
+    "id": "C8",
+    "path": "CedarPooSpec/Admission/BoundOperation.lean",
+    "revision": "c8d1a0641120cf65e299e8a98f9fe7666ca96ab5",
+    "checks": [
+      {
+        "line": 6,
+        "text": "must still authenticate the actual effect and state before execution."
+      },
+      {
+        "line": 24,
+        "text": "    by the caller. This equality check does not authenticate either input. -/"
+      },
+      {
+        "line": 25,
+        "text": "def BoundOperation.matches {Effect State : Type}"
+      },
+      {
+        "line": 41,
+        "text": "    authenticate those values and bind any eventual execution to them. -/"
+      }
+    ]
+  },
+  {
+    "id": "C11",
+    "path": "CedarPooSpec/Composition.lean",
+    "revision": "c8d1a0641120cf65e299e8a98f9fe7666ca96ab5",
+    "checks": [
+      {
+        "line": 9,
+        "text": "outside its invalidation footprint and conversely."
+      }
+    ]
+  }
+]

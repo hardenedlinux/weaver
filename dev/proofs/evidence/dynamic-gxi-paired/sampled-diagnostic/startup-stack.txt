@@ -1,0 +1,287 @@
+Analysis of sampling gxi (pid 22485) every 10 milliseconds
+Process:         gerbil [22485]
+Path:            /opt/homebrew/*/gerbil
+Load Address:    0x104224000
+Identifier:      gerbil
+Version:         0
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  python3.13 [22479]
+Target Type:     live task
+
+Date/Time:       2026-10-20 15:01:12.148 +0800
+Launch Time:     2026-10-20 15:01:11.533 +0800
+OS Version:      macOS 26.6.1 (25G76)
+Report Version:  7
+Analysis Tool:   /usr/bin/sample
+
+Physical footprint:         118.4M
+Physical footprint (peak):  118.4M
+Idle exit:                  untracked
+----
+
+Call graph:
+    95 Thread_35281723   DispatchQueue_1: com.apple.main-thread  (serial)
+      61 ___dynamic_load  (in gerbil) + 568  [0x10461b538]
+      + 61 observe_open  (in observer.dylib) + 80  [0x1053e77d4]
+      +   61 dyld4::APIs::dlopen(char const*, int)  (in dyld) + 120  [0x18d09bb04]
+      +     61 dyld4::APIs::dlopen_from(char const*, int, void*)  (in dyld) + 1116  [0x18d09c004]
+      +       61 dyld4::APIs::dlopen_from(char const*, int, void*)::$_0::operator()() const  (in dyld) + 796  [0x18d0a7cd8]
+      +         61 dyld4::RuntimeLocks::withLoadersWriteLockAndProtectedStack<dyld4::APIs::dlopen_from(char const*, int, void*)::$_0::operator()() const::'lambda'()>(dyld4::APIs::dlopen_from(char const*, int, void*)::$_0::operator()() const::'lambda'())::'lambda'()::operator()() const  (in dyld) + 184  [0x18d0a8a6c]
+      +           58 dyld4::APIs::dlopen_from(char const*, int, void*)::$_0::operator()() const::'lambda'()::operator()() const  (in dyld) + 2600  [0x18d0a9500]
+      +           ! 58 dyld4::RuntimeState::notifyDebuggerLoad(std::span<dyld4::Loader const*, 18446744073709551615ul> const&)  (in dyld) + 528  [0x18d0c0c8c]
+      +           !   42 dyld4::ExternallyViewableState::addImages(lsl::Allocator&, lsl::Allocator&, std::span<dyld4::ExternallyViewableState::ImageInfo, 18446744073709551615ul> const&)  (in dyld) + 1084  [0x18d0cbc80]
+      +           !   : 29 dyld4::ExternallyViewableState::triggerNotifications(dyld_image_mode, unsigned int, dyld_image_info const*)  (in dyld) + 296  [0x18d0cb524]
+      +           !   : | 29 dyld4::RemoteNotificationResponder::blockOnSynchronousEvent(unsigned int)  (in dyld) + 48  [0x18d111c90]
+      +           !   : |   29 dyld4::RemoteNotificationResponder::sendMessage(int, unsigned int, mach_msg_header_t*)  (in dyld) + 244  [0x18d111904]
+      +           !   : |     29 mach_msg_overwrite  (in dyld) + 244  [0x18d12b18c]
+      +           !   : |       20 mach_msg2_internal  (in dyld) + 76  [0x18d12afe4]
+      +           !   : |       + 20 mach_msg2_trap  (in dyld) + 8  [0x18d09172c]
+      +           !   : |       9 mach_msg2_internal  (in dyld) + 220  [0x18d12b074]
+      +           !   : |         9 mach_msg2_trap  (in dyld) + 8  [0x18d09172c]
+      +           !   : 13 dyld4::ExternallyViewableState::triggerNotifications(dyld_image_mode, unsigned int, dyld_image_info const*)  (in dyld) + 844  [0x18d0cb748]
+      +           !   :   13 dyld4::RemoteNotificationResponder::notifyMonitorOfImageListChanges(bool, unsigned int, mach_header const**, char const**, unsigned long long)  (in dyld) + 484  [0x18d111ba4]
+      +           !   :     13 dyld4::RemoteNotificationResponder::sendMessage(int, unsigned int, mach_msg_header_t*)  (in dyld) + 244  [0x18d111904]
+      +           !   :       13 mach_msg_overwrite  (in dyld) + 244  [0x18d12b18c]
+      +           !   :         13 mach_msg2_internal  (in dyld) + 76  [0x18d12afe4]
+      +           !   :           13 mach_msg2_trap  (in dyld) + 8  [0x18d09172c]
+      +           !   16 dyld4::ExternallyViewableState::addImages(lsl::Allocator&, lsl::Allocator&, std::span<dyld4::ExternallyViewableState::ImageInfo, 18446744073709551615ul> const&)  (in dyld) + 588  [0x18d0cba90]
+      +           !     11 dyld4::ExternallyViewableState::generateAtlas(lsl::Allocator&)  (in dyld) + 1268  [0x18d0c9da4]
+      +           !     | 10 PropertyList::~PropertyList()  (in dyld) + 108  [0x18d0ff848]
+      +           !     | + 10 lsl::Allocator::free(void*)  (in dyld) + 100  [0x18d1101c4]
+      +           !     | +   10 lsl::Allocator::AllocationMetadata::deallocate()  (in dyld) + 36  [0x18d110220]
+      +           !     | +     10 lsl::Allocator::AllocationMetadata::pool(bool) const  (in dyld) + 44  [0x18d110100]
+      +           !     | 1 PropertyList::~PropertyList()  (in dyld) + 192  [0x18d0ff89c]
+      +           !     |   1 lsl::Allocator::free(void*)  (in dyld) + 100  [0x18d1101c4]
+      +           !     |     1 lsl::Allocator::AllocationMetadata::deallocate()  (in dyld) + 36  [0x18d110220]
+      +           !     |       1 lsl::Allocator::AllocationMetadata::pool(bool) const  (in dyld) + 16  [0x18d1100e4]
+      +           !     3 dyld4::ExternallyViewableState::generateAtlas(lsl::Allocator&)  (in dyld) + 896  [0x18d0c9c30]
+      +           !     | 1 PropertyList::encode(ByteStream&)  (in dyld) + 204  [0x18d0ffc2c]
+      +           !     | + 1 (anonymous namespace)::quickSort<PropertyList::String**>(PropertyList::String**, PropertyList::String**)  (in dyld) + 292  [0x18d100da4]
+      +           !     | +   1 (anonymous namespace)::quickSort<PropertyList::String**>(PropertyList::String**, PropertyList::String**)  (in dyld) + 144  [0x18d100d10]
+      +           !     | 1 PropertyList::encode(ByteStream&)  (in dyld) + 600  [0x18d0ffdb8]
+      +           !     | + 1 (anonymous namespace)::quickSort<PropertyList::Integer**>(PropertyList::Integer**, PropertyList::Integer**)  (in dyld) + 264  [0x18d100ed4]
+      +           !     | +   1 (anonymous namespace)::quickSort<PropertyList::Integer**>(PropertyList::Integer**, PropertyList::Integer**)  (in dyld) + 264  [0x18d100ed4]
+      +           !     | +     1 (anonymous namespace)::quickSort<PropertyList::Integer**>(PropertyList::Integer**, PropertyList::Integer**)  (in dyld) + 264  [0x18d100ed4]
+      +           !     | +       1 (anonymous namespace)::quickSort<PropertyList::Integer**>(PropertyList::Integer**, PropertyList::Integer**)  (in dyld) + 0  [0x18d100dcc]
+      +           !     | 1 PropertyList::encode(ByteStream&)  (in dyld) + 1300  [0x18d100074]
+      +           !     |   1 PropertyList::Data::emit(unsigned char, ByteStream&)  (in dyld) + 276  [0x18d0fe578]
+      +           !     |     1 std::__copy_impl::operator()[abi:nqn210106]<std::byte*, std::byte*, std::back_insert_iterator<ByteStream>>(std::byte*, std::byte*, std::back_insert_iterator<ByteStream>) const  (in dyld) + 96  [0x18d100594]
+      +           !     1 dyld4::ExternallyViewableState::generateAtlas(lsl::Allocator&)  (in dyld) + 104  [0x18d0c9918]
+      +           !     | 1 dyld4::ExternallyViewableState::generateCompactInfo(lsl::Allocator&, AAREncoder&)  (in dyld) + 640  [0x18d0c9554]
+      +           !     |   1 dyld4::Atlas::ProcessSnapshot::addImages(dyld4::RuntimeState*, lsl::Vector<AuthenticatedValue<dyld4::Loader const*>>&)  (in dyld) + 200  [0x18d0f9fb4]
+      +           !     |     1 lsl::Allocator::aligned_alloc(unsigned long long, unsigned long long)  (in dyld) + 160  [0x18d10fcf4]
+      +           !     |       1 lsl::Allocator::Pool::aligned_alloc(unsigned long long, unsigned long long)  (in dyld) + 136  [0x18d10ff74]
+      +           !     |         1 lsl::Allocator::AllocationMetadata::firstAddress() const  (in dyld) + 24  [0x18d1106f0]
+      +           !     1 dyld4::ExternallyViewableState::generateAtlas(lsl::Allocator&)  (in dyld) + 508  [0x18d0c9aac]
+      +           !       1 dyld4::ExternallyViewableState::atlasAddImage(PropertyList::Dictionary&, unsigned long long, char const*)  (in dyld) + 72  [0x18d0cb2a8]
+      +           !         1 <deduplicated_symbol>  (in dyld) + 224  [0x18d0cca5c]
+      +           !           1 <deduplicated_symbol>  (in dyld) + 232  [0x18d0a88c8]
+      +           !             1 lsl::Allocator::aligned_alloc(unsigned long long, unsigned long long)  (in dyld) + 160  [0x18d10fcf4]
+      +           !               1 lsl::Allocator::Pool::aligned_alloc(unsigned long long, unsigned long long)  (in dyld) + 200  [0x18d10ffb4]
+      +           !                 1 lsl::Allocator::AllocationMetadata::AllocationMetadata(lsl::Allocator::AllocationMetadata*, unsigned long long, unsigned long long, unsigned long long)  (in dyld) + 44  [0x18d1107f0]
+      +           3 dyld4::APIs::dlopen_from(char const*, int, void*)::$_0::operator()() const::'lambda'()::operator()() const  (in dyld) + 308  [0x18d0a8c0c]
+      +             3 dyld4::Loader::getLoader(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&)  (in dyld) + 1020  [0x18d0d5720]
+      +               3 dyld4::Loader::forEachPath(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, void (char const*, dyld4::ProcessConfig::PathOverrides::Type, bool&) block_pointer)  (in dyld) + 260  [0x18d0d4e2c]
+      +                 3 dyld4::ProcessConfig::PathOverrides::forEachPathVariant(char const*, mach_o::Platform, bool, bool, bool&, void (char const*, dyld4::ProcessConfig::PathOverrides::Type, bool&) block_pointer) const  (in dyld) + 1816  [0x18d0b4014]
+      +                   3 dyld4::Loader::forEachResolvedAtPathVar(dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, dyld4::ProcessConfig::PathOverrides::Type, bool&, void (char const*, dyld4::ProcessConfig::PathOverrides::Type, bool&) block_pointer)  (in dyld) + 756  [0x18d0d52e4]
+      +                     3 invocation function for block in dyld4::Loader::getLoader(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&)  (in dyld) + 3136  [0x18d0d6764]
+      +                       3 dyld4::Loader::makeDiskLoader(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, bool, unsigned int, mach_o::Layout const*)  (in dyld) + 176  [0x18d0d4bc4]
+      +                         2 dyld4::JustInTimeLoader::makeJustInTimeLoaderDisk(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, bool, unsigned int, mach_o::Layout const*)  (in dyld) + 932  [0x18d0d329c]
+      +                         : 2 __mmap  (in dyld) + 8  [0x18d0951bc]
+      +                         1 dyld4::JustInTimeLoader::makeJustInTimeLoaderDisk(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, bool, unsigned int, mach_o::Layout const*)  (in dyld) + 1152  [0x18d0d3378]
+      +                           1 dyld4::JustInTimeLoader::withRegions(dyld3::MachOFile const*, void (dyld3::Array<dyld4::Loader::Region> const&) block_pointer)  (in dyld) + 308  [0x18d0d2bbc]
+      +                             1 invocation function for block in dyld4::JustInTimeLoader::makeJustInTimeLoaderDisk(Diagnostics&, dyld4::RuntimeState&, char const*, dyld4::Loader::LoadOptions const&, bool, unsigned int, mach_o::Layout const*)  (in dyld) + 76  [0x18d0d33f4]
+      +                               1 dyld4::Loader::mapSegments(Diagnostics&, dyld4::RuntimeState&, char const*, int, unsigned long long, dyld4::Loader::CodeSignatureInFile const&, bool, dyld3::Array<dyld4::Loader::Region> const&, bool, bool, dyld4::Loader::FileValidationInfo const&)  (in dyld) + 792  [0x18d0d73fc]
+      +                                 1 __mmap  (in dyld) + 8  [0x18d0951bc]
+      10 ___os_file_info  (in gerbil) + 104  [0x1046165a8]
+      + 10 stat_long_path  (in gerbil) + 64  [0x10461a320]
+      +   10 fstatat  (in libsystem_kernel.dylib) + 8  [0x18d4462e0]
+      10 getcwd_long_path  (in gerbil) + 20  [0x104619a94]
+      + 10 __private_getcwd  (in libsystem_c.dylib) + 184  [0x18d330af0]
+      +   9 __getcwd  (in libsystem_c.dylib) + 76  [0x18d330f24]
+      +   ! 9 open$NOCANCEL  (in libsystem_kernel.dylib) + 64  [0x18d44cc64]
+      +   !   9 __open_nocancel  (in libsystem_kernel.dylib) + 8  [0x18d438948]
+      +   1 __getcwd  (in libsystem_c.dylib) + 388  [0x18d33105c]
+      +     1 _sigtramp  (in libsystem_platform.dylib) + 56  [0x18d485744]
+      +       1 ___raise_interrupt  (in gerbil) + 132  [0x1045ffc50]
+      +         1 ___device_select_abort  (in gerbil) + 0  [0x10462b600]
+      4 ???  (in <unknown binary>)  [0x16bbcf630]
+      + 4 ___call  (in gerbil) + 204  [0x1045fefd4]
+      +   4 ___call  (in gerbil) + 204  [0x1045fefd4]
+      +     1 ___H_contract_7e_6  (in contract~6.o1) + 117364  [0x10a6d4e3c]
+      +     1 ___H_gerbil____expander____core  (in gerbil) + 115168  [0x10439bef4]
+      +     1 ___H_gerbil____expander____top  (in gerbil) + 104012  [0x1043c7860]
+      +     1 ___H_gerbil____runtime____mop  (in gerbil) + 6080  [0x10426d348]
+      3 ___call  (in gerbil) + 204  [0x1045fefd4]
+      + 3 ___call  (in gerbil) + 204  [0x1045fefd4]
+      +   3 ___H___io  (in gerbil) + 7096,60344,...  [0x10480bf98,0x104818f98,...]
+      3 ___run  (in gerbil) + 188  [0x1045ff13c]
+      + 3 ___call  (in gerbil) + 204  [0x1045fefd4]
+      +   1 ___H___kernel  (in gerbil) + 6372  [0x10463adac]
+      +   ! 1 _____kernel_23_19  (in gerbil) + 32  [0x104632764]
+      +   !   1 ___make_symkey_from_scheme_string  (in gerbil) + 20  [0x104606ea4]
+      +   !     1 ___find_symkey_from_scheme_string  (in gerbil) + 180  [0x104606ddc]
+      +   1 ___H_gerbil____expander____stx  (in gerbil) + 32  [0x104372e38]
+      +   1 ___H_gerbil____runtime____syntax  (in gerbil) + 13432  [0x1042f7468]
+      2 ___make_symkey_from_scheme_string  (in gerbil) + 80  [0x104606ee0]
+      + 2 alloc_mem_aligned_perm.constprop.0  (in gerbil) + 80  [0x104604174]
+      +   2 alloc_mem_aligned_perm.constprop.0  (in gerbil) + 92  [0x104604180]
+      1 ___H___kernel  (in gerbil) + 83708  [0x10464dbc4]
+      + 1 _____kernel_23_43  (in gerbil) + 24  [0x104632df0]
+      +   1 ___os_device_stream_read  (in gerbil) + 48  [0x10462d8f0]
+      +     1 ___device_file_read_raw_virt  (in gerbil) + 24  [0x104628a44]
+      +       1 read  (in libsystem_kernel.dylib) + 8  [0x18d43891c]
+      1 setup_module_fixup  (in gerbil) + 1132  [0x104600290]
+        1 setup_module_fixup  (in gerbil) + 1192  [0x1046002cc]
+
+Total number in stack (recursive counted multiple, when >=5):
+        5       ___call  (in gerbil) + 204  [0x1045fefd4]
+
+Sort by top of stack, same collapsed (when >= 5):
+        mach_msg2_trap  (in dyld)        42
+        lsl::Allocator::AllocationMetadata::pool(bool) const  (in dyld)        11
+        fstatat  (in libsystem_kernel.dylib)        10
+        __open_nocancel  (in libsystem_kernel.dylib)        9
+
+Binary Images:
+       0x104224000 -        0x10491ee6f +gerbil (0) <2AAD5BDF-7963-3654-889C-6C02430DBA94> /opt/homebrew/*/gerbil
+       0x10511c000 -        0x10511ffff +expander~1.o1 (0) <34D753E4-5BC8-3696-9777-A273D3D35301> /Users/*/expander~1.o1
+       0x105128000 -        0x10512bfff +sugar~4.o1 (0) <7CA263C3-26C1-35BE-B1CD-D7A53E96D5CF> /Users/*/sugar~4.o1
+       0x105138000 -        0x10513ffff +expander~2.o1 (0) <DF6EA81C-4497-3FF2-ABCF-AA120EE2D309> /Users/*/expander~2.o1
+       0x105148000 -        0x10514ffff +sugar~3.o1 (0) <678D6614-CD3C-3541-A4CA-17AC98E3DA73> /Users/*/sugar~3.o1
+       0x105158000 -        0x10515bfff +sugar~5.o1 (0) <29803B25-8F99-3226-903D-4B04C4B712E3> /Users/*/sugar~5.o1
+       0x105168000 -        0x10517bfff +sugar~1.o1 (0) <CBA1862B-B5D1-3F5B-9844-EA5FA76D22FA> /Users/*/sugar~1.o1
+       0x105188000 -        0x10518bfff +macro-object~1.o1 (0) <B6C1DD6E-B6F9-37FF-8269-7AE6E94C9711> /Users/*/macro-object~1.o1
+       0x10519c000 -        0x1051a7fff +sugar~QuasiquoteExpander~0.o1 (0) <1A06743D-B131-3347-8941-3137D36C7D17> /Users/*/sugar~QuasiquoteExpander~0.o1
+       0x1051b0000 -        0x1051bbfff +mop~1.o1 (0) <D14CF297-312F-3F2C-90DA-A827E3B02798> /Users/*/mop~1.o1
+       0x1051c8000 -        0x1051d3fff +mop~MOP-2~0.o1 (0) <A19AC964-3A4B-3609-AC19-2E84F7996B8C> /Users/*/mop~MOP-2~0.o1
+       0x1051dc000 -        0x1051e3fff +mop~4.o1 (0) <305CF974-A61A-303D-8DB9-5D56B5300F30> /Users/*/mop~4.o1
+       0x1051f4000 -        0x105203fff +mop~2.o1 (0) <1E0C10CE-4BEB-3EEB-B964-A9F11274139E> /Users/*/mop~2.o1
+       0x10520c000 -        0x105267fff +sugar~2.o1 (0) <F79765A5-F990-3D0E-BE80-1A2E66D09A3C> /Users/*/sugar~2.o1
+       0x105290000 -        0x105293fff +macro-object~0.o1 (0) <574DEA17-F013-3F0D-AB85-A0A0157B4A58> /Users/*/macro-object~0.o1
+       0x10529c000 -        0x10529ffff +match~2.o1 (0) <18255A84-0C28-3D6B-A7D2-0F2A16C775EB> /Users/*/match~2.o1
+       0x1052a8000 -        0x1052abfff +more-sugar~2.o1 (0) <FE8ABFB4-A86B-3A2B-A6BE-97C79AB8EC34> /Users/*/more-sugar~2.o1
+       0x1052bc000 -        0x1052d7fff +mop~3.o1 (0) <30A823A0-E094-394A-8627-55D05A479486> /Users/*/mop~3.o1
+       0x1052e8000 -        0x1052ebfff +contract~2.o1 (0) <A06DBB5F-2BC7-3E28-8477-1E32530718FB> /Users/*/contract~2.o1
+       0x1052fc000 -        0x105307fff +more-syntax-sugar~1.o1 (0) <FBFE5C68-B8CA-35CD-99CD-B7FB830F605A> /Users/*/more-syntax-sugar~1.o1
+       0x105310000 -        0x105313fff +contract~3.o1 (0) <6D058BB9-C1BA-3986-9157-73F3F68B2519> /Users/*/contract~3.o1
+       0x10531c000 -        0x1053438f7 +mop~5.o1 (0) <1B5FE924-3FBA-32DD-A5D0-0622DCBF434C> /opt/homebrew/*/mop~5.o1
+       0x105354000 -        0x10535ffff +contract~1.o1 (0) <5CA758AE-55BB-3627-A971-A012AC33DFD8> /Users/*/contract~1.o1
+       0x105368000 -        0x10536ffff +contract~InterfaceInfo~0.o1 (0) <188F6863-55A4-3476-AAAA-9DD7DC7DC321> /Users/*/contract~InterfaceInfo~0.o1
+       0x1053e4000 -        0x1053e7fff +observer.dylib (0) <A27AD0D6-0239-309B-89DB-ACEC8E757157> /Users/*/observer.dylib
+       0x105d90000 -        0x105dabfff +module-sugar~1.o1 (0) <F08C9626-AC0E-3C46-94F9-13DEFBC1426C> /Users/*/module-sugar~1.o1
+       0x105dbc000 -        0x105dbffff +contract~5.o1 (0) <DC412FEA-DA66-3BA9-8660-4D01B3A6390A> /Users/*/contract~5.o1
+       0x10a51c000 -        0x10a51ffff +contract~TypeEnv~0.o1 (0) <5149AE92-DAED-375D-BE47-B3C872A9A90E> /Users/*/contract~TypeEnv~0.o1
+       0x10a528000 -        0x10a52bfff +contract~7.o1 (0) <3ABC60A3-A0EC-3A63-99AC-6282900A4EC9> /Users/*/contract~7.o1
+       0x10a53c000 -        0x10a54ffff +contract~4.o1 (0) <D97E11E0-2C3E-3C51-965B-3E615DBE739D> /Users/*/contract~4.o1
+       0x10a560000 -        0x10a58bfff +more-sugar~1.o1 (0) <A7AE2D5E-9D95-3E78-87AF-CC79315DBD28> /Users/*/more-sugar~1.o1
+       0x10a5a4000 -        0x10a5a7fff +contract~ClassMeta~0.o1 (0) <05CC274B-3791-3B30-9B35-C9087EB66DB8> /Users/*/contract~ClassMeta~0.o1
+       0x10a5b8000 -        0x10a627fff +match~1.o1 (0) <BE8B401D-02E7-3427-AD84-108A3D18EB08> /Users/*/match~1.o1
+       0x10a658000 -        0x10a65ffff +contract~8.o1 (0) <0E553542-35DB-3072-8DFD-982A977BC6E5> /Users/*/contract~8.o1
+       0x10a668000 -        0x10a66bfff +object-syntax~1.o1 (0) <42F161CE-F49D-346A-AB25-F0DB612130A8> /Users/*/object-syntax~1.o1
+       0x10a674000 -        0x10a677fff +mop-system-classes~1.o1 (0) <6A45E569-B9C6-3AF2-B99B-DD01BEC7F800> /Users/*/mop-system-classes~1.o1
+       0x10a684000 -        0x10a68bfff +control~1.o1 (0) <351E6290-018D-3D89-8892-BD99511C4195> /Users/*/control~1.o1
+       0x10a694000 -        0x10a69bfff +system~1.o1 (0) <775D2244-7ACE-30A6-9C6C-836B5683FE13> /Users/*/system~1.o1
+       0x10a6a4000 -        0x10a6a7fff +object-state~1.o1 (0) <AFBAFE2A-0C2D-3624-919E-08391B395F10> /Users/*/object-state~1.o1
+       0x10a6b4000 -        0x10a6f3fff +contract~6.o1 (0) <E1D76681-E4B2-30C8-ADCD-9DE585338528> /Users/*/contract~6.o1
+       0x10a710000 -        0x10a72ffff +table~1.o1 (0) <2303F7AC-61DA-341D-9873-C0469B329A9F> /Users/*/table~1.o1
+       0x10a740000 -        0x10a747fff +eval~1.o1 (0) <30D62A9C-C40D-3691-9E97-9BCFD655C09A> /Users/*/eval~1.o1
+       0x10a750000 -        0x10a753fff +prototype-map~1.o1 (0) <EE60698E-4001-36A5-A9B7-A2EABC2BF7F2> /Users/*/prototype-map~1.o1
+       0x10a75c000 -        0x10a76bfff +error~1.o1 (0) <E663E467-1DD8-3097-9213-256F98B30942> /Users/*/error~1.o1
+       0x10a778000 -        0x10a783fff +syntax~1.o1 (0) <D9D709EA-4B03-335A-A6B3-CCA9EFA62B94> /Users/*/syntax~1.o1
+       0x10a78c000 -        0x10a793fff +loader~1.o1 (0) <CF75D808-B065-3B67-A863-C6212F8147F3> /Users/*/loader~1.o1
+       0x10a79c000 -        0x10a7a3fff +common~1.o1 (0) <80DE0C10-90CD-37A7-A62F-AABFDE109E04> /Users/*/common~1.o1
+       0x10a7ac000 -        0x10a817fff +contract~9.o1 (0) <38F2EE09-3E95-3819-83A3-ED1F72211534> /Users/*/contract~9.o1
+       0x10a848000 -        0x10a8abfff +util~1.o1 (0) <72B3BD2B-EBB9-3537-B813-68EB6025A9B5> /Users/*/util~1.o1
+       0x10a8d8000 -        0x10a8effff +interface~1.o1 (0) <C2BDF3B6-E179-3E59-9EB0-270E4FF2A8FF> /Users/*/interface~1.o1
+       0x10a900000 -        0x10a907fff +stx~1.o1 (0) <9C1B56CB-ECE5-3094-8813-423887C067FA> /Users/*/stx~1.o1
+       0x10a910000 -        0x10a917fff +stxcase~1.o1 (0) <7F4D3B4F-23C6-37C3-86B7-4C5BC66D22B7> /Users/*/stxcase~1.o1
+       0x10a920000 -        0x10a9b7fff +contract~10.o1 (0) <FED7EC31-CA18-3FFE-A1C6-31BE70E65AA4> /Users/*/contract~10.o1
+       0x10a9fc000 -        0x10aa13fff +thread~1.o1 (0) <AEA819CE-FA24-38DA-BEB9-E26DA61BB2DD> /Users/*/thread~1.o1
+       0x10aaa4000 -        0x10ab1bfff +mop~1.o1 (0) <808F06CF-66BE-3D7B-98E4-494F28A84627> /Users/*/mop~1.o1
+       0x10ab50000 -        0x10ab57fff +slot-observation~1.o1 (0) <A79D5C15-650D-391C-996F-6FA8C2ACB8BA> /Users/*/slot-observation~1.o1
+       0x10ab60000 -        0x10ab60a6f +list-builder~0.o1 (0) <BAB4FB77-8592-3047-8005-A5E9CECDB3FD> /opt/homebrew/*/list-builder~0.o1
+       0x10ab74000 -        0x10ab7f287 +interface~1.o1 (0) <F9B8D725-A531-32FA-B4D3-0BADB1FCDC1F> /opt/homebrew/*/interface~1.o1
+       0x10ab98000 -        0x10aba7fff +module~1.o1 (0) <A7F33E47-16E6-34C2-AE8B-CC4C4EB0C1FE> /Users/*/module~1.o1
+       0x10abb0000 -        0x10abbbfff +thread~0.o1 (0) <C973B454-163C-3DE3-B1BC-F7BF35D015D5> /Users/*/thread~0.o1
+       0x10abc8000 -        0x10abcb597 +list-builder~1.o1 (0) <CFA21A02-CF02-3868-98E1-9E11E52CCC8B> /opt/homebrew/*/list-builder~1.o1
+       0x10abdc000 -        0x10abe3eff +list~1.o1 (0) <09656951-9A43-3132-BEED-78C2A020F207> /opt/homebrew/*/list~1.o1
+       0x10ac04000 -        0x10ac87fff +hash~1.o1 (0) <AA9184B2-657B-330B-86EE-CFF9EC7468F0> /Users/*/hash~1.o1
+       0x10acbc000 -        0x10acfffff +core~1.o1 (0) <56242349-40F3-389A-A243-1A980BB34F41> /Users/*/core~1.o1
+       0x10ad18000 -        0x10ad1ffff +slot-layout~1.o1 (0) <A8B005B0-8BA6-3225-A1D3-8E2E3135B982> /Users/*/slot-layout~1.o1
+       0x10ad28000 -        0x10ad2b3df +stxparam~2.o1 (0) <211CF6BA-762A-36B2-86C7-736EA52B3D1C> /opt/homebrew/*/stxparam~2.o1
+       0x10ad38000 -        0x10ad54e9f +interface~1.o1 (0) <9C2E5E9E-E129-312F-B0C2-9EFB127B9AEA> /opt/homebrew/*/interface~1.o1
+       0x10adb4000 -        0x10adb7507 +values~1.o1 (0) <742209BD-560A-3680-AF4F-C5EFDFA1D05A> /opt/homebrew/*/values~1.o1
+       0x10adc8000 -        0x10adca297 +interface~0.o1 (0) <E3828D7E-B256-37C5-B769-E7FE02403BE7> /opt/homebrew/*/interface~0.o1
+       0x10add4000 -        0x10addb0d7 +stxparam~1.o1 (0) <31AB3371-8F2C-388D-BAD3-ED81AFC91FE0> /opt/homebrew/*/stxparam~1.o1
+       0x10adf8000 -        0x10ae0ad8f +symbol~1.o1 (0) <E051A491-7136-3AE0-98DA-6BC9686F7CB9> /opt/homebrew/*/symbol~1.o1
+       0x10ae3c000 -        0x10ae3d0c7 +interface~0.o1 (0) <4282EDC1-20AA-3CB7-8298-BD442114E01D> /opt/homebrew/*/interface~0.o1
+       0x10ae48000 -        0x10ae496cf +ffi~1.o1 (0) <D740B6D0-0C8A-317D-B5A0-004CDC5C62A1> /opt/homebrew/*/ffi~1.o1
+       0x10ae54000 -        0x10ae54ef7 +ffi~C-struct~0.o1 (0) <66F8DBA5-DE71-3943-B2FE-E02C6A8B0AE0> /opt/homebrew/*/ffi~C-struct~0.o1
+       0x10ae60000 -        0x10ae62557 +ffi~2.o1 (0) <21C07AEB-F9B1-32CB-84FF-A502B75CA0D6> /opt/homebrew/*/ffi~2.o1
+       0x10ae74000 -        0x10aeb125f +error~1.o1 (0) <95D952CB-D424-3926-8CD5-FBC96E52CB89> /opt/homebrew/*/error~1.o1
+       0x10af34000 -        0x10af56ec7 +iterators~1.o1 (0) <668443AB-58A9-3200-84C5-E6198450FBAF> /opt/homebrew/*/iterators~1.o1
+       0x10afa0000 -        0x10afc26f7 +macros~1.o1 (0) <76EBC495-77B1-371C-897F-CBFCEC60A630> /opt/homebrew/*/macros~1.o1
+       0x10b034000 -        0x10b05b307 +misc~1.o1 (0) <4782240E-0B66-3F2C-A5D0-6E57FFEC2309> /opt/homebrew/*/misc~1.o1
+       0x10b0c0000 -        0x10b0f3877 +rbtree~1.o1 (0) <3327B41F-9373-3204-BD5F-FC55D9218E3E> /opt/homebrew/*/rbtree~1.o1
+       0x10b164000 -        0x10b177fff +base~1.o1 (0) <78AA1716-5C4C-3142-B035-EFC1CCE4B399> /Users/*/base~1.o1
+       0x10b184000 -        0x10b191507 +error~0.o1 (0) <9FDC1F16-887C-32E0-977E-FB072211A787> /opt/homebrew/*/error~0.o1
+       0x10b1a4000 -        0x10b1b0e8f +func~1.o1 (0) <1E6E1719-5D8C-3BA3-9796-5615319B366C> /opt/homebrew/*/func~1.o1
+       0x10b1e4000 -        0x10b1ec7ef +plist~1.o1 (0) <84C5C4F2-A7E6-3B92-98FD-CBAB73D493C2> /opt/homebrew/*/plist~1.o1
+       0x10b204000 -        0x10b20ca17 +alist~1.o1 (0) <950BA312-F4D2-3843-A696-2ABA6B8D8171> /opt/homebrew/*/alist~1.o1
+       0x10b224000 -        0x10b233c8f +list~0.o1 (0) <08EC6114-6F07-301E-A28A-F650A8E66698> /opt/homebrew/*/list~0.o1
+       0x10b264000 -        0x10b276baf +iterators~0.o1 (0) <FB78788F-13C7-3997-8D49-812219868B65> /opt/homebrew/*/iterators~0.o1
+       0x10b2a8000 -        0x10b2aa3ff +time~1.o1 (0) <7F2929A1-BD40-35ED-9CEA-9553CE64CE5C> /opt/homebrew/*/time~1.o1
+       0x10b2d4000 -        0x10b2dc4c7 +timeout~1.o1 (0) <15449F4D-037E-30E8-A350-14E083819C4D> /opt/homebrew/*/timeout~1.o1
+       0x10b31c000 -        0x10b36bfff +object~1.o1 (0) <41E0A854-728F-37CF-8F8A-78F4E109BC7A> /Users/*/object~1.o1
+       0x10b390000 -        0x10b3b3caf +base~1.o1 (0) <D0BE161D-07A4-3B8E-8712-5D4EB1F3606E> /opt/homebrew/*/base~1.o1
+       0x10b450000 -        0x10b4676e7 +error~1.o1 (0) <66E1C53A-6AA0-3BCA-BD3D-C916C250D6D1> /opt/homebrew/*/error~1.o1
+       0x10b4dc000 -        0x10b4fe94f +ffi~3.o1 (0) <1555F1E2-8967-3E57-B56E-C91A0D6D2746> /opt/homebrew/*/ffi~3.o1
+       0x10b578000 -        0x10b5d38af +walist~1.o1 (0) <C3213D45-3E5B-307D-9ADD-ACDC8935EC3A> /opt/homebrew/*/walist~1.o1
+       0x10b6a4000 -        0x10b6fc237 +bio~1.o1 (0) <55822013-9A9F-3920-AC67-4D40BDD1E37D> /opt/homebrew/*/bio~1.o1
+       0x18d008000 -        0x18d05ab4b  libobjc.A.dylib (951.7) <40277974-D20C-3EC8-B25C-43AE30D8CC60> /usr/lib/libobjc.A.dylib
+       0x18d05b000 -        0x18d08fd58  libdyld.dylib (1387) <634959D0-592E-349C-B549-B91F2FF09858> /usr/lib/system/libdyld.dylib
+       0x18d090000 -        0x18d1434ff  dyld (1.0.0 - 1387) <DF42DD9D-AD11-33A7-8849-9AD5DF30A274> /usr/lib/dyld
+       0x18d144000 -        0x18d147228  libsystem_blocks.dylib (96) <A712B95E-BCEE-3F12-9F9B-58E6C2060E53> /usr/lib/system/libsystem_blocks.dylib
+       0x18d148000 -        0x18d19c55f  libxpc.dylib (3102.160.5) <40BBE226-77D4-332E-9DA8-F0B5BACFB86D> /usr/lib/system/libxpc.dylib
+       0x18d19d000 -        0x18d1bd9ff  libsystem_trace.dylib (1861.160.4) <E043667E-AD01-3228-837F-A381F32F2B30> /usr/lib/system/libsystem_trace.dylib
+       0x18d1be000 -        0x18d26c5f7  libcorecrypto.dylib (1922.160.10) <D54389FC-4078-370D-A863-9FEF16E00DFD> /usr/lib/system/libcorecrypto.dylib
+       0x18d26d000 -        0x18d2bd257  libsystem_malloc.dylib (812.160.5) <971CDCFE-4D20-300E-A1D6-EC8672FDD258> /usr/lib/system/libsystem_malloc.dylib
+       0x18d2be000 -        0x18d30523f  libdispatch.dylib (1542.160.2) <243E06A0-7BFF-3C3F-8A9B-D7732729B361> /usr/lib/system/libdispatch.dylib
+       0x18d306000 -        0x18d308ffb  libsystem_featureflags.dylib (103) <5E7CDBD5-44AB-34C0-A0F5-FC72F6116CDC> /usr/lib/system/libsystem_featureflags.dylib
+       0x18d309000 -        0x18d38a1e7  libsystem_c.dylib (1752.160.4) <FDC4E366-5C14-3A1E-BC35-D933D28CDCF3> /usr/lib/system/libsystem_c.dylib
+       0x18d38b000 -        0x18d41bae7  libc++.1.dylib (2100.43) <C6DC2145-7B94-3E01-ADE5-96A6C2D078BC> /usr/lib/libc++.1.dylib
+       0x18d41c000 -        0x18d43675f  libc++abi.dylib (2100.43) <DDE77B06-5E25-380B-85B7-BA1A27D09021> /usr/lib/libc++abi.dylib
+       0x18d437000 -        0x18d4742e7  libsystem_kernel.dylib (12377.161.13) <7CFB3A10-ADB2-32C4-99B5-922A111B3224> /usr/lib/system/libsystem_kernel.dylib
+       0x18d475000 -        0x18d481b3b  libsystem_pthread.dylib (539.100.4) <12342372-0084-37A5-9EA6-2E4DC940C685> /usr/lib/system/libsystem_pthread.dylib
+       0x18d482000 -        0x18d48a963  libsystem_platform.dylib (375.120.2) <4C6BD0FE-25F2-38D8-BE5C-24DAC1DEDCFB> /usr/lib/system/libsystem_platform.dylib
+       0x18d48b000 -        0x18d4ba6eb  libsystem_info.dylib (600) <7402662E-F235-3F48-BB65-F64C8CF0F2BB> /usr/lib/system/libsystem_info.dylib
+       0x191458000 -        0x191461e5f  libsystem_darwin.dylib (1752.160.4) <A095E4FE-0EE1-34DF-B00A-7D349FBC55E0> /usr/lib/system/libsystem_darwin.dylib
+       0x1918c3000 -        0x1918d51b6  libsystem_notify.dylib (348.160.3) <F9B1BAFF-4D09-3A1F-839B-189C21EB5FBB> /usr/lib/system/libsystem_notify.dylib
+       0x193b94000 -        0x193baef7b  libsystem_networkextension.dylib (2226.160.6) <01D14A9E-16DC-372C-8AA8-CC7AD39E797F> /usr/lib/system/libsystem_networkextension.dylib
+       0x193c31000 -        0x193c48fdf  libsystem_asl.dylib (406) <FF57F6FA-F3A1-343D-815D-57B769D31445> /usr/lib/system/libsystem_asl.dylib
+       0x1957ea000 -        0x1957f2387  libsystem_symptoms.dylib (2169.160.3) <CE07A0DF-31B6-3528-B7CE-91CAD89AA519> /usr/lib/system/libsystem_symptoms.dylib
+       0x199a8f000 -        0x199ac75b7  libsystem_containermanager.dylib (725.160.3) <2E14025A-52C2-361D-8A8F-5DD45825A2C9> /usr/lib/system/libsystem_containermanager.dylib
+       0x19aea1000 -        0x19aea55d7  libsystem_configuration.dylib (1405.160.3) <A14ED142-2F56-33A6-A23C-EEB8417DC90E> /usr/lib/system/libsystem_configuration.dylib
+       0x19aea6000 -        0x19aeac99f  libsystem_sandbox.dylib (2680.160.6) <6592D3CE-38C6-3C08-9EA5-75D64F37993F> /usr/lib/system/libsystem_sandbox.dylib
+       0x19c501000 -        0x19c5041fb  libquarantine.dylib (196.160.2) <78C5B827-8152-358D-90E9-B02F02A68B17> /usr/lib/system/libquarantine.dylib
+       0x19cca0000 -        0x19cca6d03  libsystem_coreservices.dylib (191.5.1) <F335DA14-69E8-336E-85A3-11EE239255F0> /usr/lib/system/libsystem_coreservices.dylib
+       0x19d22f000 -        0x19d26ca77  libsystem_m.dylib (3312.100.1) <3739A40F-2C17-3503-92D6-098141E56E89> /usr/lib/system/libsystem_m.dylib
+       0x19d26e000 -        0x19d271527  libmacho.dylib (1387) <3E43AF47-AD89-3BB4-82B9-A9533F4334DF> /usr/lib/system/libmacho.dylib
+       0x19d28b000 -        0x19d2983a7  libcommonCrypto.dylib (600035) <72D94140-1281-3886-971B-37C810403C03> /usr/lib/system/libcommonCrypto.dylib
+       0x19d299000 -        0x19d2a2ca3  libunwind.dylib (2100.2) <B21A1015-83D4-31D8-BA41-88688962D9A6> /usr/lib/system/libunwind.dylib
+       0x19d2ab000 -        0x19d2b5bef  libcopyfile.dylib (240.160.2.0.1) <58F425CF-7D4F-34FD-9620-706A2A7F8BDC> /usr/lib/system/libcopyfile.dylib
+       0x19d2b6000 -        0x19d2b9987  libcompiler_rt.dylib (103.3) <D60A9B54-A909-3FD5-93B9-3F38BE0A2BE8> /usr/lib/system/libcompiler_rt.dylib
+       0x19d2ba000 -        0x19d2be78b  libsystem_collections.dylib (1752.160.4) <BDA28F78-F479-3C22-B9C7-4ABCB6801592> /usr/lib/system/libsystem_collections.dylib
+       0x19d2bf000 -        0x19d2c24cf  libsystem_secinit.dylib (168.100.7) <C85AF062-AA9B-35BB-904C-C055B2C21602> /usr/lib/system/libsystem_secinit.dylib
+       0x19d2c3000 -        0x19d2c5bf7  libremovefile.dylib (85.100.6) <DA9C2B48-7A9C-32EA-888D-6C7AEB5250E6> /usr/lib/system/libremovefile.dylib
+       0x19d2c6000 -        0x19d2c6f27  libkeymgr.dylib (31) <18EFA1CE-C535-3EAC-BC2C-7955593B7382> /usr/lib/system/libkeymgr.dylib
+       0x19d2c7000 -        0x19d2cfe37  libsystem_dnssd.dylib (2881.160.4) <2C4C3043-008E-3BD8-BC29-AB9AD235DBA9> /usr/lib/system/libsystem_dnssd.dylib
+       0x19d2d0000 -        0x19d2d509b  libcache.dylib (95) <EA7C2E0B-52BF-3D45-9A33-38F54A535452> /usr/lib/system/libcache.dylib
+       0x19d2d6000 -        0x19d2d7ce3  libSystem.B.dylib (1356) <4CC4CAD6-45A6-361E-9343-DE636A0B5C02> /usr/lib/libSystem.B.dylib
+       0x29127f000 -        0x291286349  libRosetta.dylib (367.9) <F41D814B-FE1F-311A-A778-5F0699628188> /usr/lib/libRosetta.dylib
+       0x292e92000 -        0x292e95a4b  libsystem_darwindirectory.dylib (122) <6C03D78B-BFAB-3C7A-B713-50881791EE08> /usr/lib/system/libsystem_darwindirectory.dylib
+       0x292e96000 -        0x292ea039b  libsystem_eligibility.dylib (319.160.17) <A279E124-8499-3FFC-A788-655070028F97> /usr/lib/system/libsystem_eligibility.dylib
+       0x292ea1000 -        0x292ea888b  libsystem_sanitizers.dylib (26.1) <C92FAEE5-DAED-3340-96B3-0C42B005ADF9> /usr/lib/system/libsystem_sanitizers.dylib
+       0x292ea9000 -        0x292ea9bb7  libsystem_trial.dylib (474.2.18.2) <2FF186A6-F448-38CD-9A30-8B5B1AEFCA10> /usr/lib/system/libsystem_trial.dylib

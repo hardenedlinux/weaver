@@ -1,0 +1,73 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 1,
+    "sourceSha256": "dd3f124502e551fddc301a5367aa981dd56186cda1f0c3ea34f554d733794a23",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.273
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "348c2162946d5d18d87ab16c214cd2b2784912427054d5c2ce4cac1975a7ce2c",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 0.699
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "ordinaryDynamicCleanupTest",
+      "bodyRemainsDynamicTest",
+      "duplicateImportIsIdempotentTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.047
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "liveHandleRejectsExitTest",
+      "missingDecoderRejectsReturnTest",
+      "lateNaturalExitRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.008
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "reorderedCallsRejectedTest",
+      "substitutedBodyRejectedTest",
+      "arbitraryCodeRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.135
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "reorderedPublicationCounterexampleTest",
+      "bodySubstitutionCounterexampleTest",
+      "arbitraryStubCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.096
+  }
+]

@@ -1,0 +1,13 @@
+    Checking weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+error: unused variable: `revision`
+  --> crates/weaver-ledger/src/stream_custody.rs:41:13
+   |
+41 |             revision,
+   |             ^^^^^^^^ help: try ignoring the field: `revision: _`
+   |
+   = note: `-D unused-variables` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(unused_variables)]`
+
+error: could not compile `weaver-ledger` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `weaver-ledger` (lib test) due to 1 previous error

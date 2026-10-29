@@ -1,0 +1,219 @@
+#+title: Account Application and Anchor Recovery Check Receipt
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS abstract-checked-physical-qualification-pending
+
+* Identity and evidence boundary
+
+Workspace /Users/guangtao/ghq/github.com/tao3k/weaver, branch main,
+tracked HEAD =4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Documentation and
+formal artifacts remain untracked working-tree work. No gateway implementation,
+owner dependency-pin change, native build, commit or push is part of this receipt.
+
+| Artifact | SHA-256 |
+|----------+---------|
+| [[file:../lean/SettlementAnchorRecovery.lean][SettlementAnchorRecovery.lean]] | =5eae3af9c19c139afd0e9ddbe51b3245fd60d3eb243950f18929a70e3acd69f6= |
+| [[file:../quint/SettlementAnchorRecovery.qnt][SettlementAnchorRecovery.qnt]] | =a85d9e2c00cf91a9e439845d0a3d087de176ce37c2b8e44c085ae453b011b873= |
+
+[[file:settlement-anchor-traces/SHA256SUMS][The byte manifest]] covers final proof/model dependencies, retained raw evidence
+and the new dossier/diagram. [[file:settlement-anchor-traces/source-review.json][The source review]] reverified 18 registered Git
+blobs at POO Flow =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=, retaining exact paths, hashes and
+numbered excerpts. [[file:../../docs/architecture/01-reference-comparison.org][The source register]] remains the navigable reference owner.
+Inspection is not owner/native/ABI qualification; dirty source trees were not built.
+
+* Final executable checks
+
+Quint =0.33.0=, TypeScript backend; Lean =4.34.1=, arm64 Darwin, Std only.
+All nine Lean modules were rebuilt from current source into the isolated
+/private/tmp/weaver-settlement-anchor-final-proof directory. No installed
+owner package or dependency pin was changed.
+
+[[file:settlement-anchor-traces/commands.json][All seventeen final commands]] retain arguments, zero exit statuses, actual
+timings and watchdogs. Lean/typecheck/sampling each have a 20-second watchdog;
+deterministic tests have a 30-second watchdog. No timeout was widened or
+relabeled as a pass. Tool-check timing is not gateway performance evidence.
+
+| Check | Result and raw evidence |
+|-------+-------------------------|
+| Lean LogicalMessageAuthority | exit 0; [[file:settlement-anchor-traces/LogicalMessageAuthority.log][compiler / axiom inventory]] |
+| Lean SharedMessageBudget | exit 0; [[file:settlement-anchor-traces/SharedMessageBudget.log][compiler / axiom inventory]] |
+| Lean FiniteDomainMigration | exit 0; [[file:settlement-anchor-traces/FiniteDomainMigration.log][compiler / axiom inventory]] |
+| Lean AnchoredRecoveryAndEgress | exit 0; [[file:settlement-anchor-traces/AnchoredRecoveryAndEgress.log][compiler / axiom inventory]] |
+| Lean ComposedGatewayLifecycle | exit 0; [[file:settlement-anchor-traces/ComposedGatewayLifecycle.log][compiler / axiom inventory]] |
+| Lean FiniteStreamManifest | exit 0; [[file:settlement-anchor-traces/FiniteStreamManifest.log][compiler / axiom inventory]] |
+| Lean DriverCompletionRecovery | exit 0; [[file:settlement-anchor-traces/DriverCompletionRecovery.log][compiler / axiom inventory]] |
+| Lean WriterSettlementClosure | exit 0; [[file:settlement-anchor-traces/WriterSettlementClosure.log][compiler / axiom inventory]] |
+| Lean SettlementAnchorRecovery | exit 0; [[file:settlement-anchor-traces/SettlementAnchorRecovery.log][compiler / axiom inventory]] |
+| Quint typecheck | exit 0; [[file:settlement-anchor-traces/typecheck.log][raw log]] |
+| Quint deterministic controls | 66 passing: 40 direct imported settlement controls and 26 new controls, including 20 positive/rejection schedules and 6 excluded mutants; [[file:settlement-anchor-traces/tests.log][raw log]] |
+
+No final compiler log contains warnings, source errors or sorryAx. Printed
+inventories use only propext, Quot.sound and inherited Classical.choice. Restore
+and ghost-counter projection statements need no axioms. These logical axioms do
+not establish physical store atomicity or an anti-rollback root.
+
+| Initializer | Scope | Result |
+|-------------+-------+--------|
+| emptyInit: cold, zero ranges | 10 traces, at most 25 transitions each, seed 31 | no violation; [[file:settlement-anchor-traces/emptyInit.log][raw log]] |
+| singletonInit: cold, one range | 10 traces, at most 25 transitions each, seed 31 | no violation; [[file:settlement-anchor-traces/singletonInit.log][raw log]] |
+| init: cold, three ranges | 10 traces, at most 25 transitions each, seed 31 | no violation; [[file:settlement-anchor-traces/init.log][raw log]] |
+| largerInit: cold, five ranges | 10 traces, at most 25 transitions each, seed 31 | no violation; [[file:settlement-anchor-traces/largerInit.log][raw log]] |
+| anchored: original settlement reached, intent anchored | 10 traces, at most 25 transitions each, seed 31 | no violation; [[file:settlement-anchor-traces/anchored.log][raw log]] |
+| accepted: original gate slot accepted, outcome unknown | 10 traces, at most 25 transitions each, seed 31 | no violation; [[file:settlement-anchor-traces/accepted.log][raw log]] |
+
+Total: 60 bounded sampled traces. Cold finite fixtures inherit four already
+admitted messages, two shared accounts and four-byte range descriptors. The two
+account-phase fixtures construct the actual preceding source/settlement pipeline,
+preserving the new product and checking recovery at every source step. Sampling
+is not exhaustive; no automated Quint-to-Lean state equivalence is established.
+Lean starts from the actual initialized source product and quantifies over
+arbitrary finite manifests/accounts under immutable parameters and authority
+premises. Worker choices are zero through two and sampled request fences zero
+through four; authority fence increments themselves do not wrap in the model.
+
+* Reproduction
+
+After rebuilding the nine modules in recorded dependency order:
+
+#+begin_src sh
+LEAN_PATH=/private/tmp/weaver-settlement-anchor-final-proof elan run leanprover/lean4:v4.34.1 lean specs/lean/SettlementAnchorRecovery.lean
+quint typecheck specs/quint/SettlementAnchorRecovery.qnt
+quint test specs/quint/SettlementAnchorRecovery.qnt --backend typescript --max-samples 1
+quint run specs/quint/SettlementAnchorRecovery.qnt --backend typescript --init accepted --step step --invariant safety --max-samples 10 --max-steps 25 --seed 31 --verbosity 1
+#+end_src
+
+Use the other recorded initializers for the remaining scopes. Direct import
+contributes 40 settlement controls, not all transitive driver/manifest/coordinator
+controls; prior receipts retain their independent original scope.
+
+* Preliminary evidence preserved
+
+[[file:settlement-anchor-traces/tests-candidate.log][The first candidate suite]] failed because a foreign multi-step source fixture
+left the new product variable unset. [[file:settlement-anchor-traces/tests-fixture-repaired.log][A subsequent fixture]] failed effect-set
+typechecking when composing actions with different variable sets. The final model
+instead preserves the complete product on every source step. These are harness
+failures, not source/runtime bugs or proof passes.
+
+[[file:settlement-anchor-traces/tests-full-fixture.log][The fully repaired preliminary suite]] passed 66 controls before the fresh
+final suite and full isolated Lean rebuild. Its [[file:settlement-anchor-traces/full-fixture][preliminary ITF outputs]] remain
+separate. [[file:settlement-anchor-traces/preliminary][Development logs]] retain parser/proof/type diagnostics, including temporary
+sorryAx diagnostics from failed Lean candidates. Only the final clean logs and
+final ITF outputs qualify the current result. No earlier failure was removed or
+substituted for an acceptance pass.
+
+* Final deterministic traces
+
+Imported W:: filename prefixes are normalized to settlement- for portable Org
+file links; ITF bytes are unchanged. Excluded mutants are not safe protocol
+transitions. The gate-rollback mutant actually reaches a second account write
+after erasing protected gate history while retaining the original intent.
+The unknownRefund mutant breaks original settlement retention; it is not a real
+balance-refund implementation. The old-worker bypass uses a semantic ordering
+audit fact; model counters and audit facts never authorize execution/recovery.
+
+| Control | Final ITF trace |
+|---------+-----------------|
+| W::evidenceReplyLostKeepsStreamTest | [[file:settlement-anchor-traces/final/settlement-evidenceReplyLostKeepsStreamTest-0.itf.json][ITF]] |
+| W::committedButUnpublishedBlocksStreamTest | [[file:settlement-anchor-traces/final/settlement-committedButUnpublishedBlocksStreamTest-1.itf.json][ITF]] |
+| W::publishMissingDecisionRejectedTest | [[file:settlement-anchor-traces/final/settlement-publishMissingDecisionRejectedTest-2.itf.json][ITF]] |
+| W::commitReplyLostRecoveryTest | [[file:settlement-anchor-traces/final/settlement-commitReplyLostRecoveryTest-3.itf.json][ITF]] |
+| W::uncommittedFinishRestartRejectsTest | [[file:settlement-anchor-traces/final/settlement-uncommittedFinishRestartRejectsTest-4.itf.json][ITF]] |
+| W::separateIsolationEvidenceAfterFinishIntentTest | [[file:settlement-anchor-traces/final/settlement-separateIsolationEvidenceAfterFinishIntentTest-5.itf.json][ITF]] |
+| W::partialOldFdCannotResumeTest | [[file:settlement-anchor-traces/final/settlement-partialOldFdCannotResumeTest-6.itf.json][ITF]] |
+| W::fenceAcknowledgmentRequiredTest | [[file:settlement-anchor-traces/final/settlement-fenceAcknowledgmentRequiredTest-7.itf.json][ITF]] |
+| W::wrongWriterInventoryRejectedTest | [[file:settlement-anchor-traces/final/settlement-wrongWriterInventoryRejectedTest-8.itf.json][ITF]] |
+| W::wrongBufferInventoryRejectedTest | [[file:settlement-anchor-traces/final/settlement-wrongBufferInventoryRejectedTest-9.itf.json][ITF]] |
+| W::forgedAuthenticityRejectedTest | [[file:settlement-anchor-traces/final/settlement-forgedAuthenticityRejectedTest-10.itf.json][ITF]] |
+| W::unpublishedPreventsRetirementTest | [[file:settlement-anchor-traces/final/settlement-unpublishedPreventsRetirementTest-11.itf.json][ITF]] |
+| W::lateOriginalPublishKeepsSuccessorTest | [[file:settlement-anchor-traces/final/settlement-lateOriginalPublishKeepsSuccessorTest-12.itf.json][ITF]] |
+| W::noFinalUsageFromFinishTest | [[file:settlement-anchor-traces/final/settlement-noFinalUsageFromFinishTest-13.itf.json][ITF]] |
+| W::lateUsageDoesNotReleaseStreamTest | [[file:settlement-anchor-traces/final/settlement-lateUsageDoesNotReleaseStreamTest-14.itf.json][ITF]] |
+| W::finalUsageLostReplyResolveTest | [[file:settlement-anchor-traces/final/settlement-finalUsageLostReplyResolveTest-15.itf.json][ITF]] |
+| W::duplicateFinalUsageRejectedTest | [[file:settlement-anchor-traces/final/settlement-duplicateFinalUsageRejectedTest-16.itf.json][ITF]] |
+| W::conflictingLateUsageRejectedTest | [[file:settlement-anchor-traces/final/settlement-conflictingLateUsageRejectedTest-17.itf.json][ITF]] |
+| W::wrongClosureUsageRejectedTest | [[file:settlement-anchor-traces/final/settlement-wrongClosureUsageRejectedTest-18.itf.json][ITF]] |
+| W::wrongUnitUsageRejectedTest | [[file:settlement-anchor-traces/final/settlement-wrongUnitUsageRejectedTest-19.itf.json][ITF]] |
+| W::wrongAccountUsageRejectedTest | [[file:settlement-anchor-traces/final/settlement-wrongAccountUsageRejectedTest-20.itf.json][ITF]] |
+| W::wrongTokenUsageRejectedTest | [[file:settlement-anchor-traces/final/settlement-wrongTokenUsageRejectedTest-21.itf.json][ITF]] |
+| W::progressUsageRejectedTest | [[file:settlement-anchor-traces/final/settlement-progressUsageRejectedTest-22.itf.json][ITF]] |
+| W::overEnvelopeUsageRejectedTest | [[file:settlement-anchor-traces/final/settlement-overEnvelopeUsageRejectedTest-23.itf.json][ITF]] |
+| W::settlementRetryCannotChargeTwiceTest | [[file:settlement-anchor-traces/final/settlement-settlementRetryCannotChargeTwiceTest-24.itf.json][ITF]] |
+| W::isolatedUnknownHoldRetainedTest | [[file:settlement-anchor-traces/final/settlement-isolatedUnknownHoldRetainedTest-25.itf.json][ITF]] |
+| W::forgedFinalUsageRejectedTest | [[file:settlement-anchor-traces/final/settlement-forgedFinalUsageRejectedTest-26.itf.json][ITF]] |
+| W::isolationWinningRejectsFinishTest | [[file:settlement-anchor-traces/final/settlement-isolationWinningRejectsFinishTest-27.itf.json][ITF]] |
+| W::finishWinningRejectsIsolationTest | [[file:settlement-anchor-traces/final/settlement-finishWinningRejectsIsolationTest-28.itf.json][ITF]] |
+| W::sharedAccountFinalizationTest | [[file:settlement-anchor-traces/final/settlement-sharedAccountFinalizationTest-29.itf.json][ITF]] |
+| W::settlementDecisionLostReplyBeforeAccountApplyTest | [[file:settlement-anchor-traces/final/settlement-settlementDecisionLostReplyBeforeAccountApplyTest-30.itf.json][ITF]] |
+| W::accountApplyRetryRejectedTest | [[file:settlement-anchor-traces/final/settlement-accountApplyRetryRejectedTest-31.itf.json][ITF]] |
+| W::evidenceOnlyPublicationCounterexampleTest | [[file:settlement-anchor-traces/final/settlement-evidenceOnlyPublicationCounterexampleTest-32.itf.json][ITF]] |
+| W::duplicatedFinancialApplyCounterexampleTest | [[file:settlement-anchor-traces/final/settlement-duplicatedFinancialApplyCounterexampleTest-33.itf.json][ITF]] |
+| W::lateFinalOverwriteCounterexampleTest | [[file:settlement-anchor-traces/final/settlement-lateFinalOverwriteCounterexampleTest-34.itf.json][ITF]] |
+| W::usageCreatesClosureCounterexampleTest | [[file:settlement-anchor-traces/final/settlement-usageCreatesClosureCounterexampleTest-35.itf.json][ITF]] |
+| W::commitReplyLossErasesDecisionCounterexampleTest | [[file:settlement-anchor-traces/final/settlement-commitReplyLossErasesDecisionCounterexampleTest-36.itf.json][ITF]] |
+| W::restoredFdRetagCounterexampleTest | [[file:settlement-anchor-traces/final/settlement-restoredFdRetagCounterexampleTest-37.itf.json][ITF]] |
+| W::incompleteWriterUniverseCounterexampleTest | [[file:settlement-anchor-traces/final/settlement-incompleteWriterUniverseCounterexampleTest-38.itf.json][ITF]] |
+| W::completionIsBillingCounterexampleTest | [[file:settlement-anchor-traces/final/settlement-completionIsBillingCounterexampleTest-39.itf.json][ITF]] |
+| anchorReplyLostTest | [[file:settlement-anchor-traces/final/anchorReplyLostTest-40.itf.json][ITF]] |
+| acceptReplyLostPreventsNewWorkerPermitTest | [[file:settlement-anchor-traces/final/acceptReplyLostPreventsNewWorkerPermitTest-41.itf.json][ITF]] |
+| accountWriteReplyLostTest | [[file:settlement-anchor-traces/final/accountWriteReplyLostTest-42.itf.json][ITF]] |
+| duplicateApplyRejectedTest | [[file:settlement-anchor-traces/final/duplicateApplyRejectedTest-43.itf.json][ITF]] |
+| oldWorkerNewAcceptRejectedTest | [[file:settlement-anchor-traces/final/oldWorkerNewAcceptRejectedTest-44.itf.json][ITF]] |
+| acceptedBeforeFenceMayCompleteOnceTest | [[file:settlement-anchor-traces/final/acceptedBeforeFenceMayCompleteOnceTest-45.itf.json][ITF]] |
+| gateReceiptRequiredForConfirmationTest | [[file:settlement-anchor-traces/final/gateReceiptRequiredForConfirmationTest-46.itf.json][ITF]] |
+| mixedGateSnapshotRejectedTest | [[file:settlement-anchor-traces/final/mixedGateSnapshotRejectedTest-47.itf.json][ITF]] |
+| mixedSourceSnapshotRejectedTest | [[file:settlement-anchor-traces/final/mixedSourceSnapshotRejectedTest-48.itf.json][ITF]] |
+| matchingRevisionWrongRowRejectedTest | [[file:settlement-anchor-traces/final/matchingRevisionWrongRowRejectedTest-49.itf.json][ITF]] |
+| wrongReceiptAccountRejectedTest | [[file:settlement-anchor-traces/final/wrongReceiptAccountRejectedTest-50.itf.json][ITF]] |
+| lateWrongReceiptRejectedTest | [[file:settlement-anchor-traces/final/lateWrongReceiptRejectedTest-51.itf.json][ITF]] |
+| confirmationLostReplyTest | [[file:settlement-anchor-traces/final/confirmationLostReplyTest-52.itf.json][ITF]] |
+| unknownWriteRetainsFullScopeTest | [[file:settlement-anchor-traces/final/unknownWriteRetainsFullScopeTest-53.itf.json][ITF]] |
+| staleCacheCannotAuthorizeTest | [[file:settlement-anchor-traces/final/staleCacheCannotAuthorizeTest-54.itf.json][ITF]] |
+| oldSnapshotFreshRecoveryDoesNotReplayTest | [[file:settlement-anchor-traces/final/oldSnapshotFreshRecoveryDoesNotReplayTest-55.itf.json][ITF]] |
+| noMaterializationWithoutAnchorConfirmationTest | [[file:settlement-anchor-traces/final/noMaterializationWithoutAnchorConfirmationTest-56.itf.json][ITF]] |
+| anchorConfirmationThenCategoryMaterializationTest | [[file:settlement-anchor-traces/final/anchorConfirmationThenCategoryMaterializationTest-57.itf.json][ITF]] |
+| wrongLineageAcceptRejectedTest | [[file:settlement-anchor-traces/final/wrongLineageAcceptRejectedTest-58.itf.json][ITF]] |
+| duplicateConfirmationRejectedTest | [[file:settlement-anchor-traces/final/duplicateConfirmationRejectedTest-59.itf.json][ITF]] |
+| gateSnapshotRollbackCounterexampleTest | [[file:settlement-anchor-traces/final/gateSnapshotRollbackCounterexampleTest-60.itf.json][ITF]] |
+| cacheEqualityOnlyCounterexampleTest | [[file:settlement-anchor-traces/final/cacheEqualityOnlyCounterexampleTest-61.itf.json][ITF]] |
+| replayUnknownWriteCounterexampleTest | [[file:settlement-anchor-traces/final/replayUnknownWriteCounterexampleTest-62.itf.json][ITF]] |
+| unknownRefundCounterexampleTest | [[file:settlement-anchor-traces/final/unknownRefundCounterexampleTest-63.itf.json][ITF]] |
+| confirmationWithoutWriteCounterexampleTest | [[file:settlement-anchor-traces/final/confirmationWithoutWriteCounterexampleTest-64.itf.json][ITF]] |
+| oldWorkerFenceBypassCounterexampleTest | [[file:settlement-anchor-traces/final/oldWorkerFenceBypassCounterexampleTest-65.itf.json][ITF]] |
+
+* Interpretation and remaining gate
+
+[[file:../../docs/architecture/24-settlement-anchor-recovery.org][The dossier]] maps exact source reuse, authority premises and physical
+acceptance. The product checks original intent/permit/application/confirmation
+joins, one canonical account application, complete current recovery, actual
+original reservation retention and finite shared-capacity coverage. Charged
+materialization requires the same gate receipt and independent confirmation.
+
+The protected gate and independent anchor survive local worker/account-view
+restore by explicit premise. Gate application and canonical receipt commit
+atomically at the actual writer boundary. The proof does not derive these facts
+from a local cache, ordinary fsync, matching epoch or Cedar authorization.
+Restoring every authority together or losing gate consumption history violates
+the selected trust boundary. Runtime must stop and retain unknown holds when
+that boundary cannot be qualified.
+
+Physical root/persistence/privilege qualification, actual writer fencing,
+source-to-store refinement, provider billing/external payment correctness,
+native integration and deployment acceptance remain pending. No refund,
+correction ledger or high-performance result is established.
+
+* Documentation and diagram checks
+
+Final structural checks passed for 37 English Org documents, 871 local file links,
+101 pinned Git source targets, complete unique acceptance registers and 25
+canonical D2/SVG pairs. Every D2 source validated; the new bundled core diagram
+rendered and received visual inspection. Existing Go/Kubernetes/Rust assets are
+bundled, with no remote href dependencies or version/evidence labels in visible
+text. All Org files exported with Babel evaluation disabled; optional htmlize
+source highlighting remained unavailable without blocking export.
+
+The full preceding driver and writer/settlement byte manifests verify unchanged,
+including their original formal artifacts, dossiers, diagrams and raw evidence.
+The new final byte manifest and all seventeen final zero-exit command records
+also verify. These checks concern documentation/model integrity, not physical
+account-gate or independent-root qualification.

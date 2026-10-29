@@ -1,0 +1,9 @@
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.30s
+=== RUN   TestProviderConnectionBoundRetainsExistingAuthorityChannel
+    provider_connections_test.go:55: connection beyond global bound reached TLS: <nil>
+--- FAIL: TestProviderConnectionBoundRetainsExistingAuthorityChannel (3.07s)
+FAIL
+FAIL	github.com/HardenedLinux/weaver/go/dev	6.453s
+FAIL
+

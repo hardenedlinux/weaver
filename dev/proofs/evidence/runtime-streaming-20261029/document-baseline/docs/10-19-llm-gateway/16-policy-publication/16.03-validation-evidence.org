@@ -1,0 +1,132 @@
+#+title: Weaver Policy Publication Proofs and Recovery Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and model boundary
+
+Run [[file:../../../proofs/check_llm_policy_publication.py][the isolated runner]]. [[file:../../../proofs/lean/LlmPolicyPublication.lean][Lean]] composes actual category-15 transitions and
+makes owner publication the only effective Policy mutation. [[file:../../../proofs/qunit/LlmPolicyPublication.qnt][Quint]] checks one
+already admitted original subject, a bounded change-ID sample, independent readable
+projections, durable publications, producer acknowledgements and final consumption.
+The source fixture abstracts bootstrap and qualified source recovery, covered by
+the Lean composition and explicit owner predicates.
+
+See [[file:../../../proofs/evidence/llm-policy-publication/commands.json][commands.json]], [[file:../../../proofs/evidence/llm-policy-publication/receipt.json][receipt.json]] and [[file:../../../proofs/evidence/llm-policy-publication/SHA256SUMS][SHA256SUMS]]. Preliminary diagnostics remain
+separate from final acceptance. No Gateway or dependency pin is changed.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| PP1 | Pending is not effective confirmation | pendingCannotAcknowledgeTest | acknowledgements_name_committed_publications | producer.pending |
+| PP2 | Publication uses the exact staged identity | changeIdentityCannotRebindTest | publication_is_from_staged_change | producer.subject |
+| PP3 | Effective generation follows durable log | noAckIsNeededForDenialTest | generation_matches_durable_prefix | authority.publish |
+| PP4 | Effective value is the committed tip | publicationImmediatelyInvalidatesPermitTest | effective_value_matches_durable_prefix | authority.publish |
+| PP5 | Lost reply cannot publish twice | lostPublishReplyDoesNotReapplyTest | one_publication_per_change | authority.query |
+| PP6 | Exact parent prevents silent rebase | staleParentCannotPublishTest | exact_parent_chain | authority.parent |
+| PP7 | Prefix recovery cannot discard committed history | exactQueryRecoversLostReplyTest | published_prefix_is_inherited | recovery.prefix |
+| PP8 | Historical confirmation cannot reset current state | lateAckCannotRestoreOldAllowTest | late_acknowledgement_preserves_authority | recovery.ack |
+| PP9 | Producer snapshot does not assign authority | producerSnapshotCannotResetOwnerTest | producer_projection_loss_preserves_authority | recovery.projection |
+| PP10 | Old worker and permit remain fenced | oldPublisherCannotResumeTest | old_fence_cannot_consume | broker.cas |
+| PP11 | New generation invalidates old permission | restoredAllowDoesNotReviveGenerationTest | stale_generation_cannot_consume | broker.cas |
+| PP12 | Original unknown cost and domains remain bound | originalUnknownHoldSurvivesPublicationTest | unknown_usage_retains_hold | broker.hold |
+
+* Source-by-source review
+
+The [[file:../../../proofs/evidence/llm-policy-publication/source-review.json][POO Flow / Cedar register]] and [[file:../../../proofs/evidence/llm-policy-publication/agentgateway-source-review.json][agentgateway register]] record exact pinned blobs
+and freshly verified excerpts. These are inspected source snapshots, not a claim
+about current upstream releases or ABI compatibility.
+
+| Source | Actual source contract | Direct reuse / required extension |
+|--------+------------------------+-----------------------------------|
+| P12 authorized-effect-token | Immutable semantic root/operation binding and pure consumption | Reuse original subject identity; stable external-change identity and publication protocol are additions |
+| P13 strict-mediation | Pure nonce/root transitions retain consumed state even for unknown delivery | Preserve spent-state across pending publication, response loss and old acknowledgements |
+| P15 effect-host | Exact serialized local owner; runtime evaluation/delivery and indeterminate outcomes; no distributed Host guarantee | Reuse owner/consume ordering; source-to-owner durable publication and recovery remain native extensions |
+| P17/P22 durable store contracts | Scheme projects contracts while runtime owns storage, locking, leases, fsync, replay and repair | Reuse ownership split; contract receipts do not implement cross-store persistence |
+| P18/P19 authorized transaction recovery | Source-bound recovery and exact transaction membership | Reuse attribution and recovery linkage; qualify change-ID lookup, parent-CAS and current-prefix recovery |
+| P31 SessionAttempt | Exact attempt, generation and pending-obligation projection under producer/publication premises | Reuse stale-attempt exclusion; pending intent is not already published permission |
+| P35 authority monotonicity and lineage | Authority identity and strict generation advancement exclude ABA only along the admitted path | Retain qualified prefix/lineage and parent identity; no local-counter or stale-receipt currentness claim |
+| P43/P44 pure attempt proposals | Producer references are inert; Host resolves receipts and publishes by CAS; runtime-published/action-authorized/durable flags remain false | Reuse staged-data semantics; implement external publication/acknowledgement separately; respect generation exhaustion checks |
+| P20/P33 effect occurrence and budget separation | Exactly-once and budget closure depend on explicit runtime evidence | Publication/confirmation does not prove remote execution or refund unknown work |
+| C8 BoundOperation | Host authenticates actual effect/state and binds eventual execution; supplied-value equality is insufficient | Bind stage, publication and actual consume to their authenticated source state, not a producer callback |
+| C10 CompoundAuthorization | Nonempty required layers all Allow without evaluation errors | Use actual-operation layers; pending or stale confirmation does not substitute for evaluation |
+| C11 Composition | Validation/evaluation alignment is a premise | Preserve aligned source context through owner commit; no native persistence theorem is inherited |
+| Agentgateway provider/controller snapshots | Conversion and cloud-native reconciliation roles | Reuse Go ecosystem strengths; lifecycle callbacks do not become final authority publication |
+
+* Composition and proof premises
+
+=cas_projection= maps owner publication to the actual =policyChange= transition,
+background source steps to their actual transitions with unchanged Policy state,
+and restart to the actual prior owner/source restart path. Readable projection
+loss/recovery and producer acknowledgement preserve the execution authority.
+Original claim uniqueness, profile interpretation, account domains, allowance
+and unknown-usage settlement constraints follow from this projection.
+
+The new proofs establish generation/log alignment, effective-value/tip alignment,
+exact staged provenance, pairwise unique published change IDs, inherited committed
+prefixes, and an inductive exact-parent chain for arbitrary finite publications.
+Every acknowledgement names a committed publication. Historical confirmation
+cannot assign current authority, and final CAS still rejects old generation/fence.
+The worker check on owner publication is separate from the historical record's
+continued validity as data.
+
+Durable producer approval, current actual-operation publication authorization,
+exact source identity, durable publication/acknowledgement
+receipts, authenticated owner recovery and non-rollback source state remain
+explicit owner contracts. The effect/content commitments are typed identities;
+cryptographic hashing and payload interpretation need native qualification.
+Logical serialization is required between publication and final consumption; the
+proof does not implement distributed consensus, an outbox, leases or a multi-store
+transaction. Whole-authority rollback violates the stated deployment premise.
+The bounded Quint fixture is not exhaustive verification or a liveness proof.
+
+* Executable counterexamples
+
+| Removed contract | Negative control | Independently decoded violation |
+|------------------+------------------+---------------------------------|
+| Ack requires committed publication | prematureAckPolicyCounterexampleTest | Pending change receives confirmation without a log entry |
+| Stable-ID publication lookup | lostReplyReplayPolicyCounterexampleTest | Local visibility loss permits a second append for the same change |
+| Parent-CAS | staleParentPolicyCounterexampleTest | Concurrent pending change commits under the wrong predecessor |
+| Confirmation is historical data | lateAckRollbackPolicyCounterexampleTest | Old Allow receipt resets authority and accepts a real old permit after newer Deny |
+| Current publisher fence | oldPublisherPolicyCounterexampleTest | Old worker publishes under a newer owner fence |
+| Authoritative recovery join | tornRecoveryPolicyCounterexampleTest | Old issued permit is consumed from missing local projections despite current durable Deny |
+| Exact staged payload | idAliasPolicyCounterexampleTest | Same stable ID switches to an unstaged Allow payload |
+| Unknown budget hold | unknownRefundPolicyCounterexampleTest | Publication acknowledgement releases unresolved original usage |
+
+Unsafe actions are excluded from =step=. [[file:../../../proofs/evidence/llm-policy-publication/itf][ITF traces]] must show actual prior issuance
+for old-permit cases, actual newer committed denial and attributable historical
+confirmation. An invalid placeholder or forged permit is insufficient evidence.
+
+* Native acceptance still required
+
+Lose responses after stage, owner append and producer acknowledgement. Restore
+producer intent, owner visibility and acknowledgement projections independently.
+Keep queued old callbacks and publisher handles alive across owner restart. Verify
+exact stable-ID lookup and full payload equality; reject stale parents and stale
+publishers rather than rebasing. Delay the old Allow acknowledgement until a newer
+Deny has committed, and demonstrate that both old and newly reconstructed cached
+permissions fail the final CAS.
+
+Verify owner recovery checks the exact current log and ledger namespace/prefix,
+not just local counters. Exercise generation exhaustion with fail-closed behavior.
+Check that pending status is never presented as effective and that owner commit
+invalidates old permits before producer confirmation. Preserve original unknown
+holds until qualified original-slot usage and settlement. Native durability,
+transport and performance acceptance remain separate from these model receipts.
+
+* Local validation result
+
+The local runner completed 24 command routes with exit zero: 13 Lean modules,
+Quint typechecking, 45 scenario controls (37 guarded cases and eight negative
+controls), focused exported counterexamples, seven sampling routes and 40
+category-15 regression controls. Each sampling route used ten samples and at
+most 30 post-initializer steps with seed 179. The 70 samples are bounded
+simulation, not exhaustive temporal verification.
+
+The new Lean module checked 19 printed declarations without =sorryAx=, including
+the inductive exact-parent chain and composition into the prior final CAS model.
+Twelve correspondence rows resolve to actual passing Quint controls, printed
+Lean declarations and core D2 nodes. Independent trace decoding checks concrete
+violations, including earlier issuance of the old permit, the newer durable Deny
+and acknowledgement of the earlier Allow. Native storage/serialization and
+deployment acceptance remain separate obligations.

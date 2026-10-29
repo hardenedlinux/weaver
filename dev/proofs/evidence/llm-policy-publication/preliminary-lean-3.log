@@ -1,0 +1,40 @@
+proofs/lean/LlmPolicyPublication.lean:159:65: error: Type mismatch: After simplification, term
+  new
+ has type
+  r = { change := c, generation := b✝.base.policyGeneration + 1, worker := worker }
+but is expected to have type
+  r = { change := c, generation := s.base.policyGeneration + 1, worker := worker }
+proofs/lean/LlmPolicyPublication.lean:161:8: error: Type mismatch: After simplification, term
+  congrArg Nat.succ (Eq.symm parent)
+ has type
+  b✝.base.policyGeneration = c.parentGeneration
+but is expected to have type
+  s.base.policyGeneration = c.parentGeneration
+proofs/lean/LlmPolicyPublication.lean:180:65: error: Type mismatch: After simplification, term
+  new
+ has type
+  r = { change := c, generation := b✝.base.policyGeneration + 1, worker := worker }
+but is expected to have type
+  r = { change := c, generation := s.base.policyGeneration + 1, worker := worker }
+proofs/lean/LlmPolicyPublication.lean:205:81: error(lean.unknownIdentifier): Unknown identifier `s.base`
+proofs/lean/LlmPolicyPublication.lean:206:38: error(lean.unknownIdentifier): Unknown identifier `s.base.policyGeneration`
+proofs/lean/LlmPolicyPublication.lean:208:74: error(lean.unknownIdentifier): Unknown identifier `s.base`
+proofs/lean/LlmPolicyPublication.lean:209:31: error(lean.unknownIdentifier): Unknown identifier `s.base.publication.fence`
+'Weaver.LlmPolicyPublication.cas_projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.generation_matches_durable_prefix' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.effective_value_matches_durable_prefix' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.acknowledgements_name_committed_publications' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.one_publication_per_change' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.published_changes_have_parent_successor' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmPolicyPublication.published_prefix_is_inherited' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.publication_is_from_staged_change' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmPolicyPublication.original_change_domain_is_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.late_acknowledgement_preserves_authority' does not depend on any axioms
+'Weaver.LlmPolicyPublication.producer_projection_loss_preserves_authority' does not depend on any axioms
+'Weaver.LlmPolicyPublication.stale_generation_cannot_consume' depends on axioms: [sorryAx]
+'Weaver.LlmPolicyPublication.old_fence_cannot_consume' depends on axioms: [sorryAx]
+'Weaver.LlmPolicyPublication.original_claim_stays_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmPolicyPublication.original_profile_stays_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.original_allowance_stays_bounded' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.original_domains_stay_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyPublication.unknown_usage_retains_hold' depends on axioms: [propext, Quot.sound]

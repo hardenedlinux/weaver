@@ -1,0 +1,110 @@
+[
+  {
+    "label": "launcher-stable-A",
+    "args": [
+      "/opt/homebrew/bin/gxi",
+      "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-paired-20261020/fixture.ss"
+    ],
+    "exit": 0,
+    "seconds": 8.3151646250044,
+    "gateSeconds": 15,
+    "deadlineFailed": false,
+    "checks": [
+      "scheme-object-contract",
+      "native-json-contract",
+      "native-negative-ceiling",
+      "native-boolean-ceiling",
+      "native-string-ceiling",
+      "native-null-ceiling",
+      "native-unknown-authority-field",
+      "native-changed-node",
+      "native-overflow-ceiling",
+      "native-empty-targets",
+      "native-duplicate-targets"
+    ],
+    "processGatePassed": true,
+    "forcedExit": false,
+    "handleCounterCoverage": false
+  },
+  {
+    "label": "launcher-stable-D",
+    "args": [
+      "/opt/homebrew/bin/gxi",
+      "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-paired-20261020/fixture.ss"
+    ],
+    "exit": 0,
+    "seconds": 4.666495457990095,
+    "gateSeconds": 15,
+    "deadlineFailed": false,
+    "checks": [
+      "scheme-object-contract",
+      "native-json-contract",
+      "native-negative-ceiling",
+      "native-boolean-ceiling",
+      "native-string-ceiling",
+      "native-null-ceiling",
+      "native-unknown-authority-field",
+      "native-changed-node",
+      "native-overflow-ceiling",
+      "native-empty-targets",
+      "native-duplicate-targets"
+    ],
+    "processGatePassed": true,
+    "forcedExit": false,
+    "handleCounterCoverage": false
+  },
+  {
+    "label": "launcher-uuid-A",
+    "args": [
+      "/opt/homebrew/bin/gxi",
+      "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-paired-20261020/fixture.ss"
+    ],
+    "exit": 0,
+    "seconds": 20.026216749974992,
+    "gateSeconds": 15,
+    "deadlineFailed": true,
+    "checks": [
+      "scheme-object-contract",
+      "native-json-contract",
+      "native-negative-ceiling",
+      "native-boolean-ceiling",
+      "native-string-ceiling",
+      "native-null-ceiling",
+      "native-unknown-authority-field",
+      "native-changed-node",
+      "native-overflow-ceiling",
+      "native-empty-targets",
+      "native-duplicate-targets"
+    ],
+    "processGatePassed": false,
+    "forcedExit": false,
+    "handleCounterCoverage": false
+  },
+  {
+    "label": "launcher-uuid-D",
+    "args": [
+      "/opt/homebrew/bin/gxi",
+      "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-paired-20261020/fixture.ss"
+    ],
+    "exit": 0,
+    "seconds": 10.522002667014021,
+    "gateSeconds": 15,
+    "deadlineFailed": false,
+    "checks": [
+      "scheme-object-contract",
+      "native-json-contract",
+      "native-negative-ceiling",
+      "native-boolean-ceiling",
+      "native-string-ceiling",
+      "native-null-ceiling",
+      "native-unknown-authority-field",
+      "native-changed-node",
+      "native-overflow-ceiling",
+      "native-empty-targets",
+      "native-duplicate-targets"
+    ],
+    "processGatePassed": true,
+    "forcedExit": false,
+    "handleCounterCoverage": false
+  }
+]

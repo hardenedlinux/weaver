@@ -1,0 +1,71 @@
+{
+  "status": "ASSERTIONS_COMPLETE_NATURAL_EXIT_TIMEOUT",
+  "nativeContractChecks": 11,
+  "duplicateKeyDecoderRejection": true,
+  "runtime": "1cfb032",
+  "binary": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/bin/gxi",
+  "binarySha256": "eb38339db9efaee117612a22a3831db386b31a06ecb9bda775e8208cbdd628c9",
+  "coreHead": "52130d2d338b09622a3f55e37987ddc0375b6187",
+  "compiledArtifactsObservedAfterRun": {
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/core/modules/json-schema/contracts.o1": "82a282ac4c399c2dc4b67f93bf9a8c68a54563167fe0312375d935a289f53dde",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/core/modules/json-schema/contracts.scm": "466b25dc3ca708584401e00ab5964837634280fe7172ea1e3e24dd7513a5e6a2",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/core/modules/json-schema/contracts.ssi": "e53f4551451f02cf54ed6dddcea38205ec475a72321827b58c25cd8d3c01bf67",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/core/modules/json-schema/contracts.ssxi.ss": "120aa3a7da06fa6cd78d7fc4e793561cc6bb0a5491bcc77b16d8dffaf47494b7",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/core/modules/json-schema/json-schema-source.o1": "76e8226ef592a69c231e9fe390592dc2c7d84f964d70ed328b2831a7bc4532b4",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/core/modules/json-schema/json-schema-source.scm": "f73108294185c099137f1b5ea4c04dc138b44e22a40bd7b782e04512f96b99c6",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/core/modules/json-schema/json-schema-source.ssi": "13606fb83373c0767077e0fe05e3d55d16614393a9e4dadf42e8ab3eecf32b26",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/core/modules/json-schema/json-schema-source.ssxi.ss": "c141a451f16c2e2756b11291dfc4c17bc4a95cfbe948dd8d098ae01e392ec96f",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/object.o1": "e9c040bd42940f0c037fad41ecbf14fabab17712f100770c1c48ffa112309a3d",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/object.o2": "473cd552b522e2b4aac90c3d9dca8f1a52c79b08cdd4f2323d04e5604f4e7977",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/object.o3": "9b41f35b810bd57ab7723bb1ab0d82e177697b189761809d51c78504ce23bb9a",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/object.o4": "05ab8a5ea71e80e50a1211ab80bcc99e3e5732cb26d97a502514b525a805e0e1",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/object.o5": "93a1fe6a7f6edddbb8a9a0daf7243f5045f81c57ce827e5800e494695ce2edf0",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/object.scm": "b1ca31f2e95facdf4628fb47a29d113d9cf4e06c2e7ab76ecb6416ca21376d73",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/object.ssi": "56270c910cf09b1ded1380145b2680e864ecb9595105f1fe6f3167f1a6fd007b",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/object.ssxi.ss": "6afbf47c75312f90a932e4297fe134298ba682f38be7a8e84e41795a71ae5e79",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/mop.o1": "84827c929e28e35cffc2b14e2694bad3003d91e800b2082561377f1a1757888b",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/mop.o2": "51a126c07c50d06c702a51a57020356572766a506ce3357b9c1e4686e8adc766",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/mop.o3": "064d7fa4178df05cd16afac8ccefaf0f1dfda8f9d08d9ea0d2a7c4dcd61a44d5",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/mop.o4": "4a63f80cc2eb52f187d775d1159e819432c046757323f8d560577d08126383b7",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/mop.o5": "4d885b4115d59269c4d450e2ec6ec908b9307bf871e940bfaef99f848ed0c5f4",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/mop.scm": "43c5a63cc46a6fa06875dc37c7ac9136d6d610b31d8b050bc62af293e63dc3e5",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/mop.ssi": "e034c7f400fe3ad399626b34e31e1855bf7ed3cdf9c080263b2a586252af110d",
+    "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/.gerbil/lib/clan/poo/mop.ssxi.ss": "b3129892479c8164acf74891c5f6af607756fc5b348d4f2a74a2ae7b0526bdc7"
+  },
+  "artifactBoundary": "Selected directly referenced interfaces/artifacts observed after the run; not a before/after stability receipt or exhaustive loaded dependency closure",
+  "sources": [
+    {
+      "path": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/modules/json-schema/contracts.ss",
+      "sha256": "ab67b9ac2790c1d3f29e33f1685303f18d1fa842c58e5da7f249468c02ef9d9c",
+      "headSha256": "ab67b9ac2790c1d3f29e33f1685303f18d1fa842c58e5da7f249468c02ef9d9c",
+      "workingEqualsHead": true
+    },
+    {
+      "path": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/modules/json-schema/json-schema-source.ss",
+      "sha256": "c17918b0c59a20cdde00620cae483703a517e71e1736226428eb591731861859",
+      "headSha256": "c17918b0c59a20cdde00620cae483703a517e71e1736226428eb591731861859",
+      "workingEqualsHead": true
+    },
+    {
+      "path": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/modules/json-schema/json-schema-constraints.ss",
+      "sha256": "ab862d5d6e46eedbe748225649c9760b9f20ec2a52c6f343f66405bbeb3b4e1a",
+      "headSha256": "ab862d5d6e46eedbe748225649c9760b9f20ec2a52c6f343f66405bbeb3b4e1a",
+      "workingEqualsHead": true
+    },
+    {
+      "path": "/Users/guangtao/ghq/github.com/tao3k/poo-flow/core/gerbil.pkg",
+      "sha256": "f4c2576a01325a9496f7194b5acea8f49c79acc2860b8ce8a27ad9585ed82602",
+      "headSha256": "f4c2576a01325a9496f7194b5acea8f49c79acc2860b8ce8a27ad9585ed82602",
+      "workingEqualsHead": true
+    }
+  ],
+  "installedJsonReader": {
+    "path": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/1cfb032/src/std/encoding/json/reader.ss",
+    "sha256": "f5ae3864e07354174d39ae8e6cdb05acb54ac780df0ebb8fd65ed9e099cab7af"
+  },
+  "observedProcessExit": 124,
+  "nativeQualification": false,
+  "currentSourceBuildQualified": false,
+  "yamlExecuted": false,
+  "gatewayNormalizerImplemented": false
+}

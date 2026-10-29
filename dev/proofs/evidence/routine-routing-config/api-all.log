@@ -1,0 +1,102 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":2,"sourceSha256":"ca542a7130cc462612500657dc6d2b898467e759726b2ff733b72dca8a8dc18f"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"4892899477a078aa7250d23b736a504f3a974feabd385886064b123b5c4935b4"}
+@@START {"label":"api-controls-0","limit":20}
+
+  RoutineRoutingConfig
+    ok schemeSurfaceUsesSameNormalTest passed 1 test(s)
+    ok jsonSurfaceUsesSameNormalTest passed 1 test(s)
+    ok yamlSurfaceUsesSameNormalTest passed 1 test(s)
+
+  3 passing (22ms)
+@@DONE {"label":"api-controls-0","passed":["schemeSurfaceUsesSameNormalTest","jsonSurfaceUsesSameNormalTest","yamlSurfaceUsesSameNormalTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  RoutineRoutingConfig
+    ok typedConfigRequiredTest passed 1 test(s)
+    ok fullSourceClosureRequiredTest passed 1 test(s)
+    ok publisherAdmissionRequiredTest passed 1 test(s)
+
+  3 passing (3ms)
+@@DONE {"label":"api-controls-1","passed":["typedConfigRequiredTest","fullSourceClosureRequiredTest","publisherAdmissionRequiredTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  RoutineRoutingConfig
+    ok droppedCapabilityRejectedTest passed 1 test(s)
+    ok largerBudgetRejectedTest passed 1 test(s)
+    ok forgedProfileRejectedTest passed 1 test(s)
+
+  3 passing (1ms)
+@@DONE {"label":"api-controls-2","passed":["droppedCapabilityRejectedTest","largerBudgetRejectedTest","forgedProfileRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  RoutineRoutingConfig
+    ok changedResponseModeRejectedTest passed 1 test(s)
+    ok forgedRootRejectedTest passed 1 test(s)
+    ok unsupportedCheapRouteRejectedTest passed 1 test(s)
+
+  3 passing (11ms)
+@@DONE {"label":"api-controls-3","passed":["changedResponseModeRejectedTest","forgedRootRejectedTest","unsupportedCheapRouteRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  RoutineRoutingConfig
+    ok configuredTargetIsNotPermissionTest passed 1 test(s)
+    ok emptyCandidateSetFailsClosedTest passed 1 test(s)
+    ok narrowedAllowanceConstrainsRouteTest passed 1 test(s)
+
+  3 passing (6ms)
+@@DONE {"label":"api-controls-4","passed":["configuredTargetIsNotPermissionTest","emptyCandidateSetFailsClosedTest","narrowedAllowanceConstrainsRouteTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-5","limit":20}
+
+  RoutineRoutingConfig
+    ok allowedAlternativeKeepsOriginalRootTest passed 1 test(s)
+    ok newDefaultDoesNotRewritePinnedRoutineTest passed 1 test(s)
+    ok hardWithdrawalInvalidatesOldSelectionTest passed 1 test(s)
+
+  3 passing (6ms)
+@@DONE {"label":"api-controls-5","passed":["allowedAlternativeKeepsOriginalRootTest","newDefaultDoesNotRewritePinnedRoutineTest","hardWithdrawalInvalidatesOldSelectionTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-6","limit":20}
+
+  RoutineRoutingConfig
+    ok softTelemetryPreservesHardAuthorityTest passed 1 test(s)
+    ok newSelectionUsesCurrentRankingTest passed 1 test(s)
+    ok historyRestrictionRecheckedTest passed 1 test(s)
+
+  3 passing (4ms)
+@@DONE {"label":"api-controls-6","passed":["softTelemetryPreservesHardAuthorityTest","newSelectionUsesCurrentRankingTest","historyRestrictionRecheckedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-7","limit":20}
+
+  RoutineRoutingConfig
+    ok currentCompilerArtifactRequiredTest passed 1 test(s)
+    ok finalPolicyRequiredTest passed 1 test(s)
+    ok configCannotRewriteWireTest passed 1 test(s)
+
+  3 passing (4ms)
+@@DONE {"label":"api-controls-7","passed":["currentCompilerArtifactRequiredTest","finalPolicyRequiredTest","configCannotRewriteWireTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-8","limit":20}
+
+  RoutineRoutingConfig
+    ok unknownOutcomeKeepsOriginalAdmissionTest passed 1 test(s)
+    ok routineCannotSpliceResponseSourcesTest passed 1 test(s)
+    ok strengthenedContractFiltersPrimaryTest passed 1 test(s)
+
+  3 passing (5ms)
+@@DONE {"label":"api-controls-8","passed":["unknownOutcomeKeepsOriginalAdmissionTest","routineCannotSpliceResponseSourcesTest","strengthenedContractFiltersPrimaryTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-9","limit":20}
+
+  RoutineRoutingConfig
+    ok strengthenedContractChoosesCapableBackupTest passed 1 test(s)
+    ok weakenedConfigCounterexampleTest passed 1 test(s)
+    ok replacedRoutineCounterexampleTest passed 1 test(s)
+
+  3 passing (5ms)
+@@DONE {"label":"api-controls-9","passed":["strengthenedContractChoosesCapableBackupTest","weakenedConfigCounterexampleTest","replacedRoutineCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-10","limit":20}
+
+  RoutineRoutingConfig
+    ok rewrittenRootCounterexampleTest passed 1 test(s)
+    ok hiddenRetryCounterexampleTest passed 1 test(s)
+
+  2 passing (2ms)
+@@DONE {"label":"api-controls-10","passed":["rewrittenRootCounterexampleTest","hiddenRetryCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

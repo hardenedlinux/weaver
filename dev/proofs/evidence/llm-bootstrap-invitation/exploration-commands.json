@@ -1,0 +1,31 @@
+[
+  {
+    "label": "consumed",
+    "args": [
+      "quint",
+      "run",
+      "proofs/evidence/llm-bootstrap-invitation/bundle-simulation/LlmBootstrapInvitation.qnt",
+      "--main",
+      "LlmBootstrapInvitation",
+      "--backend",
+      "typescript",
+      "--init",
+      "consumed",
+      "--step",
+      "step",
+      "--invariant",
+      "invariant",
+      "--max-samples",
+      "5",
+      "--max-steps",
+      "20",
+      "--seed",
+      "293",
+      "--verbosity",
+      "1"
+    ],
+    "exit": 124,
+    "seconds": 30.02875454101013,
+    "watchdogSeconds": 30
+  }
+]

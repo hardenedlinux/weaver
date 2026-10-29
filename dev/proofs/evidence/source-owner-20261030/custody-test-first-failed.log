@@ -1,0 +1,13 @@
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+error[E0382]: borrow of partially moved value: `proposal`
+   --> crates/server/src/../tests/unit/source_owner.rs:147:17
+    |
+146 |         operation_id: proposal.operation_id,
+    |                       --------------------- value partially moved here
+147 |         digest: proposal.digest().expect("digest"),
+    |                 ^^^^^^^^ value borrowed here after partial move
+    |
+    = note: partial move occurs because `proposal.operation_id` has type `String`, which does not implement the `Copy` trait
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `weaver-server` (lib test) due to 1 previous error

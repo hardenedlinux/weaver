@@ -1,0 +1,16 @@
+#+title: Weaver Caller Incarnation and Custody Capability
+#+language: en
+#+options: toc:2
+
+* Design review
+
+- [[file:43.01-caller-custody.org][43.01 Caller binding at protected publication]]
+- [[file:43.02-caller-custody.d2][43.02 Core D2 source]] and [[file:43.02-caller-custody.svg][rendered core architecture]]
+- [[file:43.03-proof-and-source-evidence.org][43.03 Proof, source comparison and acceptance evidence]]
+- [[file:../42-custody-publication/42.00-index.org][42 Protected custody publication predecessor]]
+
+This category extends the preceding publication contract. It supplies the caller
+and capability boundary that a numeric fence, shared workload identity or cached
+permit cannot establish. The scope is an AI Agent Gateway with logical execution
+authority; it assumes no physical isolation. Models and counterexamples are
+executable design artifacts. No Gateway runtime or dependency pin is changed.

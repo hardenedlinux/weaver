@@ -1,0 +1,12 @@
+Using built-in specs.
+COLLECT_GCC=/opt/homebrew/bin/gcc-16
+COLLECT_LTO_WRAPPER=/opt/homebrew/Cellar/gcc/16.2.0/bin/../libexec/gcc/aarch64-apple-darwin25/16/lto-wrapper
+Target: aarch64-apple-darwin25
+Configured with: ../configure --prefix=/opt/homebrew/opt/gcc --libdir=/opt/homebrew/opt/gcc/lib/gcc/current --disable-nls --enable-checking=release --with-gcc-major-version-only --enable-languages=c,c++,objc,obj-c++,fortran --program-suffix=-16 --with-gmp=/opt/homebrew/opt/gmp --with-mpfr=/opt/homebrew/opt/mpfr --with-mpc=/opt/homebrew/opt/libmpc --with-isl=/opt/homebrew/opt/isl --with-zstd=/opt/homebrew/opt/zstd --with-pkgversion='Homebrew GCC 16.2.0' --with-bugurl=https://github.com/Homebrew/homebrew-core/issues --with-system-zlib --build=aarch64-apple-darwin25 --with-sysroot=/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk
+Thread model: posix
+Supported LTO compression algorithms: zlib zstd
+gcc version 16.2.0 (Homebrew GCC 16.2.0) 
+COMPILER_PATH=/opt/homebrew/Cellar/gcc/16.2.0/bin/../libexec/gcc/aarch64-apple-darwin25/16/:/opt/homebrew/Cellar/gcc/16.2.0/bin/../libexec/gcc/
+LIBRARY_PATH=/opt/homebrew/Cellar/gcc/16.2.0/bin/../lib/gcc/current/gcc/aarch64-apple-darwin25/16/:/opt/homebrew/Cellar/gcc/16.2.0/bin/../lib/gcc/current/gcc/:/opt/homebrew/Cellar/gcc/16.2.0/bin/../lib/gcc/current/gcc/aarch64-apple-darwin25/16/../../../
+COLLECT_GCC_OPTIONS='-bundle' '-isysroot' '/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk' '-o' '/private/tmp/weaver-link-diagnostic.o1' '-mmacosx-version-min=14.0' '-asm_macosx_version_min=14.0' '-nodefaultexport' '-mcpu=apple-m1' '-mlittle-endian' '-mabi=lp64' '-dumpdir' '/private/tmp/weaver-link-diagnostic.o1.'
+ /opt/homebrew/Cellar/gcc/16.2.0/bin/../libexec/gcc/aarch64-apple-darwin25/16/collect2 -demangle -dynamic -arch arm64 -macos_version_min 14.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk -o /private/tmp/weaver-link-diagnostic.o1 -L/opt/homebrew/Cellar/gcc/16.2.0/bin/../lib/gcc/current/gcc/aarch64-apple-darwin25/16 -L/opt/homebrew/Cellar/gcc/16.2.0/bin/../lib/gcc/current/gcc -L/opt/homebrew/Cellar/gcc/16.2.0/bin/../lib/gcc/current/gcc/aarch64-apple-darwin25/16/../../.. -lemutls_w -lheapt_w ".data/native-image-closure-20261020/build/std/number/misc~0.o" -lSystem -bundle -lgcc -lSystem -no_compact_unwind -rpath "@loader_path" -rpath /opt/homebrew/Cellar/gcc/16.2.0/lib/gcc/current/gcc/aarch64-apple-darwin25/16 -rpath /opt/homebrew/Cellar/gcc/16.2.0/lib/gcc/current/gcc -rpath /opt/homebrew/Cellar/gcc/16.2.0/lib/gcc/current

@@ -1,0 +1,14 @@
+{
+  "args": [
+    "/opt/homebrew/opt/node/bin/node",
+    "proofs/evidence/native-image-closure/run-quint.cjs"
+  ],
+  "exit": 0,
+  "inputs": {
+    "proofs/qunit/NativeLocatorClosure.qnt": "9d69baf38ebb396ab45b1f32fd7f3127fca52160629532ccd075fb2c83a18b3a",
+    "proofs/evidence/native-image-closure/run-quint.cjs": "27df22c29ee44247392e2427b5d1d2a54d73e950c24516334c117455af2856a3",
+    "proofs/check_routine_config_api.py": "d61834946240f0d37a7daafc66fbbd2a31a9387e255dcb13d227d9a14295022d"
+  },
+  "officialPipeline": "load -> parse -> typecheck -> runTests; new Evaluator per group",
+  "expectedControls": 13
+}

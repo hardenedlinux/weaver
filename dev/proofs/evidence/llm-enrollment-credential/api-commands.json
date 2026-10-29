@@ -1,0 +1,211 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 15,
+    "sourceSha256": "b40dd508bb86bca42c1a4350d4eacd0f307ebf4b3f2c120326915d25fabca32e",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 3.338
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "4b2446b56ae1f6216856bb45d12dc00815ce203c5ad6206f63fc6c3e08115204",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 23.506
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "sharedWorkloadCannotAssignSubjectTest",
+      "producerAssignmentRequiredTest",
+      "sharedWorkloadCannotIssueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.817
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "forwardedSubjectCredentialRejectedTest",
+      "authenticatedSubjectCannotNominateKeyTest",
+      "subjectAuthenticationRequiredTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.029
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "enrollmentPossessionRequiredTest",
+      "issuanceSessionBoundTest",
+      "currentIssuancePolicyRequiredTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.054
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "commitDoesNotSignOrEnrollTest",
+      "lostIssueReplyRecoversSameCredentialTest",
+      "oldWorkerCannotRecoverSubjectTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.949
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "recoveryAuthenticationRequiredTest",
+      "recoveryPolicyRequiredTest",
+      "canonicalLaunchCannotReissueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.88
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "crossLaunchIdCannotBeReusedTest",
+      "secondSubjectGetsDistinctIdTest",
+      "uncommittedBodyCannotReachSignerTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.28
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "signatureWithoutRequestRejectedTest",
+      "lostSignerReplyRetainsExactIntentTest",
+      "wrongBodyCallbackRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.787
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "authenticSignatureRequiredTest",
+      "lateCallbackAfterRevocationRejectedTest",
+      "interveningCommitInvalidatesReadTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.751
+  },
+  {
+    "label": "api-controls-8",
+    "passed": [
+      "releasedCredentialStillNeedsHolderTest",
+      "forwardedCredentialCannotActivateTest",
+      "recoveredConnectionCannotActivateTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.83
+  },
+  {
+    "label": "api-controls-9",
+    "passed": [
+      "oldEpochCannotActivateTest",
+      "activationNeedsCurrentPolicyTest",
+      "rootActivationDoesNotBindBeneficiaryTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.072
+  },
+  {
+    "label": "api-controls-10",
+    "passed": [
+      "activationCannotRepeatTest",
+      "recoveryCannotReplaceFirstKeyTest",
+      "actualActivationPreservesOriginalBudgetTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 4.416
+  },
+  {
+    "label": "api-controls-11",
+    "passed": [
+      "revocationFencesPublishedInvitationTest",
+      "forgedSubjectCounterexampleTest",
+      "erasedCredentialCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.356
+  },
+  {
+    "label": "api-controls-12",
+    "passed": [
+      "erasedReleaseCounterexampleTest",
+      "missingActivationOutcomeCounterexampleTest",
+      "phantomActivationOutcomeCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.008
+  },
+  {
+    "label": "api-controls-13",
+    "passed": [
+      "splitRecoveryCannotBindFirstKeyTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.35
+  }
+]

@@ -1,0 +1,67 @@
+     Locking 18 packages to latest compatible versions
+      Adding asn1-rs v0.7.1
+      Adding asn1-rs-derive v0.6.0
+      Adding asn1-rs-impl v0.2.0
+      Adding bit-vec v0.9.1
+      Adding data-encoding v2.11.1
+      Adding der-parser v10.0.0
+      Adding lazy_static v1.5.1
+      Adding minimal-lexical v0.2.1
+      Adding nom v7.1.3
+      Adding num-bigint v0.4.8
+      Adding num-integer v0.1.47
+      Adding oid-registry v0.8.1
+      Adding pem v3.0.6
+      Adding rcgen v0.14.9
+      Adding rusticata-macros v4.1.0
+      Adding synstructure v0.13.2
+      Adding x509-parser v0.18.1
+      Adding yasna v0.6.0
+   Compiling ring v0.17.14
+   Compiling getrandom v0.2.17
+   Compiling rustls v0.23.46
+   Compiling powerfmt v0.2.1
+   Compiling num-conv v0.2.2
+   Compiling deranged v0.5.8
+   Compiling time-core v0.1.9
+   Compiling pem v3.0.6
+   Compiling time v0.3.55
+   Compiling yasna v0.6.0
+   Compiling rustls-webpki v0.103.15
+   Compiling rcgen v0.14.9
+   Compiling tokio-rustls v0.26.5
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling hyper-rustls v0.27.9
+   Compiling reqwest v0.13.5
+   Compiling weaver-broker v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-broker)
+   Compiling weaver-cli v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 16.54s
+     Running unittests src/lib.rs (target/debug/deps/weaver_broker-b780253d1cd718c6)
+
+running 4 tests
+test https::tests::redirect_is_observed_without_following_or_refunding ... FAILED
+test https::tests::partial_transport_failure_is_unknown_and_never_retried ... FAILED
+test https::tests::destination_aliases_credentials_and_http_are_rejected ... ok
+test enforce_asp_rust_gate ... ok
+
+failures:
+
+---- https::tests::redirect_is_observed_without_following_or_refunding stdout ----
+
+thread 'https::tests::redirect_is_observed_without_following_or_refunding' (8128849) panicked at crates/weaver-broker/src/../tests/unit/https_transport.rs:14:53:
+loopback bind: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- https::tests::partial_transport_failure_is_unknown_and_never_retried stdout ----
+
+thread 'https::tests::partial_transport_failure_is_unknown_and_never_retried' (8128848) panicked at crates/weaver-broker/src/../tests/unit/https_transport.rs:14:53:
+loopback bind: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+
+
+failures:
+    https::tests::partial_transport_failure_is_unknown_and_never_retried
+    https::tests::redirect_is_observed_without_following_or_refunding
+
+test result: FAILED. 2 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+error: test failed, to rerun pass `-p weaver-broker --lib`

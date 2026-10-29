@@ -1,0 +1,212 @@
+#+title: Driver Completion and Recovery Check Receipt
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS abstract-checked-physical-qualification-pending
+
+* Artifact and source identity
+
+Workspace: /Users/guangtao/ghq/github.com/tao3k/weaver, branch main,
+tracked HEAD =4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Architecture and
+formal artifacts remain untracked working-tree work. No commit, push, gateway
+implementation or dependency-pin change is part of this receipt.
+
+| Artifact | SHA-256 |
+|----------+---------|
+| [[file:../quint/DriverCompletionRecovery.qnt][DriverCompletionRecovery.qnt]] | =5f58714bc10f4789c347f6e4aa04ca6198fd01f0efa03180b7960ba34aeca9f4= |
+| [[file:../lean/DriverCompletionRecovery.lean][DriverCompletionRecovery.lean]] | =5730925adda5a0069f6c0a669976eaa99148416e01988b02f2a2d2bca4523da8= |
+
+[[file:driver-completion-traces/SHA256SUMS][The byte manifest]] records the full final proof chain, model dependencies,
+new diagram and retained raw evidence. [[file:driver-completion-traces/source-review.json][The source review]] records committed Git
+object identities, SHA-256 and numbered excerpts for P12/P13/P15/P17/P18/P19/P20/
+P22/P31/P33/P35/P43 and C8/C10/C11. [[file:../../../docs/architecture/01-reference-comparison.org][The source register]] resolves navigable paths.
+Source inspection is not a native build or a proof importing those owners.
+
+| Source owner | Inspected committed identity |
+|--------------+------------------------------|
+| POO Flow | =a74fc2fd63437252175b5a67649ee54b886d3bf4= |
+| Lambda Aitia reference owner | =cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc= |
+| cedar-poo-spec | =c8d1a0641120cf65e299e8a98f9fe7666ca96ab5= |
+
+The final source-review entries resolve to the POO Flow and cedar-poo-spec Git
+objects referenced by their registry rows; the Lambda Aitia identity retains
+its separate reference scope and was not substituted for root-owned modules.
+
+* Final executable checks
+
+Quint =0.33.0=, TypeScript backend. Lean =4.34.1=, arm64 Darwin, Std only.
+Every Lean dependency was rebuilt from current source into a fresh isolated
+/private/tmp/weaver-driver-final-proof directory. Owner package builds, pins,
+ABI and dependency resolution were not changed or requalified.
+
+[[file:driver-completion-traces/commands.json][Exact commands, exit statuses, elapsed times and watchdogs]] retain all
+thirteen final commands. Seven Lean builds, Quint typecheck/test and all four
+bounded simulations exited zero. Lean builds/typecheck/simulations used a
+20-second watchdog; deterministic tests used a 60-second watchdog. No timeout
+was widened or relabeled as a pass.
+
+| Check | Result and evidence |
+|-------+---------------------|
+| Lean LogicalMessageAuthority | exit 0; [[file:driver-completion-traces/LogicalMessageAuthority.log][compiler / axiom inventory]] |
+| Lean SharedMessageBudget | exit 0; [[file:driver-completion-traces/SharedMessageBudget.log][compiler / axiom inventory]] |
+| Lean FiniteDomainMigration | exit 0; [[file:driver-completion-traces/FiniteDomainMigration.log][compiler / axiom inventory]] |
+| Lean AnchoredRecoveryAndEgress | exit 0; [[file:driver-completion-traces/AnchoredRecoveryAndEgress.log][compiler / axiom inventory]] |
+| Lean ComposedGatewayLifecycle | exit 0; [[file:driver-completion-traces/ComposedGatewayLifecycle.log][compiler / axiom inventory]] |
+| Lean FiniteStreamManifest | exit 0; [[file:driver-completion-traces/FiniteStreamManifest.log][compiler / axiom inventory]] |
+| Lean DriverCompletionRecovery | exit 0; [[file:driver-completion-traces/DriverCompletionRecovery.log][compiler / axiom inventory]] |
+| Quint typecheck | exit 0; [[file:driver-completion-traces/typecheck.log][raw log]] |
+| Quint deterministic controls | 69 passing: 39 imported manifest controls, 24 new positive/rejection controls and 6 new excluded mutants; [[file:driver-completion-traces/tests.log][raw log]] |
+
+No final compiler log contains sorryAx or a source error. Printed theorem
+inventories use only propext, Quot.sound and inherited Classical.choice;
+some projection/ledger-preservation statements require no axioms. These are
+Lean's logical axioms, not evidence authenticating a socket or a storage record.
+The original manifest Lean/Quint bytes still match their preceding receipt.
+
+| Finite range count | Sampling scope | Result |
+|--------------------+----------------+--------|
+| 0 | 20 traces, at most 30 transitions each, seed 19 | no violation; [[file:driver-completion-traces/emptyInit.log][raw log]] |
+| 1 | 20 traces, at most 30 transitions each, seed 19 | no violation; [[file:driver-completion-traces/singletonInit.log][raw log]] |
+| 3 | 20 traces, at most 30 transitions each, seed 19 | no violation; [[file:driver-completion-traces/init.log][raw log]] |
+| 5 | 20 traces, at most 30 transitions each, seed 19 | no violation; [[file:driver-completion-traces/largerInit.log][raw log]] |
+
+Total: 80 bounded sampled traces, with initial states additional to the transition
+bound. The four canonical logical messages, two shared accounts and four-byte
+range descriptors are fixture restrictions. Sampling is not exhaustive; the
+Lean product quantifies over arbitrary finite manifests under declared premises.
+The sampler selects owner incarnations zero through three and administrative
+owner restart/history actions; detailed migration schedules retain the imported
+preceding model's scope. Simulator times are not gateway performance evidence.
+
+* Reproduction
+
+From the workspace root, with the seven Lean modules rebuilt in dependency order:
+
+#+begin_src sh
+LEAN_PATH=/private/tmp/weaver-driver-final-proof elan run leanprover/lean4:v4.34.1 lean dev/specs/lean/DriverCompletionRecovery.lean
+quint typecheck dev/specs/quint/DriverCompletionRecovery.qnt
+quint test dev/specs/quint/DriverCompletionRecovery.qnt --backend typescript --max-samples 1
+quint run dev/specs/quint/DriverCompletionRecovery.qnt --backend typescript --init init --step step --invariant safety --max-samples 20 --max-steps 30 --seed 19 --verbosity 1
+#+end_src
+
+Use emptyInit, singletonInit and largerInit for the other fixture sizes.
+The complete rebuilding commands and exact watchdogs are recorded separately.
+Quint imports directly available parent module tests, not all transitive tests;
+39 imported controls here must not be described as all earlier coordinator
+regressions. Historical coordinator/manifest receipts retain their own coverage.
+
+* Retained preliminary evidence
+
+The initial development compiler log is retained as
+[[file:driver-completion-traces/initial-development-chain.log][initial-development-chain.log]]. It contains incomplete parser diagnostics
+and downstream sorryAx diagnostics from that failed candidate; it is not a
+proof pass. The fresh final seven-module rebuild supersedes it for acceptance.
+Five earlier ITF outputs displaced by inserted test ordinals are retained under
+[[file:driver-completion-traces/preliminary][preliminary]]. Four pre-pending-resolution sample logs retain their earlier
+scope; the final samples above rerun the final model including read-only pending
+resolution. Earlier evidence was neither deleted nor substituted for final runs.
+
+* Final deterministic ITF traces
+
+Each final control has its own retained ITF output. Imported M:: filename
+prefixes are normalized to manifest- for portable Org file links; ITF bytes
+are unchanged. Expected negative controls
+pass by exhibiting the documented safety violation in an excluded mutant; they
+are not executions of the proposed safe step relation.
+
+| Control | Trace |
+|---------+-------|
+| M::emptyManifestTest | [[file:driver-completion-traces/manifest-emptyManifestTest-0.itf.json][ITF]] |
+| M::singletonManifestTest | [[file:driver-completion-traces/manifest-singletonManifestTest-1.itf.json][ITF]] |
+| M::finiteManifestSequenceTest | [[file:driver-completion-traces/manifest-finiteManifestSequenceTest-2.itf.json][ITF]] |
+| M::fiveRangeManifestTest | [[file:driver-completion-traces/manifest-fiveRangeManifestTest-3.itf.json][ITF]] |
+| M::duplicateRangeRejectedTest | [[file:driver-completion-traces/manifest-duplicateRangeRejectedTest-4.itf.json][ITF]] |
+| M::manifestReplacementRejectedTest | [[file:driver-completion-traces/manifest-manifestReplacementRejectedTest-5.itf.json][ITF]] |
+| M::alteredDescriptorRejectedTest | [[file:driver-completion-traces/manifest-alteredDescriptorRejectedTest-6.itf.json][ITF]] |
+| M::predecessorRejectedTest | [[file:driver-completion-traces/manifest-predecessorRejectedTest-7.itf.json][ITF]] |
+| M::sharedStreamConcurrentTailRejectedTest | [[file:driver-completion-traces/manifest-sharedStreamConcurrentTailRejectedTest-8.itf.json][ITF]] |
+| M::independentStreamConcurrencyTest | [[file:driver-completion-traces/manifest-independentStreamConcurrencyTest-9.itf.json][ITF]] |
+| M::uncertaintyQuarantinesStreamTest | [[file:driver-completion-traces/manifest-uncertaintyQuarantinesStreamTest-10.itf.json][ITF]] |
+| M::ownerRestartPreservesOriginalTailTest | [[file:driver-completion-traces/manifest-ownerRestartPreservesOriginalTailTest-11.itf.json][ITF]] |
+| M::newOwnerCannotUseOldTailTest | [[file:driver-completion-traces/manifest-newOwnerCannotUseOldTailTest-12.itf.json][ITF]] |
+| M::historyCutPreservesOldExposureTest | [[file:driver-completion-traces/manifest-historyCutPreservesOldExposureTest-13.itf.json][ITF]] |
+| M::sharedHistoryRejectsOtherMessageTest | [[file:driver-completion-traces/manifest-sharedHistoryRejectsOtherMessageTest-14.itf.json][ITF]] |
+| M::migrationPreservesManifestAndTailTest | [[file:driver-completion-traces/manifest-migrationPreservesManifestAndTailTest-15.itf.json][ITF]] |
+| M::sharedBudgetSequenceTest | [[file:driver-completion-traces/manifest-sharedBudgetSequenceTest-16.itf.json][ITF]] |
+| M::freshNonceRejectedTest | [[file:driver-completion-traces/manifest-freshNonceRejectedTest-17.itf.json][ITF]] |
+| M::lateObservationDoesNotReopenTest | [[file:driver-completion-traces/manifest-lateObservationDoesNotReopenTest-18.itf.json][ITF]] |
+| M::retireWhileTailLiveRejectedTest | [[file:driver-completion-traces/manifest-retireWhileTailLiveRejectedTest-19.itf.json][ITF]] |
+| M::retiredMessageCannotDelegateTest | [[file:driver-completion-traces/manifest-retiredMessageCannotDelegateTest-20.itf.json][ITF]] |
+| M::unfinishedMessageRetainsStreamTest | [[file:driver-completion-traces/manifest-unfinishedMessageRetainsStreamTest-21.itf.json][ITF]] |
+| M::fullPrefixNeedsQualifiedFinishTest | [[file:driver-completion-traces/manifest-fullPrefixNeedsQualifiedFinishTest-22.itf.json][ITF]] |
+| M::fullAsyncShortReportQuarantinesTest | [[file:driver-completion-traces/manifest-fullAsyncShortReportQuarantinesTest-23.itf.json][ITF]] |
+| M::stalePrefixReceiptRejectedTest | [[file:driver-completion-traces/manifest-stalePrefixReceiptRejectedTest-24.itf.json][ITF]] |
+| M::retirementWaitsForRangeFinishTest | [[file:driver-completion-traces/manifest-retirementWaitsForRangeFinishTest-25.itf.json][ITF]] |
+| M::finishReplyLostAcrossRestartTest | [[file:driver-completion-traces/manifest-finishReplyLostAcrossRestartTest-26.itf.json][ITF]] |
+| M::reportedCountRewindCounterexampleTest | [[file:driver-completion-traces/manifest-reportedCountRewindCounterexampleTest-27.itf.json][ITF]] |
+| M::restartReplayCounterexampleTest | [[file:driver-completion-traces/manifest-restartReplayCounterexampleTest-28.itf.json][ITF]] |
+| M::newManifestAliasCounterexampleTest | [[file:driver-completion-traces/manifest-newManifestAliasCounterexampleTest-29.itf.json][ITF]] |
+| M::overlappingRangesCounterexampleTest | [[file:driver-completion-traces/manifest-overlappingRangesCounterexampleTest-30.itf.json][ITF]] |
+| M::duplicateDriverCapabilityCounterexampleTest | [[file:driver-completion-traces/manifest-duplicateDriverCapabilityCounterexampleTest-31.itf.json][ITF]] |
+| M::rangeBudgetOverrunCounterexampleTest | [[file:driver-completion-traces/manifest-rangeBudgetOverrunCounterexampleTest-32.itf.json][ITF]] |
+| M::historyBypassCounterexampleTest | [[file:driver-completion-traces/manifest-historyBypassCounterexampleTest-33.itf.json][ITF]] |
+| M::concurrentStreamTailsCounterexampleTest | [[file:driver-completion-traces/manifest-concurrentStreamTailsCounterexampleTest-34.itf.json][ITF]] |
+| M::ownerRetaggingCounterexampleTest | [[file:driver-completion-traces/manifest-ownerRetaggingCounterexampleTest-35.itf.json][ITF]] |
+| M::incompleteCoverageCounterexampleTest | [[file:driver-completion-traces/manifest-incompleteCoverageCounterexampleTest-36.itf.json][ITF]] |
+| M::prematureRetirementCounterexampleTest | [[file:driver-completion-traces/manifest-prematureRetirementCounterexampleTest-37.itf.json][ITF]] |
+| M::interleavedMessagesCounterexampleTest | [[file:driver-completion-traces/manifest-interleavedMessagesCounterexampleTest-38.itf.json][ITF]] |
+| lostPrepareReplyTest | [[file:driver-completion-traces/lostPrepareReplyTest-39.itf.json][ITF]] |
+| fullFrontierStillBusyTest | [[file:driver-completion-traces/fullFrontierStillBusyTest-40.itf.json][ITF]] |
+| completionLostReplyTest | [[file:driver-completion-traces/completionLostReplyTest-41.itf.json][ITF]] |
+| lateReceiptCannotCloseNewRangeTest | [[file:driver-completion-traces/lateReceiptCannotCloseNewRangeTest-42.itf.json][ITF]] |
+| duplicateFinishRejectedTest | [[file:driver-completion-traces/duplicateFinishRejectedTest-43.itf.json][ITF]] |
+| wrongOrdinalStatusRejectedTest | [[file:driver-completion-traces/wrongOrdinalStatusRejectedTest-44.itf.json][ITF]] |
+| restartBeforeCommitRejectsOldFinishTest | [[file:driver-completion-traces/restartBeforeCommitRejectsOldFinishTest-45.itf.json][ITF]] |
+| missingStatusRejectedTest | [[file:driver-completion-traces/missingStatusRejectedTest-46.itf.json][ITF]] |
+| prepareDoesNotAuthorizeRecoveryTest | [[file:driver-completion-traces/prepareDoesNotAuthorizeRecoveryTest-47.itf.json][ITF]] |
+| partialRestartRejectsTailTest | [[file:driver-completion-traces/partialRestartRejectsTailTest-48.itf.json][ITF]] |
+| oldDriverCannotFreeSlotTest | [[file:driver-completion-traces/oldDriverCannotFreeSlotTest-49.itf.json][ITF]] |
+| fenceRequiredTest | [[file:driver-completion-traces/fenceRequiredTest-50.itf.json][ITF]] |
+| fencedTailCannotWriteTest | [[file:driver-completion-traces/fencedTailCannotWriteTest-51.itf.json][ITF]] |
+| isolationQuarantinesTest | [[file:driver-completion-traces/isolationQuarantinesTest-52.itf.json][ITF]] |
+| lateFinishAfterQuarantineRejectedTest | [[file:driver-completion-traces/lateFinishAfterQuarantineRejectedTest-53.itf.json][ITF]] |
+| completionDoesNotSettleTest | [[file:driver-completion-traces/completionDoesNotSettleTest-54.itf.json][ITF]] |
+| retirementDoesNotProveUsageTest | [[file:driver-completion-traces/retirementDoesNotProveUsageTest-55.itf.json][ITF]] |
+| independentUsageAndRetirementTest | [[file:driver-completion-traces/independentUsageAndRetirementTest-56.itf.json][ITF]] |
+| ownerRestartKeepsDriverTest | [[file:driver-completion-traces/ownerRestartKeepsDriverTest-57.itf.json][ITF]] |
+| alteredManifestReceiptRejectedTest | [[file:driver-completion-traces/alteredManifestReceiptRejectedTest-58.itf.json][ITF]] |
+| parallelPrepareConflictRejectedTest | [[file:driver-completion-traces/parallelPrepareConflictRejectedTest-59.itf.json][ITF]] |
+| futureFenceRejectedTest | [[file:driver-completion-traces/futureFenceRejectedTest-60.itf.json][ITF]] |
+| usageCannotRetireLiveTailTest | [[file:driver-completion-traces/usageCannotRetireLiveTailTest-61.itf.json][ITF]] |
+| quarantineRetainsUnknownHoldTest | [[file:driver-completion-traces/quarantineRetainsUnknownHoldTest-62.itf.json][ITF]] |
+| latePrefixCallbackCounterexampleTest | [[file:driver-completion-traces/latePrefixCallbackCounterexampleTest-63.itf.json][ITF]] |
+| recoveredTailCopyCounterexampleTest | [[file:driver-completion-traces/recoveredTailCopyCounterexampleTest-64.itf.json][ITF]] |
+| finishAsUsageCounterexampleTest | [[file:driver-completion-traces/finishAsUsageCounterexampleTest-65.itf.json][ITF]] |
+| oldReceiptReleasesSuccessorCounterexampleTest | [[file:driver-completion-traces/oldReceiptReleasesSuccessorCounterexampleTest-66.itf.json][ITF]] |
+| lostReplyResetsResultCounterexampleTest | [[file:driver-completion-traces/lostReplyResetsResultCounterexampleTest-67.itf.json][ITF]] |
+| unmediatedOldBufferCounterexampleTest | [[file:driver-completion-traces/unmediatedOldBufferCounterexampleTest-68.itf.json][ITF]] |
+
+* Interpretation and remaining gate
+
+[[file:../../../docs/architecture/22-driver-completion-recovery.org][The design dossier]] states the event mapping, per-owner reuse, counterexample
+oracles and physical acceptance obligations. Authenticated original-driver
+quiescence and actual external isolation are trusted input events. Durable
+completion and slot release share one abstract owner transaction; no concrete
+multi-store atomicity, fsync, raw-FD revocation, source admission, Cedar execution,
+provider final-usage authenticity or native deployed integration is established.
+
+The proved profile keeps unknown occupancy and escrow, forbids adopting old
+tails after driver restart, and permanently quarantines isolated uncertain
+streams. It does not prove eventual delivery, refundable actual cost or safe
+tail transfer. Physical failure injection remains pending; no runtime end-to-end
+closure or high-performance measurement is claimed.
+
+* Documentation and diagram checks
+
+Final structural checks passed for 33 English Org documents, 646 local links,
+101 pinned Git source targets, complete unique acceptance registers and 23
+canonical D2/SVG pairs. All Org files exported with Babel evaluation disabled;
+optional htmlize source highlighting was unavailable, without blocking export.
+The new D2 passed syntax validation, bundled SVG generation, core-only visible
+label checks and visual inspection. Existing local Go, Kubernetes and Rust assets
+are bundled; no remote href dependency is present. Source/version/evidence details
+stay in Org, outside the core diagram. Final byte-manifest verification passed.

@@ -1,0 +1,93 @@
+[
+  {
+    "name": "expiry",
+    "path": "proofs/evidence/llm-caller-custody/itf/expiryCallerCounterexampleTest-1.itf.json",
+    "states": 5,
+    "incarnation": 0,
+    "key": 100,
+    "custodyFence": 0,
+    "grantFence": 0,
+    "actualFloorRecords": 2,
+    "hold12": 2,
+    "providerCalls": 0,
+    "qualificationMonitor": false
+  },
+  {
+    "name": "redeliveryRenew",
+    "path": "proofs/evidence/llm-caller-custody/itf/redeliveryRenewCallerCounterexampleTest-4.itf.json",
+    "states": 5,
+    "incarnation": 0,
+    "key": 100,
+    "custodyFence": 0,
+    "grantFence": 0,
+    "actualFloorRecords": 2,
+    "hold12": 2,
+    "providerCalls": 0,
+    "qualificationMonitor": true
+  },
+  {
+    "name": "restartReuse",
+    "path": "proofs/evidence/llm-caller-custody/itf/restartReuseCallerCounterexampleTest-5.itf.json",
+    "states": 6,
+    "incarnation": 1,
+    "key": 200,
+    "custodyFence": 1,
+    "grantFence": 1,
+    "actualFloorRecords": 1,
+    "hold12": 2,
+    "providerCalls": 0,
+    "qualificationMonitor": true
+  },
+  {
+    "name": "rotationOldKey",
+    "path": "proofs/evidence/llm-caller-custody/itf/rotationOldKeyCallerCounterexampleTest-6.itf.json",
+    "states": 7,
+    "incarnation": 0,
+    "key": 101,
+    "custodyFence": 0,
+    "grantFence": 0,
+    "actualFloorRecords": 1,
+    "hold12": 2,
+    "providerCalls": 0,
+    "qualificationMonitor": false
+  },
+  {
+    "name": "sharedIdentity",
+    "path": "proofs/evidence/llm-caller-custody/itf/sharedIdentityCallerCounterexampleTest-0.itf.json",
+    "states": 17,
+    "incarnation": 1,
+    "key": 200,
+    "custodyFence": 1,
+    "grantFence": 1,
+    "actualFloorRecords": 2,
+    "hold12": 2,
+    "providerCalls": 0,
+    "qualificationMonitor": false
+  },
+  {
+    "name": "splitGrant",
+    "path": "proofs/evidence/llm-caller-custody/itf/splitGrantCallerCounterexampleTest-2.itf.json",
+    "states": 5,
+    "incarnation": 0,
+    "key": 100,
+    "custodyFence": 1,
+    "grantFence": 0,
+    "actualFloorRecords": 1,
+    "hold12": 2,
+    "providerCalls": 0,
+    "qualificationMonitor": true
+  },
+  {
+    "name": "workloadMint",
+    "path": "proofs/evidence/llm-caller-custody/itf/workloadMintCallerCounterexampleTest-3.itf.json",
+    "states": 6,
+    "incarnation": 0,
+    "key": 100,
+    "custodyFence": 1,
+    "grantFence": 1,
+    "actualFloorRecords": 1,
+    "hold12": 2,
+    "providerCalls": 0,
+    "qualificationMonitor": true
+  }
+]

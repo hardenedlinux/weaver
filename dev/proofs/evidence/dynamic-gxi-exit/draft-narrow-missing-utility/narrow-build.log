@@ -1,0 +1,9 @@
+COMPILE-START std/text/parser/ll1.ss
+*** ERROR IN __with-lock -- 
+*** ERROR IN ".data/dynamic-gxi-exit-20261020/narrow-source/std/text/parser/ll1.ss"@238.4-238.24
+--- Syntax Error: Reference to unbound identifier
+--- Context: 
+ at expand
+ at std/text/parser/ll1
+... form:   (%#ref with-buffered-reader)
+... detail: with-buffered-reader at ".data/dynamic-gxi-exit-20261020/narrow-source/std/text/parser/ll1.ss"@238.4-238.24

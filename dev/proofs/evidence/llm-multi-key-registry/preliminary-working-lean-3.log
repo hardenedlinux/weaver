@@ -1,0 +1,39 @@
+proofs/lean/LlmMultiKeyRegistry.lean:179:12: warning: This simp argument is unused:
+  finish
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [put, same] at known
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+proofs/lean/LlmMultiKeyRegistry.lean:181:12: warning: This simp argument is unused:
+  finish
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [put, same]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+proofs/lean/LlmMultiKeyRegistry.lean:188:12: warning: This simp argument is unused:
+  finish
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [put, distinctFamily, distinctClaim, binding, family, claim]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Weaver.LlmMultiKeyRegistry.source_projection' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.origin_immutable' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.alias_immutable' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.family_step_immutable' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.claim_step_immutable' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.decision_step_immutable' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.spent_step_retained' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.unknown_hold_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmMultiKeyRegistry.shared_budget_bound' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.pending_intent_retained' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.stale_owner_blocks_commit' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.stale_parent_blocks_commit' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.lost_reply_blocks_reapply' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.recovery_cannot_replace_source' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.composition' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.initialized_coherence' depends on axioms: [propext]
+'Weaver.LlmMultiKeyRegistry.same_family_same_origin' does not depend on any axioms
+'Weaver.LlmMultiKeyRegistry.same_claim_same_origin' does not depend on any axioms

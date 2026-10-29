@@ -1,0 +1,13 @@
+{
+  "args": [
+    "gxi",
+    "-e",
+    "(import (only-in :gerbil/runtime/init load-scheme))",
+    "-e",
+    "(load-scheme (getenv \"WEAVER_NATIVE_CANARY\"))"
+  ],
+  "exit": 70,
+  "seconds": 1.934,
+  "cleanup": "",
+  "forcedExit": false
+}

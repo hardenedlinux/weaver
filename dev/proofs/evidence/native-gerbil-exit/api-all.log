@@ -1,0 +1,40 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":1,"sourceSha256":"553d3f42d5dd5b4648365b5ebc738ce2c3dd59717ddc50590b86f6e5677a8d86"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"fb69a43c97d1bf03acb1f0471134e640d4b64adb627f14698b98f59cdd9e43d6"}
+@@START {"label":"api-controls-0","limit":20}
+
+  NativeExitQualification
+    ok markerAloneIsNotPassTest passed 1 test(s)
+    ok nativeReturnAloneIsNotPassTest passed 1 test(s)
+    ok aotStillAllowsNaturalCleanupTest passed 1 test(s)
+
+  3 passing (32ms)
+@@DONE {"label":"api-controls-0","passed":["markerAloneIsNotPassTest","nativeReturnAloneIsNotPassTest","aotStillAllowsNaturalCleanupTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  NativeExitQualification
+    ok noDynamicSchemeHandlesStillChecksTest passed 1 test(s)
+    ok outstandingHandleBlocksExitTest passed 1 test(s)
+    ok missingDecoderCheckRejectedTest passed 1 test(s)
+
+  3 passing (25ms)
+@@DONE {"label":"api-controls-1","passed":["noDynamicSchemeHandlesStillChecksTest","outstandingHandleBlocksExitTest","missingDecoderCheckRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  NativeExitQualification
+    ok incompleteChecksRejectedTest passed 1 test(s)
+    ok lateNaturalZeroExitStillFailsTest passed 1 test(s)
+    ok repeatedHandleCloseRejectedTest passed 1 test(s)
+
+  3 passing (18ms)
+@@DONE {"label":"api-controls-2","passed":["incompleteChecksRejectedTest","lateNaturalZeroExitStillFailsTest","repeatedHandleCloseRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  NativeExitQualification
+    ok forcedExitCounterexampleTest passed 1 test(s)
+    ok substitutedSourceCounterexampleTest passed 1 test(s)
+    ok skippedChecksCounterexampleTest passed 1 test(s)
+
+  3 passing (15ms)
+@@DONE {"label":"api-controls-3","passed":["forcedExitCounterexampleTest","substitutedSourceCounterexampleTest","skippedChecksCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

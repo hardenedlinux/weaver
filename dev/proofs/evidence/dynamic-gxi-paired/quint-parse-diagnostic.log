@@ -1,0 +1,8 @@
+
+ Error [QNT101]: Built-in name 'append' is redefined in module 'DynamicPairedEvidence'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/DynamicPairedEvidence.qnt:9:10
+  9:   action append(r:Receipt):bool=all {records.forall(old=>old.id!=r.id),records'=records.append(r)}
+              ^^^^^^
+
+error: parsing failed

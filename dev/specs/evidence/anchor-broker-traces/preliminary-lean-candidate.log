@@ -1,0 +1,33 @@
+specs/lean/AnchorBrokerCommit.lean:74:72: error: unexpected identifier; expected '}'
+specs/lean/AnchorBrokerCommit.lean:120:2: error: Invalid alternative name `localEvent`: Expected `propose`
+specs/lean/AnchorBrokerCommit.lean:121:2: error: Invalid alternative name `changeLeader`: Expected `propose`
+specs/lean/AnchorBrokerCommit.lean:122:2: error: Invalid alternative name `loseJournal`: Expected `propose`
+specs/lean/AnchorBrokerCommit.lean:130:88: warning: This simp argument is unused:
+  update
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+specs/lean/AnchorBrokerCommit.lean:134:2: error: Invalid alternative name `dispatch`: Expected `propose` or `commit`
+specs/lean/AnchorBrokerCommit.lean:181:2: error: Invalid alternative name `acknowledgeGrant`: Expected `propose`
+specs/lean/AnchorBrokerCommit.lean:187:2: error: Invalid alternative name `acknowledgeBurn`: Expected `propose`
+specs/lean/AnchorBrokerCommit.lean:193:2: error: Invalid alternative name `dispatch`: Expected `propose`
+specs/lean/AnchorBrokerCommit.lean:199:2: error: Invalid alternative name `localEvent`: Expected `propose`
+specs/lean/AnchorBrokerCommit.lean:177:45: error: Type mismatch: After simplification, term
+  Eq.symm record
+ has type
+  some entry = s.log s.head
+but is expected to have type
+  entry = e
+specs/lean/AnchorBrokerCommit.lean:239:111: error: unexpected identifier; expected '}'
+'Weaver.AnchorBrokerCommit.reachable_invariant' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.AnchorBrokerCommit.qualified_prefix_is_single_valued' does not depend on any axioms
+'Weaver.AnchorBrokerCommit.actual_application_requires_qualified_original_dispatch' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.AnchorBrokerCommit.no_duplicate_dispatch_or_application' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.AnchorBrokerCommit.original_budget_and_history_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.AnchorBrokerCommit.change_leader_does_not_erase_original_execution' does not depend on any axioms

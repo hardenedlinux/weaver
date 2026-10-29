@@ -1,0 +1,31 @@
+'Weaver.LlmSubjectAuthority.task_retained' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.assignment_retained' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.assignment_run' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.no_enrollment_replacement' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.original_enrollment_bound' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.shared_identity_rejected' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.other_authority_rejected' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.other_tenant_rejected' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.wrong_producer_rejected' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.rotation_preserves_identity' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.rotation_advances_generation' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSubjectAuthority.stale_subject_rejected' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.stale_producer_rejected' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.stale_read_rejected' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.sources_step' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.valid_step' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.joined_step' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.outcome_step' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.qualified_step' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.qualified_run' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.inconsistent_image_rejected' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.task_origin' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.assignment_from_original_task' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.new_plan_has_current_assignment' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.new_plan_has_no_credential_effect' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.new_credential_rechecks_subject' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.composition' does not depend on any axioms
+'Weaver.LlmSubjectAuthority.credential_retained' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.first_key_retained' depends on axioms: [propext]
+'Weaver.LlmSubjectAuthority.original_reservation_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSubjectAuthority.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]

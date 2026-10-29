@@ -1,0 +1,21 @@
+#+title: Weaver Committed Results and Ledger Projection Index
+#+language: en
+#+options: toc:2
+
+* Recover the committed result without repeating the effect
+
+Area =20-29 Execution authority=; category =20 Result projection=.
+The LLM Gateway area is full through category 19. This area continues
+[[file:../../10-19-llm-gateway/19-multi-key-registry/19.00-index.org][19 Multi-key registry]] at its explicit result-body and participant-CAS boundary.
+
+| ID | Artifact |
+|----+----------|
+| 20.00 | This index |
+| 20.01 | [[file:20.01-committed-result-recovery.org][Result commitments, projection CAS and fenced recovery]] |
+| 20.02 | [[file:20.02-result-projection.d2][Core D2]] / [[file:20.02-result-projection.svg][SVG]] |
+| 20.03 | [[file:20.03-proof-and-source-evidence.org][Proof correspondence, source audit and acceptance evidence]] |
+
+Formal artifacts: [[file:../../../dev/proofs/lean/LlmResultProjection.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmResultProjection.qnt][Quint]].
+Run [[file:../../../dev/proofs/check_llm_result_projection.py][the isolated runner]]. ASP is an optional code-tool integration example;
+the core authority protocol is independent of ASP. No Gateway implementation,
+upstream source or dependency pin is changed. Earlier sealed artifacts are retained.

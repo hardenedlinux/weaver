@@ -1,0 +1,11 @@
+
+ Error [QNT000]: Couldn't unify set and list
+Trying to unify Set[_t8519] and List[Record]
+Trying to unify (Set[_t8519], _t8519) => bool and (List[Record], F::Record) => _t8520
+
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmSourceCustody.qnt:9:35
+  9:     (not(custody.haveOutcome) or (F::f.log.contains(custody.outcome) and custody.outcome.proposal.id==custody.original.id)) and
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

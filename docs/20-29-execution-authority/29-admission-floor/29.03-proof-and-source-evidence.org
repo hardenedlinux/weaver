@@ -1,0 +1,174 @@
+#+title: Weaver Admission Floor Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and bounded evidence
+
+[[file:../../../dev/proofs/check_llm_admission_floor.py][Runner]], [[file:../../../dev/proofs/lean/LlmAdmissionFloor.lean][Lean]], [[file:../../../dev/proofs/quint/LlmAdmissionFloor.qnt][Quint]], [[file:../../../dev/proofs/evidence/llm-admission-floor/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-admission-floor/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-admission-floor/SHA256SUMS][byte manifest]] distinguish checked formal
+contracts from native implementation acceptance. The workload compiles 26 Lean
+modules and prints 14 new declarations without =sorryAx=. Quint checks 33 new
+controls (25 guarded and eight mutation counterexamples) plus 38 directly imported
+handoff controls: 71 total. A separate handoff regression checks 77 controls.
+Nine initializers each sample ten paths with at most 30 post-initializer steps
+and seed 257: 90 bounded samples. Eight ITFs are independently decoded.
+Preliminary diagnostics remain recorded. This is not exhaustive state exploration,
+native consensus/IO acceptance, bounded recovery liveness or a performance result.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| AF1 | Latest determining image and active recovery qualification agree | originalPendingTailRecoversAfterOwnerChangeTest | initialized_safe | broker.hold |
+| AF2 | Publication executes an actual guarded handoff transition | publicationClosesOldProjectionTest | logical_projection | recovery.fence |
+| AF3 | Actual initialized handoff/account/source history composes | actualLateFinancialCommitRemainsSeparateTest | actual_handoff_composition | lean |
+| AF4 | Original reservation cannot be consumed twice after recovery | duplicateOperationPublicationRejectedTest | original_reservation_once | registry.origin |
+| AF5 | Unknown original source usage retains its original hold | pureControlPublicationCannotReleaseHoldTest | unknown_original_hold_retained | registry.query |
+| AF6 | Committed determining prefix survives response loss and restart | lostCommitResponseResolvesSameOperationTest | committed_prefix_retained | protocols.mcp |
+| AF7 | Stale attempt and reauthorized same intent remain retained | sameIntentMayReauthorizeAgainstNewParentTest | pending_intent_retained | registry.alias |
+| AF8 | Current metadata without required pending tail stays closed | restoredCurrentMetadataWithoutTailCannotActivateTest | active_requires_current_floor | broker.hold |
+| AF9 | Control publication changes no account money or financial journal | pureControlPublicationCannotReleaseHoldTest | publication_has_no_financial_effect | recovery.fence |
+| AF10 | Publication rechecks retained body, parent, current worker and before-image | oldWorkerCannotPublishCurrentAttemptTest | publication_requires_durable_body | broker.cas |
+| AF11 | Protected recovery does not reopen a retired append generation | restoredOldFrontierCannotActivateTest | guarded_generation_monotone | recovery.projection |
+| AF12 | Original body references remain protected through actual handoff runs | originalPendingTailRecoversAfterOwnerChangeTest | reference_copy_retained | recovery.join |
+| AF13 | One original operation key cannot determine conflicting results | duplicateOperationPublicationRejectedTest | committed_operation_unique | protocols.a2a |
+| AF14 | Restoring local metadata never installs financial authority | restoredOldFrontierCannotActivateTest | local_restore_preserves_authority | protocols.acp |
+
+The correspondence records complementary checks. AF4 additionally uses inherited
+actual account uniqueness; its finite control rejects a second determining result.
+AF5's control and decoder preserve a pending fixture hold; the Lean unknown-source
+consequence requires the inherited original-key binding on every relevant account
+commit path. AF11's transition theorem proves monotonic protected generation;
+qualification also compares the complete restored image and current determining
+head. AF14 states authority preservation for arbitrary local restores; its control
+checks that the restored image remains unqualified.
+
+* Concrete product and initialized composition
+
+=State.logical= is the actual =LlmAppendHandoff.State=. The independent protected
+log stores exact original proposals and complete storage recovery images. Local
+projection, copied objects/checkpoints, current-head observation, historical
+resolved result and active diagnostic state are separate fields. =Image= captures
+root, closed/live tail, original allocation identity, generations/frontier, cut,
+candidate and current owner/source generation. It contains no financial authority
+projection that may replace account balances.
+
+=propose= retains original attempts under immutable intent binding. =commit= checks
+current qualification, exact parent/before-image, current worker, original key
+freshness, actual handoff step, canonical intent, durable body, Policy and durable
+independent publication. The actual handoff step supplies the real admitted frame
+or cut semantics; account authority and financial journal must remain unchanged.
+=financial= permits actual handoff transitions whose storage image stays unchanged,
+including preparation, current reads, candidate submission and a real later account
+commit. It closes local activation but does not invent another floor record.
+
+=resolve= reports one historical determining record without confirming the current
+head. =query= authenticates the current head and worker. =restore= changes only
+local metadata/copies and closes prior observations. =fetch= authenticates complete
+archive retrieval. =project= and =activate= require current qualification and full
+body coverage. Restoration of a complete old WAL cannot replace the current image.
+A root image with a missing live/closed tail fails =Complete=.
+
+=logical_projection= maps every publication/financial step to actual handoff runs;
+metadata recovery stutters. =actual_handoff_composition= joins a supplied initialized
+handoff prefix. The original account uniqueness/unknown-hold statements use the
+actual checkpoint/WAL/account/source chain through that composition. The seed
+record assumes an authenticated original namespace and valid base; it does not
+prove bootstrap or permit a fresh empty namespace after restart.
+
+=committed_prefix_retained= preserves the protected log; =pending_intent_retained=
+preserves original attempts, including conflicting-parent attempts after safe
+reauthorization. =committed_operation_unique= says equal original operation IDs
+have equal determining records. A duplicate network message reporting that same
+record is not another financial application. The guarded commit rejects a second
+publication of the key entirely. The conflict mutation deliberately changes the
+result body for that same key; merely duplicating an identical record would not
+violate this particular theorem.
+
+Quint's =capture= uses the full bounded storage image and current worker. Its source
+generation is fixed in this fixture; Lean captures the actual governed source
+generation. Financial head changes remain separate from storage image equality.
+Storage-only Quint actions include an authenticated pure financial read and an
+explicit imported =h'=h= hold. They refine actual image-preserving handoff steps
+followed by the corresponding metadata action; they cannot create provider or
+usage receipts. The decoder verifies unchanged actual provider execution state.
+
+* Deliberately broken protocols
+
+| Counterexample control | Independently decoded violation |
+|------------------------+---------------------------------|
+| missingConfirmationFloorCounterexampleTest | New determining record exists but no current-head observation; broken activation succeeds |
+| oldGenerationFloorCounterexampleTest | Current protected generation is one while restored local image remains generation zero despite complete segment copies |
+| missingTailFloorCounterexampleTest | Current metadata is restored but its unique pending segment copy is absent |
+| oldWorkerFloorCounterexampleTest | Current complete image and protected owner are one; old worker zero bypasses the activation caller gate |
+| lateResultFloorCounterexampleTest | Historical append result is used as current head after a later cut has committed |
+| protectedPrefixRollbackFloorCounterexampleTest | Protected log is illegally reset while the independently retained logical reference still contains the acknowledged cut/tail |
+| oldWorkerCommitFloorCounterexampleTest | A stale worker publishes a new fence result despite a different current owner; before-image and recorded worker disagree |
+| duplicateOperationFloorCounterexampleTest | Same original operation ID determines two different result images |
+
+Unsafe actions are excluded from =step=. =attemptedWorker= records the activation caller for the finite owner-gate check;
+it is not native authority. Missing-confirmation, stale-image, missing-tail and
+old-caller mutations isolate their respective qualification premises. =chain= additionally checks publication parent,
+worker/before-image binding and exact adjacent determining images in finite runs.
+The protected-prefix rollback mutation violates the declared independent-prefix
+contract; its retained logical reference exposes that violation. It does not prove
+that jointly rolling back all references can be detected without an independently
+governed anchor. Native prefix inheritance, storage fault domain and body/archive
+independence remain explicit premises.
+
+* Source-by-source audit
+
+[[file:../../../dev/proofs/evidence/llm-admission-floor/source-review.json][Nineteen pinned identities/excerpts]], [[file:../../../dev/proofs/evidence/llm-admission-floor/source-receipt-check.json][fresh blob/excerpt checks]], [[file:../../../dev/proofs/evidence/llm-admission-floor/floor-source-audit.json][focused publication/recovery extract]] and
+[[file:../../../dev/proofs/evidence/llm-admission-floor/working-source-check.json][working hashes/HEAD identities]] distinguish existing mechanisms from extensions.
+
+| Source | Direct reuse | Required extension or limit |
+|--------+--------------+-----------------------------|
+| P12 authorized-effect-token.ss | Immutable original effect/root/nonce/payload binding | Bind canonical admission intent and its exact determining body; key equality alone is insufficient |
+| P13 strict-mediation.ss | Indeterminate observations consume conservatively; validation failure unchanged | Unknown publication cannot reset original consumption or release unknown budget |
+| P15 effect-host.ss | Reservation is inert; attributed handoff and unknown outcomes differ; durable?/distributed-authority? false | Host receipts are not independent floor commitment or native archive retention |
+| P17 store-backend.ss | Scheme negotiates/projects contracts; runtime owns append/fsync/leases/checkpoint IO/repair | Rust publication adapter must qualify independent prefix and archive durability |
+| P18 PromotionTransactionRecovery.lean | Source-bound recovery and effect-observation premises | Distinguish original result lookup from current floor confirmation |
+| P19 authorized recovery bridge | Exact recovery member/source authority | Reconstruct original admitted tail only under current authoritative membership |
+| P20 CommittedEffectApplicationExactlyOnce.lean | Real occurrence depends on runtime trace/universe correspondence | Control publication, actual admission and financial application remain distinct effects |
+| P22 store.ss | Checkpoint references/capabilities; runtime owns locking/fsync/replay | Existing capability does not imply independent floor/confirmation or atomic cross-store recovery |
+| P31 SessionAttempt.lean | Recovery retains active obligations as pending | Keep unknown and conflicting-parent original attempts after response loss |
+| P31 SessionAttempt.qnt | Pending/closed-state invariants | Add historical-result/current-head distinction and inconsistent local recovery images |
+| P33 deterministic budget closure | Original deterministic bound witness | Preserve original reservation/bound/units; no new budget domain on restart |
+| P33 runtime budget separation | Timeout differs from authoritative usage | Publication/query/recovery timeout cannot settle or release unknown hold |
+| P35 receipt context monotonicity | Governed monotonic context | Fresh floor confirmation binds current owner/source context |
+| P35 receipt lineage prefix | Authenticated ancestry/prefix | Successor authority inherits the complete determining floor prefix and original results |
+| P43 funs-attempt.ss | Revision CAS, bounded exhaustion and retained obligations; runtime-published?/action-authorized?/durable? false; reconcile is not acknowledgment | Reuse pure original-intent proposals; independent durable publication, result query and effect-time current-head CAS are extensions |
+| P44 objects-attempt.ss | Frozen producer/scope/profile references | Reauthorized attempt cannot substitute another original semantic contract |
+| C8 BoundOperation.lean | Exact operation/state binding still requires authentic Host input | Authenticate full original intent, actual before/after image and takeover role |
+| C10 CompoundAuthorization.lean | Required nonempty layers allow without errors; runtime owns atomic execution and authentic facts | Cedar decision cannot prove prefix durability, retained archive or cross-store atomicity |
+| C11 Composition.lean | Aligned policy/validation/invalidation | Compose current semantic dependencies with native publication/recovery gates; no existing native floor theorem is inferred |
+
+The source bytes and excerpts are freshly rechecked, not relabeled as upstream
+runtime acceptance. Eighteen live files match the reviewed baseline; P17 differs
+only in two control-plane import paths captured in [[file:../../../dev/proofs/evidence/llm-admission-floor/P17-working-diff.patch][the working diff]]. Native
+ABI equivalence of the new import targets remains unqualified. The runner compiles
+Weaver's actual chain; it does not rerun the entire upstream build. No upstream
+source or dependency pin changes.
+
+* Native acceptance and evidence boundary
+
+| Gate | Required executable evidence |
+|------+------------------------------|
+| Prepare/archive pin | Crash before/after object persistence and retention publication; only fully retrievable exact determining bodies may commit |
+| Independent commit | Lose response before/after parent CAS; one exact original result survives qualified leader/configuration recovery |
+| Concurrent attempts | Competing same-parent attempts, canonical-key conflicts and reauthorization preserve original intent/pending bodies without double admission |
+| Current receipt | Deliver an old valid original-result or head response after a later cut/fence; actual use rejects it as current authority |
+| Cross-store rollback | Restore local descriptor, manifest, segment and account projections independently while financial head/checkpoint stay unchanged; floor forces exact pending-tail reconstruction or closure |
+| Archive failure | Lose the local unique tail and fetch from qualified retained archive; missing/corrupt/conflicting archive content keeps closed and retains hold |
+| Owner takeover | Pause an old worker after readback, publish a fence, resume commit/project/activate/unlink; actual owner rejects the old descriptor |
+| Publication-only effect | Instrument control commit; no account delta, provider call, grant reconsumption or financial replay occurs |
+| Recovery join | Race financial/source change between validation and publication; actual source-admission bridge must revalidate/serialize the original handoff. Rebuild cannot restore financial authority or bypass final broker/executor gates |
+| Qualified independence | Roll back replicas and change membership/leader; recover full determining prefix and retention obligations or refuse authority; no fresh empty namespace |
+| Exhaustion/encoding | Reject bounded counter overflow, incomplete maps/defaults, identity substitution, body/hash mismatch and namespace reuse |
+
+The model assumes a single qualified durable independent prefix, authentic current
+reads and retained determining bodies; it does not prove a new consensus, quorum
+or physical device implementation. Prior logical prefix/fencing contracts remain
+requirements. The handoff layer retains its one unresolved cut and one uncommitted
+settlement frame per account lane. Native codec/IO qualification, protected-log
+or archive pruning, arbitrary-account products, pending-owner continuation
+liveness, provider exactly-once delivery and performance remain outside this result.

@@ -1,0 +1,25 @@
+{
+  "command": {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(issueDoesNotActivateCustodyTest|sharedWorkloadCannotIssueTest|independentLaunchApprovalRequiredTest|assignedKeyRequiredTest|lostIssueReplySameLaunchCannotRemintTest|reservedIncarnationCannotReissueTest|selfSelectedOldKeyCannotIssueTest|lostIssueReplyRecoveredByLaunchLookupTest|sharedWorkloadCannotLookupNewLaunchTest|launchLookupNeedsCurrentReadPolicyTest|oldWorkerCannotProveNewKeyTest|invalidSignatureRejectedTest|substitutedKeyRejectedTest|wrongTranscriptChallengeRejectedTest|wrongFutureIncarnationRejectedTest|wrongBootstrapSessionRejectedTest|proofWithoutActivationHasNoGrantTest|issuedWithoutProofCannotActivateTest|currentBootstrapActivatesOriginalTest|lostActivationReplyCannotRepeatTest|oldWorkerCannotCollectNewTicketTest|redeliveryDoesNotRefreshActivationReadTest|issuerEpochChangeRejectsQueuedActivationTest|sourcePublicationRejectsOldIssueParentTest|twoLaunchesCannotBothUseOldParentTest|sharedIdentityIssuanceCounterexampleTest|noProofIssuanceCounterexampleTest|revokedProofIssuanceCounterexampleTest|keySubstitutionIssuanceCounterexampleTest|rollbackIssueIssuanceCounterexampleTest|lostActivationResultIssuanceCounterexampleTest)$"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-incarnation-issuance/quint-core/LlmIncarnationIssuance.qnt": "b7a7239704f5ba37c013d3d41da78e65a1e008d2eaa4209e92fad07859a57e64"
+    },
+    "exit": 0,
+    "seconds": 41.962,
+    "watchdogSeconds": 55
+  },
+  "log": "proofs/evidence/llm-incarnation-issuance/tests.log",
+  "logSha256": "073a90860c2821688a6c80cae998a74c5c3dac7e4e2821c8f5b19adc462f65e3",
+  "classification": "Source-checked sealed predecessor receipt; not a current rerun"
+}

@@ -1,0 +1,62 @@
+#+TITLE: Native Runtime Qualification Results
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Qualified scope
+The first modular native execution profile passes the executable local-owner
+checks. This is implementation evidence for committed non-streaming JSON and
+one deciding store, not completion of the production gateway architecture.
+The [[file:../../../proofs/evidence/runtime-implementation-20261029/full-check.log][unified check transcript]] retains the complete run.
+
+| Check | Observation |
+|-------+-------------|
+| Rust native tests | Twenty tests pass, including five deny-mode ASP Rust gates |
+| Stateful Rust PBT | Sixty-four generated sequences checked against an independent hold/spent oracle |
+| Native concurrency | Competing consumers, shared node capacity and effective-publication serialization pass |
+| Real loopback TLS | Redirect not followed; connection failure not automatically retried; holds retained |
+| Go race checks | All current packages pass |
+| Go routing fuzz | 73961 executions in the retained run; no budget expansion found |
+| Go decoder fuzz | 119189 executions in the retained run; no panic found |
+| SysML v2 | Strict validation passes for seven named safety/development requirements |
+| Quint | Thirteen controls pass, including three deliberately unsafe counterexamples |
+| Quint sampled invariant | One thousand traces of fifty transitions find no safety violation |
+| Lean | Four declarations checked with no sorryAx dependency |
+| Native development checks | Formatting and all-target Clippy with warnings denied pass |
+| Cross-language replay | Real Go proposal, Rust queue, replay, mutation rejection and stale-view rejection pass |
+
+Fuzz execution counts are coverage observations, not throughput benchmarks or
+proofs of total correctness. Sampled Quint runs are not exhaustive state-space
+verification. Lean proofs concern explicit abstract transitions and do not
+remove SQLite durability, source authenticity or actual transport premises.
+
+* Retained failure evidence
+[[file:../../../proofs/evidence/runtime-implementation-20261029/initial-failures/][Initial attempts]] retain native compiler errors, ASP module/style findings,
+Clippy feedback, Go cache-environment failure, Quint syntax/test-continuation
+failures, Lean proof elaboration failure, sandbox loopback refusal and the
+initial TLS fixture failure. The TLS fixture needed accepted sockets switched
+explicitly to blocking mode on macOS; certificate and hostname verification
+remain enabled, and no timeout was relaxed to obtain the pass.
+
+The old temporary Cedar reference directory was absent on this host. The exact
+historical commit was recovered into the new isolated reference repository for
+document-link verification. This changes neither historical source identity nor
+old sealed documents. Current implementation review uses its separately recorded
+new source revision.
+
+The [[file:../../../proofs/evidence/runtime-implementation-20261029/historical-seals.json][historical audit]] checks fifty-two manifests and finds one existing
+source-target difference: =docs/architecture/01-reference-comparison.org= differs
+from the quorum-promise receipt. Its observed modification time predates this
+implementation run. That document is not edited or rolled back here; both the
+expected and current hashes are retained. All other audited target comparisons
+match. This checkpoint does not relabel the historical receipt as a current pass.
+
+* Development and runtime separation
+ASP Rust is a pinned development dependency in each native crate. No native
+runtime crate reaches it through normal dependency edges. Existing dependency
+pins and historical native image qualification remain unchanged. The sealed
+development environment and its lock are unchanged. Supply a prepared Go
+toolchain through PATH or =WEAVER_GO= for the check entrypoint.
+
+See [[file:57.02-verification-and-delivery.org][the delivery register]] for remaining Scheme publication, streaming, protocol,
+settlement, rollback recovery and performance work. No production-readiness or
+complete Zero Trust deployment claim follows from this checkpoint.

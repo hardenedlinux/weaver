@@ -1,0 +1,488 @@
+[
+  {
+    "path": "proofs/evidence/llm-semantic-contract/itf/bufferOverflowSemanticCounterexampleTest-5.itf.json",
+    "states": 5,
+    "protocol": {
+      "buffers": {
+        "0": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "1": [],
+        "2": []
+      },
+      "calls": [
+        0
+      ],
+      "consumed": true,
+      "contract": {
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "payload": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        }
+      },
+      "ended": false,
+      "epoch": 0,
+      "outputs": [],
+      "parts": {
+        "0": 1,
+        "1": 0,
+        "2": 0
+      },
+      "proposals": [],
+      "retired": false,
+      "sealed": true,
+      "toolEffects": 0,
+      "view": 0,
+      "wire": {
+        "attempt": 1,
+        "body": 106,
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "manifest": 106,
+        "names": true,
+        "projection": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        },
+        "root": 0,
+        "target": 6
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-semantic-contract/itf/mixedWinnerSemanticCounterexampleTest-2.itf.json",
+    "states": 4,
+    "protocol": {
+      "buffers": {
+        "0": [],
+        "1": [],
+        "2": []
+      },
+      "calls": [],
+      "consumed": true,
+      "contract": {
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "payload": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        }
+      },
+      "ended": false,
+      "epoch": 0,
+      "outputs": [
+        {
+          "attempt": 2,
+          "complete": false,
+          "kind": 0,
+          "ordinal": 0,
+          "root": 0,
+          "valid": true
+        }
+      ],
+      "parts": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "proposals": [],
+      "retired": false,
+      "sealed": true,
+      "toolEffects": 0,
+      "view": 0,
+      "wire": {
+        "attempt": 1,
+        "body": 106,
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "manifest": 106,
+        "names": true,
+        "projection": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        },
+        "root": 0,
+        "target": 6
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-semantic-contract/itf/partialSchemaSemanticCounterexampleTest-4.itf.json",
+    "states": 4,
+    "protocol": {
+      "buffers": {
+        "0": [],
+        "1": [],
+        "2": []
+      },
+      "calls": [],
+      "consumed": true,
+      "contract": {
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "payload": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        }
+      },
+      "ended": false,
+      "epoch": 0,
+      "outputs": [
+        {
+          "attempt": 1,
+          "complete": false,
+          "kind": 2,
+          "ordinal": 0,
+          "root": 0,
+          "valid": true
+        }
+      ],
+      "parts": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "proposals": [],
+      "retired": false,
+      "sealed": true,
+      "toolEffects": 0,
+      "view": 0,
+      "wire": {
+        "attempt": 1,
+        "body": 106,
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "manifest": 106,
+        "names": true,
+        "projection": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        },
+        "root": 0,
+        "target": 6
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-semantic-contract/itf/partialToolSemanticCounterexampleTest-3.itf.json",
+    "states": 5,
+    "protocol": {
+      "buffers": {
+        "0": [
+          1,
+          2
+        ],
+        "1": [],
+        "2": []
+      },
+      "calls": [
+        0
+      ],
+      "consumed": true,
+      "contract": {
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "payload": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        }
+      },
+      "ended": false,
+      "epoch": 0,
+      "outputs": [],
+      "parts": {
+        "0": 1,
+        "1": 0,
+        "2": 0
+      },
+      "proposals": [
+        {
+          "args": [
+            1,
+            2
+          ],
+          "attempt": 1,
+          "call": 0,
+          "finished": false,
+          "root": 0,
+          "schema": true,
+          "tool": 7
+        }
+      ],
+      "retired": false,
+      "sealed": true,
+      "toolEffects": 0,
+      "view": 0,
+      "wire": {
+        "attempt": 1,
+        "body": 106,
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "manifest": 106,
+        "names": true,
+        "projection": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        },
+        "root": 0,
+        "target": 6
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-semantic-contract/itf/roleDropSemanticCounterexampleTest-0.itf.json",
+    "states": 3,
+    "protocol": {
+      "buffers": {
+        "0": [],
+        "1": [],
+        "2": []
+      },
+      "calls": [],
+      "consumed": false,
+      "contract": {
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "payload": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        }
+      },
+      "ended": false,
+      "epoch": 0,
+      "outputs": [],
+      "parts": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "proposals": [],
+      "retired": false,
+      "sealed": true,
+      "toolEffects": 0,
+      "view": 0,
+      "wire": {
+        "attempt": 1,
+        "body": 106,
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "manifest": 106,
+        "names": true,
+        "projection": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        },
+        "root": 0,
+        "target": 6
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-semantic-contract/itf/targetSwapSemanticCounterexampleTest-1.itf.json",
+    "states": 3,
+    "protocol": {
+      "buffers": {
+        "0": [],
+        "1": [],
+        "2": []
+      },
+      "calls": [],
+      "consumed": false,
+      "contract": {
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "payload": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        }
+      },
+      "ended": false,
+      "epoch": 0,
+      "outputs": [],
+      "parts": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "proposals": [],
+      "retired": false,
+      "sealed": true,
+      "toolEffects": 0,
+      "view": 0,
+      "wire": {
+        "attempt": 1,
+        "body": 106,
+        "budget": 5,
+        "document": false,
+        "history": 9,
+        "manifest": 106,
+        "names": true,
+        "projection": {
+          "candidates": 1,
+          "choice": 7,
+          "input": 10,
+          "parallel": false,
+          "roles": [
+            1,
+            2,
+            3
+          ],
+          "schema": 4,
+          "tools": [
+            7,
+            8
+          ]
+        },
+        "root": 0,
+        "target": 0
+      }
+    }
+  }
+]

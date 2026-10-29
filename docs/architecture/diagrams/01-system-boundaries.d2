@@ -1,0 +1,243 @@
+# W01: compact responsibility map; fixed positions use bundled TALA.
+...@lib/theme
+title: WEAVER / UNIFIED GATEWAY {
+  class: title
+  near: top-center
+}
+semantic: SCHEME / GOVERNANCE {
+  top: 0
+  left: 0
+  width: 340
+  height: 390
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  evidence: POO Governance / Cedar\nShared model / exact projection {
+    top: 65
+    left: 40
+    width: 260
+    height: 80
+    label.near: center-center
+    class: policy
+  }
+  composition: Governance composition\nAdmitted policy closure {
+    top: 175
+    left: 40
+    width: 260
+    height: 64
+    class: semantic
+  }
+  source: Runtime source admission\nExact operation / current facts {
+    top: 285
+    left: 40
+    width: 260
+    height: 64
+    class: semantic
+  }
+}
+cloud: GO / CLOUD INTEGRATION {
+  top: 0
+  left: 430
+  width: 340
+  height: 390
+  style.fill: "#f7f9fc"
+  style.stroke: "#9cacc2"
+  brand: "" {
+    shape: image
+    icon: assets/go.svg
+    top: 12
+    left: 14
+    width: 46
+    height: 20
+  }
+  kube: "" {
+    shape: image
+    icon: assets/kubernetes.svg
+    top: 9
+    left: 295
+    width: 28
+    height: 28
+  }
+  discovery: Discovery and reconciliation\nScoped endpoints / routes {
+    top: 65
+    left: 40
+    width: 260
+    height: 64
+    class: cloud
+  }
+  identity: Workload identity integration\nAuthenticated / scoped facts {
+    top: 175
+    left: 40
+    width: 260
+    height: 64
+    class: cloud
+  }
+  distribution: Publication distribution\nObserved generation status {
+    top: 285
+    left: 40
+    width: 260
+    height: 64
+    class: cloud
+  }
+}
+runtime: "" {
+  top: 500
+  left: 0
+  width: 1180
+  height: 360
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  brand: "" {
+    shape: image
+    icon: assets/rust.svg
+    top: 8
+    left: 15
+    width: 30
+    height: 30
+  }
+  adapter: Go or Rust ingress\nExact actor / target / payload {
+    top: 70
+    left: 35
+    width: 240
+    height: 70
+    class: cloud
+  }
+  coordinator: Rust effect coordinator\nOne fenced state owner {
+    top: 70
+    left: 425
+    width: 260
+    height: 70
+    class: runtime
+  }
+  broker: Final egress broker\nBound bytes / peer / credential {
+    top: 70
+    left: 840
+    width: 260
+    height: 70
+    class: runtime
+  }
+  authority: Authority / Cedar evaluation\nAllow / error-free required checks {
+    top: 250
+    left: 425
+    width: 260
+    height: 70
+    class: policy
+  }
+  ledger: Coordination ledger\nHistory / budget / unique claims {
+    top: 245
+    left: 840
+    width: 260
+    height: 80
+    shape: cylinder
+    height: 110
+    label.near: center-center
+    class: ledger
+  }
+}
+upstream: Upstream service\nEffect acceptance {
+  top: 570
+  left: 1330
+  width: 220
+  height: 70
+  class: ledger
+}
+semantic.evidence -> semantic.composition: Compose / select
+cloud.discovery -> semantic.composition: Scoped observations
+semantic.composition -> cloud.distribution: Admitted closure
+cloud.identity -> runtime.adapter: Identity facts
+cloud.distribution -> runtime.coordinator: Admitted publication
+runtime.adapter -> runtime.coordinator: Exact operation
+runtime.coordinator <-> semantic.source: Source guards
+runtime.coordinator <-> runtime.authority: Evaluate / consume
+runtime.coordinator <-> runtime.ledger: Fenced transactions
+runtime.coordinator <-> runtime.broker: Claim / observations
+runtime.broker -> upstream: One bound attempt
+note: "POO defines governed effects across requests; the runtime preserves one-use state, history and budget.\nQuint / Lean links constrain the design. Each send needs current admission, a typed claim and the final broker gate." {
+  class: note
+  shape: text
+  near: bottom-center
+}
+
+semantic.label.near: top-center
+semantic.style.font-size: 18
+
+cloud.label.near: top-center
+cloud.style.font-size: 18
+
+runtime.label.near: top-right
+runtime.style.font-size: 18
+
+baseline: ZERO TRUST / REQUIRED {
+  top: 0
+  left: 900
+  width: 350
+  height: 390
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#fafbfc"
+  style.stroke: "#b1bac8"
+  policy: Code as Policy\nAdmitted artifact closure {
+    top: 65
+    left: 35
+    width: 280
+    height: 64
+    class: policy
+  }
+  identity: No ambient authority\nExplicit role and audience {
+    top: 175
+    left: 35
+    width: 280
+    height: 64
+    class: ledger
+  }
+  recovery: Conservative recovery\nNo automatic redispatch {
+    top: 285
+    left: 35
+    width: 280
+    height: 64
+    class: ledger
+  }
+}
+
+runtime.heading: RUNTIME / EXECUTION {
+  shape: text
+  top: 12
+  left: 740
+  width: 360
+  height: 30
+  style.font-size: 18
+  style.font-color: "#1e293b"
+}
+
+assurance: DESIGN ASSURANCE / CONTRACTS, NOT REQUEST TRAFFIC {
+  top: 1010
+  left: 0
+  width: 1180
+  height: 210
+  label.near: bottom-center
+  style.font-size: 18
+  style.fill: "#fafbfc"
+  style.stroke: "#b1bac8"
+  quint: Quint / concurrent state model\nConsume / commit / claim / send / recovery {
+    top: 75
+    left: 35
+    width: 460
+    height: 80
+    class: semantic
+  }
+  lean: Lean / semantic preservation\nCedar-POO meaning / projection / invariants {
+    top: 75
+    left: 685
+    width: 460
+    height: 80
+    class: runtime
+  }
+}
+assurance.quint -> assurance.lean: Transition correspondence {
+  style.stroke-dash: 4
+}
+assurance.quint -> runtime.coordinator: State-machine contract {
+  style.stroke-dash: 4
+}
+assurance.lean -> runtime.authority: Meaning / projection contract {
+  style.stroke-dash: 4
+}

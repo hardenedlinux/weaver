@@ -1,0 +1,316 @@
+[
+  {
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmEnrollmentCredential.olean",
+      "proofs/lean/LlmEnrollmentCredential.lean"
+    ],
+    "exit": 0,
+    "seconds": 7.544,
+    "watchdogSeconds": 20,
+    "label": "LlmEnrollmentCredential",
+    "sourceSha256": {
+      "proofs/lean/LlmEnrollmentCredential.lean": "8da9f527d5b8e65ece84203dd525db68c521e73f9424ebc8826835259a468c25"
+    },
+    "compiledSha256": "e043a106b0cd493b1192980e1c34f90767293e871e4735e40300ecd2ef8f38a8"
+  },
+  {
+    "label": "prepare-bundle",
+    "args": [
+      "python3",
+      "proofs/prepare_enrollment_credential.py"
+    ],
+    "sourceSha256": {
+      "proofs/prepare_enrollment_credential.py": "796200e1091eaf2b0887ac226d814b5b8fb50da6d453e0713bb26c5fa09e8f60"
+    },
+    "exit": 0,
+    "seconds": 0.546,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "parse-raw-leaf",
+    "args": [
+      "/opt/homebrew/opt/node/bin/node",
+      "proofs/evidence/llm-enrollment-credential/parse-raw-leaf.cjs"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-enrollment-credential/parse-raw-leaf.cjs": "134a66a84975e2e9d455bc86b0e511dc06198fbec51a54c95d5c0f0d1c975997"
+    },
+    "exit": 0,
+    "seconds": 1.171,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "parse-bundle",
+    "args": [
+      "quint",
+      "parse",
+      "proofs/evidence/llm-enrollment-credential/bundle/LlmEnrollmentCredential.qnt",
+      "--out",
+      "proofs/evidence/llm-enrollment-credential/bundle-parsed.json",
+      "--source-map",
+      "proofs/evidence/llm-enrollment-credential/bundle-source-map.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-enrollment-credential/bundle/LlmEnrollmentCredential.qnt": "b40dd508bb86bca42c1a4350d4eacd0f307ebf4b3f2c120326915d25fabca32e"
+    },
+    "exit": 0,
+    "seconds": 4.391,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "verify-bundle",
+    "args": [
+      "python3",
+      "proofs/evidence/llm-enrollment-credential/check-bundle.py"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-enrollment-credential/check-bundle.py": "78682008fe321d92984fc36f0e933115df03307498201eb29a2b2b83aa98255c"
+    },
+    "exit": 0,
+    "seconds": 0.623,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "api-parse",
+    "modules": 15,
+    "sourceSha256": "b40dd508bb86bca42c1a4350d4eacd0f307ebf4b3f2c120326915d25fabca32e",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 3.338,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "4b2446b56ae1f6216856bb45d12dc00815ce203c5ad6206f63fc6c3e08115204",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 23.506,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "sharedWorkloadCannotAssignSubjectTest",
+      "producerAssignmentRequiredTest",
+      "sharedWorkloadCannotIssueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.817,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "forwardedSubjectCredentialRejectedTest",
+      "authenticatedSubjectCannotNominateKeyTest",
+      "subjectAuthenticationRequiredTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.029,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "enrollmentPossessionRequiredTest",
+      "issuanceSessionBoundTest",
+      "currentIssuancePolicyRequiredTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.054,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "commitDoesNotSignOrEnrollTest",
+      "lostIssueReplyRecoversSameCredentialTest",
+      "oldWorkerCannotRecoverSubjectTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.949,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "recoveryAuthenticationRequiredTest",
+      "recoveryPolicyRequiredTest",
+      "canonicalLaunchCannotReissueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.88,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "crossLaunchIdCannotBeReusedTest",
+      "secondSubjectGetsDistinctIdTest",
+      "uncommittedBodyCannotReachSignerTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.28,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "signatureWithoutRequestRejectedTest",
+      "lostSignerReplyRetainsExactIntentTest",
+      "wrongBodyCallbackRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.787,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "authenticSignatureRequiredTest",
+      "lateCallbackAfterRevocationRejectedTest",
+      "interveningCommitInvalidatesReadTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.751,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-8",
+    "passed": [
+      "releasedCredentialStillNeedsHolderTest",
+      "forwardedCredentialCannotActivateTest",
+      "recoveredConnectionCannotActivateTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.83,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-9",
+    "passed": [
+      "oldEpochCannotActivateTest",
+      "activationNeedsCurrentPolicyTest",
+      "rootActivationDoesNotBindBeneficiaryTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.072,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-10",
+    "passed": [
+      "activationCannotRepeatTest",
+      "recoveryCannotReplaceFirstKeyTest",
+      "actualActivationPreservesOriginalBudgetTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 4.416,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-11",
+    "passed": [
+      "revocationFencesPublishedInvitationTest",
+      "forgedSubjectCounterexampleTest",
+      "erasedCredentialCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.356,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-12",
+    "passed": [
+      "erasedReleaseCounterexampleTest",
+      "missingActivationOutcomeCounterexampleTest",
+      "phantomActivationOutcomeCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.008,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-13",
+    "passed": [
+      "splitRecoveryCannotBindFirstKeyTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.35,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "python3",
+      "proofs/evidence/llm-enrollment-credential/check-counterexamples.py"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-enrollment-credential/check-counterexamples.py": "3dec8865ff082511c75edc40b36634cb617afe3e2d0033893e2fbd7f3664d160"
+    },
+    "exit": 0,
+    "seconds": 1.665,
+    "watchdogSeconds": 20
+  }
+]

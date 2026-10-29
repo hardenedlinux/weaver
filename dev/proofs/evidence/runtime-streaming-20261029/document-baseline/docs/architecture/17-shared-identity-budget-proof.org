@@ -1,0 +1,227 @@
+#+title: Weaver Cross-Message Identity and Shared Budget Proof
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS abstract-product-proof-checked-source-refinement-pending
+#+options: toc:3
+
+* The gap closed by this extension
+
+The earlier single-message model starts after logical identity resolution. It
+cannot establish that a second raw key refers to the same operation, or that
+distinct messages draw from one cost/history domain. The new artifacts are
+[[file:../../specs/quint/SharedMessageBudget.qnt][SharedMessageBudget.qnt]] and [[file:../../specs/lean/SharedMessageBudget.lean][SharedMessageBudget.lean]]. Lean imports the earlier
+checked message machine and proves a product invariant around it. The original
+files and dated receipt remain intact.
+
+The product contains two distinct canonical semantic intents, arbitrarily many
+raw aliases in Lean, and one shared budget/history domain. Cost weights and
+capacity are arbitrary natural numbers in Lean. Quint exercises four aliases,
+two intents, two workers, two issuer selectors and three stream incarnations,
+with unequal cost weights. This is a genuine cross-message model, but not a
+proof for an arbitrary number of intents, domains or currencies.
+
+The required result is conditional and precise: within an authenticated stable
+intent/domain projection, a new raw key cannot choose another canonical record;
+new nonce, issuer and stream coordinates cannot reset that record; all distinct
+records use the same capacity and restrictive-history gate. The model does not
+prove that untrusted text can be classified into intent without trusted facts.
+
+* Identity admission and the domain boundary
+
+| Coordinate | Meaning and authority |
+|------------+-----------------------|
+| Raw alias | Client/SDK correlation input; a new value has no authority to create intent, a budget domain or a history domain |
+| Canonical intent | Scheme-owned authenticated tenant/workflow/parent-operation/message-slot meaning; independent of issuance and transport coordinates |
+| Immutable payload projection | The complete admitted effect, recipient and semantic content; the model uses a natural-number projection as its abstraction |
+| Shared domain | Owner-resolved budget window/account plus history conflict scope and publication lineage; never reconstructed from a new client key |
+| Issuance | Fully scoped canonical intent plus actual issuer/nonce identity; a bare numeric token alone is insufficient |
+| Physical stream | Execution binding retained in the original claim; changing it does not change canonical intent |
+
+Domain.intent maps raw aliases to already authenticated semantic evidence.
+Domain.payload fixes the immutable payload for each intent. enroll checks that
+payload and writes only the alias index and revision. It does not reserve cost,
+clear history, issue a grant or allocate a second message. An existing alias
+cannot be rebound to an incompatible intent. The correct resolver can therefore
+accept many aliases for one intent without duplicating its claim or hold.
+
+This projection is a trusted boundary, not a content hash or an all-true
+validity predicate. The Host must authenticate the actual source/request facts
+that Scheme projects. Equal payloads with separately admitted distinct intent
+can be different messages. Different payloads for the same admitted intent are
+a binding conflict, not an update. The integer payload fixture abstracts full
+value equality; it is not a cryptographic collision-resistance proof.
+
+Creating an empty ledger or a new Domain for the same authenticated parent is
+not a transition of the model. That is an attempted domain bypass, not a safe
+reconnect. The concrete system must bind the canonical registry, cost account,
+history conflict scope and lineage through owner admission; a per-worker pool
+or a newly minted account ID is insufficient. Ownership changes and semantic
+publication migrations must retain those bindings and obligations. Cross-domain
+admission and arbitrary scope resolution remain source-refinement requirements.
+
+* Shared allocation, claim and history semantics
+
+For each canonical key k, let Reserved(k) retain its lifetime reservation and
+Cost(k) be its admitted immutable upper bound in one common accounting unit.
+The reference uses conservative full-upper-bound charging, no refund, no top-up
+and no budget-window reset. Zero-cost semantic operations are permitted by the
+abstract arithmetic; queue/memory limits remain separate resource contracts.
+
+#+begin_example
+Booked       = sum over the two canonical keys of Reserved(k) * Cost(k)
+HeldTotal    = sum of uncharged reserved upper bounds
+ChargedTotal = sum of settled upper bounds
+Free         = Capacity - Booked
+HeldTotal + ChargedTotal = Booked <= Capacity
+Free + HeldTotal + ChargedTotal = Capacity
+#+end_example
+
+The sum is over canonical records, never over aliases. reserve requires an
+enrolled alias, a fresh authoritative candidate revision, an unreserved
+canonical record and enough shared capacity. It commits reservation/history
+and increments the shared revision atomically. Both contenders can initially
+observe enough free budget; after one wins, the other's revision and capacity
+must be rechecked. Captured free capacity is not a reservation.
+
+Each non-allocation local transition is a Passive transition proved to be an
+existing checked single-message Step. Its reservation flag cannot change.
+New issuance, reconnect, late observations and settlement consequently cannot
+replenish Booked. Settlement moves a held upper bound to ChargedTotal; it does
+not make an already charged cost available to another message. Real partial
+charges, refunds and multidimensional provider costs require a further model.
+
+One shared restrictive-history bit represents a conservative deny-disclosure
+policy. Once learned it is sticky across all keys, including genuinely new
+intents. A current final offer requires that bit to be false. This is a selected
+policy abstraction, not a replacement for Cedar's full decision semantics.
+History changes increment the same revision as allocation and message updates;
+a delayed policy snapshot cannot authorize a later offer by itself. Previously
+accepted physical writes are governed by the separate retirement/fencing
+contract; the proof concerns new abstract offers, not remote arrival time.
+
+Alias enrollment, issuer changes and reconnect have no reset transition for
+message claims, message history or the shared history gate. A claim keeps its
+original token and stream. Even consuming a second admitted issuance for the
+same intent cannot acquire another claim. That permissive stress case does
+not authorize runtime recovery to issue around unknown original consumption.
+Original issuer consumption, source validity and the stricter recovery join
+remain mandatory runtime premises.
+
+* Exact owner-source comparison
+
+All source IDs and snapshots are fixed in [[file:01-reference-comparison.org][the source register]]. This review
+reads committed blobs, not concurrent owner working-tree edits. It changes no
+owner code, dependency pin or native ABI.
+
+| Owner and exact declaration | Reuse | Required extension / proof limit |
+|-----------------------------+-------+----------------------------------|
+| P18: registryEntriesCompatible, transactionRegistryUnique, receiptBindsCanonicalRequest | Canonical request identity and complete subject/pre/post binding; individualCommitClosureDoesNotEnforceTransactionIdUniqueness already rejects independent validity as uniqueness | Bind alias admission to authenticated intent and the shared domain, not just equal client transaction IDs; actual registry atomicity remains physical |
+| P18: duplicateOutcomeDoesNotProvePriorCommit, matchingFenceFieldsDoNotProvideExclusiveOwnership | A duplicate label and matching fence values alone do not establish valid commit or exclusive authority | Resolve original command and retain real owner/claim fencing; no parallel per-alias ledger |
+| P31/P43: same-attempt?, freeze-input, recover, reconcile | Exact immutable source/input/consumer bindings and retained recovery obligations | Reuse as evidence-carrying identity/recovery semantics; their proposed scheduling receipts do not implement durable gateway identity or permission |
+| P33: SourceBoundDeterministicBudgetEvidenceClosed, deterministicBudgetAccountingClosed, closedBudgetAccountingBindsAuthorizedLimits | Accounting conservation plus owner/plan/registry/generation/progress provenance; budget authority remains distinct from runtime watchdog authority | Its semantic/scheduling units are not provider cost. Bind one gateway parent account and cost units, atomic suballocation, retained upper bounds and charges across messages |
+| P34: historyIdentityAndProvenanceClosed, closedHistoryContainsCurrentFingerprint | Identity/provenance and current-fingerprint membership are independently necessary | A progress fingerprint is not disclosure history. Instantiate actual history conflict scope and current per-offer Cedar inputs, including new canonical keys |
+| P35: AuthoritativeContextPublicationDomain, sharedPublicationDomainRejectsSplitViewEquivocation | A common authority-owned publication domain is needed to reject split views; individually valid lineages can disagree | Bind registry, policy/source lineage, budget and history to the same qualified domain; constructing two private valid states is insufficient |
+| C8: BoundOperation.matches, BoundOperation.authorize | Exact supplied effect/state mismatch checks before evaluation | The code explicitly does not authenticate supplied values. Include canonical intent, actual effect/recipient, shared domain and current state projection; Host authenticity remains external |
+| C10: Receipt.allowed, layersAllowed | Nonempty required checks, every decision allow, no erroring policies | The runtime must enforce this exact predicate. Receipt construction/Except.ok does not admit an alias, reserve shared capacity or grant final send |
+| C11: certificate / alignedCertificate | Conditional evaluation/validation composition | Instantiate actual identity/domain/state alignment; a certificate with fabricated facts or a deny result supplies no execution authority |
+| Existing Weaver LogicalMessageAuthority.lean | Actual imported initial_safe, step_preserves_safe, claim_origin_is_sticky and history_is_monotone | New product proof supplies shared aliases, weighted capacity, history gate and frame relation; no imports of owner packages or native acceptance are claimed |
+
+The projection into Cedar must include the already resolved canonical identity
+and shared domain, not let a caller choose them in an unauthenticated context.
+The final Rust broker must join the exact granted message and claim with the
+current shared history/source checks. A Go retry or reconnect cannot select a
+new cost/history account by changing its local request metadata.
+
+* Checked correspondence and theorem inventory
+
+| Quint state/actions or invariant | Lean declaration | Guarantee |
+|---------------------------------+------------------+-----------|
+| enroll / aliasSafety | alias_cannot_choose_another_intent | Every enrolled alias targets its owner-admitted canonical intent |
+| Multiple aliases for one intent | aliases_share_claim_budget_and_history | The complete message record, claim, allocation and local history are shared |
+| Enroll without allocation | alias_enrollment_does_not_allocate_or_reset | Alias registration changes neither messages nor shared restriction |
+| Every safe product step | transition_preserves, reachable_invariant | Initial/step induction closes local safety, alias soundness, capacity and no forbidden offers |
+| Per-key consume/claim/offer | passive_is_local_step, per_intent_claim_and_offer_bound | Reuse existing local consume law; each canonical record has at most one claim/offer |
+| Product-to-message frame | local_step_or_stutter, unrelated_message_is_unchanged | Global steps project to a checked local step or stutter; other keys retain their state |
+| Sticky original claim and local history | original_claim_survives_all_global_steps, local_history_survives_all_global_steps | New aliases/issuers/streams do not replace claim origin or clear history |
+| Shared weighted capacity | shared_budget_bound, shared_budget_partition, shared_free_held_charged_conservation | The actual sum over both canonical records conserves one fixed pool |
+| Passive message updates | passive_update_does_not_replenish | New nonce/Authority, reconnect, observation and settlement cannot replenish booked capacity |
+| Competing allocation snapshots | allocation_invalidates_other_worker | A winning allocation makes a previously captured shared revision stale |
+| restrict / historySafety | restrictive_history_is_sticky, no_restricted_offer | New canonical keys inherit the common restriction; accepted abstract offers cannot ignore it |
+
+Quint has additional ghost counters semanticClaims and semanticOffers indexed
+by admitted intent, independently of the chosen ledger key. Normal executions
+keep them equal to the corresponding canonical record counters. The negative
+resolver variants can therefore expose two locally unique claims/offers for
+one semantic intent. Lean erases these ghost counters and proves the alias
+soundness and canonical bounds that justify the normal relation. This relation
+is reviewed, not an automated Quint-to-Lean equivalence theorem.
+
+The product supplies focused abstract evidence for FM2/FM3 identity and one-use,
+FM5 claim uniqueness, FM7 shared budget, FM8 shared history, FM9 late evidence,
+FM10 retained obligations, FM11 serialization and FM12 binding correspondence.
+It does not close those complete rows. FM1 native/dependency integration, FM4
+concrete submission/range behavior and FM6 physical/source fencing retain their
+previous acceptance requirements. In particular, a successful abstract reserve
+is not evidence of an error-free Cedar allow or an admitted physical emitter.
+
+* Discriminating executable controls
+
+| Control | Required observation |
+|---------+----------------------|
+| Distinct admitted messages | Both canonical messages can reserve unequal costs when one shared pool can fund their sum |
+| Same intent, new alias/issuer/nonce/reconnect | Consume a fresh issuance without changing original claim, held cost or stream origin; late evidence remains admissible |
+| Shared history with a genuinely new intent | The new message can be prepared but cannot offer while the common deny-disclosure restriction holds |
+| Concurrent allocation | Both workers capture the same revision; the winner invalidates the other candidate |
+| Settlement followed by another allocation | The first charge remains booked while the second message consumes only genuinely free capacity |
+| Wrong payload | The actual enroll action fails; no alternate payload is admitted for the fixed semantic intent |
+| Fresh nonce / Authority / reconnect plus incorrect fresh key | Each local record can appear affine while semanticClaims and semanticOffers reach two for one admitted intent; alias/semantic invariants must fail |
+| Cached-free-capacity allocation | Ignoring the winning revision overbooks the real shared sum |
+| Private budget per logical key | Individually affordable messages can jointly exceed the parent capacity |
+| New key checks only local history | Local state can remain valid while a post-restriction offer violates the shared gate |
+| Settlement forgets reservation | A new allocation reuses charged money; held plus charged exceeds the parent bound |
+
+The invalid transitions are excluded from normal step. Their tests succeed
+only when the expected invariant violation is observed. They are counterexamples
+to weaker designs, not tests that such designs are safe. The three key-bypass
+controls actually perform two offers under fresh keys; they do not stop at an
+unequal alias field. Complete traces and exact tool results are linked below.
+
+* Language ownership and remaining acceptance boundary
+
+Scheme owns authenticated semantic projection, canonical intent/domain meaning,
+Cedar request/entity inventory, units/cost-bound semantics and history policy.
+It reuses POO immutable input, exact subject and recovery-obligation relations.
+Go owns cloud-native and SDK/protocol integration, inert staging, correlation
+transport and attributable observations. It cannot certify a new intent or
+budget domain from retry metadata, mint a claim, or autonomously replay a stream.
+Rust owns the canonical alias/record index, shared atomic revision/allocation,
+original issuer join, durable claims/holds/history, and the final broker guard.
+
+Lean checks an abstract two-intent product for arbitrary finite traces and
+arbitrary natural cost weights/capacity. Quint provides bounded simulation and
+specific positive/negative traces. Neither proves raw input authenticity,
+Cedar compilation/entity projection, account/domain classification, persistent
+storage, arbitrary domain cardinality, rollback exclusion, physical stop/drain,
+receiver deduplication or network range refinement. Those obligations remain
+explicit rather than hidden behind a hash or a validity Boolean.
+
+[[file:../../specs/README.org][The formal artifact guide]] and [[file:../../specs/evidence/shared-identity-budget-2026-10-19.org][the new validation receipt]] provide exact
+commands, hashes, bounds, results, axiom inventory and retained traces. Existing
+owner proof packages are not rebuilt by this check. No complete FM row, native
+profile or deployed Zero Trust guarantee is marked accepted.
+
+#+caption: Client identity variations cannot choose a fresh ledger, history scope or pool. Both canonical messages share the same allocation and offer constraints.
+[[file:diagrams/18-shared-identity-budget.svg]]
+
+[[file:diagrams/18-shared-identity-budget.d2][D2 source]]. Only core design relationships appear in the diagram.
+
+
+* Finite-domain and migration extension
+
+[[file:18-finite-domains-and-migration.org][The finite-domain dossier]] now replaces the two-message scope with a
+parametric finite-key proof and independent overlapping budget/history account
+identities. Actual Quint/Lean artifacts add create/seal/stage/activate, retained
+process/claim state, immutable tickets and stale-worker rejection. Earlier dated
+receipts keep their scope. Canonical identity-preserving relocation does not
+permit semantic reparenting or empty-ledger reconstruction; source authenticity,
+physical persistence and post-cut emission remain separate qualification gates.

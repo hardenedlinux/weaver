@@ -1,0 +1,29 @@
+{
+  "closedNativeInputsSha256": "2fd0cb909cd093e2299944addeb0ddb410883cc2be4ed93a3a5b488939f2c968",
+  "executionContext": {
+    "kind": "exact-original-script-with-passive-observer",
+    "entrySha256": "68a27a0b594fda7aedab994c2d230464ddb2907176e25d9b8fe5837e24203750",
+    "loadPath": [
+      "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/dynamic-images",
+      "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-narrow",
+      "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-native"
+    ],
+    "runtime": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/bin/gxi",
+    "observerBinarySha256": "a3b42ef8f6b459a7737b6c5da6d27c7b82a76acfa0c3f9cd2604a0dab46cfff3",
+    "moduleEntryMapSha256": "468d93e3a9260fc8ea06f9d20f22c5d5541606dc833993535943e734a6d2b1ec",
+    "gateSeconds": 15
+  },
+  "nativeExecutionProfileSha256": "e57b3465959e638a3625182ec68715817a79a37ba47c45ab4c144229f917a5ef",
+  "auditedProgramDigests": {
+    "qualified-0": "9901170af341e19c08ac0e1b7bbae0ad9af8c70b5084f2591ca20eefbb32af7e",
+    "qualified-1": "9901170af341e19c08ac0e1b7bbae0ad9af8c70b5084f2591ca20eefbb32af7e",
+    "qualified-2": "9901170af341e19c08ac0e1b7bbae0ad9af8c70b5084f2591ca20eefbb32af7e",
+    "packed-observed": "9901170af341e19c08ac0e1b7bbae0ad9af8c70b5084f2591ca20eefbb32af7e",
+    "quiet-a1": "9901170af341e19c08ac0e1b7bbae0ad9af8c70b5084f2591ca20eefbb32af7e",
+    "quiet-b1": "9901170af341e19c08ac0e1b7bbae0ad9af8c70b5084f2591ca20eefbb32af7e",
+    "quiet-b2": "9901170af341e19c08ac0e1b7bbae0ad9af8c70b5084f2591ca20eefbb32af7e",
+    "quiet-a2": "9901170af341e19c08ac0e1b7bbae0ad9af8c70b5084f2591ca20eefbb32af7e"
+  },
+  "originalEntryDigest": "68a27a0b594fda7aedab994c2d230464ddb2907176e25d9b8fe5837e24203750",
+  "scope": "Primary profile binds the exact original source and observed native execution. Audited programs have separate complete entry digests. Final recipe/proof/receipt identities are additionally covered by SHA256SUMS; this is local trusted-controller evidence, not cryptographic runtime attestation."
+}

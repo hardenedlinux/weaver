@@ -1,0 +1,39 @@
+proofs/lean/LlmExecutionReconciliation.lean:134:11: error: Type mismatch
+  ih
+has type
+  LlmAttemptLedger.Run c p ao s.source b✝.source
+but is expected to have type
+  LlmAttemptLedger.Run c p ao s.source
+    { execution := b✝.execution, source := next✝, epoch := b✝.epoch, qualified := b✝.qualified, sealed := b✝.sealed,
+        decision := b✝.decision, applied := b✝.applied, metered := b✝.metered, amount := b✝.amount,
+        accountApplied := b✝.accountApplied, released := b✝.released }.source
+proofs/lean/LlmExecutionReconciliation.lean:142:21: error: Function expected at
+  ih
+but this term has type
+  LlmAttemptLedger.Run c p ao LlmAttemptLedger.initial b✝.source
+
+Note: Expected a function because this term is being applied to the argument
+  prefixRun
+proofs/lean/LlmExecutionReconciliation.lean:169:21: error: Function expected at
+  ih
+but this term has type
+  LlmExecutorOffer.Run op ro R signals A limit Q V qo xo seed (LlmExecutorOffer.initial seed) b✝.execution
+
+Note: Expected a function because this term is being applied to the argument
+  prefixRun
+'Weaver.LlmExecutionReconciliation.initialized_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmExecutionReconciliation.source_projection' depends on axioms: [sorryAx]
+'Weaver.LlmExecutionReconciliation.source_composition' depends on axioms: [sorryAx]
+'Weaver.LlmExecutionReconciliation.execution_projection' does not depend on any axioms
+'Weaver.LlmExecutionReconciliation.actual_executor_composition' depends on axioms: [propext, sorryAx]
+'Weaver.LlmExecutionReconciliation.negative_needs_dispatch_absence' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LlmExecutionReconciliation.no_source_zero_premise' does not depend on any axioms
+'Weaver.LlmExecutionReconciliation.unknown_retains_full_reservation' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmExecutionReconciliation.source_terminal_precedes_release' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmExecutionReconciliation.release_conserves_original_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmExecutionReconciliation.decision_immutable' depends on axioms: [propext]
+'Weaver.LlmExecutionReconciliation.account_application_immutable' depends on axioms: [propext]
+'Weaver.LlmExecutionReconciliation.sealed_execution_cannot_rearm' does not depend on any axioms
+'Weaver.LlmExecutionReconciliation.restart_retains_records' does not depend on any axioms

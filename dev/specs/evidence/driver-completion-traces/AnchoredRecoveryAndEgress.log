@@ -1,0 +1,9 @@
+'Weaver.AnchoredRecoveryAndEgress.Journal.reachable_invariant' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.Journal.recovered_budget_conservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.Journal.operation_receipt_is_immutable' depends on axioms: [propext]
+'Weaver.AnchoredRecoveryAndEgress.Egress.reachable_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.Egress.post_seal_wire_emission_is_reachable' depends on axioms: [propext]
+'Weaver.AnchoredRecoveryAndEgress.joint_publication_preserves' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.protected_handoff_requires_original_claim' does not depend on any axioms

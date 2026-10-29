@@ -1,0 +1,126 @@
+#+TITLE: 59.08 Pre-TLS Connection Custody and Bounded Acceptance
+#+LANGUAGE: en
+
+This chapter records the single-listener connection-custody increment and its
+original receipts. The subsequent [[file:59.09-source-ingress.org][source-ingress increment]] preserves that
+custody protocol while adding a separate source pool and distinct source leaf.
+Current total connection capacity and method allocation are defined there.
+
+* Resource and authority boundary
+
+The default Rust gRPC server now admits at most sixteen TCP connections per live
+server process. This includes unfinished TLS handshakes and established HTTP/2
+connections. Incoming reserves capacity before polling accept; when full it
+applies accept backpressure rather than spawning unbounded waiting connection
+tasks. Completed TCP handshakes in the operating system backlog are not accepted
+application sockets and do not prove gRPC admission. Deployment replica counts
+and kernel backlog memory are separate resource domains.
+
+A private IO wrapper owns the semaphore permit alongside its TcpStream. Tonic
+wraps that IO in TLS and HTTP/2 without changing ownership. The wrapper delegates
+scalar and vectored writes, reads, flush and shutdown, preserves TCP_NODELAY and
+returns the original TcpConnectInfo. Consequently existing certificate-pinning
+checks still use TlsConnectInfo<TcpConnectInfo>. No caller can forge a permit,
+retain capacity through cloned peer metadata, or obtain authority through merely
+finishing TLS. Original principal checks, Cedar decisions, durable consumption
+and per-row final guards remain necessary.
+
+The lifetime contract is deliberately stricter than network observations. TLS
+completion does not return capacity. Peer EOF does not return capacity until the
+server actually destroys the socket wrapper. Dropping the listener releases only
+its unused reservation; existing sockets keep their own permits. A failed
+handshake is dropped and returns its socket capacity. The fixed three-second TLS
+deadline applies independently of an RPC deadline or caller-provided timeout.
+The existing fifteen-second natural process-exit gate is unchanged.
+
+Scheme owns semantic contracts and Go owns source-bound routing and RPC clients.
+Only Rust accepts sockets and accounts their physical runtime resource custody.
+This is logical gateway resource ownership, not a hardware isolation design or
+proof that credentials become trustworthy because they share a Kubernetes name.
+
+* Four-way executable correspondence
+
+| Artifact | Property and counterexample | Refinement premise |
+|----------+-----------------------------+--------------------|
+| SysML ConnectionCustodyBound | Acquire before accept, retain through IO destruction, expire stalled handshakes | Structural requirement and native/formal witness mapping |
+| Quint ConnectionAdmission | Live sockets equal held permits; live plus listener reservation stays bounded; handshakes are a subset of live sockets | Finite socket identities, capacity two, sampled schedules; timeout action means actual socket destruction |
+| Lean ProviderRpc | connection_step_preserves_custody; bounded_connections_include_handshakes; provider_and_connection_composition | Arbitrary natural capacity; faithful RAII, scheduler and Tonic/Rustls destruction behavior |
+| Rust native IO tests | Data/peer identity preserved; peer EOF retains capacity; listener and socket destruction return only their own permits | Real loopback TCP; no mock transport substituted |
+| Go native integration | Established and pre-TLS pressure, fixed TLS expiry, existing authority channel, replacement connection and natural shutdown | Actual daemon, mTLS and HTTP/2; fixed workload and limits |
+
+Quint explicitly demonstrates two unsafe designs: accepting a third socket before
+obtaining budget, and returning capacity after TLS completion while its socket
+remains alive. Both violate custody. Positive controls cover listener reservation
+cleanup, peer loss, handshake expiry, shutdown rejection and capacity recovery.
+Lean composes socket custody with the existing provider claim/hold invariant;
+it does not derive provider authorization from a connection permit. The native
+tests supply transport evidence separately from the logical proof.
+
+* Native validation protocol
+
+The established-connection test first completes one original provider operation
+over the fixture's existing authenticated channel, retaining its four-credit hold.
+It establishes fifteen additional TLS connections and deliberately withholds
+their HTTP/2 prefaces. A seventeenth connection must not finish TLS within its
+fixed probe deadline. The already authenticated channel must still commit a
+forbid publication and inspect the original complete receipt without changing
+its held budget. Destroying one idle connection must admit a replacement.
+
+The pre-TLS test opens fifteen plaintext sockets alongside the fixture channel.
+Another TLS attempt must be blocked by the same global budget. Every stalled
+handshake must then terminate under the server's three-second deadline; a new
+connection must succeed afterward. A separate test stops the daemon while those
+plaintext sockets are still present. Natural exit must occur under the original
+fifteen-second gate, and no peer socket may remain usable afterward.
+
+A native negative control temporarily changed only the server capacity from
+sixteen to seventeen. The same established-connection test failed because the
+over-budget probe completed TLS. The constant was restored immediately; the
+[[file:../../../dev/proofs/evidence/connection-admission-20261030/over-budget-counterexample.log][raw failed run]] remains separate from restored-source acceptance evidence.
+
+* Restored-source verification
+
+The [[file:../../../dev/proofs/evidence/connection-admission-20261030/verification-current/receipt.json][unified receipt]] passes all twenty-eight stages with 138 unchanged source
+hashes. Rust reports forty-three passing tests, including five ASP deny gates and
+the two new socket-custody tests. Go race integration passes the established,
+pre-TLS and natural-shutdown scenarios alongside prior routing, partial-write,
+revocation and Arrow controls. ConnectionAdmission contributes nine executable
+controls and a 1000-trace, sixty-step sampled safety run. ProviderRpc now prints
+fifteen checked Lean declarations without sorryAx. The strict in-process SysML
+SDK and named trace mapping also pass. D2 was regenerated as SVG/PNG and visually
+checked. Compiler, lock, timeout and ASP settings were not relaxed.
+
+* Performance and unresolved availability
+
+Each connection retains one permit, with no per-byte permission allocation.
+The new Go reconnect benchmark measures actual fresh TCP/mTLS/HTTP2 setup,
+canonical Inspect and client close separately from warm Inspect. Both benchmark
+families use the same source-bound provider operation and preserve its hold.
+They do not measure model inference or infer Rust allocations from Go counters.
+
+The [[file:../../../dev/proofs/evidence/connection-admission-20261030/benchmark-current/receipt.json][new benchmark receipt]] passes all five stages and binds exactly the same 138
+input hashes as the verification receipt. All fourteen Criterion cases across
+the five Rust packages were actually resampled. Their means and confidence
+intervals are in the [[file:../../../dev/proofs/evidence/connection-admission-20261030/benchmark-current/benchmark-summary.org][generated benchmark summary]]. The
+[[file:../../../dev/proofs/evidence/connection-admission-20261030/benchmark-current/grpc-benchmark.log][actual gRPC measurements]] retain three runs for each family:
+
+| Boundary | Observed ns/op, three separate runs | Go allocations/op |
+|----------+------------------------------------+-------------------|
+| Warm authenticated Inspect | 2340509; 2093678; 1583480 | 115; 115; 115 |
+| Fresh connection plus authenticated Inspect and client close | 5025984; 4700814; 9631106 | 1265; 1269; 1268 |
+
+These serial Apple M2 Pro/Darwin samples include canonical ledger reads and show
+substantial host variance. They are not isolated gRPC overhead, a percentile
+distribution under load, or evidence that the admission change caused a speedup.
+The earlier timing receipts remain intact under their earlier source hashes.
+
+Connection and stream limits bound accepted application objects, but do not
+establish a measured resident-memory maximum or a cluster-wide quota. TLS
+completion without an HTTP/2 preface can hold a slot indefinitely in this
+profile. Existing authority channels retain independent native admission capacity;
+new authority channels have no connection reservation and can be denied by
+connection pressure. Certificate/role checks still precede privileged operations.
+A dedicated authenticated administrative admission boundary, preface/idle handling,
+adversarial memory measurements and scheduler fairness remain further availability
+work. SQLite dispatch still holds the deciding lock through provider response
+headers; this increment does not claim to remove that publication latency.

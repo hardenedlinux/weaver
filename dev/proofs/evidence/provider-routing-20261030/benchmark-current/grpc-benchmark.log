@@ -1,0 +1,10 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.87s
+goos: darwin
+goarch: arm64
+pkg: github.com/HardenedLinux/weaver/go/dev
+cpu: Apple M2 Pro
+BenchmarkGatewayInspect-12    	     445	   5156188 ns/op	    6610 B/op	     115 allocs/op
+BenchmarkGatewayInspect-12    	     624	   4666633 ns/op	    6603 B/op	     115 allocs/op
+BenchmarkGatewayInspect-12    	     530	   5287038 ns/op	    6587 B/op	     115 allocs/op
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	15.986s

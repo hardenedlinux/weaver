@@ -1,0 +1,109 @@
+#+TITLE: 59.05 Per-Package Benchmark Contract
+#+LANGUAGE: en
+
+* Coverage and entrypoint
+
+Every Rust workspace member has =benches/gateway.rs=, a harness-free =gateway=
+benchmark declaration and a workspace-inherited Criterion development dependency.
+The package gate rejects missing targets and production Criterion/ASP dependencies.
+No runtime transport or writable handle is exported to make a benchmark possible;
+server encoding is a pure bounded data API, and actual provider I/O still uses
+the guarded executor.
+
+| Package | Benchmarks | Measured boundary |
+|---------+------------+-------------------|
+| contracts | Provider commitments at 128 B, 16 KiB and 512 KiB source payloads | Validation, canonical request hashing and plan commitment; byte throughput reported |
+| contracts | Publication commitment with a 16 KiB Policy comment plus typed fixture | Exact Policy/schema hashing and stable parent/fence/ID binding |
+| policy | Typed schema validation; warmed compilation with a fresh decision; sixteen-source cache churn | Schema/parse cost and actual Cedar evaluation; no decision-cache benchmark |
+| ledger | Fresh admission; consumption plus dispatch burn; idempotent admission | SQLite FULL/WAL operations, current authorization and original hold checks |
+| ledger | Atomic publication commit; exact publication replay; historical outcome lookup | Joint authority/schema/outcome commit versus immutable result observation; setup/teardown outside timed closure |
+| execution | Guarded HTTPS SSE request with three response events | Cold TLS connection, actual loopback provider request, source admission, durable burns, bounded parsing and final release guards |
+| server | Protobuf versus Arrow at one and 32 equivalent events | Pure frame creation and actual Protobuf/Arrow IPC serialization; record throughput reported |
+| server through Go | Warm mTLS gRPC Inspect on an already completed operation | Actual authenticated RPC, principal join and canonical ledger observation; Go client allocations reported separately |
+| server reconnect through Go | Fresh TCP/mTLS/HTTP2 connection, Inspect and client close per iteration | Connection setup plus canonical read, distinct from warm RPC cost; Go client allocation counters only |
+| source server through Go | Warm mTLS PublishAuthority with strict typed Cedar validation and a fresh revision CAS per iteration | Actual source ingress and durable Policy publication; no provider invocation allowed |
+
+=go run ./go/cmd/weaver-dev bench= runs optimized Rust benchmarks and the actual
+RPC benchmark. It records Rust/Go environment output, raw logs, a source-bound
+receipt, Criterion structured data and an English Org summary. Only result files
+created during the current run can qualify its eighteen explicitly mapped cases.
+Every case is required: a partial package, stale estimate or unmapped case fails
+artifact collection. Adding or renaming a case requires updating the Go collector
+and this workload contract together. The workspace development gate separately
+checks every member's Criterion development edge and executable target.
+A separate
+=generate-rpc= mode reproduces the pinned Go bindings without a shell.
+
+Each package also documents its entrypoint and timing boundary beside the target:
+[[file:../../../crates/contracts/benches/README.org][contracts]],
+[[file:../../../crates/policy/benches/README.org][policy]],
+[[file:../../../crates/ledger/benches/README.org][ledger]],
+[[file:../../../crates/execution/benches/README.org][execution]], and
+[[file:../../../crates/server/benches/README.org][server]].
+
+* Workload and measurement rules
+
+Criterion uses thirty samples, one second of warm-up and two seconds of requested
+measurement per case. These are initial workload settings, not a latency pass
+threshold. Go runs the read-only RPC benchmark for two seconds, three times, with
+allocation reporting. Compilation and one-iteration smoke checks are distinct
+from measured benchmark results.
+
+Task/Policy creation and fresh durable store provisioning are outside the timed
+ledger/execution closure. The closure returns its owning database/temp objects
+so their destruction also occurs outside the measured routine. The execution
+benchmark includes the real request and TLS connection: its provider fixture is
+local and deterministic, and no external inference or paid provider is used.
+Read/write/transport limits are preserved, and fixture threads exit naturally.
+
+The thirty-two-event Protobuf case serializes thirty-two individual frames; the
+Arrow case serializes one equivalent thirty-two-row batch. Compare normalized
+record cost and byte counts as well as batch latency. Arrow's schema/framing
+cost can dominate small token events. Its option status is a capability decision,
+not an assumption that Arrow wins every benchmark.
+
+* Interpretation and remaining performance gates
+
+The baseline is host-specific and serial. It does not establish provider inference
+latency, maximum concurrent throughput, p99 latency under load, Rust allocations
+from Go allocation counters, end-to-end zero-copy, or a gRPC-versus-HTTP speedup.
+The request currently holds the deciding write lock through response headers;
+release guards serialize bounded queue admission and row checks. Those choices
+must be included in later matched concurrent-load and sharding qualification.
+
+Currentness hashes and compiler metadata make comparisons reviewable, not
+noise-free. CPU contention, filesystem sync behavior, TLS setup, cache state and
+workload differences must be recorded in any comparative claim. No timeout,
+iteration count, sample count or negative control is widened to declare a
+performance improvement. Actual estimates and confidence bounds are linked from
+[[file:59.06-checked-results.org][the checked-results chapter]].
+The subsequent [[file:59.08-connection-custody.org][connection-custody chapter]] records a fresh same-source check/benchmark
+pair, including both warm and reconnect RPC measurements. Each receipt identifies
+its own source hashes; historical samples are not reassigned to the newest code.
+The latest [[file:59.09-source-ingress.org][source-ingress increment]] adds measured source publication and retains a
+new check/benchmark pair with identical inputs for the split-listener code.
+The [[file:59.10-publication-recovery.org][publication-recovery increment]] expands coverage to eighteen Rust cases and
+records full-batch regression warnings plus a fixed-workload same-binary encoding
+pair. Successful artifact collection does not turn those warnings into performance
+acceptance.
+The [[file:59.11-owned-source-worker.org][owned-source increment]] retains a complete same-source matrix plus a
+separate fixed-256-commit ABBAAB comparison against a preserved source/binary
+baseline. Its local debug-profile result is distinct from production admission.
+
+The [[file:59.12-final-invocation-cancellation.org][final-invocation cancellation increment]] retains the subsequent complete
+eighteen-case matrix. Every case reports a Criterion regression against its local
+cached baseline; neither artifact completeness nor a successful process exit
+qualifies performance. No matched experiment attributes these warnings to the
+cancellation fix or dismisses them as host noise.
+
+The subsequent [[file:59.13-original-release-capability.org][original-release capability increment]] preserves a fresh complete
+eighteen-case matrix and the new exact per-case collector gate. Its twelve
+improvements and six no-significant-change results are relative to the local
+Criterion cache, not matched proof of a binding-check speedup. A later Quint-only
+restart alignment has a separately recorded model hash and does not change the
+measured Rust/Go execution paths or benchmark fixtures.
+
+The [[file:59.14-go-fuzz-coordinator.org][Go fuzz coordinator increment]] then qualifies the locked development Go
+package with the upstream source backport and reruns the complete measured
+entrypoint. Its verification and benchmark receipts bind the same 164 inputs;
+the earlier Go 1.25.0 receipts are not relabeled as this development profile.

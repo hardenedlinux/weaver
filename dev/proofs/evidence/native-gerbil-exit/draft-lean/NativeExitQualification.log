@@ -1,0 +1,17 @@
+proofs/lean/NativeExitQualification.lean:19:36: error: Insufficient number of fields for `⟨...⟩` constructor: Constructor `Weaver.NativeExitQualification.State.mk` has 10 explicit field, but only 1 was provided
+proofs/lean/NativeExitQualification.lean:66:9: error: unsolved goals
+case refl
+c : Config
+s : State
+⊢ (sorry () = true → sorry () = c.expectedChecks ∧ sorry () = true) ∧
+    (sorry () = true → sorry () = true ∧ sorry () = [])
+proofs/lean/NativeExitQualification.lean:66:24: warning: declaration uses `sorry`
+'Weaver.NativeExitQualification.audit_step' depends on axioms: [propext]
+'Weaver.NativeExitQualification.initialized_audit' depends on axioms: [propext, sorryAx]
+'Weaver.NativeExitQualification.completion_marker_is_insufficient' depends on axioms: [propext]
+'Weaver.NativeExitQualification.qualification_preserves_cleanup' does not depend on any axioms
+'Weaver.NativeExitQualification.qualification_preserves_actual_checks' does not depend on any axioms
+'Weaver.NativeExitQualification.late_natural_exit_still_fails' depends on axioms: [propext, Quot.sound]
+'Weaver.NativeExitQualification.wrong_source_is_not_qualified' does not depend on any axioms
+'Weaver.NativeExitQualification.live_handle_blocks_qualification' does not depend on any axioms
+'Weaver.NativeExitQualification.natural_pass_still_needs_gateway_policy' does not depend on any axioms

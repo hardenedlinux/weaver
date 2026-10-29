@@ -1,0 +1,2159 @@
+[
+  {
+    "path": "proofs/evidence/floor-intent-decision/itf/lateCommitAfterFenceCounterexampleTest-1.itf.json",
+    "states": 30,
+    "worker": 2,
+    "fence": 2,
+    "haveSlot": true,
+    "slot": {
+      "cut": {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 5,
+              "kind": 0
+            },
+            "id": 3
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 6,
+              "kind": 1
+            },
+            "id": 4
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 7,
+              "kind": 2
+            },
+            "id": 5
+          }
+        ],
+        "oldFloor": 1,
+        "oldService": 1,
+        "profile": 0,
+        "serial": 3
+      },
+      "fence": 1,
+      "id": 1,
+      "worker": 1
+    },
+    "accepted": [
+      {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 5,
+                "kind": 0
+              },
+              "id": 3
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 6,
+                "kind": 1
+              },
+              "id": 4
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 7,
+                "kind": 2
+              },
+              "id": 5
+            }
+          ],
+          "oldFloor": 1,
+          "oldService": 1,
+          "profile": 0,
+          "serial": 3
+        },
+        "fence": 1,
+        "id": 1,
+        "worker": 1
+      },
+      {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            }
+          ],
+          "oldFloor": 0,
+          "oldService": 0,
+          "profile": 0,
+          "serial": 1
+        },
+        "fence": 0,
+        "id": 0,
+        "worker": 0
+      }
+    ],
+    "decisions": [
+      {
+        "intent": {
+          "cut": {
+            "device": 0,
+            "driver": 0,
+            "members": [
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 1,
+                  "kind": 0
+                },
+                "id": 0
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 2,
+                  "kind": 1
+                },
+                "id": 1
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 3,
+                  "kind": 2
+                },
+                "id": 2
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 5,
+                  "kind": 0
+                },
+                "id": 3
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 6,
+                  "kind": 1
+                },
+                "id": 4
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 7,
+                  "kind": 2
+                },
+                "id": 5
+              }
+            ],
+            "oldFloor": 1,
+            "oldService": 1,
+            "profile": 0,
+            "serial": 3
+          },
+          "fence": 1,
+          "id": 1,
+          "worker": 1
+        },
+        "kind": 1
+      },
+      {
+        "intent": {
+          "cut": {
+            "device": 0,
+            "driver": 0,
+            "members": [
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 1,
+                  "kind": 0
+                },
+                "id": 0
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 2,
+                  "kind": 1
+                },
+                "id": 1
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 3,
+                  "kind": 2
+                },
+                "id": 2
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 5,
+                  "kind": 0
+                },
+                "id": 3
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 6,
+                  "kind": 1
+                },
+                "id": 4
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 7,
+                  "kind": 2
+                },
+                "id": 5
+              }
+            ],
+            "oldFloor": 1,
+            "oldService": 1,
+            "profile": 0,
+            "serial": 3
+          },
+          "fence": 1,
+          "id": 1,
+          "worker": 1
+        },
+        "kind": 2
+      },
+      {
+        "intent": {
+          "cut": {
+            "device": 0,
+            "driver": 0,
+            "members": [
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 1,
+                  "kind": 0
+                },
+                "id": 0
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 2,
+                  "kind": 1
+                },
+                "id": 1
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 3,
+                  "kind": 2
+                },
+                "id": 2
+              }
+            ],
+            "oldFloor": 0,
+            "oldService": 0,
+            "profile": 0,
+            "serial": 1
+          },
+          "fence": 0,
+          "id": 0,
+          "worker": 0
+        },
+        "kind": 1
+      }
+    ],
+    "observed": false,
+    "receipt": {
+      "intent": {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            }
+          ],
+          "oldFloor": 0,
+          "oldService": 0,
+          "profile": 0,
+          "serial": 1
+        },
+        "fence": 0,
+        "id": 0,
+        "worker": 0
+      },
+      "kind": 1
+    },
+    "floorJournal": [
+      {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          }
+        ],
+        "oldFloor": 0,
+        "oldService": 0,
+        "profile": 0,
+        "serial": 1
+      }
+    ]
+  },
+  {
+    "path": "proofs/evidence/floor-intent-decision/itf/negativeResolutionUnlockCounterexampleTest-3.itf.json",
+    "states": 31,
+    "worker": 2,
+    "fence": 2,
+    "haveSlot": false,
+    "slot": {
+      "cut": {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 5,
+              "kind": 0
+            },
+            "id": 3
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 6,
+              "kind": 1
+            },
+            "id": 4
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 7,
+              "kind": 2
+            },
+            "id": 5
+          }
+        ],
+        "oldFloor": 1,
+        "oldService": 1,
+        "profile": 0,
+        "serial": 3
+      },
+      "fence": 1,
+      "id": 1,
+      "worker": 1
+    },
+    "accepted": [
+      {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 5,
+                "kind": 0
+              },
+              "id": 3
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 6,
+                "kind": 1
+              },
+              "id": 4
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 7,
+                "kind": 2
+              },
+              "id": 5
+            }
+          ],
+          "oldFloor": 1,
+          "oldService": 1,
+          "profile": 0,
+          "serial": 3
+        },
+        "fence": 1,
+        "id": 1,
+        "worker": 1
+      },
+      {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            }
+          ],
+          "oldFloor": 0,
+          "oldService": 0,
+          "profile": 0,
+          "serial": 1
+        },
+        "fence": 0,
+        "id": 0,
+        "worker": 0
+      }
+    ],
+    "decisions": [
+      {
+        "intent": {
+          "cut": {
+            "device": 0,
+            "driver": 0,
+            "members": [
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 1,
+                  "kind": 0
+                },
+                "id": 0
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 2,
+                  "kind": 1
+                },
+                "id": 1
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 3,
+                  "kind": 2
+                },
+                "id": 2
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 5,
+                  "kind": 0
+                },
+                "id": 3
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 6,
+                  "kind": 1
+                },
+                "id": 4
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 7,
+                  "kind": 2
+                },
+                "id": 5
+              }
+            ],
+            "oldFloor": 1,
+            "oldService": 1,
+            "profile": 0,
+            "serial": 3
+          },
+          "fence": 1,
+          "id": 1,
+          "worker": 1
+        },
+        "kind": 2
+      },
+      {
+        "intent": {
+          "cut": {
+            "device": 0,
+            "driver": 0,
+            "members": [
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 1,
+                  "kind": 0
+                },
+                "id": 0
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 2,
+                  "kind": 1
+                },
+                "id": 1
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 3,
+                  "kind": 2
+                },
+                "id": 2
+              }
+            ],
+            "oldFloor": 0,
+            "oldService": 0,
+            "profile": 0,
+            "serial": 1
+          },
+          "fence": 0,
+          "id": 0,
+          "worker": 0
+        },
+        "kind": 1
+      }
+    ],
+    "observed": true,
+    "receipt": {
+      "intent": {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 5,
+                "kind": 0
+              },
+              "id": 3
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 6,
+                "kind": 1
+              },
+              "id": 4
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 7,
+                "kind": 2
+              },
+              "id": 5
+            }
+          ],
+          "oldFloor": 1,
+          "oldService": 1,
+          "profile": 0,
+          "serial": 3
+        },
+        "fence": 1,
+        "id": 1,
+        "worker": 1
+      },
+      "kind": 2
+    },
+    "floorJournal": [
+      {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          }
+        ],
+        "oldFloor": 0,
+        "oldService": 0,
+        "profile": 0,
+        "serial": 1
+      }
+    ]
+  },
+  {
+    "path": "proofs/evidence/floor-intent-decision/itf/oldWorkerReceiptRelabelCounterexampleTest-4.itf.json",
+    "states": 31,
+    "worker": 2,
+    "fence": 2,
+    "haveSlot": true,
+    "slot": {
+      "cut": {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 5,
+              "kind": 0
+            },
+            "id": 3
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 6,
+              "kind": 1
+            },
+            "id": 4
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 7,
+              "kind": 2
+            },
+            "id": 5
+          }
+        ],
+        "oldFloor": 1,
+        "oldService": 1,
+        "profile": 0,
+        "serial": 3
+      },
+      "fence": 1,
+      "id": 1,
+      "worker": 1
+    },
+    "accepted": [
+      {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 5,
+                "kind": 0
+              },
+              "id": 3
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 6,
+                "kind": 1
+              },
+              "id": 4
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 7,
+                "kind": 2
+              },
+              "id": 5
+            }
+          ],
+          "oldFloor": 1,
+          "oldService": 1,
+          "profile": 0,
+          "serial": 3
+        },
+        "fence": 1,
+        "id": 1,
+        "worker": 1
+      },
+      {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            }
+          ],
+          "oldFloor": 0,
+          "oldService": 0,
+          "profile": 0,
+          "serial": 1
+        },
+        "fence": 0,
+        "id": 0,
+        "worker": 0
+      }
+    ],
+    "decisions": [
+      {
+        "intent": {
+          "cut": {
+            "device": 0,
+            "driver": 0,
+            "members": [
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 1,
+                  "kind": 0
+                },
+                "id": 0
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 2,
+                  "kind": 1
+                },
+                "id": 1
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 3,
+                  "kind": 2
+                },
+                "id": 2
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 5,
+                  "kind": 0
+                },
+                "id": 3
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 6,
+                  "kind": 1
+                },
+                "id": 4
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 1,
+                  "generation": 7,
+                  "kind": 2
+                },
+                "id": 5
+              }
+            ],
+            "oldFloor": 1,
+            "oldService": 1,
+            "profile": 0,
+            "serial": 3
+          },
+          "fence": 1,
+          "id": 1,
+          "worker": 1
+        },
+        "kind": 1
+      },
+      {
+        "intent": {
+          "cut": {
+            "device": 0,
+            "driver": 0,
+            "members": [
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 1,
+                  "kind": 0
+                },
+                "id": 0
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 2,
+                  "kind": 1
+                },
+                "id": 1
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 3,
+                  "kind": 2
+                },
+                "id": 2
+              }
+            ],
+            "oldFloor": 0,
+            "oldService": 0,
+            "profile": 0,
+            "serial": 1
+          },
+          "fence": 0,
+          "id": 0,
+          "worker": 0
+        },
+        "kind": 1
+      }
+    ],
+    "observed": true,
+    "receipt": {
+      "intent": {
+        "cut": {
+          "device": -1,
+          "driver": -1,
+          "members": [],
+          "oldFloor": -1,
+          "oldService": -1,
+          "profile": -1,
+          "serial": -1
+        },
+        "fence": -1,
+        "id": -1,
+        "worker": -1
+      },
+      "kind": 1
+    },
+    "floorJournal": [
+      {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 5,
+              "kind": 0
+            },
+            "id": 3
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 6,
+              "kind": 1
+            },
+            "id": 4
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 7,
+              "kind": 2
+            },
+            "id": 5
+          }
+        ],
+        "oldFloor": 1,
+        "oldService": 1,
+        "profile": 0,
+        "serial": 3
+      },
+      {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          }
+        ],
+        "oldFloor": 0,
+        "oldService": 0,
+        "profile": 0,
+        "serial": 1
+      }
+    ]
+  },
+  {
+    "path": "proofs/evidence/floor-intent-decision/itf/rollbackDecisionPrefixCounterexampleTest-2.itf.json",
+    "states": 32,
+    "worker": 1,
+    "fence": 1,
+    "haveSlot": false,
+    "slot": {
+      "cut": {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 5,
+              "kind": 0
+            },
+            "id": 3
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 6,
+              "kind": 1
+            },
+            "id": 4
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 7,
+              "kind": 2
+            },
+            "id": 5
+          }
+        ],
+        "oldFloor": 1,
+        "oldService": 1,
+        "profile": 0,
+        "serial": 3
+      },
+      "fence": 1,
+      "id": 1,
+      "worker": 1
+    },
+    "accepted": [
+      {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 5,
+                "kind": 0
+              },
+              "id": 3
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 6,
+                "kind": 1
+              },
+              "id": 4
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 7,
+                "kind": 2
+              },
+              "id": 5
+            }
+          ],
+          "oldFloor": 1,
+          "oldService": 1,
+          "profile": 0,
+          "serial": 3
+        },
+        "fence": 1,
+        "id": 1,
+        "worker": 1
+      },
+      {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            }
+          ],
+          "oldFloor": 0,
+          "oldService": 0,
+          "profile": 0,
+          "serial": 1
+        },
+        "fence": 0,
+        "id": 0,
+        "worker": 0
+      }
+    ],
+    "decisions": [],
+    "observed": false,
+    "receipt": {
+      "intent": {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 5,
+                "kind": 0
+              },
+              "id": 3
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 6,
+                "kind": 1
+              },
+              "id": 4
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 7,
+                "kind": 2
+              },
+              "id": 5
+            }
+          ],
+          "oldFloor": 1,
+          "oldService": 1,
+          "profile": 0,
+          "serial": 3
+        },
+        "fence": 1,
+        "id": 1,
+        "worker": 1
+      },
+      "kind": 1
+    },
+    "floorJournal": [
+      {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 5,
+              "kind": 0
+            },
+            "id": 3
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 6,
+              "kind": 1
+            },
+            "id": 4
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 7,
+              "kind": 2
+            },
+            "id": 5
+          }
+        ],
+        "oldFloor": 1,
+        "oldService": 1,
+        "profile": 0,
+        "serial": 3
+      },
+      {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          }
+        ],
+        "oldFloor": 0,
+        "oldService": 0,
+        "profile": 0,
+        "serial": 1
+      }
+    ]
+  },
+  {
+    "path": "proofs/evidence/floor-intent-decision/itf/timeoutUnlockCounterexampleTest-0.itf.json",
+    "states": 30,
+    "worker": 1,
+    "fence": 1,
+    "haveSlot": false,
+    "slot": {
+      "cut": {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 5,
+              "kind": 0
+            },
+            "id": 3
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 6,
+              "kind": 1
+            },
+            "id": 4
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 1,
+              "generation": 7,
+              "kind": 2
+            },
+            "id": 5
+          }
+        ],
+        "oldFloor": 1,
+        "oldService": 1,
+        "profile": 0,
+        "serial": 3
+      },
+      "fence": 1,
+      "id": 1,
+      "worker": 1
+    },
+    "accepted": [
+      {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 5,
+                "kind": 0
+              },
+              "id": 3
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 6,
+                "kind": 1
+              },
+              "id": 4
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 1,
+                "generation": 7,
+                "kind": 2
+              },
+              "id": 5
+            }
+          ],
+          "oldFloor": 1,
+          "oldService": 1,
+          "profile": 0,
+          "serial": 3
+        },
+        "fence": 1,
+        "id": 1,
+        "worker": 1
+      },
+      {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            }
+          ],
+          "oldFloor": 0,
+          "oldService": 0,
+          "profile": 0,
+          "serial": 1
+        },
+        "fence": 0,
+        "id": 0,
+        "worker": 0
+      }
+    ],
+    "decisions": [
+      {
+        "intent": {
+          "cut": {
+            "device": 0,
+            "driver": 0,
+            "members": [
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 1,
+                  "kind": 0
+                },
+                "id": 0
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 2,
+                  "kind": 1
+                },
+                "id": 1
+              },
+              {
+                "alias": {
+                  "device": 0,
+                  "driver": 0,
+                  "epoch": 0,
+                  "generation": 3,
+                  "kind": 2
+                },
+                "id": 2
+              }
+            ],
+            "oldFloor": 0,
+            "oldService": 0,
+            "profile": 0,
+            "serial": 1
+          },
+          "fence": 0,
+          "id": 0,
+          "worker": 0
+        },
+        "kind": 1
+      }
+    ],
+    "observed": false,
+    "receipt": {
+      "intent": {
+        "cut": {
+          "device": 0,
+          "driver": 0,
+          "members": [
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 1,
+                "kind": 0
+              },
+              "id": 0
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 2,
+                "kind": 1
+              },
+              "id": 1
+            },
+            {
+              "alias": {
+                "device": 0,
+                "driver": 0,
+                "epoch": 0,
+                "generation": 3,
+                "kind": 2
+              },
+              "id": 2
+            }
+          ],
+          "oldFloor": 0,
+          "oldService": 0,
+          "profile": 0,
+          "serial": 1
+        },
+        "fence": 0,
+        "id": 0,
+        "worker": 0
+      },
+      "kind": 1
+    },
+    "floorJournal": [
+      {
+        "device": 0,
+        "driver": 0,
+        "members": [
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 1,
+              "kind": 0
+            },
+            "id": 0
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 2,
+              "kind": 1
+            },
+            "id": 1
+          },
+          {
+            "alias": {
+              "device": 0,
+              "driver": 0,
+              "epoch": 0,
+              "generation": 3,
+              "kind": 2
+            },
+            "id": 2
+          }
+        ],
+        "oldFloor": 0,
+        "oldService": 0,
+        "profile": 0,
+        "serial": 1
+      }
+    ]
+  }
+]

@@ -1,0 +1,137 @@
+#+title: Weaver Canonical Registry Proofs and Recovery Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and source boundary
+
+Run [[file:../../../dev/proofs/check_llm_canonical_registry.py][the isolated runner]]. [[file:../../../dev/proofs/lean/LlmCanonicalRegistry.lean][Lean]] wraps actual category-17 transitions and
+adds authoritative registration, unique namespaced aliases and current resolution
+gates. [[file:../../../dev/proofs/quint/LlmCanonicalRegistry.qnt][Quint]] models one admitted original origin, MCP/A2A/Client ACP aliases,
+independent visibility, registry/source changes and current original consumption.
+Its source bootstrap is a fixture; Lean supplies the actual source projection.
+
+Results: [[file:../../../dev/proofs/evidence/llm-canonical-registry/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-canonical-registry/receipt.json][receipt.json]], [[file:../../../dev/proofs/evidence/llm-canonical-registry/SHA256SUMS][SHA256SUMS]]. Preliminary diagnostics remain
+separate from acceptance. No Gateway implementation or dependency pin is changed.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| CR1 | Register only exact source origin and original | rawWireIDCannotRegisterRootTest | registration_is_original | registry.origin |
+| CR2 | Lost reply cannot replace the registration | lostRegistrationReplyCannotCreateAgainTest | registration_is_never_replaced | registry.query |
+| CR3 | Alias keys are immutable authoritative bindings | aliasCannotReplaceCanonicalTargetTest | alias_keys_cannot_rebind | registry.alias |
+| CR4 | Reconnect resolves the same canonical family | mcpReconnectKeepsOriginalFamilyTest | alias_targets_original_family | protocols.mcp |
+| CR5 | New remote task does not create another family | a2aNewTaskKeepsOriginalFamilyTest | aliases_resolve_registered_original | protocols.a2a |
+| CR6 | Session resume retains original pending | acpSessionResumeKeepsOriginalFamilyTest | registered_origin_retains_pending | protocols.acp |
+| CR7 | Projection recovery cannot assign authority | oldSnapshotProjectionCannotResetLedgerTest | projection_restore_never_assigns_authority | recovery.projection |
+| CR8 | Missing authoritative identity projection closes use | missingProjectionCannotResolveTest | missing_registry_projection_blocks_use | recovery.join |
+| CR9 | Owner restart rejects old resolution | oldResolutionCannotConsumeAfterOwnerRestartTest | stale_registry_fence_blocks_use | recovery.fence |
+| CR10 | Concurrent alias/registry writes reject old resolution | newAliasInvalidatesOldResolutionTest | stale_registry_revision_blocks_use | broker.cas |
+| CR11 | New valid task resolution cannot consume spent claim | freshNewTaskResolutionCannotResetClaimTest | original_claim_stays_unique | broker.claim |
+| CR12 | Unknown cost and original accounts survive aliases | unknownUsageSurvivesNewA2ATaskTest | unknown_usage_retains_hold | broker.hold |
+
+* Source-by-source comparison
+
+The [[file:../../../dev/proofs/evidence/llm-canonical-registry/source-review.json][POO Flow / Cedar register]], [[file:../../../dev/proofs/evidence/llm-canonical-registry/asp-source-review.json][ASP register]] and [[file:../../../dev/proofs/evidence/llm-canonical-registry/agentgateway-source-review.json][agentgateway register]] retain exact
+pinned source blobs and freshly verified excerpts. [[file:../../../dev/proofs/evidence/llm-canonical-registry/protocol-sources.json][Protocol references]] record the
+selected official MCP/A2A/Client ACP material and its architectural evidence scope.
+Pinned source reads and abstract models are not native protocol conformance.
+
+| Source | Actual source contract | Reuse / extension |
+|--------+------------------------+-------------------|
+| P12/P13 effect identity and strict mediation | Exact root/operation and nonce consumption; unknown outcomes retain spent state | Reuse original subject and spent-state; add durable cross-protocol origin/alias registry |
+| P15 serialized effect Host | Exact local owner and consume/delivery separation; no distributed guarantee | Reuse mediation boundary; qualify registry CAS/lookup and native persistence |
+| P17/P22 store contracts | Scheme projects typed contracts; runtime owns locking, leases, fsync, replay and repair | Preserve ownership; a store contract receipt is not a registration commit |
+| P18/P19 source-bound transaction recovery | Exact recovery membership, authority exclusivity and source authorization | Reuse source attribution; alias continuity and complete current registry/source recovery are new obligations |
+| P31 SessionAttempt | Recovery advances generation/revision and retains active work in pending obligations | Reuse pending retention; protocol session restoration is not source scheduling authority |
+| P35 context monotonicity/lineage | Identity-path generation excludes ABA only with admitted lineage and prefix authority | Scope registry revision/fence to exact namespace/current prefix; no counter-only lookup proof |
+| P43/P44 pure producer/attempt references | Frozen producer, identity, scope/source-vector/query/profile references remain inert; Host publishes by CAS | Reuse provenance material; wire IDs and producer packets cannot create a Gateway family |
+| P20/P33 occurrence/budget separation | Runtime exactly-once and deterministic cost closure carry explicit evidence premises | No new-task or reconnect refund; protocol completion does not resolve unknown usage |
+| C8 BoundOperation | Host authenticates actual effect/state and binds eventual execution; equality alone is insufficient | Authenticate origin, alias continuity and final actual operation, not client-supplied canonical labels |
+| C10/C11 authorization composition | Every required layer must allow without errors; input alignment is explicit | Registration, alias binding and use require actual current operations and aligned source state |
+| ASP README and query projection | Shared semantic schemas/provider provenance, source fingerprint and exact read locators; no mutation authority in query projection | Reuse exact source evidence; source digest alone is neither canonical operation identity nor an execution grant |
+| Agentgateway controllers/conversion | Cloud-native reconciliation and provider integration patterns | Retain Go ecosystem roles while Rust owns canonical registry and protected egress |
+
+* Composition and proof premises
+
+=continuation_projection= maps authoritative alias admission to an actual
+category-17 =bindAlias= and every source mutation to its actual prior transition.
+Bootstrap cannot publish, choose a winner, consume, settle or admit an unregistered
+alias around the new gate. Original registration requires actual staged origin and
+exact source binding, rather than a raw protocol locator.
+
+The registry invariant binds the single committed registration to the admitted
+origin/original, every authoritative alias to that exact registration and normalized
+subject, and all alias keys pairwise distinctly. Registration is never replaced.
+Whenever registration exists, the actual original remains staged. Resolution and
+projection restoration cannot assign execution state. Final-use gates reject old
+registry revision/fence; the full source cut and actual source transitions preserve
+original claim, profile, domains, allowance, winner and unknown-usage settlement.
+
+The admitted =expected= key and =owner.originValid= are source-issued origin
+contracts. The proof does not derive semantic intent continuity from prompts or
+wire IDs. Native enrollment must enforce origin uniqueness and authentic complete
+namespaces. Canonical family classification must agree with that enrollment;
+continuity, durable registration/alias receipts, current reads, recovery and actual
+operation binding are explicit owner predicates. Treating those predicates as
+caller-provided labels would invalidate the native refinement.
+
+The model covers one origin and arbitrary finite alias lists. Global multi-origin
+allocation, delegated-principal migration, cryptographic proofs, native storage
+consensus, wire parsers/authentication, real-time leases, remote exactly-once and
+liveness are not proved. Whole-authority rollback violates the non-rollback
+premise. Native fast-path optimizations need equivalent scoped currentness laws.
+
+* Executable counterexamples
+
+| Missing contract | Negative control | Observable violation |
+|------------------+------------------+----------------------|
+| Authoritative registration lookup | lostRegistrationRegistryCounterexampleTest | Empty local projection creates a second registration/family |
+| Immutable full alias key | aliasRebindRegistryCounterexampleTest | Same key maps to a different original root |
+| New-task continuity to original origin | newTaskFamilyRegistryCounterexampleTest | New A2A task receives a new family after unknown original consumption |
+| Registry/source recovery separation | snapshotRollbackRegistryCounterexampleTest | Restored identity snapshot resets an already spent source ledger |
+| Current registry owner fence | oldOwnerRegistryCounterexampleTest | Actually issued old resolution is used after registry owner restart |
+| Current registry revision | staleResolutionRegistryCounterexampleTest | New alias admission leaves an old resolution incorrectly usable |
+| Original claim/unknown hold | claimResetRegistryCounterexampleTest | New admitted alias resets original spent-state and hold |
+| Pending-intent recovery | droppedPendingRegistryCounterexampleTest | Recovered registry hides or drops the original pending source intent |
+
+Unsafe actions are excluded from =step=. [[file:../../../dev/proofs/evidence/llm-canonical-registry/itf][ITF traces]] are independently decoded.
+Old-resolution controls must show actual prior issuance. Fresh-resolution positive
+controls must establish the new receipt passes identity currentness before checking
+that original spent/history constraints still reject the actual use.
+
+* Native acceptance
+
+Lose replies after origin/alias CAS; query exact authoritative keys and full bodies.
+Race concurrent registration/binding with identity/source restart, Policy/history
+changes and actual consumption. Restore origin, alias, pending, winner and source
+ledger projections independently. Keep old callbacks and issued resolution receipts
+alive. Reject duplicate/rebound keys, foreign tenant/principal/issuer/profile and
+stale incarnation; require authenticated continuity for new MCP/A2A/ACP locators.
+
+Verify fresh valid resolutions cannot reset original spent claims or bypass original
+history denial. Preserve unknown holds and the original pending/winner through all
+resume paths. Capture native source-bound current-prefix receipts and separate
+wire-interoperability tests. These acceptance obligations are not satisfied merely
+by passing this abstract model.
+
+* Local validation result
+
+The runner completed 26 command routes: 15 Lean modules, Quint typechecking,
+49 scenario controls (41 guarded cases and eight negative controls), focused
+exported counterexamples, seven sampling routes and 42 category-17 regression
+controls. Each sampling route used ten samples and at most 30 post-initializer
+steps with seed 191. These 70 samples are bounded simulation, not exhaustive
+temporal verification.
+
+The new Lean module checked 21 printed declarations without =sorryAx=. Twelve
+four-artifact rows resolve to passing Quint controls, printed Lean statements
+and core D2 nodes. Three fresh-resolution controls first assert that the exact
+issued receipt passes current identity admission, then verify that original
+spent-state or history denial rejects the actual operation. Independent trace
+decoding checks the eight faults and actual prior old-resolution issuance.
+
+Source review freshly verifies 33 pinned blobs across POO Flow, Cedar, ASP and
+agentgateway, plus the three selected official protocol references. Native
+multi-origin CAS, authenticated recovery, task-to-child mapping and wire
+conformance remain separate acceptance obligations.

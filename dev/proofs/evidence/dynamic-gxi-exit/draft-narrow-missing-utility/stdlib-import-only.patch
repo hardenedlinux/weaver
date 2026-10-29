@@ -1,0 +1,56 @@
+--- installed/std/text/parser/ll1.ss
++++ isolated/std/text/parser/ll1.ss
+@@ -16,7 +16,8 @@
+ (import
+   (for-syntax :std/number/misc)
+   :std/error
+-  :std/io
++  :std/io/interface
++  :std/io/bio/api
+   (only-in :std/text/parser/base ParseError? raise-parse-error)
+   :std/iter
+   :std/vector/u8vector
+--- installed/std/encoding/json/reader.ss
++++ isolated/std/encoding/json/reader.ss
+@@ -2,7 +2,7 @@
+ ;;; © vyzo
+ ;;; json reader
+ (import :std/error
+-        :std/io
++        :std/io/interface
+         :std/io/bio/api
+         :std/list/walist
+         :std/encoding/hex
+--- installed/std/encoding/json/writer.ss
++++ isolated/std/encoding/json/writer.ss
+@@ -2,7 +2,7 @@
+ ;;; © vyzo
+ ;;; json writer
+ (import :std/error
+-        :std/io
++        :std/io/interface
+         :std/serde/serialize
+         :std/format
+         :std/format/ioutil
+--- installed/std/encoding/json/io.ss
++++ isolated/std/encoding/json/io.ss
+@@ -1,7 +1,7 @@
+ ;;; -*- Gerbil -*-
+ ;;; © vyzo
+ ;;; json io interface
+-(import :std/io
++(import :std/io/interface
+         :std/io/bio/api
+         ./env
+         ./writer
+--- installed/std/encoding/json/util.ss
++++ isolated/std/encoding/json/util.ss
+@@ -3,7 +3,7 @@
+ ;;; json utilities
+ (import :std/error
+         :std/format/ioutil
+-        :std/io
++        :std/io/interface
+         :std/io/bio/api
+         :std/iter
+         :std/list/alist

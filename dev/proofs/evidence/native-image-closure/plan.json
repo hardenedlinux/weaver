@@ -1,0 +1,18 @@
+{
+  "gateSeconds": 15,
+  "terminateNativeChild": false,
+  "sourceFixture": "Exact original interpreted native-authoring.ss; eleven checks and real duplicate-key rejection",
+  "objects": "238 admitted pure modules; 98 verified reused official objects plus 140 freshly compiled lowered Scheme units",
+  "exclusions": "22 C/FFI-token units stay on unchanged installed/fallback paths; no security or cleanup suppression",
+  "candidate": "Export-conflict-colored shared images; original dlsym linker entries scoped to image handles",
+  "control": "Same 238 objects; previous directory partition for the original 98 plus 140 independent images",
+  "blocks": [["control", "candidate"], ["candidate", "control"], ["candidate", "control"], ["control", "candidate"]],
+  "uses": ["first", "repeat"],
+  "matrixSamples": 16,
+  "identity": "Fresh selected-image paths/inodes and unique random UUIDs for each block/cell; fresh gxi process and GERBIL_PATH for every sample",
+  "coldBoundary": "Selected application image generation only. Installed runtime/foreign modules, page caches and OS service state shared/uncontrolled. Build, audit and hashing occur before timing.",
+  "acceptance": "All eight predetermined candidate samples must pass 15 seconds, source/check/decoder identity and complete tracked cleanup. Every control retained regardless of deadline. No failed first use replaced by warm pass.",
+  "ordinaryLauncherControls": "Four supplementary exact-original-script installed-outer-launcher candidate runs after the matrix; unobserved warm/shared-runtime scope, no per-handle counter claim",
+  "counterexamples": "Same-name linker symbols reject one-image merge; wrong alias-to-image binding rejected; qualified handle lookup and lazy initialization exercised separately",
+  "attribution": "Compare counts and within-block whole-process/wrapper-interval observations; no general host-independent speed ratio or all-machine-cold claim"
+}

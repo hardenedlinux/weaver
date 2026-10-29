@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/prepare_llm_publication_closure.py", line 50, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/prepare_llm_publication_closure.py", line 44, in main
+    assert normalized(m)==normalized(actualModules[m['name']]),('IR mismatch',m['name'])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('IR mismatch', 'LlmExecutorOffer')

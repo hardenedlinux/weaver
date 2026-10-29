@@ -1,0 +1,17 @@
+'Weaver.CommittedSemanticProfile.profile_retained_step' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.binding_retained_step' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.safe_step' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.initialized_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.CommittedSemanticProfile.profile_retained' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.binding_retained' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.conflicting_profile_cannot_replace' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.conflicting_binding_cannot_replace' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.resolved_binding_is_original' does not depend on any axioms
+'Weaver.CommittedSemanticProfile.resolved_node_is_assigned' does not depend on any axioms
+'Weaver.CommittedSemanticProfile.resolved_contract_is_published' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.original_record_covers_full_profile' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.external_template_cannot_replace_constraints' does not depend on any axioms
+'Weaver.CommittedSemanticProfile.node_context_cannot_be_lowered' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.original_budget_cannot_be_raised' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.actual_route_preserves_committed_capability' depends on axioms: [propext, Quot.sound]
+'Weaver.CommittedSemanticProfile.actual_semantic_use_keeps_published_schema' depends on axioms: [propext, Quot.sound]

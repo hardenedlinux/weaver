@@ -1,0 +1,137 @@
+{
+  "status": "pass",
+  "boundary": "Named-reference consistency, not semantic equivalence or native extraction",
+  "contracts": [
+    {
+      "contract": "HC1 Current CAS image",
+      "orgRule": "Compare complete authoritative view at commit",
+      "quint": [
+        "casAudit",
+        "republishedHeadRejectsOldVersionTest",
+        "lostRequestReplyBeforeCommitCanStillCommitTest",
+        "otherMessagePolicyPublicationInvalidatesJobTest",
+        "semanticTicketPublicationInvalidatesJobTest"
+      ],
+      "lean": [
+        "initialized_cas_audit",
+        "newly_committed_job_has_current_scope",
+        "initialized_read_provenance"
+      ],
+      "d2": "cloud.observe"
+    },
+    {
+      "contract": "HC2 Unique original root",
+      "orgRule": "Competing jobs cannot complete root twice",
+      "quint": [
+        "rootUnique",
+        "twoQueuedJobsHaveSingleWinnerTest"
+      ],
+      "lean": [
+        "initialized_unique_roots"
+      ],
+      "d2": "ledger.cas"
+    },
+    {
+      "contract": "HC3 Prepared is not committed",
+      "orgRule": "No projection authority from an uncommitted job",
+      "quint": [
+        "rowsCommitted",
+        "preparedIsNotProjectionAuthorityTest"
+      ],
+      "lean": [
+        "initialized_rows_are_committed",
+        "prepared_row_is_not_committed_counterexample"
+      ],
+      "d2": "ledger.rows"
+    },
+    {
+      "contract": "HC4 New fence invalidates caches",
+      "orgRule": "Restored old worker/ABA cannot reuse permit",
+      "quint": [
+        "oldWorkerCannotCommitAfterRestartTest",
+        "abaHeadPointerDoesNotRestorePermitTest"
+      ],
+      "lean": [
+        "changed_fence_clears_cached_authority",
+        "every_new_decision_rechecks_current_head"
+      ],
+      "d2": "broker.fence"
+    },
+    {
+      "contract": "HC5 Cross-store join is current",
+      "orgRule": "Projection response is not send authority",
+      "quint": [
+        "joinSound",
+        "projectionWriteAloneCannotSendTest"
+      ],
+      "lean": [
+        "new_join_requires_authentic_current_images",
+        "new_send_requires_exact_current_join"
+      ],
+      "d2": "ledger.join"
+    },
+    {
+      "contract": "HC6 Historical metadata is safe to rebuild",
+      "orgRule": "Lost row reply or rollback does not recommit root",
+      "quint": [
+        "lostProjectionReplyIsIdempotentTest",
+        "projectionRollbackDoesNotRecommitRootTest"
+      ],
+      "lean": [
+        "decisions_never_roll_back",
+        "initialized_rows_are_committed"
+      ],
+      "d2": "cloud.recover"
+    },
+    {
+      "contract": "HC7 Actual effect remains bound",
+      "orgRule": "SDK route/body changes cannot reuse allow",
+      "quint": [
+        "sendBound",
+        "payloadChangeCannotReuseDecisionTest",
+        "redirectCannotWidenSelectedRouteTest"
+      ],
+      "lean": [
+        "new_send_requires_exact_current_join"
+      ],
+      "d2": "broker.gate"
+    },
+    {
+      "contract": "HC8 Original semantic identity persists",
+      "orgRule": "New broker session does not replace claim/executor",
+      "quint": [
+        "unknownBudgetRemainsHeldAcrossRestartTest"
+      ],
+      "lean": [
+        "original_claim_and_history_survive",
+        "original_executor_survives"
+      ],
+      "d2": "semantic.intent"
+    },
+    {
+      "contract": "HC9 Original shared obligations remain",
+      "orgRule": "No automatic refund or replay after unknown result",
+      "quint": [
+        "streamReconnectCannotReclaimOriginalTest"
+      ],
+      "lean": [
+        "unknown_original_reservation_survives",
+        "shared_budget_is_bounded",
+        "nonce_consumption_once"
+      ],
+      "d2": "semantic.unknown"
+    },
+    {
+      "contract": "HC10 Code as Policy reaches final admission",
+      "orgRule": "Current effect/state and live Policy gate actual offer",
+      "quint": [
+        "policyRevocationBlocksFinalOfferTest"
+      ],
+      "lean": [
+        "actual_logical_offer_requires_broker_authority",
+        "original_claim_and_offer_once"
+      ],
+      "d2": "semantic.policy"
+    }
+  ]
+}

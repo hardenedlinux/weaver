@@ -1,0 +1,38 @@
+{
+  "generation": 0,
+  "loadpath": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-image-closure-20261020/launcher-cold/g0/aliases:/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-image-closure-20261020/lib-narrow:/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-image-closure-20261020/lib-native",
+  "privateModulePath": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-image-closure-20261020/run-launcher-cold-0",
+  "args": [
+    "/opt/homebrew/bin/gxi",
+    "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-image-closure-20261020/fixture.ss"
+  ],
+  "pid": 4643,
+  "exit": 0,
+  "seconds": 6.047005207976326,
+  "gateSeconds": 15,
+  "deadlineFailed": false,
+  "forcedExit": false,
+  "qualified": true,
+  "checks": [
+    "scheme-object-contract",
+    "native-json-contract",
+    "native-negative-ceiling",
+    "native-boolean-ceiling",
+    "native-string-ceiling",
+    "native-null-ceiling",
+    "native-unknown-authority-field",
+    "native-changed-node",
+    "native-overflow-ceiling",
+    "native-empty-targets",
+    "native-duplicate-targets"
+  ],
+  "fixtureSha256": "68a27a0b594fda7aedab994c2d230464ddb2907176e25d9b8fe5837e24203750",
+  "newUUIDs": [
+    "CD98326F-277C-4D6B-AABF-AAF3BE56DA59",
+    "6A480CDB-5F2C-42E7-BE4A-6204E75FEC2E",
+    "7B849BD1-719D-4F8B-A01C-A33636212D23",
+    "DA2506C3-E321-4496-BB68-E0529A349CA1"
+  ],
+  "handleCounterCoverage": false,
+  "coldScope": "Fresh selected image generation; installed runtime and OS caches shared"
+}

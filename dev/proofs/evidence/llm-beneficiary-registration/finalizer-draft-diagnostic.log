@@ -1,0 +1,1 @@
+Draft finalizer rejected the scalar API parse sourceSha256 as if it were the command source-hash map: AttributeError: 'str' object has no attribute 'items'. No manifest was sealed. Corrected by validating the API parse digest against the exact bundle and retaining map checks for command inputs.

@@ -1,0 +1,29 @@
+
+ Error [QNT101]: Built-in name 'tail' is redefined in module 'LlmCheckpointTruncation'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmCheckpointTruncation.qnt:35:18
+  35:   action trim(cp,tail,worker,durable)=all {c.published.length()>0,cp==latest,publicationCurrent,worker==W::view.epoch,c.blobs.contains(cp),durable,
+                       ^^^^
+
+
+ Error [QNT101]: Built-in name 'tail' is redefined in module 'LlmCheckpointTruncation'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmCheckpointTruncation.qnt:37:26
+  37:   action restore(cp,have,tail)=all {W::restoreWal((if (have) cp.basis.journal else List()).concat(tail)),
+                               ^^^^
+
+
+ Error [QNT101]: Built-in name 'tail' is redefined in module 'LlmCheckpointTruncation'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmCheckpointTruncation.qnt:39:20
+  39:   action repair(cp,tail,authentic)=all {authentic,cp==latest,if (c.published.length()>0) c.blobs.contains(cp) else true,
+                         ^^^^
+
+
+ Error [QNT101]: Built-in name 'tail' is redefined in module 'LlmCheckpointTruncation'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmCheckpointTruncation.qnt:68:54
+  68:   action step={nondet cp=Set(cp1,cp2).oneOf() nondet tail=Set(List(),List(W::f0),List(fOther),W::w.records).oneOf()
+                                                           ^^^^
+
+error: parsing failed

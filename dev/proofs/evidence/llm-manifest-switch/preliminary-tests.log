@@ -1,0 +1,94 @@
+
+  LlmManifestSwitch
+    ok C::checkpointBuildDoesNotReleaseBudgetTest passed 1 test(s)
+    ok C::unpublishedCheckpointCannotTruncateTest passed 1 test(s)
+    ok C::durableBodyRequiredBeforePublishTest passed 1 test(s)
+    ok C::publicationRequiresDurableCommitTest passed 1 test(s)
+    ok C::publicationRechecksPolicyTest passed 1 test(s)
+    ok C::lostPublishReplyBlocksTruncateTest passed 1 test(s)
+    ok C::lostPublishReplyQueriesSameRecordTest passed 1 test(s)
+    ok C::trimRetainsCompleteApplicationAndReservationTest passed 1 test(s)
+    ok C::unconsumedOriginalHoldSurvivesCheckpointTest passed 1 test(s)
+    ok C::checkpointWithoutApplicationsRejectedTest passed 1 test(s)
+    ok C::checkpointWithoutReservationConsumptionRejectedTest passed 1 test(s)
+    ok C::checkpointWithoutOriginalHoldRejectedTest passed 1 test(s)
+    ok C::checkpointBalanceOnlyCannotMatchPrefixTest passed 1 test(s)
+    ok C::rollbackBelowPublishedFloorCannotActivateTest passed 1 test(s)
+    ok C::rollbackAfterTrimRepairsLatestCheckpointTest passed 1 test(s)
+    ok C::oldWorkerCannotActivateRecoveredCheckpointTest passed 1 test(s)
+    ok C::oldWorkerCannotUseFreshTruncateReceiptTest passed 1 test(s)
+    ok C::oldCheckpointReplyCannotLowerNewFloorTest passed 1 test(s)
+    ok C::staleParentCannotRepublishTest passed 1 test(s)
+    ok C::checkpointPlusSuffixReplaysCurrentHeadTest passed 1 test(s)
+    ok C::secondCheckpointCanTrimFurtherTest passed 1 test(s)
+    ok C::missingCheckpointBodyKeepsRecoveryClosedTest passed 1 test(s)
+    ok C::queryRequiresCurrentAuthorityTest passed 1 test(s)
+    ok C::repairRequiresAuthenticPrefixTest passed 1 test(s)
+    ok C::sameCheckpointIdDifferentBodyRejectedTest passed 1 test(s)
+    ok C::trimmedWalCannotReconsumeOriginalReservationTest passed 1 test(s)
+    ok C::trimCannotDiscardUncommittedTailTest passed 1 test(s)
+    ok C::lateCandidateAfterTrimReplaysThroughSuffixTest passed 1 test(s)
+    ok C::pendingTailIsNotReplayedAsFinancialDeltaTest passed 1 test(s)
+    ok C::missingApplicationCheckpointCounterexampleTest passed 1 test(s)
+    ok C::missingReservationCheckpointCounterexampleTest passed 1 test(s)
+    ok C::unknownHoldCheckpointCounterexampleTest passed 1 test(s)
+    ok C::prepublicationTrimCheckpointCounterexampleTest passed 1 test(s)
+    ok C::lostReplyCheckpointCounterexampleTest passed 1 test(s)
+    ok C::belowFloorCheckpointCounterexampleTest passed 1 test(s)
+    ok C::suffixLossCheckpointCounterexampleTest passed 1 test(s)
+    ok C::staleParentCheckpointCounterexampleTest passed 1 test(s)
+    ok C::floorRollbackCheckpointCounterexampleTest passed 1 test(s)
+    ok C::staleOwnerReceiptCheckpointCounterexampleTest passed 1 test(s)
+    ok stagePreservesOldCopyTest passed 1 test(s)
+    ok switchRetainsBothRepresentationsTest passed 1 test(s)
+    ok lostSwitchReplyRequiresReadbackTest passed 1 test(s)
+    1) sameSwitchRetryUsesOriginalResultTest failed after 1 test(s)
+    ok readbackThenDeleteTest passed 1 test(s)
+    ok deletionInterruptionIsIdempotentTest passed 1 test(s)
+    ok crashBeforeSwitchRetainsOldCopyTest passed 1 test(s)
+    ok currentSegmentCannotDeleteTest passed 1 test(s)
+    ok staleOwnerCannotDeleteTest passed 1 test(s)
+    ok staleGenerationCannotDeleteTest passed 1 test(s)
+    ok staleParentCannotSwitchTest passed 1 test(s)
+    ok missingManifestCannotSwitchTest passed 1 test(s)
+    ok missingSegmentCannotSwitchTest passed 1 test(s)
+    ok nondurableSegmentRejectedTest passed 1 test(s)
+    ok nondurableManifestRejectedTest passed 1 test(s)
+    ok nondurableSwitchRejectedTest passed 1 test(s)
+    ok policyDenialBlocksSwitchTest passed 1 test(s)
+    ok segmentIdCannotRebindTest passed 1 test(s)
+    ok manifestIdCannotRebindTest passed 1 test(s)
+    ok unauthenticatedReadbackRejectedTest passed 1 test(s)
+    ok restartRetainsUnknownHoldTest passed 1 test(s)
+    ok pendingAckCannotActivateTest passed 1 test(s)
+    2) deleteCurrentCommittedTailRejectedTest failed after 1 test(s)
+    ok committedTailCannotDisappearTest passed 1 test(s)
+    ok beforeSwitchManifestCounterexampleTest passed 1 test(s)
+    ok interruptedDeleteManifestCounterexampleTest passed 1 test(s)
+    ok lostAckManifestCounterexampleTest passed 1 test(s)
+    ok staleOwnerManifestCounterexampleTest passed 1 test(s)
+    ok staleGenerationManifestCounterexampleTest passed 1 test(s)
+    ok rootRollbackManifestCounterexampleTest passed 1 test(s)
+    ok suffixLossManifestCounterexampleTest passed 1 test(s)
+    ok pathnameRebindManifestCounterexampleTest passed 1 test(s)
+
+  69 passing (842ms)
+  2 failed
+
+  1) sameSwitchRetryUsesOriginalResultTest:
+       Error [QNT502]: Variable m not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmManifestSwitch.qnt:35:61
+        35:   action observe(worker,authentic)=all {authentic,available(m.root),worker==C::pubView.epoch,idle,
+                                                                        ^
+    Use --seed=0x132c0263abc1fe --match=sameSwitchRetryUsesOriginalResultTest to repeat.
+  2) deleteCurrentCommittedTailRejectedTest:
+       Error [QNT502]: Variable m not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmManifestSwitch.qnt:22:26
+        22:   val safeCopy=available(m.root) and replay(m.root)==C::expanded and
+                                     ^
+    Use --seed=0x132c0263abc1fe --match=deleteCurrentCommittedTailRejectedTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 proofs/qunit/LlmManifestSwitch.qnt
+error: Tests failed

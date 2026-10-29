@@ -1,0 +1,8 @@
+{
+  "sdk": "/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk",
+  "systemStub": "/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/lib/libSystem.tbd",
+  "systemStubSha256": "d0f99b66c6fc4064e2dfc536303fa93a4fa30fb66254b6cade2961b380e99714",
+  "deploymentTarget": "14.0 (unchanged inherited value)",
+  "cCompileProfile": "Existing complete Gambit flags and native compiler; C objects unchanged by linker SDK correction",
+  "reason": "The original legacy _pow import resolves with this preexisting workspace SDK; no unresolved dynamic lookup, renamed ABI, global SDK setting or dependency pin change"
+}

@@ -1,0 +1,38 @@
+dev/proofs/lean/ProviderRpc.lean:100:17: error: unexpected token 'open'; expected '_' or identifier
+dev/proofs/lean/ProviderRpc.lean:100:21: error: unexpected token ':'; expected 'scoped' or identifier
+dev/proofs/lean/ProviderRpc.lean:102:21: error: unexpected token ':'; expected 'scoped' or identifier
+dev/proofs/lean/ProviderRpc.lean:104:21: error: unexpected token ':'; expected 'scoped' or identifier
+dev/proofs/lean/ProviderRpc.lean:112:67: error: Function expected at
+  LaneStep
+but this term has type
+  ?m.3
+
+Note: Expected a function because this term is being applied to the argument
+  limit
+
+Hint: The identifier `LaneStep` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+dev/proofs/lean/ProviderRpc.lean:117:17: error: unexpected token 'open'; expected '_' or identifier
+dev/proofs/lean/ProviderRpc.lean:117:21: error: unexpected token ':'; expected 'scoped' or identifier
+dev/proofs/lean/ProviderRpc.lean:119:31: error: unexpected token '('; expected 'scoped' or identifier
+dev/proofs/lean/ProviderRpc.lean:123:47: error: Function expected at
+  LaneStep
+but this term has type
+  ?m.7
+
+Note: Expected a function because this term is being applied to the argument
+  limit
+
+Hint: The identifier `LaneStep` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+'Weaver.ProviderRpc.lane_step_preserves_bounds' depends on axioms: [sorryAx]
+dev/proofs/lean/ProviderRpc.lean:128:14: error(lean.unknownIdentifier): Unknown constant `execution_saturation_preserves_publication_admission`
+'Weaver.ProviderRpc.execution_and_admission_composition' depends on axioms: [sorryAx]
+'Weaver.ProviderRpc.safe_step' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.safe_run' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.stale_authority_cannot_pass' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.consumed_unknown_retains_original_hold' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.new_rpc_nonce_cannot_select_fresh_state' does not depend on any axioms
+'Weaver.ProviderRpc.arrow_cannot_weaken_row_authority' does not depend on any axioms
+'Weaver.ProviderRpc.every_arrow_row_requires_authority' does not depend on any axioms
+'Weaver.ProviderRpc.shared_name_is_not_key_authority' does not depend on any axioms
+'Weaver.ProviderRpc.execution_and_encoding_composition' depends on axioms: [propext, Quot.sound]
+

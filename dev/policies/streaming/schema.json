@@ -1,0 +1,304 @@
+{
+  "Weaver": {
+    "entityTypes": {
+      "Principal": {
+        "shape": {
+          "type": "Record",
+          "attributes": {}
+        }
+      },
+      "Target": {
+        "shape": {
+          "type": "Record",
+          "attributes": {}
+        }
+      }
+    },
+    "actions": {
+      "admitMessage": {
+        "appliesTo": {
+          "principalTypes": [
+            "Principal"
+          ],
+          "resourceTypes": [
+            "Target"
+          ],
+          "context": {
+            "type": "Record",
+            "attributes": {
+              "family": {
+                "type": "String",
+                "required": true
+              },
+              "node": {
+                "type": "String",
+                "required": true
+              },
+              "profile": {
+                "type": "String",
+                "required": true
+              },
+              "input_digest": {
+                "type": "String",
+                "required": true
+              },
+              "destination": {
+                "type": "String",
+                "required": true
+              },
+              "message": {
+                "type": "String",
+                "required": true
+              },
+              "message_digest": {
+                "type": "String",
+                "required": true
+              },
+              "payload_digest": {
+                "type": "String",
+                "required": true
+              },
+              "ceiling": {
+                "type": "Long",
+                "required": true
+              },
+              "offset": {
+                "type": "Long",
+                "required": true
+              },
+              "length": {
+                "type": "Long",
+                "required": true
+              },
+              "payload_length": {
+                "type": "Long",
+                "required": true
+              },
+              "revision": {
+                "type": "Long",
+                "required": true
+              },
+              "fence": {
+                "type": "Long",
+                "required": true
+              }
+            }
+          }
+        }
+      },
+      "openStream": {
+        "appliesTo": {
+          "principalTypes": [
+            "Principal"
+          ],
+          "resourceTypes": [
+            "Target"
+          ],
+          "context": {
+            "type": "Record",
+            "attributes": {
+              "family": {
+                "type": "String",
+                "required": true
+              },
+              "node": {
+                "type": "String",
+                "required": true
+              },
+              "profile": {
+                "type": "String",
+                "required": true
+              },
+              "input_digest": {
+                "type": "String",
+                "required": true
+              },
+              "destination": {
+                "type": "String",
+                "required": true
+              },
+              "message": {
+                "type": "String",
+                "required": true
+              },
+              "message_digest": {
+                "type": "String",
+                "required": true
+              },
+              "payload_digest": {
+                "type": "String",
+                "required": true
+              },
+              "ceiling": {
+                "type": "Long",
+                "required": true
+              },
+              "offset": {
+                "type": "Long",
+                "required": true
+              },
+              "length": {
+                "type": "Long",
+                "required": true
+              },
+              "payload_length": {
+                "type": "Long",
+                "required": true
+              },
+              "revision": {
+                "type": "Long",
+                "required": true
+              },
+              "fence": {
+                "type": "Long",
+                "required": true
+              }
+            }
+          }
+        }
+      },
+      "resumeMessage": {
+        "appliesTo": {
+          "principalTypes": [
+            "Principal"
+          ],
+          "resourceTypes": [
+            "Target"
+          ],
+          "context": {
+            "type": "Record",
+            "attributes": {
+              "family": {
+                "type": "String",
+                "required": true
+              },
+              "node": {
+                "type": "String",
+                "required": true
+              },
+              "profile": {
+                "type": "String",
+                "required": true
+              },
+              "input_digest": {
+                "type": "String",
+                "required": true
+              },
+              "destination": {
+                "type": "String",
+                "required": true
+              },
+              "message": {
+                "type": "String",
+                "required": true
+              },
+              "message_digest": {
+                "type": "String",
+                "required": true
+              },
+              "payload_digest": {
+                "type": "String",
+                "required": true
+              },
+              "ceiling": {
+                "type": "Long",
+                "required": true
+              },
+              "offset": {
+                "type": "Long",
+                "required": true
+              },
+              "length": {
+                "type": "Long",
+                "required": true
+              },
+              "payload_length": {
+                "type": "Long",
+                "required": true
+              },
+              "revision": {
+                "type": "Long",
+                "required": true
+              },
+              "fence": {
+                "type": "Long",
+                "required": true
+              }
+            }
+          }
+        }
+      },
+      "writeRange": {
+        "appliesTo": {
+          "principalTypes": [
+            "Principal"
+          ],
+          "resourceTypes": [
+            "Target"
+          ],
+          "context": {
+            "type": "Record",
+            "attributes": {
+              "family": {
+                "type": "String",
+                "required": true
+              },
+              "node": {
+                "type": "String",
+                "required": true
+              },
+              "profile": {
+                "type": "String",
+                "required": true
+              },
+              "input_digest": {
+                "type": "String",
+                "required": true
+              },
+              "destination": {
+                "type": "String",
+                "required": true
+              },
+              "message": {
+                "type": "String",
+                "required": true
+              },
+              "message_digest": {
+                "type": "String",
+                "required": true
+              },
+              "payload_digest": {
+                "type": "String",
+                "required": true
+              },
+              "ceiling": {
+                "type": "Long",
+                "required": true
+              },
+              "offset": {
+                "type": "Long",
+                "required": true
+              },
+              "length": {
+                "type": "Long",
+                "required": true
+              },
+              "payload_length": {
+                "type": "Long",
+                "required": true
+              },
+              "revision": {
+                "type": "Long",
+                "required": true
+              },
+              "fence": {
+                "type": "Long",
+                "required": true
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

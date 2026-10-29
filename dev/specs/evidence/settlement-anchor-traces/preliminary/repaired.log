@@ -1,0 +1,11 @@
+'Weaver.SettlementAnchorRecovery.reachable_invariant' depends on axioms: [propext, Quot.sound]
+'Weaver.SettlementAnchorRecovery.accepted_and_applied_at_most_once' depends on axioms: [propext, Quot.sound]
+'Weaver.SettlementAnchorRecovery.application_has_original_settlement' depends on axioms: [propext, Quot.sound]
+'Weaver.SettlementAnchorRecovery.materialization_covered' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.SettlementAnchorRecovery.materialization_within_capacity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SettlementAnchorRecovery.unknown_application_retains_reservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.SettlementAnchorRecovery.restore_never_changes_authority' does not depend on any axioms

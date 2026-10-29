@@ -1,0 +1,85 @@
+#+TITLE: Native POO and JSON Contract Results
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* What actually ran
+A verification-only Scheme fixture loads installed compiled Core
+=schema-value-contract= and =poo-flow-json-schema-read-port= with the native Gerbil
+runtime. The same schema validates a POO object and the actual JSON-decoded
+representation. This goes beyond the earlier Python JSON/YAML fixture; it still
+does not run a Gateway compiler, a full configuration publisher or native YAML.
+
+Reuse the existing Core JSON source bridge. It requests symbol-key walists and
+projects walists/vectors into JSON-like Scheme data, avoiding a second ad hoc
+object-key conversion in Weaver. It performs decoding only; normalization,
+reference resolution, Contracts and execution admission have separate owners.
+The existing Gerbil JSON reader rejects duplicate keys before information is
+lost in a map. Preserve this behavior in any future decoder integration.
+
+* Observed contract checks
+| Input | Observed result |
+|-------+-----------------|
+| Scheme POO object | Accepted by the shared value Contract |
+| Native JSON through Core bridge | Accepted by the same value Contract |
+| Negative ceiling | Rejected |
+| Boolean ceiling | Rejected |
+| String ceiling | Rejected |
+| Null ceiling | Rejected |
+| Unknown original-authority field | Rejected |
+| Changed node outside the fixture Contract | Rejected |
+| Ceiling beyond unsigned 64-bit maximum | Rejected |
+| Empty target list | Rejected |
+| Duplicate target list | Rejected with uniqueItems |
+| Duplicate JSON object key | Decoder rejected before Contract validation |
+
+These are eleven contract assertions plus one decoder observation. The schema
+is an explicit bounded fixture, not the full public Gateway schema. A type-valid
+capability string is not an authenticated registered capability. Value membership
+does not prove normalized equality, graph membership or Policy authorization.
+
+* Natural exit is a separate failed gate
+One native run printed all eleven successful checks and the completion marker
+but did not exit within the fixed fifteen-second watchdog. Its recorded exit is
+124. Preserve that failure even though an earlier narrower fixture exited zero.
+Do not insert forced successful exit, expand the watchdog or call completed
+stdout a native pass. The timed run remains the qualification result for this
+workload until the unexplained failure is resolved.
+
+Independent version-only, JSON-only and Core-value-contract-only controls exited
+zero under the same bound. This narrows the observation to the complete workload
+or its runtime interaction; it does not identify the underlying cause. A separate
+instrumented diagnostic retains per-line elapsed times and any own-process stack
+sample, with the same bound. The instrumented run also timed out: its final completion output appeared at
+11.621 seconds and it was stopped at 15.085 seconds. Sampling was attempted but
+produced no stack artifact, so the current stack/root cause is unknown.
+Diagnostic sampling can perturb timing; the independent uninstrumented timeout
+remains the gate failure. A later isolated success would show variability, not
+prove a repair. See the raw receipts before drawing a lifecycle conclusion.
+
+An initial fixture used the obsolete =:std/text/json= module path and failed at
+import. Source inspection identified the installed =:std/encoding/json= API and
+Core's existing source bridge. Only the verification fixture changed; no runtime
+flags, dependency pin, upstream source or package installation changed.
+
+* Artifact and source boundary
+The native tests loaded pre-existing compiled Core/POO artifacts. Selected direct
+artifact hashes and installed reader/source identities are recorded after the
+observed execution. This is not an exhaustive loaded-dependency receipt, a
+before/after artifact stability proof, or a fresh exact-source Core build.
+The current source snapshot and an installed compiled library are different
+identities. Preserve the already-reviewed dirty Core configuration source.
+
+A future source qualification must compile the selected transitive Core/POO
+closure in an isolated output directory, bind source/import/runtime/artifact
+identities, execute actual Scheme and actual decoder cases, and require natural
+exit under bounded guards. Native YAML, diagnostics/default parity, bounded
+lexing, graph normalization and actual commitment verification are still open.
+No provider SDK, Rust executor or persistence test is claimed by this workload.
+
+* Evidence
+- [[file:../../../proofs/evidence/committed-profile-binding/native-authoring.ss][Native fixture]].
+- [[file:../../../proofs/evidence/committed-profile-binding/native-authoring.json][Timed native command receipt]].
+- [[file:../../../proofs/evidence/committed-profile-binding/native-natural-exit-timeout/native-authoring.log][Preserved timeout output]].
+- [[file:../../../proofs/evidence/committed-profile-binding/native-exit-controls.json][Independent exit controls]].
+- [[file:../../../proofs/evidence/committed-profile-binding/native-observed.json][Instrumented diagnostic]].
+- [[file:../../../proofs/evidence/committed-profile-binding/native-identity.json][Selected installed artifact/source observations]].

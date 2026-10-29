@@ -1,0 +1,84 @@
+{
+  "commands": [
+    {
+      "args": [
+        "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/bin/gsc",
+        "-c",
+        "-linker-name",
+        "canary.o1",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.scm"
+      ],
+      "exit": 0,
+      "seconds": 0.085
+    },
+    {
+      "args": [
+        "/opt/homebrew/bin/gcc-16",
+        "-O1",
+        "-fPIC",
+        "-foptimize-sibling-calls",
+        "-D___SINGLE_HOST",
+        "-D___INLINE_JUMPS",
+        "-D___TRUST_C_TCO",
+        "-D___CAN_IMPORT_CLIB_DYNAMICALLY",
+        "-D___CAN_IMPORT_SETJMP_DYNAMICALLY",
+        "-D___DYNAMIC",
+        "-I/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/include",
+        "-c",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary-scheme.o"
+      ],
+      "exit": 0,
+      "seconds": 0.563
+    },
+    {
+      "args": [
+        "/opt/homebrew/bin/gcc-16",
+        "-O1",
+        "-fPIC",
+        "-c",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/cleanup.c",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/cleanup.o"
+      ],
+      "exit": 0,
+      "seconds": 0.365
+    },
+    {
+      "args": [
+        "/opt/homebrew/bin/gcc-16",
+        "-bundle",
+        "-undefined",
+        "dynamic_lookup",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary-scheme.o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/cleanup.o",
+        "-isysroot",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk",
+        "-lSystem",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.o1"
+      ],
+      "exit": 0,
+      "seconds": 0.23
+    }
+  ],
+  "exit": 0,
+  "output": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.o1",
+  "objectSha256": "27ed7a5a0ef372869868eff3ba362200210c26e8eedc4034a2a28c5d1de4d5ca",
+  "sources": {
+    "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.scm": "7b11c38127f741cb1f91d3025fd0f81c0c0ba342ad8a8c8e3e8384a00fc93cb6",
+    "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/cleanup.c": "af991773fa2a96cb6a00eb65db6d21be843303a1b9bbbdffe033ea593d97d647"
+  },
+  "abiDefinitions": [
+    "-D___SINGLE_HOST",
+    "-D___INLINE_JUMPS",
+    "-D___TRUST_C_TCO",
+    "-D___CAN_IMPORT_CLIB_DYNAMICALLY",
+    "-D___CAN_IMPORT_SETJMP_DYNAMICALLY",
+    "-D___DYNAMIC"
+  ],
+  "abiOwner": "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/bin/gambuild-C"
+}

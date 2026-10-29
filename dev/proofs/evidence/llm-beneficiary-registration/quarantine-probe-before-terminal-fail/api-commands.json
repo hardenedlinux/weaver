@@ -1,0 +1,163 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 14,
+    "sourceSha256": "05b835c63b1cc3e44004a7280761415ca02c6568f3559b2be721c9242b337dd2",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.07
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "d016bbb7e45b75b4cac31ae04ecd0ce3d8a85afd43da1d289cc82959106c3d8d",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 16.658
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "sharedWorkloadCannotCreateEntitlementTest",
+      "producerApprovalRequiredTest",
+      "rootHasNoBeneficiaryAuthorityTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.277
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "sharedIdentityCannotRegisterKeyTest",
+      "forwardedBearerWithOwnKeyRejectedTest",
+      "entitlementProofRequiredTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.392
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "beneficiaryPossessionRequiredTest",
+      "substitutedSessionRejectedTest",
+      "originalScopeCannotBeRewrittenTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.679
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "firstBindingDoesNotPublishTest",
+      "lostBindingReplyRetainsFirstKeyTest",
+      "authorizedSecondKeyCannotReplaceFirstTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.708
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "oldWorkerCannotRecoverEnrollmentTest",
+      "recoveryNeedsCurrentReadPolicyTest",
+      "newRootInvalidatesPublicationReadTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.46
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "currentPolicyRequiredAtPublicationTest",
+      "changedPayloadCannotPublishTest",
+      "lostPublicationReplyRetainsExactOutcomeTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.393
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "publicationCannotRepeatTest",
+      "rootRevocationBlocksPublicationTest",
+      "rootRevocationFencesPublishedConsumptionTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.887
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "actualActivationRetainsOriginalHoldTest",
+      "lostRootReplyRetainsEnrollmentPrincipalTest",
+      "rootCannotBeReplacedAfterRecoveryTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.071
+  },
+  {
+    "label": "api-controls-8",
+    "passed": [
+      "signatureForAnotherBeneficiaryKeyRejectedTest",
+      "sourceEpochChangeInvalidatesPublicationTest",
+      "sharedIdentityRegistrationCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.57
+  },
+  {
+    "label": "api-controls-9",
+    "passed": [
+      "replacedKeyRegistrationCounterexampleTest",
+      "missingOutcomeRegistrationCounterexampleTest",
+      "splitPublicationRegistrationCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.372
+  },
+  {
+    "label": "api-controls-10",
+    "exit": 1,
+    "watchdogSeconds": 20,
+    "seconds": 0.38
+  }
+]

@@ -1,0 +1,54 @@
+
+  RuntimeAdmission
+    ok originalBindingTest passed 1 test(s)
+    1) sharedBudgetTest failed after 1 test(s)
+    ok enqueueNeverSendsTest passed 1 test(s)
+    ok consumeBeforeSendTest passed 1 test(s)
+    2) onceOnlyTest failed after 1 test(s)
+    3) restartRetainsSpentTest failed after 1 test(s)
+    ok lostReplyRetainsHoldTest passed 1 test(s)
+    4) stalePermitTest failed after 1 test(s)
+    5) guardSerializesPublicationTest failed after 1 test(s)
+    ok duplicateRetryCounterexampleTest passed 1 test(s)
+    ok unknownRefundCounterexampleTest passed 1 test(s)
+    ok cachedGuardCounterexampleTest passed 1 test(s)
+
+  7 passing (711ms)
+  5 failed
+
+  1) sharedBudgetTest:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/RuntimeAdmission.qnt:8:14
+        8:     val held=s.holds.get(0)+s.holds.get(1)
+                        ^
+    Use --seed=0x6b6e7430e2439461 --match=sharedBudgetTest to repeat.
+  2) onceOnlyTest:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/RuntimeAdmission.qnt:8:14
+        8:     val held=s.holds.get(0)+s.holds.get(1)
+                        ^
+    Use --seed=0x1d399f83b2c0cdcb --match=onceOnlyTest to repeat.
+  3) restartRetainsSpentTest:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/RuntimeAdmission.qnt:8:14
+        8:     val held=s.holds.get(0)+s.holds.get(1)
+                        ^
+    Use --seed=0x2661f22219b216cb --match=restartRetainsSpentTest to repeat.
+  4) stalePermitTest:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/RuntimeAdmission.qnt:8:14
+        8:     val held=s.holds.get(0)+s.holds.get(1)
+                        ^
+    Use --seed=0xe1f54a7be914a7c3 --match=stalePermitTest to repeat.
+  5) guardSerializesPublicationTest:
+       Error [QNT502]: Variable s not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/RuntimeAdmission.qnt:29:9
+        29:         s.lock,s.tickets.contains(k),s.qRevision.get(k)==s.revision,s.qFence.get(k)==s.fence,
+                    ^
+          at send(0) (/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/RuntimeAdmission.qnt:53:95)
+    Use --seed=0x20396caa789a0598 --match=guardSerializesPublicationTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 proofs/qunit/RuntimeAdmission.qnt
+error: Tests failed

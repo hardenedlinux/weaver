@@ -1,0 +1,29 @@
+#+title: Broker Consumption and Final Queue Index
+#+language: en
+#+options: toc:2
+
+* Johnny Decimal category
+
+Area =30-39 Assurance=; category =37 Broker consumption queue=. This category
+extends [[file:../36-gateway-head-cas/36.00-index.org][36 Gateway head CAS]] with the software boundary between durable
+consumption, queue acceptance and actual bounded write invocation. The earlier
+sealed receipt remains unchanged. This is an AI Agent Gateway logical execution
+authority design; device isolation is not a prerequisite.
+
+| ID | Artifact |
+|----+----------|
+| 37.00 | This index |
+| 37.01 | [[file:37.01-consumption-to-final-queue.org][Durable consumption to final queue design]] |
+| 37.02 | [[file:37.02-broker-consumption-queue.d2][Core D2]] / [[file:37.02-broker-consumption-queue.svg][SVG]] |
+| 37.03 | [[file:37.03-validation-evidence.org][Proof, counterexample and validation evidence]] |
+
+The [[file:../../../dev/proofs/quint/BrokerConsumptionQueue.qnt][Quint model]] executes the parent admission transition. The
+[[file:../../../dev/proofs/lean/BrokerConsumptionQueue.lean][Lean module]] proves arbitrary finite range safety and explicitly composes
+with the parent admission proof. The four-artifact table in 37.01 is checked
+against real declarations and diagram nodes. No Gateway runtime or dependency
+pin is modified.
+
+#+begin_src sh :eval never
+python3 dev/proofs/check_broker_consumption_queue.py
+python3 dev/proofs/evidence/broker-consumption-queue/check-four-artifacts.py
+#+end_src

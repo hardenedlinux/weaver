@@ -1,0 +1,25 @@
+#+TITLE: Guarded HTTPS streaming
+#+LANGUAGE: en
+
+* Workload
+
+One actual loopback HTTPS SSE request producing three response events through the guarded executor.
+
+* Measurement boundary
+
+Source admission, durable burns, cold TLS connection, bounded parsing and release guards. Fixture setup and database destruction are outside timing. No paid external inference is invoked; local TLS latency does not predict provider inference latency.
+
+* Entrypoints
+
+Run this package with =cargo bench -p weaver-execution --all-features --bench gateway --locked --offline -- --noplot=.
+Run the complete measured matrix with =go run ./go/cmd/weaver-dev bench=.
+Criterion is inherited from the workspace as a development dependency.
+Each case uses thirty samples, one second of warm-up and two seconds of requested measurement.
+Compilation or a smoke invocation alone is not a measured baseline.
+
+The Go runner retains environment logs, source hashes, fresh per-case Criterion
+data and an English Org summary. Missing cases fail artifact collection.
+Regression warnings remain evidence even when the benchmark process succeeds;
+these measurements do not establish a production latency or throughput target.
+
+See [[file:../../../docs/50-59-research-program/59-provider-rpc/59.05-benchmarks.org][the workspace benchmark contract]] for the complete matrix and interpretation rules.

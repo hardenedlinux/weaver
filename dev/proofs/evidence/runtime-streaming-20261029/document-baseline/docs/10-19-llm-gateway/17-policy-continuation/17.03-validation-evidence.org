@@ -1,0 +1,131 @@
+#+title: Weaver Policy Continuation Proofs, Counterexamples and Source Review
+#+language: en
+#+options: toc:3
+
+* Reproduction and scope
+
+Run [[file:../../../proofs/check_llm_policy_continuation.py][the isolated runner]]. [[file:../../../proofs/lean/LlmPolicyContinuation.lean][Lean]] projects every source-changing transition into
+the actual category-16 model. [[file:../../../proofs/qunit/LlmPolicyContinuation.qnt][Quint]] exercises one original family, competing
+external publications, linked candidates, current approval cuts, stable winners
+and protocol aliases. It abstracts source bootstrap behind an admitted fixture.
+
+Results: [[file:../../../proofs/evidence/llm-policy-continuation/commands.json][commands.json]], [[file:../../../proofs/evidence/llm-policy-continuation/receipt.json][receipt.json]], [[file:../../../proofs/evidence/llm-policy-continuation/SHA256SUMS][SHA256SUMS]]. Preliminary diagnostics remain
+separate from final acceptance. No Gateway code or dependency pin is changed.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| PC1 | Keep original pending intent through continuation | originalPendingIntentIsRetainedTest | original_staged_intent_is_retained | intent.original |
+| PC2 | Resolve uncertainty before declaring conflict | unknownOriginalCommitCannotBecomeConflictTest | committed_family_prevents_absence | owner.inspect |
+| PC3 | Preserve exact original semantics | changedProfileCannotContinueTest | approvals_keep_original_semantics | intent.candidate |
+| PC4 | Inspection is data, not execution authority | freshInspectionDoesNotGrantUseTest | inspection_cannot_authorize_consumption | owner.inspect |
+| PC5 | Approval must match full current cut | staleApprovalAfterLedgerWriteTest | stale_approval_cut_is_rejected | owner.approval |
+| PC6 | Owner change retires old approval | staleApprovalAfterFenceChangeTest | stale_approval_fence_is_rejected | owner.approval |
+| PC7 | At most one publication for the original family | twoApprovalsStillHaveOneWinnerTest | family_has_one_winner | result.winner |
+| PC8 | Lost winner reply cannot reopen the family | lostWinnerReplyQueriesSameDecisionTest | winner_is_never_replaced | result.query |
+| PC9 | Late acknowledgement cannot alter winner | lateAcknowledgementIsOnlyHistoryTest | current_publication_prefix_is_inherited | result.ack |
+| PC10 | Cross-protocol aliases retain canonical family | newProtocolAliasPreservesPendingTest | aliases_keep_canonical_family | intent.protocol |
+| PC11 | Interface change is not a consumption grant | unknownCostSurvivesProtocolSwitchTest | protocol_alias_is_only_data | broker.cas |
+| PC12 | Original unknown usage continues to block settlement | unknownCostSurvivesProtocolSwitchTest | unknown_usage_retains_hold | broker.hold |
+
+* Source comparison
+
+The [[file:../../../proofs/evidence/llm-policy-continuation/source-review.json][POO Flow / Cedar register]], [[file:../../../proofs/evidence/llm-policy-continuation/asp-source-review.json][ASP register]] and [[file:../../../proofs/evidence/llm-policy-continuation/agentgateway-source-review.json][agentgateway register]] identify pinned
+source blobs and checked excerpts. [[file:../../../proofs/evidence/llm-policy-continuation/protocol-sources.json][Official protocol references]] support the
+interface taxonomy in [[file:17.04-protocol-admission-and-identity.org][17.04]]. Native protocol conformance is not inferred from
+these source reads or from the abstract alias model.
+
+| Source | Observed contract | Reuse / new obligation |
+|--------+-------------------+-----------------------|
+| P12/P13 effect token and strict mediation | Pure exact-root consumption retains spent-state for unknown outcomes | Reuse original subject and unknown obligations; add canonical family resolution before continuation |
+| P15 local effect Host | Exact serialized owner, no distributed durability claim | Reuse owner boundary; family winner and source publication need native atomic qualification |
+| P17/P22 runtime store contracts | Scheme projects store contracts; runtime owns storage/leases/fsync/replay/repair | Preserve responsibility split; durable approval and family index are runtime extensions |
+| P18 recovery transaction | Matching recovery claims and authority exclusivity are explicit predicates | Reuse exact recovery membership; extend from individual attempt to original intent family |
+| P19 authorized recovery bridge | Source-linked authority path and authorization evidence | Reauthorize actual candidate under current source, rather than replaying old approval |
+| P31 SessionAttempt | Recovery preserves active work as pending obligations while advancing generation/revision | Reuse pending retention and exact attempt; no proof of native family publication is inherited |
+| P35 authority monotonicity and prefix lineage | Anti-ABA generation applies on an admitted identity path; prefix/fork freedom requires authority evidence | Bind inspection and approval to exact current prefix, identity and fence |
+| P43/P44 pure attempt objects | Frozen scheduling proposals remain inert; Host resolves producer receipts and publishes by CAS | Reuse staged semantic references; continuation links, canonical root classification and winner CAS remain extensions |
+| P20/P33 runtime occurrence and budget separation | Exactly-once and budget closure require runtime premises | No inference of remote exactly-once, timeout refund or completed settlement |
+| C8 BoundOperation | Actual effect/state equality is not authentication; Host must bind actual execution | Authenticate original, candidate and complete current publication context |
+| C10/C11 authorization composition | Required layers all Allow without errors; validation/evaluation alignment is explicit | Recheck actual continuation/publication inputs; no native transaction proof is imported |
+| ASP README / semantic query projection | Shared semantic schemas/provider contracts; source fingerprints and exact read locators; query projection does not own mutation authority | Reuse semantic provenance; ASP packets/expansion actions are not Gateway grants |
+| Agentgateway conversion/controller sources | Provider and cloud-native integration roles | Reuse adapter ecosystem; wire IDs and lifecycle callbacks do not allocate canonical intent families |
+
+* Proof composition and explicit premises
+
+=WinnerSafe= relates every committed family publication to exactly the same
+stable winner and requires that winner to exist in the source log. The proof
+excludes a second family publication, including after response loss. Source
+publication remains an actual category-16 step, so its parent/fence/current-Policy
+checks and durable-prefix laws still apply. Every approval retains the original
+semantic tuple, and every admitted alias names the original canonical family.
+
+The source projection retains original claim uniqueness, profile interpretation,
+allowance, account domains and unknown-usage settlement constraints. Original
+staged membership survives every source-changing step. Neither inspection nor
+alias registration modifies execution authority.
+
+The immutable =original= parameter and =owner.familyOf= represent authenticated
+canonical source registration. Their correct native issuer/tenant/operation
+binding is an explicit premise; a caller-controlled family classifier would
+invalidate this proof. Qualified complete-family absence, current reauthorization,
+durable approval, alias authentication and non-rollback source/winner persistence
+are also owner contracts. Atomic family-winner/source publication is a required
+native refinement, not an implemented distributed transaction.
+
+The alias model checks identity/effect separation for protocol tags. It does not
+verify MCP/A2A/ACP/AG-UI/ASP wire schemas, parsers, transport authentication,
+OAuth, client permissions or event delivery. Those require independent adapter
+acceptance. No liveness, full multi-tenant/multi-domain product, native storage,
+remote exactly-once or performance claim is made.
+
+* Executable negative controls
+
+| Missing contract | Counterexample | Observable violation |
+|------------------+----------------+----------------------|
+| Fresh reauthorization before continuation | silentRebaseContinuationCounterexampleTest | New parent accepts old intent with no valid continuation authorization |
+| Complete-family lookup after reply loss | lostWinnerContinuationCounterexampleTest | Original already committed but a second family attempt is published |
+| Family closure through approval and publication | doubleContinuationContinuationCounterexampleTest | Later linked attempt publishes after a winner exists |
+| Full current approval cut | staleApprovalContinuationCounterexampleTest | Old approval survives an execution revision change |
+| Same original semantics | semanticSwapContinuationCounterexampleTest | Linked candidate changes original profile |
+| Historical confirmation is data | lateAckContinuationCounterexampleTest | Old winner acknowledgement restores Allow and a real old permit bypasses newer Deny |
+| Canonical identity across protocols | protocolResetContinuationCounterexampleTest | A2A alias resets original spent-state/unknown hold |
+| Pending-intent retention | droppedIntentContinuationCounterexampleTest | Original staged intent disappears after candidate approval |
+
+Unsafe actions are excluded from =step=. [[file:../../../proofs/evidence/llm-policy-continuation/itf][ITF traces]] are independently decoded;
+old-permit evidence must show actual earlier issuance and a newer committed Deny.
+A negative control can deliberately remove a linked pair of enforcement guards;
+it does not demonstrate that removing any unrelated single guard is sufficient.
+
+* Native acceptance
+
+Race original/candidate publication with competing families, current authorization
+changes, ledger writes and owner restart. Lose replies at candidate staging,
+approval and final winner/publication commit. Query by the full canonical family
+and exact payload; do not classify unknown as conflict from local absence. Keep
+old worker handles and queued confirmations alive. Restore independent producer,
+approval, winner and source-log projections; require exact current-prefix recovery.
+
+Exercise MCP reconnect, A2A task recreation/stream resubscription, ACP session
+resume and AG-UI replay against the same original claim, family and account domains.
+Verify forged/new protocol IDs cannot create a family, erase original pending or
+refund unknown work. Preserve parser/source fingerprints for ASP read proposals.
+Collect source-bound native receipts separately from abstract proof acceptance.
+
+* Local validation result
+
+The runner checks 25 command routes: 14 Lean modules, Quint typechecking,
+42 scenario controls (34 guarded cases and eight negative controls), focused
+exported counterexamples, seven sampling routes and 45 category-16 regression
+controls. Each sampling route uses ten samples and at most 30 post-initializer
+steps with seed 181. These 70 samples are bounded simulation, not exhaustive
+temporal verification.
+
+The new Lean module checks 18 printed declarations without =sorryAx=. Twelve
+four-artifact rows resolve to passing Quint cases, printed Lean statements and
+core D2 nodes. Independent trace decoding checks actual staged candidates, the
+existing winner hidden by reply loss, and the real old permit followed by newer
+Deny. Source review includes 33 pinned blobs across POO Flow, Cedar, agentgateway
+and ASP, plus seven official protocol references for the interface taxonomy.
+Native storage and protocol conformance remain separate acceptance obligations.

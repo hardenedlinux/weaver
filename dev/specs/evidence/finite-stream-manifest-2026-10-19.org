@@ -1,0 +1,237 @@
+#+title: Finite Stream Manifest Formal Validation Receipt
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS final-abstract-checks-passed-larger-sampling-incomplete-physical-refinement-pending
+#+options: toc:2
+
+* Identity and exact scope
+
+Workspace =main= at =4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=.
+Architecture/specification files remain untracked local work. No commit/push,
+gateway implementation, owner-package edit or dependency-pin change was made.
+The earlier proof files and receipts retain their historical identities.
+
+| Artifact | SHA-256 |
+|----------+---------|
+| [[file:../lean/FiniteStreamManifest.lean][FiniteStreamManifest.lean]] | =8f54e3c5fa5417258dc42bd03de0e3f71cedd04c743bd6d0728435210330fd9c= |
+| [[file:../quint/FiniteStreamManifest.qnt][FiniteStreamManifest.qnt]] | =83822adeff7babaf61c70ba1e61df3389cc32145c237bb67677121f7a1ad21bc= |
+| [[file:manifest-traces/candidate-before-retirement.qnt][candidate-before-retirement.qnt]] | =80969bbd4db9be257100c84e47e869f1fa1a739f04100057ce257f12e1fb7779= |
+| [[file:manifest-traces/candidate-before-stream-exclusion.qnt][candidate-before-stream-exclusion.qnt]] | =913b16ac5857aaf62f00cee8217edff1099df9eedfad4bdb684bb02970fb1f25= |
+| [[file:manifest-traces/ComposedGatewayLifecycle.qnt][ComposedGatewayLifecycle.qnt]] | =9ca44e3ab83115b3f0fb4284dd33f0f64fcc4a25667a4727c363dd35fd273d43= |
+
+The first two files are normative current artifacts. The last three retain two earlier Quint candidates and their exact imported
+coordinator for the sampling/diagnostic records below. Their directory preserves the
+relative import, so the archived candidate remains independently runnable.
+It is evidence history, not another active gateway or normative specification.
+
+Five imported Lean modules were rebuilt from their current source into isolated
+/private/tmp/weaver-manifest-proof: LogicalMessageAuthority, SharedMessageBudget,
+FiniteDomainMigration, AnchoredRecoveryAndEgress and ComposedGatewayLifecycle.
+All five returned exit zero before checking the new consumer. It imports the
+actual coordinator and original finite-ledger contracts, not cedar-poo-spec or
+POO Flow native libraries. No source/native refinement follows from compilation.
+
+The [[file:../../../docs/architecture/21-finite-stream-manifest-proof.org][dossier]] separates validated manifest input, exact event projection,
+Code as Policy integration, driver ownership, complete durable recovery and
+physical acceptance. The selected abstract message-offer boundary is protected
+broker acceptance; a full-body autonomous upstream call cannot be retroactively
+refined into still-unoffered ranges.
+
+* Final executed checks
+
+| Check | Result and scope |
+|-------+------------------|
+| Quint 0.33.0 typecheck | Final model passed |
+| Quint TypeScript deterministic controls | 67 passed: 39 new manifest-product controls (27 normal/rejection/boundary and 12 expected bad-design counterexamples), plus 28 imported coordinator controls; [[file:manifest-traces/quint-tests.log][raw output]] |
+| Lean 4.34.1 | Final initialized finite-manifest composition and retirement join compiled; [[file:manifest-traces/lean-check.log][printed axiom inventory]] |
+| Proof-hole audit | Six Weaver Lean files contain no sorry, admit, unsafe or custom axiom declaration |
+| Physical/native qualification | Not executed; physical acceptance rows remain Pending |
+
+Imported coordinator tests do not initialize or exercise the new range-product
+state. Their rerun is retained as a distinct regression scope, not counted as
+39 additional product controls. Positive product controls include empty, one,
+three and five ranges; same-stream exclusion versus independent-stream concurrency;
+original driver continuation across owner restart/migration; shared history;
+unknown quarantine the retirement/tail join, unfinished-message stream occupancy, full-frontier
+uncertainty, qualified finish and lost finish reply resolution.
+
+Printed proof dependencies are only propext, Quot.sound and inherited
+Classical.choice. admitted_range_has_exact_peer has no axiom dependencies.
+No sorryAx or added durability/driver axiom declaration occurs. The physical
+premises remain in the declared relation and manifest input contracts; absence
+of new axioms does not establish them about a running system.
+
+* Final sampled exploration
+
+Each final run checked the complete safety predicate, including byte alias,
+coverage, shared budget, unique stream tail unfinished-message stream occupancy and the qualified range-finish/retirement join. All
+used the TypeScript backend, 20 samples, at most 30 steps per sample, and a
+20-second external watchdog. The model bytes match the normative hash above.
+
+| Initializer / range count per message | Seed | Result |
+|--------------------------------------+----------+--------|
+| init / 3 | 20261019 | Passed, no violation found; [[file:manifest-traces/final-default.log][raw output]] |
+| largerInit / 5 | 20261020 | Passed, no violation found; [[file:manifest-traces/final-larger.log][raw output]] |
+| singletonInit / 1 | 20261021 | Passed, no violation found; [[file:manifest-traces/final-singleton.log][raw output]] |
+| emptyInit / 0 | 20261022 | Passed, no violation found; [[file:manifest-traces/final-empty.log][raw output]] |
+
+This is 80 bounded sampled traces, not exhaustive state exploration or a timing
+claim about Weaver. Lean independently proves the declared inductive relation
+for arbitrary finite message/range counts and admitted manifest parameters.
+No sample proves source authenticity, driver isolation, fsync or delivery.
+
+* Earlier sampling limits and diagnostic controls
+
+The following records belong to the archived pre-retirement candidate above.
+They are not relabeled as final-model acceptance. Both incomplete runs remain
+incomplete; a later smaller passing scope does not turn either into a pass.
+
+| Candidate run | Watchdog / result | Retained output |
+|---------------+-------------------+-----------------|
+| init, 300 samples x 60 steps, seed 20261019, safety | 60 seconds; incomplete, exit classification 124 | [[file:manifest-traces/simulation-default.log][Raw timeout]] |
+| init, 100 samples x 40 steps, seed 20261019, safety | 60 seconds; incomplete, exit classification 124 | [[file:manifest-traces/simulation-default-bounded.log][Raw timeout]] |
+| largerInit, 100 x 50, seed 20261020, safety | Passed, 48856 ms simulator time | [[file:manifest-traces/simulation-larger.log][Raw output]] |
+| singletonInit, 100 x 50, seed 20261021, safety | Passed, 4877 ms simulator time | [[file:manifest-traces/simulation-singleton.log][Raw output]] |
+| emptyInit, 100 x 40, seed 20261022, safety | Passed, 1325 ms simulator time | [[file:manifest-traces/simulation-empty.log][Raw output]] |
+| init, 1 x 5 / 1 x 15, seed 20261019, safety | Passed under separate 15-second probes | [[file:manifest-traces/cost-5.log][Short trace]], [[file:manifest-traces/cost-15.log][Longer trace]] |
+| init, 20 x 30, seed 20261019, safety | Passed; 3440 ms simulator time | [[file:manifest-traces/diagnostic-with-safety.log][Full predicate]] |
+| Same 20 x 30 trace-generation scope, invariant true | Completed; 153 ms simulator time; no safety qualification | [[file:manifest-traces/diagnostic-without-safety.log][Counterfactual control]] |
+
+The matched probes locate substantial cost in checking the complete safety
+predicate for that measured scope. They do not establish the sole cause of
+all larger-run timeouts or a general complexity bound. The safety predicate
+was not weakened to obtain passing final samples. Larger default exploration
+remains an explicit validation limit. No timeout was widened, no native build
+was repeated, and no incomplete execution was called a pass.
+
+* Intermediate retirement-join scope
+
+Before adding unfinished-message stream exclusion and qualified range finish,
+the archived candidate-before-stream-exclusion.qnt completed four 20 x 30 safety
+samples with the same initializer/seed family. These are historical scope only,
+not final-model qualification: [[file:manifest-traces/before-stream-exclusion-default.log][default]],
+[[file:manifest-traces/before-stream-exclusion-larger.log][larger]], [[file:manifest-traces/before-stream-exclusion-singleton.log][singleton]], [[file:manifest-traces/before-stream-exclusion-empty.log][empty]].
+The final model adds both guards and reruns the full predicate/tests. No larger
+candidate timeout is erased or made successful by those extensions.
+
+* Document and diagram validation
+
+All 31 English Org files exported with source evaluation disabled. The local
+checker validated 538 file links and 101 pinned Git source targets. All 22
+canonical D2 sources passed syntax and formatting checks. The new bundled SVG
+was rendered and visually inspected; its visible text contains core design
+only, without tool versions, source hashes or validation counts. Optional
+htmlize source-block fontification was unavailable; Org exports still exited
+normally with zero. All historical/current formal receipt hashes and the six
+Lean source proof-hole audits passed.
+
+* Source comparison receipt
+
+Committed blobs were inspected at POO Flow
+=a74fc2fd63437252175b5a67649ee54b886d3bf4=, separate Lambda Aitia
+=cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc= and cedar-poo-spec
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. Navigable exact paths remain in
+[[file:../../../docs/architecture/01-reference-comparison.org][the source register]]. The current adjacent dirty checkout was not built or
+edited. Inspection checked grant removal before handoff, indeterminate nonce
+append/sequence, local consumed-before-callback semantics, runtime-owned durable
+IO, canonical registry/receipt and exclusive-claim premises, frozen pending
+Session obligations, typed accounting/watchdog separation, supplied-effect/state
+projection and nonempty error-free compound authorization. These contracts do
+not implement the new persistent manifest, affine driver tail or retirement
+join. The dossier records each reuse/extension boundary.
+
+* Reproduce without changing pins
+
+#+begin_src sh :eval never
+mkdir -p /private/tmp/weaver-manifest-proof
+elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-manifest-proof/LogicalMessageAuthority.olean dev/specs/lean/LogicalMessageAuthority.lean
+LEAN_PATH=/private/tmp/weaver-manifest-proof elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-manifest-proof/SharedMessageBudget.olean dev/specs/lean/SharedMessageBudget.lean
+LEAN_PATH=/private/tmp/weaver-manifest-proof elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-manifest-proof/FiniteDomainMigration.olean dev/specs/lean/FiniteDomainMigration.lean
+LEAN_PATH=/private/tmp/weaver-manifest-proof elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-manifest-proof/AnchoredRecoveryAndEgress.olean dev/specs/lean/AnchoredRecoveryAndEgress.lean
+LEAN_PATH=/private/tmp/weaver-manifest-proof elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-manifest-proof/ComposedGatewayLifecycle.olean dev/specs/lean/ComposedGatewayLifecycle.lean
+LEAN_PATH=/private/tmp/weaver-manifest-proof elan run leanprover/lean4:v4.34.1 lean dev/specs/lean/FiniteStreamManifest.lean
+quint typecheck dev/specs/quint/FiniteStreamManifest.qnt
+quint test dev/specs/quint/FiniteStreamManifest.qnt --backend typescript --max-samples 1 --out-itf '/private/tmp/manifest-{test}-{seq}.itf.json'
+quint run dev/specs/quint/FiniteStreamManifest.qnt --backend typescript --init init --max-samples 20 --max-steps 30 --seed 20261019 --invariants safety --verbosity 1
+quint run dev/specs/quint/FiniteStreamManifest.qnt --backend typescript --init largerInit --max-samples 20 --max-steps 30 --seed 20261020 --invariants safety --verbosity 1
+quint run dev/specs/quint/FiniteStreamManifest.qnt --backend typescript --init singletonInit --max-samples 20 --max-steps 30 --seed 20261021 --invariants safety --verbosity 1
+quint run dev/specs/quint/FiniteStreamManifest.qnt --backend typescript --init emptyInit --max-samples 20 --max-steps 30 --seed 20261022 --invariants safety --verbosity 1
+#+end_src
+
+* Retained deterministic traces
+
+Expected rejection actions terminate in .fail(). Their last ITF item may contain
+only metadata because a rejected action has no successor state. Mutant traces
+retain concrete historical acceptance/byte facts. Portable base- filenames are
+renamed copies of the tool's Base:: test filenames; names and ordinal remain
+recorded here. The full raw test log distinguishes imported and product scopes.
+
+| Test | Evidence |
+|------+----------|
+| Base::lostCommitReplyTest | [[file:manifest-traces/base-lostCommitReplyTest-0.itf.json][ITF trace]] |
+| Base::competingCommitRejectedTest | [[file:manifest-traces/base-competingCommitRejectedTest-1.itf.json][ITF trace]] |
+| Base::competingSealRejectedTest | [[file:manifest-traces/base-competingSealRejectedTest-2.itf.json][ITF trace]] |
+| Base::wrongActivationRejectedTest | [[file:manifest-traces/base-wrongActivationRejectedTest-3.itf.json][ITF trace]] |
+| Base::newCommandRetryRejectedTest | [[file:manifest-traces/base-newCommandRetryRejectedTest-4.itf.json][ITF trace]] |
+| Base::abortAndLateCommitRejectedTest | [[file:manifest-traces/base-abortAndLateCommitRejectedTest-5.itf.json][ITF trace]] |
+| Base::missingIsNotAbortTest | [[file:manifest-traces/base-missingIsNotAbortTest-6.itf.json][ITF trace]] |
+| Base::restartBeforeCommitTest | [[file:manifest-traces/base-restartBeforeCommitTest-7.itf.json][ITF trace]] |
+| Base::staleActivationIncarnationRejectedTest | [[file:manifest-traces/base-staleActivationIncarnationRejectedTest-8.itf.json][ITF trace]] |
+| Base::restartRetainsDelegationTest | [[file:manifest-traces/base-restartRetainsDelegationTest-9.itf.json][ITF trace]] |
+| Base::restartRejectsOldHandleTest | [[file:manifest-traces/base-restartRejectsOldHandleTest-10.itf.json][ITF trace]] |
+| Base::sharedHistoryBlocksOtherMessageTest | [[file:manifest-traces/base-sharedHistoryBlocksOtherMessageTest-11.itf.json][ITF trace]] |
+| Base::staleHostAfterRestrictionRejectedTest | [[file:manifest-traces/base-staleHostAfterRestrictionRejectedTest-12.itf.json][ITF trace]] |
+| Base::oldBufferCanDrainAfterRestartAndMigrationTest | [[file:manifest-traces/base-oldBufferCanDrainAfterRestartAndMigrationTest-13.itf.json][ITF trace]] |
+| Base::lostSealReplyAcrossRestartTest | [[file:manifest-traces/base-lostSealReplyAcrossRestartTest-14.itf.json][ITF trace]] |
+| Base::lostActivateReplyAcrossRestartTest | [[file:manifest-traces/base-lostActivateReplyAcrossRestartTest-15.itf.json][ITF trace]] |
+| Base::sealWinsAgainstDelegationTest | [[file:manifest-traces/base-sealWinsAgainstDelegationTest-16.itf.json][ITF trace]] |
+| Base::freshNonceCannotReplaceOriginalClaimTest | [[file:manifest-traces/base-freshNonceCannotReplaceOriginalClaimTest-17.itf.json][ITF trace]] |
+| Base::wrongSealCounterexampleTest | [[file:manifest-traces/base-wrongSealCounterexampleTest-18.itf.json][ITF trace]] |
+| Base::wrongReceiptCounterexampleTest | [[file:manifest-traces/base-wrongReceiptCounterexampleTest-19.itf.json][ITF trace]] |
+| Base::forgettingOwnerRecordsCounterexampleTest | [[file:manifest-traces/base-forgettingOwnerRecordsCounterexampleTest-20.itf.json][ITF trace]] |
+| Base::historyBypassCounterexampleTest | [[file:manifest-traces/base-historyBypassCounterexampleTest-21.itf.json][ITF trace]] |
+| Base::incompleteRecoveryCounterexampleTest | [[file:manifest-traces/base-incompleteRecoveryCounterexampleTest-22.itf.json][ITF trace]] |
+| Base::newAuthorityRebindingCounterexampleTest | [[file:manifest-traces/base-newAuthorityRebindingCounterexampleTest-23.itf.json][ITF trace]] |
+| Base::pendingSealReopenCounterexampleTest | [[file:manifest-traces/base-pendingSealReopenCounterexampleTest-24.itf.json][ITF trace]] |
+| Base::duplicateAfterLostReplyCounterexampleTest | [[file:manifest-traces/base-duplicateAfterLostReplyCounterexampleTest-25.itf.json][ITF trace]] |
+| Base::rebuildingTransportQueueCounterexampleTest | [[file:manifest-traces/base-rebuildingTransportQueueCounterexampleTest-26.itf.json][ITF trace]] |
+| Base::rawFdBypassCounterexampleTest | [[file:manifest-traces/base-rawFdBypassCounterexampleTest-27.itf.json][ITF trace]] |
+| emptyManifestTest | [[file:manifest-traces/emptyManifestTest-28.itf.json][ITF trace]] |
+| singletonManifestTest | [[file:manifest-traces/singletonManifestTest-29.itf.json][ITF trace]] |
+| finiteManifestSequenceTest | [[file:manifest-traces/finiteManifestSequenceTest-30.itf.json][ITF trace]] |
+| fiveRangeManifestTest | [[file:manifest-traces/fiveRangeManifestTest-31.itf.json][ITF trace]] |
+| duplicateRangeRejectedTest | [[file:manifest-traces/duplicateRangeRejectedTest-32.itf.json][ITF trace]] |
+| manifestReplacementRejectedTest | [[file:manifest-traces/manifestReplacementRejectedTest-33.itf.json][ITF trace]] |
+| alteredDescriptorRejectedTest | [[file:manifest-traces/alteredDescriptorRejectedTest-34.itf.json][ITF trace]] |
+| predecessorRejectedTest | [[file:manifest-traces/predecessorRejectedTest-35.itf.json][ITF trace]] |
+| sharedStreamConcurrentTailRejectedTest | [[file:manifest-traces/sharedStreamConcurrentTailRejectedTest-36.itf.json][ITF trace]] |
+| independentStreamConcurrencyTest | [[file:manifest-traces/independentStreamConcurrencyTest-37.itf.json][ITF trace]] |
+| uncertaintyQuarantinesStreamTest | [[file:manifest-traces/uncertaintyQuarantinesStreamTest-38.itf.json][ITF trace]] |
+| ownerRestartPreservesOriginalTailTest | [[file:manifest-traces/ownerRestartPreservesOriginalTailTest-39.itf.json][ITF trace]] |
+| newOwnerCannotUseOldTailTest | [[file:manifest-traces/newOwnerCannotUseOldTailTest-40.itf.json][ITF trace]] |
+| historyCutPreservesOldExposureTest | [[file:manifest-traces/historyCutPreservesOldExposureTest-41.itf.json][ITF trace]] |
+| sharedHistoryRejectsOtherMessageTest | [[file:manifest-traces/sharedHistoryRejectsOtherMessageTest-42.itf.json][ITF trace]] |
+| migrationPreservesManifestAndTailTest | [[file:manifest-traces/migrationPreservesManifestAndTailTest-43.itf.json][ITF trace]] |
+| sharedBudgetSequenceTest | [[file:manifest-traces/sharedBudgetSequenceTest-44.itf.json][ITF trace]] |
+| freshNonceRejectedTest | [[file:manifest-traces/freshNonceRejectedTest-45.itf.json][ITF trace]] |
+| lateObservationDoesNotReopenTest | [[file:manifest-traces/lateObservationDoesNotReopenTest-46.itf.json][ITF trace]] |
+| retireWhileTailLiveRejectedTest | [[file:manifest-traces/retireWhileTailLiveRejectedTest-47.itf.json][ITF trace]] |
+| retiredMessageCannotDelegateTest | [[file:manifest-traces/retiredMessageCannotDelegateTest-48.itf.json][ITF trace]] |
+| unfinishedMessageRetainsStreamTest | [[file:manifest-traces/unfinishedMessageRetainsStreamTest-49.itf.json][ITF trace]] |
+| fullPrefixNeedsQualifiedFinishTest | [[file:manifest-traces/fullPrefixNeedsQualifiedFinishTest-50.itf.json][ITF trace]] |
+| fullAsyncShortReportQuarantinesTest | [[file:manifest-traces/fullAsyncShortReportQuarantinesTest-51.itf.json][ITF trace]] |
+| stalePrefixReceiptRejectedTest | [[file:manifest-traces/stalePrefixReceiptRejectedTest-52.itf.json][ITF trace]] |
+| retirementWaitsForRangeFinishTest | [[file:manifest-traces/retirementWaitsForRangeFinishTest-53.itf.json][ITF trace]] |
+| finishReplyLostAcrossRestartTest | [[file:manifest-traces/finishReplyLostAcrossRestartTest-54.itf.json][ITF trace]] |
+| reportedCountRewindCounterexampleTest | [[file:manifest-traces/reportedCountRewindCounterexampleTest-55.itf.json][ITF trace]] |
+| restartReplayCounterexampleTest | [[file:manifest-traces/restartReplayCounterexampleTest-56.itf.json][ITF trace]] |
+| newManifestAliasCounterexampleTest | [[file:manifest-traces/newManifestAliasCounterexampleTest-57.itf.json][ITF trace]] |
+| overlappingRangesCounterexampleTest | [[file:manifest-traces/overlappingRangesCounterexampleTest-58.itf.json][ITF trace]] |
+| duplicateDriverCapabilityCounterexampleTest | [[file:manifest-traces/duplicateDriverCapabilityCounterexampleTest-59.itf.json][ITF trace]] |
+| rangeBudgetOverrunCounterexampleTest | [[file:manifest-traces/rangeBudgetOverrunCounterexampleTest-60.itf.json][ITF trace]] |
+| historyBypassCounterexampleTest | [[file:manifest-traces/historyBypassCounterexampleTest-61.itf.json][ITF trace]] |
+| concurrentStreamTailsCounterexampleTest | [[file:manifest-traces/concurrentStreamTailsCounterexampleTest-62.itf.json][ITF trace]] |
+| ownerRetaggingCounterexampleTest | [[file:manifest-traces/ownerRetaggingCounterexampleTest-63.itf.json][ITF trace]] |
+| incompleteCoverageCounterexampleTest | [[file:manifest-traces/incompleteCoverageCounterexampleTest-64.itf.json][ITF trace]] |
+| prematureRetirementCounterexampleTest | [[file:manifest-traces/prematureRetirementCounterexampleTest-65.itf.json][ITF trace]] |
+| interleavedMessagesCounterexampleTest | [[file:manifest-traces/interleavedMessagesCounterexampleTest-66.itf.json][ITF trace]] |

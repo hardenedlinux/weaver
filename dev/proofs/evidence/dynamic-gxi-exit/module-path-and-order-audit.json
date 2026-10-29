@@ -1,0 +1,53 @@
+{
+  "logicalModuleKeysEqual": true,
+  "packedReferences": 98,
+  "packedImageGroups": 7,
+  "fullOrdinalEqualityWithUnpacked": false,
+  "ordinalDifferences": [
+    {
+      "module": "std/list/list-builder~0",
+      "packed": 76,
+      "unpacked": 75
+    },
+    {
+      "module": "std/iter/interface~0",
+      "packed": 78,
+      "unpacked": 76
+    },
+    {
+      "module": "std/iter/iterators~0",
+      "packed": 80,
+      "unpacked": 79
+    },
+    {
+      "module": "std/error~0",
+      "packed": 75,
+      "unpacked": 78
+    },
+    {
+      "module": "std/interface~0",
+      "packed": 79,
+      "unpacked": 77
+    },
+    {
+      "module": "std/list/list~0",
+      "packed": 77,
+      "unpacked": 80
+    }
+  ],
+  "samePackedPlanComparisons": [
+    {
+      "seconds": 14.648,
+      "differentOrdinalsFromObserved": 0
+    },
+    {
+      "seconds": 11.382,
+      "differentOrdinalsFromObserved": 0
+    },
+    {
+      "seconds": 8.048,
+      "differentOrdinalsFromObserved": 2
+    }
+  ],
+  "interpretation": "Total initialization order is not an equivalence claim. Packed repeats can change incidental load ordinals too; preserved source, bindings, dependency owners, logical keys and exercised checks provide bounded evidence. Arbitrary order-sensitive initialization is outside this qualification."
+}

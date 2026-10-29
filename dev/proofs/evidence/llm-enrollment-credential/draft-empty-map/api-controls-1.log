@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-1","limit":20}
+
+  LlmEnrollmentCredential
+    ok forwardedSubjectCredentialRejectedTest passed 1 test(s)
+    ok authenticatedSubjectCannotNominateKeyTest passed 1 test(s)
+    ok subjectAuthenticationRequiredTest passed 1 test(s)
+
+  3 passing (308ms)
+@@DONE {"label":"api-controls-1","passed":["forwardedSubjectCredentialRejectedTest","authenticatedSubjectCannotNominateKeyTest","subjectAuthenticationRequiredTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

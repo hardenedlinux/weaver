@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/opt/homebrew/opt/node/bin/node",
+    "proofs/run_subject_authority.cjs"
+  ],
+  "exit": 0,
+  "inputs": {
+    "proofs/qunit/LlmSubjectAuthority.qnt": "6b07f54dc57d3d320b5811d896e31d4bbc977b8f55e998af848b3bf93f14db59",
+    "proofs/run_subject_authority.cjs": "436ad13f06ff8745b2f099d1a0a434741c2a70f15d71b0958156573a5121fe70",
+    "proofs/check_subject_api.py": "fab69de13460fad68dba8b10e7e49f6b3a7a5c616cba969a6f801f79b7275c93",
+    "proofs/evidence/llm-subject-authority/bundle/LlmSubjectAuthority.qnt": "80590eb4be699357f507447b37a93a3b1685776e50acc36e36ba7b11164cb17a"
+  },
+  "officialPipeline": "load -> parse -> typecheck -> runTests; new Evaluator per group",
+  "expectedControls": 42
+}

@@ -1,0 +1,175 @@
+#+title: Weaver Append Handoff Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and bounded receipts
+
+[[file:../../../proofs/check_llm_append_handoff.py][Runner]], [[file:../../../proofs/lean/LlmAppendHandoff.lean][Lean]], [[file:../../../proofs/qunit/LlmAppendHandoff.qnt][Quint]], [[file:../../../proofs/evidence/llm-append-handoff/commands.json][commands]], [[file:../../../proofs/evidence/llm-append-handoff/receipt.json][receipt]] and [[file:../../../proofs/evidence/llm-append-handoff/SHA256SUMS][byte manifest]] keep executable evidence separate
+from native acceptance. The runner compiles 25 Lean modules and prints 13 new
+declarations without =sorryAx=. Quint checks 38 new controls (30 guarded and eight
+mutation counterexamples) plus 39 directly imported checkpoint controls: 77 total.
+A separate manifest regression checks 72 controls. Nine initializers each sample
+ten paths with at most 30 post-initializer steps and seed 251: 90 bounded samples.
+Eight ITFs are independently decoded. Preliminary parser/compiler diagnostics are
+retained. No native IO, exhaustive exploration, recovery liveness or performance
+result is inferred from these checks.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| AH1 | Current and pending reconstruction paths survive finite guarded runs | oldGarbageMayDeleteAfterSwitchTest | recovery_copy_retained | broker.hold |
+| AH2 | Each admitted frame follows the actual WAL flush and parent contract | appendAfterCutRetainsLiveTailTest | logical_projection | recovery.projection |
+| AH3 | Concurrent storage steps compose the initialized actual account/source history | restartReplaysCommittedTailTest | actual_checkpoint_composition | lean |
+| AH4 | Late commit cannot settle the original reservation twice | repeatOriginalCommitRejectedTest | original_reservation_once | registry.origin |
+| AH5 | Unknown original source usage retains its original hold | pendingTailKeepsOriginalHoldTest | unknown_original_hold_retained | registry.query |
+| AH6 | Appending and switching preserve every admitted WAL record | appendBeforeCutRetainsPendingTailTest | append_prefix_retained | recovery.join |
+| AH7 | Switching the base preserves the entire current live tail | switchCarriesCurrentLiveTailTest | switched_live_tail_retained | broker.cas |
+| AH8 | GC cannot delete a current live tail segment | liveTailCannotDeleteTest | current_tail_not_collectible | broker.alias |
+| AH9 | The retired append generation cannot be reopened by a late descriptor | oldAppendGenerationRejectedTest | append_generation_monotone | recovery.fence |
+| AH10 | New root observations do not regress manifest generation | lostCutResponseQueriesSameGenerationTest | root_generation_monotone | protocols.mcp |
+| AH11 | Cut handoff requires a current observation and durable decision | nondurableHandoffRejectedTest | durable_cut_required | recovery.fence |
+| AH12 | Captured cut retains all pre-cut admitted records, including pending work | preCutPendingSurvivesSwitchAndLateCommitTest | cut_records_retained | broker.hold |
+| AH13 | Admitting new WAL requires both durable bytes and durable admission descriptor | nondurableAppendRejectedTest | admission_requires_durable_descriptor | recovery.projection |
+
+The correspondence is complementary, not theorem/test identity. AH9's theorem
+proves generation monotonicity; the guarded append constructor additionally checks
+exact generation, frontier and current worker. AH10's theorem concerns root
+progress, while its control observes a lost cut result without inventing another
+generation. AH5's finite control identifies the original pending reservation;
+the independent decoder checks its actual hold. The Lean unknown-source theorem
+uses the inherited original-key binding for every relevant account commit path.
+
+* Product state, safety and actual refinement
+
+=State.logical= is the actual =LlmCheckpointTruncation.State=. Segments and immutable
+manifests use the category 27 types. The physical representation consists of root
+segments, closed cut segments and live-generation segments; =replay= must equal
+the actual logical WAL, and checkpoint/suffix must agree with the actual parent.
+Every root/candidate checkpoint body remains present. Every referenced segment
+is present and durable; the current immutable root is durable.
+
+=Aligned= ties the unresolved cut to its captured records, original root,
+root generation and successor append generation. =Candidate= requires a staged
+replacement to replay exactly that captured prefix. Candidate staging cannot
+turn an uncommitted frame's after-image into a published financial checkpoint.
+
+=Step.append= invokes the actual WAL =flush= premises: prepared original proposal,
+actual account =Ready=, current journal equality and durable exact frame.
+=Owner.appendDurable= separately requires durable admission of that frame and
+its frontier reference; segment bytes alone do not satisfy this premise. It adds
+a fresh immutable segment and advances the frontier. Its parent projection is
+the actual checkpoint =advance= of that actual =flush=, not arbitrary WAL restore.
+The complete initial physical representation is an explicit premise of the
+projection/composition theorem.
+
+=sealCut= freezes all admitted live segments, increments the admission generation
+and persists its original cut intent. =switchRoot= requires actual parent transition
+evidence, selected publication and its confirmation, authenticated durable
+checkpoint, durable immutable candidate, exact current descriptor and durable
+root/append-descriptor decision. It carries =live= unchanged. =erase= checks the
+union of all current and pending references at actual deletion. =authority= admits
+actual parent transitions preserving represented WAL/checkpoint/suffix and bodies,
+including late account commitment, owner rotation and financial recovery reads.
+
+=logical_projection= and =actual_checkpoint_composition= compose into the actual
+checkpoint/WAL/account/source chain. Original reservation uniqueness and unknown
+holds are inherited through those real runs. This is not a claim that category
+27's fixed-WAL =Run= already permits concurrent append. This extension replaces
+that fixed-representation contract; it reuses category 27 immutable types and
+safe-delete obligations and establishes its own preservation theorem.
+
+Quint storage-only operations use an authenticated pure financial-head read,
+which maps to an actual parent authority step followed by the corresponding
+storage transition. No operation fabricates provider completion or metering.
+The independent decoder checks unchanged actual provider execution state from
+initialization through every mutation trace.
+
+The native typed state requires durable admission descriptors, root binding,
+immutable content identity and real effect-time serialization. Complete typed
+objects do not prove torn-byte handling, hashing, CAS durability or filesystem
+ordering. Root crash durability also does not replace independently governed recovery
+qualification after snapshot rollback. Financial/checkpoint anchors alone may
+remain unchanged while a pending append frontier is lost. Admission/cut minimum
+publication in the retained original pending-intent/control log is a required
+native extension, as specified in 28.01; it is represented by Owner premises,
+not proved by preserving an in-memory counter.
+
+* Counterexamples
+
+| Counterexample control | Independently decoded violation |
+|------------------------+---------------------------------|
+| droppedLiveAppendCounterexampleTest | Switched root omits the post-cut live reference although actual WAL/suffix still contains the pending frame |
+| droppedClosedAppendCounterexampleTest | Cut forgets an admitted pre-cut pending frame; logical parent still retains it |
+| tailDeletionAppendCounterexampleTest | Unique live segment object is removed while its live reference remains |
+| oldGenerationAppendCounterexampleTest | Actual frame flush occurs with a retired generation descriptor despite complete physical representation |
+| oldFrontierAppendCounterexampleTest | Switch descriptor uses the old frontier after a new append was admitted |
+| oldOwnerAppendCounterexampleTest | Old worker descriptor is used after authoritative owner rotation |
+| pendingAsCommittedAppendCounterexampleTest | Published checkpoint invents a later settled image while actual account still retains the original hold |
+| lostResponseAppendCounterexampleTest | An unconfirmed operation proceeds after response loss without current readback |
+
+Unsafe actions are excluded from =step=. =lastAuthorized= and =attempted= are independent ghost
+mutation monitor, not a production permit or anti-rollback source. Descriptor-only
+violations are distinguished from missing-copy/replay violations. The pending
+checkpoint mutation does not itself change the authoritative balance; it shows
+why trusting a speculative checkpoint would be unsound. Actual original queue,
+spent nonce, exposure, application/reservation state and pending hold are decoded.
+
+* Source-by-source reuse and extension
+
+[[file:../../../proofs/evidence/llm-append-handoff/source-review.json][Pinned source identities and excerpts]], [[file:../../../proofs/evidence/llm-append-handoff/source-receipt-check.json][fresh blob/excerpt checks]], [[file:../../../proofs/evidence/llm-append-handoff/append-source-audit.json][focused append/CAS extract]] and
+[[file:../../../proofs/evidence/llm-append-handoff/working-source-check.json][fresh working hashes and HEAD identities]] cover nineteen source files.
+
+| Source | Direct reuse | Extension or qualification |
+|--------+--------------+----------------------------|
+| P12 authorized-effect-token.ss | Immutable root/effect/nonce/payload binding | Bind original append operation, body, cut, generation and frontier |
+| P13 strict-mediation.ss | Conservative consumption for indeterminate observations; failed validation unchanged | Unknown append/cut result must not reset original consumption or authorize retry as a new operation |
+| P15 effect-host.ss | Inert reservation, attributable handoff and unknown-result consumption; durable?/distributed-authority? false | No native admission, durable descriptor or generation handoff is established by an in-process receipt |
+| P17 store-backend.ss | Scheme selects/projects contracts; runtime owns append, fsync, leases, checkpoint IO, rebuild and repair | Rust must persist append decision and root/descriptor handoff and serialize actual GC |
+| P18 PromotionTransactionRecovery.lean | Source-bound recovery/effect observation premises | Bind observed append/cut outcomes to exact original bodies and retained source authority |
+| P19 authorized recovery bridge | Exact original recovery member and authority | New generation cannot replace original claim/profile/application lineage |
+| P20 CommittedEffectApplicationExactlyOnce.lean | Real occurrence requires runtime universe/trace correspondence | Native admitted frame, financial commit and actual unlink must refine their declared transitions |
+| P22 store.ss | Checkpoint references/capabilities and runtime locking/fsync/replay boundary | Existing store capability is not atomic append admission or cut/successor recovery |
+| P31 SessionAttempt.lean | Active work becomes pending on recovery | Retain independently accepted candidates across generation retirement |
+| P31 SessionAttempt.qnt | Pending/closed-state safety | Extend with live/closed suffix and lost-handoff outcomes |
+| P33 deterministic budget closure | Original deterministic cost witness | Preserve original bound/units in pending and replayed frames |
+| P33 runtime budget separation | Timeout is not semantic resource usage | Cut, append and delete timeouts cannot release unknown usage |
+| P35 receipt context monotonicity | Governed monotonic context | Append/root generation joins current owner/source progression |
+| P35 receipt lineage prefix | Authenticated ancestry/prefix | Verify ordered cut coverage and current live prefix, not equal lengths alone |
+| P43 funs-attempt.ss | Expected revision checks, bounded revision/generation exhaustion, pure CAS intents, durable?/runtime-published?/action-authorized? false | Reuse intent/obligation semantics; durable append admission, frontier CAS and handoff recovery are native extensions |
+| P44 objects-attempt.ss | Frozen producer/scope/profile references | New root/owner/generation must retain original semantic/account namespace |
+| C8 BoundOperation.lean | Exact operation/state matching under authentic Host input | Bind actual current root, append descriptor, frontier and immutable body |
+| C10 CompoundAuthorization.lean | Required nonempty layers allow without errors; runtime owns atomic execution and authentic facts | Cedar cannot certify write/fsync ordering, cut durability or current unlink fencing |
+| C11 Composition.lean | Aligned authorization/validation/invalidation | Add storage and financial refinement; no existing theorem proves concurrent native append recovery |
+
+The upstream source blobs and registered excerpts are freshly rechecked. Eighteen
+live files match the reviewed baseline; P17 differs only in two control-plane
+import paths recorded in [[file:../../../proofs/evidence/llm-append-handoff/P17-working-diff.patch][the working diff]]. That does not qualify the new
+import targets' native ABI. The runner compiles Weaver's real composition chain,
+not the full upstream build. Dependency pins and upstream sources remain unchanged.
+
+* Acceptance evidence and proof boundary
+
+| Native gate | Required executable evidence |
+|-------------+------------------------------|
+| Append admission ordering | Crash before/after body persistence, descriptor CAS and response; no accepted frontier without its durable body |
+| Append idempotence | Lose admission response and retry the same operation; resolve one exact admitted frame or retain original pending intent |
+| Seal/open decision | Crash between sealing old generation and opening successor; recover exactly one appendable generation without default reset |
+| Queued old writer | Pause old worker/FD callback before actual admission, advance cut/owner, resume; reject retired descriptor despite durable staged bytes |
+| Concurrent cut | Admit a frame immediately before/after cut linearization; every acknowledged frame appears exactly once in captured or live ordered suffix |
+| Switch frontier race | Append between join validation and switch CAS; retry current handoff bundle or carry current live descriptor, never lose a tail |
+| Late financial commit | Commit accepted original frame before/after switch and lose response; original application/reservation settles once and replay follows financial head |
+| Uncommitted replay | Preserve pending suffix without advancing financial head, releasing its hold or inferring no-execution |
+| GC effect race | Resume old deletion with current live/shared/candidate objects; actual unlink checks the complete reference union and current fence |
+| Cross-store rollback | Roll back admitted/cut frontier even when financial head and checkpoint are unchanged; independently published admission minimum rejects the snapshot or keeps recovery closed |
+| Fenced proposal continuation | Reauthorize current-owner continuation with original application/reservation and retain unknown hold; no timeout-based abandonment |
+| Counters and namespace | Reject exhausted generation/frontier/cut/allocation counters, pathname ABA and incomplete map/default/source identity recovery |
+
+The Lean result covers arbitrary finite segment lists and guarded runs. Its
+actual per-account flush is serial with one uncommitted settlement frame; it does
+not qualify a speculative multi-candidate before-image pipeline. The Quint fixture
+contains one original committed record and one pending/later committed record,
+not an arbitrary-account product or exhaustive fault-space exploration. Durable
+IO, admission deduplication, anchor consensus, native codecs, independent reader
+lease recovery, pending-owner continuation liveness, provider delivery and
+performance remain explicit implementation/acceptance boundaries.

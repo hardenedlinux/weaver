@@ -1,0 +1,142 @@
+proofs/lean/StreamingExecution.lean:54:2: error: Too many variable names provided at alternative `reserve`: 6 provided, but 5 expected
+proofs/lean/StreamingExecution.lean:55:14: error(lean.unknownIdentifier): Unknown identifier `bound`
+proofs/lean/StreamingExecution.lean:56:36: error: Type mismatch
+  m
+has type
+  Nat
+but is expected to have type
+  M
+proofs/lean/StreamingExecution.lean:57:6: error: unsolved goals
+case pos
+budget : Nat
+M : Type
+inst✝ : DecidableEq M
+s : State M
+owner : ExecutorEvidence M
+capacity : s.held ≤ budget
+calls : ∀ (key : M × Nat), s.calls key ≤ 1
+unknown : ∀ (m : M), s.unknown m = true → s.reserved m = true
+before : M
+m : Nat
+cost : 0 < m
+positive : s.reserved before = false
+fresh : s.held + m ≤ budget
+x : M
+hx :
+  { held := s.held + m, reserved := fun x => if x = before then true else s.reserved x, unknown := s.unknown,
+          calls := s.calls, revision := s.revision, fence := s.fence, generation := s.generation }.unknown
+      x =
+    true
+same : sorry
+⊢ x = before ∨ s.reserved x = true
+proofs/lean/StreamingExecution.lean:58:8: error: Type mismatch: After simplification, term
+  unknown x hx
+ has type
+  s.reserved x = true
+but is expected to have type
+  x = before ∨ s.reserved x = true
+proofs/lean/StreamingExecution.lean:59:2: error: Too many variable names provided at alternative `burn`: 3 provided, but 2 expected
+proofs/lean/StreamingExecution.lean:61:36: error: Type mismatch
+  m
+has type
+  s.reserved before = true
+of sort `Prop` but is expected to have type
+  M
+of sort `Type`
+proofs/lean/StreamingExecution.lean:62:27: error(lean.unknownIdentifier): Unknown identifier `reserved`
+proofs/lean/StreamingExecution.lean:63:28: error: Type mismatch: After simplification, term
+  hx
+ has type
+  x = before ∨ s.unknown x = true
+but is expected to have type
+  s.unknown x = true
+proofs/lean/StreamingExecution.lean:64:2: error: Too many variable names provided at alternative `send`: 6 provided, but 5 expected
+proofs/lean/StreamingExecution.lean:66:40: error(lean.invalidField): Invalid field `message`: The environment does not contain `And.message`, so it is not possible to project the field `message` from an expression
+  p
+of type
+  before.revision = s.revision ∧ before.fence = s.fence ∧ before.generation = s.generation
+proofs/lean/StreamingExecution.lean:66:50: error(lean.invalidField): Invalid field `offset`: The environment does not contain `And.offset`, so it is not possible to project the field `offset` from an expression
+  p
+of type
+  before.revision = s.revision ∧ before.fence = s.fence ∧ before.generation = s.generation
+proofs/lean/StreamingExecution.lean:67:6: error: unsolved goals
+case pos
+budget : Nat
+M : Type
+inst✝ : DecidableEq M
+s : State M
+owner : ExecutorEvidence M
+capacity : s.held ≤ budget
+calls : ∀ (key : M × Nat), s.calls key ≤ 1
+unknown : ∀ (m : M), s.unknown m = true → s.reserved m = true
+before : Permit M
+p : Current s before
+current : s.reserved before.message = true
+reserved : s.unknown before.message = true
+burned : s.calls (before.message, before.offset) = 0
+key : M × Nat
+same : key = (sorry, sorry)
+⊢ (if sorry () = before.message ∧ sorry () = before.offset then 1 else s.calls (sorry (), sorry ())) ≤ 1
+proofs/lean/StreamingExecution.lean:68:8: error: Type mismatch: After simplification, term
+  calls key
+ has type
+  s.calls key ≤ 1
+but is expected to have type
+  (if key = (before.message, before.offset) then 1 else s.calls key) ≤ 1
+proofs/lean/StreamingExecution.lean:69:2: error: Too many variable names provided at alternative `retireZeroCall`: 3 provided, but 2 expected
+proofs/lean/StreamingExecution.lean:71:36: error: Type mismatch
+  m
+has type
+  owner.zeroCallAndRetired s before
+of sort `Prop` but is expected to have type
+  M
+of sort `Type`
+proofs/lean/StreamingExecution.lean:72:6: error: unsolved goals
+case pos
+budget : Nat
+M : Type
+inst✝ : DecidableEq M
+s : State M
+owner : ExecutorEvidence M
+capacity : s.held ≤ budget
+calls : ∀ (key : M × Nat), s.calls key ≤ 1
+unknown : ∀ (m : M), s.unknown m = true → s.reserved m = true
+before : M
+m : owner.zeroCallAndRetired s before
+x : M
+same : sorry
+hx : ¬x = before ∧ s.unknown x = true
+⊢ { held := s.held, reserved := s.reserved, unknown := fun x => if x = before then false else s.unknown x,
+          calls := s.calls, revision := s.revision, fence := s.fence, generation := s.generation }.reserved
+      x =
+    true
+proofs/lean/StreamingExecution.lean:73:28: error: Type mismatch: After simplification, term
+  hx
+ has type
+  ¬x = before ∧ s.unknown x = true
+but is expected to have type
+  s.unknown x = true
+proofs/lean/StreamingExecution.lean:57:14: warning: This simp argument is unused:
+  same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+proofs/lean/StreamingExecution.lean:72:14: warning: This simp argument is unused:
+  same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Weaver.StreamingExecution.safe_step' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Weaver.StreamingExecution.safe_run' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Weaver.StreamingExecution.arbitrary_finite_messages_and_ranges' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.StreamingExecution.unknown_cannot_resume' depends on axioms: [propext]
+'Weaver.StreamingExecution.old_generation_cannot_pass' does not depend on any axioms
+'Weaver.StreamingExecution.held_never_decreases' depends on axioms: [propext, Quot.sound]
+'Weaver.StreamingExecution.bounded_range_copy_work' depends on axioms: [propext, Quot.sound]

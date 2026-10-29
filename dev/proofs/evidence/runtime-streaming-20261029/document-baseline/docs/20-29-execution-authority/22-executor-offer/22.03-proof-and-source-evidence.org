@@ -1,0 +1,194 @@
+#+title: Weaver Executor Offer Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and bounded result
+
+Run [[file:../../../proofs/check_llm_executor_offer.py][the isolated runner]] for [[file:../../../proofs/lean/LlmExecutorOffer.lean][Lean]] and [[file:../../../proofs/qunit/LlmExecutorOffer.qnt][Quint]]. Results are retained in
+[[file:../../../proofs/evidence/llm-executor-offer/commands.json][commands.json]], [[file:../../../proofs/evidence/llm-executor-offer/receipt.json][receipt.json]] and [[file:../../../proofs/evidence/llm-executor-offer/SHA256SUMS][the sealed byte manifest]]. Preliminary diagnostics remain separate.
+
+The workload compiles 19 Lean modules, prints 20 new declarations without =sorryAx=,
+checks 42 Quint controls including 10 deliberate broken-protocol alternatives,
+checks 40 category-21 regression controls, and samples 70 executions with at most
+30 post-initializer steps and seed 223. These are local conditional formal/finite
+model results, not native transport, storage or exhaustive state-space evidence.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| EO1 | Dequeue changes no invocation state | dequeueIsNotInvocationTest | dequeue_has_no_invocation | protocols.mcp |
+| EO2 | Durable burn changes no invocation state | observeAndBurnAreNotInvocationTest | burn_has_no_invocation | recovery.fence |
+| EO3 | Every new invocation requires the actual current gate | currentTicketNeedsFinalOfferAllowTest | invocation_requires_current_gate | recovery.join |
+| EO4 | A caught-up new prefix cannot revive an old ticket | caughtUpJoinStillRejectsOldOfferTicketTest | changed_view_blocks_offer | recovery.projection |
+| EO5 | Old worker cannot use new-owner authority | oldWorkerCannotUseFreshRangeTicketTest | old_worker_blocks_offer | recovery.join |
+| EO6 | Recovered source owner must align the range owner | newOwnerMustFenceRangeBeforeObservationTest | unaligned_lane_blocks_offer | recovery.projection |
+| EO7 | Executor recovery cannot reset original burn | executorRecoveryRequiresCompleteEvidenceTest | execution_recovery_preserves_burn | recovery.projection |
+| EO8 | Owner handover cannot create another uncertain burn | restartAfterBurnCannotCreateNewBurnTest | original_burn_retained | recovery.fence |
+| EO9 | Submitted state cannot be reset by recovery | originalSlotAndUnknownHoldSurviveRestartTest | submitted_never_reset | broker.cas |
+| EO10 | Partial write cannot create another invocation | partialWriteCannotBeOfferedAgainTest | offer_at_most_once | broker.alias |
+| EO11 | Actual range history composes into initialized broker semantics | currentOwnerCanUseRequalifiedUnusedRangeTest | actual_broker_initialized | broker.cas |
+| EO12 | Unknown actual range retains original broker hold | timeoutCannotReleaseOrRearmTest | unknown_retains_broker_hold | broker.hold |
+| EO13 | Original queue record survives executor recovery | originalSlotAndUnknownHoldSurviveRestartTest | original_queue_binding_retained | protocols.acp |
+| EO14 | Original canonical slot survives executor recovery | originalSlotAndUnknownHoldSurviveRestartTest | original_slot_retained | registry.origin |
+| EO15 | Executor cannot release source exposure | lateFullReceiptAfterOwnerSwitchIsDataTest | original_exposure_retained | broker.hold |
+| EO16 | New offer evaluates Policy against complete current context | freshTicketStillChecksEffectivePolicyTest | new_offer_checks_current_policy | registry.alias |
+| EO17 | Original partial/full observations use actual range transitions | lateFullReceiptAfterOwnerSwitchIsDataTest | range_projection | broker.alias |
+| EO18 | Executor preserves actual original admission history | oneSubmitMarksOriginalUnknownTest | queue_projection | registry.query |
+
+EO6 reaches the observation boundary, while the Lean lemma also guards final offer
+independently. EO7's control checks the explicit qualification premise; its theorem
+proves qualification changes no burn data, not that a storage snapshot is authentic.
+EO9 checks actual submitted state across restart; the destructive reset control is
+independently decoded below. Correspondence does not erase those evidence limits.
+
+* Actual product and composition proof
+
+The combined state contains the actual category-21 admission state and the actual
+=LogicalRangeRecovery.State= for one immutable admitted operation. =queue_projection=
+maps background changes to actual category-21 transitions and executor actions to
+stutters. It retains original admission, canonical slot and source exposure proofs.
+
+=range_projection= maps lane fencing, no-offer progress and final invocation to
+actual existing range transitions. Other actions stutter. The no-offer guard on
+range progress excludes invoke; =invocation_requires_current_gate= proves that any
+change in the invocation counter must come from the dedicated final offer action
+with its current gate, original burn, unsubmitted state and effective Policy.
+
+The initialized range invariant gives =offer_at_most_once=. The existing checked
+=initialized_data_path_refines_queue= then constructs an actual initialized
+=BrokerConsumptionQueue.Run= for the projected original interval. Its unknown-hold
+theorem supplies =unknown_retains_broker_hold=. This closes the earlier conditional
+suffix gap with an actual composed range history, rather than a parallel counter.
+
+The prior range-to-broker projection erases some permission generations and mirrors
+source consumption/acceptance as an abstraction. That abstract accepted state is
+not an execution grant. Every new invocation in this product separately requires
+actual queued operation and canonical slot lookup, dequeue, execution qualification,
+current source/account join, current owner and range permit, and current offer Policy.
+Native authenticity must not be inferred from the erased broker owner.
+
+* Gate, phase and recovery contracts
+
+An offer ticket binds the complete current admission view and held range permit.
+It compares source image/prefix, queue revision, Policy/history generation, global
+owner, lane owner, lane generation and range revision at final use. A persistent
+source-owner change clears executor qualification. Source recovery alone cannot
+qualify the lane; a whole-executor recovery predicate is required before owner
+alignment and new observation.
+
+The =reserveRecordedDispatch= and =offerRecordedRange= predicates are distinct and
+both receive the complete executor state. The current offer predicate therefore
+has access to source, lane, burn, submitted marker and execution history. Matching
+an old dequeue request or an old enqueue allow receipt is insufficient.
+
+The background validity contract also receives the complete execution state. It
+must prevent no-execution/terminal/refund conclusions from zero admission-plane
+counters while permitting legitimate governance updates. Source-only existing
+owner proofs cannot be reused as authoritative execution absence certificates.
+The outer source-exposure theorem proves monotonic risk retention; a complete
+native source/execution/settlement/account product remains a separate obligation.
+
+The original burn and submitted marker are monotonic. There is no constructor that
+clears either, no invocation-count reset and no new tail or manifest constructor.
+Partial progress and timeout use the actual range model's data/stutter behavior.
+An authentic exact original full receipt may update the range after handover; it
+does not recreate a permit, release source exposure or clear the original slot.
+
+The model has one selected source-admitted possible-offer interval. Admission may
+contain arbitrary other operations, and runs/logs are arbitrary finite paths.
+Pointwise lifting to already admitted disjoint ranges still needs the earlier
+manifest/non-overlap and shared-account products. No automatic partial-tail resume,
+uncertain-burn reclamation, settlement or recovery liveness is asserted here.
+
+* Native linearization and evidence limits
+
+Logical final offer is the last serialized possible-I/O handoff, not producer
+queueing or an editable callback. Durable marker release must be affine, and every
+real provider invocation must refine one such original event. A marker may be
+conservative when a crash prevents actual I/O. The native mapping must establish
+that one marker cannot release two real callbacks; models do not instrument an
+unwritten transport implementation.
+
+Policy/owner effectiveness is ordered at this final boundary. A cut before handoff
+blocks; an earlier irreversible handoff remains an original in-flight operation.
+The proof does not promise zero later wall-clock wire bytes from kernel or remote
+buffers. Old mutable SDK buffers and direct network handles cannot be admitted as
+an alternate execution path. Exclusive writer and non-rollback prefix qualification
+remain explicit native premises, with fail-closed behavior when unknown.
+
+Receipt validity includes original-call attribution, consistency, actual complete
+coverage and current parsing/codec interpretation. The fixture's partial receipt
+is incomplete nonterminal evidence. A terminal short write cannot be upgraded to
+full completion by a forged or contradictory byte count. Definitive short-write
+and safe unoffered-tail evidence belong to the earlier qualified frontier protocol;
+this extension does not synthesize them.
+
+* Counterexamples and independent checks
+
+| Missing contract | Broken control | Required decoded observation |
+|------------------+----------------+------------------------------|
+| Effective Policy after burn | stalePolicyExecutorCounterexampleTest | Original issued/burned ticket submits after generation change and denial |
+| Current global owner at handoff | oldOwnerExecutorCounterexampleTest | Original worker/ticket uses an old epoch after qualified source recovery |
+| Explicit range-owner alignment | unfencedRangeExecutorCounterexampleTest | Current global view/worker is used with the previous lane owner |
+| Full current source view | stalePrefixExecutorCounterexampleTest | Old issued ticket submits after a newer prefix is fully projected |
+| Affine original range invocation | partialRetryExecutorCounterexampleTest | Partial progress is followed by a second invocation of the same interval |
+| Non-rollback invocation/submitted records | snapshotResetExecutorCounterexampleTest | Recorded original invocation remains in evidence while counters reset to unused |
+| Original unknown hold | unknownRefundExecutorCounterexampleTest | An unknown burned/submitted range loses source exposure |
+| Exact authentic completion | forgedCompletionExecutorCounterexampleTest | Partial byte count is labeled complete |
+| Original immutable interval | tailRewriteExecutorCounterexampleTest | Submitted ticket changes the original interval's lower bound |
+| Dequeue has no effect capability | dequeueSendExecutorCounterexampleTest | Dequeue changes invocation state without a final offer record |
+
+Unsafe alternatives are excluded from =step=. [[file:../../../proofs/evidence/llm-executor-offer/itf][ITFs]] are independently decoded,
+including real original source commit, durable enqueue, actual ticket issuance,
+burn/submission and partial receipt observations. Fresh-gate controls establish
+currentness before testing denied Policy or a mismatched actual worker. A positive
+new-owner control qualifies dispatch, fences the unused range and then invokes
+under the original operation. Conservative uncertain burns cannot take that path.
+
+* Source-by-source reuse and required extensions
+
+The [[file:../../../proofs/evidence/llm-executor-offer/source-review.json][POO Flow / cedar-poo-spec register]] preserves exact pinned blobs and excerpts,
+freshly verified in [[file:../../../proofs/evidence/llm-executor-offer/source-receipt-check.json][the source receipt]]. These are reproducible review identities;
+no ABI, dependency pin, upstream checkout or compatibility layer is changed.
+
+The separate [[file:../../../proofs/evidence/llm-executor-offer/working-source-check.json][current working-source check]] re-hashes the 19 reviewed files: 18 match
+the baseline bytes. P17 redirects two control-plane imports from
+=:poo-flow/modules/workflow/= to =:core/modules/funflow/=. Its ownership contract
+and imported binding names are unchanged. The [[file:../../../proofs/evidence/llm-executor-offer/P17-working-store-backend.ss][captured current file]] and [[file:../../../proofs/evidence/llm-executor-offer/P17-working-diff.patch][exact diff]]
+retain this distinction. This audit does not infer ABI/runtime equivalence of the
+new import targets or change either source tree. Native qualification remains open.
+
+| Source | Existing source contract | Direct reuse / extension |
+|--------+--------------------------+--------------------------|
+| P12 effect token | Original semantic operation, nonce/root, payload/range, lease and validity binding | Reuse exact original scope; native last handoff must bind actual bytes/route, not just dequeue identity |
+| P13 strict mediation | Pure consumed-nonce/root transitions; indeterminate outcomes remain spent | Reuse monotonic consumed state; add persistent dispatch burn/submitted/range outcome chain |
+| P15 local effect Host | Exact local serialized owner; reservation has no external effect; delivery consumes even on exception/unknown | Reuse phase separation and unknown discipline; extend to current final writer, durable multi-store qualification and actual callback confinement |
+| P17/P22 durable backend/store | Scheme projects typed contracts; runtime owns locks, leases, fsync, replay and repair | Reuse ownership boundary; add qualified source/queue/dispatch prefix join, immutable marker recovery and affine handoff |
+| P18/P19 recovery bridge | Source attribution and authority-exclusive recovery | Reuse original source binding; source-only recovery cannot certify empty dispatch or authorize old writer handles |
+| P20 delivery occurrence | Runtime occurrence evidence is a premise | A durable dispatch marker is possible execution evidence, not provider receipt or remote exactly-once |
+| P31 SessionAttempt / P43 funs-attempt | Revision/generation guards, retained pending obligations and pure non-authoritative proposals | Reuse scheduling identity; dequeue, reconnect and provider completion do not reconcile execution by themselves |
+| P35 lineage | Non-forking prefix/current lineage prerequisites | Qualify dispatch state and range-owner mapping; restored local counters cannot prove freshness or absence |
+| P33 budget / P44 original references | Deterministic cost and frozen original scope/profile references | Preserve original unresolved exposure; source zero-call projection cannot justify unused-budget release after separate executor activity |
+| C8 BoundOperation | Input equality does not authenticate; Host binds eventual execution to actual effect/state | Use complete current executor context at final offer and authenticate actual immutable wire/range before handoff |
+| C10 CompoundAuthorization | Required nonempty layers all allow without errors | Reserve and offer require their actual actions; fresh snapshot is not an allow receipt |
+| C11 Composition | Evaluation/typechecking certificates require input alignment | Reuse semantic input alignment; no implied native final-writer, fsync or journal recovery theorem |
+
+* Native acceptance
+
+Pause after dequeue, offer observation and durable burn; publish Policy/history and
+move ownership before resuming. Verify actual last handoff rejects stale work and
+fresh tickets still obey original scope and effective denial. Source recovery alone
+must not enable the executor. Validate full dispatch-prefix recovery and current
+range-owner mapping with old callbacks and buffers retained.
+
+Crash before/after the submitted marker and possible transport handoff. Lose both
+responses, return short/partial writes, restart and reconnect. Verify zero replay,
+no new tail, immutable original invocation and full unresolved reservation. Test
+late authentic full evidence, contradictory terminal totals, repeated receipts and
+forged completion. Check original source/queue/dispatch identity across every store.
+
+Native acceptance still requires durable/atomic protocol evidence, non-rollback
+lineage, semantic/codec correctness, final-writer exclusivity, receipt consistency
+and actual I/O instrumentation. No implementation, benchmark, liveness or remote
+exactly-once claim follows from these local results.

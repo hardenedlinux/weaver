@@ -1,0 +1,152 @@
+# Core state-authority boundary. Source findings and acceptance stay in Org.
+...@lib/theme
+title: ONE-USE AUTHORITY / STATE BEFORE EFFECT {
+  class: title
+  near: top-center
+}
+meaning: SCHEME / OWNED SEMANTICS {
+  top: 0
+  left: 0
+  width: 370
+  height: 650
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  policy: Admitted policy semantic root\nExpected operation / exact binding {
+    top: 75
+    left: 30
+    width: 310
+    height: 90
+    class: semantic
+  }
+  context: Owner-derived validation context\nCurrent scoped spent membership {
+    top: 270
+    left: 30
+    width: 310
+    height: 90
+    class: semantic
+  }
+  candidate: Pure transition candidate\nAccepted result is still inert {
+    top: 465
+    left: 30
+    width: 310
+    height: 90
+    class: policy
+  }
+}
+state: RUST / AUTHORITATIVE LEDGER {
+  top: 0
+  left: 500
+  width: 440
+  height: 650
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  brand: "" {
+    shape: image
+    icon: assets/rust.svg
+    top: 14
+    left: 14
+    width: 30
+    height: 30
+  }
+  snapshot: Execution root / revision / spent\nLineage / owner fence / revocation {
+    top: 75
+    left: 40
+    width: 360
+    height: 90
+    class: ledger
+  }
+  cas: Commit exact snapshot / command\nVersion and unspent CAS / audit {
+    top: 270
+    left: 40
+    width: 360
+    height: 90
+    class: runtime
+  }
+  spent: Committed one-use fact\nUnknown spends too / no handle yet {
+    top: 465
+    left: 40
+    width: 360
+    height: 90
+    class: ledger
+  }
+}
+execution: RUST / EXECUTION GUARDS {
+  top: 0
+  left: 1100
+  width: 400
+  height: 650
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#f7f9fc"
+  style.stroke: "#9cacc2"
+  issuer: Original issuer positive consume\nBound logical operation / handoff {
+    top: 75
+    left: 30
+    width: 340
+    height: 90
+    class: policy
+  }
+  obligations: Commit current obligations\nSource / history / held budget {
+    top: 270
+    left: 30
+    width: 340
+    height: 90
+    class: ledger
+  }
+  gate: Typed unique claim / final gate\nExact peer / bytes / bounded range {
+    top: 465
+    left: 30
+    width: 340
+    height: 90
+    class: runtime
+  }
+}
+peer: Admitted external effect\nNo automatic replay {
+  top: 465
+  left: 1680
+  width: 260
+  height: 90
+  class: ledger
+}
+restart: Restart / restore\nRecover facts / never local handles {
+  top: 800
+  left: 30
+  width: 310
+  height: 100
+  class: ledger
+}
+resolve: Stale / duplicate / unknown commit\nResolve same command or quarantine {
+  top: 800
+  left: 540
+  width: 360
+  height: 100
+  class: deny
+}
+recovery: Retain message recovery obligations\nNo pending replay / fresh-nonce bypass {
+  top: 800
+  left: 1130
+  width: 340
+  height: 100
+  class: ledger
+}
+meaning.policy -> meaning.context
+state.snapshot -> meaning.context: Authoritative projection
+meaning.context -> meaning.candidate
+meaning.candidate -> state.cas: Inert candidate / expected snapshot
+state.cas -> state.spent: Spent monotone / revision advances
+state.spent -> execution.obligations: Same canonical operation
+execution.issuer -> execution.obligations
+execution.obligations -> execution.gate
+execution.gate -> peer: One bound effect
+state.cas -> resolve: Conflict / lost reply
+restart -> state.snapshot: Verified lineage / high-water
+resolve -> recovery: Preserve uncertainty
+rule: "Semantic root, execution root and state revision have different meanings. An unchanged execution root does not mean an unspent nonce.\nQuint models concurrent publication and restart. Lean preserves state/context alignment and logical-operation continuity under explicit physical premises." {
+  shape: text
+  class: note
+  near: bottom-center
+}

@@ -1,0 +1,97 @@
+[
+  {
+    "id": "OriginalTaskBinding",
+    "witnesses": [
+      {
+        "file": "crates/weaver-ledger/tests/unit/recovery.rs",
+        "pattern": "fn original_task_body_and_profile_cannot_be_replaced"
+      },
+      {
+        "file": "proofs/qunit/RuntimeAdmission.qnt",
+        "pattern": "run originalBindingTest"
+      }
+    ]
+  },
+  {
+    "id": "SharedBudget",
+    "witnesses": [
+      {
+        "file": "crates/weaver-ledger/tests/unit/properties.rs",
+        "pattern": "fn arbitrary_replays_restarts_and_consumption_preserve_claims"
+      },
+      {
+        "file": "proofs/qunit/RuntimeAdmission.qnt",
+        "pattern": "run sharedBudgetTest"
+      },
+      {
+        "file": "proofs/qunit/RuntimeAdmission.qnt",
+        "pattern": "run originalCostBoundTest"
+      },
+      {
+        "file": "crates/weaver-ledger/tests/unit/recovery.rs",
+        "pattern": "fn authored_ceiling_cannot_underreserve_the_original_wire_cost"
+      }
+    ]
+  },
+  {
+    "id": "ConsumeBeforeSend",
+    "witnesses": [
+      {
+        "file": "crates/weaver-ledger/tests/unit/recovery.rs",
+        "pattern": "fn crash_after_consumption_never_reopens_or_refunds"
+      },
+      {
+        "file": "proofs/qunit/RuntimeAdmission.qnt",
+        "pattern": "run consumeBeforeSendTest"
+      }
+    ]
+  },
+  {
+    "id": "CurrentFinalGuard",
+    "witnesses": [
+      {
+        "file": "crates/weaver-ledger/tests/unit/serialization.rs",
+        "pattern": "fn effective_publication_cannot_overtake_the_locked_send_boundary"
+      },
+      {
+        "file": "proofs/qunit/RuntimeAdmission.qnt",
+        "pattern": "run stalePermitTest"
+      }
+    ]
+  },
+  {
+    "id": "UnknownRetainsHold",
+    "witnesses": [
+      {
+        "file": "crates/weaver-broker/tests/unit/https_transport.rs",
+        "pattern": "fn partial_transport_failure_is_unknown_and_never_retried"
+      },
+      {
+        "file": "proofs/qunit/RuntimeAdmission.qnt",
+        "pattern": "run unknownRefundCounterexampleTest"
+      }
+    ]
+  },
+  {
+    "id": "NoImplicitRetry",
+    "witnesses": [
+      {
+        "file": "crates/weaver-ledger/tests/unit/concurrency.rs",
+        "pattern": "fn concurrent_consumers_invoke_once"
+      },
+      {
+        "file": "proofs/qunit/RuntimeAdmission.qnt",
+        "pattern": "run duplicateRetryCounterexampleTest"
+      }
+    ]
+  },
+  {
+    "id": "DevelopmentPolicy",
+    "witnesses": [
+      {
+        "file": "crates/weaver-contracts/src/lib.rs",
+        "pattern": "mode = deny"
+      }
+    ]
+  }
+]

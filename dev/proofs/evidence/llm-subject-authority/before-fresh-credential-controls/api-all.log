@@ -1,0 +1,128 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":16,"sourceSha256":"b4d68762de7fde488735879d5ef83560494dd420e593997bbb4ccab97a57f3fc"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"c6911275c7072beed6c1d00ae899856f9476be51b31807f978ccb622bb570667"}
+@@START {"label":"api-controls-0","limit":20}
+
+  LlmSubjectAuthority
+    ok sharedWorkloadCannotRegisterSubjectTest passed 1 test(s)
+    ok configuredAuthorityEvidenceRequiredTest passed 1 test(s)
+    ok otherIdentityIssuerRejectedTest passed 1 test(s)
+
+  3 passing (2437ms)
+@@DONE {"label":"api-controls-0","passed":["sharedWorkloadCannotRegisterSubjectTest","configuredAuthorityEvidenceRequiredTest","otherIdentityIssuerRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  LlmSubjectAuthority
+    ok taskOriginCannotComeFromSharedWorkloadTest passed 1 test(s)
+    ok sharedIdentityCannotAssignTest passed 1 test(s)
+    ok tenantSubstitutionRejectedTest passed 1 test(s)
+
+  3 passing (1206ms)
+@@DONE {"label":"api-controls-1","passed":["taskOriginCannotComeFromSharedWorkloadTest","sharedIdentityCannotAssignTest","tenantSubstitutionRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  LlmSubjectAuthority
+    ok producerSubstitutionRejectedTest passed 1 test(s)
+    ok exactJointProofRequiredTest passed 1 test(s)
+    ok originalEnrollmentKeyCannotChangeTest passed 1 test(s)
+
+  3 passing (2089ms)
+@@DONE {"label":"api-controls-2","passed":["producerSubstitutionRejectedTest","exactJointProofRequiredTest","originalEnrollmentKeyCannotChangeTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  LlmSubjectAuthority
+    ok assignmentDoesNotPublishOrIssueTest passed 1 test(s)
+    ok lostAssignmentReplyRetainsOriginalTest passed 1 test(s)
+    ok existingAssignmentCannotBeReplacedTest passed 1 test(s)
+
+  3 passing (2333ms)
+@@DONE {"label":"api-controls-3","passed":["assignmentDoesNotPublishOrIssueTest","lostAssignmentReplyRetainsOriginalTest","existingAssignmentCannotBeReplacedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  LlmSubjectAuthority
+    ok subjectRotationInvalidatesOldApprovalTest passed 1 test(s)
+    ok producerRotationInvalidatesOldApprovalTest passed 1 test(s)
+    ok sameKeyCredentialRotationCanReauthorizeTest passed 1 test(s)
+
+  3 passing (2545ms)
+@@DONE {"label":"api-controls-4","passed":["subjectRotationInvalidatesOldApprovalTest","producerRotationInvalidatesOldApprovalTest","sameKeyCredentialRotationCanReauthorizeTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-5","limit":20}
+
+  LlmSubjectAuthority
+    ok producerRotationCanReauthorizeSamePlanTest passed 1 test(s)
+    ok changedSubjectKeyCannotRewritePendingPlanTest passed 1 test(s)
+    ok oldWorkerCannotRotateFromOldParentTest passed 1 test(s)
+
+  3 passing (1304ms)
+@@DONE {"label":"api-controls-5","passed":["producerRotationCanReauthorizeSamePlanTest","changedSubjectKeyCannotRewritePendingPlanTest","oldWorkerCannotRotateFromOldParentTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-6","limit":20}
+
+  LlmSubjectAuthority
+    ok generationCannotBeReopenedTest passed 1 test(s)
+    ok rotationCannotRenameSubjectTest passed 1 test(s)
+    ok sameKeyRotationDoesNotChangeHistoricalPlanTest passed 1 test(s)
+
+  3 passing (1376ms)
+@@DONE {"label":"api-controls-6","passed":["generationCannotBeReopenedTest","rotationCannotRenameSubjectTest","sameKeyRotationDoesNotChangeHistoricalPlanTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-7","limit":20}
+
+  LlmSubjectAuthority
+    ok oldSourceReadCannotPublishTest passed 1 test(s)
+    ok publicationNeedsCurrentPolicyTest passed 1 test(s)
+    ok lostPublicationReplyRecoversExactPlanTest passed 1 test(s)
+
+  3 passing (2692ms)
+@@DONE {"label":"api-controls-7","passed":["oldSourceReadCannotPublishTest","publicationNeedsCurrentPolicyTest","lostPublicationReplyRecoversExactPlanTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-8","limit":20}
+
+  LlmSubjectAuthority
+    ok publicationCannotRepeatTest passed 1 test(s)
+    ok planPublicationHasNoCredentialEffectTest passed 1 test(s)
+    ok rotatedIdentityRecheckedAtNewIssueTest passed 1 test(s)
+
+  3 passing (2871ms)
+@@DONE {"label":"api-controls-8","passed":["publicationCannotRepeatTest","planPublicationHasNoCredentialEffectTest","rotatedIdentityRecheckedAtNewIssueTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-9","limit":20}
+
+  LlmSubjectAuthority
+    ok renewedIdentityCanIssueOriginalPlanTest passed 1 test(s)
+    ok sharedWorkloadCannotRecoverSubjectTest passed 1 test(s)
+    ok recoveryRequiresCurrentProofTest passed 1 test(s)
+
+  3 passing (2236ms)
+@@DONE {"label":"api-controls-9","passed":["renewedIdentityCanIssueOriginalPlanTest","sharedWorkloadCannotRecoverSubjectTest","recoveryRequiresCurrentProofTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-10","limit":20}
+
+  LlmSubjectAuthority
+    ok oldSubjectCredentialCannotRecoverTest passed 1 test(s)
+    ok recoveryRequiresReadPolicyTest passed 1 test(s)
+    ok actualActivationPreservesOriginalHoldTest passed 1 test(s)
+
+  3 passing (3935ms)
+@@DONE {"label":"api-controls-10","passed":["oldSubjectCredentialCannotRecoverTest","recoveryRequiresReadPolicyTest","actualActivationPreservesOriginalHoldTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-11","limit":20}
+
+  LlmSubjectAuthority
+    ok recoveredWorkerCannotReplaceFirstKeyTest passed 1 test(s)
+    ok forgedAuthorityCounterexampleTest passed 1 test(s)
+    ok replacedEnrollmentCounterexampleTest passed 1 test(s)
+
+  3 passing (2876ms)
+@@DONE {"label":"api-controls-11","passed":["recoveredWorkerCannotReplaceFirstKeyTest","forgedAuthorityCounterexampleTest","replacedEnrollmentCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-12","limit":20}
+
+  LlmSubjectAuthority
+    ok erasedAssignmentCounterexampleTest passed 1 test(s)
+    ok missingPlanOutcomeCounterexampleTest passed 1 test(s)
+    ok phantomPlanOutcomeCounterexampleTest passed 1 test(s)
+
+  3 passing (2619ms)
+@@DONE {"label":"api-controls-12","passed":["erasedAssignmentCounterexampleTest","missingPlanOutcomeCounterexampleTest","phantomPlanOutcomeCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-13","limit":20}
+
+  LlmSubjectAuthority
+    ok splitRecoveryCannotIssueTest passed 1 test(s)
+
+  1 passing (2001ms)
+@@DONE {"label":"api-controls-13","passed":["splitRecoveryCannotIssueTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

@@ -1,0 +1,12 @@
+//! Final execution API; writable transports remain private behind deciding guards.
+mod broker;
+mod provider;
+mod transport;
+pub use broker::execute::execute;
+pub use broker::stream_session::StreamSession;
+pub use provider::{ProviderExecution, ProviderOutput, ProviderTransport, execute_provider};
+pub use transport::https::{HttpsTransport, SendObservation};
+pub use transport::stream_sink::StreamTlsConfig;
+pub use weaver_ledger::StreamClaim as OpenStream;
+#[cfg(test)]
+asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_rust_config());

@@ -1,0 +1,13 @@
+Undefined symbols for architecture arm64:
+  "___cxa_atexit", referenced from:
+      __sub_I_65535_0 in ccrAzhTT.o
+  "_fclose", referenced from:
+      _weaver_canary_event in ccrAzhTT.o
+  "_fopen", referenced from:
+      _weaver_canary_event in ccrAzhTT.o
+  "_fputc", referenced from:
+      _weaver_canary_event in ccrAzhTT.o
+  "_getenv", referenced from:
+      _weaver_canary_event in ccrAzhTT.o
+ld: symbol(s) not found for architecture arm64
+collect2: error: ld returned 1 exit status

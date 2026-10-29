@@ -1,0 +1,216 @@
+proofs/lean/LlmAccountCommit.lean:69:73: error: unexpected identifier; expected '}'
+proofs/lean/LlmAccountCommit.lean:110:2: error: Invalid alternative name `rotate`: Expected `prepare`
+proofs/lean/LlmAccountCommit.lean:111:2: error: Invalid alternative name `restore`: Expected `prepare`
+proofs/lean/LlmAccountCommit.lean:112:2: error: Invalid alternative name `recover`: Expected `prepare`
+proofs/lean/LlmAccountCommit.lean:95:21: error: unsolved goals
+genesis : Nat → Balance
+s : State
+o : Owner
+conserved :
+  ∀ (k : Nat),
+    (s.authority.balances k).available + (s.authority.balances k).held + (s.authority.balances k).charged =
+      (genesis k).available + (genesis k).held + (genesis k).charged
+once : ∀ (k : Nat), s.authority.writes k ≤ 1 ∧ (s.authority.reservations k = none → s.authority.writes k = 0)
+linked :
+  ∀ (id : Nat) (tx : Transaction),
+    s.authority.applications id = some tx → tx.application = id ∧ s.authority.reservations tx.reservation = some id
+qualified : s.qualified = true → s.localImage = s.authority
+p : Proposal
+stored : p ∈ s.prepared
+durable : o.commitDurable { proposal := p, after := applyImage s.authority p.transaction }
+hq : s.qualified = true
+localExact : s.localImage = s.authority
+worker : p.worker = s.epoch
+before : p.before = s.authority
+bound : p.transaction.bound = o.bound p.transaction.reservation
+account : p.transaction.account = o.account p.transaction.reservation
+usage : p.transaction.usage ≤ p.transaction.bound
+source : o.sourceReady p.transaction
+policy : o.policy p.transaction s.authority s.epoch
+fresh : s.authority.applications p.transaction.application = none
+freshSlot : s.authority.reservations p.transaction.reservation = none
+enough : p.transaction.bound ≤ (s.authority.balances p.transaction.account).held
+⊢ s.qualified = true → s.localImage = applyImage s.authority p.transaction
+proofs/lean/LlmAccountCommit.lean:97:43: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+proofs/lean/LlmAccountCommit.lean:97:113: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  l ≥ 0
+  k ≥ 0
+  j ≥ 0
+  i ≥ 0
+  h ≥ 0
+  g ≥ 0
+  g + h + i - j - k - l ≥ 1
+  f ≥ 0
+  e ≥ 0
+  e + f - g - h - i ≤ 0
+  d ≥ 0
+  c ≥ 0
+  b ≥ 0
+  b - d ≥ 0
+  b + e + f - g - h - i ≤ 0
+  a ≥ 0
+where
+ a := ↑s.epoch
+ b := ↑(o.bound p.transaction.reservation)
+ c := ↑(o.account p.transaction.reservation)
+ d := ↑p.transaction.usage
+ e := ↑(s.authority.balances p.transaction.account).available
+ f := ↑(s.authority.balances p.transaction.account).charged
+ g := ↑(genesis p.transaction.account).available
+ h := ↑(genesis p.transaction.account).held
+ i := ↑(genesis p.transaction.account).charged
+ j := ↑(if True then
+      {
+        available :=
+          (s.authority.balances p.transaction.account).available + (p.transaction.bound - p.transaction.usage),
+        held := (s.authority.balances p.transaction.account).held - p.transaction.bound,
+        charged := (s.authority.balances p.transaction.account).charged + p.transaction.usage }
+    else s.authority.balances p.transaction.account).available
+ k := ↑(if True then
+      {
+        available :=
+          (s.authority.balances p.transaction.account).available + (p.transaction.bound - p.transaction.usage),
+        held := (s.authority.balances p.transaction.account).held - p.transaction.bound,
+        charged := (s.authority.balances p.transaction.account).charged + p.transaction.usage }
+    else s.authority.balances p.transaction.account).held
+ l := ↑(if True then
+      {
+        available :=
+          (s.authority.balances p.transaction.account).available + (p.transaction.bound - p.transaction.usage),
+        held := (s.authority.balances p.transaction.account).held - p.transaction.bound,
+        charged := (s.authority.balances p.transaction.account).charged + p.transaction.usage }
+    else s.authority.balances p.transaction.account).charged
+proofs/lean/LlmAccountCommit.lean:97:43: warning: This simp argument is unused:
+  if_pos rfl
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [applyImage, put, postBalance]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+proofs/lean/LlmAccountCommit.lean:128:39: error: Application type mismatch: The argument
+  id
+has type
+  ?m.5 → ?m.5
+but is expected to have type
+  Nat
+in the application
+  s.authority.applications id
+proofs/lean/LlmAccountCommit.lean:128:72: error: Type mismatch
+  id
+has type
+  ?m.8 → ?m.8
+but is expected to have type
+  Nat
+proofs/lean/LlmAccountCommit.lean:128:119: error: Type mismatch
+  some id
+has type
+  Option (?m.10 → ?m.10)
+but is expected to have type
+  Option Nat
+proofs/lean/LlmAccountCommit.lean:129:31: error: Application type mismatch: The argument
+  id
+has type
+  ?m.20 → ?m.20
+but is expected to have type
+  Nat
+in the application
+  (initialized_safe run).right.right.left id
+proofs/lean/LlmAccountCommit.lean:131:80: error: Application type mismatch: The argument
+  id
+has type
+  ?m.5 → ?m.5
+but is expected to have type
+  Nat
+in the application
+  s.authority.applications id
+proofs/lean/LlmAccountCommit.lean:131:121: error: Application type mismatch: The argument
+  id
+has type
+  ?m.8 → ?m.8
+but is expected to have type
+  Nat
+in the application
+  t.authority.applications id
+proofs/lean/LlmAccountCommit.lean:135:25: error: Type mismatch
+  p.transaction.application
+has type
+  Nat
+but is expected to have type
+  ?m.72 → ?m.72
+proofs/lean/LlmAccountCommit.lean:136:12: error: Unexpected term `@id`; expected single reference to variable
+proofs/lean/LlmAccountCommit.lean:140:92: error: Type mismatch
+  some id
+has type
+  Option (?m.6 → ?m.6)
+but is expected to have type
+  Option Nat
+proofs/lean/LlmAccountCommit.lean:140:132: error: Type mismatch
+  some id
+has type
+  Option (?m.8 → ?m.8)
+but is expected to have type
+  Option Nat
+proofs/lean/LlmAccountCommit.lean:153:60: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.77 = ?m.77
+but is expected to have type
+  { authority := applyImage s.authority p.transaction, journal := s.journal, localImage := s.localImage,
+        epoch := s.epoch, qualified := s.qualified, prepared := s.prepared, observations := s.observations }.qualified =
+    false
+in the application
+  ⟨?m.75, rfl⟩
+proofs/lean/LlmAccountCommit.lean:157:23: error(lean.invalidField): Invalid field notation: Type of
+  p
+is not known; cannot resolve field `transaction`
+
+Hint: Consider replacing the field projection `.transaction` with a call to the function `Proposal.transaction`.
+proofs/lean/LlmAccountCommit.lean:157:48: error(lean.invalidField): Invalid field notation: Type of
+  p
+is not known; cannot resolve field `transaction`
+
+Hint: Consider replacing the field projection `.transaction` with a call to the function `Proposal.transaction`.
+proofs/lean/LlmAccountCommit.lean:157:84: error(lean.invalidField): Invalid field notation: Type of
+  p
+is not known; cannot resolve field `worker`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `FiniteDomainMigration.Ticket.worker`
+  • `GatewayHeadCAS.State.worker`
+  • `GatewayHeadCAS.View.worker`
+  • `Proposal.worker`
+  • `LlmPolicyPublication.Publication.worker`
+  • `LlmRegistryPublication.Permit.worker`
+  • `LlmSemanticContract.ChildCall.worker`
+proofs/lean/LlmAccountCommit.lean:177:39: error: Application type mismatch: The argument
+  id
+has type
+  ?m.5 → ?m.5
+but is expected to have type
+  Nat
+in the application
+  s.authority.applications id
+proofs/lean/LlmAccountCommit.lean:178:46: error: Type mismatch
+  some id
+has type
+  Option (?m.10 → ?m.10)
+but is expected to have type
+  Option Nat
+proofs/lean/LlmAccountCommit.lean:196:11: error: `simp` made no progress
+'Weaver.LlmAccountCommit.initialized_safe' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAccountCommit.balance_conserved' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAccountCommit.original_reservation_at_most_once' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAccountCommit.application_and_reservation_join' depends on axioms: [sorryAx]
+'Weaver.LlmAccountCommit.applications_immutable' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Weaver.LlmAccountCommit.original_reservation_immutable' does not depend on any axioms
+'Weaver.LlmAccountCommit.commit_is_atomic' depends on axioms: [sorryAx]
+'Weaver.LlmAccountCommit.new_commit_requires_final_source' depends on axioms: [sorryAx]
+'Weaver.LlmAccountCommit.stale_before_image_blocks_commit' does not depend on any axioms
+'Weaver.LlmAccountCommit.old_worker_blocks_commit' does not depend on any axioms
+'Weaver.LlmAccountCommit.complete_image_before_visibility' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAccountCommit.restore_cannot_rollback_authority' does not depend on any axioms
+'Weaver.LlmAccountCommit.commit_response_loss_preserves_result' does not depend on any axioms
+'Weaver.LlmAccountCommit.account_zero_delta_is_still_consumed' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAccountCommit.actual_reconciliation_has_terminal_and_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAccountCommit.unknown_reconciliation_has_no_account_authority' depends on axioms: [sorryAx]

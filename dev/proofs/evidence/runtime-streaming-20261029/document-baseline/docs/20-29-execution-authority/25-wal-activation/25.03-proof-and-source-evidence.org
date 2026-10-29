@@ -1,0 +1,191 @@
+#+title: Weaver WAL Activation Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and bounded evidence
+
+Run [[file:../../../proofs/check_llm_wal_activation.py][the isolated checker]] for [[file:../../../proofs/lean/LlmWalActivation.lean][Lean]] and [[file:../../../proofs/qunit/LlmWalActivation.qnt][Quint]]. Retain
+[[file:../../../proofs/evidence/llm-wal-activation/commands.json][command results]], [[file:../../../proofs/evidence/llm-wal-activation/receipt.json][the receipt]] and [[file:../../../proofs/evidence/llm-wal-activation/SHA256SUMS][the byte manifest]]. Preliminary diagnostics remain separate.
+
+The workload compiles 22 Lean modules and prints 17 new declarations without
+=sorryAx=. Quint checks 40 new controls (30 guarded and 10 deliberate broken
+protocols) plus 43 directly imported account controls: 83 total. A separate account
+regression checks 89 controls, including its imported reconciliation controls.
+Seven initializers each sample ten paths with at most 30 post-initializer steps
+and seed 233. This is conditional formal and finite sampled evidence, not native
+WAL durability, exhaustive model checking, performance or recovery liveness.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| WA1 | Every financial transition refines the actual account model | recoveryDoesNotRepeatFinancialDeltaTest | core_projection | recovery.fence |
+| WA2 | The actual initialized account history is preserved | committedLostReplyCanRecoverSameResultTest | actual_account_composition | broker.alias |
+| WA3 | Active projection obeys the complete current-view invariant | truncatedWalCanRepairFromAuthorityTest | initialized_live | broker.hold |
+| WA4 | Balance visibility needs current confirmation and complete WAL | equalRevisionWrongWalBodyRejectedTest | visible_balance_is_current | broker.hold |
+| WA5 | Duplicate original candidate cannot settle twice | originalCandidateCannotCommitTwiceTest | original_reservation_once | recovery.fence |
+| WA6 | Account totals remain conserved across staged recovery | truncatedWalCanRepairFromAuthorityTest | account_conservation | registry.origin |
+| WA7 | Restoring local images cannot erase original application | snapshotDoesNotEraseOriginalApplicationTest | committed_application_retained | broker.alias |
+| WA8 | Missing anchored WAL records block visibility | truncatedCommittedWalCannotActivateTest | truncated_wal_cannot_be_visible | broker.hold |
+| WA9 | Old confirmation cannot survive an owner change | oldConfirmationAfterRotateCannotActivateTest | changed_epoch_invalidates_confirmation | protocols.acp |
+| WA10 | WAL repair creates no financial delta | truncatedWalCanRepairFromAuthorityTest | repair_does_not_change_account | broker.alias |
+| WA11 | Candidate acceptance creates no financial delta | candidateAcceptanceDoesNotReleaseBudgetTest | unconfirmed_candidate_has_no_financial_effect | recovery.join |
+| WA12 | Local WAL durability creates no financial delta | walDurableDoesNotReleaseBudgetTest | wal_flush_has_no_financial_effect | recovery.projection |
+| WA13 | Old worker cannot commit an earlier accepted candidate | oldWorkerCannotAnchorAcceptedCandidateTest | stale_worker_cannot_anchor | registry.alias |
+| WA14 | Local restore cannot truncate the protected committed prefix | snapshotDoesNotEraseOriginalApplicationTest | committed_prefix_retained | broker.cas |
+| WA15 | Unknown original usage retains its hold through account refinement | sourceChangeBlocksAcceptedCandidateTest | unknown_budget_hold_retained | registry.query |
+| WA16 | Late account commit invalidates an earlier activated head | lateCommitInvalidatesAlreadyActivatedOldHeadTest | financial_change_requires_anchor | broker.hold |
+| WA17 | Local WAL loss cannot silently cancel an accepted candidate | localWalLossCannotCancelPendingCandidateTest | accepted_candidate_retained | recovery.join |
+
+The mapping records complementary controls rather than literal theorem/test
+identity. WA15's new test exercises source invalidation at final account commit;
+the directly imported unknownUsageCannotPrepareTest checks actual unknown source
+usage. The Lean theorem composes the actual earlier account/source hold result
+under the original-key binding for every relevant account path. WA1's executable
+control observes one financial result; the Lean projection establishes the actual
+transition relation, not instrumentation of an unwritten native sender.
+
+* Actual composition and visibility proof
+
+The product contains the actual =LlmAccountCommit.State=, a local WAL, retained
+complete candidates, a current confirmation and an activation flag. =core_projection=
+constructs actual account runs for prepare, protected commit, owner/source changes,
+image install and recovery. Other staging/repair/readback steps stutter the account.
+=actual_account_composition= extends an initialized account prefix through arbitrary
+finite product runs, rather than reinitializing the financial state at recovery.
+
+The inherited actual account theorem proves one original reservation consumption,
+account conservation and immutable application bodies. Its actual reconciliation
+mapping supplies source terminal/final usage and unknown-original-hold retention.
+No independent "release counter" is substituted for that account history.
+
+=initialized_live= proves that every active state has a qualified core, exact
+current account image, qualified source, a confirmation matching the complete
+current head/journal/owner/source generation and full anchored WAL prefix coverage.
+=visible_balance_is_current= extracts that gate. =truncated_wal_cannot_be_visible=
+excludes a missing anchored record even when a local revision looks correct.
+
+=financial_change_requires_anchor= characterizes every change in financial revision:
+it requires a retained complete candidate, the actual final account Ready predicate
+and the exact account image transition, and it closes visibility. Thus a late
+commit between observation/replay/install or after an earlier activation invalidates
+the earlier view. Native final consumers must refine this authority order; a remote
+cached activation bit is not an independent grant.
+
+=accepted_candidate_retained= is deliberately conservative for this reference: local
+WAL restore does not alter the independent pending candidate. The model retains
+candidates even after completion. Safe garbage collection would need a proof that
+the full committed result or a terminal rejection remains independently queryable;
+this product does not authorize deletion of the only outcome evidence.
+
+* Native and model boundaries
+
+Local WAL frames are typed complete records, not modeled byte arrays. The flush
+and candidate predicates stand for native atomic framing, durable completion and
+complete immutable retention. Malformed/truncated record controls exercise missing
+or altered typed records; they are not a proof that a native parser rejects every
+torn byte sequence. Native crash injection and WAL-format qualification remain gates.
+
+Protected journal and fence fields are not restored from local images. The model
+has no guarded action that truncates the protected prefix. The independent prefix
+predicate must authenticate the actual current non-forking authority, including
+complete bodies and stamps. An old replicated response or an equal numeric position
+cannot satisfy that premise by assertion. A co-rollback counterexample breaks the
+premise deliberately and keeps an independent test monitor of already committed
+credits; that monitor is not production authority.
+
+The active flag represents authority-serialized state. Immediate clearing in the
+model must be implemented by a final CAS/current-prefix check; it does not prove
+instantaneous delivery of invalidation notifications to every process. Projected
+informational balances can be stale, but financial mutation cannot trust them.
+
+The Quint product directly imports the preceding account model and its actual
+metered-source fixture. It adds local WAL/candidate/confirmation stages. Its
+source-qualified flag represents the source-invalidation seam into the earlier
+module; Lean stores that flag in the actual account state. The shared account's
+second-reservation evidence remains the earlier explicit trusted fixture. No
+arbitrary-many-provider or native consensus/storage product is claimed.
+
+* Deliberate broken protocols and decoded observations
+
+| Missing contract | Counterexample control | Required independently decoded observation |
+|------------------+------------------------+-------------------------------------------|
+| WAL is not money | walAsMoneyWalCounterexampleTest | Local frame has no accepted candidate, yet financial journal/balance advances |
+| Candidate acceptance is not confirmation | acceptanceAsConfirmationWalCounterexampleTest | Accepted candidate exists, authority remains at genesis, forged confirmation claims its after-image |
+| Complete anchored WAL before activation | truncatedWalWalCounterexampleTest | Financial result exists but active local WAL is empty |
+| Exact current balance projection | oldSnapshotWalCounterexampleTest | Active local image is genesis after protected commit and owner rotation |
+| Current owner-bound confirmation | staleConfirmationWalCounterexampleTest | Current financial image and WAL, but an old-epoch confirmation is treated as active |
+| Original outcome after lost reply | lostReplyRetryWalCounterexampleTest | Two financial records consume the same original reservation |
+| Independent non-rollback authority | sharedRollbackWalCounterexampleTest | Authority returns to genesis while the test monitor retains the original financial credit |
+| Exact full record body | forgedWalBodyWalCounterexampleTest | Local record count matches but its original usage/body differs from the protected record |
+| Old candidate is not a reusable permit | oldCandidateRetryWalCounterexampleTest | Old worker's original candidate is applied again after owner rotation |
+| Unknown commit reply is not another release | unconfirmedTailRefundWalCounterexampleTest | No confirmed outcome or accepted candidate, yet the local frame is promoted to a financial result |
+
+Unsafe constructors are excluded from =step=. Their tests expect the named invariant
+to fail. [[file:../../../proofs/evidence/llm-wal-activation/check-counterexample-observations.py][The independent ITF decoder]] checks actual original queue/spent/exposure history,
+complete candidate/confirmation bodies, financial records, epochs and local images.
+Passing negative controls mean the intended violation was reproduced.
+
+Guarded controls additionally cover authentic-prefix requirements, durable candidate
+acceptance, final policy denial, old-owner accepted work, source invalidation,
+late commit after local WAL loss, repair/commit interleaving and recovery of the
+same application after snapshot rollback. The positive new-owner control reuses
+the same original application/reservation body with a current owner stamp and
+commits once, preserving the old candidate's fence.
+
+* Source-by-source audit
+
+[[file:../../../proofs/evidence/llm-wal-activation/source-review.json][Pinned identities and excerpts]], [[file:../../../proofs/evidence/llm-wal-activation/source-receipt-check.json][fresh blob checks]] and
+[[file:../../../proofs/evidence/llm-wal-activation/wal-source-audit.json][the focused WAL/recovery source extract]] cover nineteen files.
+
+| Source | Grounded mechanism | Reuse | Extension / remaining native evidence |
+|--------+--------------------+-------+---------------------------------------|
+| P12 authorized-effect-token.ss | Exact immutable effect/root/nonce/payload binding | Original account frame and source commitment | Complete current financial before/after image and durable body |
+| P13 strict-mediation.ss | Unavailable observation conservatively records spent nonce; invalid validation leaves state unchanged | Unknown response cannot resurrect consumed authority | Missing local WAL cannot prove remote non-commit |
+| P15 effect-host.ss | Attributable delivered acknowledgment; consumes even on exception/unknown; durable? and distributed-authority? false | Inert reservation versus irreversible outcome | Native WAL fsync and independent commit confirmation are separate evidence |
+| P17 store-backend.ss | Runtime owns append, fsync, lease, checkpoint IO, rebuild and repair; Scheme projects contracts | Keep storage implementation in native owner | Qualified complete frame, independent candidate retention and current-prefix repair |
+| P18 PromotionTransactionRecovery.lean | Source-bound recovery evidence and effect observation | Preserve original materialized effect provenance | Actual WAL/anchor/projection crash trace mapping |
+| P19 authorized recovery bridge | Exact recovery member and authority binding | Authenticate original source and target effect correspondence | Full financial application and independently current prefix join |
+| P20 CommittedEffectApplicationExactlyOnce.lean | Exact occurrence conclusion depends on runtime trace/universe premise | Require every real financial mutation to refine the declared effect | Does not prove an unwritten WAL or exclusive account writer |
+| P22 store.ss | Fact-log/checkpoint/repair contracts; runtime owns locking/fsync/replay/side effects | Reuse store receipt structure and native ownership | Store ID/capability receipt is not a flush acknowledgment or protected commit decision |
+| P31 SessionAttempt.lean | Recovery retains active attempt in pending | Preserve unresolved original obligation | Candidate/query outcome cannot be dropped on local restore |
+| P31 SessionAttempt.qnt | Pending retention and closed-state invariant | Failure ordering and restart controls | Complete candidate and financial-prefix recovery interleavings |
+| P33 deterministic budget closure | Original deterministic cost witness | Bound and original reservation provenance | Final usage before financial commit; WAL cannot invent usage |
+| P33 runtime budget separation | Watchdog and semantic budget evidence are distinct | Timeout never establishes zero usage | Unknown original budget hold remains intact |
+| P35 receipt context monotonicity | Governed monotonic context | Current owner/source/prefix progression | Persist stamps independently from worker/WAL snapshots |
+| P35 receipt lineage prefix | Explicit authenticated prefix inheritance | Complete protected history qualification | Numeric WAL position cannot authenticate a missing or forked body |
+| P43 funs-attempt.ss | Pure CAS intents; durable?/runtime-published?/action-authorized? false; reconcile is not acknowledgment | Pending intent and expected generation/revision | Runtime must query actual protected decision before activation |
+| P44 objects-attempt.ss | Frozen producer/scope/profile references | Preserve original semantic identity | Frozen references do not authenticate actual WAL/anchor state |
+| C8 BoundOperation.lean | Exact effect/state matching with Host authentication responsibility | Code as Policy for actual current submit/commit/activate effects | Matching request fields cannot prove persisted bytes or current prefix |
+| C10 CompoundAuthorization.lean | Required nonempty layers allow without errors; runtime owns atomic execution and authentic input | Fail closed on missing/erroring policy layers | Native atomic WAL/commit and final-use serialization |
+| C11 Composition.lean | Evaluation/validation alignment and invalidation conditions | Reuse compatible policy certificate obligations | No theorem here proves fsync, no-fork storage or snapshot anti-rollback |
+
+The runner recompiles Weaver's actual composition chain. It does not claim that
+all upstream proofs were recompiled: their pinned bytes/excerpts are freshly
+verified. Earlier Weaver settlement/gate persistence contracts guide this extension;
+the direct executable dependency is the actual category-24 account model, preserving
+the AI Agent Gateway logical execution boundary.
+
+* Current source qualification and native acceptance
+
+[[file:../../../proofs/evidence/llm-wal-activation/working-source-check.json][Live source hashes]] distinguish working files from the pinned baseline.
+Eighteen match. P17 changes only two control-plane import paths, captured in
+[[file:../../../proofs/evidence/llm-wal-activation/P17-working-diff.patch][the exact working diff]]. This textual comparison does not establish import-target
+runtime/ABI equivalence. No upstream source or dependency pin is modified.
+
+| Native gate | Required evidence before implementation acceptance |
+|-------------+----------------------------------------------------|
+| Atomic frame | Torn writes and process/power loss at header/body/checksum/commit boundary; reject incomplete or ambiguous frames |
+| Flush/accept order | Candidate acknowledgment requires complete retained body; local flush alone changes no available balance |
+| Protected decision | Lost commit reply and duplicate candidates produce one original application/reservation/hold/delta result |
+| Log truncation | Remove/mutate local committed-prefix records, including equal-length wrong bodies; close and repair from current protected evidence |
+| Missing authority body | Independent head exists but required record bodies are unavailable; no activation or empty-log replacement |
+| Cross-store restore | Account ID/hold/balance/source/usage and local WAL at different positions; restore exact original result before mutation |
+| Current final gate | Commit between observe/repair/install/activate and final use; stale confirmation or cached active flag cannot authorize funds |
+| Old workers | Restored proposals, WAL descriptors/buffers and accepted candidate handles cannot bypass protected owner/source/head CAS |
+| Unknown budgets | Missing final usage, source invalidation and unknown commit reply never release an original unknown hold |
+| Checkpoint pruning | Before any future pruning, independently anchored complete checkpoint plus suffix must preserve all uniqueness/hold/binding facts |
+
+Local proof closure is conditional on those native gates. No Gateway implementation,
+real WAL parser, storage crash injection, quorum recovery, exhaustive exploration,
+provider delivery, performance or recovery liveness acceptance is asserted.

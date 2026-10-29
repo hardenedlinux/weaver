@@ -1,0 +1,183 @@
+#+title: Weaver Dispatch Evidence to Source Terminal and Budget Release
+#+language: en
+#+options: toc:3
+
+* Decision and threat boundary
+
+A source-side zero invocation counter is not authoritative evidence of no execution.
+Category 22 deliberately keeps admission-plane counters inert while the Rust
+executor records the actual possible offer. A queued operation can therefore have
+source calls equal to zero and dispatch calls equal to one. No-execution must be
+proved against the original dispatch ledger and the closed execution boundary.
+
+This is an AI Agent Gateway software authority boundary. Closing means retiring
+logical execution rights and preventing all old workers, SDK callbacks, queued
+closures and mutable buffers from making another possible offer. It does not mean
+physical separation, hardware isolation or withdrawal of bytes already handed off.
+
+The reference protocol conservatively treats an uncertain burn as possible work.
+Even if no submit marker is visible, an unresolved burn prevents no-execution and
+keeps the original reservation held. A timeout, an empty source trace, a missing
+response, a process exit or absence in a stale snapshot cannot discharge it.
+
+* Immutable identity and evidence envelope
+
+Every resolution identifies the original root, canonical origin/family, claim,
+logical message, attempt, nonce consumption, profile commitment, exact manifest
+range and payload/route binding, budget/history domains and original reservation.
+The source, dispatch and account participants use the same resolution identity and
+exact immutable body. A new receipt ID, transport reconnect, worker epoch, nonce or
+alias cannot create a new financial application key.
+
+The durable evidence envelope contains the original dispatch decision and committed
+prefix, closure fence, possible-offer markers, original invocation identities,
+terminal attestation and final usage provenance. A participant cursor or numeric
+revision alone cannot authenticate its contents. The selected range models erase
+some identity dimensions into the already admitted operation; native qualification
+must check the entire upstream canonical registry binding rather than inventing
+fresh root/claim/budget identities from the compact fixture.
+
+The authority commits one resolution per original reservation/attempt slot:
+=NoExecution=, or =ExecutedTerminal=. The latter includes semantic success or failure
+in the native envelope; this model merges those two terminal outcomes because both
+require execution and final metering evidence. A rejected local request is not
+therefore a zero-cost remote result. Contradictory evidence quarantines the slot.
+
+* Ordered protocol
+
+1. Close the original execution slot under the current logical owner. Serialize
+   closure with the final possible-offer gate, drain or invalidate queued executable
+   closures, and authenticate a complete non-rollback dispatch prefix. Merely
+   acknowledging a cancellation request or advancing a source lease is insufficient.
+2. Resolve that prefix. No-execution requires no burn, no submit and no invocation,
+   plus no outstanding holder capable of executing. Executed-terminal requires the
+   original possible invocation and a separate attributable whole-call terminal
+   attestation. Full range write coverage alone is insufficient for LLM terminal.
+3. Commit an immutable resolution before releasing any source application ticket.
+   Loss of the commit response leaves an unresolved query, not permission to create
+   another resolution. Read by original identity and verify the complete body.
+4. Apply the resolution to the source ledger by CAS. Bind the original attempt,
+   expected pre-terminal state, current owner and exact resolution. Repeated reads
+   return the original application. Commit-stage projection does not send externally.
+5. Apply final usage once against the original reservation, after source terminal.
+   No-execution has usage zero. Executed-terminal requires an independent authentic
+   final usage record; terminal failure or completed transport cannot imply zero.
+6. Apply the account settlement once, linking the same resolution, source application
+   and immutable usage application. Retain the usage charge and release only the
+   proven unused remainder. Persist the application identity atomically with the
+   account delta before acknowledging success.
+
+A native source CAS may atomically combine terminal, retirement and known zero
+usage for no-execution. The reference separates them to expose the evidence needed
+by each effect. Financial release still waits for the linked applications.
+
+* State and failure semantics
+
+| Evidence state | Permitted interpretation | Budget treatment |
+|----------------+--------------------------+------------------|
+| Source calls zero; executor unknown | No conclusion about execution | Full original bound retained |
+| Burn committed; submission reply absent | Possible execution remains unresolved | Full bound retained |
+| Original dispatch closed; complete absence certificate | No-execution resolution may commit | Hold until source, usage and account applications |
+| Partial write or late partial callback | Original range progress only | No automatic release or retry |
+| Original full range receipt | Exact interval write coverage only | Await whole-call terminal and final usage |
+| Original terminal; usage absent | No more original execution; charge unknown | Full bound retained |
+| Final usage exceeds the reserved bound | Reservation accounting contract violated | Quarantine; never truncate charge to manufacture a refund |
+| Source terminal applied; account response lost | Query original account application | No second financial delta |
+| Conflicting terminal/usage evidence | Reconciliation conflict | Close mutation path and retain unresolved exposure |
+| Mixed dispatch/source/account snapshots | Recovery unqualified | No source or financial application |
+
+The accounted bound is split into final usage plus released remainder exactly once.
+A zero remainder is still an applied settlement identity; numeric zero cannot mean
+unapplied. The outer admission model's monotonic charged exposure is a risk ledger,
+not a refundable account balance. This extension adds a selected-reservation
+application model; it does not subtract from or reinterpret the sealed outer model.
+
+* Late receipts and retries
+
+A callback carries original call identity and immutable attribution. It may arrive
+after closure, owner change, terminal commit, source application or payment. A
+matching full-write receipt remains data and can complete the old range record.
+It cannot reopen a resolution, replace usage, mint a tail or refund unknown cost.
+
+A duplicate authentic final-usage receipt returns the original metering result.
+A contradictory late usage amount is quarantined and audited; it is not silently
+accepted, charged twice or used to recalculate a completed refund. Corrections,
+credits and provider billing adjustments need separate authorized append-only
+financial operations, outside this protocol.
+
+Go SDK retry handling queries the original resolution or proposes a new separately
+sponsored attempt. It cannot replay a consumed dispatch, treat local source zero
+as absence, resubmit a range or clear an outstanding budget hold. New attempts
+remain subject to the existing aggregate sponsor and shared-budget constraints.
+
+* Cross-storage recovery
+
+The durable authority, source application and account application may be stored
+separately. The reference serializes their observable effects; it assumes no magic
+transaction across those stores. Each participant has an immutable application
+identity and an exact before/after body with its local CAS result.
+
+Recovery closes mutation first, obtains the current non-rollback authority prefix,
+then reconciles source and account results to it. A participant snapshot may be an
+older prefix but cannot authorize mutation until replay/readback restores the
+original applied identities. Detect a missing authority result, an account effect
+without its linked source application, a conflicting immutable body or an unknown
+commit status; remain closed. Never infer non-application from a stale cache.
+
+An application committed before a lost response is retained in its authoritative
+log. The recovering worker reads that result rather than repeating the delta.
+An account application that appears ahead of a source snapshot requires restoration
+of the original source application, not another settlement or destructive rollback.
+Native storage must atomically couple each participant's application ID and delta;
+a split ID/delta write is an explicit rejected implementation.
+
+The Quint product models immutable decisions/applications and independently stale
+participant views. The Lean product preserves authoritative records over restart;
+its full-state recovery predicate must authenticate the actual cross-store join.
+Thus Lean does not establish a storage engine's anti-rollback behavior from integer
+cursors. The finite view controls exercise additional recovery bookkeeping, not a
+claim that the two formal languages have identical concrete storage models.
+
+* Scheme, Go and Rust ownership
+
+| Owner | Responsibility | Concrete execution constraint |
+|-------+----------------+-------------------------------|
+| Scheme / POO | Define original identity, evidence types, pending retention, source terminal and usage semantics; derive Cedar requests | Pure rules distinguish possible offer, terminal and metering; allow cannot certify physical non-execution |
+| Go | Kubernetes identity/lifecycle integration, protocol adapters, SDK retry proposals, attributable provider receipt translation | No direct provider send or account mutation authority; cancellation/zero SDK calls are observations |
+| Rust broker / executor | Serialize close with final offer, preserve affine burn/invocation and old-worker fence, ingest exact original receipts | No accepted no-execution while an old execution holder can still act |
+| Rust ledger / account owner | Persist immutable resolution and participant application CAS, qualify recovery, couple ID and financial delta | Unknown stays held; exact linked usage precedes one remainder release |
+| Cedar / cedar-poo-spec | Code as Policy for resolveNoExecution, resolveTerminal, applyUsage and settleOriginalReservation | BoundOperation authenticates the actual effect and current context at use; all required layers allow without errors |
+| Quint / Lean | Explore adverse interleavings and prove guarded transition/composition properties | Native durable prefix, receipt truth and exhaustive execution-path mediation remain explicit premises |
+
+Cedar checks who may resolve or settle and what original context must match. It
+does not create missing execution facts. A trusted runtime must authenticate the
+facts supplied to Scheme and Cedar and execute only the exact authorized CAS.
+A policy change can stop further mutation; authentic old observations still remain
+historical data. Current reconciliation authority must not rewrite original facts.
+
+* Reuse and extension boundary
+
+Reuse POO Flow's exact effect binding, conservative one-shot consumption, pending
+retention, generation/revision CAS intents, source-bound completion and lineage
+premises. Reuse Cedar bound-operation matching, layered deny/error handling and
+aligned validation/evaluation obligations. No new parallel policy evaluator is
+introduced.
+
+Extend the host boundary with durable dispatch closure evidence, immutable terminal
+resolution, explicit source/usage/account application joins and non-rollback
+recovery qualification. The in-process effect Host and pure session reconcile
+proposal do not already implement this distributed evidence protocol.
+
+The current Lean product projects to actual LlmAttemptLedger transitions and,
+under an explicit actual-step mapping, to the category-22 executor run. Source
+terminal reconciliation preserves the existing registered-attempt, retirement,
+no-prefix, usage-bound and close rules. Source invocation reconciliation can fail
+if its original route is no longer current: it must retain the hold, not fabricate
+a current invocation. A future authenticated historical-invocation import would
+need its own source transition and proof, not a weakened current invoke check.
+
+The selected source ledger and the admission source snapshot are separate typed
+projections in this extension. A native adapter must prove their exact original
+binding and publish the source application through the existing authoritative
+commit/projection protocol. The proof does not establish an atomic transaction
+between arbitrary provider transport, native stores and those two projections.

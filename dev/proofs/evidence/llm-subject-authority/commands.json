@@ -1,0 +1,318 @@
+[
+  {
+    "label": "LlmSubjectAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmSubjectAuthority.olean",
+      "proofs/lean/LlmSubjectAuthority.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmSubjectAuthority.lean": "a777b40dc80a41f882437e8fa3d92753d90f7559c8872cda568fcd4eb3cc67fa"
+    },
+    "exit": 0,
+    "seconds": 9.77,
+    "watchdogSeconds": 20,
+    "compiledSha256": "42b6f4358cba01f448bb88433967e00428c5fcb4e378f8df81d9d03664ce256d"
+  },
+  {
+    "label": "prepare-bundle",
+    "args": [
+      "python3",
+      "proofs/prepare_subject_authority.py"
+    ],
+    "sourceSha256": {
+      "proofs/prepare_subject_authority.py": "325e56fd72002223dce1612352cedb9b17f494705562f8810a4538275b9dad39"
+    },
+    "exit": 0,
+    "seconds": 0.512,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "parse-raw-leaf",
+    "args": [
+      "/opt/homebrew/opt/node/bin/node",
+      "proofs/evidence/llm-subject-authority/parse-raw-leaf.cjs"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-subject-authority/parse-raw-leaf.cjs": "6abcae38f73caa65db9c6ab3df474cca62ae9d1594b59eb6e593e36f14e21d42"
+    },
+    "exit": 0,
+    "seconds": 0.529,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "parse-bundle",
+    "args": [
+      "quint",
+      "parse",
+      "proofs/evidence/llm-subject-authority/bundle/LlmSubjectAuthority.qnt",
+      "--out",
+      "proofs/evidence/llm-subject-authority/bundle-parsed.json",
+      "--source-map",
+      "proofs/evidence/llm-subject-authority/bundle-source-map.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-subject-authority/bundle/LlmSubjectAuthority.qnt": "80590eb4be699357f507447b37a93a3b1685776e50acc36e36ba7b11164cb17a"
+    },
+    "exit": 0,
+    "seconds": 3.744,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "verify-bundle",
+    "args": [
+      "python3",
+      "proofs/evidence/llm-subject-authority/check-bundle.py"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-subject-authority/check-bundle.py": "182f6a62f7f1cb0b5fe9fdb41b5ac31f0b1d9e8b484115975ce61ea4c75634fb"
+    },
+    "exit": 0,
+    "seconds": 0.813,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "api-parse",
+    "modules": 16,
+    "sourceSha256": "80590eb4be699357f507447b37a93a3b1685776e50acc36e36ba7b11164cb17a",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 4.84,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "aa66bc417dfb691b152e52b7554395c85a59cd1cac4ca1c59b0206cd69a2c83f",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 36.777,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "sharedWorkloadCannotRegisterSubjectTest",
+      "configuredAuthorityEvidenceRequiredTest",
+      "otherIdentityIssuerRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.638,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "taskOriginCannotComeFromSharedWorkloadTest",
+      "sharedIdentityCannotAssignTest",
+      "tenantSubstitutionRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.971,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "producerSubstitutionRejectedTest",
+      "exactJointProofRequiredTest",
+      "originalEnrollmentKeyCannotChangeTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.401,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "assignmentDoesNotPublishOrIssueTest",
+      "lostAssignmentReplyRetainsOriginalTest",
+      "existingAssignmentCannotBeReplacedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.162,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "subjectRotationInvalidatesOldApprovalTest",
+      "producerRotationInvalidatesOldApprovalTest",
+      "sameKeyCredentialRotationCanReauthorizeTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 3.242,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "producerRotationCanReauthorizeSamePlanTest",
+      "changedSubjectKeyCannotRewritePendingPlanTest",
+      "oldWorkerCannotRotateFromOldParentTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.264,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "generationCannotBeReopenedTest",
+      "rotationCannotRenameSubjectTest",
+      "sameKeyRotationDoesNotChangeHistoricalPlanTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.007,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "oldSourceReadCannotPublishTest",
+      "publicationNeedsCurrentPolicyTest",
+      "lostPublicationReplyRecoversExactPlanTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.463,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-8",
+    "passed": [
+      "publicationCannotRepeatTest",
+      "planPublicationHasNoCredentialEffectTest",
+      "rotatedIdentityRecheckedAtNewIssueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.435,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-9",
+    "passed": [
+      "renewedIdentityCanIssueOriginalPlanTest",
+      "sharedWorkloadCannotRecoverSubjectTest",
+      "recoveryRequiresCurrentProofTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.121,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-10",
+    "passed": [
+      "oldSubjectCredentialCannotRecoverTest",
+      "recoveryRequiresReadPolicyTest",
+      "actualActivationPreservesOriginalHoldTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.512,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-11",
+    "passed": [
+      "recoveredWorkerCannotReplaceFirstKeyTest",
+      "oldCredentialCannotBorrowNewGenerationTest",
+      "renewalRetainsIssuedCredentialTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.853,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-12",
+    "passed": [
+      "forgedAuthorityCounterexampleTest",
+      "replacedEnrollmentCounterexampleTest",
+      "erasedAssignmentCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.206,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "api-controls-13",
+    "passed": [
+      "missingPlanOutcomeCounterexampleTest",
+      "phantomPlanOutcomeCounterexampleTest",
+      "splitRecoveryCannotIssueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.266,
+    "currentOfficialInvocation": true
+  },
+  {
+    "label": "counterexamples",
+    "args": [
+      "python3",
+      "proofs/evidence/llm-subject-authority/check-counterexamples.py"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-subject-authority/check-counterexamples.py": "f81e74e744d74d882143c033e1271133df1612fd0a77ba9452a6f6d40f184c90"
+    },
+    "exit": 0,
+    "seconds": 0.873,
+    "watchdogSeconds": 20
+  }
+]

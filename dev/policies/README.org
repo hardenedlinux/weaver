@@ -1,0 +1,25 @@
+#+TITLE: Cedar Policy Development Contracts
+#+LANGUAGE: en
+
+* Semantic owner
+cedar-poo-spec supplies the BoundOperation effect/state projection contract and
+CompoundAuthorization's all-allow, error-free contract. It does not authenticate
+request-supplied facts or prove that a native socket used them. Weaver's source
+task commitment, deciding ledger and final broker discharge those host duties.
+
+The streaming fixture is an explicit test policy, not a permissive production
+default. Its schema describes the exact native projection. Strict Cedar schema
+validation, positive/negative native decisions, and actual final-wire tests run
+against it. An invoke-only policy does not authorize stream actions.
+
+* Separate verification roles
+- Quint explores schedules, crash/reply loss, owner handoff, partial writes and
+  deliberate unsafe counterexamples. Sampled runs are not universal proofs.
+- Lean proves parametric invariants under explicit source, native freshness,
+  storage and executor-evidence premises. It does not model-check schedules or
+  authenticate native receipts merely by accepting a record.
+- Rust/Go PBT and real TCP/TLS tests check native transitions, byte effects and
+  independent oracles. They are evidence for refinement, not compiler proofs.
+- SysML v2 specifies allocation, typed interfaces, requirements and work bounds.
+  Its structural verdict is not an authorization permit.
+- ASP Rust is a deny-mode development dependency and never runtime authority.

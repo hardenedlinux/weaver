@@ -1,0 +1,111 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":3,"sourceSha256":"afe75fc1a6f60fdba69ca86b5ed81c323c8a2366c75a16bdc940ac28b7477f3b"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"c9aa2858383b7c26edb41f444f99a8e2ea1bc44e7263d73c511eb709b532d170"}
+@@START {"label":"api-controls-0","limit":20}
+
+  SemanticGatewaySlice
+    ok queueHasNoExternalSendTest passed 1 test(s)
+    ok actualDispatchUsesOriginalRouterTest passed 1 test(s)
+    ok forgedProfileCannotQueueTest passed 1 test(s)
+
+  3 passing (24ms)
+@@DONE {"label":"api-controls-0","passed":["queueHasNoExternalSendTest","actualDispatchUsesOriginalRouterTest","forgedProfileCannotQueueTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  SemanticGatewaySlice
+    ok forgedOriginCannotQueueTest passed 1 test(s)
+    ok changedResponseCannotQueueTest passed 1 test(s)
+    ok generationChangeRejectsOldPermitTest passed 1 test(s)
+
+  3 passing (6ms)
+@@DONE {"label":"api-controls-1","passed":["forgedOriginCannotQueueTest","changedResponseCannotQueueTest","generationChangeRejectsOldPermitTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  SemanticGatewaySlice
+    ok rejoinPreservesIdentityTest passed 1 test(s)
+    ok policyAfterQueueRejectsSendTest passed 1 test(s)
+    ok historyAfterQueueRejectsSendTest passed 1 test(s)
+
+  3 passing (8ms)
+@@DONE {"label":"api-controls-2","passed":["rejoinPreservesIdentityTest","policyAfterQueueRejectsSendTest","historyAfterQueueRejectsSendTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  SemanticGatewaySlice
+    ok artifactCurrentnessRequiredTest passed 1 test(s)
+    ok actualPolicyRequiredTest passed 1 test(s)
+    ok crashBeforeDispatchKeepsQueueTest passed 1 test(s)
+
+  3 passing (8ms)
+@@DONE {"label":"api-controls-3","passed":["artifactCurrentnessRequiredTest","actualPolicyRequiredTest","crashBeforeDispatchKeepsQueueTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  SemanticGatewaySlice
+    ok oldWorkerAfterRecoveryRejectedTest passed 1 test(s)
+    ok recoveryRejoinCanProgressTest passed 1 test(s)
+    ok lostReplyCannotRetryTest passed 1 test(s)
+
+  3 passing (5ms)
+@@DONE {"label":"api-controls-4","passed":["oldWorkerAfterRecoveryRejectedTest","recoveryRejoinCanProgressTest","lostReplyCannotRetryTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-5","limit":20}
+
+  SemanticGatewaySlice
+    ok crashAfterDispatchCannotRetryTest passed 1 test(s)
+    ok partialWriteRetainsUnknownHoldTest passed 1 test(s)
+    ok policyChangeStopsNextWriteTest passed 1 test(s)
+
+  3 passing (11ms)
+@@DONE {"label":"api-controls-5","passed":["crashAfterDispatchCannotRetryTest","partialWriteRetainsUnknownHoldTest","policyChangeStopsNextWriteTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-6","limit":20}
+
+  SemanticGatewaySlice
+    ok historyChangeStopsNextWriteTest passed 1 test(s)
+    ok newGenerationStopsNextWriteTest passed 1 test(s)
+    ok oldWriterCannotReleaseAfterRestartTest passed 1 test(s)
+
+  3 passing (5ms)
+@@DONE {"label":"api-controls-6","passed":["historyChangeStopsNextWriteTest","newGenerationStopsNextWriteTest","oldWriterCannotReleaseAfterRestartTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-7","limit":20}
+
+  SemanticGatewaySlice
+    ok lateReceiptIsNotFreshSendTest passed 1 test(s)
+    ok timeoutDoesNotReleaseBudgetTest passed 1 test(s)
+    ok foreignUsageReceiptRejectedTest passed 1 test(s)
+
+  3 passing (10ms)
+@@DONE {"label":"api-controls-7","passed":["lateReceiptIsNotFreshSendTest","timeoutDoesNotReleaseBudgetTest","foreignUsageReceiptRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-8","limit":20}
+
+  SemanticGatewaySlice
+    ok untrustedUsageReceiptRejectedTest passed 1 test(s)
+    ok settlementRequiresTerminalTest passed 1 test(s)
+    ok noExecutionSealFencesQueuedWorkTest passed 1 test(s)
+
+  3 passing (13ms)
+@@DONE {"label":"api-controls-8","passed":["untrustedUsageReceiptRejectedTest","settlementRequiresTerminalTest","noExecutionSealFencesQueuedWorkTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-9","limit":20}
+
+  SemanticGatewaySlice
+    ok noExecutionRejectsOldQueuedPermitTest passed 1 test(s)
+    ok duplicateSettlementRejectedTest passed 1 test(s)
+    ok queueSendCounterexampleTest passed 1 test(s)
+
+  3 passing (4ms)
+@@DONE {"label":"api-controls-9","passed":["noExecutionRejectsOldQueuedPermitTest","duplicateSettlementRejectedTest","queueSendCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-10","limit":20}
+
+  SemanticGatewaySlice
+    ok unknownRefundCounterexampleTest passed 1 test(s)
+    ok forgottenConsumptionCounterexampleTest passed 1 test(s)
+    ok sourceZeroCallCounterexampleTest passed 1 test(s)
+
+  3 passing (14ms)
+@@DONE {"label":"api-controls-10","passed":["unknownRefundCounterexampleTest","forgottenConsumptionCounterexampleTest","sourceZeroCallCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-11","limit":20}
+
+  SemanticGatewaySlice
+    ok foreignTicketCounterexampleTest passed 1 test(s)
+    ok hiddenSdkRetryCounterexampleTest passed 1 test(s)
+
+  2 passing (6ms)
+@@DONE {"label":"api-controls-11","passed":["foreignTicketCounterexampleTest","hiddenSdkRetryCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

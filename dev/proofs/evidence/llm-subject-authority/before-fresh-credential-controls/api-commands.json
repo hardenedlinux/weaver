@@ -1,0 +1,211 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 16,
+    "sourceSha256": "b4d68762de7fde488735879d5ef83560494dd420e593997bbb4ccab97a57f3fc",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 5.36
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "c6911275c7072beed6c1d00ae899856f9476be51b31807f978ccb622bb570667",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 40.938
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "sharedWorkloadCannotRegisterSubjectTest",
+      "configuredAuthorityEvidenceRequiredTest",
+      "otherIdentityIssuerRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.928
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "taskOriginCannotComeFromSharedWorkloadTest",
+      "sharedIdentityCannotAssignTest",
+      "tenantSubstitutionRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.289
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "producerSubstitutionRejectedTest",
+      "exactJointProofRequiredTest",
+      "originalEnrollmentKeyCannotChangeTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.196
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "assignmentDoesNotPublishOrIssueTest",
+      "lostAssignmentReplyRetainsOriginalTest",
+      "existingAssignmentCannotBeReplacedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.417
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "subjectRotationInvalidatesOldApprovalTest",
+      "producerRotationInvalidatesOldApprovalTest",
+      "sameKeyCredentialRotationCanReauthorizeTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.617
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "producerRotationCanReauthorizeSamePlanTest",
+      "changedSubjectKeyCannotRewritePendingPlanTest",
+      "oldWorkerCannotRotateFromOldParentTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.445
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "generationCannotBeReopenedTest",
+      "rotationCannotRenameSubjectTest",
+      "sameKeyRotationDoesNotChangeHistoricalPlanTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.567
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "oldSourceReadCannotPublishTest",
+      "publicationNeedsCurrentPolicyTest",
+      "lostPublicationReplyRecoversExactPlanTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 3.405
+  },
+  {
+    "label": "api-controls-8",
+    "passed": [
+      "publicationCannotRepeatTest",
+      "planPublicationHasNoCredentialEffectTest",
+      "rotatedIdentityRecheckedAtNewIssueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 3.07
+  },
+  {
+    "label": "api-controls-9",
+    "passed": [
+      "renewedIdentityCanIssueOriginalPlanTest",
+      "sharedWorkloadCannotRecoverSubjectTest",
+      "recoveryRequiresCurrentProofTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.437
+  },
+  {
+    "label": "api-controls-10",
+    "passed": [
+      "oldSubjectCredentialCannotRecoverTest",
+      "recoveryRequiresReadPolicyTest",
+      "actualActivationPreservesOriginalHoldTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 4.019
+  },
+  {
+    "label": "api-controls-11",
+    "passed": [
+      "recoveredWorkerCannotReplaceFirstKeyTest",
+      "forgedAuthorityCounterexampleTest",
+      "replacedEnrollmentCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 3.192
+  },
+  {
+    "label": "api-controls-12",
+    "passed": [
+      "erasedAssignmentCounterexampleTest",
+      "missingPlanOutcomeCounterexampleTest",
+      "phantomPlanOutcomeCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.867
+  },
+  {
+    "label": "api-controls-13",
+    "passed": [
+      "splitRecoveryCannotIssueTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 2.309
+  }
+]

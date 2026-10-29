@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-caller-custody/check-document-inventory.py", line 9, in <module>
+    target=target.split('::')[0];assert (p.parent/target).exists(),(p,target);nlinks+=1
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~^^
+AssertionError: (PosixPath('/Users/guangtao/ghq/github.com/tao3k/weaver/docs/40-49-admission-coordination/43-caller-custody/43.03-proof-and-source-evidence.org'), '../../../proofs/evidence/llm-caller-custody/counterexample-observations.json')

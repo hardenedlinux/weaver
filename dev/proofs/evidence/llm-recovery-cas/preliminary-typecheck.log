@@ -1,0 +1,8 @@
+
+ Error [QNT404]: Name 'toSet' not found
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmRecoveryCAS.qnt:56:14
+  56:   val unique=s.decisions.map(d=>d.request.id).toSet().size()==s.decisions.length()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: parsing failed

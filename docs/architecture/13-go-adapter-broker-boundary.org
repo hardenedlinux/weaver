@@ -1,0 +1,319 @@
+#+title: Weaver Go Adapter to Rust Broker: Policy-Preserving Egress
+#+language: en
+#+date: 2026-10-18
+#+property: STATUS proposed-contract-no-runtime-or-proof-implementation
+#+options: toc:3
+#+link: ag https://github.com/agentgateway/agentgateway/blob/955d56fae09b45f3cb8e85e797dbb1eb06134f77/%s
+
+* Decision and review findings
+
+The reference Go adapter serializes and normalizes an operation; the Rust
+broker owns actual credentialed application submission. A single call into an
+SDK is not proof of a single upstream attempt. Enforcement must cover every
+application request start and credential release underneath retries, redirects,
+connection management and deferred body readers. No unqualified transport or
+background task may be delegated an unrestricted send capability.
+
+This refines, rather than replaces, S1-S6 in
+[[file:05-authorization-execution-protocol.org][the authorization-to-execution protocol]]. It introduces no gateway code,
+wire schema, model or proof. The focused view is the proposed contract:
+
+#+caption: Adapter data is not send authority; the broker constrains actual submission and each admitted stream segment.
+[[file:diagrams/14-adapter-broker-boundary.svg]]
+
+[[file:diagrams/14-adapter-broker-boundary.d2][D2 source]]. Scheme defines the semantic contract. Go produces the bounded
+representation. Rust preserves that contract through the actual transport.
+Quint models interleavings across these owners, and Lean must establish their
+projection and transition properties under explicit physical assumptions.
+
+** Source-grounded reasons to reject the single-call assumption
+
+The official [[https://go.dev/src/net/http/transport.go][Go transport source]] documents network-error retry conditions,
+including idempotent/replayable requests, and environment-selected proxies.
+A Go method call is therefore not an application-attempt counter. The
+[[https://go.dev/src/net/http/client.go][Go client source]] documents redirect following and method/body rewriting or
+replay. Redirect refusal alone does not disable lower transport retry.
+
+The [[https://grpc.io/docs/guides/retry/][gRPC retry guide]] distinguishes configured retries from transparent retry,
+which can occur without an explicit retry policy. Its server-processing
+criterion is not Weaver's stricter criterion for disclosure or application
+submission. A retry judged safe by a library can still be disallowed here.
+
+The inspected agentgateway [[ag:crates/agentgateway/src/http/retry/mod.rs][retry policy]] supports attempt counts and request/response predicates;
+its [[ag:crates/agentgateway/src/http/retry/body.rs][replayable body]] buffers request data. The
+[[ag:crates/agentgateway/src/proxy/httpproxy.rs][HTTP proxy]] also invokes request mirroring independently of retries.
+These are useful proxy features, not allegations of an upstream vulnerability.
+Weaver must explicitly mediate such extra effects rather than assume an
+upstream proxy/SDK preserves its one-claim contract.
+
+* Exact boundary and complete mediation
+
+** Go produces data; the broker derives the send
+
+A permitted Go SDK role is deterministic request construction against the
+selected protocol contract, with network submission unavailable. The selected
+SDK must actually support that separation. A custom transport hook is not
+sufficient if another code path, plugin, goroutine or fallback client can dial
+upstream directly. If construction cannot be separated, do not use that SDK
+in this adapter role. Moving it into a qualified broker changes its trust and
+transport obligations; it does not automatically solve hidden effects.
+
+The handoff contains the exact operation, admitted closure identity, bounded
+immutable payload reference or sealed message, recipient constraints, transform
+identity and stream/resource contract. It carries neither raw application
+credentials, an open upstream socket, a Go callback nor the broker's emission
+handle. Rust checks the received representation, immutable content identity,
+reference ownership/lifetime and supported fields; it does not trust a Go
+assertion that these checks already passed. Shared writable memory, a mutable
+file path or a lazy producer is not a frozen body.
+
+Use existing operation/subject and command-binding contracts from
+[[file:02-interfaces-and-policy.org][Unified interfaces]]. A conceptual handoff is not permission to invent a
+parallel public DSL or reuse an old grant signature for a new representation.
+
+Retried adapter-to-broker RPCs keep the same authenticated command ID and exact
+input binding. The receiver deduplicates/resolves that command; it never creates
+a fresh operation/claim on replay or returns another emission handle. This
+control-message retry is distinct from another upstream application attempt.
+Payload upload retransmission also needs bound range identity and mismatch
+rejection; it cannot itself trigger upstream submission.
+
+** Scheme constraints must reach physical bytes and recipients
+
+| Scheme / POO contract | Go responsibility | Rust broker/coordination responsibility |
+|-----------------------+-------------------+-----------------------------------------|
+| Exact policy projection and complete required checks | Produce the selected method/tool/model, arguments, actor and recipient representation | Verify binding and evaluate the admitted Cedar inventory; require allow without policy errors |
+| Permitted transforms | Apply only named normalization/encoding; expose resulting semantics before authorization | Independently derive/validate the outbound request; credential injection cannot change account, target or action |
+| Recipient equivalence and disclosure scope | Preserve provenance and propose endpoint candidates, never silently replace intent | Bind actual address/TLS peer/origin/proxy path to admitted constraints at use time |
+| Source/currentness and restrictive history | Carry authenticated owner references; do not mint validity Booleans | Enforce the owner's admitted cut/lease at commit, claim and applicable stream checkpoints |
+| Effect multiplicity and obligations | Do not run retries, redirects, hedges, mirrors or tool follow-ups as adapter side effects | One claim, one bounded application attempt; extra effects require their own admitted lineage/authority |
+| Stream language, units and resource limits | Seal bounded messages/ranges and preserve order; no body mutation after handoff | Validate supported prefix/message semantics; reserve capacity and gate every admitted submission unit |
+
+An unimplemented Scheme predicate is not an executable guard. The owner must
+export an admitted concrete validator/projection/lease contract whose checked
+result the runtime can bind, or the runtime must obtain a bounded owner decision
+before entering the critical transition. Unsupported semantics reject admission.
+The synchronous POO callback must not reenter its blocked Scheme owner to validate
+a chunk. Any continuation requires a qualified derived validator/lease or an
+explicitly supported separate lifecycle protocol. Existing preflight/unknown
+admission cannot be renamed into this streaming authority.
+
+Credentials and deployment egress must prevent bypass. The Go adapter can use
+only its separately scoped identity/discovery/broker services, not arbitrary
+application destinations. The Rust broker's constrained transport is also part
+of the trusted boundary. Environment proxies, service meshes, sidecars and
+provider gateways that replay or mirror requests must be disabled for this
+profile or included in its enforceable attempt contract. Removing an API key
+alone does not prevent unauthenticated data exfiltration. Full mediation remains
+a deployment premise; a privileged deployment owner can invalidate it.
+
+* Retry, redirect and route rules
+
+** An attempt is below a convenience API
+
+The conservative profile permits at most one application request start per
+claimed attempt. Request headers, tool invocation metadata and stream-opening
+messages can trigger effects or disclose information before body data exists.
+Opening a new HTTP request or RPC stream is another application start even if
+it is called transparent retry, failover, hedging or resumption. Multiple writes
+and TCP retransmissions within the same admitted stream are not new application
+starts; they still obey its content/range and resource limits.
+
+The broker must qualify the lowest application-submission path, including
+asynchronous queues, library retries and connection-pool recovery. Disabling
+an SDK retry counter, using a lower-level API, or observing one wrapper call is
+insufficient. A transport that cannot expose/control this boundary is unavailable
+for this protected profile. Library claims of idempotence, an HTTP method or an
+Idempotency-Key header are not effect-absence or receiver-idempotency evidence.
+
+One application stream can still carry multiple semantic effects. A tool call
+inside MCP, a bidirectional RPC or an SDK-managed session needs its own action,
+lineage and applicable history/budget admission; opening the session does not
+authorize arbitrary later calls. A byte-range slot alone cannot authorize a
+new tool/action/account. The property is both bounded request starts and
+complete mediation of semantic effects carried by their messages.
+
+Connection acquisition may have bounded alternate dials only under its admitted
+service contract and without replaying application data. Credential disclosure,
+including client authentication during a handshake, has its own bound recipient
+and release authorization; it cannot be dismissed as harmless pre-request work.
+No new claim is inferred from a failed dial, refused stream, reconnect or reset.
+
+** Redirects and endpoint changes are proposals
+
+A received redirect does not authorize following Location. A protected response
+gate may return the permitted response; issuing a follow-up request requires a
+new admitted operation with the resulting method, body, recipient and credentials.
+Do not forward credentials, cookies or request signatures into a new origin as
+a library side effect. Returning a redirect is not automatically permission for
+a protected agent to act on it; its next request must also be mediated.
+
+A route name is not a recipient identity. Bind the selected route/publication,
+recipient domain/account, permitted resolution constraints and actual TLS/origin
+identity. Policy may define a bounded equivalence class of replicas; Go cannot
+invent one from matching labels. DNS resolution or connection selection within
+that admitted class is permitted only if the committed binding allows it and
+current source/credential constraints still hold. Otherwise reject the old
+attempt and obtain new admission; never splice a fresh route into an old grant.
+
+Pooled connections must be partitioned/checked for tenant, origin, peer identity
+and credential/session scope. HTTP/2 connection reuse or multiplexing is not
+permission to coalesce different disclosure domains. Route change after enqueue
+must not rewrite queued authority-bearing work. A changed/expired binding before
+a final guard blocks new submission; a change after physical submission cannot
+retract it. Retain the residual pause/syscall window and stronger stop/receiver
+fencing premises from the canonical protocol.
+
+** Extra attempts do not inherit the original claim
+
+Unknown outcome leaves the original claim spent and possible exposure held.
+A new attempt needs explicit recovery/retry eligibility, fresh source/history
+and budget admission and its own identity; it must not disguise a duplicate of
+the unresolved effect. A protocol-specific idempotent replay mode requires the
+separate receiver contract already described in S6. The conservative profile
+does not enable it. Mirror, hedge, model fallback and SDK-generated tool calls
+are independent effects with explicit lineage and disclosure/budget obligations.
+
+* Selected message-stream specialization
+
+[[file:14-stream-message-authorization.org][The streaming authorization closure]] selects complete bounded semantic messages,
+a fixed parent escrow, one authorized message slot/writer per stream and typed
+child message claims. It specifies S1-S6 reuse, physical enqueue, range intents,
+partial writes, the seal race, recovery and final-cost requirements. The generic
+prefix/checkpoint requirements below do not mean arbitrary prefix-policy
+streaming or pipelined authorization is already selected or implemented.
+Per-range authority only attenuates an already fully authorized message.
+Existing one-shot grants are reused per semantic operation, never as permission
+for unknown future messages.
+
+* Streaming: permission before irreversible submission
+
+The baseline body-dependent profile buffers a bounded complete request before
+authorization. Unknown future content cannot inherit that permission. A separate
+streaming capability must define its accepted message/prefix language, recipient,
+ordering, checkpoints, maximum in-flight range and resource bounds. If the policy
+needs a complete message, buffer that complete bounded message before submitting
+any part of it. A final-body predicate is not a prefix-safe streaming predicate.
+
+The base attempt still reserves and commits its obligations before claim in
+S1/S4. Streaming cannot defer that base hold until after opening the request.
+Any later incremental reservation is a separately specified stream-ledger
+extension within the already admitted session limits, not a retroactive S4 or
+a bypass of its history/budget serialization. Without that extension, only
+ranges already covered by the original held envelope may become eligible.
+
+For an admitted streaming profile, the proposed transition contract is:
+
+1. Acquire/seal a bounded message or range with exact stream incarnation,
+   direction, sequence, content identity and units. Normalize policy-relevant
+   trailers/metadata before their release; do not let them change an already
+   approved action. Full-message checks cannot be deferred until after emission.
+2. Apply the admitted Scheme-derived validator/currentness contract and required
+   Cedar checks to that unit or the explicitly authorized prefix. Reserve its
+   incremental budget/history obligations atomically before queue admission.
+3. Allocate one bound submission slot for that sequence/range. The queue receives
+   immutable content and attenuated authority for that slot, never a generic
+   write callback or reusable session-wide allow token.
+4. Before offering bytes to the constrained application transport, enforce the
+   slot, recipient, currentness/lease and deadline gates. Track admitted, queued,
+   offered and possibly submitted data separately. A failed partial write does
+   not authorize replaying the message or reopening the stream.
+5. Seal the input frontier on cancellation/expiry/revocation as defined by the
+   profile, stop new admissions, and retire outstanding producer/queue/emitter
+   capabilities before asserting closure. Retain unknown exposure and exact
+   range evidence; transport cancellation alone does not prove retirement.
+
+This is a required extension contract, not a claim that existing one-shot grants
+already implement per-range permissions. The original application-start claim
+is never reissued for each chunk. Per-range slots attenuate that stream's
+admitted authority and cannot create another request, recipient or session.
+A stream reconnect/resume is a new application start and needs explicit new
+admission, even when it carries the same logical session name.
+
+Checkpoint checks and socket writes are not magically atomic. The profile must
+bound already admitted/queued/in-flight exposure and specify its lease and stop
+semantics. A new restrictive read must honor that outstanding exposure in the
+common history/conflict scope. Strict zero-emission-after-revocation requires a
+qualified transport/receiver fence or quiescence, not merely a chunk counter.
+Do not claim an instantaneous cut across an accepted write. An unknown prefix
+cannot be refunded or relabeled public because the client disconnected.
+
+Message identity and framing must preserve policy meaning across partial
+reads, compression, encoding, trailers and protocol parsing. Byte/token limits
+use declared units and bounded conversions; an encoded-size limit does not
+bound decoded memory or semantic token cost. A split tool invocation cannot
+bypass whole-message validation by presenting each fragment as harmless.
+Unsupported transforms or incompatible parsers reject the profile.
+
+Producer EOF, a half-closed request stream and a completed response are separate
+facts. SSE auto-reconnect, Last-Event-ID resumption and a gRPC reconnect cannot
+reuse the old application's start handle. No future submission must remain in
+a queued callback after emitter closure is asserted.
+
+Response ranges have their own peer/label/history gate. An upstream chunk being
+paid for, received or parseable does not authorize releasing it to the caller.
+Bound staging memory, queue depth, bytes/tokens, total duration and validation
+cost; backpressure cannot manufacture extra budget or extend a deadline.
+
+* Original one-use authority during recovery
+
+[[file:15-authoritative-spent-state.org][The P13 alignment and recovery review]] binds membership, source and revision to
+the actual authoritative state. Retrying an internal command can resolve an old
+consumption fact, but cannot regenerate a broker handle. A fresh issuance/nonce
+cannot turn a recovered pending logical message into a new send. Go SDK retry,
+Rust stream restoration and observation callbacks all preserve that distinction.
+
+* Quint and Lean correspondence
+
+The following are new cross-boundary obligations within the existing FM scope,
+not completed theorems and not another authorization language. Reuse
+cedar-poo-spec's receipt/BoundOperation semantics and the existing POO lifecycle,
+claim/history/recovery interfaces; extend their concrete event correspondence.
+
+| Safety property | Quint actions and required distinction | Lean obligation and physical premise | Existing FM scope |
+|-----------------+----------------------------------------+--------------------------------------+-------------------|
+| ExactEgressBinding | Freeze, mutate body/reference, translate, choose route, resolve/connect, submit | Every actual effect projects to the admitted operation modulo only declared transforms; authentic facts, immutable content and peer checks remain premises | FM2, FM8, FM11, FM12 |
+| NoUnclaimedApplicationStart | Claim/reply, queue, application start, crash and old-worker resume are distinct | Each start derives from one durable claim and local affine handle; no second start under that claim, including library/mesh attempts | FM5, FM10, FM12 |
+| BoundMessageEffects | Receive/fragments, assemble, validate action, admit child effect and submit message are explicit | Every policy-relevant message effect has its own admitted semantic operation; session/range authority cannot widen action, recipient or multiplicity | FM2, FM5, FM7, FM8, FM12 |
+| NoImplicitFollowup | Retry, redirect, mirror, hedge, fallback and stream reopen are explicit effect proposals | New application effects require separate eligible admission/lineage; HTTP idempotence or a wrapper call is insufficient | FM4, FM5, FM9 |
+| BoundedAdmittedPrefix | Seal unit, validate, reserve, queue, offer, partial write and unknown observation are separate | Offered/possibly submitted ranges are covered by nonduplicated admitted slots and retained holds; bytes/units/order and prefix semantics are preserved | FM6, FM7, FM8, FM9 |
+| CurrentRecipientAndCut | Route/source/identity change may race with validation, queue and send | Preserve the chosen binding and declared lease/checkpoint contract; stronger physical exclusion needs real stop/receiver fencing | FM6, FM8, FM10, FM11 |
+| ConservativeClosure | Cancel, expire, retire producer, drain queue, stop emitter and reconcile usage are distinct | Closure implies no remaining submission capability; unknown prefix or usage never creates a new right or premature refund | FM7, FM9, FM10, FM11 |
+| NoAmbientAdapterEgress | Adapter callback/plugin/fallback client tries to dial or attach credentials | All governed effects pass the qualified broker, with deployment egress/credential isolation as explicit premises | FM2, FM5, FM12 |
+
+The abstraction must retain application-start multiplicity underneath a single
+SDK call, at least two message/range identities, a partially submitted unit,
+a route/source change, delayed duplicate RPCs and a paused old broker. A model
+with only InvokeSDK as one atomic action cannot establish these properties.
+Segment submission can be an allowed stutter only when it preserves the exact
+claim, recipient, range and exposure relation. It cannot hide another start or
+a newly disclosed range. Broader state counts/bounds belong in model evidence.
+
+Lean must relate the actual canonical operation and Scheme-owned projection to
+the selected Cedar/POO definitions, not a local authorized Boolean. Its step
+relation must preserve atomic ledger conservation, affine start/slot usage and
+the physical-premise distinction. A runtime validator, transport hook, state
+hash or source digest does not automatically supply this refinement proof.
+
+* Counterexamples and required future observations
+
+| Scenario | Unsafe trace to expose | Required refusal or bounded behavior |
+|----------+------------------------+--------------------------------------|
+| SDK retry disabled, transport retry remains | One wrapper call opens a second application stream after reset | Reject/disable the hidden path; capture actual application starts, not wrapper counters |
+| Mirroring or mesh retry | One claimed send produces another recipient/request | Extra effect is unavailable without separate admitted authority; include proxy/receiver boundary |
+| Lost broker reply and repeated RPC | Same command creates two claims/handles | Stable command binding resolves the original result; mismatch rejects and no new handle appears |
+| Redirect across origin or method rewrite | Old allow sends credentials/body to Location or changes action | No follow-up submission; new request receives fresh projection/admission |
+| Route churn with pooled connection | Logical tool stays constant while actual account/peer changes | Reject a mismatched connection/recipient; do not mutate queued intent |
+| Mutable file/body producer | Body hash is checked, then bytes change before transport polls | Immutable ownership/sealed-unit verification prevents substitution |
+| Multiple tools on one session | One application start permits unbounded new tool actions | Every semantic effect has its own operation/lineage and applicable admission, even on the same connection |
+| Sensitive second message | Stream-open allow causes a later forbidden message to escape | No unit is queued/offered before its required semantic checks and holds |
+| Revocation with queued prefix | A new restrictive read ignores old queued emission capability | Retain bounded exposure/conflict; close or fence the emitter before stronger exclusion claims |
+| Partial write plus reconnect | Unknown prefix is resent on another request under the old claim | No implicit reopen/replay; claim remains spent and exposure unknown |
+| Response-driven tool invocation | SDK executes a returned tool call as ordinary response handling | Treat the call as a separately admitted child effect; response release alone is insufficient |
+
+Future observations must join broker/transport request identities, actual peers,
+protocol stream IDs, admitted/offered ranges and credential releases without
+logging raw secrets. Failure controls must exercise real queue/library/mesh
+behavior and receiver-visible starts; a mocked Go client or Rust method-call
+counter is insufficient. Existing native authority qualification does not cover
+this new boundary. No such runtime or formal acceptance is claimed here.

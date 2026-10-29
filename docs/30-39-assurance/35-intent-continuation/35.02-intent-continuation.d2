@@ -1,0 +1,197 @@
+# Core ownership and flow only. Evidence and proof assumptions stay in Org.
+...@../../architecture/diagrams/lib/theme
+title: ORIGINAL OBLIGATION / FENCED CONTINUATION / QUALIFIED RELEASE {
+  class: title
+  near: top-center
+}
+semantic: SEMANTICS / CLOUD RECONCILIATION {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  obligation: Scheme / immutable original obligation\nSame claim / budget / history domain\nCedar binds actual effect and state {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  cloud: Go / cloud-native reconciliation\nRetry original root and status reads\nPod restart cannot create authority {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  unknown: Unknown obligations stay reserved\nNo replacement root / refund / replay\nMissing evidence remains closed {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+ledger: PROTECTED ROOT / DURABLE HISTORY {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  history: Original accepted root and outcome\nOld fenced attempt stays immutable\nSame root / retired predecessor link {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  head: Read authentic continuation head\nFull chain / current worker and fence\nAdmission alone is not observation {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  commit: One original-root completion\nCurrent link / fence / exact root CAS\nOriginal floor row and fresh witness {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+native: RUST / PHYSICAL CONTINUATION {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  cut: Fresh physical cut under same root\nRetain all original alias scope\nInclude FD / DMA / queued results {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  fence: Isolate current cut / enforce fence\nExact aliases and protected barrier\nRetired workers cannot newly commit {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  release: Final Rust broker and native gate\nCurrent hardware / original spent-state\nProtected commit and live Policy {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+recovery: RECOVERY / CONDITIONAL PROGRESS {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  observe: Observe original committed result\nCurrent session / full deciding image\nLost reply never repeats completion {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  progress: Stable and fair recovery milestones\nAvailable owner / complete isolation\nUnknown budget can remain held {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  activate: Qualify current signer and hardware\nHistorical commit cannot reopen output\nRetained buffers remain mediated {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+}
+quint: QUINT\nLost replies / stale workers / competing heads / retained buffers / counterexamples {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nSame-root conservation / unique completion / conditional fair recovery {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+semantic.obligation -> ledger.history
+semantic.cloud -> ledger.head
+ledger.history -> native.cut
+native.cut -> ledger.head
+ledger.head -> native.fence
+native.fence -> ledger.commit
+ledger.head -> semantic.unknown: retained {
+  style.stroke-dash: 4
+}
+ledger.commit -> recovery.observe
+recovery.observe -> recovery.progress
+recovery.progress -> recovery.activate
+recovery.activate -> native.release
+
+native.fence -> native.cut: new fence {
+  style.stroke-dash: 4
+}

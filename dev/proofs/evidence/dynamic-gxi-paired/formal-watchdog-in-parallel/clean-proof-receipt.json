@@ -1,0 +1,47 @@
+{
+  "targets": [
+    "DynamicPairedEvidence"
+  ],
+  "compiledDirectory": "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-6ngnu2jg",
+  "modules": [
+    {
+      "module": "LogicalMessageAuthority",
+      "source": "specs/lean/LogicalMessageAuthority.lean",
+      "sourceSha256": "649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca",
+      "imports": [],
+      "args": [
+        "elan",
+        "run",
+        "leanprover/lean4:v4.34.1",
+        "lean",
+        "-o",
+        "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-native-exit-proof-6ngnu2jg/LogicalMessageAuthority.olean",
+        "specs/lean/LogicalMessageAuthority.lean"
+      ],
+      "exit": 124,
+      "seconds": 20.071,
+      "watchdogSeconds": 20,
+      "noSorryAx": true,
+      "printedDeclarations": 0
+    }
+  ],
+  "sourceClosure": [
+    "LogicalMessageAuthority",
+    "SharedMessageBudget",
+    "FiniteDomainMigration",
+    "GatewayHeadCAS",
+    "BrokerConsumptionQueue",
+    "LogicalRangeRecovery",
+    "LlmRouting",
+    "RoutineRoutingConfig",
+    "LlmAttemptLedger",
+    "LlmSemanticContract",
+    "LlmAuthoritativeScope",
+    "SemanticGatewaySlice",
+    "CommittedSemanticProfile",
+    "NativeExitQualification",
+    "NativeDynamicImportBoundary",
+    "DynamicImageCustody",
+    "DynamicPairedEvidence"
+  ]
+}

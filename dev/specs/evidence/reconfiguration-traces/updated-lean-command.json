@@ -1,0 +1,15 @@
+{
+  "label": "AnchorReconfiguration",
+  "args": [
+    "elan",
+    "run",
+    "leanprover/lean4:v4.34.1",
+    "lean",
+    "-o",
+    "/private/tmp/weaver-reconfiguration-final-proof/AnchorReconfiguration.olean",
+    "specs/lean/AnchorReconfiguration.lean"
+  ],
+  "watchdogSeconds": 20,
+  "seconds": 3.973,
+  "exit": 0
+}

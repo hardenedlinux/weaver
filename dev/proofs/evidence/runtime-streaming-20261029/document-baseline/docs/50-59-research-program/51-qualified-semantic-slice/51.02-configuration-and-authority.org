@@ -1,0 +1,113 @@
+#+TITLE: Common Configuration Contract and Constructive Authority Bridge
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Common semantic subset
+Scheme prototypes compose reusable business routines. JSON and YAML populate
+the same public Type/Contracts projection. Reserve refinement syntax for
+extending an existing value; ordinary assignments remain direct. General Scheme
+programs need not serialize to declarative formats. The common subset contains
+records, ordered sequences, typed references, bounded integers and booleans;
+no request-supplied code, YAML object constructors or executable tags.
+
+Reuse Core's POO configuration prototypes, Contracts, graph projection and
+schema predicate closures. Add Gateway-owned Contracts and normalization; do not
+replace Funflow with a second workflow interpreter. Existing adapters project
+configuration and intentionally do not execute effects.
+
+* Public authoring fields and authoritative projection
+| Field | Contract / default | Authoritative treatment |
+|-------+--------------------+-------------------------|
+| routine | Registered, namespaced reference; required | Resolve admitted immutable graph closure |
+| node | Declared graph member; required | Cannot invent a new logical source key |
+| response | Registered strict schema reference; required | Must equal original task response contract |
+| targets | Nonempty ordered unique binding references; required | Intersect original catalog and original contract targets |
+| extra-requirements | Unique capability references; default empty | Union with original required capabilities |
+| ceiling-microcredits | Unsigned bounded integer; required | Effective allowance is min(original reservation, authored ceiling) |
+| context-floor-tokens | Unsigned bounded integer; default zero | Effective demand is max(original demand, authored floor) |
+| extensions | Default empty; namespaced registered entries only | Reject entries without an admitted contract/semantic projection |
+
+Original root, canonical payload, commitment, region, budget/history domains and
+credential scope are not caller-overridable fields. The original task's template
+owns required capabilities, context and region. It must be authenticated under
+the same published profile closure; this is a native publication duty, not a
+fact established by record equality in Lean. Category 13's current registry
+Contract does not yet encode all template fields; extend the committed profile
+representation or bind a committed template reference before native admission.
+The same closure must bind the declared node to the canonical logical source key.
+The Lean NodeRule assumes that admitted rule; assigning its numeric node field
+does not itself prove membership in the original routine graph.
+
+An authored ceiling larger than the original reservation cannot raise the
+normal allowance. It is an upper preference, not a new grant. An incoming normal
+form with an inflated allowance is rejected. Empty effective target intersection
+fails closed, without a permissive default model.
+
+* Deterministic decoding and diagnostics
+Reject duplicate keys before constructing a map, unknown fields, nonfinite or
+fractional numbers, negative limits, implicit numeric strings and null for any
+required value. Missing optional fields receive exactly the specified defaults;
+null is not missing. Reject YAML merge keys, anchors/aliases and custom tags in
+this first subset rather than relying on parser-specific expansion. Require
+string keys and explicit booleans. Bound nesting, lengths, bytes and references.
+
+References resolve after record collection, allowing forward references in a
+finite acyclic graph. Reject missing references and cycles with source paths;
+the older tiny fixture's reference ordering is not the general graph contract.
+Record UTF-8 bytes without implicit Unicode normalization for content; public
+identifiers follow one admitted spelling grammar. Normalize capability/target
+sets deterministically while retaining explicit rank order separately. Preserve
+message and routine edge order where semantic. Produce semantic identity and
+source provenance identity separately with domain-separated canonical encoding;
+hash collision resistance is a native trust assumption.
+
+Diagnostics identify source format/location, field path, code and owning
+Contract. Syntax errors, type errors, unresolved references, capability conflicts
+and Policy denials are distinct. No raw secret or complete prompt in diagnostics.
+
+* Equivalent declarative example
+These are proposed common-subset documents, not a native compiler receipt.
+#+begin_src json
+{"routine":"support.resolve","node":"infer","response":"support.answer",
+ "targets":["support.primary","support.private"],
+ "extra-requirements":[],"ceiling-microcredits":100000,
+ "context-floor-tokens":4096,"extensions":{}}
+#+end_src
+#+begin_src yaml
+routine: support.resolve
+node: infer
+response: support.answer
+targets: [support.primary, support.private]
+extra-requirements: []
+ceiling-microcredits: 100000
+context-floor-tokens: 4096
+extensions: {}
+#+end_src
+
+Scheme authoring constructs the same typed slots through existing POO prototype
+composition. No invented Scheme Gateway macro is presented as an installed API.
+Native parity must compare actual POO evaluation with both actual decoders,
+including rejection and diagnostic classes. Parsed JSON/YAML equality alone
+cannot qualify Scheme or the compiler.
+
+* Constructive proof connection
+[[file:../../../proofs/lean/SemanticGatewaySlice.lean][SemanticGatewaySlice]] constructs the original routing config from the source
+key, source payload, source reservation and registry target intersection. Its
+=normalize= fixes the registry commitment, schema and node while appending
+requirements, taking minimum allowance and maximum context. The theorem
+=constructed_refinement= supplies category 49's previously external =Refines=
+witness for this bounded transformation.
+
+Eligibility therefore preserves original constraints, original catalog and
+registry target membership. An unknown registry entry gives no eligible target.
+=normalization_binds_registered_record= and =actual_uses_share_registered_contract=
+connect normal identity/schema to category 13's registered record and actual
+initialized semantic uses. Existing actual routing and source-admission Steps
+supply final Policy/wire checks, original claim bounds and account capacity.
+
+This is a constructive semantic bridge, not a verified native normalizer or a
+complete queue/transport/account product proof. It depends on an authentic
+original template, immutable admitted registry/profile, native codecs/current
+facts, and the original source-admission assumptions. It does not import or
+reprove all Cedar upstream theorems; Cedar operation/fact authentication remains
+a separate host obligation.

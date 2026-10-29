@@ -1,0 +1,15 @@
+{
+  "command": [
+    "quint",
+    "parse",
+    "proofs/qunit/LlmCallerCustody.qnt",
+    "--out",
+    "original-parsed.json",
+    "--source-map",
+    "source-map.json"
+  ],
+  "watchdogSeconds": 20,
+  "result": "TimeoutExpired",
+  "accepted": false,
+  "note": "Initial full-import parse failed its fixed watchdog. No passing full-import parse is claimed. Accepted closure checks retained ancestor IR and new source byte identity."
+}

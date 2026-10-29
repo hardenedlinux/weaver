@@ -1,0 +1,56 @@
+{
+  "name": "support.resolve",
+  "policyRef": "governance.support",
+  "budget": {
+    "domain": "original-task",
+    "maxCostUnits": 20
+  },
+  "routines": {
+    "resolve": {
+      "inputContract": "support.request",
+      "steps": [
+        {
+          "id": "retrieve",
+          "kind": "tool",
+          "capabilityRef": "knowledge.search",
+          "resultContract": "knowledge.matches",
+          "maxInvocations": 1,
+          "maxCostUnits": 2
+        },
+        {
+          "id": "draft",
+          "kind": "inference",
+          "after": [
+            "retrieve"
+          ],
+          "routeRef": "support.reply",
+          "capabilityRequirements": [
+            "tool-calling",
+            "structured-output"
+          ],
+          "responseContract": "support.reply",
+          "maxInvocations": 1,
+          "maxCostUnits": 10
+        },
+        {
+          "id": "release",
+          "kind": "response",
+          "after": [
+            "draft"
+          ],
+          "responseContract": "support.reply"
+        }
+      ]
+    }
+  },
+  "routes": {
+    "support.reply": {
+      "candidates": [
+        "reply-primary",
+        "reply-backup"
+      ],
+      "objective": "cost-with-quality-floor",
+      "unknownOutcome": "retain-reservation"
+    }
+  }
+}

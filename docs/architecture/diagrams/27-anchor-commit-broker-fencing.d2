@@ -1,0 +1,192 @@
+# Core ownership and protocol only. Qualification evidence stays in Org.
+...@lib/theme
+title: DURABLE COMMIT / ACTUAL WRITER BARRIER / ORIGINAL EXECUTION {
+  class: title
+  near: top-center
+}
+semantic: SEMANTICS / CLOUD LIFECYCLE {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  original: Scheme / original identity\nClaim / budget / account / history\nSame operation across leadership {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  policy: Cedar / Code as Policy\nBound actual effect and state\nAll required layers must allow {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  worker: Go / Agent and Kubernetes lifecycle\nDiscovery / handover / readiness\nResolve original status without replay {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  goBrand: "" {
+    shape: image
+    icon: assets/go.svg
+    top: 452
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: assets/kubernetes.svg
+    top: 452
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+root: RUST / QUALIFIED ANCHOR CLIENT {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  proposal: Proposal or leader-local reply\nNot yet a durable committed record\nCannot create execution authority {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  prefix: One durable committed prefix\nRoot / configuration / term / position\nOriginal seal / grant / burn {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  fence: Committed actual-writer fence\nInherited original tombstones\nResults survive leadership changes {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+broker: RUST / ACTUAL WRITER OWNER {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  permission: Original confirmed burn\nAffine original response continuation\nNo apply right from status readback {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  barrier: Actual physical writer barrier\nFD / callback / offload / buffer aliases\nClose the old submission gate {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  activate: Current prefix and committed fence\nInstalled actual writer term / epoch\nActivate the same original domains {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  rustBrand: "" {
+    shape: image
+    icon: assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+outcome: ORIGINAL EXECUTION / SETTLEMENT {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  old: Old broker before physical barrier\nOriginal account I/O may submit once\nElection alone does not isolate it {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  unknown: Lost commit or I/O response\nRetain original booked obligations\nNo new capability / replay / refund {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  settle: Authentic original result\nArchive the same actual receipt\nPreserve original settlement identity {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+quint: QUINT\nLeader changes / lost replies / split publication / old permissions {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nQualified original dispatch / one application / retained shared budgets {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+semantic.original -> root.prefix
+semantic.policy -> root.prefix
+root.proposal -> root.prefix: qualified durable commit
+root.prefix -> broker.permission
+broker.permission -> outcome.old
+broker.permission -> broker.barrier
+broker.barrier -> root.fence: actual isolation evidence
+root.fence -> broker.activate
+broker.barrier -> broker.activate
+outcome.old -> outcome.unknown
+outcome.unknown -> outcome.settle: authentic original receipt
+outcome.settle -> broker.activate

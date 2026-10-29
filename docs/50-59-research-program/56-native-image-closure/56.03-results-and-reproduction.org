@@ -1,0 +1,73 @@
+#+TITLE: Ordinary Dynamic Native Image Results and Reproduction
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Current acceptance result
+Status: =ORDINARY_DYNAMIC_SELECTED_IMAGE_GATE_CLOSED=. The predetermined candidate series passed 8 of eight native observations under the unchanged fifteen-second whole-process gate. Required acceptance is eight of eight; any failed sample keeps the series open.
+
+| Block | Cell | First seconds | Repeat seconds | First / repeat gate |
+|-------+------+---------------+----------------+---------------------|
+| 0 | control | 77.776 | 4.599 | FAIL / pass |
+| 0 | candidate | 4.808 | 3.160 | pass / pass |
+| 1 | control | 74.775 | 4.816 | FAIL / pass |
+| 1 | candidate | 5.185 | 4.107 | pass / pass |
+| 2 | control | 77.622 | 6.028 | FAIL / pass |
+| 2 | candidate | 5.793 | 2.320 | pass / pass |
+| 3 | control | 79.939 | 4.801 | FAIL / pass |
+| 3 | candidate | 7.507 | 3.184 | pass / pass |
+
+All matrix children exited naturally: True. Every consumed module path matched its manifest: True. All 260 successful Scheme-image acquisitions per sample were closed, with no outstanding references or close errors: True.
+
+* Scope of closure
+This is qualification of the exact original interpreted configuration workload with freshly linked selected application images, fresh paths/inodes/UUIDs and a fresh interpreter process for every sample. Common installed runtime/foreign bodies and OS cache/service state remain shared. No OS-wide cold-cache reset, universal host deadline or arbitrary-program Gerbil repair is claimed. The old checkpoint and every earlier timeout remain unchanged failures.
+
+* Same-object attribution
+Both cells use exactly the same 238 source-bound C objects and full configured compiler semantics. Controls use 147 selected OS images; candidates use 4. Observed peaks are {'control': [215], 'candidate': [72]}. All 238 original lazy entry identities and all 260 logical native body/phase units remain.
+
+The [[file:../../../dev/proofs/evidence/native-image-closure/analysis.json][complete interval analysis]] retains each within-block contrast and first/repeat observation. Physical mapping reduction is deterministic; whole-process differences also contain host library-validation, notifications, cache state, scheduling and observer bookkeeping. No exact source-only speedup ratio follows. No unrelated process was stopped and no runtime security check or cleanup call was suppressed.
+
+* Fresh ordinary installed-launcher qualification
+A separate supplemental plan was recorded before creating or executing these four new generations. Their image UUIDs and paths are disjoint from the primary matrix. All interpret the exact original source through the unchanged protected shell launcher, without observer insertion or appended code. Installed runtime/fallback bodies and OS caches remain shared.
+- Cold launcher 0: 6.047 seconds; pass; native exit 0.
+- Cold launcher 1: 5.272 seconds; pass; native exit 0.
+- Cold launcher 2: 7.940 seconds; pass; native exit 0.
+- Cold launcher 3: 6.464 seconds; pass; native exit 0.
+
+The [[file:../../../dev/proofs/evidence/native-image-closure/launcher-cold-plan.json][supplemental plan]], [[file:../../../dev/proofs/evidence/native-image-closure/launcher-cold-images.json][fresh image manifest]] and [[file:../../../dev/proofs/evidence/native-image-closure/launcher-cold.json][typed results]] retain the stricter ordinary-entry evidence. Per-handle instrumentation is unavailable through that protected shell; the matched binary/profile observed matrix and separate native destructor probe supply complementary cleanup evidence.
+
+* Supplementary warm ordinary-launcher controls
+- launcher-0: 2.813 seconds; pass; native exit 0.
+- launcher-1: 2.886 seconds; pass; native exit 0.
+- launcher-2: 4.833 seconds; pass; native exit 0.
+- launcher-3: 5.305 seconds; pass; native exit 0.
+
+These supplementary runs interpret the exact original script through the unchanged ordinary shell launcher, without the observer or an appended epilogue. They are warm/shared-runtime checks, not additional first-use samples, and have no per-handle counter coverage.
+
+* Native identity, laziness, cleanup and ABI evidence
+- [[file:../../../dev/proofs/evidence/native-image-closure/probe-qualified/receipt.json][Equal entry names in distinct handles initialize the correct owners]].
+- [[file:../../../dev/proofs/evidence/native-image-closure/duplicate-link-rejected.log][Direct duplicate-entry image merge fails linking]].
+- [[file:../../../dev/proofs/evidence/native-image-closure/probe-wrong-alias/receipt.json][Wrong alias is rejected and its acquired references are closed]].
+- [[file:../../../dev/proofs/evidence/native-image-closure/lazy-entry-control.json][Two independent entries in one image remain lazy; the dynamic canary completes LU cleanup]].
+- [[file:../../../dev/proofs/evidence/native-image-closure/probe-math/receipt.json][Original math interfaces execute through the corrected source-bound native link profile]].
+
+* Proof, source and retained failures
+The [[file:../../../dev/proofs/evidence/native-image-closure/clean-proof-receipt.json][fresh Lean build]] checks eighteen source-bound modules, including thirteen new locator declarations. The [[file:../../../dev/proofs/evidence/native-image-closure/api-commands.json][official Quint pipeline]] checks fifteen finite controls including four deliberate unsafe counterexamples. Proof premises remain explicit; native timing is not proved by these models.
+
+The [[file:../../../dev/proofs/evidence/native-image-closure/source-currentness.json][source recheck]] records all sixteen reviewed repository/source identities. The [[file:../../../dev/proofs/evidence/native-image-closure/historical-manifests.json][historical seal verification]] retains fifty-one older manifests, including the previous failed new-UUID starts. The expanded SDK link failure, rejected duplicate merge, wrong-alias native error and preliminary Lean syntax failure remain present. No failure receipt is overwritten with a later pass.
+
+The [[file:../../../dev/proofs/evidence/native-image-closure/artifact-check.json][independent artifact audit]] verifies exact module coverage, alias inodes, source/object bindings and unique UUIDs; it also rejects native initializer/finalizer section types rather than relying solely on section names.
+
+The [[file:../../../dev/proofs/evidence/native-image-closure/inputs-before.json][complete before inventory]] and [[file:../../../dev/proofs/evidence/native-image-closure/inputs-after.json][after verification]] cover the actual selected and excluded Scheme bodies/interfaces, owned artifacts and tool ABI. OS and foreign system dylibs remain trusted prerequisites. The build is serialized with one trusted writer; it is not an anti-tampering or distributed durability proof.
+
+* Reproduction
+Use the [[file:../../../dev/proofs/evidence/native-image-closure/reproduce.py][fresh-generation recipe]] rather than executing a sealed directory in place:
+
+#+begin_src sh
+python3 dev/proofs/evidence/native-image-closure/reproduce.py --generation independent-check
+python3 dev/proofs/evidence/native-image-closure/reproduce.py --generation independent-run --run
+#+end_src
+
+The first invocation materializes an isolated recipe; the second executes a separate generation. Original high-level/lowered source artifacts and the recorded installed toolchain are prerequisites. All timed native processes keep the fifteen-second verdict and are retained until natural exit. Collector exit zero means collection finished; it is not native acceptance. Read the complete candidate-series, fresh ordinary-launcher and supplementary warm verdicts. The replay command returns failure if any required native candidate or launcher observation fails; all its native children still finish naturally.
+
+* Remaining boundary
+The installed runtime is unchanged. F_CHECK_LV and synchronous image notifications still execute. The kernel/service endpoint behind their variable latency remains unidentified; this packaging profile reduces the number of mappings rather than disabling those checks. General plugin ordering, OS-wide cold-start availability, arbitrary configuration workloads and actual Gateway transport/store implementation require separate qualification. No Gateway code or dependency pin is changed. The [[file:../../../dev/proofs/evidence/native-image-closure/SHA256SUMS][checkpoint byte seal]] binds the four connected artifacts and native evidence.

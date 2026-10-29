@@ -1,0 +1,191 @@
+#+title: Anchor Commit Confirmation and Final Broker Check Receipt
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS abstract-checked-consensus-and-native-qualification-pending
+
+* Identity and evidence boundary
+
+Workspace /Users/guangtao/ghq/github.com/tao3k/weaver, branch main, tracked HEAD
+=4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Documentation and formal sources
+remain untracked working-tree artifacts. No gateway implementation, owner source
+change, dependency-pin change, native build, commit or push is part of this work.
+
+[[file:../../../docs/architecture/26-anchor-commit-broker-fencing.org][The dossier]] defines source/event correspondence and physical premises.
+[[file:anchor-broker-traces/source-review.json][Eighteen committed source blobs]] were reverified at POO Flow
+=a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=, matching each registered hash.
+The retained numbered excerpts now include P35's explicit fork countermodel.
+These are pinned source contracts, not a new native/ABI/consensus qualification.
+
+| New artifact | SHA-256 |
+|--------------+---------|
+| [[file:../lean/AnchorBrokerCommit.lean][AnchorBrokerCommit.lean]] | =51594b78f4a66c909be13f675f394fe79b1c8969b0ead175ecb8fe6ed714ed0f= |
+| [[file:../quint/AnchorBrokerCommit.qnt][AnchorBrokerCommit.qnt]] | =857680dc331d9e067621e2866b8b34e7edcdb6ce35688cdf5a32f55563058e16= |
+
+[[file:anchor-broker-traces/SHA256SUMS][The byte manifest]] covers the final source dependencies, dossier/diagram,
+receipt and retained raw evidence. Historical models and receipts retain their
+own byte identity. New crosslinks do not alter their previous check claims.
+
+* Final executable checks
+
+Quint =0.33.0=, TypeScript backend; Lean =4.34.1=, arm64 Darwin, Std only.
+All eleven Lean modules were rebuilt in the isolated
+/private/tmp/weaver-anchor-broker-final-proof directory. The first ten unchanged
+modules were built once; the new module was recompiled after adding canonical
+burn-body theorems and explicit root/configuration/term barrier/read binding.
+No installed owner package or dependency pin was changed.
+
+[[file:anchor-broker-traces/commands.json][Nineteen final-source commands]] retain exact arguments, timings, zero exit
+statuses and watchdogs: 20 seconds for Lean/typecheck, 45 for deterministic tests,
+30 for each sampled run. These bounds were selected before those final checks;
+no timeout was widened or relabeled as a pass. Check durations are not gateway
+performance evidence.
+
+| Final command | Exit | Seconds | Raw evidence |
+|---------------+------+---------+--------------|
+| LogicalMessageAuthority | 0 | 4.455 | [[file:anchor-broker-traces/LogicalMessageAuthority.log][log]] |
+| SharedMessageBudget | 0 | 0.99 | [[file:anchor-broker-traces/SharedMessageBudget.log][log]] |
+| FiniteDomainMigration | 0 | 1.115 | [[file:anchor-broker-traces/FiniteDomainMigration.log][log]] |
+| AnchoredRecoveryAndEgress | 0 | 0.946 | [[file:anchor-broker-traces/AnchoredRecoveryAndEgress.log][log]] |
+| ComposedGatewayLifecycle | 0 | 1.183 | [[file:anchor-broker-traces/ComposedGatewayLifecycle.log][log]] |
+| FiniteStreamManifest | 0 | 1.305 | [[file:anchor-broker-traces/FiniteStreamManifest.log][log]] |
+| DriverCompletionRecovery | 0 | 0.748 | [[file:anchor-broker-traces/DriverCompletionRecovery.log][log]] |
+| WriterSettlementClosure | 0 | 0.997 | [[file:anchor-broker-traces/WriterSettlementClosure.log][log]] |
+| SettlementAnchorRecovery | 0 | 0.781 | [[file:anchor-broker-traces/SettlementAnchorRecovery.log][log]] |
+| GateConsumptionPersistence | 0 | 0.676 | [[file:anchor-broker-traces/GateConsumptionPersistence.log][log]] |
+| AnchorBrokerCommit | 0 | 3.801 | [[file:anchor-broker-traces/AnchorBrokerCommit.log][log]] |
+| typecheck | 0 | 3.738 | [[file:anchor-broker-traces/typecheck.log][log]] |
+| tests | 0 | 24.42 | [[file:anchor-broker-traces/tests.log][log]] |
+| emptyInit | 0 | 4.044 | [[file:anchor-broker-traces/emptyInit.log][log]] |
+| singletonInit | 0 | 4.019 | [[file:anchor-broker-traces/singletonInit.log][log]] |
+| init | 0 | 4.678 | [[file:anchor-broker-traces/init.log][log]] |
+| largerInit | 0 | 5.664 | [[file:anchor-broker-traces/largerInit.log][log]] |
+| held | 0 | 5.089 | [[file:anchor-broker-traces/held.log][log]] |
+| dispatched | 0 | 4.909 | [[file:anchor-broker-traces/dispatched.log][log]] |
+
+[[file:anchor-broker-traces/tests.log][67 deterministic controls passed]]: 30 direct imported gate-persistence controls
+and 37 new controls (33 positive/rejection schedules plus four excluded-rule
+traces). [[file:anchor-broker-traces/itf][67 final ITF traces]] correspond to the final test ordering. Imported
+counts are direct parent declarations, not every transitive test.
+
+Each of emptyInit/singletonInit/init/largerInit/held/dispatched sampled ten traces,
+at most 25 transitions each, seed 41: 60 bounded sampled traces total, no
+violation found. Cold fixtures use zero/one/three/five ranges, four admitted
+logical messages and two shared accounts. held and dispatched execute the actual
+preceding formal source/settlement/root pipeline, assigning the new product on
+every step. Sampling is not exhaustive; there is no automated Quint/Lean state
+translation or native refinement checker.
+
+All final compiler logs have no errors, warnings or sorryAx. Printed axiom
+inventories use only propext, Quot.sound and inherited Classical.choice; several
+coordinate/recovery lemmas require no axioms. Logical axioms do not supply root
+durability, authentic external evidence or physical FD isolation.
+
+* Lean composition and concrete assumptions
+
+| Declaration | Checked consequence |
+|-------------+---------------------|
+| projection / base_reachable | Every wrapper event projects into the actual initialized preceding Weaver relation |
+| reachable_invariant | Committed entries retain domain/configuration/body; actual outcomes have original qualified dispatch records |
+| qualified_prefix_is_single_valued | Two registered qualified entries at one position are identical |
+| qualified_burns_preserve_original_body | Qualified burns for one canonical key cannot disagree on original permit or writer epoch |
+| one_canonical_grant_and_consumption | Grant and burn counts stay at most one through leadership/recovery |
+| actual_application_requires_qualified_original_dispatch | Actual application has a registered committed original burn, exact key/permit and actual observed writer term/epoch |
+| no_duplicate_dispatch_or_application | Each original key has at most one actual submission and one actual account application |
+| original_shared_budget_conserved | Actual account amounts stay covered by original booked reservations and shared capacity |
+| application_has_original_usage | Key, lineage and full original final usage remain bound |
+| held_unknown_keeps_original_reservation | Election, lost responses and held permission do not release the original hold |
+| root_term_monotone / actual_writer_epoch_monotone | Leadership term and actual writer epoch independently do not decrease |
+| actual_barrier_blocks_held_permission / old_epoch_cannot_dispatch_after_reactivation | Physical closure and subsequent epoch mismatch reject old execution permission |
+| change_leader_does_not_erase_original_execution | Election preserves registered history, held confirmations and actual submitted original IO |
+
+RootOwner.commitValid is a qualified durable-publication premise. Its
+currentReadValid and barrierBound predicates are indexed by the selected root,
+configuration, term and head/target epoch. G.EvidenceOwner.barrierValid separately
+requires actual no-new-submission isolation at the physical owner; matching fields
+alone do not supply it. Qualified entries additionally belong to the registered
+single committed prefix. This proves neither a quorum algorithm nor agreement of
+arbitrary external signatures. Fixed configuration, correct prefix inheritance,
+authentic original response ownership, all-alias isolation and actual original
+account mutation/receipt atomicity require concrete owner evidence.
+
+The actual writer stays in its previous coordinates during an anchor election
+until physical isolation. The safe model deliberately permits the original
+already confirmed operation, or its late original confirmation, to dispatch once
+before that barrier. It prohibits new control-side consumption, replay from status
+and any old dispatch after the actual barrier. A consumed-but-unsubmitted burn
+cannot complete; a submitted original can finish while control admission remains
+closed. Full-shard unknown retention can prevent activation forever.
+
+The Lean commit entry retains the full permit; Quint records the determining
+pre-commit root image and projects its full sealed permit for grant/burn entries.
+The seal source request remains checked by the imported source action. These
+encodings are documented correspondences, not a proven generated translation.
+The effect in this receipt is internal account application, not provider byte
+submission or external payment. Their original Policy/stream guards remain
+separate required contracts.
+
+* Counterexamples with retained observations
+
+[[file:anchor-broker-traces/counterexample-observations.json][Extracted observations]] are checked against final ITF states, including the
+imported actual account-write counter rather than only wrapper audit flags.
+
+| Excluded rule | Trace and observable failure |
+|---------------+------------------------------|
+| Leader-local reply treated as committed burn | localAckAsCommitCounterexampleTest; acknowledged entry is absent from qualified committed prefix |
+| Conflicting certified entries at one domain/configuration/index | twoCertifiedBranchesCounterexampleTest; two different keys share one committed position |
+| Use old burn confirmation after physical barrier | oldAckUsedAfterBarrierCounterexampleTest; original term/epoch zero is used at actual writer term/epoch one and completes an actual account application |
+| Install a forked root that forgets spent history | forkedRootReplaysApplicationCounterexampleTest; original key zero reaches two actual account applications while historical counters remain |
+
+The fork mutant deliberately violates the single-prefix/nonrollback owner premise;
+it is not a proof that a qualified consensus implementation forks. The stale
+permission mutant bypasses the actual writer guard and then executes the imported
+account completion, demonstrating the need for that physical boundary.
+
+Positive/rejection schedules cover proposal/local-append nonauthority, lost grant/
+burn/result/fence responses, no capability from status, duplicate dispatch and
+reply, stale proposals, held old grants, late burn acknowledgements before/after
+the barrier, completion across elections, unknown-burn activation refusal, missing
+physical isolation, stale current reads and wrong root/configuration in commits,
+reads and barrier acknowledgements. An old barrier reply after a second election
+cannot be rebound to the new handover by changing caller metadata.
+
+* Preliminary evidence
+
+Initial reserved head/seal parsing, record-layout and nondeterministic fixture
+selector diagnostics are retained under preliminary-prefixed files. Final
+selectors are deterministic for the unique target-phase fixture row; sampled
+steps still choose competing proposals nondeterministically. Earlier successful
+checks retain separate command lists/logs. Pre-read-binding and pre-barrier-binding
+ITF files remain separately named; only the final 67 traces support final claims.
+No failed or earlier-scope run was rewritten into final evidence.
+The [[file:anchor-broker-traces/preliminary-document-check.log][first documentation check]] ran before the export log existed and failed
+on that missing link; the final link check ran after export completed.
+
+* Documentation and historical evidence
+
+[[file:anchor-broker-traces/document-check.log][The final documentation check]] covers all 41 English Org documents, their
+local links, 101 pinned source targets, complete acceptance registers and 27
+canonical D2/SVG pairs. [[file:anchor-broker-traces/diagram-validation.json][All D2 sources validate]]. The new bundled SVG received
+visual inspection and its labels contain core design only. [[file:anchor-broker-traces/org-export.log][Org export]] disables
+source evaluation; optional htmlize fontification warnings do not affect export.
+[[file:anchor-broker-traces/historical-manifests.log][All four prior byte manifests]] remain valid.
+
+* Reproduction and remaining physical qualification
+
+Rebuild the eleven modules in recorded dependency order with the isolated
+LEAN_PATH, then run:
+
+#+begin_src sh
+quint typecheck dev/specs/quint/AnchorBrokerCommit.qnt
+quint test dev/specs/quint/AnchorBrokerCommit.qnt --backend typescript --max-samples 1
+quint run dev/specs/quint/AnchorBrokerCommit.qnt --backend typescript --init dispatched --step step --invariant safety --max-samples 10 --max-steps 25 --seed 41 --verbosity 1
+#+end_src
+
+Qualify actual durable commitment and successor prefix inheritance under leader
+loss, partitions, old checkpoints and lost replies. Serialize the actual writer
+barrier with submission across all old aliases; bind the actual receipt and
+handover to exact root/configuration/term/epoch. Test current-read/fence-commit
+races and multiple elections while original IO remains unresolved. Retain unknown
+budget when any evidence is unavailable. None of these native gates is certified
+by the abstract checks above; no gateway implementation or pin change is made.

@@ -1,0 +1,145 @@
+proofs/lean/LlmBeneficiaryRegistration.lean:126:37: error: unexpected token 'matches'; expected '_' or identifier
+proofs/lean/LlmBeneficiaryRegistration.lean:150:10: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  s.roots r.template.ticket.launch
+in the target expression
+  s.roots b.invitation.ticket.launch = some b.root
+
+edge : LlmBootstrapInvitation.State → LlmBootstrapInvitation.State → Prop
+o : Owner
+s : State
+valid : ValidBindings o s
+b : Binding
+r : Root
+authorized : o.rootAuthorized r
+fresh : s.roots r.template.ticket.launch = none
+epoch : r.epoch = s.epoch
+canonical : eraseKey r.template = r.template
+durable :
+  o.durable s
+    { inner := s.inner, roots := fun k => if k = r.template.ticket.launch then some r else s.roots k,
+      bindings := s.bindings, published := s.published, epoch := s.epoch, revision := s.revision + 1, seen := none }
+template : eraseKey b.invitation = b.root.template
+proof : Credential o b.root b.invitation b.peer
+known :
+  { inner := s.inner, roots := fun k => if k = r.template.ticket.launch then some r else s.roots k,
+          bindings := s.bindings, published := s.published, epoch := s.epoch, revision := s.revision + 1,
+          seen := none }.bindings
+      b.invitation.ticket.launch =
+    some b
+root : s.roots b.invitation.ticket.launch = some b.root
+eq : b.invitation.ticket.launch = r.template.ticket.launch
+⊢ False
+proofs/lean/LlmBeneficiaryRegistration.lean:180:89: error(lean.unknownIdentifier): Unknown identifier `e`
+proofs/lean/LlmBeneficiaryRegistration.lean:180:89: error(lean.unknownIdentifier): Unknown identifier `e`
+proofs/lean/LlmBeneficiaryRegistration.lean:180:89: error(lean.unknownIdentifier): Unknown identifier `e`
+proofs/lean/LlmBeneficiaryRegistration.lean:180:89: error(lean.unknownIdentifier): Unknown identifier `e`
+proofs/lean/LlmBeneficiaryRegistration.lean:180:89: error(lean.unknownIdentifier): Unknown identifier `e`
+proofs/lean/LlmBeneficiaryRegistration.lean:180:89: error(lean.unknownIdentifier): Unknown identifier `e`
+proofs/lean/LlmBeneficiaryRegistration.lean:201:9: error(lean.invalidField): Invalid field notation: Type of
+  b
+is not known; cannot resolve field `invitation`
+
+Hint: Consider replacing the field projection `.invitation` with a call to the function `Binding.invitation`.
+proofs/lean/LlmBeneficiaryRegistration.lean:201:45: error(lean.invalidField): Invalid field notation: Type of
+  b
+is not known; cannot resolve field `root`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `IO.FS.DirEntry.root`
+  • `FiniteDomainMigration.Config.root`
+  • `FiniteDomainMigration.Ticket.root`
+  • `LlmAdmissionFloor.Image.root`
+  • `LlmAppendHandoff.Receipt.root`
+  • `LlmAppendHandoff.State.root`
+  • `LlmAttemptLedger.RootSponsor.root`
+  • `Binding.root`
+  • `Step.root`
+  • `LlmJoinEnqueue.Slot.root`
+  • `LlmManifestSwitch.State.root`
+  • `LlmRouting.Config.root`
+  • `LlmRouting.Plan.root`
+  • `LlmSemanticContract.EncodingBridge.root`
+  • `LlmSemanticContract.Fragment.root`
+  • `LlmSemanticContract.Output.root`
+  • `LlmSemanticContract.Proposal.root`
+  • `LlmSemanticContract.Scope.root`
+  • `LlmSemanticContract.Wire.root`
+  • `LogicalRangeRecovery.Scope.root`
+proofs/lean/LlmBeneficiaryRegistration.lean:202:19: error(lean.invalidField): Invalid field notation: Type of
+  b
+is not known; cannot resolve field `root`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `IO.FS.DirEntry.root`
+  • `FiniteDomainMigration.Config.root`
+  • `FiniteDomainMigration.Ticket.root`
+  • `LlmAdmissionFloor.Image.root`
+  • `LlmAppendHandoff.Receipt.root`
+  • `LlmAppendHandoff.State.root`
+  • `LlmAttemptLedger.RootSponsor.root`
+  • `Binding.root`
+  • `Step.root`
+  • `LlmJoinEnqueue.Slot.root`
+  • `LlmManifestSwitch.State.root`
+  • `LlmRouting.Config.root`
+  • `LlmRouting.Plan.root`
+  • `LlmSemanticContract.EncodingBridge.root`
+  • `LlmSemanticContract.Fragment.root`
+  • `LlmSemanticContract.Output.root`
+  • `LlmSemanticContract.Proposal.root`
+  • `LlmSemanticContract.Scope.root`
+  • `LlmSemanticContract.Wire.root`
+  • `LogicalRangeRecovery.Scope.root`
+proofs/lean/LlmBeneficiaryRegistration.lean:202:50: error(lean.invalidField): Invalid field notation: Type of
+  b
+is not known; cannot resolve field `root`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `IO.FS.DirEntry.root`
+  • `FiniteDomainMigration.Config.root`
+  • `FiniteDomainMigration.Ticket.root`
+  • `LlmAdmissionFloor.Image.root`
+  • `LlmAppendHandoff.Receipt.root`
+  • `LlmAppendHandoff.State.root`
+  • `LlmAttemptLedger.RootSponsor.root`
+  • `Binding.root`
+  • `Step.root`
+  • `LlmJoinEnqueue.Slot.root`
+  • `LlmManifestSwitch.State.root`
+  • `LlmRouting.Config.root`
+  • `LlmRouting.Plan.root`
+  • `LlmSemanticContract.EncodingBridge.root`
+  • `LlmSemanticContract.Fragment.root`
+  • `LlmSemanticContract.Output.root`
+  • `LlmSemanticContract.Proposal.root`
+  • `LlmSemanticContract.Scope.root`
+  • `LlmSemanticContract.Wire.root`
+  • `LogicalRangeRecovery.Scope.root`
+proofs/lean/LlmBeneficiaryRegistration.lean:202:59: error(lean.invalidField): Invalid field notation: Type of
+  b
+is not known; cannot resolve field `peer`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Binding.peer`
+  • `LlmCanonicalRegistry.AliasKey.peer`
+  • `LlmIncarnationIssuance.Receipt.peer`
+'Weaver.LlmBeneficiaryRegistration.root_retained' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.binding_retained' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.publication_retained' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.binding_run' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.no_replacement' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.shared_identity_not_entitlement' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.beneficiary_possession_required' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.session_cannot_be_selected' does not depend on any axioms
+proofs/lean/LlmBeneficiaryRegistration.lean:258:14: error(lean.unknownIdentifier): Unknown constant `original_previous_preserved`
+'Weaver.LlmBeneficiaryRegistration.stale_epoch_cannot_publish' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.stale_read_cannot_publish' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.valid_bindings_step' depends on axioms: [propext, sorryAx]
+'Weaver.LlmBeneficiaryRegistration.valid_bindings_run' depends on axioms: [propext, sorryAx]
+'Weaver.LlmBeneficiaryRegistration.covered_step' depends on axioms: [propext, sorryAx]
+'Weaver.LlmBeneficiaryRegistration.covered_run' depends on axioms: [propext, sorryAx]
+'Weaver.LlmBeneficiaryRegistration.root_origin' depends on axioms: [propext]
+'Weaver.LlmBeneficiaryRegistration.published_from_entitlement' depends on axioms: [propext, sorryAx]
+'Weaver.LlmBeneficiaryRegistration.composition' does not depend on any axioms
+'Weaver.LlmBeneficiaryRegistration.original_reservation_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmBeneficiaryRegistration.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]

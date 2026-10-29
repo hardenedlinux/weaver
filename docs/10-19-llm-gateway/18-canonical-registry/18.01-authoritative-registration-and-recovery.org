@@ -1,0 +1,209 @@
+#+title: Weaver Canonical Origin Registration and Cross-Protocol Recovery
+#+language: en
+#+options: toc:3
+
+* Core decision
+
+A protocol identifier is an attributable locator, not the issuer of an original
+claim or intent family. The registry registers a source-authenticated canonical
+origin once, then binds separately authenticated wire aliases to that immutable
+record. Reconnect, remote task recreation and session resume use this resume
+path; they cannot fall back to new-origin creation when a lookup is uncertain.
+
+A recovered registry row is not a recovered execution ledger. Resolution produces
+a source-bound identity receipt, not a send grant. Protected progress must compare
+that receipt with the current registry revision/fence and current source authority
+cut, then satisfy the actual original-operation gates. The original claim, profile,
+pending intent, family winner, budget and history remain owned by existing sources.
+
+This is an AI Agent Gateway logical authority boundary. Durable authenticated
+owners and non-rollback recovery remain explicit native contracts; no physical
+isolation device is assumed.
+
+* Canonical origin and namespaced alias keys
+
+| Object | Identity and immutable meaning |
+|--------+--------------------------------|
+| Canonical origin | Tenant, normalized principal, trusted source issuer and stable original producer operation |
+| Registration | Exact origin plus the original source change, task/claim/profile binding, domain/source vector and pending-intent identity |
+| Wire alias key | Tenant, normalized principal, source issuer, peer namespace, protocol, selected profile, connection incarnation, session/task/request locators |
+| Alias binding | Exact wire key and exact committed registration target; separately authenticated continuity evidence |
+| Resolution image | Committed registration/alias, registry revision, registry owner fence and current source authority cut |
+| Source cut | Original binding, publication position, execution revision, current Policy generation and source owner fence |
+
+The original producer operation is stable across its protocol delivery attempts.
+It is not a prompt digest, connection ID, JSON-RPC request ID, A2A task ID or ACP
+session ID. Identical prompts may be distinct legitimate operations; different
+wire identifiers may be retries of one operation. The source issuer must provide
+a durable origin/continuity contract rather than infer either case from content.
+
+Native alias encoding must preserve protocol-typed presence and exact opaque
+identifier meaning. Missing or not-applicable fields cannot collide with a
+literal empty/zero identifier, and issuer-specific principal normalization is not
+an arbitrary case-folding rule. The model uses abstract natural identifiers;
+string encoding, digest collision resistance and parser ambiguity require native
+qualification.
+
+The alias key includes both normalized subject and peer/profile/incarnation.
+A reused task/request ID at another endpoint is a different alias requiring
+fresh admission. A changed profile or connection does not inherit unvalidated
+capabilities. Delegation or principal migration requires its own qualified
+identity contract; the present direct-subject model requires matching normalized
+tenant/principal/issuer and does not silently substitute an account.
+
+* Authority registration protocol
+
+1. Resolve the trusted source origin and actual original staged intent. Verify the
+   exact task/claim/profile subject and canonical source-family classification.
+2. Authorize creation of the registration under that current source context.
+   Conditionally persist the full record only if the origin slot is empty.
+3. If creation loses its response, query the same origin slot and compare the full
+   immutable record. An existing matching row is the same result; a mismatch is
+   a conflict. Missing local visibility is not proof of absence.
+4. Bind each new protocol alias only after authenticating peer/principal/profile
+   and proving continuity to that committed origin. Atomically enforce unique
+   full alias keys; an existing exact key is queried, never rebound.
+5. Record/recover the original source links and unresolved obligations. Registration
+   and binding do not consume a claim or initialize a new ledger/budget/history.
+
+In the Lean model the origin operation equals the original stable change ID and
+the tenant matches the source configuration. Registration requires membership of
+the actual original in the source staged list and the exact original binding in
+the authoritative source registry. Canonical classification also agrees with
+category 17's family owner. =owner.originValid= supplies the remaining authenticated
+issuer/principal/source registration contract.
+
+Origin registration and alias-key uniqueness must be enforced by the authoritative
+store, not an adapter cache. The full immutable body is checked on retry. A remote
+client cannot choose a different producer-operation key merely because its first
+request might have committed. New-origin creation and resume are distinct native
+operations; there is no =lookup-or-create= on the resume path.
+
+The proof fixes one admitted origin and original family. It demonstrates this
+slot's write-once registration and arbitrary finite alias list. A native multi-key
+registry must enforce the same CAS scope for every origin and alias namespace;
+this model does not prove global identity allocation or malicious source-issuer
+resistance across all tenants.
+
+* Protocol-specific resume rules
+
+| Interface event | Required authority action | No implicit inference |
+|-----------------+---------------------------+-----------------------|
+| MCP transport reconnect or request retry | Authenticate the selected profile and original source operation; bind or query a qualified alias | No new family or grant from a connection/session/request locator |
+| MCP metadata/profile change | Revalidate exact profile/capabilities and body/envelope binding before alias admission | No ambient carryover from the old connection |
+| A2A new task or context locator | Resolve source-backed continuity to the original child/operation, then bind the remote locator | New task/context ID is not a fresh claim, budget or proof that the old remote effect did not occur |
+| A2A reconnect/subscription/webhook | Recover attributable observation/range under the existing task/child binding | Missing events/history are not source-ledger absence or cost completion |
+| Client ACP session load/resume | Authenticate the agent/client peer and exact original origin; recover or separately bind the session locator | Session history and client permission prompts do not replace current Policy/history checks |
+| ASP packet/provider change | Retain admitted source fingerprint, producer/schema identity and exact original operation binding | A new packet or read locator does not create a Gateway family or mutation capability |
+
+Current MCP's reviewed transport specification carries protocol version and
+capabilities per request; earlier profiles used connection-scoped initialization.
+Therefore =MCP reconnect= here covers transport/request recovery and does not
+assume every selected profile has a persistent session. This clarifies the generic
+session wording in category 17 without requiring a compatibility layer or changing
+a dependency pin. See the [[https://modelcontextprotocol.io/specification/2026-07-28/basic/transports][official transport specification]].
+
+A2A assigns new task IDs at the server and can group multiple tasks in one
+context. Equal context IDs therefore do not identify one original operation.
+A2A has distinct context/task identifiers and task observation operations; Weaver
+maps these locators to source authority instead of treating them as producer
+operation keys. See the [[https://a2a-protocol.org/dev/specification/][official specification]]. Client ACP's reviewed overview includes
+=session/load= where supported; loading a session still follows Weaver's resume
+admission, not a new-origin path. See the [[https://agentclientprotocol.com/protocol/v1/overview][official overview]]. These are protocol facts;
+the authority rules in the table are Weaver design decisions, not guarantees made
+by those protocols on the gateway's behalf.
+
+An alias resolves original-root context; it does not select or grant a child
+slot. The actual operation must bind the intended registered child/message/range
+and exact request payload through the existing source gates. Several tasks may
+represent separately admitted children under the same original root, each with
+its own consumed slot and original shared-budget allocation. The native
+=owner.operationValid= bridge must authenticate that mapping; the alias model
+does not implement a complete task-to-child registry.
+
+A truly new A2A task can represent genuinely new work. It must then use an explicit
+new source intent and fresh Policy/claim/budget admission. The gateway must not
+collapse all tasks into one family or allow a caller to relabel a retry/unknown
+operation as new work. Without authenticated continuity or explicit new-intent
+admission, retain unresolved status and original unknown obligations.
+
+* Qualified resolution and actual progress
+
+A resolution request requires the committed exact registration and alias to be
+readable, an online recovered owner and a qualified read of the complete image.
+It appends a receipt only. Before protected progress, the owner checks:
+
+- The exact receipt was issued and still refers to the committed registration.
+- The exact alias remains in both the authoritative log and readable projection.
+- Registry revision and logical owner fence match the current authority image.
+- The source cut matches the current original binding, ledger revision, publication
+  position, Policy generation and source fence.
+- The actual source transition and encoded operation match the admitted profile
+  and pass the existing family/publication/consumption and Policy gates.
+
+The registry read and actual source mutation must share a qualified serialization
+contract. A remote identity read followed by an independent local source CAS
+leaves a check-to-use window. The native final transition must order registry
+revision/fence changes with source consumption through a coordinated authority
+cut or equivalent serializable protocol. A signed lookup response alone is not a
+lease excluding those changes.
+
+Every registry mutation and admitted source step advances the modeled registry
+revision; source-only mutations are also detected by the source cut. Registering
+a new alias invalidates old identity receipts in this conservative model. A native
+fast path may scope revisions or cache immutable rows only with an equivalent
+currentness proof; this is not a throughput prescription or benchmark.
+
+Bootstrap source steps can establish data/claim context, but cannot publish a
+Policy change, choose a winner, bind an unregistered protocol alias, consume a
+child, offer the root or settle work around the registry gate. Actual protected
+steps project into category 17 and retain its original one-winner rules.
+
+* Lost responses and independent snapshot recovery
+
+| Failure/interleaving | Safe recovery |
+|----------------------+---------------|
+| Registration commits, reply lost | Query the exact source origin and same full record; never allocate another family |
+| Alias commits, reply lost | Query the exact full alias key and target; do not rebind it |
+| Registry projection is empty after restart | Keep authority unchanged; restore from qualified committed rows or stay unavailable |
+| Alias projection is older than registration | Restore exact committed alias before resolution; no synthesized default link |
+| Old registry/alias projection but current ledger | Restore identity data only; never assign old claim/call/budget/history state |
+| Current registry but old ledger projection | Require existing qualified current source recovery; immutable identity alone does not validate spent-state |
+| Registry owner restarts | Advance non-rollback fence, close access and recover exact current authority before reissuing a resolution |
+| Source owner or Policy changes after resolution | Full source cut invalidates the receipt even if canonical identity is unchanged |
+| Late register/alias/resolve success reaches an old worker | Treat as data; current final-use comparison still rejects stale revision/fence |
+
+Restore operations change readable projections only, never authoritative bindings
+or execution state. Registry recovery itself reopens access under
+=owner.recoveryValid= over the full current state. It neither manufactures source
+execution recovery nor turns old resolution receipts into leases. These qualified
+read/recovery predicates require native authenticated prefix/namespace evidence;
+a local counter equality or an old successful callback is insufficient.
+
+The durable registration, alias log and anti-rollback witnesses must survive the
+cache/worker rollback failure domain. If the entire trusted authority and its
+currentness witnesses roll back together, the deployment violates the premise.
+No proof of consensus, native fsync, transport quiescence or automatic repair of
+such a deployment is claimed.
+
+* Responsibilities and retained obligations
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme / POO Flow | Define original operation/claim/profile semantics, source intent continuity and actual Policy projection |
+| Go | Selected MCP/A2A/Client ACP lifecycle and cloud-native reconciliation; report attributable aliases and preserve unresolved status |
+| Rust registry owner | Authoritative origin CAS, immutable alias-key binding, exact lookup, qualified prefix recovery and identity fence |
+| Rust final broker | Join identity receipt with current source authority and actual operation; preserve final consumption/range ownership |
+| ASP | Source/schema/provider provenance and exact read evidence; no Gateway family creation or mutation grant |
+| Cedar | Authorize actual registration/binding/use under authenticated current effect/state and all required layers |
+| Quint / Lean | Check response loss, alias collisions, recovery and original-state preservation under explicit owner contracts |
+
+Source registration and alias admission retain original pending and winner.
+Original claim uniqueness, semantic profile, account domains, allowance and unknown
+usage holds follow from actual source-transition composition. Even a fresh valid
+resolution for a new A2A task cannot reset an already spent original claim or
+bypass original history denial. New interface IDs are not new funding domains.
+
+Measure authority lookup/CAS contention, alias cardinality, reconnect recovery,
+failed-continuity rate and final image validation cost. No native adapter support
+or performance claim follows from this design-only change.

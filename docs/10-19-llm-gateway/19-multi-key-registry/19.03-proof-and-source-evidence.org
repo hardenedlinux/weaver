@@ -1,0 +1,161 @@
+#+title: Weaver Multi-Key Registry Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Checked scope and reproduction
+
+Run [[file:../../../dev/proofs/check_llm_multi_key_registry.py][the isolated runner]]. It compiles the existing Lean dependency chain into a
+fresh temporary directory and checks [[file:../../../dev/proofs/lean/LlmMultiKeyRegistry.lean][the new Lean module]], [[file:../../../dev/proofs/quint/LlmMultiKeyRegistry.qnt][Quint]], focused ITF controls,
+bounded simulations and the category-18 regression. Results are recorded in
+[[file:../../../dev/proofs/evidence/llm-multi-key-registry/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-multi-key-registry/receipt.json][receipt.json]] and [[file:../../../dev/proofs/evidence/llm-multi-key-registry/SHA256SUMS][the byte manifest]]. Failed preliminary proof diagnostics are
+retained separately. Passing negative controls mean that deliberately broken
+alternatives produce the stated violation; they are excluded from the safe step.
+
+Checked local scope: 16 Lean modules, 24 printed declarations without =sorryAx=,
+40 Quint controls (30 guarded controls and 10 expected-violation controls), 49
+category-18 regression controls and 70 sampled runs of at most 30 post-initializer
+steps with seed 197. These counts describe the recorded local receipt only.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| MK1 | An admitted origin entry cannot be replaced | duplicateOriginDifferentTransactionTest | origin_immutable | recovery.projection |
+| MK2 | One family has one canonical origin | familyCollisionRejectedTest | same_family_same_origin | recovery.projection |
+| MK3 | One claim has one canonical origin | claimCollisionRejectedTest | same_claim_same_origin | recovery.projection |
+| MK4 | Aliases cannot rebind across origins | aliasCannotRebindAcrossOriginsTest | alias_immutable | recovery.projection |
+| MK5 | Lost commit response cannot reapply | lostReplyCannotApplyAgainTest | lost_reply_blocks_reapply | protocols.acp |
+| MK6 | Decision body and outcome remain immutable | reusedTransactionDifferentBodyTest | decision_immutable | recovery.join |
+| MK7 | Old parent cannot win after concurrent commit | concurrentOldParentCannotCommitTest | stale_parent_blocks_commit | recovery.join |
+| MK8 | Restart rejects old mutation permits | oldOwnerCannotCommitTest | stale_owner_blocks_commit | broker.cas |
+| MK9 | Recovery cannot overwrite the original source | recoveryReplaysDecisionOnlyTest | recovery_cannot_replace_source | recovery.fence |
+| MK10 | Shared exposure remains bounded | sharedBudgetRejectsIndependentAllowanceTest | shared_budget_bound | broker.hold |
+| MK11 | Unknown consumption cannot reset spent-state | freshReceiptStillSeesSpentClaimTest | spent_retained | broker.claim |
+| MK12 | Original pending survives recovery and conflicts | pendingSurvivesRestartTest | pending_intent_retained | registry.query |
+| MK13 | Actual source transitions compose with prior semantics | freshReceiptStillSeesHistoryDenialTest | canonical_source_composition | registry.alias |
+| MK14 | Unknown exposure cannot be refunded by recovery | recoveryReplaysDecisionOnlyTest | unknown_hold_retained | broker.hold |
+
+* Lean model, premises and composition
+
+=State= uses total maps with optional rows. A finite run inserts only finitely many
+rows; there is no fixed origin/alias bound. Registration changes the origin, family
+and claim indexes atomically with the exact decision and actual source transition.
+=initialized_coherence= establishes all three indexes agree from the empty initial
+registry. =same_family_same_origin= and =same_claim_same_origin= derive uniqueness
+from this coherence, rather than assuming unique families as an invariant premise.
+Origin and alias map immutability preserve the complete stored entry/target.
+=initialized_aliases_bound= separately proves aliases target committed origin rows.
+
+Pending requests retain their exact body. Staging requires same-ID bodies to agree;
+commit requires actual pending membership, an unused decision ID and the current
+parent/fence. Durable decision identity never changes. Projection loss, recovery
+and restart cannot assign source state, remove pending or release exposure. The
+recovery predicate is an explicit qualified owner contract, not an executable
+implementation of current-prefix authentication.
+
+Every register, bind or consume step requires =SourceStep Request before after=.
+The request includes the existing typed recovery cut. =source_projection= gives an
+actual admitted source path; =composition= transports any source invariant preserved
+by that relation. =canonical_source_composition= explicitly transports that path
+into initialized category-18 =Run= when a refinement into its actual =Step= is
+provided. Unrelated-origin transitions may stutter in the selected-origin projection;
+shared-account mutations still require the joint account guard. This is a concrete typed connection to the existing model, with the
+refinement obligation exposed; it does not supply a native multi-origin backend.
+Category 18 then supplies original claim/profile/domain/allowance/pending proofs.
+
+For multiple origins, each selected-origin projection must refine its original
+initialized source path, while the same joint transition preserves the shared
+account/history relation. Cloning independent initial category-18 states does not
+satisfy that obligation. The additional shared-pool theorem is a joint admission
+bound over arbitrary finite commits, not a proof of a complete asynchronous
+multi-account settlement product. Charged exposure never decreases in this model;
+there is no settlement, cancellation, delivery or reclamation transition.
+
+=admitted Entry= must authenticate the exact original registration and its family,
+claim, profile, budget and history references. =SourceStep= must enforce current
+Policy/history, source-cut equality, original grant validity and actual effect
+binding, not merely return a successful RPC Boolean. Coherence alone cannot
+establish authenticity. A faulty canonicalizer can consistently index the wrong
+identity; parser/crypto/producer qualification remains required.
+
+** Storage abstraction boundary
+
+The Lean source value is authoritative state, not a participant snapshot. Its
+recovery steps alter visibility/fence only; they do not reconstruct or authenticate
+a disk journal. The decision table stores immutable requests, while the native
+protocol additionally requires immutable source-result commitments and complete
+replay data. Quint's applied-ID set abstracts idempotent participant publication;
+it does not execute a storage engine's position/result CAS. Barrier ordering,
+result reconstruction and non-rollback prefix qualification remain native
+refinement obligations. The models prohibit unsupported recovery rather than
+silently assigning arbitrary restored source state.
+
+* Quint interleavings and independent observations
+
+The fixture has three original entries, two protocol aliases plus reconnect alias,
+one shared account, concurrent pending requests, independent projections, owner
+restarts, source/Policy changes and unknown consumption. Colliding admitted fixture
+entries deliberately reach family/claim guards; those controls do not merely fail
+an earlier entry-shape check. Independent controls keep the source coordinate fresh while invalidating only
+the parent, and keep the parent fresh while invalidating only the source read.
+Fresh-receipt controls first establish currentness,
+then show that spent-state or history still blocks actual consumption.
+
+| Broken alternative | Counterexample control | Independently checked observation |
+|--------------------+------------------------+------------------------------------|
+| Recreate origin after lost reply | duplicateOriginCounterexampleTest | Two distinct entries share the same origin |
+| Allocate family without reverse CAS | duplicateFamilyCounterexampleTest | Distinct origins share one family |
+| Register a second claim owner | duplicateClaimCounterexampleTest | Distinct origins share one claim |
+| Rebind a committed alias | aliasRebindCounterexampleTest | Same alias key resolves to distinct origins |
+| Accept a retired owner | oldOwnerCounterexampleTest | Actual staged request fence differs from use fence |
+| Separate source read and source CAS | staleSourceCounterexampleTest | Actual staged request source revision differs from use revision |
+| Apply independent local allowances | sharedBudgetCounterexampleTest | Total shared exposure exceeds the account limit |
+| Restore spent-state from a stale participant | rollbackCounterexampleTest | An ever-spent claim disappears from current spent-state |
+| Treat a lost response as a new decision | conflictingDecisionCounterexampleTest | One transaction ID has conflicting bodies/outcomes |
+| Drop unresolved pending during replay | droppedPendingCounterexampleTest | A committed original request no longer appears in pending |
+
+ITFs are in [[file:../../../dev/proofs/evidence/llm-multi-key-registry/itf][the evidence directory]] and decoded by an independent checker.
+Bounded TypeScript simulation is sampled evidence, not exhaustive model checking.
+Lean quantifies finite transition paths but still assumes admitted source steps,
+qualified recovery and one non-forking authority. No liveness proof is claimed.
+
+* Source-by-source reuse and extension
+
+The [[file:../../../dev/proofs/evidence/llm-multi-key-registry/source-review.json][POO Flow / Cedar register]], [[file:../../../dev/proofs/evidence/llm-multi-key-registry/asp-source-review.json][ASP register]] and [[file:../../../dev/proofs/evidence/llm-multi-key-registry/agentgateway-source-review.json][agentgateway register]] preserve pinned blob
+identities and exact excerpts, freshly verified in [[file:../../../dev/proofs/evidence/llm-multi-key-registry/source-receipt-check.json][the source receipt]]. These are
+reviewed source identities, not requests to preserve a legacy compatibility layer.
+No upstream checkout, ABI or dependency pin is changed by this design extension.
+
+| Source | Existing mechanism | Direct reuse / required extension |
+|--------+--------------------+-----------------------------------|
+| P12 authorized-effect-token | Exact original root, operation, payload/range and nonce binding | Reuse as semantic input; canonical registry never manufactures a second token |
+| P13 strict-mediation | Pure immutable nonce/root transition; indeterminate outcome still consumes | Reuse spent-state law; persist it in the same authority decision as registry/source CAS |
+| P15 assurance effect Host | Exact serialized local owner; reservation and delivery separated; receipt explicitly non-durable/non-distributed | Reuse logical mediation boundary; extend with durable multi-key authority and replay, rather than treating local serialization as distributed CAS |
+| P17/P22 durable backend/store | Scheme validates/projects contracts; runtime owns locks, fsync, leases, replay and repair | Reuse typed receipt boundary; add authority prefix, immutable decisions, reverse indexes and participant-position application |
+| P18/P19 transaction recovery | Source-bound recovery and authority-exclusive predicates | Reuse source attribution; extend recovery join to origin/family/claim/alias indexes and original decision body |
+| P20/P33 occurrence and budget | Exactly-once/runtime evidence and deterministic cost assumptions remain explicit | Retain original reservation; no timeout/refund or inferred provider completion |
+| P31 SessionAttempt / P43 funs-attempt | Pure generation/revision guards; active work retained in obligations; runtime-published/action-authorized/durable are false in proposal receipts | Reuse pending/claim/profile identity; authoritative journal publication remains Rust's responsibility |
+| P35 context lineage | Current lineage and non-forking prefix are explicit prerequisites | Reuse recovery/fence condition; a restored counter is not current-prefix evidence |
+| P44 producer/attempt objects | Frozen source, scope, profile and producer reference material | Reuse exact original provenance; do not classify wire task IDs as new origins |
+| C8 BoundOperation | Effect/state equality does not authenticate inputs; Host must bind eventual execution | Reuse actual operation projection; authenticate complete transaction/read set and final broker operation |
+| C10 CompoundAuthorization | Every required nonempty layer allows without Policy evaluation errors | Require aligned admission for enrollment, alias and consumption, never reuse an unrelated allow receipt |
+| C11 Composition | Evaluator/typechecker certificates require input alignment | Reuse alignment law; this is not a theorem about multi-store commit or rollback recovery |
+| ASP1 shared contracts | Shared schemas/provider provenance and parser-owned facts | Reuse typed source attribution; add authenticated producer-operation continuity |
+| ASP2 query projection | Source fingerprint, exact read locators and bounded parser projection | Reuse evidence locators; fingerprints/read packets are neither canonical mutation identity nor a grant |
+| Agentgateway controller/provider paths | Cloud-native reconciliation and provider conversion patterns | Inform Go adapter placement; provider SDK retries still cross Rust's exact operation gate |
+
+* Acceptance and evidence boundary
+
+The receipt records tool versions, command counts, source hashes, ITF observations,
+Org/D2 checks and unchanged dependency identities. Such metadata stays out of the
+core diagram. Native acceptance still requires controlled fault injection at each
+journal durability barrier, source/participant CAS, response loss and owner fence;
+restoring all permutations of participant snapshots must never create authority.
+
+Test two old/new workers with retained queued requests, late callbacks and historical
+receipts; verify only the current broker mutates and exact historical results remain
+observable. Exercise at least two genuine origins sharing an account, colliding
+qualified families/claims, conflicting alias inserts and concurrent history changes.
+Verify the native canonical codec and original source-cut mapping. A passing abstract
+model is not a backend atomic-commit, consensus, fsync, native protocol conformance,
+remote exactly-once, liveness or performance result.

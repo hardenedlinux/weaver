@@ -1,0 +1,192 @@
+#+title: Weaver Independent Admission Floor Publication and Recovery
+#+language: en
+#+options: toc:3
+
+* The admission minimum is an independently determined result
+
+An append body can be durable while its local admission descriptor is lost.
+An old local snapshot can omit an acknowledged pending tail or reopen a retired
+append generation even when the financial head and checkpoint are unchanged.
+The gateway therefore publishes the determining admission/cut decision in one
+independently governed original control-log namespace before reporting committed
+admission. An in-process counter or a local manifest is insufficient.
+
+Reuse the original task/claim/profile/account/reservation lineage and retained
+pending-intent semantics. Extend the authoritative control log with complete
+admission recovery images and original-operation outcomes. Do not create a new
+family, budget domain, source account or empty authority namespace on restart.
+This log publishes storage-control facts; its commit cannot apply account money,
+release an unknown hold or send an LLM request.
+
+* Original intent, attempt and determining record
+
+The canonical operation key identifies the original admission, cut or fence
+intent. Its immutable semantic commitment binds operation kind, complete body,
+source lineage, original claim/profile and affected storage scope. A publication
+attempt additionally captures the expected parent, complete before/after recovery
+image and current worker/source facts. A stale attempt stays pending. Reauthorize
+and rebase that same original intent against the current parent; never obtain
+progress by replacing its original key or semantic commitment.
+
+The formal =Proposal.id= is the canonical original operation key. Several pending
+attempts may share it only under the same =intent= commitment. =Owner.intentMatches=
+requires the attempted actual transition to implement that exact original intent.
+The natural-number commitment is a semantic abstraction: caller-chosen equal
+numbers do not authenticate bodies. Native canonical encoding and the POO/Cedar
+source-bound operation checks must establish this fact.
+
+The immutable request body is distinct from the derived before/after recovery
+image. Reauthorization may refresh only the context-derived parent and image
+permitted by that original request; it cannot widen its scope or substitute
+another original append body. This is part of =Owner.intentMatches= and the
+Scheme/Cedar semantic contract, not a consequence of matching an intent number.
+
+The independent log admits one determining record for an operation key. Publication
+checks the exact current parent and before-image, fresh original key, current
+owner, actual guarded handoff transition, original intent, body retention, Policy
+and durable commit boundary. Duplicate network replies can resolve the same record;
+a second conflicting result for the same key cannot commit.
+
+A current read receipt binds namespace/incarnation, qualified configuration,
+committed prefix identity, exact position and full determining record. The record
+binds the original key/intent, parent, before/after image and captured worker.
+A signature or leader reply without qualified durable-prefix membership is not
+such a receipt. The model represents authenticated membership by exact typed
+records and Owner predicates, not by proving a signature/quorum implementation.
+
+* Complete recovery image and body retention
+
+The recovery image contains the selected immutable base manifest, closed/live
+segments, allocation identity history or qualified retirement equivalent,
+manifest generation, active append generation/frontier, original cut sequence
+and unresolved cut/candidate, current worker and governed source generation.
+Every segment keeps its exact ordered original frame and source/account binding.
+Current and candidate checkpoint bodies retain applications, reservation
+consumption, unknown holds and original semantic lineage through earlier contracts.
+
+The determining record must reference a qualified durable archive/retention domain
+for all bodies required by that image. Publishing a digest while the only body
+remains in a rollbackable local cache is forbidden. Commit, GC and archive
+retention share an ordering contract: referenced objects cannot be removed before
+an authenticated successor supersedes them while preserving every unresolved
+obligation. This model retains all protected floor records and their determining
+history. Archive expiry and protected-log compaction are not established here.
+
+The admission image is storage recovery metadata. It is not a snapshot that may
+replace the financial authority, reset account maps or replay balances. The
+actual account journal and original source/usage archives remain authoritative.
+
+* Protocol and crash decisions
+
+| Phase | Persistent or authoritative effect | Failure decision |
+|-------+------------------------------------+------------------|
+| Prepare | Persist complete bodies and original pending attempt without changing admitted frontier | Body exists but operation is still pending; no success or release |
+| Commit | Parent/before-image CAS installs one determining admission/cut/fence record on the qualified independent prefix | Response loss is unknown; preserve original attempt and all possibly required bodies |
+| Resolve original operation | Read its immutable committed result, or retain unresolved status | A historical result is status evidence only; it cannot confirm the current floor |
+| Confirm current head | Authenticate the current determining prefix and current worker/source context | Missing, stale, erroring or unauthenticated confirmation keeps recovery closed |
+| Retrieve | Fetch and verify all exact bodies referenced by the determining image | Missing or conflicting content keeps closed; no empty-generation fallback |
+| Project | Install exact current admission metadata from the qualified image; preserve financial authority | Partial local writes remain unqualified; repeat reconstruction idempotently |
+| Activate/use | Compare current head, complete local image, required bodies and current owner at actual use | New publication or owner change requires a new join; cached active bits grant no permission |
+
+The durable publication point determines the logical admission. The original body
+and archive pin are prepared before it; local projection and acknowledgment can
+follow. The formal =commit= composes the actual prior handoff transition at this
+logical point while forbidding any account balance/journal delta. Its native
+refinement must order actual body IO and independent publication accordingly.
+The ordinary filesystem/remote backend cannot infer a cross-store transaction
+from two completed writes. The actual handoff premise includes current original
+source/account readiness, even though those financial facts are not all encoded
+in the storage-only image. Reuse the original source-admission bridge and its
+source-owner fence/serialization contract at this boundary. A financial/source
+change between validation and floor CAS must force current reauthorization or
+closure; matching the floor parent alone cannot validate a stale financial
+before-image. This product requires that actual handoff witness and does not
+prove an atomic cross-store bridge implementation.
+
+After commit with a lost response, resolve the original key. If already committed,
+return the same result; do not repeat append or cut under another key. If an
+attempt's parent lost a race, retain that attempt and reauthorize a new attempt
+for the same original semantic intent. Absence from one replica or a read timeout
+does not prove abort. Pending-intent retirement needs an authoritative determining
+result; this safety model retains pending attempts rather than proving bounded
+cleanup or recovery liveness.
+
+* Historical outcome and current recovery authority are separate
+
+A cut can retire an append generation after an earlier append committed. Its
+late append response is still correct about that original operation. It says
+nothing about the current cut, worker, frontier or candidate. =resolve= stores
+historical result evidence separately from =query='s current-head receipt.
+Resolving an old result never overwrites the current recovery head.
+
+Current-head qualification compares the entire original namespace/body/lineage,
+not merely a larger sequence number. A genuine but stale committed prefix is not a current-head read. The backend
+must qualify the read against its current commit authority; replica-local
+=lastApplied=, a larger leader term or a valid historical signature is insufficient.
+A delayed old confirmation fails the final head equality check after a new commit. Final publish CAS repeats the exact parent,
+original key, before-image and worker checks; a successful earlier query cannot
+cross a newer authoritative publication.
+
+* Recovery under independent rollback
+
+The authoritative prefix and referenced archive survive the declared local
+rollback domain. Local manifest, append-descriptor, object and account projection
+snapshots may be inconsistent. Read the current independent floor, fetch its
+complete required bodies, reconstruct the exact ordered admission state and then
+join the original financial/source/Policy/history gates. A complete old physical
+WAL still cannot justify reopening an old admission generation.
+
+A current metadata image without its pending segment is equally unqualified.
+Missing accepted data is a recovery failure, never evidence that an original
+operation did not execute or that its reservation can be released. The original
+pending body and hold survive. Financial replay uses only the protected committed
+financial head; accepted but uncommitted frames remain pending.
+
+The independent authority must inherit every committed determining record and its
+retention obligation on leader/configuration change. It cannot recover by creating
+a fresh namespace with an empty log or by accepting the largest restored local
+counter. Qualified prefix inheritance and non-rollback storage remain explicit
+native premises; a co-restored monitor cannot certify them. Existing logical
+anchor-prefix/fencing contracts are reusable requirements, not a claim that an
+HSM, physical isolation or a particular consensus implementation is required.
+
+* Worker recovery and current generation
+
+An owner fence is itself a determining control transition retaining the original
+base, admitted tail, cut and pending candidate. It changes current logical owner
+and closes cached recovery qualification. The control-plane identity authorized
+to publish takeover is distinct from an untrusted old worker. Native Policy and
+=Owner.intentMatches= must authenticate that role and its exact transition.
+
+A restored worker must read the current prefix and prove current owner/source
+membership before confirmation, projection or use. It cannot use an old original
+success receipt to resume an old append generation or delete a current segment.
+Rust retains writable native handles and backend credentials; logical workers
+receive fenced operation handles. A detached old FD with unrestricted mutation
+would violate the native ownership premise, not become safe through a new term.
+
+Recovery refreshes admission qualification and the earlier financial/source gates
+separately. Admission activation alone does not prove current account projection,
+usage reconciliation, grant consumption or final-send permission. An actual late
+financial commit remains a distinct guarded handoff/account transition; control
+publication itself cannot cause it.
+
+* Scheme, Go, Rust and Policy
+
+| Component | Responsibility and enforceable boundary |
+|-----------+-----------------------------------------|
+| Scheme | Define canonical original intents, complete images, pending retention and source-bound CAS contracts; pure proposals are not published or durable authority |
+| Cedar | Require all original storage/tenant/recovery layers to allow the exact current operation without errors; authenticate actual Host facts and takeover role |
+| Go | Kubernetes lifecycle, adapter/backend discovery and reconciliation; resolve original outcomes separately from current-head readback; preserve keys across SDK retries |
+| Rust | Own body retention, protected publication adapter, parent/key/owner CAS, current read qualification, authenticated reconstruction and actual effect-time fencing |
+| Quint | Exercise lost commits, stale parents, mismatched snapshots, missing tail, old worker and historical-result misuse |
+| Lean | Compose actual handoff/WAL/account/source transitions and prove current-floor qualification, retained history, operation-result uniqueness and original budget consequences |
+
+Native status, head and archive reads also enforce the original scope and read
+ACL. Record membership is not reader permission; authentic Owner/member facts
+must come from that qualified boundary, never caller-provided boolean flags.
+
+No stage in this publication/recovery pipeline triggers provider IO. Final broker
+consumption, enqueue and executor sending still use the earlier current original
+claim, grant, Policy/history, budget and owner checks. This is an AI Agent Gateway
+logical execution-authority boundary.

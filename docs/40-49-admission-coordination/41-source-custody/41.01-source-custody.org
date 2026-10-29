@@ -1,0 +1,134 @@
+#+title: Weaver Recoverable Source Custody and Final Admission CAS
+#+language: en
+#+options: toc:3
+
+* Design finding
+
+A recoverable validation ticket is insufficient. The determining admission floor
+CAS must atomically compare the current custody holder and custody fence as well
+as the original source/account join. Otherwise a worker that lost custody can
+refresh an otherwise valid join and publish using an old custody permit.
+
+Custody is a logical execution-authority boundary of an AI Agent Gateway. It is
+not physical isolation. The protected authority must reject stale capabilities at
+the determining operation; process cancellation and Kubernetes lease expiry alone
+cannot establish that property.
+
+* Identity and durable record
+
+The durable record is keyed by the original admission operation, not a Go worker,
+SDK request, transport session, nonce or newly allocated continuation identifier.
+It retains the original claim, profile commitment, reservation, history domain,
+tail/body references and pending intent until an authoritative decision is known.
+
+| Field | Required meaning |
+|-------+------------------|
+| Original intent | Immutable canonical operation and semantic bindings |
+| Attempt | Exact floor proposal, parent and current account/source join |
+| Custody | Holder and monotonically increasing custody fence |
+| Phase | Prepared, armed, determined or closed |
+| Outcome | Absent or the exact original committed result |
+| Resolution | Whether this holder has authoritatively resolved that outcome |
+| Recovery pins | Original tail, replay material and unknown budget obligations |
+
+Custody fence and Gateway execution-owner generation are distinct. A custody
+handoff cannot silently rewrite =proposal.worker=, manufacture a new execution
+owner, or erase a pending reservation. Rebase preserves the original operation
+and semantic intent; the Scheme contract checks the complete immutable binding.
+The Lean =sameIntent= premise represents that native check, rather than deriving
+semantic equivalence from two numeric keys.
+
+* Protocol and linearization
+
+1. Persist the original intent and exact attempt before arming. Acquire custody
+   through the authority that will enforce the final floor CAS.
+2. Validate the current source/account/floor join; persist the arm before allowing
+   the determining CAS. The arm binds the exact attempt and current custody tuple.
+3. While armed, serialize relevant source mutations with the determining CAS.
+   A Policy/history/account change either invalidates the join before commit or
+   waits for that commit/transfer. The model conservatively blocks local source
+   mutations during the arm; an implementation may use a shared transactional
+   revision instead if it proves the same final comparison.
+4. At the determining CAS, compare the current custody tuple, armed attempt,
+   unresolved original operation, exact current join and current source allow.
+   Publish one original outcome using the inherited floor uniqueness gate.
+5. A handoff first durably advances the custody fence in that same ordering
+   domain. It preserves intent, attempt, outcome and pins, clears the volatile
+   join and sets resolution to unknown. The new holder must resolve before arming.
+6. Read the original outcome under the current protected fence. If committed,
+   recover that result; if absent, prove absence at an authority that rejects all
+   pre-transfer CAS operations. Revalidate before a fresh arm of the same intent.
+7. Close custody only after a committed outcome is authoritatively resolved.
+   Closing custody is not terminal execution evidence and never refunds money.
+
+The Lean commit transition bundles the actual source-join publication and durable
+outcome. This is an abstract atomicity requirement, not a proof that two stores
+commit atomically. A native implementation must use a single authority transaction
+or derive the custody outcome from the immutable floor log by original operation.
+The native =fenceDurable= contract includes authenticated handoff/recovery authority,
+non-reuse of a committed fence and protected persistence before acknowledgement.
+It cannot be satisfied by a caller-supplied Boolean or an expiring local lease.
+A separate best-effort outcome write is insufficient. Likewise a local custody
+counter beside a remote floor store does not implement the transfer transition.
+No external provider send is permitted by acquire, arm, transfer, resolve or floor
+publication. The broker/executor retains its separately fenced send protocol.
+
+* Crash and concurrency decisions
+
+| Interleaving | Required decision |
+|--------------+-------------------|
+| Transfer precedes an old final CAS | Old custody fence fails even if its source join is fresh |
+| Final CAS precedes transfer; response lost | New holder recovers the same outcome, never another append |
+| Crash after arm but before known commit | Retain original intent and unknown hold; transfer/fence before retry |
+| Crash after commit but before local outcome write | Reconstruct outcome from determining authority; do not infer absence from local storage |
+| Transfer response lost | Query current authority; neither old nor proposed holder assumes permission |
+| Old worker resumes with an armed descriptor | Determining authority compares current custody tuple again |
+| Source allow changes and returns to allow | Old revision remains invalid; fresh authorization is required |
+| Account changes while a cached join exists | Compare current account image/journal at actual floor CAS |
+| Snapshot restores an old custody record | Protected current fence is authoritative; stale snapshot stays inactive |
+| Custody close arrives late | Match current holder/fence and exact determined outcome; no financial release |
+
+Both possible orders of commit and transfer are serialized. Resolving an absent
+outcome while an old attempt may still commit is prohibited. A timeout, exhausted
+retry budget, empty local queue or source-side zero-call observation is not proof
+of non-execution. Lost response is uncertainty, not a new operation identity.
+
+A process restart can erase local resolution knowledge after a valid durable
+custody close. The committed original outcome and historical close remain; this
+is distinct from allowing a new close with no resolution. The invariant preserves
+the outcome, and the close transition checks current resolution at its own
+linearization point. Neither condition authorizes a budget refund.
+
+* Language responsibilities
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme / POO Flow | Canonical original task and semantic context; immutable claim/profile/history/reservation bindings; Cedar projection and required layer checks; recovery obligations; same-intent validation |
+| Go | Cloud native lifecycle, protocol adapters, reconnection and status queries keyed by original operation; SDK retries submit the same intent; no direct provider-send authority or custody reassignment by local lease |
+| Rust | Durable intent/arm/outcome, current custody fencing, actual source/account/floor CAS serialization, replay pins, broker queues and final executor checks |
+| Cedar | Policy decision over authentic bound operation and current facts; it does not persist custody or make an external send atomic |
+| Quint | Bounded commit/transfer/restart interleavings and deliberately broken boundary controls |
+| Lean | Arbitrary finite transition composition through actual source-join/floor/account models, conditional on native owner contracts |
+
+The high performance path uses one current authority comparison at determining
+publication and shares its result with outcome recovery. Keep immutable semantic
+material referenced by digest; batch persistence only within one qualified atomic
+ordering. Caches, sharding and async projections cannot move the fence check away
+from the determining CAS. Partition by original operation only if shared account
+and history dependencies remain in the join. No latency or throughput claim is
+established by these proof checks.
+
+* Recovery and liveness boundary
+
+The model retains one original custody lifetime and has no reset from closed to a
+new intent. It proves safety for arbitrary finite executions, not eventual
+recovery, fair scheduling, unbounded nonce capacity or native anti-rollback.
+Progress requires available protected authority, resolvable original outcome,
+retained replay material and a current source/account authorization. A denied
+original intent remains pending until an explicit authorized terminal procedure;
+this review deliberately supplies no cancellation-based budget release.
+
+An implementation qualification must inject crashes around durable arm, transfer
+commit and final CAS, drop replies, restore mismatched snapshots, resume old
+workers, and verify one original floor result with unchanged unknown holds. It
+must demonstrate that authority recovery cannot reopen an earlier custody fence.

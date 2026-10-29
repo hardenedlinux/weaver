@@ -1,0 +1,61 @@
+proofs/lean/LlmManifestSwitch.lean:98:10: error: Function expected at
+  unreferenced
+but this term has type
+  confirmed = s.generation
+
+Note: Expected a function because this term is being applied to the argument
+  x
+proofs/lean/LlmManifestSwitch.lean:94:53: error: unsolved goals
+case erase
+o : Owner
+s : State
+ao : LlmAccountCommit.Owner
+wo : LlmWalActivation.Owner
+co : LlmCheckpointTruncation.Owner
+genesis : LlmAccountCommit.Image
+av : Available o s s.root
+replayEq : replay s.root = s.logical.logical.wal
+checkpointEq : s.root.checkpoint = s.logical.localCheckpoint
+suffixEq : frames s.root = s.logical.suffix
+id worker confirmed : Nat
+owner : Confirmed s
+cas : worker = s.logical.logical.core.epoch
+unreferenced : confirmed = s.generation
+unreferenced✝ : ∀ (seg : Segment), seg ∈ s.root.segments → seg.id ≠ id
+x : Segment
+member :
+  x ∈
+    { logical := s.logical, root := s.root, generation := s.generation,
+          objects := List.filter (fun seg => seg.id != id) s.objects, manifests := s.manifests,
+          allocated := s.allocated, observed := s.observed }.root.segments
+⊢ ¬x.id = id
+proofs/lean/LlmManifestSwitch.lean:120:5: error: unexpected token 'prefix'; expected '_' or identifier
+proofs/lean/LlmManifestSwitch.lean:120:13: error: unexpected identifier; expected prec
+proofs/lean/LlmManifestSwitch.lean:123:24: error: unexpected token '|'; expected ':'
+proofs/lean/LlmManifestSwitch.lean:127:5: error: unexpected token 'prefix'; expected '_' or identifier
+proofs/lean/LlmManifestSwitch.lean:127:13: error: unexpected identifier; expected prec
+proofs/lean/LlmManifestSwitch.lean:130:24: error: unexpected token '|'; expected ':'
+proofs/lean/LlmManifestSwitch.lean:134:5: error: unexpected token 'prefix'; expected '_' or identifier
+proofs/lean/LlmManifestSwitch.lean:134:13: error: unexpected identifier; expected prec
+proofs/lean/LlmManifestSwitch.lean:136:100: error: unexpected token ')'; expected ':'
+proofs/lean/LlmManifestSwitch.lean:139:5: error: unexpected token 'prefix'; expected '_' or identifier
+proofs/lean/LlmManifestSwitch.lean:139:13: error: unexpected identifier; expected prec
+proofs/lean/LlmManifestSwitch.lean:143:105: error: unexpected token ')'; expected ':'
+proofs/lean/LlmManifestSwitch.lean:152:5: warning: Variable name `same` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _same
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'Weaver.LlmManifestSwitch.recovery_copy_retained' depends on axioms: [sorryAx, Quot.sound]
+'Weaver.LlmManifestSwitch.logical_projection' does not depend on any axioms
+proofs/lean/LlmManifestSwitch.lean:174:14: error(lean.unknownIdentifier): Unknown constant `actual_checkpoint_composition`
+proofs/lean/LlmManifestSwitch.lean:175:14: error(lean.unknownIdentifier): Unknown constant `original_reservation_once`
+proofs/lean/LlmManifestSwitch.lean:176:14: error(lean.unknownIdentifier): Unknown constant `unknown_original_hold_retained`
+'Weaver.LlmManifestSwitch.switched_response_is_unknown' does not depend on any axioms
+'Weaver.LlmManifestSwitch.erase_preserves_account' does not depend on any axioms
+'Weaver.LlmManifestSwitch.deletion_preserves_selected_segments' depends on axioms: [sorryAx, Quot.sound]
+'Weaver.LlmManifestSwitch.generation_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmManifestSwitch.stale_owner_cannot_erase' does not depend on any axioms
+'Weaver.LlmManifestSwitch.referenced_segment_cannot_be_erased' does not depend on any axioms
+'Weaver.LlmManifestSwitch.durable_switch_required' does not depend on any axioms

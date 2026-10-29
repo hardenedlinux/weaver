@@ -1,0 +1,154 @@
+#+title: Weaver Manifest Switch Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and evidence scope
+
+[[file:../../../proofs/check_llm_manifest_switch.py][Runner]], [[file:../../../proofs/evidence/llm-manifest-switch/commands.json][commands]], [[file:../../../proofs/evidence/llm-manifest-switch/receipt.json][receipt]] and [[file:../../../proofs/evidence/llm-manifest-switch/SHA256SUMS][byte manifest]] record local results.
+[[file:../../../proofs/lean/LlmManifestSwitch.lean][Lean]] imports the actual checkpoint model and its complete preceding chain.
+[[file:../../../proofs/qunit/LlmManifestSwitch.qnt][Quint]] imports the actual checkpoint actions, preserving their account/source state.
+The runner compiles 24 Lean modules and prints 12 new declarations without
+=sorryAx=. Quint checks 33 new controls (25 guarded and eight deliberately broken variants)
+plus 39 directly imported checkpoint controls: 72 total. A separate parent
+regression checks 79 controls. Seven initializers sample ten paths each, with
+at most 30 post-initializer steps and seed 241: 70 bounded samples. Eight ITFs
+are independently decoded. Preliminary failures
+remain recorded. These results do not establish native power-loss or filesystem
+correctness, exhaustive state exploration, availability or recovery liveness.
+
+* Four-artifact correspondence
+
+| ID | Obligation | Quint control | Lean statement | D2 node |
+|----+------------+---------------+----------------+---------|
+| MS1 | At least one selected complete path survives arbitrary finite guarded runs | deletionInterruptionIsIdempotentTest | recovery_copy_retained | broker.hold |
+| MS2 | Storage phases refine the actual checkpoint protocol | switchRetainsBothRepresentationsTest | logical_projection | recovery.fence |
+| MS3 | Restarts preserve initialized checkpoint/WAL/account lineage | restartRetainsUnknownHoldTest | actual_checkpoint_composition | broker.hold |
+| MS4 | Original reservation cannot be settled twice | readbackThenDeleteTest | original_reservation_once | registry.origin |
+| MS5 | Unknown original usage retains its original hold | restartRetainsUnknownHoldTest | unknown_original_hold_retained | registry.query |
+| MS6 | Root switch and response observation are distinct | lostSwitchReplyRequiresReadbackTest | switched_response_is_unknown | protocols.mcp |
+| MS7 | Deleting an obsolete object creates no account delta | readbackThenDeleteTest | erase_preserves_account | broker.alias |
+| MS8 | Actual deletion preserves selected segments | deleteCurrentCommittedTailRejectedTest | deletion_preserves_selected_segments | broker.alias |
+| MS9 | Lost response and retry cannot lower generation | sameSwitchRetryUsesOriginalResultTest | generation_monotone | recovery.fence |
+| MS10 | A recovered old worker cannot use a delete descriptor | staleOwnerCannotDeleteTest | stale_owner_cannot_erase | protocols.acp |
+| MS11 | Shared or current tail objects remain protected | currentSegmentCannotDeleteTest | referenced_segment_cannot_be_erased | recovery.join |
+| MS12 | New root requires durable complete replacement and parent | nondurableSwitchRejectedTest | durable_switch_required | broker.cas |
+
+Correspondence is complementary. MS4's finite control verifies retained application
+and reservation state; the Lean theorem proves actual inherited uniqueness.
+MS5's finite fixture retains an unconsumed hold; its unknown-source consequence is
+proved using the inherited source binding premise on every relevant commit path.
+MS10 and MS11 expose necessary guard contradictions rather than a native fencing
+implementation. MS12 additionally depends on the actual parent transition, selected
+publication, current publication observation, owner and policy premises.
+
+* Formal construction and composition
+
+=Available= requires the exact manifest body, every referenced segment and any
+selected checkpoint body to be present. =Safe= adds exact replay equivalence and
+agreement with the actual parent checkpoint/suffix representation. Segment and
+manifest durability are explicit Owner predicates. Native root durability is
+=Owner.switchDurable=; authentication is =Owner.rootAuthentic=.
+
+=Step.switchRoot= requires actual parent checkpoint transition evidence, current
+selected publication and confirmation, durable checkpoint, complete replacement,
+parent match, current owner, policy and durable root switch. It does not delete
+old objects. The result clears the observation and closes the parent WAL gate.
+=erase= requires current observation, owner, generation and non-reachability;
+it filters one immutable ID. Crash clears observations without rolling back the
+protected logical state or the durable root. Object/manifest staging uses fresh
+allocation identities. Each arbitrary finite prefix remains reconstructible by
+=safe_step= and =recovery_copy_retained= from an explicitly supplied safe initial
+representation. This is not an unconditional theorem that every native startup
+image is trustworthy.
+
+=logical_projection= maps each step to an actual checkpoint run; storage-only
+steps stutter, crash is actual lost-response closure, and authority/activation use
+actual parent actions. =actual_checkpoint_composition= attaches a supplied actual
+initialized parent prefix. Uniqueness and unknown-budget results then use the
+existing checkpoint/WAL/account/source proofs, not duplicate counters.
+
+Quint storage actions perform an authenticated pure financial-head read before
+the storage mutation because the imported parent has no public generic hold action.
+That read refines a permitted Lean =authority= step, followed by the storage step.
+It cannot fabricate a provider completion or usage receipt. The independent ITF
+decoder verifies unchanged actual provider execution state throughout these phases.
+The control fixture contains one original committed record; a second initializer
+contains a later committed suffix. Lean permits arbitrary finite segment lists and
+runs but freezes the represented WAL sequence during a cut, as specified in 27.01.
+
+=lastDeleteAuthorized= is a ghost negative-test monitor, not a production permit
+or anti-rollback authority. Losing a readback is a conservative protocol violation
+if a broken variant deletes without it, even when that particular obsolete deletion
+happens not to destroy the selected path. The decoder distinguishes this guard
+violation from actual missing-copy and replay violations.
+
+* Counterexamples and independent observations
+
+| Counterexample control | Independently required observation |
+|------------------------+-----------------------------------|
+| beforeSwitchManifestCounterexampleTest | Old root is still selected; its only WAL segment has disappeared despite a staged replacement |
+| interruptedDeleteManifestCounterexampleTest | Old garbage was removed safely, then a broken broad deletion removes the current committed suffix |
+| lostAckManifestCounterexampleTest | Replacement remains complete, but deletion occurs without root readback |
+| staleOwnerManifestCounterexampleTest | Current root and objects are complete, but a new owner epoch accepts the old worker descriptor |
+| staleGenerationManifestCounterexampleTest | Current generation is one; deletion uses generation zero |
+| rootRollbackManifestCounterexampleTest | After deletion, an obsolete root selects an already deleted segment |
+| suffixLossManifestCounterexampleTest | Root omits a committed later record and disagrees with the actual parent suffix |
+| pathnameRebindManifestCounterexampleTest | Same numeric object ID names different records; exact selected object is unavailable |
+
+Unsafe constructors are excluded from =step=. Tests deliberately expect the
+specific property to fail; they are mutation controls, not passing guarded
+protocols. Original queue, spent nonce, exposure, provider call counts, application
+IDs, reservation consumption and remaining hold are checked from actual ITF data.
+
+* Source-by-source reuse audit
+
+[[file:../../../proofs/evidence/llm-manifest-switch/source-review.json][Nineteen pinned source identities/excerpts]], [[file:../../../proofs/evidence/llm-manifest-switch/source-receipt-check.json][fresh byte checks]], [[file:../../../proofs/evidence/llm-manifest-switch/manifest-source-audit.json][focused storage extract]] and
+[[file:../../../proofs/evidence/llm-manifest-switch/working-source-check.json][current working hashes]] separate reference facts from design extensions.
+
+| Source | Reused fact | Required extension or explicit limit |
+|--------+-------------+--------------------------------------|
+| P12 authorized-effect-token.ss | Exact immutable root/effect/nonce/payload binding | Bind original cut, manifest, immutable object and deletion scope |
+| P13 strict-mediation.ss | Failed validation preserves state; indeterminate observations consume conservatively | Missing switch response cannot restore permission or imply financial non-application |
+| P15 effect-host.ss | Inert reservation, attributable handoff and unknown-result consumption; durable?/distributed-authority? false | In-process receipts do not establish durable root selection or safe unlink |
+| P17 store-backend.ss | Runtime owns append, fsync, leases, checkpoint IO, rebuild and repair | Reuse Scheme negotiation; add Rust object/root persistence and effect-time deletion serialization |
+| P18 PromotionTransactionRecovery.lean | Source-bound recovery/effect correspondence premises | Supply actual manifest-to-checkpoint replay refinement |
+| P19 authorized recovery bridge | Exact recovery member and authority binding | Recovered root must belong to current original account/publication lineage |
+| P20 CommittedEffectApplicationExactlyOnce.lean | Exact effect occurrence depends on runtime trace/universe premise | Deletion and switch must actually refine guarded effects; a counter is insufficient |
+| P22 store.ss | Checkpoint-store references and write-checkpoint capability; runtime owns locking/fsync/replay | Capability is not durable complete body, atomic root switch or unconditional GC authority |
+| P31 SessionAttempt.lean | Recovery retains active work as pending | Preserve independently accepted candidates through local file deletion |
+| P31 SessionAttempt.qnt | Pending and closed-state invariants | Add switch/readback/interrupted-delete interleavings |
+| P33 deterministic budget closure | Original deterministic bound witness | Preserve exact application/reservation/bound and units in reconstructed state |
+| P33 runtime budget separation | Watchdog timeout differs from semantic usage | Storage timeout and missing file never refund unknown usage |
+| P35 receipt context monotonicity | Governed context progression | Current root/owner/source qualification cannot use restored capture stamps |
+| P35 receipt lineage prefix | Explicit authenticated prefix inheritance | Native object closure and financial-prefix authentication remain necessary |
+| P43 funs-attempt.ss | Pure CAS intents; durable?/runtime-published?/action-authorized? false; reconciliation is not acknowledgment | Reuse generation/revision checks; native switch durability, same-operation query and current delete gate must be added |
+| P44 objects-attempt.ss | Frozen original producer/scope/profile references | Restart cannot create a new lineage to escape the original hold or claim |
+| C8 BoundOperation.lean | Exact operation/state binding under authentic Host facts | Bind actual root/object/owner facts at the storage effect |
+| C10 CompoundAuthorization.lean | All required nonempty layers allow without errors; runtime owns atomic execution/authentic facts | Cedar allowance cannot prove fsync or atomic rename/delete |
+| C11 Composition.lean | Aligned policy evaluation/validation/invalidation | Add native root/deletion refinement; existing theorem is not a storage crash proof |
+
+Pinned blobs and every recorded excerpt are freshly checked. Eighteen current
+working files match; P17 differs only in two control-plane import paths captured
+in [[file:../../../proofs/evidence/llm-manifest-switch/P17-working-diff.patch][the working diff]]. This does not qualify the new targets' native ABI. Weaver's
+actual Lean chain is compiled; upstream complete proof/runtime builds are not
+claimed. No dependency pin or upstream source changes.
+
+* Native acceptance obligations
+
+| Gate | Required executable evidence |
+|------+------------------------------|
+| Object-before-root ordering | Power loss at every write/fsync/publish boundary; old or complete new path survives; truncated/torn body never qualifies |
+| Root switch | Lose response before/after durable parent CAS, duplicate same operation, competing parent and generation exhaustion; exact original result or fail closed |
+| Deletion serialization | Pause old worker after validation, change owner/root, resume actual unlink; new reachable objects survive or takeover waits for the old critical section |
+| Partial deletion | Crash before/after each obsolete unlink and directory persistence, including already-missing files; repeat idempotently with no balance delta |
+| ABA and shared suffix | Reuse pathname/inode number, stale descriptor and shared segment; immutable identity and current reachability reject unsafe deletion |
+| Independent rollback | Restore root, object store and account snapshots inconsistently; qualify against retained publication/financial anchors or remain closed |
+| Restart and late result | Deliver old switch/deletion acknowledgment to a new owner; it cannot install a stale root or act as reusable permission |
+| Complete financial recovery | Preserve application IDs, reservation tombstones, unknown holds, namespaces/defaults, original profile/claim/history and ordered committed suffix |
+| Pending suffix and append | Race accepted candidate commit and append-generation capture; pending frames stay inert and no later frame is silently dropped |
+| Final use | Restored projection still crosses current source/Policy/history/owner and broker/executor gates; storage completion never triggers external send |
+
+The typed model assumes immutable complete records and qualified native IO.
+It does not prove torn-byte parsing, codec/hash security, independent anchor
+consensus, concurrent reader lease recovery, general append rollover, archive
+pruning, provider exactly-once delivery, bounded recovery progress or performance.

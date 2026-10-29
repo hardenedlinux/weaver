@@ -1,0 +1,19 @@
+proofs/lean/LlmSourceCustody.lean:111:27: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  a ≥ 0
+where
+ a := ↑{ logical := s.logical, fence := s.fence + 1, holder := s.holder, intent := s.intent, attempt := s.attempt,
+      phase := s.phase, outcome := s.outcome, resolved := s.resolved }.fence
+'Weaver.LlmSourceCustody.join_projection' does not depend on any axioms
+'Weaver.LlmSourceCustody.actual_join_composition' does not depend on any axioms
+'Weaver.LlmSourceCustody.final_cas_requires_current_custody' does not depend on any axioms
+'Weaver.LlmSourceCustody.fence_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSourceCustody.transfer_preserves_original' does not depend on any axioms
+'Weaver.LlmSourceCustody.old_fence_rejected' depends on axioms: [sorryAx]
+'Weaver.LlmSourceCustody.determined_outcome_retained' does not depend on any axioms
+'Weaver.LlmSourceCustody.unresolved_cannot_close' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSourceCustody.source_mutation_blocked_while_armed' does not depend on any axioms
+'Weaver.LlmSourceCustody.publication_no_financial_effect' does not depend on any axioms
+'Weaver.LlmSourceCustody.original_reservation_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSourceCustody.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmSourceCustody.original_result_unique' depends on axioms: [propext, Quot.sound]

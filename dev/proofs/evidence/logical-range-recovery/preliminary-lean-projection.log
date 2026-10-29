@@ -1,0 +1,151 @@
+proofs/lean/LogicalRangeRecovery.lean:234:3: error: unknown tactic
+proofs/lean/LogicalRangeRecovery.lean:232:34: error: unsolved goals
+scope : Scope
+nonempty : scope.lo < scope.hi
+positive : 0 < span scope
+s1 : BrokerConsumptionQueue.State := { spent := true }
+s2 : BrokerConsumptionQueue.State := { spent := true, intent := true }
+s3 : BrokerConsumptionQueue.State := { spent := true, intent := true, accepted := true }
+r1 : BrokerConsumptionQueue.Run abstractOwner (span scope) BrokerConsumptionQueue.initial s1
+r2 : BrokerConsumptionQueue.Run abstractOwner (span scope) BrokerConsumptionQueue.initial s2
+r3 : BrokerConsumptionQueue.Run abstractOwner (span scope) BrokerConsumptionQueue.initial s3
+⊢ span scope ≤ ?m.116
+proofs/lean/LogicalRangeRecovery.lean:220:71: error: unsolved goals
+scope : Scope
+nonempty : scope.lo < scope.hi
+positive : 0 < span scope
+s1 : BrokerConsumptionQueue.State := { spent := true }
+s2 : BrokerConsumptionQueue.State := { spent := true, intent := true }
+s3 : BrokerConsumptionQueue.State := { spent := true, intent := true, accepted := true }
+r1 : BrokerConsumptionQueue.Run abstractOwner (span scope) BrokerConsumptionQueue.initial s1
+r2 : BrokerConsumptionQueue.Run abstractOwner (span scope) BrokerConsumptionQueue.initial s2
+r3 : BrokerConsumptionQueue.Run abstractOwner (span scope) BrokerConsumptionQueue.initial s3
+⊢ BrokerConsumptionQueue.Run abstractOwner (span scope) BrokerConsumptionQueue.initial (project scope initial)
+proofs/lean/LogicalRangeRecovery.lean:254:5: error: unknown tactic
+proofs/lean/LogicalRangeRecovery.lean:250:18: error: don't know how to synthesize implicit argument `length`
+  @BrokerConsumptionQueue.Step.invoke abstractOwner ?m.170 (project scope s) (originalRange scope) 0
+    (of_eq_true
+      (Eq.trans
+        (congrFun'
+          (congrArg Eq
+            (congrArg BrokerConsumptionQueue.State.pending
+              (congrFun'
+                (congrFun'
+                  (congrFun'
+                    (congrFun'
+                      (congrFun'
+                        (congr
+                          (congrFun'
+                            (congrFun'
+                              (congrArg (BrokerConsumptionQueue.State.mk true true true false true 0 true (span scope))
+                                (ite_eq_right_of_eq_false none (some (originalRange scope))
+                                  (Eq.trans (congrFun' (congrArg Eq notFull) true) Bool.false_eq_true)))
+                              fun i => if i = 0 then s.calls else 0)
+                            [originalRange scope])
+                          (ite_eq_right_of_eq_false [originalRange scope] []
+                            (Eq.trans (congrFun' (congrArg Eq notFull) true) Bool.false_eq_true)))
+                        s.unknown)
+                      false)
+                    false)
+                  false)
+                0)))
+          (some (originalRange scope)))
+        (eq_self (some (originalRange scope)))))
+    rfl rfl rfl rfl
+    (of_eq_true
+      (Eq.trans
+        (congrFun'
+          (congrArg Eq
+            (congrArg BrokerConsumptionQueue.State.unknown
+              (congrFun'
+                (congrFun'
+                  (congrFun'
+                    (congrFun'
+                      (congrArg
+                        (BrokerConsumptionQueue.State.mk true true true false true 0 true (span scope)
+                          (if s.full = true then none else some (originalRange scope))
+                          (fun i => if i = 0 then s.calls else 0) [originalRange scope]
+                          (if s.full = true then [originalRange scope] else []))
+                        notUnknown)
+                      false)
+                    false)
+                  false)
+                0)))
+          false)
+        (eq_self false)))
+    (of_eq_true
+      (Eq.trans
+        (congrFun'
+          (congrArg Eq
+            (congrFun'
+              (congrArg BrokerConsumptionQueue.State.calls
+                (congrFun'
+                  (congrFun'
+                    (congrFun'
+                      (congrFun'
+                        (congrFun'
+                          (congrFun'
+                            (congrFun'
+                              (congrArg
+                                (BrokerConsumptionQueue.State.mk true true true false true 0 true (span scope)
+                                  (if s.full = true then none else some { lo := 0, hi := span scope, epoch := 0 }))
+                                (funext fun i =>
+                                  Eq.trans (ite_congr (Eq.refl (i = 0)) (fun a => unused) fun a => Eq.refl 0)
+                                    (ite_self 0)))
+                              [{ lo := 0, hi := span scope, epoch := 0 }])
+                            (if s.full = true then [{ lo := 0, hi := span scope, epoch := 0 }] else []))
+                          s.unknown)
+                        false)
+                      false)
+                    false)
+                  0))
+              0))
+          0)
+        (eq_self 0)))
+    True.intro rfl
+context:
+scope : Scope
+s : State
+owner : Owner
+safe : Safe scope s
+p : Permit
+worker : Nat
+held : s.permit = some p
+bound : p.scope = scope
+epoch : p.epoch = s.epoch
+current : worker = s.epoch
+serial : p.activation = s.revision
+unused : s.calls = 0
+allowed : s.allowed = true
+policy : owner.policyValid scope s.epoch
+notUnknown : s.unknown = false
+notFull : s.full = false
+⊢ Nat
+proofs/lean/LogicalRangeRecovery.lean:250:9: error: failed to infer `have` declaration type
+proofs/lean/LogicalRangeRecovery.lean:239:2: error: Alternative `fence` has not been provided
+proofs/lean/LogicalRangeRecovery.lean:239:2: error: Alternative `certify` has not been provided
+proofs/lean/LogicalRangeRecovery.lean:239:2: error: Alternative `prepare` has not been provided
+proofs/lean/LogicalRangeRecovery.lean:239:2: error: Alternative `activate` has not been provided
+proofs/lean/LogicalRangeRecovery.lean:239:2: error: Alternative `fullReceipt` has not been provided
+proofs/lean/LogicalRangeRecovery.lean:239:2: error: Alternative `loseReply` has not been provided
+proofs/lean/LogicalRangeRecovery.lean:239:2: error: Alternative `partialOrTimeout` has not been provided
+proofs/lean/LogicalRangeRecovery.lean:239:2: error: Alternative `revoke` has not been provided
+proofs/lean/LogicalRangeRecovery.lean:239:2: error: Alternative `reauthorize` has not been provided
+'Weaver.LogicalRangeRecovery.projection_initial_reachable' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LogicalRangeRecovery.projection_step_or_stutter' depends on axioms: [sorryAx]
+'Weaver.LogicalRangeRecovery.initialized_data_path_refines_queue' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LogicalRangeRecovery.initialized_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.LogicalRangeRecovery.call_slot_never_resets' depends on axioms: [propext]
+'Weaver.LogicalRangeRecovery.at_most_one_original_invocation' depends on axioms: [propext, Quot.sound]
+'Weaver.LogicalRangeRecovery.consumed_slot_cannot_rearm' depends on axioms: [propext, Quot.sound]
+'Weaver.LogicalRangeRecovery.activation_rechecks_original_cut' depends on axioms: [propext]
+'Weaver.LogicalRangeRecovery.invocation_rechecks_current_permit' does not depend on any axioms
+'Weaver.LogicalRangeRecovery.published_fence_clears_execution' does not depend on any axioms
+'Weaver.LogicalRangeRecovery.initialized_job_provenance' depends on axioms: [propext, Quot.sound]
+'Weaver.LogicalRangeRecovery.receipt_rechecks_original_call' depends on axioms: [propext]
+'Weaver.LogicalRangeRecovery.recovery_preserves_original_obligations' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LogicalRangeRecovery.forgotten_slot_counterexample' depends on axioms: [propext]
+'Weaver.LogicalRangeRecovery.stale_permit_counterexample' depends on axioms: [propext]
+'Weaver.LogicalRangeRecovery.unknown_as_full_counterexample' depends on axioms: [propext]

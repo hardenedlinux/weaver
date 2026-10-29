@@ -1,0 +1,31 @@
+proofs/lean/GatewayHeadCAS.lean:258:4: error: Dependent elimination failed: Failed to solve equation
+  t.base.1 k =
+    { reserved := true, history := true, issued := (s.base.messages k).issued, consumes := (s.base.messages k).consumes,
+      revision := (s.base.messages k).revision, candidate := (s.base.messages k).candidate,
+      claims := (s.base.messages k).claims, claimed := (s.base.messages k).claimed,
+      claimToken := (s.base.messages k).claimToken, claimStream := (s.base.messages k).claimStream,
+      stream := (s.base.messages k).stream, authority := (s.base.messages k).authority,
+      sends := (s.base.messages k).sends, observed := (s.base.messages k).observed,
+      retired := (s.base.messages k).retired, finalCost := (s.base.messages k).finalCost,
+      charged := (s.base.messages k).charged }
+'Weaver.GatewayHeadCAS.unknown_original_reservation_survives' depends on axioms: [propext, sorryAx]
+'Weaver.GatewayHeadCAS.newly_committed_job_has_current_scope' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.prepared_row_is_not_committed_counterexample' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.duplicate_root_decision_counterexample' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.GatewayHeadCAS.stale_fence_decision_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.GatewayHeadCAS.decisions_never_roll_back' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.initialized_unique_roots' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.initialized_rows_are_committed' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.initialized_cas_audit' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.every_new_decision_rechecks_current_head' does not depend on any axioms
+'Weaver.GatewayHeadCAS.version_never_decreases' depends on axioms: [propext, Quot.sound]
+'Weaver.GatewayHeadCAS.changed_fence_clears_cached_authority' does not depend on any axioms
+'Weaver.GatewayHeadCAS.new_send_requires_exact_current_join' does not depend on any axioms
+'Weaver.GatewayHeadCAS.initialized_product_refines_semantics' does not depend on any axioms
+'Weaver.GatewayHeadCAS.original_claim_and_history_survive' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.original_executor_survives' depends on axioms: [propext]
+'Weaver.GatewayHeadCAS.shared_budget_is_bounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.GatewayHeadCAS.original_claim_and_offer_once' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.GatewayHeadCAS.free_held_charged_conservation' depends on axioms: [propext, Classical.choice, Quot.sound]

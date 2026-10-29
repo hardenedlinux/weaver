@@ -1,0 +1,129 @@
+#+title: Weaver Recovery CAS Proof Correspondence and Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and scope
+
+Run [[file:../../../dev/proofs/check_llm_recovery_cas.py][the isolated check runner]]. [[file:../../../dev/proofs/lean/LlmRecoveryCAS.lean][Lean]] imports the actual registry-publication
+model and projects every source-changing step into it. [[file:../../../dev/proofs/quint/LlmRecoveryCAS.qnt][Quint]] uses one already
+published original-task fixture with independent authority reads, external Policy
+generation, issued permits, exact requests, durable decisions and late replies.
+The fixture abstracts source setup; Lean supplies the actual source projection.
+
+Final commands and bounded checks are recorded in [[file:../../../dev/proofs/evidence/llm-recovery-cas/commands.json][commands.json]] and [[file:../../../dev/proofs/evidence/llm-recovery-cas/receipt.json][receipt.json]].
+Earlier compiler/scenario diagnostics remain distinct from final acceptance.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| RC1 | Reads and preparation cannot consume | observationCannotConsumeTest | restored_observation_is_only_data | reads.prepare |
+| RC2 | Torn cross-store reads fail at final use | tornReadCannotCommitTest | committed_at_exact_cut | owner.cas |
+| RC3 | External Policy changes join the authority cut | externalHistoryWithoutLedgerWriteBlocksTest | stale_policy_generation_cannot_commit | owner.generation |
+| RC4 | Permission restoration cannot reuse an old generation | policyABACannotCommitTest | policy_generation_never_decreases | owner.generation |
+| RC5 | Owner change fences previously issued permits | ownerRestartInvalidatesPermitTest | stale_fence_cannot_commit | owner.fence |
+| RC6 | Concurrent ledger writes invalidate old requests | ledgerWriteInvalidatesPermitTest | stale_execution_revision_cannot_commit | owner.cas |
+| RC7 | One stable decision per request | duplicateRequestCannotCommitTest | decision_ids_remain_unique | result.decision |
+| RC8 | Late confirmation reports an existing decision | lateConfirmationAfterFenceIsOnlyDataTest | confirmed_decision_is_committed | result.confirm |
+| RC9 | Confirmation cannot reactivate execution authority | lateConfirmationCannotRevivePermitTest | late_confirmation_preserves_authority | result.confirm |
+| RC10 | Original claim remains one-shot | freshRequestCannotReplaySpentClaimTest | original_claim_stays_unique | broker.consume |
+| RC11 | Original profile and account domains remain bound | forgedProfileCannotCommitTest | original_profile_stays_bound | reads.binding |
+| RC12 | Unknown use retains original allowance and hold | freshScopeCannotRefundUnknownTest | unknown_usage_retains_hold | broker.hold |
+
+* Source-by-source comparison
+
+The [[file:../../../dev/proofs/evidence/llm-recovery-cas/source-review.json][POO Flow / Cedar register]] and [[file:../../../dev/proofs/evidence/llm-recovery-cas/agentgateway-source-review.json][agentgateway register]] retain exact pinned source
+identities and freshly checked excerpts. These are inspected snapshots; no claim
+about a newer release, native ABI or deployed storage behavior follows.
+
+| Source | Actual source boundary | Reuse and required extension |
+|--------+------------------------+------------------------------|
+| P12 authorized-effect-token | Pure immutable root/operation binding and token consumption | Reuse exact subject; add original publication and complete current cut at the native owner |
+| P13 strict-mediation | Nonce/root transitions preserve spent state across unknown results | Keep unknown spent; durable CAS decision/query recovery and cross-store serialization are extensions |
+| P15 effect-host | Exact serialized local owner, authorization/consumption/delivery boundary; no distributed Host guarantee | Reuse one owner and consume ordering; qualify durable multi-source currentness separately |
+| P17/P22 runtime store contracts | Scheme projects contracts; runtime owns append, locking, leases, fsync, replay and repair | Reuse responsibility split; a contract receipt is not evidence that a final CAS spans independent stores |
+| P18/P19 transaction recovery | Source-bound recovery and authorized transaction linkage | Reuse attribution, pending-obligation and exact recovery membership; add publication/execution/Policy cut coordination |
+| P31 SessionAttempt | Generation, exact attempt and pending-obligation invariants with producer/publication premises | Reuse anti-stale attempt identity; do not promote pure scheduling data to a runtime CAS acknowledgement |
+| P35 monotonicity and prefix lineage | Strict generation excludes ABA on one identity path; local monotonicity alone can fork | Bind actual authority namespace/prefix and qualify serializable final mutation; no timestamp substitute |
+| P43/P44 attempt proposals | Frozen producer/scope/profile references are inert; Host resolves producers and publishes by CAS | Reuse semantic references; Go cannot turn a proposal or provider completion into effective authority publication |
+| P20/P33 exactly-once and budget separation | Runtime occurrence and deterministic-budget closure carry explicit evidence premises | No remote exactly-once, timeout refund or watchdog-to-budget inference |
+| C8 BoundOperation | Equality checks supplied actual values; Host must authenticate and bind eventual execution | Authenticate the final cut and actual effect, not a previously evaluated stale context |
+| C10 CompoundAuthorization | Required nonempty layers all allow with no evaluation errors | Evaluate all applicable actual-operation layers against the joined authoritative state |
+| C11 Composition | Validation/evaluation alignment is an explicit condition | Keep input alignment through commit; these laws do not prove distributed serializability |
+| Agentgateway conversion/controller sources | Cloud-native reconciliation and provider adaptation patterns | Retain Go ecosystem value; adapters and SDK replies do not own original claim/profile/ledger authority |
+
+* Composition proof and explicit premises
+
+=publication_projection= maps each consuming transition to an actual category-14
+=advance= and every background source mutation to an actual prior step with no
+new protected effect. The prior execution projection then preserves original
+claim uniqueness, profile interpretation, account domains, response mode and
+allowance. Unknown child usage prevents a root settlement change.
+
+The new decision audit proves each recorded request equals the actual accepted
+cut and actual Policy was Allow. =decision_ids_remain_unique= proves pairwise
+distinct durable decision IDs. Confirmations are members of the durable decision
+log and cannot change execution or append a new decision. Final freshness lemmas
+exclude old Policy generation, owner fence and execution revision.
+
+This is a conditional state-machine composition proof. Authority values are
+logically serialized, while native durable authenticity, independent non-rollback
+recovery, effective authority publication and =owner.commitValid= are explicit
+owner contracts. The generation represents the external Policy/history domain;
+it does not authenticate arbitrary caller domain names. The model does not prove
+consensus, cryptography, a native distributed transaction, real-time lease expiry,
+remote execution, a full asynchronous range/account product or liveness.
+
+In particular, a read callback cannot enforce the owner premise by itself. A
+separately effective external change that can bypass the final owner's generation
+would be a native refinement failure. Such a deployment is not admitted by the
+proof. Publication of permission changes and consumption must share a qualified
+serialization point or a protocol excluding conflicting commits.
+
+* Executable counterexamples
+
+| Missing check | Negative control | Required decoded evidence |
+|---------------+------------------+---------------------------|
+| Full cut at commit | tornReadCASCounterexampleTest | Old read generation accepted after external denial with unchanged ledger revision |
+| Anti-ABA generation | policyABACASCounterexampleTest | Allow is restored but old request generation differs from actual generation |
+| Final owner fence | oldFenceCASCounterexampleTest | Actually issued permit belongs to old owner, actual fence advanced |
+| Current ledger revision | staleLedgerCASCounterexampleTest | Old request accepted against a newer ledger revision |
+| Confirmation is data only | lateAckCASCounterexampleTest | Original committed receipt after restart is reused to consume twice |
+| Stable decision uniqueness | duplicateCASCounterexampleTest | Same exact request ID recorded twice |
+| Exact original profile | profileSwapCASCounterexampleTest | Accepted request names a different commitment from actual original binding |
+| Unknown hold | unknownRefundCASCounterexampleTest | Unknown usage releases the hold and marks settlement |
+
+Unsafe transitions are excluded from =step=. [[file:../../../dev/proofs/evidence/llm-recovery-cas/itf][ITF traces]] are independently decoded;
+old-owner cases must demonstrate actual earlier permit/request issuance. Passing
+negative controls mean the intentionally weakened model exposes the specified
+violation, not that the unsafe transition is accepted by the guarded model.
+
+* Native acceptance and performance gates
+
+Inject a Policy/history update after each individual read and immediately before
+CAS. Test Allow/Deny/Allow with the same visible Boolean but newer generation.
+Race final consumption against owner restart, effective revocation, independent
+ledger writes and profile-cache recovery. Retain real old issued permits and
+queued callbacks. Lose commit replies, read exact decisions after restart and
+reject operation-ID aliases. Do not retry based on stale local absence.
+
+Verify effective Policy/history acknowledgements cannot precede their publication
+to the final serialization authority, or qualify the selected participant protocol.
+Retain unknown budget until attributable original-slot usage and settlement.
+Collect source-bound durable receipts and matched performance controls. Formal
+receipts are sealed by [[file:../../../dev/proofs/evidence/llm-recovery-cas/SHA256SUMS][SHA256SUMS]]; previous receipts remain unchanged.
+
+* Local validation result
+
+The local runner checks 12 Lean modules and 19 printed declarations in the new
+module, with no =sorryAx=. Quint checks 40 scenario controls: 32 guarded cases and
+eight negative controls with exported traces. Seven initializers each receive
+ten samples of at most 30 post-initializer steps, seed 173. These 70 samples are
+bounded simulation, not exhaustive temporal verification. The category-14
+regression runs 43 controls.
+
+The 12 correspondence rows resolve to actual passing controls, printed Lean
+statements and core D2 nodes. Independent trace decoding checks observable faults,
+including actual prior issuance of an old permit, a mixed read across effective
+denial, and a late confirmation of an already committed original decision.
+Native serialization and durable commit remain separate acceptance obligations.

@@ -1,0 +1,108 @@
+...@lib/theme
+# W03: admission states, positive consume knowledge, and result observations.
+direction: right
+proposed: Proposed
+prepared: Prepared\nBudget hold / pending flow state
+pending: ConsumePending\nDurable exact command
+consumed: GrantConsumed\nTransient positive owner knowledge {
+  style.stroke-dash: 5
+}
+committed: SendCommitted\nAdmission linearization
+claimed: DispatchClaimed\nClaim stays spent
+recorded: ResultRecorded\nOutcome evidence / not global completion
+unknown: OutcomeUnknown\nRetain uncertain exposure
+no_submit: NoSubmissionProven\nEvidence only / spent claim retained
+aborted: AbortedNoDispatch\nIrreversible tombstone {
+  style.fill: "#feecec"
+}
+reconcile: Fresh scoped recovery\nInspect / admit evidence / settle
+proposed -> prepared: Prepare
+prepared -> pending: Reserve\nPersist pending\nDeliver once
+pending -> consumed: Positive\nconsume reply
+consumed -> committed: S4 valid CAS
+committed -> claimed: S5 unique claim
+claimed -> recorded: Outcome evidence
+claimed -> unknown: Uncertain submission
+claimed -> no_submit: No-submission proof
+prepared -> aborted: Deny / error / cancel\nAbort CAS wins
+pending -> aborted: Reject / timeout / cancel\nAbort CAS wins
+consumed -> aborted: S4 cannot qualify\nAbort CAS wins
+committed -> aborted: Claim absent\nAbort CAS wins
+unknown -> reconcile: Fresh recovery
+no_submit -> reconcile: Fresh cleanup
+reconcile -> recorded: Admit evidence / no resend
+rule: "no result branch returns to dispatch.\nEmitter closure and accounting are independent records (W07).\nMissing durable replies are unresolved commands, never successful transitions." {
+  shape: text
+}
+
+# Shared role accents; brand marks are confined to architecture headers.
+proposed.class: ledger
+prepared.class: ledger
+pending.class: policy
+consumed.class: policy
+committed.class: ledger
+claimed.class: runtime
+recorded.class: verified
+unknown.class: unknown
+no_submit.class: verified
+aborted.class: deny
+reconcile.class: semantic
+rule.class: note
+
+# Explicit reading order; presentation coordinates are not protocol events.
+proposed.left: 0
+proposed.top: 0
+proposed.width: 290
+proposed.height: 90
+proposed.label.near: center-center
+prepared.left: 350
+prepared.top: 0
+prepared.width: 290
+prepared.height: 90
+prepared.label.near: center-center
+pending.left: 700
+pending.top: 0
+pending.width: 290
+pending.height: 90
+pending.label.near: center-center
+consumed.left: 1050
+consumed.top: 0
+consumed.width: 290
+consumed.height: 90
+consumed.label.near: center-center
+committed.left: 1050
+committed.top: 220
+committed.width: 290
+committed.height: 90
+committed.label.near: center-center
+claimed.left: 1400
+claimed.top: 220
+claimed.width: 290
+claimed.height: 90
+claimed.label.near: center-center
+recorded.left: 1750
+recorded.top: 220
+recorded.width: 290
+recorded.height: 90
+recorded.label.near: center-center
+aborted.left: 700
+aborted.top: 270
+aborted.width: 290
+aborted.height: 90
+aborted.label.near: center-center
+unknown.left: 1400
+unknown.top: 500
+unknown.width: 290
+unknown.height: 90
+unknown.label.near: center-center
+no_submit.left: 1400
+no_submit.top: 720
+no_submit.width: 290
+no_submit.height: 90
+no_submit.label.near: center-center
+reconcile.left: 1750
+reconcile.top: 600
+reconcile.width: 290
+reconcile.height: 90
+reconcile.label.near: center-center
+rule.near: bottom-center

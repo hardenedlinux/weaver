@@ -1,0 +1,200 @@
+#+title: Device Isolation and Floor Recovery Validation Evidence
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS conditional-composition-checked-native-reset-output-isolation-pending
+
+* Identity, layout and source review
+
+Workspace /Users/guangtao/ghq/github.com/tao3k/weaver, branch main, tracked HEAD
+=4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Architecture/formal artifacts remain
+untracked working-tree files. No gateway implementation, HSM/driver library,
+upstream source, dependency pin, commit or push is changed.
+
+[[file:33.00-index.org][33.00 Index]], [[file:33.01-isolation-evidence-floor-recovery.org][33.01 Design]], [[file:33.02-device-isolation.d2][33.02 D2]] / [[file:33.02-device-isolation.svg][SVG]] and this receipt use Johnny
+Decimal under =docs/30-39-assurance/33-device-isolation/=. Executable sources are
+[[file:../../../proofs/qunit/DeviceIsolationRecovery.qnt][proofs/qunit/DeviceIsolationRecovery.qnt]] and
+[[file:../../../proofs/lean/DeviceIsolationRecovery.lean][proofs/lean/DeviceIsolationRecovery.lean]]. The requested =qunit= directory
+contains Quint language models.
+
+[[file:../../../proofs/evidence/device-isolation/source-review.json][Eighteen source blobs]] were rehashed at POO Flow
+=a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. Exact hashes match the registered
+identities. [[file:../../../proofs/evidence/device-isolation/source-boundary-review.log][Targeted numbered excerpts]] distinguish semantic payload/generation
+binding and prior committed receipt validity from actual output isolation and
+native durable publication. This source review does not qualify any HSM/driver.
+
+* Reproduction and completed commands
+
+Run from the workspace root:
+
+#+begin_src sh :eval never
+python3 proofs/check_device_isolation.py
+#+end_src
+
+[[file:../../../proofs/evidence/device-isolation/versions.log][Recorded tools]]: Lean =4.34.1=, arm64 Darwin, Std only; Quint =0.33.0=,
+TypeScript backend. All sixteen Lean modules were rebuilt in the fresh isolated
+directory identified in [[file:../../../proofs/evidence/device-isolation/commands.json][twenty-seven command records]]. These retain exact arguments,
+exits, timings and watchdogs: 20 seconds for compile/typecheck, 55 seconds for
+deterministic routes and 30 seconds for each sampled route. No watchdog was
+widened. Timings measure checks, not HSM or gateway performance.
+
+| Command | Exit | Seconds | Raw output |
+|---------+------+---------+------------|
+| LogicalMessageAuthority | 0 | 0.831 | [[file:../../../proofs/evidence/device-isolation/LogicalMessageAuthority.log][log]] |
+| SharedMessageBudget | 0 | 0.79 | [[file:../../../proofs/evidence/device-isolation/SharedMessageBudget.log][log]] |
+| FiniteDomainMigration | 0 | 0.874 | [[file:../../../proofs/evidence/device-isolation/FiniteDomainMigration.log][log]] |
+| AnchoredRecoveryAndEgress | 0 | 0.657 | [[file:../../../proofs/evidence/device-isolation/AnchoredRecoveryAndEgress.log][log]] |
+| ComposedGatewayLifecycle | 0 | 0.617 | [[file:../../../proofs/evidence/device-isolation/ComposedGatewayLifecycle.log][log]] |
+| FiniteStreamManifest | 0 | 0.82 | [[file:../../../proofs/evidence/device-isolation/FiniteStreamManifest.log][log]] |
+| DriverCompletionRecovery | 0 | 0.552 | [[file:../../../proofs/evidence/device-isolation/DriverCompletionRecovery.log][log]] |
+| WriterSettlementClosure | 0 | 0.715 | [[file:../../../proofs/evidence/device-isolation/WriterSettlementClosure.log][log]] |
+| SettlementAnchorRecovery | 0 | 0.637 | [[file:../../../proofs/evidence/device-isolation/SettlementAnchorRecovery.log][log]] |
+| GateConsumptionPersistence | 0 | 0.595 | [[file:../../../proofs/evidence/device-isolation/GateConsumptionPersistence.log][log]] |
+| AnchorBrokerCommit | 0 | 0.668 | [[file:../../../proofs/evidence/device-isolation/AnchorBrokerCommit.log][log]] |
+| AnchorReconfiguration | 0 | 0.609 | [[file:../../../proofs/evidence/device-isolation/AnchorReconfiguration.log][log]] |
+| QuorumDurablePromises | 0 | 0.489 | [[file:../../../proofs/evidence/device-isolation/QuorumDurablePromises.log][log]] |
+| ProtectedSignerRelease | 0 | 0.554 | [[file:../../../proofs/evidence/device-isolation/ProtectedSignerRelease.log][log]] |
+| KeyBoundaryQueue | 0 | 0.616 | [[file:../../../proofs/evidence/device-isolation/KeyBoundaryQueue.log][log]] |
+| DeviceIsolationRecovery | 0 | 0.825 | [[file:../../../proofs/evidence/device-isolation/DeviceIsolationRecovery.log][log]] |
+| typecheck | 0 | 1.684 | [[file:../../../proofs/evidence/device-isolation/typecheck.log][log]] |
+| tests | 0 | 3.174 | [[file:../../../proofs/evidence/device-isolation/tests.log][log]] |
+| counterexamples | 0 | 2.048 | [[file:../../../proofs/evidence/device-isolation/counterexamples.log][log]] |
+| init | 0 | 1.693 | [[file:../../../proofs/evidence/device-isolation/init.log][log]] |
+| boot | 0 | 1.609 | [[file:../../../proofs/evidence/device-isolation/boot.log][log]] |
+| running | 0 | 1.631 | [[file:../../../proofs/evidence/device-isolation/running.log][log]] |
+| computed | 0 | 1.573 | [[file:../../../proofs/evidence/device-isolation/computed.log][log]] |
+| barrierPending | 0 | 1.901 | [[file:../../../proofs/evidence/device-isolation/barrierPending.log][log]] |
+| freshPending | 0 | 1.665 | [[file:../../../proofs/evidence/device-isolation/freshPending.log][log]] |
+| protected-signer-regression | 0 | 0.825 | [[file:../../../proofs/evidence/device-isolation/protected-signer-regression.log][log]] |
+| inherited-account-replay | 0 | 4.349 | [[file:../../../proofs/evidence/device-isolation/inherited-account-replay.log][log]] |
+
+The final named =Test$= route has 73 passing controls: 35 direct imported
+key-boundary controls and 38 new controls (31 positive/rejection controls and
+seven intentional counterexamples). The transitive protected-signer controls
+are not silently counted as direct imports: its 30 controls were run separately.
+The previous actual forked-root duplicate-account-application counterexample was
+also rerun as a separate route.
+
+Six initializers (=init=, =boot=, =running=, =computed=, =barrierPending=,
+=freshPending=) each ran 10 traces with a maximum of 25 post-initializer model
+steps at seed 109: 60 bounded samples. This is not exhaustive exploration,
+liveness evidence or a native reset/driver acceptance result.
+
+* Observed counterexamples
+
+[[file:../../../proofs/evidence/device-isolation/counterexample-observations.json][Decoded final observations]] were checked against seven focused ITFs:
+
+- Reset receipt replay accepts a certificate for a different device incarnation.
+- The omitted-FD certificate leaves registered alias 0 outside the manifest and
+  unblocked while claiming isolation.
+- The retained-DMA trace emits a signature while the actual key gate is closed.
+- The late-callback trace attributes an old submission envelope to a new job.
+- Device-counter recovery reports local floor 0 while protected floor 1 remains.
+- Forgotten-intent recovery loses one accepted unresolved request after reset.
+- Scalar-only recovery retains protected floor 1 with an empty floor prefix.
+
+These distinguish false physical confirmation, false completion admission,
+unmediated output and inconsistent durable recovery. They do not demonstrate
+an accepted consensus fork, native signature forgery or duplicate payment.
+
+| Excluded rule / artifact | States | Trace |
+|--------------------------+--------+-------|
+| floorScalarWithoutCommitPrefixCounterexampleTest-6.itf | 28 | [[file:../../../proofs/evidence/device-isolation/itf/floorScalarWithoutCommitPrefixCounterexampleTest-6.itf.json][ITF]] |
+| lateCallbackRelabelsNewJobCounterexampleTest-3.itf | 50 | [[file:../../../proofs/evidence/device-isolation/itf/lateCallbackRelabelsNewJobCounterexampleTest-3.itf.json][ITF]] |
+| omittedOldFDIsolationCounterexampleTest-1.itf | 9 | [[file:../../../proofs/evidence/device-isolation/itf/omittedOldFDIsolationCounterexampleTest-1.itf.json][ITF]] |
+| resetForgetsAcceptedFloorIntentCounterexampleTest-5.itf | 34 | [[file:../../../proofs/evidence/device-isolation/itf/resetForgetsAcceptedFloorIntentCounterexampleTest-5.itf.json][ITF]] |
+| resetReceiptReplayCounterexampleTest-0.itf | 32 | [[file:../../../proofs/evidence/device-isolation/itf/resetReceiptReplayCounterexampleTest-0.itf.json][ITF]] |
+| resettableDeviceCounterRestoresFloorCounterexampleTest-4.itf | 29 | [[file:../../../proofs/evidence/device-isolation/itf/resettableDeviceCounterRestoresFloorCounterexampleTest-4.itf.json][ITF]] |
+| retainedDMABufferLeaksOnResetCounterexampleTest-2.itf | 29 | [[file:../../../proofs/evidence/device-isolation/itf/retainedDMABufferLeaksOnResetCounterexampleTest-2.itf.json][ITF]] |
+
+Unsafe rules stay outside =step=. Accepted-intent, callback and export observation
+histories are checker witnesses; an implementation cannot recover erased authority
+from a ghost history. Runtime recovery must obtain authentic original owner
+records. Retained old aliases, submissions, jobs and buffers are deliberately
+not erased by reset in the safe model; final current-context checks reject them.
+
+* Lean result and composition boundary
+
+[[file:../../../proofs/evidence/device-isolation/DeviceIsolationRecovery.log][Fourteen printed theorem reports]] contain no =sorryAx=, added axioms or final
+compiler errors. Dependencies are none or standard =propext=, =Quot.sound= and
+inherited =Classical.choice=. Checked results include:
+
+- Newly accepted isolation joins the exact current retiring manifest, old floor,
+  complete blocked coverage and authentic native certificate.
+- Alias identities cannot retag; protected floor and committed history cannot
+  roll back under any permitted transition.
+- Every floor append preserves its exact original isolation cut; the initialized
+  journal contains one committed row per protected floor advance.
+- An accepted unresolved floor intent survives every reset/restart and may only
+  resolve through its original committed cut; no implicit abort or rebinding.
+- Validated callbacks retain the original current submission/producer envelope;
+  every new export rechecks current hardware and original commit-chain context.
+- The initialized product refines the prior key/signing/configuration/execution
+  chain, preserving original burn/dispatch/account uniqueness, shared capacity
+  and unknown original reservation retention.
+
+The new layer maps reset/driver restart to the prior close transition, accepted
+intent and historical-read events to stutters, and typed IO/control events to
+qualified prior key transitions. Generic delegation cannot alter key floor,
+isolation/readiness, queue/used-job state or exports behind the new boundary.
+
+The floor row, protected successor and signer-session invalidation occur in one
+abstract commit event. Authentic recovery includes full committed prefix and
+outstanding accepted intent. Native write durability, alias-inventory completeness,
+attestation freshness and cut/decision-versus-reset fencing are supplied owner
+contracts. They are not derived from fsync metadata or a successful logout.
+A sticky old intent may become unfinishable after reset and remain blocked;
+no qualified abort/replacement or liveness theorem is supplied.
+
+The native adapter must serialize the authoritative floor decision with its
+qualified context fence. A decision before that fence may return after reset as
+valid historical evidence; a decision ordered after the fence cannot newly use
+the old cut. Unknown ordering is not activation authority. This is a required
+native refinement, not a claim that a raw physical reset is atomic with storage.
+
+Lean uses arbitrary finite structural cut lists and Nat-indexed aliases/jobs.
+Quint imports the small original key model and adds nine alias IDs plus explicit
+owned-entry/binding phases before device start. Its manifests are sets; Lean uses
+no-duplicate-ID lists. Native canonical encoding, producer/key identity, callback
+bytes and hash/prefix binding remain unproved implementation obligations. There
+is no extracted equivalence or native DMA/IOMMU theorem.
+
+Historical floor recovery and live physical qualification are separate. An old
+committed cut remains valid history after reset; it cannot activate the current
+device. The current-view arithmetic head is proof bookkeeping. Native receipts
+must authenticate full content and publication identity, not equal counters.
+
+The safe reset profile requires sealed-output confidentiality or a fail-closed
+interlock through real reset/detection races. If an old reader can obtain
+unreleased usable signature bytes first, that profile is false; the DMA trace
+exposes it. No later software gate can retract those bytes. Complete rollback of
+the protected owner/key domain is also outside the safe model. Unknown original
+claim, nonce, budget/history and application obligations remain retained.
+
+* Diagnostics, documentation and byte identities
+
+Preliminary logs retain the original Lean alternative-layout/length proof errors
+and the failed complete build using reserved =seal= as a pattern name. The latter
+has its exact source and command snapshot under =preliminary-reserved-seal-*=;
+its exit 1 is not counted as success. Escaped constructor matching and corrected
+proofs precede the fresh final build.
+
+Earlier 67/68-control checks preceded explicit authentication of archived late
+callbacks and persistent accepted floor intents. Their diagnostics and command
+logs remain under =preliminary-*=, with prior focused traces retained separately.
+Final sources add the forged-archive rejection and unresolved-intent preservation,
+read/admission guards and counterexample; all final routes were rerun to produce
+the 73-control result. No historical receipt or pin is rewritten to hide failures.
+
+[[file:../../../proofs/evidence/device-isolation/document-check.log][English Org/link/source-register checks]],
+[[file:../../../proofs/evidence/device-isolation/org-export.log][Org export without Babel]],
+[[file:../../../proofs/evidence/device-isolation/diagram-validation.json][all core D2 validations]],
+[[file:../../../proofs/evidence/device-isolation/visual-check.log][final SVG inspection]] and
+[[file:../../../proofs/evidence/device-isolation/historical-manifests.log][nine historical manifests]] are independent receipts. The diagram uses bundled
+Go/Kubernetes/Rust assets and core relationships only. Optional missing htmlize
+source-highlighting diagnostics remain in the Org export log.
+
+[[file:../../../proofs/evidence/device-isolation/SHA256SUMS][The final byte manifest]] covers new formal sources, checking runner, formal
+dependencies, Johnny Decimal artifacts and raw evidence. Native HSM/driver/FD/DMA
+isolation, protected persistence and final broker acceptance remain pending.
+No gateway implementation or dependency-pin change is delivered.

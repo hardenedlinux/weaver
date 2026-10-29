@@ -1,0 +1,170 @@
+[
+  {
+    "id": "RC1",
+    "lean": "eligible_is_narrowed",
+    "obligation": "Configuration only narrows original route eligibility",
+    "quint": "configuredTargetIsNotPermissionTest",
+    "d2": "execution.cas"
+  },
+  {
+    "id": "RC2",
+    "lean": "selected_target_is_declared",
+    "obligation": "Selected target belongs to declared candidates",
+    "quint": "emptyCandidateSetFailsClosedTest",
+    "d2": "execution.cas"
+  },
+  {
+    "id": "RC3",
+    "lean": "original_budget_is_bound",
+    "obligation": "A configured allowance cannot exceed original escrow",
+    "quint": "largerBudgetRejectedTest",
+    "d2": "semantic.query"
+  },
+  {
+    "id": "RC4",
+    "lean": "required_capability_preserved",
+    "obligation": "Required capability survives normalization and selection",
+    "quint": "strengthenedContractFiltersPrimaryTest",
+    "d2": "semantic.origin"
+  },
+  {
+    "id": "RC5",
+    "lean": "history_cannot_be_overridden",
+    "obligation": "Current original history constrains dispatch",
+    "quint": "historyRestrictionRecheckedTest",
+    "d2": "execution.alias"
+  },
+  {
+    "id": "RC6",
+    "lean": "same_normal_same_runtime",
+    "obligation": "Equivalent accepted values share runtime lowering",
+    "quint": "jsonSurfaceUsesSameNormalTest",
+    "d2": "authoring.a2a"
+  },
+  {
+    "id": "RC7",
+    "lean": "all_surfaces_share_runtime",
+    "obligation": "All accepted equivalent surface outputs share semantics",
+    "quint": "yamlSurfaceUsesSameNormalTest",
+    "d2": "authoring.a2a"
+  },
+  {
+    "id": "RC8",
+    "lean": "source_provenance_is_separate",
+    "obligation": "Equal semantics do not remove source admission",
+    "quint": "fullSourceClosureRequiredTest",
+    "d2": "authoring.acp"
+  },
+  {
+    "id": "RC9",
+    "lean": "provenance_changes_without_semantic_change",
+    "obligation": "Source package identity can differ for the same semantic value",
+    "quint": "publisherAdmissionRequiredTest",
+    "d2": "cloud.projection"
+  },
+  {
+    "id": "RC10",
+    "lean": "task_identity_is_fixed",
+    "obligation": "Bound task/profile/node/response remain authoritative",
+    "quint": "forgedRootRejectedTest",
+    "d2": "semantic.query"
+  },
+  {
+    "id": "RC11",
+    "lean": "dropped_capability_rejected",
+    "obligation": "Config cannot drop original capability requirements",
+    "quint": "droppedCapabilityRejectedTest",
+    "d2": "semantic.origin"
+  },
+  {
+    "id": "RC12",
+    "lean": "enlarged_allowance_rejected",
+    "obligation": "Config cannot grant a larger budget",
+    "quint": "largerBudgetRejectedTest",
+    "d2": "semantic.query"
+  },
+  {
+    "id": "RC13",
+    "lean": "changed_profile_rejected",
+    "obligation": "Config cannot forge another semantic profile",
+    "quint": "forgedProfileRejectedTest",
+    "d2": "semantic.query"
+  },
+  {
+    "id": "RC14",
+    "lean": "changed_response_rejected",
+    "obligation": "Config cannot silently change response semantics",
+    "quint": "changedResponseModeRejectedTest",
+    "d2": "semantic.origin"
+  },
+  {
+    "id": "RC15",
+    "lean": "no_empty_route_fallback",
+    "obligation": "Empty eligible candidates do not trigger permissive fallback",
+    "quint": "emptyCandidateSetFailsClosedTest",
+    "d2": "execution.cas"
+  },
+  {
+    "id": "RC16",
+    "lean": "final_dispatch_rechecks_parent",
+    "obligation": "Actual final routing rechecks original eligibility",
+    "quint": "hardWithdrawalInvalidatesOldSelectionTest",
+    "d2": "execution.alias"
+  },
+  {
+    "id": "RC17",
+    "lean": "artifact_current_at_dispatch",
+    "obligation": "Final admission requires admitted and current compiled artifacts",
+    "quint": "currentCompilerArtifactRequiredTest",
+    "d2": "execution.alias"
+  },
+  {
+    "id": "RC18",
+    "lean": "no_extra_provider_attempt",
+    "obligation": "Unknown outcome cannot enable hidden retry",
+    "quint": "unknownOutcomeKeepsOriginalAdmissionTest",
+    "d2": "execution.hold"
+  },
+  {
+    "id": "RC19",
+    "lean": "no_response_splicing",
+    "obligation": "A logical response has one committed provider source",
+    "quint": "routineCannotSpliceResponseSourcesTest",
+    "d2": "execution.hold"
+  },
+  {
+    "id": "RC20",
+    "lean": "advice_does_not_grant_authority",
+    "obligation": "Callout advice cannot choose a denied model",
+    "quint": "configuredTargetIsNotPermissionTest",
+    "d2": "cloud.join"
+  },
+  {
+    "id": "RC21",
+    "lean": "telemetry_is_not_authority",
+    "obligation": "Soft telemetry affects ranking, not the hard authority view",
+    "quint": "softTelemetryPreservesHardAuthorityTest",
+    "d2": "execution.cas"
+  },
+  {
+    "id": "RC22",
+    "lean": "cost_fits_actual_step_reservation",
+    "obligation": "Selected cost binds the actual step reservation",
+    "quint": "narrowedAllowanceConstrainsRouteTest",
+    "d2": "execution.alias"
+  },
+  {
+    "id": "RC23",
+    "lean": "shared_account_capacity_retained",
+    "obligation": "Actual source bridge preserves shared account capacity",
+    "quint": "allowedAlternativeKeepsOriginalRootTest",
+    "d2": "semantic.query"
+  },
+  {
+    "id": "RC24",
+    "lean": "original_claim_retained",
+    "obligation": "Actual source bridge preserves the original claim and offer",
+    "quint": "unknownOutcomeKeepsOriginalAdmissionTest",
+    "d2": "execution.hold"
+  }
+]

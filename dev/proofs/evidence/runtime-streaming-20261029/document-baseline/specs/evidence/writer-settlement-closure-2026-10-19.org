@@ -1,0 +1,211 @@
+#+title: Writer Isolation and Settlement Closure Check Receipt
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS abstract-checked-physical-qualification-pending
+
+* Identity and scope
+
+Workspace /Users/guangtao/ghq/github.com/tao3k/weaver, branch main,
+tracked HEAD =4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Architecture/formal
+artifacts remain untracked working-tree work. No gateway implementation, native
+owner build, dependency-pin change, commit or push is part of this receipt.
+
+| Artifact | SHA-256 |
+|----------+---------|
+| [[file:../lean/WriterSettlementClosure.lean][WriterSettlementClosure.lean]] | =e1b67e4c4eeaadaaf75284472e40a442ed2e89c0133eeb919dcdd5d7bbae5a52= |
+| [[file:../quint/WriterSettlementClosure.qnt][WriterSettlementClosure.qnt]] | =ada3c9334b1c71ba2b1be932db27f8caa2d9d5f58b2c1ed7844429599672f784= |
+
+[[file:writer-settlement-traces/SHA256SUMS][The byte manifest]] covers the final formal dependency chain, model sources,
+new dossier/diagram and retained raw evidence. [[file:writer-settlement-traces/source-review.json][The source review]] verifies 18
+registered committed source blobs and retains their hashes and numbered excerpts.
+It covers P12/P13/P15/P17/P18/P19/P20/P22/P31/P33/P35/P43 and C8/C10/C11 from
+POO Flow =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. Paths resolve through
+[[file:../../docs/architecture/01-reference-comparison.org][the source register]]. This is committed source inspection, not native/ABI
+qualification or a build of adjacent dirty owner checkouts.
+
+* Final checked commands
+
+Quint =0.33.0=, TypeScript backend; Lean =4.34.1=, arm64 Darwin, Std only.
+[[file:writer-settlement-traces/commands.json][All fourteen final commands]] retain exact arguments, watchdogs, timings and
+zero exit statuses. Eight dependency modules were rebuilt from source in an
+isolated /private/tmp/weaver-writer-final-proof directory. The final strengthened
+leaf module was recompiled after adding indexed-decision and evidence-key proofs;
+its unchanged dependencies retain that fresh independent rebuild.
+
+| Check | Result and raw evidence |
+|-------+-------------------------|
+| Lean LogicalMessageAuthority | exit 0; [[file:writer-settlement-traces/LogicalMessageAuthority.log][compiler / axiom inventory]] |
+| Lean SharedMessageBudget | exit 0; [[file:writer-settlement-traces/SharedMessageBudget.log][compiler / axiom inventory]] |
+| Lean FiniteDomainMigration | exit 0; [[file:writer-settlement-traces/FiniteDomainMigration.log][compiler / axiom inventory]] |
+| Lean AnchoredRecoveryAndEgress | exit 0; [[file:writer-settlement-traces/AnchoredRecoveryAndEgress.log][compiler / axiom inventory]] |
+| Lean ComposedGatewayLifecycle | exit 0; [[file:writer-settlement-traces/ComposedGatewayLifecycle.log][compiler / axiom inventory]] |
+| Lean FiniteStreamManifest | exit 0; [[file:writer-settlement-traces/FiniteStreamManifest.log][compiler / axiom inventory]] |
+| Lean DriverCompletionRecovery | exit 0; [[file:writer-settlement-traces/DriverCompletionRecovery.log][compiler / axiom inventory]] |
+| Lean WriterSettlementClosure | exit 0; [[file:writer-settlement-traces/WriterSettlementClosure.log][compiler / axiom inventory]] |
+| Quint typecheck | exit 0; [[file:writer-settlement-traces/typecheck.log][raw log]] |
+| Quint deterministic controls | 70 passing: 30 direct imported driver controls and 40 new controls, including 32 positive/rejection scenarios and 8 excluded mutants; [[file:writer-settlement-traces/tests.log][raw log]] |
+
+Final compiler logs contain no warnings, errors or sorryAx. Printed inventories
+use only propext, Quot.sound and inherited Classical.choice; the late-usage
+preservation statement needs no axioms. Evidence/usage authenticity are explicit
+Profile input predicates, not physical facts derived by these logical axioms.
+
+Lean builds/typecheck/sampling have a 20-second watchdog per invocation; the
+final deterministic suite has a 30-second watchdog. No watchdog was widened and
+no timeout is recorded as a pass. Timings are tool-check times, not gateway
+throughput, latency or durable-store benchmarks.
+
+| Manifest range count | Scope | Result |
+|----------------------+-------+--------|
+| 0 | 10 traces, at most 25 transitions each, seed 23 | no violation; [[file:writer-settlement-traces/emptyInit.log][raw log]] |
+| 1 | 10 traces, at most 25 transitions each, seed 23 | no violation; [[file:writer-settlement-traces/singletonInit.log][raw log]] |
+| 3 | 10 traces, at most 25 transitions each, seed 23 | no violation; [[file:writer-settlement-traces/init.log][raw log]] |
+| 5 | 10 traces, at most 25 transitions each, seed 23 | no violation; [[file:writer-settlement-traces/largerInit.log][raw log]] |
+
+Total: 40 bounded sampled traces. The fixture has four admitted messages, two
+shared accounts, four-byte descriptors, fixed initializer-selected quota-unit
+conversion and owner-incarnation selections zero through three. The sampler
+includes phase/restart/history actions; exhaustive exploration, dynamic pricing,
+arbitrary physical aliases and native source refinement are not established.
+Lean quantifies over arbitrary finite manifests/message accounts under its
+immutable Config/Manifest/Profile and trusted-event premises.
+
+* Reproduction
+
+After rebuilding the eight modules in the recorded order:
+
+#+begin_src sh
+LEAN_PATH=/private/tmp/weaver-writer-final-proof elan run leanprover/lean4:v4.34.1 lean specs/lean/WriterSettlementClosure.lean
+quint typecheck specs/quint/WriterSettlementClosure.qnt
+quint test specs/quint/WriterSettlementClosure.qnt --backend typescript --max-samples 1
+quint run specs/quint/WriterSettlementClosure.qnt --backend typescript --init init --step step --invariant safety --max-samples 10 --max-steps 25 --seed 23 --verbosity 1
+#+end_src
+
+Use emptyInit, singletonInit and largerInit for the other finite sizes. Direct
+imports contribute 30 driver controls here, not all transitive manifest/coordinator
+controls. Their earlier receipts retain their own original checks and scope.
+
+* Preliminary evidence retained
+
+The initial test invocation failed with ENOENT because its candidate ITF output
+subdirectory did not yet exist. [[file:writer-settlement-traces/tests-candidate.log][The failed setup log]] remains retained.
+After creating that directory, [[file:writer-settlement-traces/tests-candidate-ready.log][the earlier candidate suite]] passed 64 controls;
+its [[file:writer-settlement-traces/candidate][candidate traces]] predate four additional controls and are not final evidence.
+[[file:writer-settlement-traces/preliminary][Development proof logs]] retain intermediate parser/proof diagnostics,
+including temporary sorryAx diagnostics from failed candidates and the earlier
+unindexed leaf proof. The earlier 68-control pass and its traces before splitting financial decision
+from account application are retained under preliminary. The final suite reruns
+the current split relation with two additional financial-window controls.
+Only the final eight clean compiler logs qualify the
+current formal result. No earlier failure was deleted or relabeled as a pass.
+
+* Final deterministic traces
+
+Imported D:: filename prefixes are normalized to driver- for portable Org links;
+ITF contents remain unchanged. Every expected mutant is excluded from the safe
+step relation. Six new mutants violate visible/closed/financial invariants
+directly; restored-FD retagging and incomplete-inventory acceptance retain explicit
+semantic audit violations. Audit facts are not execution guards. The imported
+old-buffer control retains a direct byte-affinity failure.
+
+| Control | Final ITF trace |
+|---------+-----------------|
+| D::lostPrepareReplyTest | [[file:writer-settlement-traces/final/driver-lostPrepareReplyTest-0.itf.json][ITF]] |
+| D::fullFrontierStillBusyTest | [[file:writer-settlement-traces/final/driver-fullFrontierStillBusyTest-1.itf.json][ITF]] |
+| D::completionLostReplyTest | [[file:writer-settlement-traces/final/driver-completionLostReplyTest-2.itf.json][ITF]] |
+| D::lateReceiptCannotCloseNewRangeTest | [[file:writer-settlement-traces/final/driver-lateReceiptCannotCloseNewRangeTest-3.itf.json][ITF]] |
+| D::duplicateFinishRejectedTest | [[file:writer-settlement-traces/final/driver-duplicateFinishRejectedTest-4.itf.json][ITF]] |
+| D::wrongOrdinalStatusRejectedTest | [[file:writer-settlement-traces/final/driver-wrongOrdinalStatusRejectedTest-5.itf.json][ITF]] |
+| D::restartBeforeCommitRejectsOldFinishTest | [[file:writer-settlement-traces/final/driver-restartBeforeCommitRejectsOldFinishTest-6.itf.json][ITF]] |
+| D::missingStatusRejectedTest | [[file:writer-settlement-traces/final/driver-missingStatusRejectedTest-7.itf.json][ITF]] |
+| D::prepareDoesNotAuthorizeRecoveryTest | [[file:writer-settlement-traces/final/driver-prepareDoesNotAuthorizeRecoveryTest-8.itf.json][ITF]] |
+| D::partialRestartRejectsTailTest | [[file:writer-settlement-traces/final/driver-partialRestartRejectsTailTest-9.itf.json][ITF]] |
+| D::oldDriverCannotFreeSlotTest | [[file:writer-settlement-traces/final/driver-oldDriverCannotFreeSlotTest-10.itf.json][ITF]] |
+| D::fenceRequiredTest | [[file:writer-settlement-traces/final/driver-fenceRequiredTest-11.itf.json][ITF]] |
+| D::fencedTailCannotWriteTest | [[file:writer-settlement-traces/final/driver-fencedTailCannotWriteTest-12.itf.json][ITF]] |
+| D::isolationQuarantinesTest | [[file:writer-settlement-traces/final/driver-isolationQuarantinesTest-13.itf.json][ITF]] |
+| D::lateFinishAfterQuarantineRejectedTest | [[file:writer-settlement-traces/final/driver-lateFinishAfterQuarantineRejectedTest-14.itf.json][ITF]] |
+| D::completionDoesNotSettleTest | [[file:writer-settlement-traces/final/driver-completionDoesNotSettleTest-15.itf.json][ITF]] |
+| D::retirementDoesNotProveUsageTest | [[file:writer-settlement-traces/final/driver-retirementDoesNotProveUsageTest-16.itf.json][ITF]] |
+| D::independentUsageAndRetirementTest | [[file:writer-settlement-traces/final/driver-independentUsageAndRetirementTest-17.itf.json][ITF]] |
+| D::ownerRestartKeepsDriverTest | [[file:writer-settlement-traces/final/driver-ownerRestartKeepsDriverTest-18.itf.json][ITF]] |
+| D::alteredManifestReceiptRejectedTest | [[file:writer-settlement-traces/final/driver-alteredManifestReceiptRejectedTest-19.itf.json][ITF]] |
+| D::parallelPrepareConflictRejectedTest | [[file:writer-settlement-traces/final/driver-parallelPrepareConflictRejectedTest-20.itf.json][ITF]] |
+| D::futureFenceRejectedTest | [[file:writer-settlement-traces/final/driver-futureFenceRejectedTest-21.itf.json][ITF]] |
+| D::usageCannotRetireLiveTailTest | [[file:writer-settlement-traces/final/driver-usageCannotRetireLiveTailTest-22.itf.json][ITF]] |
+| D::quarantineRetainsUnknownHoldTest | [[file:writer-settlement-traces/final/driver-quarantineRetainsUnknownHoldTest-23.itf.json][ITF]] |
+| D::latePrefixCallbackCounterexampleTest | [[file:writer-settlement-traces/final/driver-latePrefixCallbackCounterexampleTest-24.itf.json][ITF]] |
+| D::recoveredTailCopyCounterexampleTest | [[file:writer-settlement-traces/final/driver-recoveredTailCopyCounterexampleTest-25.itf.json][ITF]] |
+| D::finishAsUsageCounterexampleTest | [[file:writer-settlement-traces/final/driver-finishAsUsageCounterexampleTest-26.itf.json][ITF]] |
+| D::oldReceiptReleasesSuccessorCounterexampleTest | [[file:writer-settlement-traces/final/driver-oldReceiptReleasesSuccessorCounterexampleTest-27.itf.json][ITF]] |
+| D::lostReplyResetsResultCounterexampleTest | [[file:writer-settlement-traces/final/driver-lostReplyResetsResultCounterexampleTest-28.itf.json][ITF]] |
+| D::unmediatedOldBufferCounterexampleTest | [[file:writer-settlement-traces/final/driver-unmediatedOldBufferCounterexampleTest-29.itf.json][ITF]] |
+| evidenceReplyLostKeepsStreamTest | [[file:writer-settlement-traces/final/evidenceReplyLostKeepsStreamTest-30.itf.json][ITF]] |
+| committedButUnpublishedBlocksStreamTest | [[file:writer-settlement-traces/final/committedButUnpublishedBlocksStreamTest-31.itf.json][ITF]] |
+| publishMissingDecisionRejectedTest | [[file:writer-settlement-traces/final/publishMissingDecisionRejectedTest-32.itf.json][ITF]] |
+| commitReplyLostRecoveryTest | [[file:writer-settlement-traces/final/commitReplyLostRecoveryTest-33.itf.json][ITF]] |
+| uncommittedFinishRestartRejectsTest | [[file:writer-settlement-traces/final/uncommittedFinishRestartRejectsTest-34.itf.json][ITF]] |
+| separateIsolationEvidenceAfterFinishIntentTest | [[file:writer-settlement-traces/final/separateIsolationEvidenceAfterFinishIntentTest-35.itf.json][ITF]] |
+| partialOldFdCannotResumeTest | [[file:writer-settlement-traces/final/partialOldFdCannotResumeTest-36.itf.json][ITF]] |
+| fenceAcknowledgmentRequiredTest | [[file:writer-settlement-traces/final/fenceAcknowledgmentRequiredTest-37.itf.json][ITF]] |
+| wrongWriterInventoryRejectedTest | [[file:writer-settlement-traces/final/wrongWriterInventoryRejectedTest-38.itf.json][ITF]] |
+| wrongBufferInventoryRejectedTest | [[file:writer-settlement-traces/final/wrongBufferInventoryRejectedTest-39.itf.json][ITF]] |
+| forgedAuthenticityRejectedTest | [[file:writer-settlement-traces/final/forgedAuthenticityRejectedTest-40.itf.json][ITF]] |
+| unpublishedPreventsRetirementTest | [[file:writer-settlement-traces/final/unpublishedPreventsRetirementTest-41.itf.json][ITF]] |
+| lateOriginalPublishKeepsSuccessorTest | [[file:writer-settlement-traces/final/lateOriginalPublishKeepsSuccessorTest-42.itf.json][ITF]] |
+| noFinalUsageFromFinishTest | [[file:writer-settlement-traces/final/noFinalUsageFromFinishTest-43.itf.json][ITF]] |
+| lateUsageDoesNotReleaseStreamTest | [[file:writer-settlement-traces/final/lateUsageDoesNotReleaseStreamTest-44.itf.json][ITF]] |
+| finalUsageLostReplyResolveTest | [[file:writer-settlement-traces/final/finalUsageLostReplyResolveTest-45.itf.json][ITF]] |
+| duplicateFinalUsageRejectedTest | [[file:writer-settlement-traces/final/duplicateFinalUsageRejectedTest-46.itf.json][ITF]] |
+| conflictingLateUsageRejectedTest | [[file:writer-settlement-traces/final/conflictingLateUsageRejectedTest-47.itf.json][ITF]] |
+| wrongClosureUsageRejectedTest | [[file:writer-settlement-traces/final/wrongClosureUsageRejectedTest-48.itf.json][ITF]] |
+| wrongUnitUsageRejectedTest | [[file:writer-settlement-traces/final/wrongUnitUsageRejectedTest-49.itf.json][ITF]] |
+| wrongAccountUsageRejectedTest | [[file:writer-settlement-traces/final/wrongAccountUsageRejectedTest-50.itf.json][ITF]] |
+| wrongTokenUsageRejectedTest | [[file:writer-settlement-traces/final/wrongTokenUsageRejectedTest-51.itf.json][ITF]] |
+| progressUsageRejectedTest | [[file:writer-settlement-traces/final/progressUsageRejectedTest-52.itf.json][ITF]] |
+| overEnvelopeUsageRejectedTest | [[file:writer-settlement-traces/final/overEnvelopeUsageRejectedTest-53.itf.json][ITF]] |
+| settlementRetryCannotChargeTwiceTest | [[file:writer-settlement-traces/final/settlementRetryCannotChargeTwiceTest-54.itf.json][ITF]] |
+| isolatedUnknownHoldRetainedTest | [[file:writer-settlement-traces/final/isolatedUnknownHoldRetainedTest-55.itf.json][ITF]] |
+| forgedFinalUsageRejectedTest | [[file:writer-settlement-traces/final/forgedFinalUsageRejectedTest-56.itf.json][ITF]] |
+| isolationWinningRejectsFinishTest | [[file:writer-settlement-traces/final/isolationWinningRejectsFinishTest-57.itf.json][ITF]] |
+| finishWinningRejectsIsolationTest | [[file:writer-settlement-traces/final/finishWinningRejectsIsolationTest-58.itf.json][ITF]] |
+| sharedAccountFinalizationTest | [[file:writer-settlement-traces/final/sharedAccountFinalizationTest-59.itf.json][ITF]] |
+| settlementDecisionLostReplyBeforeAccountApplyTest | [[file:writer-settlement-traces/final/settlementDecisionLostReplyBeforeAccountApplyTest-60.itf.json][ITF]] |
+| accountApplyRetryRejectedTest | [[file:writer-settlement-traces/final/accountApplyRetryRejectedTest-61.itf.json][ITF]] |
+| evidenceOnlyPublicationCounterexampleTest | [[file:writer-settlement-traces/final/evidenceOnlyPublicationCounterexampleTest-62.itf.json][ITF]] |
+| duplicatedFinancialApplyCounterexampleTest | [[file:writer-settlement-traces/final/duplicatedFinancialApplyCounterexampleTest-63.itf.json][ITF]] |
+| lateFinalOverwriteCounterexampleTest | [[file:writer-settlement-traces/final/lateFinalOverwriteCounterexampleTest-64.itf.json][ITF]] |
+| usageCreatesClosureCounterexampleTest | [[file:writer-settlement-traces/final/usageCreatesClosureCounterexampleTest-65.itf.json][ITF]] |
+| commitReplyLossErasesDecisionCounterexampleTest | [[file:writer-settlement-traces/final/commitReplyLossErasesDecisionCounterexampleTest-66.itf.json][ITF]] |
+| restoredFdRetagCounterexampleTest | [[file:writer-settlement-traces/final/restoredFdRetagCounterexampleTest-67.itf.json][ITF]] |
+| incompleteWriterUniverseCounterexampleTest | [[file:writer-settlement-traces/final/incompleteWriterUniverseCounterexampleTest-68.itf.json][ITF]] |
+| completionIsBillingCounterexampleTest | [[file:writer-settlement-traces/final/completionIsBillingCounterexampleTest-69.itf.json][ITF]] |
+
+* Meaning and remaining acceptance gate
+
+[[file:../../docs/architecture/23-writer-isolation-settlement-closure.org][The design dossier]] states exact reuse, physical premises and acceptance
+requirements. The product separates evidence blobs, canonical ownership decisions,
+local publication, message closure, final usage and settlement. It proves their
+abstract joins, immutability, actual original-ledger projection and finite shared
+reservation coverage. It does not establish crash-atomic storage, fsync semantics,
+irrevocable FD/offload fencing, actual writer-inventory completeness, provider
+finality, external payment idempotency, native ABI or deployed behavior.
+
+The selected profile never reconstructs an old tail, preserves unknown holds,
+permanently quarantines isolated uncertain streams and does not refund the original
+fixed reservation. Over-envelope or conflicting usage blocks normal settlement;
+a separate accounting/repair obligation is not implemented here. Physical failure
+injection and source-to-storage/driver/provider refinement remain pending.
+
+* Documentation and diagram verification
+
+Final structural checks passed for 35 English Org documents, 759 local links,
+101 pinned Git source targets, complete unique acceptance registers and 24
+canonical D2/SVG pairs. All 24 D2 sources validated. The new core diagram rendered
+with bundled existing Go/Kubernetes/Rust assets and received visual inspection;
+visible labels contain no versions or acceptance/source-register counters, and
+SVG assets have no remote href dependency. All Org files exported with Babel
+evaluation disabled; optional htmlize highlighting was unavailable without
+blocking export. The preceding driver receipt's full byte manifest still
+verifies unchanged, including its original proof, model, diagram and dossier.

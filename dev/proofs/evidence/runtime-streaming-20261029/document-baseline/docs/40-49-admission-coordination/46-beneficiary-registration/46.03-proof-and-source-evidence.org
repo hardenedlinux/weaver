@@ -1,0 +1,266 @@
+#+title: Beneficiary Registration Proof and Source Evidence
+#+language: en
+#+startup: overview
+
+* Scope and current evidence
+This category expands the predecessor's producer-assigned-key premise into an
+independent enrollment root, first-binding receipt and authoritative invitation
+publication. It strengthens current target-scope checks and rejects incomplete
+publication images before downstream consumption or activation.
+
+- [[file:../../../proofs/lean/LlmBeneficiaryRegistration.lean][Lean source]]
+- [[file:../../../proofs/qunit/LlmBeneficiaryRegistration.qnt][Quint source]]
+- [[file:../../../proofs/check_llm_beneficiary_registration.py][Primary bounded checker]]
+- [[file:../../../proofs/check_beneficiary_api.py][Official pipeline phase watchdog]]
+- [[file:../../../proofs/run_beneficiary_registration.cjs][Official load, parse, type/effect analysis and fresh evaluators]]
+- [[file:../../../proofs/prepare_beneficiary_registration.py][Source-preserving ancestor bundle preparation]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/receipt.json][Final classification receipt]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/commands.json][Current Lean and Quint phase receipts]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/api-commands.json][Current official Quint phase results]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/api-invocation.json][Executed source and proof-tool hashes]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/typed-stage-summary.json][Official typed IR and installed tool identities]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/bundle-certificate.json][Exact ancestor and current-source association]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/counterexample-observations.json][Decoded fault and quarantine observations]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/source-review.json][Pinned source paths, hashes and exact excerpts]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/source-receipt-check.json][Fresh Git object checks]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/working-source-check.json][Current checkout source comparison]]
+- [[file:../../../proofs/evidence/llm-beneficiary-registration/SHA256SUMS][Sealed evidence manifest]]
+
+* Source comparison: reuse and extension
+Nineteen pinned source blobs and all recorded excerpts were freshly verified.
+Eighteen working source files match the reviewed bytes; P17 differs only in two
+recorded control-plane import paths. No upstream file or dependency pin changed.
+The source identities describe evidence, not a compatibility layer or a core
+architecture requirement.
+
+| Source | Directly reusable mechanism or proof | Extension required here |
+|--------+-------------------------------------+-------------------------|
+| P12 authorized-effect-token | Exact semantic root/binding, spent nonce and revocation epoch | First-key authority is not an arbitrary public key plus a spent boolean; bind the enrollment principal, full transcript and retained result |
+| P13 strict-mediation | Consume before uncertain observation; unknown result remains consumed | Missing registration/publication response cannot reopen a canonical key slot or authorize a refund |
+| P15 lambda-aitia effect-host | Producer-issued opaque grant provenance; private host table and current-thread owner checks | Weak tables and thread identity do not authenticate a cross-process enrollment principal or survive restart; receipt explicitly marks durable/distributed authority false |
+| P17 store-backend | Explicit native owner contract | Atomic first-binding and invitation/outcome records, complete-prefix recovery and downstream join checks |
+| P18 promotion recovery | Exact request, pre/post state and observation association | Recover the original root, first key/session and determining result after lost responses |
+| P19 authorized recovery bridge | Original claim, authority and source binding | A new session or key cannot allocate a new family, reservation or history domain |
+| P20 committed effect application | Conditional trace-level application uniqueness | Do not infer native commit, storage anti-rollback or external exactly-once delivery |
+| P22 durable store | Locking, fsync and replay ownership contracts | Qualify complete enrollment and publication images before exposing absence or permitting a CAS |
+| P31 session-attempt Lean/Quint | Revision/generation and pending recovery discipline | Freeze an exact first-key receipt, invalidate reads and propagate root revocation to the issuer fence |
+| P33 semantic budget/watchdog | Timeout is not no-execution evidence | Preserve original unknown holds throughout registration and recovery |
+| P35 context invalidation | Dependency lineage and currentness | Include current source/policy parent in publication; a historical key proof is not current approval |
+| P43 funs-attempt | Expected revision, session/turn identity and bounded-coordinate rejection | Native identities must authenticate enrollment and channel facts; local receipt denies runtime publication/action authorization/durability |
+| P44 objects-attempt | Typed identity/generation/anchor vocabulary | Canonical enrollment roots, immutable first bindings and complete publication joins |
+| C8 BoundOperation | Proof-bearing request equality and bound authorization | Its source explicitly says equality authenticates neither input; native host must authenticate both key/session facts and original operation |
+| C10 CompoundAuthorization | Pure Cedar evaluation over a compiled POO root and entity snapshot | Authentic facts, atomic execution and current source state remain host obligations |
+| C11 composition family | Dependency/invalidation proof composition | Not cryptographic enrollment, credential provisioning, storage or transport proof |
+
+Multiple Lean/Quint blobs belong to some source families, producing nineteen
+exact artifacts in source-review.json. P12 rejects now greater than expiry;
+the Gateway model intentionally uses now strictly less than expiry. This is a
+semantic design distinction, not an ABI-equivalence claim.
+
+POO Flow supplies strong original-root, provenance and recovery vocabulary.
+It does not currently implement this native enrollment protocol. Cedar remains
+Code as Policy over authentic facts; Scheme does not manufacture those facts
+from caller-provided key or session strings. No compiled Cedar proof is a
+cryptographic first-key certificate. The checked import composition here is the
+Weaver predecessor proof chain. Source comparison with C8/C10/C11 identifies
+reusable upstream contracts; it does not constitute a new compiled import or
+refinement proof of those upstream modules. currentAllows remains an explicit
+Cedar/native authentic-facts obligation.
+
+* Four-artifact obligations
+Every row has an English Org explanation, a checked Lean declaration, a concrete
+Quint control and a stable core D2 node. A fault test intentionally enters an
+invalid state through an action outside step. A passing fault test demonstrates
+the broken contract, not an invariant violation by a legal guarded run.
+
+| ID | Obligation | Lean declaration | Quint control | D2 node |
+|----+------------+------------------+---------------+---------|
+| BR1 | Canonical enrollment root is immutable | =root_retained= | =lostRootReplyRetainsEnrollmentPrincipalTest= | =recovery.projection= |
+| BR2 | First key and session survive lost responses | =binding_retained= | =lostBindingReplyRetainsFirstKeyTest= | =recovery.join= |
+| BR3 | Original publication outcome remains exact | =publication_retained= | =lostPublicationReplyRetainsExactOutcomeTest= | =recovery.fence= |
+| BR4 | Finite recovery does not reopen the first-key slot | =binding_run= | =authorizedSecondKeyCannotReplaceFirstTest= | =protocols.acp= |
+| BR5 | Even a second authorized key cannot overwrite the first | =no_replacement= | =authorizedSecondKeyCannotReplaceFirstTest= | =recovery.join= |
+| BR6 | Shared workload identity is not enrollment entitlement | =shared_identity_not_entitlement= | =sharedIdentityCannotRegisterKeyTest= | =protocols.mcp= |
+| BR7 | Enrollment authority also requires beneficiary possession | =beneficiary_possession_required= | =beneficiaryPossessionRequiredTest= | =protocols.a2a= |
+| BR8 | The peer cannot nominate another bootstrap session | =session_cannot_be_selected= | =substitutedSessionRejectedTest= | =protocols.a2a= |
+| BR9 | The full original template remains bound | =original_previous_preserved= | =originalScopeCannotBeRewrittenTest= | =registry.origin= |
+| BR10 | Current target scope is explicitly constrained before publication | =blueprint_preserves_original_scope= | =originalScopeCannotBeRewrittenTest= | =registry.alias= |
+| BR11 | An old root epoch cannot publish | =stale_epoch_cannot_publish= | =rootRevocationBlocksPublicationTest= | =broker.cas= |
+| BR12 | Intervening authority commits invalidate observations | =stale_read_cannot_publish= | =newRootInvalidatesPublicationReadTest= | =broker.cas= |
+| BR13 | Binding stores the exact authenticated peer transcript | =valid_bindings_step= | =sharedIdentityRegistrationCounterexampleTest= | =recovery.join= |
+| BR14 | Historical binding provenance survives recovery | =valid_bindings_run= | =signatureForAnotherBeneficiaryKeyRejectedTest= | =recovery.fence= |
+| BR15 | Every invitation requires a retained first binding | =covered_step= | =missingOutcomeRegistrationCounterexampleTest= | =broker.cas= |
+| BR16 | One-sided recovery cannot erase the first binding | =covered_run= | =rollbackFirstBindingRegistrationCounterexampleTest= | =recovery.fence= |
+| BR17 | Root provenance starts from independent producer approval | =root_origin= | =producerApprovalRequiredTest= | =registry.alias= |
+| BR18 | Publication derives from the original enrollment principal | =published_from_entitlement= | =forwardedBearerWithOwnKeyRejectedTest= | =registry.origin= |
+| BR19 | Invitation visibility requires the same determining outcome | =joined_step= | =missingOutcomeRegistrationCounterexampleTest= | =broker.cas= |
+| BR20 | New publication has current binding and no issuance side effect | =new_publication_has_current_binding= | =lostPublicationReplyRetainsExactOutcomeTest= | =broker.cas= |
+| BR21 | Authority revisions cannot move backward in a legal trace | =revision_monotone= | =newRootInvalidatesPublicationReadTest= | =broker.cas= |
+| BR22 | Revocation crosses the downstream issuer fence | =old_ticket_epoch_rejected= | =rootRevocationFencesPublishedConsumptionTest= | =broker.hold= |
+| BR23 | A refreshed parent read cannot admit an unjoined image | =inconsistent_publication_not_qualified= | =unjoinedImageCannotConsumeTest= | =broker.alias= |
+| BR24 | Qualified recovery preserves publication association | =joined_run= | =rollbackFirstBindingRegistrationCounterexampleTest= | =recovery.fence= |
+| BR25 | An outcome requires the exact invitation projection | =outcome_bound_step= | =splitPublicationRegistrationCounterexampleTest= | =broker.cas= |
+| BR26 | Repeated recovery returns the same complete result | =outcome_bound_run= | =lostPublicationReplyRetainsExactOutcomeTest= | =protocols.acp= |
+| BR27 | Authority advances project to actual predecessor traces | =composition= | =actualActivationRetainsOriginalHoldTest= | =broker.alias= |
+| BR28 | Original account application remains conditionally unique | =original_reservation_once= | =actualActivationRetainsOriginalHoldTest= | =broker.hold= |
+| BR29 | Unknown original usage retains its reservation | =unknown_original_hold_retained= | =actualActivationRetainsOriginalHoldTest= | =registry.query= |
+
+* Lean model and composition
+The leaf prints twenty-nine declarations. Natural-number-indexed registries and
+inductive Run quantify over arbitrary finite traces and populations; the proof
+is not restricted to the two-launch Quint fixture.
+
+- Root retention and root_origin establish independent assignment provenance
+  from an empty initial root registry. The enrollment principal is pre-existing;
+  its native provisioning/authentication remains an explicit rootAuthorized premise.
+- ValidBindings associates each first binding with the exact root, erased-key
+  template and verified enrollment/beneficiary/session transcript. It is historical
+  provenance, not permission to ignore later source or policy changes.
+- Covered associates every predecessor invitation with its retained first binding.
+  Joined requires its determining publication outcome. OutcomeBound requires an
+  outcome to name an actual exact invitation projection. Their two directions
+  catch different split-publication failures.
+- Qualified combines these properties. Bind and publication require qualification;
+  downstream authority advance also requires it. Inconsistent publication cannot
+  be made admissible by refreshing only the predecessor's read permission.
+- Blueprint explicitly constrains the target to the original current capability
+  scope, previous grant, source parent, issuer epoch/challenge and expiration.
+  New publication exposes CanPublish and leaves the entire issuance state unchanged.
+- Revoke projects an actual predecessor issuer-epoch advance as well as the outer
+  enrollment epoch change, preserving the first key/session and publication records.
+  The old ticket epoch therefore cannot match the new issuer epoch.
+- composition requires a witness to the actual predecessor Run. The generic edge
+  is not a trusted alternative transition relation. Instantiate it with actual
+  predecessor Step and one-step Run; no authentication or durability predicate is
+  replaced by True.
+
+Financial composition retains initialized caller/publication/custody/account
+prefixes, safe handoff and original sourceReady-to-OriginalReady binding premises.
+A public-key equality lemma alone proves neither account uniqueness nor a refund.
+Unknown original use is explicit and retains its hold. All publication and final
+execution constraints remain attached to the original canonical claim.
+
+Qualified is a mathematical image invariant, not a proposed full-registry scan
+on the streaming path. The native owner needs a bounded per-launch join certificate
+and accepted-prefix qualification tied to the determining CAS. A coherent rollback
+can satisfy the pure map equalities; the independent non-rollback floor is still
+required. Arbitrary restored maps are not valid initial states for the trace proof.
+Nat has no wraparound; bounded native identifiers/revisions/epochs must reject
+exhaustion and preserve retired namespace/result records.
+
+* Quint fixture and correspondence limits
+The fixture has two canonical launches, independent enrollment keys, beneficiary
+keys and bootstrap sessions, with the same Kubernetes workload. The enrolled
+principal may sign a different beneficiary key, but it cannot overwrite the
+first key already committed. Parent publication approval remains an independent
+trusted source fact; this fixture publishes only the predecessor's admitted keys.
+That finite assignment oracle is not a general native public-key implementation.
+The replacement-root test also encounters a restrictive root whitelist; general
+canonical root retention is a Lean property, not evidence of a real database index.
+
+Lean eraseKey preserves a previous capability containing the original proposal.
+The Quint ticket carries a separate original root field plus the predecessor grant
+scope; Blueprint checks that field against actual source custody. These are stated
+semantic projections, not an automatic compiler or ABI refinement theorem.
+Native verify and approved values denote authenticated owner outcomes, not client
+booleans. Both proofs must authenticate one complete canonical transcript.
+
+The current source has twenty-six ordinary guarded controls, five fault controls
+and one additional quarantine control. All thirty-two execute. The actual parent
+registration, invitation consumption, proof, custody activation and revocation
+actions are retained in the ancestor source and executed by the corresponding
+controls. The activated fixture checks the original unknown reservation explicitly.
+
+* Fault traces and the quarantine probe
+- Shared identity: insert a first binding whose stored enrollment peer is the old
+  shared-workload principal. ValidBindings fails. This is a fabricated binding,
+  not evidence that an attacker acquired the intended private key.
+- Replaced key: mutate the first key after invitation publication. The old public
+  invitation still names the original key; both binding and join checks detect
+  the mismatch. No active custody change or provider send is claimed.
+- Missing outcome: execute actual predecessor invitation registration without the
+  outer determining outcome. Joined fails, even though the parent registry is live.
+- Split publication: publish only the outcome while the invitation projection is
+  absent. OutcomeBound/Joined fail; an outcome alone is not registration completion.
+- Rolled-back binding: erase the first-binding membership while retaining the
+  invitation and outcome. Covered/Joined fail; recovery must not reopen this slot.
+
+The quarantine probe first creates a missing-outcome image, then explicitly
+refreshes the parent invitation read. Consumption still fails at the new outer
+join gate. It checks no ticket issuance, no active incarnation change and retention
+of the original unknown hold in the fully defined pre-rejection state; the terminal
+failed action has no admitted successor. This detects the gap between merely observing a
+broken invariant and actually refusing admission from that image.
+
+Decoded ITF observations check actual parent account/source state as well as the
+new registry fields: original unknown hold retained, no new provider source calls,
+unchanged floor log and original claim, and no active incarnation change for the
+five pending-publication faults. Earlier unrelated spent/application state remains;
+zero new provider calls is not a claim of zero historical effects.
+
+* Execution protocol and bounded claims
+The initial combined CLI route passed six controls and hit its fixed 55-second
+watchdog on the next group. That model was subsequently strengthened with explicit
+scope checks; those partial results are historical, not current acceptance.
+Compiler diagnostics from draft Lean declarations are also retained and excluded.
+A later thirty-one-control pass before the quarantine gate is preserved separately.
+
+The accepted current route uses the installed official load, parse, typecheck and
+runTests functions. The full current fourteen-module IR, including every current
+run declaration, receives actual type and effect analysis once. Parsing has a
+20-second watchdog and type/effect analysis has a separate 55-second watchdog.
+The same accepted AST, lookup table and collected definitions are reused without
+mutation. Each test group calls official runTests, which constructs a new Evaluator
+and RNG; each group has its own 20-second execution watchdog. This removes repeated
+parsing/analysis without replacing the evaluator or changing any transition.
+The old combined-route timeout remains a timeout; it is not relabeled as passing.
+The first quarantine-probe draft tried to inspect successor state after fail(),
+which has no admitted successor, and raised QNT502. That failed harness and its
+source are preserved. The corrected probe checks the fully defined pre-rejection
+state and then ends with the guarded consumption failure.
+
+Installed pipeline/evaluator hashes, model bytes, complete results and an unchanged
+IR digest after every group are recorded. All thirteen ancestor non-run declaration
+IRs match the sealed parent; the current raw leaf also matches the bundled IR.
+Only local import source paths, parser IDs/order and checked top-level lexical depth
+normalization differ. No semantic/effect qualifier is stripped.
+
+The thirty-two earlier Lean receipts are reused after source/log/artifact checks.
+The predecessor's twenty-three Quint controls have sealed independent passing
+receipts, reused by exact source identity rather than claimed as a current rerun.
+Current tests are bounded deterministic scenarios, not exhaustive state exploration.
+The predecessor's 30-second randomized exploration timeout remains unchanged;
+no new randomized pass, fairness, liveness, native crypto, provider exactly-once,
+performance result or remote CI is claimed.
+
+* Native acceptance obligations
+The formal contracts still require independent enrollment-credential provisioning,
+authentic producer/root assignment, both signature checks over the exact transcript,
+authenticated adapter channel facts, canonical key encoding, durable atomic commits,
+complete-prefix restoration, anti-rollback floors covering the outer enrollment commit prefix (not merely
+the unchanged source/account floor), bounded counter exhaustion and
+real final-send refinement. Equality checks do not supply these obligations.
+
+Possession of the authorized enrollment private key or its signing oracle permits
+choices for that logical principal under policy. Shared Kubernetes credentials
+alone do not. A party that can relay both authorized signing capabilities and the
+bound channel cannot be distinguished as a different physical process by this
+model. This design enforces logical execution authority and makes no physical
+isolation or hardware claim.
+
+* Reproduction
+Use an isolated evidence copy to preserve the sealed current and historical receipts.
+The certified ancestor bundle is an input. Rebuild official parser/source-map and
+raw-leaf parser receipts after any source edit; never reuse an IR for changed bytes.
+
+#+begin_src sh
+python3 proofs/prepare_beneficiary_registration.py
+quint parse proofs/evidence/llm-beneficiary-registration/bundle/LlmBeneficiaryRegistration.qnt --out proofs/evidence/llm-beneficiary-registration/bundle-parsed.json --source-map proofs/evidence/llm-beneficiary-registration/bundle-source-map.json
+node proofs/evidence/llm-beneficiary-registration/parse-raw-leaf.cjs
+python3 proofs/check_llm_beneficiary_registration.py
+python3 proofs/evidence/llm-beneficiary-registration/check-source-receipts.py
+python3 proofs/evidence/llm-beneficiary-registration/check-working-sources.py
+#+end_src
+
+The checker reuses only exact current invocation bytes when explicitly requested
+with --reuse-api. Native acceptance remains separate from these model receipts.

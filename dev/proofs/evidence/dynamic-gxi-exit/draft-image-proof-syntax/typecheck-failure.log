@@ -1,0 +1,15 @@
+
+ Error [QNT000]: missing '}' at 'pure'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/DynamicImageCustody.qnt:2:101
+  2:   type State={opened:Set[int],closed:Set[int],unloaded:Set[int],initialized:List[int],stopping:bool,pure:bool,distinctEntries:bool,admitted:bool}
+                                                                                                         ^^^^
+
+
+ Error [QNT000]: extraneous input 'var' expecting {<EOF>, 'module', DOCCOMMENT}
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/DynamicImageCustody.qnt:3:3
+  3:   var s:State
+       ^^^
+
+error: parsing failed

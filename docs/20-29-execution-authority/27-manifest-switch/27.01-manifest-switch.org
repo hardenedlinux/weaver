@@ -1,0 +1,138 @@
+#+title: Weaver Atomic Manifest Switch, WAL Deletion and Crash Recovery
+#+language: en
+#+options: toc:3
+
+* The gap in the earlier truncation abstraction
+
+Category 26 replaces checkpoint plus WAL representation in one logical step.
+That abstraction cannot justify deleting files after a successful rename call,
+an upload acknowledgment, a cached checkpoint receipt or a timed-out switch.
+There must always be a retained, authenticated complete reconstruction path.
+The independent financial journal, publication floor, canonical source registry
+and original outcome archive remain retained; this category deletes local WAL
+objects only. It does not establish pruning of those independent authorities.
+
+The manifest identifies the complete checkpoint body, exact ordered suffix,
+immutable segment identities and contents, namespace, parent manifest and local
+manifest generation. Native encoding must also bind the original claim, profile,
+reservation and application records through the authenticated checkpoint/financial
+lineage. A digest or pathname without retrievable complete contents is insufficient.
+
+* Durable state and the serialization point
+
+The Rust storage owner maintains a durable current-manifest record and immutable
+manifest/segment bodies. A volatile observation or client response is separate
+from that record. The native root includes store identity, manifest identity and
+body commitment, generation, expected parent, publication baseline, owner/source
+fences and original cut operation ID. The model's typed exact bodies represent
+these authenticated commitments; it does not verify a codec or hashing algorithm.
+
+The local current root is crash-durable under the declared storage fault model.
+It is not itself a substitute for the independent non-rollback publication and
+financial anchors. A restored older local root must be requalified against those
+authorities before balances, execution or deletion are enabled. If all local root
+and object copies roll back together, the system must not authenticate itself
+from a co-restored observation. Reconstruction or quarantine is required.
+
+| Phase | Preconditions and persistent effect | Crash or lost response |
+|-------+-------------------------------------+------------------------|
+| Capture | Freeze an immutable cut and ordered suffix; preserve accepted pending candidates and original identifiers | Incomplete candidate is inert; current root and objects remain |
+| Stage objects | Write complete checkpoint/segments, verify exact bytes, persist objects and namespace reachability | Current root still selects the old complete path |
+| Stage manifest | Persist complete immutable manifest; allocation identity cannot be rebound | A staged manifest grants no switch, delete, activation or send authority |
+| Switch | Serialize parent/generation CAS with owner/source, publication, full coverage and Cedar checks; persist current-root change and namespace metadata | Durable outcome is either old or new; unknown outcome closes use and deletion until authoritative readback |
+| Read back | Resolve the same cut/result, authenticate current root, generation, owner and every required object | A stale or unauthenticated response grants nothing |
+| Delete one object | In the same storage serialization domain, recheck current root, current owner, generation and absence from its reachable set; perform exact-identity unlink | Interrupted deletion removes some obsolete objects only; repeat missing-object deletion idempotently after requalification |
+| Recover | Read durable current root, verify object closure and ordered replay to current protected financial head; refresh all earlier source/policy gates | Missing or conflicting evidence keeps projection, release and execution closed |
+
+The =switchDurable= premise means the replacement and root transition have crossed
+the native durable ordering boundary. For a filesystem this requires qualified
+object/file persistence and directory/root persistence, not merely return from
+rename. For another backend it requires its documented conditional-write and
+crash-durability equivalent. No cross-store atomicity is inferred from two separate
+successful writes. The protected publication is already committed before this
+local switch; failure to switch never lowers that publication floor.
+
+* Delete authorization must reach the actual unlink
+
+A queued deletion descriptor is an intention, not reusable authority. The Rust
+owner must hold the serialization gate until actual exact-identity deletion has
+completed, or use an equivalent backend conditional delete whose checks and
+effect are atomic. It cannot validate, enqueue an unfenced unlink and release the
+gate while another worker changes the root. Owner takeover and root changes must
+wait for that critical section to resolve, or conservatively recover an unknown
+outcome. A detached executor that retains unrestricted delete credentials would
+violate the premise.
+
+Object IDs include a store incarnation/allocation identity and content binding;
+paths cannot be rebound to new contents. Native allocation must reject exhausted
+counters and retain sufficient retirement information to prevent ABA after
+restart. The proof retains an allocation history as a reference witness; it is
+not an implementation requirement to keep every deleted byte or an unbounded
+in-memory tombstone list. Native bounded allocation/retirement needs qualification.
+
+Before switching, old objects are indispensable. After switching, objects reachable
+from the new manifest remain indispensable even if the old and new manifests
+share them. Never delete by a numeric prefix, filename age or a directory wildcard.
+Each deletion recomputes reachability at its actual serialization point. The model
+is an exclusive storage owner: external readers/backup jobs may not retain authority
+to access collectible files. Supporting independent read leases requires adding
+the union of all durable live pins to the deletion guard and proving their recovery;
+that extension is not established here.
+
+A lost switch response is not an abort certificate. Query the same operation and
+current root. If a newer root already exists, re-evaluate garbage against that
+root; do not replay an old deletion plan merely because its original switch once
+succeeded. Late acknowledgments do not overwrite the current generation. Deleted
+old objects need not be reconstructed when the current qualified path remains
+complete. Missing selected objects are an integrity/recovery failure, never an
+instruction to fall back silently to genesis or an obsolete manifest.
+
+* Concurrent financial changes and frozen cuts
+
+Switching cannot discard an accepted but uncommitted suffix. The final financial
+head, not the number of persisted frames, limits account replay. Later accepted
+candidates retain their independent bodies and original reservation identity.
+Unknown usage keeps its original hold; a storage timeout creates no refund.
+
+The formal cut keeps the represented WAL sequence fixed while staging/switching.
+It permits parent authority transitions that keep WAL, selected local checkpoint,
+suffix and checkpoint blobs unchanged, including owner rotation, receipt refresh
+and financial commitment of an already-persisted candidate. Appending to the
+represented sequence requires a new captured manifest/cut or an append-generation
+handoff whose complete suffix is included at switch. A native implementation must
+serialize this capture boundary; the current proof does not establish concurrent
+append-generation rollover or removal of an independently accepted candidate.
+Do not turn this finite critical-section premise into a global stop-the-world
+LLM routing design or a performance result.
+
+* Scheme, Go, Rust and Code as Policy
+
+| Component | Responsibility | Concrete authority boundary |
+|-----------+----------------+-----------------------------|
+| Scheme | Define complete account/manifest meaning, original claim/profile/source lineage, current fence and coverage constraints; construct typed publish/switch/delete/recover intents | POO contracts and Cedar facts never perform filesystem IO or assert their own durability |
+| Cedar | Evaluate required storage, tenant, data-retention and recovery policy layers for the exact operation and current facts | Missing, denied or erroring layers block; allowance does not make an object durable or replace native atomicity |
+| Go | Kubernetes owner lifecycle, reconciliation, backend discovery and SDK/control-plane timeout handling; report observed outcomes and query the original operation | No independent balance application, fallback root selection, GC worker credentials or provider retry from a storage receipt |
+| Rust | Own storage gate, durable object publication, manifest CAS, reachability, exact unlink, recovery and actual broker/executor authority checks | Revalidate at the actual storage effect; old handles and buffers do not carry independent logical authority |
+| Quint | Exercise interrupted phases, stale fences, suffix loss, object identity substitution and rollback mutations | Finite controls and sampled traces, not exhaustive native fault injection |
+| Lean | Prove complete-path preservation over arbitrary finite guarded runs and composition into the actual checkpoint/WAL/account/source chain | Durable IO, authenticated facts, exclusive storage ownership and initial complete path are explicit premises |
+
+A current manifest is a storage prerequisite, never a send permit. Neither
+checkpoint publication, root switching, garbage collection nor reconstruction
+calls a provider. Rust broker final consumption/enqueue and executor handoff still
+require their original current Policy/history/owner gates. SDK retries, reconnects
+and Go restarts retain the original logical message and reservation keys. This
+is an AI Agent Gateway logical execution boundary, without physical isolation or
+an HSM requirement.
+
+* Failure decisions
+
+| Observation | Decision |
+|-------------+----------|
+| Switch response lost, root unknown | Retain all objects; query same original cut; no delete or activation |
+| Switch durable, deletion response lost | Re-read root/fence; repeat obsolete-object deletion only; no account delta |
+| Crash during obsolete-object deletion | Recover current complete path; tolerate any subset of obsolete files remaining |
+| Old worker resumes with old root receipt | Reject at current storage gate; invalidate its cached observation |
+| Old snapshot names a deleted old segment | Reject the snapshot; qualify current root or reconstruct from retained independent authorities |
+| Current suffix object missing or wrong contents | Keep closed; no rollback selection or unknown-budget release |
+| Policy/history changes after manifest observation | Existing final financial/source/executor checks remain mandatory; observation is not cached authorization |
+| All required local copies lost outside durability premise | Availability is not proved; remain closed and retain original accounting obligations |

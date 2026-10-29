@@ -1,0 +1,42 @@
+proofs/lean/ProtectedSignerRelease.lean:100:23: error: Application type mismatch: The argument
+  id
+has type
+  ?m.4 → ?m.4
+but is expected to have type
+  Nat
+in the application
+  s.committed id
+proofs/lean/ProtectedSignerRelease.lean:100:50: error: Application type mismatch: The argument
+  id
+has type
+  ?m.7 → ?m.7
+but is expected to have type
+  Nat
+in the application
+  t.committed id
+proofs/lean/ProtectedSignerRelease.lean:103:25: error: Type mismatch
+  other
+has type
+  Nat
+but is expected to have type
+  ?m.82 → ?m.82
+proofs/lean/ProtectedSignerRelease.lean:104:12: error: Unexpected term `@id`; expected single reference to variable
+'Weaver.ProtectedSignerRelease.every_released_statement_keeps_its_promise' depends on axioms: [propext]
+'Weaver.ProtectedSignerRelease.commit_response_loss_cannot_erase_commitment' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ProtectedSignerRelease.restart_does_not_restore_old_service_handle' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ProtectedSignerRelease.released_certificates_cannot_conflict' does not depend on any axioms
+'Weaver.ProtectedSignerRelease.initialized_release_invariant' depends on axioms: [propext]
+'Weaver.ProtectedSignerRelease.initialized_product_refines_promises' does not depend on any axioms
+'Weaver.ProtectedSignerRelease.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.ProtectedSignerRelease.original_budget_remains_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ProtectedSignerRelease.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

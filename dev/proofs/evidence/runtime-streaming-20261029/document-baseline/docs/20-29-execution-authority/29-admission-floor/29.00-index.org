@@ -1,0 +1,22 @@
+#+title: Weaver Independent Admission Recovery Floor Index
+#+language: en
+#+options: toc:2
+
+* Publish the determining minimum before confirming admission
+
+Area =20-29 Execution authority=; category =29 Admission floor=.
+This extends [[file:../28-append-handoff/28.00-index.org][28 Append handoff]] by separating independent publication, original
+operation resolution, current-head confirmation, local reconstruction and recovery
+qualification. A local generation counter cannot authenticate its own recovery.
+
+| ID | Artifact |
+|----+----------|
+| 29.00 | This index |
+| 29.01 | [[file:29.01-admission-floor.org][Publication, confirmation, recovery and final-use protocol]] |
+| 29.02 | [[file:29.02-admission-floor.d2][Core D2]] / [[file:29.02-admission-floor.svg][SVG]] |
+| 29.03 | [[file:29.03-proof-and-source-evidence.org][Proof mapping, source audit, counterexamples and acceptance evidence]] |
+
+Four artifacts: [[file:../../../proofs/lean/LlmAdmissionFloor.lean][Lean]] / [[file:../../../proofs/qunit/LlmAdmissionFloor.qnt][Quint]] / English Org / core D2.
+Run [[file:../../../proofs/check_llm_admission_floor.py][the isolated checker]]. This work changes design, formal sources and local
+evidence only; Gateway implementation, dependency pins and historical sealed
+artifacts remain unchanged.

@@ -1,0 +1,31 @@
+#+TITLE: Per-Case Benchmark Coverage Gate Check
+#+LANGUAGE: en
+
+* Scope
+
+This focused check qualifies the later Go collector hardening, not a new Rust
+performance sample. The adjacent benchmark-current receipt retains the earlier
+complete measured matrix and its own source hashes. No dependency pin, sampling
+limit, timeout or gateway runtime implementation changes in this increment.
+
+* Executed check
+
+The project-local Go caches and GOTOOLCHAIN=local were used with Go 1.25.0.
+
+#+begin_src text
+go test -count=1 -race ./go/internal/devrunner ./go/dev -run 'Test(Benchmark|OldBenchmark|CargoWorkspace)' -v
+#+end_src
+
+| Check | Result |
+|-------+--------|
+| Complete eighteen-case evidence produces every summary row | PASS |
+| Missing ledger publication commit rejects partial package evidence | PASS |
+| Missing Arrow thirty-two-row case rejects partial package evidence | PASS |
+| Unmapped case rejects artifact collection | PASS |
+| Old result files cannot qualify a current run | PASS |
+| Every Cargo member has the required executable target and development dependencies | PASS |
+
+Both selected Go packages exited successfully under the race detector. The
+collector now requires exact case names rather than five broad package prefixes.
+The measured Rust receipt remains historical: eighteen warnings are not cleared
+by these coverage checks. No new production performance acceptance is asserted.

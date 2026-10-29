@@ -1,0 +1,2704 @@
+An example execution:
+
+[State 0]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 0,
+      isolated: Set(),
+      observed: Set(),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 1]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 0,
+      isolated: Set(),
+      observed: Set(),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 2]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 0,
+      isolated: Set(),
+      observed: Set(),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 3]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 0,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 0,
+      isolated: Set(),
+      observed: Set(),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 4]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 0,
+      isolated: Set(),
+      observed: Set(),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 5]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 0,
+      isolated: Set(),
+      observed: Set(),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 6]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 0,
+      isolated: Set(),
+      observed: Set(),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 7]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 0,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> false),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 0,
+      isolated: Set(),
+      observed: Set(),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 8]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 1,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 0,
+      isolated: Set(),
+      observed: Set(),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 9]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 1,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 0,
+      isolated: Set(),
+      observed: Set(),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 10]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 1,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 0,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> false),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 11]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 1,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 12]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 1,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(),
+      violations: 0
+    }
+}
+
+[State 13]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 1,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 14]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 15]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 1,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: true,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 16]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 2,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 17]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 3,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 18]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 3,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 19]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 4,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 20]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 4,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 21]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 4,
+      known: -1,
+      localClaims: 4,
+      localHead: 1,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 22]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 4,
+      known: -1,
+      localClaims: 4,
+      localHead: 2,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 23]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 4,
+      known: -1,
+      localClaims: 4,
+      localHead: 2,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 24]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 5,
+      known: -1,
+      localClaims: 4,
+      localHead: 2,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 25]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 2,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 5,
+      known: -1,
+      localClaims: 4,
+      localHead: 2,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> false, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 26]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 3,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 5,
+      known: -1,
+      localClaims: 4,
+      localHead: 2,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> true, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(3),
+      violations: 0
+    }
+}
+
+[State 27]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 3,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 5,
+      known: -1,
+      localClaims: 4,
+      localHead: 2,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> true, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: false,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(0, 3),
+      violations: 0
+    }
+}
+
+[State 28]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 3,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 5,
+      known: -1,
+      localClaims: 4,
+      localHead: 2,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> true, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(0, 3),
+      violations: 0
+    }
+}
+
+[State 29]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 3,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 5,
+      known: -1,
+      localClaims: 4,
+      localHead: 2,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> true, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(0, 3),
+      violations: 0
+    }
+}
+
+[State 30]
+{
+  s:
+    {
+      accepted: Set(),
+      accepts: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      bufferEpoch: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      claimed: Map(0 -> 1, 1 -> 1, 2 -> 1, 3 -> 1),
+      commands: Set(),
+      decisions: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      epoch: 0,
+      exposures: Map(0 -> 0, 1 -> 0, 2 -> 0, 3 -> 0),
+      head: 3,
+      held: Map(0 -> 2, 1 -> 2, 2 -> 2, 3 -> 2),
+      inc: 6,
+      known: -1,
+      localClaims: 4,
+      localHead: 2,
+      localHeld: 8,
+      localHistory: Map(0 -> false, 1 -> true),
+      online: true,
+      ownerEpoch: 0,
+      ownerOpen: true,
+      pending: Set(),
+      ready: false,
+      restricted: Map(0 -> true, 1 -> true),
+      results:
+        Map(
+          0 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          1 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          2 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            },
+          3 ->
+            {
+              committed: false,
+              head: 0,
+              present: false,
+              request: { binding: 100, head: 0, op: 0, source: 0, target: 10 }
+            }
+        ),
+      sealPresent: false,
+      sealed: { binding: 100, head: 0, op: 0, source: 0, target: 10 },
+      token: Map(0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3),
+      violations: 0
+    },
+  x:
+    {
+      blocked: Set(),
+      installed: Set(),
+      n: 0,
+      ranges: Map(),
+      retired: Set(),
+      violations: 0
+    },
+  y:
+    {
+      charged: Set(),
+      done: Set(),
+      generation: 1,
+      isolated: Set(),
+      observed: Set(0, 1),
+      online: true,
+      pending: Set(),
+      requests: Map(),
+      tails: Map(),
+      usage: Set(0, 3),
+      violations: 0
+    }
+}
+
+[ok] No violation found (160ms at 125 traces/second).
+Trace length statistics: max=31, min=31, average=31.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0x13 --backend=typescript to reproduce.

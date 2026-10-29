@@ -1,0 +1,69 @@
+#+TITLE: Integrated Audit Evidence and Qualification Boundary
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Scope and identity
+Audit date: 2026-10-20. Workspace: Weaver, branch =main=, tracked HEAD
+=4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. The maintained design/proof corpus
+is currently untracked; this HEAD does not identify those untracked bytes.
+This review adds documents and audit harness/evidence only. It changes neither
+Gateway implementation nor dependency pins, and performs no commit or push.
+
+* Fresh observations
+| Observation | Result | What it establishes |
+|-------------+--------+---------------------|
+| Historical manifests | 45 verified, 4,982 unique byte targets | Prior sealed bytes still match |
+| Selected source review | 16 of 16 HEAD and working-byte matches | Reviewed upstream snapshots have not drifted locally |
+| Clean Lean closure | 11 modules, all exit zero | Selected exact source/import closure compiles freshly |
+| Selected historical receipts | Six classified, not rerun | Evidence provenance, not new controls |
+
+The source comparison preserves the already-recorded modified Core
+=configuration-source.ss= working file; matching review bytes does not make
+that file committed or equate its working bytes to Core HEAD.
+
+The clean closure roots are =LlmAuthoritativeScope= and =RoutineRoutingConfig=.
+It includes =LogicalMessageAuthority=, =SharedMessageBudget=,
+=FiniteDomainMigration=, =GatewayHeadCAS=, =BrokerConsumptionQueue=,
+=LogicalRangeRecovery=, =LlmRouting=, =LlmAttemptLedger=,
+=LlmSemanticContract= and the two roots. Each build used a new temporary output
+directory, exact source hashes, recorded import edges and compiled-artifact
+hashes, with a bounded per-module watchdog. Source identity was checked before
+and after compilation; logs contain no error or =sorryAx= admission.
+
+The compiler was =leanprover/lean4:v4.34.1=. This is evidence metadata, not an
+architecture requirement or a pin change. The deeper identity closure was not
+freshly rebuilt. No Quint model, provider SDK, native Scheme compiler, broker,
+storage fault harness, deployment or performance benchmark was rerun here.
+Existing control counts and theorems are not relabeled as fresh native coverage.
+
+* Reproduction artifacts
+- [[file:../../../specs/evidence/research-program-audit-20261020/collect-audit.py][Byte/source/receipt collector]].
+- [[file:../../../specs/evidence/research-program-audit-20261020/historical-manifests.json][Historical manifest identities]].
+- [[file:../../../specs/evidence/research-program-audit-20261020/source-currentness.json][Source comparison]].
+- [[file:../../../specs/evidence/research-program-audit-20261020/selected-receipts.json][Historical receipt classification]].
+- [[file:../../../specs/evidence/research-program-audit-20261020/workspace-snapshot.json][Workspace snapshot]].
+- [[file:../../../specs/evidence/research-program-audit-20261020/clean-proof-audit.py][Fresh proof build harness]].
+- [[file:../../../specs/evidence/research-program-audit-20261020/clean-proof-receipt.json][Fresh source/import/compiled-artifact receipt]].
+
+The temporary compiled directory is a local receipt location, not a portable
+artifact guarantee. The exact source/import build recipe and hashes are retained.
+The collector explicitly accepts =rg= exit one as an empty source inventory;
+that inventory excludes ignored research clones and is not a universal proof
+that no implementation exists anywhere.
+
+* Reference comparison boundary
+The inspected agentgateway reference is the local snapshot
+=955d56fae09b45f3cb8e85e797dbb1eb06134f77=, not a claim about upstream latest.
+Its shared configuration representation, Rust proxy and Go cloud-native
+integration are reference choices, not requirements to copy a language split.
+POO Flow/Core Contracts, graph and configuration mechanisms and Cedar typed
+operation contracts are reuse candidates, not proof that Weaver's native glue
+already exists. Exact reviewed files and working hashes are in the source table.
+
+* Audit acceptance
+The audit is complete when findings A01-A12 map to RP1-RP8, dependencies are
+acyclic, English Org parses/exports with source evaluation disabled, local links
+resolve, and prior seals remain unchanged. These are documentation/audit gates.
+The general proposed native, protocol, effect, formal, performance, deployment
+and Zero Trust gates remain open wherever authentic implementation evidence is
+absent. This review creates no new proof declaration or runtime safety claim.

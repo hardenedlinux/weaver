@@ -1,0 +1,156 @@
+#+title: Arbitrary Finite Messages and Domain Migration Validation Receipt
+#+language: en
+#+date: 2026-10-19
+#+options: toc:2
+
+* Exact inputs and proof boundary
+
+Local tools: Quint 0.33.0 with TypeScript backend, Lean 4.34.1 through elan.
+The two imported Weaver proofs were rebuilt from current source into isolated
+temporary output before checking FiniteDomainMigration.lean. Their original
+source files and earlier evidence receipts remain unchanged. No owner package,
+gateway runtime, native ABI or dependency pin was modified.
+
+| Exact input | SHA-256 |
+|-------------+---------|
+| FiniteDomainMigration.qnt | ffa97e53967b763840369d6af6b110f989eda82dde82d1017d884749cb06b454 |
+| FiniteDomainMigration.lean | 89a16ca38a6b6e21e4fd4892c26043c0d4f68881c7c4626a2e648cadaabf1c2d |
+| LogicalMessageAuthority.lean | 649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca |
+| SharedMessageBudget.lean | be3f2237e83c6d1ecf824795919d7278654aa05012d30a8c5363f1bc24a3904f |
+
+[[file:../README.org][The formal guide]] provides exact commands. [[file:../../docs/architecture/18-finite-domains-and-migration.org][The finite-domain dossier]] records
+owner-source correspondence, assumptions, actions, theorems and explicit
+migration semantics. The Lean proof covers arbitrary finite duplicate-free
+canonical message-key lists and arbitrary natural costs/capacities. Budget and
+history maps can independently overlap across arbitrary canonical owner roots.
+The statement is parametric, not a proof for only the sampled cardinalities.
+
+This is an abstract transition proof. It does not establish authentic owner
+inputs, arbitrary semantic reparenting, rollback-resistant storage, physical
+migration copying, Cedar/native projection, post-cut socket exclusion, eventual
+delivery or automated Quint-to-Lean/source refinement. Independent publication/
+identity high-water and actual final-broker mediation remain physical premises.
+No complete FM row or deployed protected profile is admitted.
+
+* Executed checks and results
+
+- Quint typecheck exited zero on the final source bytes.
+- Seventeen deterministic controls passed: nine permitted lifecycle/rejection controls and eight expected counterexamples.
+- Four-message fixture: 2,000 sampled traces, at most 100 transitions each, seed 20261019; safety found no violation.
+- Seven-message fixture: 500 sampled traces, at most 80 transitions each, seed 20261020; safety found no violation.
+- Singleton fixture: 500 sampled traces, at most 80 transitions each, seed 20261021; safety found no violation.
+- Empty finite support is covered by a deterministic initial-state control and the general Lean proof; no empty-support random run is claimed.
+- Imported proofs and finite consumer compiled with exit zero. Printed axiom inventories contain no sorryAx or custom axiom.
+
+Simulation calls used independent bounded watchdogs: 90 seconds for the
+four-message sample, 60 seconds per other sample. Each completed with exit zero;
+no timeout was widened or reclassified. These are samples, not exhaustive
+TLC/Apalache checking. Lean initial/step induction establishes the invariant for
+all finite abstract traces independently of those samples. Simulator elapsed
+time is not a gateway performance claim.
+
+* Interpretation of the controls
+
+The settled-charge and three-message controls execute permitted authority and
+accounting paths beyond the previous two-key scope. Migration/restart controls
+retain original claims and tickets, admit late evidence and reject execution
+by a new claim owner. Another root's shared-account allocation invalidates a
+staged transfer even when the sealed root fence has not changed.
+
+The stale-worker counterexamples can preserve local affine counts and budget
+while violating current executor authority. The wrong-domain allocator uses
+an empty second account to overbook the actual canonical account. The history
+mutants select or clear a different history scope. The restored-checkpoint
+variant uses a fresh nonce and performs a second semantic claim/offer for the
+same logical message while its final local record again looks affine.
+
+Audit ghosts represent specification history, not a hidden durable runtime
+oracle. Restoring authoritative state together with its only freshness anchor
+cannot be ruled out by local equality checks; the actual anti-rollback lineage
+and physical fencing requirements remain explicit in the dossier.
+
+The two rejection controls terminate in Quint's fail combinator. Their final
+ITF entry has no successor s value; the preceding state is the last actual
+ledger state. That is test-combinator semantics, not gateway state loss. Passing
+negative tests mean that the expected invariant violations were observed;
+the invalid transitions remain excluded from normal step.
+
+* Actual test output
+
+#+begin_example
+FiniteDomainMigration
+    ok settledChargeSurvivesMigrationTest passed 1 test(s)
+    ok emptyUniverseTest passed 1 test(s)
+    ok threeMessagesAndSharedAccountsTest passed 1 test(s)
+    ok migrationRetainsClaimAndEvidenceTest passed 1 test(s)
+    ok restartRetainsClaimTest passed 1 test(s)
+    ok sharedAccountInvalidatesTransferTest passed 1 test(s)
+    ok sealedDomainAliasDoesNotReopenTest passed 1 test(s)
+    ok recreateExistingRootRejectedTest passed 1 test(s)
+    ok wrongBudgetDomainRejectedTest passed 1 test(s)
+    ok oldWorkerAfterMigrationCounterexampleTest passed 1 test(s)
+    ok oldWorkerAfterRestartCounterexampleTest passed 1 test(s)
+    ok claimHandoffCounterexampleTest passed 1 test(s)
+    ok wrongDomainBudgetCounterexampleTest passed 1 test(s)
+    ok newDomainHistoryCounterexampleTest passed 1 test(s)
+    ok migrationHistoryResetCounterexampleTest passed 1 test(s)
+    ok staleTransferCounterexampleTest passed 1 test(s)
+    ok restoredCheckpointReplayCounterexampleTest passed 1 test(s)
+
+  17 passing (1295ms)
+#+end_example
+
+* Four-message simulation
+
+#+begin_example
+[ok] No violation found (58468ms at 34 traces/second).
+Use --seed=0x135289b --backend=typescript to reproduce.
+#+end_example
+
+* Seven-message simulation
+
+#+begin_example
+[ok] No violation found (28717ms at 17 traces/second).
+Use --seed=0x135289c --backend=typescript to reproduce.
+#+end_example
+
+* Singleton simulation
+
+#+begin_example
+[ok] No violation found (14694ms at 34 traces/second).
+Use --seed=0x135289d --backend=typescript to reproduce.
+#+end_example
+
+* Lean axiom inventory
+
+#+begin_example
+'Weaver.FiniteDomainMigration.reachable_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteDomainMigration.finite_free_held_charged_conservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FiniteDomainMigration.claim_executor_stamp_is_sticky' depends on axioms: [propext]
+'Weaver.FiniteDomainMigration.restart_rejects_retained_ticket' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteDomainMigration.migration_preserves_obligations' does not depend on any axioms
+'Weaver.FiniteDomainMigration.issued_ticket_is_immutable' depends on axioms: [propext]
+'Weaver.FiniteDomainMigration.advanced_fence_rejects_old_ticket' depends on axioms: [propext, Quot.sound]
+#+end_example
+
+* Retained positive and negative traces
+
+- [[file:finite-traces/claimHandoffCounterexampleTest-11.itf.json][claimHandoffCounterexampleTest-11.itf]]
+- [[file:finite-traces/emptyUniverseTest-1.itf.json][emptyUniverseTest-1.itf]]
+- [[file:finite-traces/migrationHistoryResetCounterexampleTest-14.itf.json][migrationHistoryResetCounterexampleTest-14.itf]]
+- [[file:finite-traces/migrationRetainsClaimAndEvidenceTest-3.itf.json][migrationRetainsClaimAndEvidenceTest-3.itf]]
+- [[file:finite-traces/newDomainHistoryCounterexampleTest-13.itf.json][newDomainHistoryCounterexampleTest-13.itf]]
+- [[file:finite-traces/oldWorkerAfterMigrationCounterexampleTest-9.itf.json][oldWorkerAfterMigrationCounterexampleTest-9.itf]]
+- [[file:finite-traces/oldWorkerAfterRestartCounterexampleTest-10.itf.json][oldWorkerAfterRestartCounterexampleTest-10.itf]]
+- [[file:finite-traces/recreateExistingRootRejectedTest-7.itf.json][recreateExistingRootRejectedTest-7.itf]]
+- [[file:finite-traces/restartRetainsClaimTest-4.itf.json][restartRetainsClaimTest-4.itf]]
+- [[file:finite-traces/restoredCheckpointReplayCounterexampleTest-16.itf.json][restoredCheckpointReplayCounterexampleTest-16.itf]]
+- [[file:finite-traces/sealedDomainAliasDoesNotReopenTest-6.itf.json][sealedDomainAliasDoesNotReopenTest-6.itf]]
+- [[file:finite-traces/settledChargeSurvivesMigrationTest-0.itf.json][settledChargeSurvivesMigrationTest-0.itf]]
+- [[file:finite-traces/sharedAccountInvalidatesTransferTest-5.itf.json][sharedAccountInvalidatesTransferTest-5.itf]]
+- [[file:finite-traces/staleTransferCounterexampleTest-15.itf.json][staleTransferCounterexampleTest-15.itf]]
+- [[file:finite-traces/threeMessagesAndSharedAccountsTest-2.itf.json][threeMessagesAndSharedAccountsTest-2.itf]]
+- [[file:finite-traces/wrongBudgetDomainRejectedTest-8.itf.json][wrongBudgetDomainRejectedTest-8.itf]]
+- [[file:finite-traces/wrongDomainBudgetCounterexampleTest-12.itf.json][wrongDomainBudgetCounterexampleTest-12.itf]]

@@ -1,0 +1,29 @@
+{
+  "label": "launcher-1",
+  "args": [
+    "/opt/homebrew/bin/gxi",
+    "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-image-closure-20261020/fixture.ss"
+  ],
+  "pid": 7145,
+  "exit": 0,
+  "seconds": 2.886081207951065,
+  "gateSeconds": 15,
+  "deadlineFailed": false,
+  "forcedExit": false,
+  "checks": [
+    "scheme-object-contract",
+    "native-json-contract",
+    "native-negative-ceiling",
+    "native-boolean-ceiling",
+    "native-string-ceiling",
+    "native-null-ceiling",
+    "native-unknown-authority-field",
+    "native-changed-node",
+    "native-overflow-ceiling",
+    "native-empty-targets",
+    "native-duplicate-targets"
+  ],
+  "qualified": true,
+  "handleCounterCoverage": false,
+  "coldClaim": false
+}

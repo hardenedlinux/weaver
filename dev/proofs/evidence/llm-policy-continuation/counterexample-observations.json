@@ -1,0 +1,1247 @@
+[
+  {
+    "path": "proofs/evidence/llm-policy-continuation/itf/doubleContinuationContinuationCounterexampleTest-2.itf.json",
+    "states": 9,
+    "authority": {
+      "acks": [],
+      "aliases": [],
+      "allowed": true,
+      "approvals": [
+        {
+          "authorized": true,
+          "candidate": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 20,
+            "root": 10,
+            "tip": 20
+          },
+          "view": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          }
+        },
+        {
+          "authorized": true,
+          "candidate": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 12,
+            "parent": 2,
+            "profile": 20,
+            "root": 10,
+            "tip": 11
+          },
+          "view": {
+            "fence": 0,
+            "generation": 2,
+            "revision": 0,
+            "tip": 11
+          }
+        }
+      ],
+      "calls": 0,
+      "everSpent": false,
+      "fence": 0,
+      "generation": 3,
+      "hold": 6,
+      "inspections": [
+        {
+          "fence": 0,
+          "generation": 1,
+          "revision": 0,
+          "tip": 20
+        }
+      ],
+      "log": [
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "change": {
+            "allowed": false,
+            "budget": 5,
+            "claim": 11,
+            "content": 200,
+            "history": 9,
+            "id": 20,
+            "parent": 0,
+            "profile": 20,
+            "root": 20,
+            "tip": 0
+          },
+          "generation": 1,
+          "reauthorized": true
+        },
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          },
+          "change": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 20,
+            "root": 10,
+            "tip": 20
+          },
+          "generation": 2,
+          "reauthorized": true
+        },
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 2,
+            "revision": 0,
+            "tip": 11
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 2,
+            "revision": 0,
+            "tip": 11
+          },
+          "change": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 12,
+            "parent": 2,
+            "profile": 20,
+            "root": 10,
+            "tip": 11
+          },
+          "generation": 3,
+          "reauthorized": true
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0
+        }
+      ],
+      "revision": 0,
+      "spent": false,
+      "staged": [
+        {
+          "allowed": false,
+          "budget": 5,
+          "claim": 11,
+          "content": 200,
+          "history": 9,
+          "id": 20,
+          "parent": 0,
+          "profile": 20,
+          "root": 20,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 10,
+          "parent": 0,
+          "profile": 20,
+          "root": 10,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 11,
+          "parent": 1,
+          "profile": 20,
+          "root": 10,
+          "tip": 20
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 12,
+          "parent": 2,
+          "profile": 20,
+          "root": 10,
+          "tip": 11
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visibleWinner": 11,
+      "winner": 12
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-continuation/itf/droppedIntentContinuationCounterexampleTest-7.itf.json",
+    "states": 6,
+    "authority": {
+      "acks": [],
+      "aliases": [],
+      "allowed": false,
+      "approvals": [
+        {
+          "authorized": true,
+          "candidate": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 20,
+            "root": 10,
+            "tip": 20
+          },
+          "view": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          }
+        }
+      ],
+      "calls": 0,
+      "everSpent": false,
+      "fence": 0,
+      "generation": 1,
+      "hold": 6,
+      "inspections": [
+        {
+          "fence": 0,
+          "generation": 1,
+          "revision": 0,
+          "tip": 20
+        }
+      ],
+      "log": [
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "change": {
+            "allowed": false,
+            "budget": 5,
+            "claim": 11,
+            "content": 200,
+            "history": 9,
+            "id": 20,
+            "parent": 0,
+            "profile": 20,
+            "root": 20,
+            "tip": 0
+          },
+          "generation": 1,
+          "reauthorized": true
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0
+        }
+      ],
+      "revision": 0,
+      "spent": false,
+      "staged": [
+        {
+          "allowed": false,
+          "budget": 5,
+          "claim": 11,
+          "content": 200,
+          "history": 9,
+          "id": 20,
+          "parent": 0,
+          "profile": 20,
+          "root": 20,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 11,
+          "parent": 1,
+          "profile": 20,
+          "root": 10,
+          "tip": 20
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visibleWinner": -1,
+      "winner": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-continuation/itf/lateAckContinuationCounterexampleTest-5.itf.json",
+    "states": 11,
+    "authority": {
+      "acks": [
+        11
+      ],
+      "aliases": [],
+      "allowed": true,
+      "approvals": [
+        {
+          "authorized": true,
+          "candidate": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 20,
+            "root": 10,
+            "tip": 20
+          },
+          "view": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          }
+        }
+      ],
+      "calls": 1,
+      "everSpent": true,
+      "fence": 0,
+      "generation": 2,
+      "hold": 6,
+      "inspections": [
+        {
+          "fence": 0,
+          "generation": 1,
+          "revision": 0,
+          "tip": 20
+        }
+      ],
+      "log": [
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "change": {
+            "allowed": false,
+            "budget": 5,
+            "claim": 11,
+            "content": 200,
+            "history": 9,
+            "id": 20,
+            "parent": 0,
+            "profile": 20,
+            "root": 20,
+            "tip": 0
+          },
+          "generation": 1,
+          "reauthorized": true
+        },
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          },
+          "change": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 20,
+            "root": 10,
+            "tip": 20
+          },
+          "generation": 2,
+          "reauthorized": true
+        },
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 2,
+            "revision": 0,
+            "tip": 11
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 2,
+            "revision": 0,
+            "tip": 11
+          },
+          "change": {
+            "allowed": false,
+            "budget": 5,
+            "claim": 11,
+            "content": 200,
+            "history": 9,
+            "id": 21,
+            "parent": 2,
+            "profile": 20,
+            "root": 20,
+            "tip": 11
+          },
+          "generation": 3,
+          "reauthorized": true
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0
+        },
+        {
+          "fence": 0,
+          "generation": 2,
+          "id": 1,
+          "revision": 0
+        }
+      ],
+      "revision": 1,
+      "spent": true,
+      "staged": [
+        {
+          "allowed": false,
+          "budget": 5,
+          "claim": 11,
+          "content": 200,
+          "history": 9,
+          "id": 20,
+          "parent": 0,
+          "profile": 20,
+          "root": 20,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 10,
+          "parent": 0,
+          "profile": 20,
+          "root": 10,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 11,
+          "parent": 1,
+          "profile": 20,
+          "root": 10,
+          "tip": 20
+        }
+      ],
+      "usage": -1,
+      "uses": [
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 3,
+            "revision": 0,
+            "tip": 21
+          },
+          "allowed": false,
+          "permit": {
+            "fence": 0,
+            "generation": 2,
+            "id": 1,
+            "revision": 0
+          }
+        }
+      ],
+      "visibleWinner": 11,
+      "winner": 11
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-continuation/itf/lostWinnerContinuationCounterexampleTest-1.itf.json",
+    "states": 6,
+    "authority": {
+      "acks": [],
+      "aliases": [],
+      "allowed": true,
+      "approvals": [
+        {
+          "authorized": true,
+          "candidate": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 20,
+            "root": 10,
+            "tip": 10
+          },
+          "view": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 10
+          }
+        }
+      ],
+      "calls": 0,
+      "everSpent": false,
+      "fence": 0,
+      "generation": 2,
+      "hold": 6,
+      "inspections": [],
+      "log": [
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "change": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 10,
+            "parent": 0,
+            "profile": 20,
+            "root": 10,
+            "tip": 0
+          },
+          "generation": 1,
+          "reauthorized": true
+        },
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 10
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 10
+          },
+          "change": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 20,
+            "root": 10,
+            "tip": 10
+          },
+          "generation": 2,
+          "reauthorized": true
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0
+        }
+      ],
+      "revision": 0,
+      "spent": false,
+      "staged": [
+        {
+          "allowed": false,
+          "budget": 5,
+          "claim": 11,
+          "content": 200,
+          "history": 9,
+          "id": 20,
+          "parent": 0,
+          "profile": 20,
+          "root": 20,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 10,
+          "parent": 0,
+          "profile": 20,
+          "root": 10,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 11,
+          "parent": 1,
+          "profile": 20,
+          "root": 10,
+          "tip": 10
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visibleWinner": -1,
+      "winner": 11
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-continuation/itf/protocolResetContinuationCounterexampleTest-6.itf.json",
+    "states": 5,
+    "authority": {
+      "acks": [],
+      "aliases": [
+        {
+          "canonicalRoot": 10,
+          "protocol": 2,
+          "task": 12
+        }
+      ],
+      "allowed": false,
+      "approvals": [],
+      "calls": 1,
+      "everSpent": true,
+      "fence": 0,
+      "generation": 1,
+      "hold": 0,
+      "inspections": [],
+      "log": [
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 1,
+            "tip": 0
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 1,
+            "tip": 0
+          },
+          "change": {
+            "allowed": false,
+            "budget": 5,
+            "claim": 11,
+            "content": 200,
+            "history": 9,
+            "id": 20,
+            "parent": 0,
+            "profile": 20,
+            "root": 20,
+            "tip": 0
+          },
+          "generation": 1,
+          "reauthorized": true
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0
+        }
+      ],
+      "revision": 1,
+      "spent": false,
+      "staged": [
+        {
+          "allowed": false,
+          "budget": 5,
+          "claim": 11,
+          "content": 200,
+          "history": 9,
+          "id": 20,
+          "parent": 0,
+          "profile": 20,
+          "root": 20,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 10,
+          "parent": 0,
+          "profile": 20,
+          "root": 10,
+          "tip": 0
+        }
+      ],
+      "usage": -1,
+      "uses": [
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "allowed": true,
+          "permit": {
+            "fence": 0,
+            "generation": 0,
+            "id": 0,
+            "revision": 0
+          }
+        }
+      ],
+      "visibleWinner": -1,
+      "winner": -1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-continuation/itf/semanticSwapContinuationCounterexampleTest-4.itf.json",
+    "states": 6,
+    "authority": {
+      "acks": [],
+      "aliases": [],
+      "allowed": true,
+      "approvals": [
+        {
+          "authorized": true,
+          "candidate": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 21,
+            "root": 10,
+            "tip": 20
+          },
+          "view": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          }
+        }
+      ],
+      "calls": 0,
+      "everSpent": false,
+      "fence": 0,
+      "generation": 2,
+      "hold": 6,
+      "inspections": [
+        {
+          "fence": 0,
+          "generation": 1,
+          "revision": 0,
+          "tip": 20
+        }
+      ],
+      "log": [
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "change": {
+            "allowed": false,
+            "budget": 5,
+            "claim": 11,
+            "content": 200,
+            "history": 9,
+            "id": 20,
+            "parent": 0,
+            "profile": 20,
+            "root": 20,
+            "tip": 0
+          },
+          "generation": 1,
+          "reauthorized": true
+        },
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          },
+          "change": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 21,
+            "root": 10,
+            "tip": 20
+          },
+          "generation": 2,
+          "reauthorized": true
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0
+        }
+      ],
+      "revision": 0,
+      "spent": false,
+      "staged": [
+        {
+          "allowed": false,
+          "budget": 5,
+          "claim": 11,
+          "content": 200,
+          "history": 9,
+          "id": 20,
+          "parent": 0,
+          "profile": 20,
+          "root": 20,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 10,
+          "parent": 0,
+          "profile": 20,
+          "root": 10,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 11,
+          "parent": 1,
+          "profile": 21,
+          "root": 10,
+          "tip": 20
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visibleWinner": -1,
+      "winner": 11
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-continuation/itf/silentRebaseContinuationCounterexampleTest-0.itf.json",
+    "states": 5,
+    "authority": {
+      "acks": [],
+      "aliases": [],
+      "allowed": true,
+      "approvals": [],
+      "calls": 0,
+      "everSpent": false,
+      "fence": 0,
+      "generation": 2,
+      "hold": 6,
+      "inspections": [
+        {
+          "fence": 0,
+          "generation": 1,
+          "revision": 0,
+          "tip": 20
+        }
+      ],
+      "log": [
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "change": {
+            "allowed": false,
+            "budget": 5,
+            "claim": 11,
+            "content": 200,
+            "history": 9,
+            "id": 20,
+            "parent": 0,
+            "profile": 20,
+            "root": 20,
+            "tip": 0
+          },
+          "generation": 1,
+          "reauthorized": true
+        },
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          },
+          "change": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 20,
+            "root": 10,
+            "tip": 20
+          },
+          "generation": 2,
+          "reauthorized": false
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0
+        }
+      ],
+      "revision": 0,
+      "spent": false,
+      "staged": [
+        {
+          "allowed": false,
+          "budget": 5,
+          "claim": 11,
+          "content": 200,
+          "history": 9,
+          "id": 20,
+          "parent": 0,
+          "profile": 20,
+          "root": 20,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 10,
+          "parent": 0,
+          "profile": 20,
+          "root": 10,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 11,
+          "parent": 1,
+          "profile": 20,
+          "root": 10,
+          "tip": 20
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visibleWinner": -1,
+      "winner": 11
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-continuation/itf/staleApprovalContinuationCounterexampleTest-3.itf.json",
+    "states": 7,
+    "authority": {
+      "acks": [],
+      "aliases": [],
+      "allowed": true,
+      "approvals": [
+        {
+          "authorized": true,
+          "candidate": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 20,
+            "root": 10,
+            "tip": 20
+          },
+          "view": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          }
+        }
+      ],
+      "calls": 0,
+      "everSpent": false,
+      "fence": 0,
+      "generation": 2,
+      "hold": 6,
+      "inspections": [
+        {
+          "fence": 0,
+          "generation": 1,
+          "revision": 0,
+          "tip": 20
+        }
+      ],
+      "log": [
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 0,
+            "revision": 0,
+            "tip": 0
+          },
+          "change": {
+            "allowed": false,
+            "budget": 5,
+            "claim": 11,
+            "content": 200,
+            "history": 9,
+            "id": 20,
+            "parent": 0,
+            "profile": 20,
+            "root": 20,
+            "tip": 0
+          },
+          "generation": 1,
+          "reauthorized": true
+        },
+        {
+          "actual": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 1,
+            "tip": 20
+          },
+          "approval": {
+            "fence": 0,
+            "generation": 1,
+            "revision": 0,
+            "tip": 20
+          },
+          "change": {
+            "allowed": true,
+            "budget": 5,
+            "claim": 11,
+            "content": 100,
+            "history": 9,
+            "id": 11,
+            "parent": 1,
+            "profile": 20,
+            "root": 10,
+            "tip": 20
+          },
+          "generation": 2,
+          "reauthorized": true
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0
+        }
+      ],
+      "revision": 1,
+      "spent": false,
+      "staged": [
+        {
+          "allowed": false,
+          "budget": 5,
+          "claim": 11,
+          "content": 200,
+          "history": 9,
+          "id": 20,
+          "parent": 0,
+          "profile": 20,
+          "root": 20,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 10,
+          "parent": 0,
+          "profile": 20,
+          "root": 10,
+          "tip": 0
+        },
+        {
+          "allowed": true,
+          "budget": 5,
+          "claim": 11,
+          "content": 100,
+          "history": 9,
+          "id": 11,
+          "parent": 1,
+          "profile": 20,
+          "root": 10,
+          "tip": 20
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visibleWinner": -1,
+      "winner": 11
+    }
+  }
+]

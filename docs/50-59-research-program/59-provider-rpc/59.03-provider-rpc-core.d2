@@ -1,0 +1,99 @@
+# Core design only. Versions, benchmark results and acceptance evidence belong in Org.
+vars: {
+  d2-config: {
+    layout-engine: tala
+    theme-id: 3
+    pad: 60
+  }
+}
+classes: {
+  card: {
+    label.near: center-center
+    style.font-size: 18
+    style.border-radius: 8
+    style.stroke-width: 1
+  }
+}
+title: WEAVER / DEFAULT gRPC GATEWAY {
+  shape: text
+  near: top-center
+  style.font-size: 28
+  style.bold: true
+}
+source: Scheme / POO Governance\nTask and Policy commitments {
+  class: card
+  left: 0
+  top: 0
+  width: 380
+  height: 110
+}
+source_rpc: Source mTLS gRPC\nTracked SQL worker\nBounded publish / recovery lane {
+  class: card
+  left: 480
+  top: 0
+  width: 380
+  height: 110
+}
+assurance: Cedar Policy / Quint / Lean\nSemantic and safety assurance {
+  class: card
+  left: 960
+  top: 0
+  width: 380
+  height: 110
+  style.fill: "#edf4f0"
+  style.stroke: "#5c8b77"
+}
+control: Go Control Plane\nSource-bound LLM routing {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 0
+  top: 220
+  width: 380
+  height: 110
+}
+rpc: Operation mTLS gRPC\nPinned caller and method role {
+  class: card
+  left: 480
+  top: 220
+  width: 380
+  height: 110
+}
+owner: Rust Deciding Owner\nAtomic authority and outcome\nClaim, budget and Cedar dispatch {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 960
+  top: 220
+  width: 380
+  height: 110
+}
+consumer: Go Stream Consumer\nOrdered data and canonical receipt {
+  class: card
+  left: 0
+  top: 440
+  width: 380
+  height: 110
+}
+release: Original Plan / Encoding Token\nFresh Cedar Release Guard\nProtobuf or optional Arrow IPC {
+  class: card
+  left: 480
+  top: 440
+  width: 380
+  height: 110
+}
+provider: LLM Provider / SSE\nOne consumed HTTPS invocation {
+  class: card
+  left: 960
+  top: 440
+  width: 380
+  height: 110
+}
+source -> control: Governed config
+source -> source_rpc: Publication
+source_rpc -> owner: Policy / outcome CAS
+control -> rpc: Typed RPC
+rpc -> owner: Admit
+owner -> provider: Cedar + cancellation
+provider -> release: SSE
+release -> consumer: Stream

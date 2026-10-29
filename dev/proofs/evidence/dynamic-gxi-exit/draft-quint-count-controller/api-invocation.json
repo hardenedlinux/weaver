@@ -1,0 +1,14 @@
+{
+  "args": [
+    "/opt/homebrew/opt/node/bin/node",
+    "proofs/evidence/dynamic-gxi-exit/run-quint.cjs"
+  ],
+  "exit": 0,
+  "inputs": {
+    "proofs/qunit/NativeDynamicImportBoundary.qnt": "f476e709edc35d7ddd510ac810c4958ce5d23240232884091c09ef27d4af068f",
+    "proofs/evidence/dynamic-gxi-exit/run-quint.cjs": "fa247dc430926176143a67af9f3f615b3aa787b9bce251af6d813d9660233604",
+    "proofs/check_routine_config_api.py": "d61834946240f0d37a7daafc66fbbd2a31a9387e255dcb13d227d9a14295022d"
+  },
+  "officialPipeline": "load -> parse -> typecheck -> runTests; new Evaluator per group",
+  "expectedControls": 15
+}

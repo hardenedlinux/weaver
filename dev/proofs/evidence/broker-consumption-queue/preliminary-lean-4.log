@@ -1,0 +1,31 @@
+'Weaver.BrokerConsumptionQueue.product_unknown_keeps_hold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.BrokerConsumptionQueue.initialized_receipt_coverage' depends on axioms: [propext, Quot.sound]
+'Weaver.BrokerConsumptionQueue.settlement_has_every_original_range_receipt' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.BrokerConsumptionQueue.initialized_safe' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.BrokerConsumptionQueue.initialized_nonoverlapping_ranges' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.BrokerConsumptionQueue.initialized_at_most_one_invocation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.BrokerConsumptionQueue.unknown_retains_original_hold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.BrokerConsumptionQueue.settlement_requires_terminal_evidence' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.BrokerConsumptionQueue.durable_consumption_survives' depends on axioms: [propext]
+'Weaver.BrokerConsumptionQueue.accepted_tombstone_survives' depends on axioms: [propext]
+'Weaver.BrokerConsumptionQueue.stale_worker_cannot_invoke' depends on axioms: [propext]
+'Weaver.BrokerConsumptionQueue.full_receipt_rechecks_original_pending' depends on axioms: [propext]
+'Weaver.BrokerConsumptionQueue.invocation_rechecks_final_gate' does not depend on any axioms
+'Weaver.BrokerConsumptionQueue.admission_has_current_policy' does not depend on any axioms
+'Weaver.BrokerConsumptionQueue.queue_refinement_preserves_original_affinity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.BrokerConsumptionQueue.queue_refinement_preserves_shared_budget' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.BrokerConsumptionQueue.repeated_sdk_invocation_counterexample' depends on axioms: [propext]
+'Weaver.BrokerConsumptionQueue.unknown_refund_counterexample' depends on axioms: [propext]
+'Weaver.BrokerConsumptionQueue.overlapping_tail_counterexample' depends on axioms: [propext]

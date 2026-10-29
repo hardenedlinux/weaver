@@ -1,0 +1,87 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 1,
+    "sourceSha256": "f476e709edc35d7ddd510ac810c4958ce5d23240232884091c09ef27d4af068f",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.487
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "0a46dd341bbdfe6ab1d96cf2ffea557a8e2afe4964c7c586c74d6202148ade01",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 1.359
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "narrowedDynamicCleanupTest",
+      "allRequiredBodiesRemainTest",
+      "duplicateImportIdempotentTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.035
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "requiredInitializerCannotBePrunedTest",
+      "publicationFreezesClosureTest",
+      "outstandingHandleRejectsExitTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.006
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "lateNaturalExitRejectedTest",
+      "missingDecoderRejectsReturnTest",
+      "missingRequiredBodyRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.005
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "bindingSubstitutionRejectedTest",
+      "interfaceSubstitutionRejectedTest",
+      "omittedInitializerCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.139
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "substitutedBindingCounterexampleTest",
+      "interfaceDriftCounterexampleTest",
+      "executableMutationCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.002
+  }
+]

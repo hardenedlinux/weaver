@@ -1,0 +1,195 @@
+# Core ownership only. Versions and check receipts belong in Org.
+...@lib/theme
+title: ORIGINAL DRIVER / DURABLE COMPLETION / CONSERVATIVE RECOVERY {
+  class: title
+  near: top-center
+}
+semantics: SEMANTICS AND CLOUD LIFECYCLE {
+  top: 0
+  left: 0
+  width: 340
+  height: 660
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  scheme: Scheme / original intent\nClaim and account meaning\nTrusted terminal evidence {
+    top: 90
+    left: 25
+    width: 290
+    height: 120
+    class: semantic
+  }
+  cedar: Cedar / Code as Policy\nActual effect and state binding\nNew range needs current allow {
+    top: 280
+    left: 25
+    width: 290
+    height: 120
+    class: policy
+  }
+  goBrand: "" {
+    shape: image
+    icon: assets/go.svg
+    top: 430
+    left: 25
+    width: 46
+    height: 22
+  }
+  kubeBrand: "" {
+    shape: image
+    icon: assets/kubernetes.svg
+    top: 427
+    left: 85
+    width: 28
+    height: 28
+  }
+  adapter: Go / agent and Kubernetes lifecycle\nRetry original status queries\nReconcile retained obligations {
+    top: 470
+    left: 25
+    width: 290
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+}
+authority: RUST / AUTHORITATIVE OWNER {
+  top: 0
+  left: 460
+  width: 360
+  height: 660
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  brand: "" {
+    shape: image
+    icon: assets/rust.svg
+    top: 48
+    left: 25
+    width: 28
+    height: 28
+  }
+  original: Original claim / sealed manifest\nCanonical range and driver binding\nShared history and escrow {
+    top: 90
+    left: 25
+    width: 310
+    height: 120
+    class: ledger
+  }
+  finish: Durable completion transaction\nExact quiescence and full frontier\nCommit result with original slot close {
+    top: 280
+    left: 25
+    width: 310
+    height: 120
+    class: ledger
+  }
+  recovery: Anchored complete recovery\nImmutable original result or unknown\nStatus never creates a capability {
+    top: 470
+    left: 25
+    width: 310
+    height: 120
+    class: ledger
+  }
+}
+transport: RUST / QUALIFIED DRIVER {
+  top: 0
+  left: 940
+  width: 370
+  height: 660
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  brand: "" {
+    shape: image
+    icon: assets/rust.svg
+    top: 48
+    left: 25
+    width: 28
+    height: 28
+  }
+  tail: One original affine range tail\nConsume prefix before API handoff\nFull frontier retains stream slot {
+    top: 90
+    left: 25
+    width: 320
+    height: 120
+    class: runtime
+  }
+  quiet: Ordered handoff / relinquishment\nAll writers and aliases covered\nSDK callback alone is insufficient {
+    top: 280
+    left: 25
+    width: 320
+    height: 120
+    class: runtime
+  }
+  restart: Driver continuity lost\nPreserve original obligations\nOld or new process cannot adopt tail {
+    top: 470
+    left: 25
+    width: 320
+    height: 120
+    class: unknown
+  }
+}
+closure: RECOVERY / ACCOUNTING {
+  top: 0
+  left: 1430
+  width: 360
+  height: 660
+  label.near: top-left
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  gate: Next range / actual writer gate\nCurrent Policy and history\nOriginal stream exclusion {
+    top: 90
+    left: 25
+    width: 310
+    height: 120
+    class: runtime
+  }
+  isolate: External writer fence acknowledgment\nUncertain exposure retained\nCanonical stream quarantined {
+    top: 280
+    left: 25
+    width: 310
+    height: 120
+    class: unknown
+  }
+  usage: No future work plus final usage\nOriginal message settlement\nUnknown retains full escrow {
+    top: 470
+    left: 25
+    width: 310
+    height: 120
+    class: ledger
+  }
+}
+quint: QUINT\nLost replies / late receipts / old driver schedules {
+  top: 780
+  left: 290
+  width: 540
+  height: 100
+  class: policy
+}
+lean: LEAN\nCanonical completion / affine tails / shared escrow composition {
+  top: 780
+  left: 1000
+  width: 600
+  height: 100
+  class: semantic
+}
+semantics.scheme -> semantics.cedar
+semantics.cedar -> authority.original: admitted original effect
+semantics.adapter -> authority.recovery: same-operation status
+authority.original -> transport.tail: bounded delegation
+transport.tail -> transport.quiet: full frontier
+transport.quiet -> authority.finish: trusted relinquishment
+authority.finish -> closure.gate: exact original slot closed
+authority.recovery -> authority.finish: committed result only
+transport.restart -> authority.recovery: retain pending state
+transport.restart -> closure.isolate: unresolved continuity
+closure.isolate -> closure.usage: original isolation evidence
+authority.finish -> closure.usage: terminal evidence only
+quint -> authority.recovery: explore races {
+  style.stroke-dash: 5
+}
+lean -> transport.tail: preserve original binding {
+  style.stroke-dash: 5
+}

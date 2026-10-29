@@ -1,0 +1,9 @@
+'Weaver.FiniteDomainMigration.reachable_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FiniteDomainMigration.finite_free_held_charged_conservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FiniteDomainMigration.claim_executor_stamp_is_sticky' depends on axioms: [propext]
+'Weaver.FiniteDomainMigration.restart_rejects_retained_ticket' depends on axioms: [propext, Quot.sound]
+'Weaver.FiniteDomainMigration.migration_preserves_obligations' does not depend on any axioms
+'Weaver.FiniteDomainMigration.issued_ticket_is_immutable' depends on axioms: [propext]
+'Weaver.FiniteDomainMigration.advanced_fence_rejects_old_ticket' depends on axioms: [propext, Quot.sound]

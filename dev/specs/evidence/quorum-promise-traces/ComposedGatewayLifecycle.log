@@ -1,0 +1,15 @@
+'Weaver.ComposedGatewayLifecycle.reachable_invariant' depends on axioms: [propext, Quot.sound]
+'Weaver.ComposedGatewayLifecycle.end_to_end_conservation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ComposedGatewayLifecycle.end_to_end_free_held_charged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ComposedGatewayLifecycle.end_to_end_nonce_claim_offer_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ComposedGatewayLifecycle.accepted_range_retains_original_executor' depends on axioms: [propext, Quot.sound]
+'Weaver.ComposedGatewayLifecycle.original_claim_survives_trace' depends on axioms: [propext]
+'Weaver.ComposedGatewayLifecycle.restrictive_history_survives_trace' depends on axioms: [propext]
+'Weaver.ComposedGatewayLifecycle.range_record_is_immutable' depends on axioms: [propext]
+'Weaver.ComposedGatewayLifecycle.activation_has_exact_committed_seal' depends on axioms: [propext]
+'Weaver.ComposedGatewayLifecycle.migration_advance_has_matching_seal' depends on axioms: [propext]
+'Weaver.ComposedGatewayLifecycle.accepted_range_retains_admission' depends on axioms: [propext, Quot.sound]

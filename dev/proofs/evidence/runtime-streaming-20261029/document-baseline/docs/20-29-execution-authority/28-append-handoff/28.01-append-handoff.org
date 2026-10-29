@@ -1,0 +1,190 @@
+#+title: Weaver Concurrent Append, Durable Cut and Manifest Handoff
+#+language: en
+#+options: toc:3
+
+* Replace the fixed-WAL cut assumption
+
+Category 27 proves retention for a fixed represented WAL during one cut. Native
+append cannot silently run outside that serialization contract. This extension
+separates three ordered components: the selected immutable base manifest, closed
+append segments captured by the cut, and the current live append generation.
+Switching compacts the captured prefix and carries the live generation forward.
+It neither assumes that a provider completed nor settles an original reservation.
+
+The account namespace, original logical message, claim, profile, application,
+reservation, budget and history identities remain unchanged. A new generation,
+worker or manifest cannot create a new accounting obligation or clear an old one.
+The independent financial journal, canonical source registry, publication floor
+and accepted-candidate archive remain retained; local WAL deletion does not prune
+those authorities or authorize external sends.
+
+* Three independent progress coordinates
+
+| Coordinate | Meaning | Invalidates |
+|------------+---------+-------------|
+| Owner/source fence | Current logical storage/execution authority and governed semantic dependencies | Old worker descriptors and stale source/Policy/history authorization |
+| Append generation and frontier | Active admission lane and exact durable ordered suffix prefix | Pre-cut generation descriptors, stale append/switch/GC observations |
+| Manifest generation and body | Selected durable reconstruction base | Old root observations and obsolete deletion plans |
+
+The readback binds the exact root, root generation, append generation, frontier
+and worker. Native encoding also binds the store incarnation, immutable body
+commitments and inherited source/policy facts. Every actual append admission,
+cut, switch and unlink checks the current tuple in the Rust owner serialization
+domain. A previously issued descriptor is not a reusable capability. Late
+callbacks report an original operation outcome; they do not mutate the current
+frontier or select a root on their own.
+
+* Durable append admission and generation handoff
+
+An append has an original operation key, immutable frame/body commitment and
+expected owner, append generation and frontier. The storage owner first persists
+the frame body, then atomically admits its exact identity at one ordered frontier.
+The admitted descriptor and referenced body must be recoverable together before
+success can be reported or a cut may pass that frontier. The typed model combines
+these ordered native effects into its guarded append transition. It does not
+prove that separate backend writes are atomic.
+
+A durable raw object without admission is an inert staged object. It cannot be
+submitted as an accepted account candidate, replayed as a financial delta or used
+to release a hold. If admission response is lost, query the same original operation
+and current frontier. Never blindly append a duplicate under a new key. Native
+operation-key deduplication and durable descriptor recovery are qualification
+obligations; the model's fixture retries the same allocated segment ID and the
+actual account gate retains original application/reservation uniqueness.
+
+The cut linearizes against append admission. It freezes the complete admitted
+prefix, including accepted but uncommitted account frames, persists a cut record
+and seals the old admission generation while opening its successor. If append
+admission wins, the cut includes it in the closed segments. If the cut wins,
+the old descriptor is rejected and the original operation may be retried against
+the successor only after authoritative outcome lookup and current authorization.
+An old worker cannot append to a retired generation merely because its file
+handle still permits writing bytes. The Rust storage owner retains actual writable
+FDs and backend credentials; logical workers receive fenced operation handles.
+No admitted immutable object may remain writable through an independent old FD
+or delayed buffer. If a backend cannot enforce this ownership/immutability
+contract, content verification must close recovery on mutation; this proof cannot
+promise continued availability or integrity from an unchecked raw handle.
+
+This logical handoff is atomic and crash-durable. For a filesystem or backend
+with several writes, the native owner must journal the decision so recovery sees
+one complete old or new admission state. Crash between sealing and opening cannot
+manufacture a writable default generation. A lost cut response queries the same
+cut sequence and generation; it does not initiate another cut. At most one cut
+is unresolved in this model. Recovery retains that original intent until its
+result is established; an abort/continuation protocol is not inferred from timeout.
+
+* Recovery must authenticate the admission minimum
+
+Crash durability does not prevent a coordinated snapshot rollback. The financial
+head and published checkpoint may both be unchanged while an uncommitted append
+or a cut has already been acknowledged. Those two anchors alone cannot detect
+loss of that admission frontier or reopening of its retired generation.
+
+Extend the retained original pending-intent/authoritative control log with the
+admission and cut decision commitment: original operation, body identity, owner,
+append generation, frontier, cut sequence and root/descriptor lineage. Recover
+against that independently governed minimum before enabling append, cut, GC or
+use. These records are control evidence, not account balance applications or
+provider sends. Existing POO Flow pure CAS intents do not supply this durable
+publication automatically. The native adapter must qualify the publication,
+acknowledgment and recovery protocol; a local checkpoint digest is insufficient.
+
+=Owner.appendDurable=, =Owner.cutDurable= and =Owner.authentic= include this
+qualified recovery contract for the supported fault domain. The Lean crash action
+preserves durable decisions; it does not prove an independent anchor implementation.
+If the independent minimum or complete original operation is unavailable, retain
+original pending work and holds and remain closed. Never reset generation/frontier
+to zero, assume that no append occurred, or treat a new owner as evidence that the
+old obligations disappeared. Rotating the owner fences old descriptors but does
+not by itself reconstruct the missing admitted tail.
+
+* Manifest switch incorporates the current live tail
+
+The candidate's complete checkpoint plus ordered segments must reproduce the
+captured cut exactly. The checkpoint itself covers an independently committed
+financial prefix, so pending frames remain in its suffix. While the candidate is
+being prepared, new-generation frames may be admitted to the live tail.
+
+At actual switch, re-read and CAS the current owner, root generation, append
+generation and frontier. Retain the entire current live tail and its durable
+append descriptor in the new recovery root. A candidate produced at an earlier
+frontier is useful only as a compacted base; it cannot replace the current live
+tail with the tail observed when staging began. If the frontier changes between
+join validation and the switch CAS, re-read the same cut and rebuild the handoff
+bundle; do not discard a new frame or invent a new logical message.
+
+Native root publication must bind the immutable base and the active durable
+append descriptor together. A root pointing to a new empty append log while the
+old log is still receiving accepted work is forbidden. The formal state uses
+=closed= and =live= references to express that binding; these are not a claim that
+an immutable manifest's body may be edited in place. The full typed candidate
+and generation are authoritative, not an unauthenticated numeric manifest ID.
+
+| Ordering | Required outcome |
+|----------+------------------|
+| Append admitted before cut | Its body appears in the sealed captured prefix and survives candidate validation |
+| Cut admitted before old append | Retired-generation admission fails; same original operation requires outcome resolution before retry |
+| Append admitted after candidate stage | Switch carries the newer live tail and validates its current frontier |
+| Account commit after cut but before switch | Same persisted frame remains; only actual protected financial head advances |
+| Account commit after switch | Same original application/reservation is applied once; checkpoint is historical and suffix provides current replay |
+| Owner changes during pending candidate | Old financial commit, append, switch and deletion fail their current gates; pending body and original hold remain |
+| Crash after switch with lost response | Read current root and append descriptor; reconstruct current complete path before use |
+
+* Reachability protects unresolved work
+
+Garbage collection checks the union of selected base segments, closed cut
+segments, current live segments and staged candidate segments. Checkpoint bodies
+for the current root and candidate are retained as well. All checks reach the
+actual exact-object deletion under the storage gate; the owner cannot enqueue
+an unfenced unlink and release that gate. A stale list of old-generation filenames
+is never a deletion plan.
+
+Switching removes closed cut references only after the replacement is durable,
+current coverage is verified and the live generation is retained. Obsolete prefix
+objects may then be collected incrementally. A shared segment or uncommitted tail
+remains reachable even if another root no longer needs it. A resumed old worker
+cannot use its former cut receipt to remove the unique current tail copy.
+Interrupted deletion leaves some garbage or removes already-obsolete objects;
+it never supplies evidence of financial completion or cancellation.
+
+* Financial application remains a separate gate
+
+The inherited =LlmWalActivation.flush= requires =wal = core.journal=. This is a
+per-account settlement lane: at most one uncommitted settlement frame is admitted
+before the actual account commit or authoritative recovery resolves it. This
+extension permits append to interleave with cut, staging, switch, late account
+commit, restart and GC. Over arbitrary finite Lean runs, later settlements may
+append after the actual account gates requalify the lane. It does not prove
+arbitrary simultaneous uncommitted settlements with speculative before-images.
+
+This per-account constraint does not require all tenants, LLM streams or routing
+lanes to stop. Independent account lanes can use separate owners, but an arbitrary
+product of accounts and a batched multi-candidate settlement protocol need their
+own composition/qualification. Physical staging of several requests grants none
+of them financial application authority.
+
+Native recovery may reconcile a fenced old proposal into a current-owner proposal
+only through the earlier source/account protocol, keeping the original application,
+reservation, claim and unknown usage. The guarded model retains old pending bodies
+and blocks the old worker. It does not prove bounded progress for transferring a
+pending frame to a new owner, or permit dropping that frame to make a new flush
+pass. A missing callback, closed generation or storage timeout is not an abort,
+no-execution proof or refund. Unknown source usage retains its original hold.
+
+* Responsibilities and Zero Trust
+
+| Component | Concrete responsibility |
+|-----------+-------------------------|
+| Scheme | Define original semantic/account identities, cut and ordered-coverage contracts, pending-work retention and typed CAS intents; preserve source/profile/Policy/history lineage |
+| Cedar | Require all relevant layers to allow the exact current append/cut/switch/delete/recovery operation without errors; allowance does not establish body persistence or financial completion |
+| Go | Kubernetes owner lifecycle, storage/backend discovery, reconciliation and SDK timeout handling; query original outcomes and preserve identity across retries/reconnects |
+| Rust | Own durable append admission, cut decision, successor generation, frontier CAS, root/descriptor switch, effect-time deletion fencing and actual financial/broker/executor gates |
+| Quint | Exercise before/after-cut appends, lost responses, late commits, owner changes, pending replay and unsafe deletion/interleavings |
+| Lean | Prove complete-path and captured-prefix preservation for arbitrary finite guarded runs and compose actual checkpoint/WAL/account/source transitions |
+
+Go cannot retry a provider send because append succeeded. Scheme/Cedar receipts
+cannot attest fsync. Rust storage completion is not broker consumption or executor
+send authority. Final execution still checks the original current Policy/history,
+owner, grant consumption and budget chain. The boundary is logical authority in
+an AI Agent Gateway; no physical isolation or HSM boundary is assumed.

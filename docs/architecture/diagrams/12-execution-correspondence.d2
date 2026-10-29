@@ -1,0 +1,164 @@
+# W12: required event relations, not an existing translator or runtime proof.
+...@lib/theme
+runtime: 01 / CONCRETE OWNER EVENT {
+  top: 140
+  left: 0
+  width: 390
+  height: 710
+  label.near: top-center
+  style.fill: "#f7f9fc"
+  style.stroke: "#9cacc2"
+  style.font-size: 18
+  consume: Consume the original scoped grant\nReply may be lost / knowledge unknown {
+    top: 65
+    left: 30
+    width: 330
+    height: 84
+    class: ledger
+  }
+  commit: S4 authoritative ledger CAS\nSeparate from consume and its reply {
+    top: 190
+    left: 30
+    width: 330
+    height: 84
+    class: ledger
+  }
+  claim: S5 durable claim / handle delivery\nReply replay cannot recreate handle {
+    top: 315
+    left: 30
+    width: 330
+    height: 84
+    class: ledger
+  }
+  send: Final gate / physical submission\nOld worker may resume after check {
+    top: 440
+    left: 30
+    width: 330
+    height: 84
+    class: ledger
+  }
+  observe: S6 independently admitted evidence\nClosure / result / usage / disclosure {
+    top: 565
+    left: 30
+    width: 330
+    height: 84
+    class: ledger
+  }
+}
+model: 02 / QUINT INTEGRATION ACTION {
+  top: 140
+  left: 490
+  width: 390
+  height: 710
+  label.near: top-center
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  style.font-size: 18
+  consume: ConsumeApplied / ConsumeReply\nSeparate physical state and knowledge {
+    top: 65
+    left: 30
+    width: 330
+    height: 84
+    class: semantic
+  }
+  commit: SendCommitted / commit reply\nAbort race / retained holds {
+    top: 190
+    left: 30
+    width: 330
+    height: 84
+    class: semantic
+  }
+  claim: DispatchClaimed / handle delivery\nAt most one application invocation {
+    top: 315
+    left: 30
+    width: 330
+    height: 84
+    class: semantic
+  }
+  send: FinalGate / TransportEntry\nPause / takeover / accepted old work {
+    top: 440
+    left: 30
+    width: 330
+    height: 84
+    class: semantic
+  }
+  observe: Separate evidence transitions\nNo result-to-refund shortcut {
+    top: 565
+    left: 30
+    width: 330
+    height: 84
+    class: semantic
+  }
+}
+proof: 03 / LEAN AND PHYSICAL EVIDENCE {
+  top: 140
+  left: 980
+  width: 390
+  height: 710
+  label.near: top-center
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  style.font-size: 18
+  consume: Exact grant and operation binding\nNo positive result from unknown {
+    top: 65
+    left: 30
+    width: 330
+    height: 84
+    class: runtime
+  }
+  commit: Guarded state preservation\nReal CAS / source / history / budget {
+    top: 190
+    left: 30
+    width: 330
+    height: 84
+    class: runtime
+  }
+  claim: Exclusive authority + affine handle\nOne claim / one local send handle {
+    top: 315
+    left: 30
+    width: 330
+    height: 84
+    class: runtime
+  }
+  send: Use-time and retirement premises\nGate proof is not a physical stop {
+    top: 440
+    left: 30
+    width: 330
+    height: 84
+    class: runtime
+  }
+  observe: Monotonic facts and conservation\nResult / closure / usage stay distinct {
+    top: 565
+    left: 30
+    width: 330
+    height: 84
+    class: runtime
+  }
+}
+
+heading: "MANDATORY CORRESPONDENCE / exact selected closure + complete event inventory\nScheme owns source/lifecycle semantics. Go reports cloud state. Rust enforces the reference ledger/broker boundaries." {
+  shape: text
+  class: title
+  top: 0
+  left: 110
+}
+runtime.consume -> runtime.commit: Separate boundary
+runtime.commit -> runtime.claim: Separate boundary
+runtime.claim -> runtime.send: Separate boundary
+runtime.send -> runtime.observe: No atomic completion
+runtime.consume -> model.consume: Event relation
+model.consume -> proof.consume: Step / predicate
+runtime.commit -> model.commit: Event relation
+model.commit -> proof.commit: Step / predicate
+runtime.claim -> model.claim: Event relation
+model.claim -> proof.claim: Step / predicate
+runtime.send -> model.send: Event relation
+model.send -> proof.send: Step / predicate
+runtime.observe -> model.observe: Event relation
+model.observe -> proof.observe: Step / predicate
+
+rule: "Lost replies do not undo authoritative state. A claim does not prove submission, and a result does not close an old emitter.\nEach physical event must preserve the operation binding, state transition and safety invariant." {
+  shape: text
+  class: note
+  near: bottom-center
+}

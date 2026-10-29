@@ -1,0 +1,108 @@
+#+TITLE: Dynamic gxi Experiment and Root-Cause Boundary
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Mechanism versus latency
+The Gambit dynamic loader retains successful native handles and closes them at
+normal runtime cleanup. Current native evidence identifies two separate host mechanisms: first-use
+F_CHECK_LV library-validation preflight during mapping, and synchronous dyld image
+notification during loading/unloading. The installed-binary attribution below
+distinguishes them; a warmed notification stack alone cannot explain cold mapping.
+The responsible kernel/service endpoints are not identified.
+Neither application assertion completion nor normal main return establishes
+process exit. A remote notification stall can affect startup and teardown.
+
+The candidate narrows JSON/parser imports to their defining I/O owners and shares
+admitted pure native images while preserving independent lazy linker entries.
+These changes reduce required modules and physical mappings. They do not remove
+Gambit's reference accounting, skip destructors or disable host notification.
+No deterministic host-latency ceiling follows from a lower mapping count.
+
+* Predetermined matrix
+The [[file:../../../dev/proofs/evidence/dynamic-gxi-paired/plan.json][pre-execution plan]] fixes two reversed blocks. Each cell has its own newly
+linked selected-image paths/inodes; first use is followed immediately by a repeat.
+
+| Cell | Import scope | Selected native images |
+|------+--------------+------------------------|
+| A    | Original broad stdlib | Independent entries |
+| B    | Narrow defining owners | Independent entries |
+| C    | Original broad stdlib | Shared pure images |
+| D    | Narrow defining owners | Shared pure images |
+
+Cell order is A, B, D, C in block zero and C, D, B, A in block one.
+Family/block order is stable zero, random zero, random one, stable one. The initial plan fixes sixteen observations. Before any native sample, a retained
+plan amendment adds a second sixteen-observation family using random UUIDs; all
+thirty-two observations count.
+There are no discarded warmups or replacement retries. Equivalent default-UUID
+layouts can share UUIDs across cells despite fresh paths; the random family
+removes that selected-image identity overlap. Packing contrasts use
+identical rebuilt C objects and complete installed compiler options. Import
+contrasts intentionally change the selected stdlib source closure. They are
+bounded semantic controls, not byte-identical whole-program comparisons.
+
+* What cold means here
+Each timed process has a fresh GERBIL_PATH and empty process-local loader state.
+Each cell/block first use has separately linked selected artifacts and fresh
+paths/inodes. Actual UUIDs, hashes and aliases are measured, never inferred from
+relinking. Public runtime and nonselected libraries remain shared. Source build,
+link validation and before-run hashing touch file data and may warm host caches.
+
+This is a first-use image-generation experiment with a paired reuse control.
+It is not an OS page-cache, code-signature cache, dyld observer or whole-machine
+cold experiment. Fresh inodes or paths do not establish fresh UUID identities.
+The content-UUID family and random-UUID family distinguish namespace freshness
+from unique selected-image identity. The installed linker manual documents both
+behaviors. Random UUID changes the artifact profile and is applied symmetrically
+to every cell in that family. It does not make common runtime files or OS pages
+cold. No global purge, observer shutdown or unrelated process termination occurs.
+
+* Observation contract
+The original source fixture is interpreted by the installed native gxi executable.
+For native instrumentation its ordinary shell launcher's runtime-root environment
+is reproduced; that shell strips insertion variables. Unobserved ordinary shell
+launcher controls are separate evidence. The passive observer invokes each real
+API exactly once and records monotonic call durations, reference counts and peak
+image count. It does not suppress an unload or force process termination.
+
+The trace interval surrounds each real API and its local observer bookkeeping;
+it is not an isolated syscall clock. It includes host calls, descheduling,
+reference accounting and the image-count query. Instrumentation is matched across
+cells; supplementary unobserved runs check a separate execution path. Controller marker timestamps
+are upper-bound observations of buffered stdout, not exact Scheme phase clocks.
+Summing API intervals across threads can double-count overlap; the artifact stores
+individual intervals so this premise can be checked. A sampled diagnostic process
+is separate from unperturbed matrix timings. A timed-out sample remains failed
+while its child is retained and reaped after natural exit.
+
+* Attribution rules
+Report within-block, within-import packing contrasts and within-packaging import
+contrasts separately for first use and reuse. Report every sign reversal and every
+failed sample. Reversed blocks reduce simple order bias but cannot remove host
+state carryover or unobserved scheduling. Two blocks are descriptive local evidence,
+not statistical proof, a stable speedup ratio or a universal fifteen-second SLA.
+A current failing stack plus matched latency intervals can support a concrete
+blocking attribution; old stacks alone cannot identify a new sample's blocker.
+
+* New first-use finding: library validation is a separate bottleneck
+The new-UUID sampled generation distinguishes first-use mapping from warmed image
+notification. Three cold load windows put 95/97, 96/96 and 95/97 main-thread
+samples in fcntl beneath Loader::mapSegments. The [[file:../../../dev/proofs/evidence/dynamic-gxi-paired/binary-attribution.json][installed-binary attribution]]
+checks the sampled dyld UUID against the actual binary, maps the sampled return
+address to the call instruction, reads command 0x62 from w2, and checks the SDK
+constant: F_CHECK_LV is 98. This is library-validation preflight, not proof that
+the entire first-use delay is debugger notification or signature registration.
+
+The [[file:../../../dev/proofs/evidence/dynamic-gxi-paired/dyld-map-segments-excerpt.txt][exact local disassembly]] supplies the command evidence. [[https://github.com/apple-oss-distributions/dyld/blob/main/dyld/Loader.cpp][Apple's public Loader source]]
+corroborates the library-validation role; its main branch is not asserted to be
+identical to the installed binary. The separate warmed diagnostic and teardown
+stacks still establish synchronous image-notification waits. The kernel/service
+endpoint behind the library-validation delay, and the precise cache or queue
+contributions, remain unidentified. No host security check is disabled.
+
+This explains why image sharing can reduce expensive first mappings without
+fixing every host delay. In the first random-UUID narrow pair, the selected
+independent-image load intervals total 50.076 seconds over 98 first mapping
+requests. The packed intervals total 3.647 seconds over seven first requests,
+plus 0.074 seconds over 91 alias requests. Those are measured local components,
+not a host-independent causal partition of whole-process time. Every real load
+still enters the ordinary loader; aliases do not skip reference acquisition.

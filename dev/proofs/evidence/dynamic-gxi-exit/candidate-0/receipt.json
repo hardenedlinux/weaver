@@ -1,0 +1,22 @@
+{
+  "args": [
+    "gxi",
+    "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/fixture.ss",
+    "-e",
+    "(import (only-in :gerbil/runtime/loader list-modules)) (for-each (lambda (row) (display \"MODULE \") (write row) (newline)) (list-modules)) (load (getenv \"WEAVER_NATIVE_CANARY\")) (display \"DYNAMIC-GXI-RETURN\\n\")"
+  ],
+  "pid": 49623,
+  "exit": 70,
+  "seconds": 0.143,
+  "gateSeconds": 15,
+  "qualified": false,
+  "forcedExit": false,
+  "loadpath": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/source-loaders:/Users/guangtao/ghq/github.com/tao3k/weaver/.data/dynamic-gxi-exit-20261020/lib-native",
+  "checks": [],
+  "cleanup": "",
+  "fixtureSha256": "68a27a0b594fda7aedab994c2d230464ddb2907176e25d9b8fe5837e24203750",
+  "modules": {},
+  "sourceLoaderModules": 0,
+  "nativeBodyModules": 0,
+  "canarySha256": "27ed7a5a0ef372869868eff3ba362200210c26e8eedc4034a2a28c5d1de4d5ca"
+}

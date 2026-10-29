@@ -1,0 +1,60 @@
+proofs/lean/LlmCustodyPublication.lean:44:156: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Decidable deliver
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+proofs/lean/LlmCustodyPublication.lean:62:8: warning: declaration uses `sorry`
+proofs/lean/LlmCustodyPublication.lean:81:8: warning: declaration uses `sorry`
+proofs/lean/LlmCustodyPublication.lean:94:8: warning: declaration uses `sorry`
+proofs/lean/LlmCustodyPublication.lean:99:8: warning: declaration uses `sorry`
+proofs/lean/LlmCustodyPublication.lean:104:8: warning: declaration uses `sorry`
+proofs/lean/LlmCustodyPublication.lean:112:8: warning: declaration uses `sorry`
+proofs/lean/LlmCustodyPublication.lean:123:19: error(lean.invalidField): Invalid field notation: Type of
+  c
+is not known; cannot resolve field `parent`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `System.FilePath.parent`
+  • `LlmAdmissionFloor.Proposal.parent`
+  • `LlmAppendHandoff.Cut.parent`
+  • `LlmCheckpointTruncation.Checkpoint.parent`
+  • `Candidate.parent`
+  • `LlmManifestSwitch.Manifest.parent`
+  • `LlmMultiKeyRegistry.Request.parent`
+  • `Std.Http.URI.Path.parent`
+proofs/lean/LlmCustodyPublication.lean:123:133: error(lean.invalidField): Invalid field notation: Type of
+  c
+is not known; cannot resolve field `afterState`
+
+Hint: Consider replacing the field projection `.afterState` with a call to the function `Candidate.afterState`.
+proofs/lean/LlmCustodyPublication.lean:130:3: error: unknown tactic
+proofs/lean/LlmCustodyPublication.lean:129:81: error: unsolved goals
+ao : LlmAccountCommit.Owner
+wo : LlmWalActivation.Owner
+co : LlmCheckpointTruncation.Owner
+ho : LlmAppendHandoff.Owner
+fo : LlmAdmissionFloor.Owner
+jo : LlmSourceJoin.Owner
+semantic : LlmAdmissionFloor.Proposal → LlmAdmissionFloor.Proposal → Prop
+o : Owner
+genesis : LlmAccountCommit.Image
+s t : State
+event : Step ao wo co ho fo jo semantic o genesis s t
+unqualified : s.qualified = false
+⊢ t.journal.length = s.journal.length
+'Weaver.LlmCustodyPublication.custody_projection' depends on axioms: [sorryAx]
+'Weaver.LlmCustodyPublication.actual_custody_composition' depends on axioms: [sorryAx]
+'Weaver.LlmCustodyPublication.journal_prefix_step' depends on axioms: [propext, sorryAx]
+'Weaver.LlmCustodyPublication.journal_prefix_run' depends on axioms: [propext, sorryAx]
+'Weaver.LlmCustodyPublication.journal_alignment' depends on axioms: [propext, sorryAx]
+'Weaver.LlmCustodyPublication.fence_monotone' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCustodyPublication.outcome_retained' depends on axioms: [sorryAx]
+'Weaver.LlmCustodyPublication.staging_has_no_authoritative_effect' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+proofs/lean/LlmCustodyPublication.lean:167:14: error(lean.unknownIdentifier): Unknown constant `publication_checks_current_parent`
+'Weaver.LlmCustodyPublication.unqualified_cannot_publish' depends on axioms: [sorryAx]
+'Weaver.LlmCustodyPublication.late_ack_cannot_refresh' does not depend on any axioms
+'Weaver.LlmCustodyPublication.original_result_unique' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCustodyPublication.original_reservation_once' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmCustodyPublication.unknown_original_hold_retained' depends on axioms: [propext, sorryAx, Quot.sound]

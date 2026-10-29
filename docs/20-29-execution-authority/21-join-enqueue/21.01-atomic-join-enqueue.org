@@ -1,0 +1,172 @@
+#+title: Weaver Atomic Projection Join and Broker Enqueue
+#+language: en
+#+options: toc:3
+
+* Gap and chosen decision point
+
+Checking a source/account join and later invoking an SDK leaves a race: a new
+source commit, Policy/history publication or owner retirement can invalidate the
+checked state. An acknowledgment timeout can also cause the adapter to queue the
+same effect twice. The authority must arbitrate the actual final enqueue, not just
+issue a reusable result of a previous join check.
+
+The baseline is one logical serializable authority for the connected source,
+account/history, queue-admission and mutation-fence domain. Final enqueue atomically
+compares its current read set and creates one durable original operation record
+with its canonical slot claim. Provider I/O does not occur in this transaction.
+The final broker is Rust's protected egress owner. Go SDKs do not own an alternate
+network path, redirect executor or retry queue capable of bypassing this owner.
+
+* Three distinct phases
+
+| Phase | Permitted state change | Forbidden effect |
+|-------+------------------------+------------------|
+| Commit source result | Actual admitted pure source transition, consumed nonce, original reservation, identity indexes and exact result log | Provider call, transport write, route dispatch or SDK invocation |
+| Materialize and enqueue | Apply exact projection results; atomically create the original queue record and canonical slot claim | New nonce consumption, extra reservation, provider call or stream write |
+| Execute original operation | Dedicated current broker/range gate admits a bounded original offer and records unknown outcome | Blind retry, new logical message/slot or refund on an unknown result |
+
+The new source relation is =AdmissionOnly=: an actual prior source step AND equality
+of execution signals. Its concrete category-18 lens covers every root offer count,
+the complete child-call map and route dispatch list. It excludes the earlier
+source model's invoke/dispatch constructors when they change these channels.
+Result commit, source recovery and participant application cannot use these
+constructors to smuggle execution into the commit phase.
+
+This is an executable phase restriction, with a semantic footprint qualification
+obligation: native delivery paths and any new source execution channel must map to
+those signals or extend the footprint. A runtime callback can perform hidden I/O
+without changing a model counter; native capability confinement and instrumentation
+must rule that out. Pure Scheme evaluation has no provider callback capability.
+
+* Immutable operation and canonical slot
+
+The operation binds its original committed request/result, canonical key, original
+root/claim, exact admitted manifest range, payload, route and profile. Budget and
+history domains remain in the original scope. A final permit also records the
+complete current source image, journal position, owner fence, Policy/history
+validation generation and queue revision. It is registered as an observation;
+it is not an independently usable send capability.
+
+Deduplicate both the source-issued operation key and the canonical range slot.
+The model slot is =(root, claim, lo, hi)= under a source-authenticated manifest.
+Changing operation ID, payload, route, profile, protocol session or owner must not
+change this slot for the same original range. The qualified scope contract must
+reject overlapping, invented or repartitioned ranges; the slot tuple alone does
+not prove manifest validity or non-overlap. The earlier finite-range protocol
+continues to own that proof and any legal split/continuation.
+
+Native root/claim identifiers include source/tenant/issuer namespaces. Wire IDs,
+SDK request IDs and caller-provided numeric slots are not admitted canonical keys.
+A genuinely new operation requires independent source admission. An SDK-generated
+fresh key resolving the same original slot still loses the slot CAS.
+
+* Final enqueue transaction
+
+At its linearization point Rust validates and commits all of the following:
+
+1. The permit was issued for the exact immutable operation and current source image.
+2. Source and account projections are complete at the current authoritative prefix,
+   including exact before/after result materialization and all required participants.
+3. The current owner is qualified/active; both the permit fence and actual worker
+   fence match the current logical authority owner.
+4. Current Policy/history generation, source result image and queue revision match
+   the observed cut. Original grant lifetime, revocation and semantic scope remain valid.
+5. The original request has an actual committed result. Scheme verifies its claim,
+   profile, payload/route/range and original account/history obligations; Cedar
+   permits the actual =enqueueRecordedOperation= action against current inputs.
+6. Neither the operation key nor its canonical slot is already admitted.
+7. The exact queue record, canonical slot claim and admission receipt become durable
+   atomically, before acknowledgment or any executor wakeup can release execution.
+
+Successful enqueue increments the queue revision and records its exact original
+operation once. The baseline global revision is conservative: an unrelated queue
+insertion may invalidate other observed permits, which then re-read. A future
+per-slot optimization needs equivalent negative-read, Policy and owner ordering laws.
+
+The source nonce was already consumed to reserve this exact operation. Final
+Policy validation does not validate that nonce as fresh or consume it again. It
+authorizes materialization of the committed effect intent within its original
+constraints. A fresh authorization observation cannot reset spent-state, increase
+allowance or replace the original claim. Expired/revoked original authority blocks
+admission unless a qualified original-family continuation explicitly permits it.
+
+A queue store outside the journal may materialize this decision, but it cannot
+independently choose another admission. Broker execution must look up the exact
+committed admission; the new transaction protocol is not a distributed read-check
+followed by an unchecked local queue push. If the chosen backend cannot atomically
+order final checks, slot claim, receipt and owner retirement, affected enqueue is
+unavailable until an equivalent protocol is qualified.
+
+* Interleavings and recovery
+
+| Interleaving | Required result |
+|--------------+-----------------|
+| New source commit after join read | Old prefix/image permit fails, even if both projections later catch up |
+| Policy/history changes after join read | Old validation generation fails; a fresh permit still needs an actual current allow |
+| Owner changes after join read | Old permit and old worker fail independently; a current permit cannot revive an old worker |
+| Source/account join becomes incomplete | Final enqueue closes; previous activation is not sufficient |
+| Concurrent enqueue wins another queue CAS | Old queue revision fails and retries re-read; same slot remains claimed |
+| Enqueue commits but reply is lost | Query exact durable original queue record; no new admission or provider call |
+| Process restarts after durable admission | Keep the operation key, canonical slot and outcome tombstone; do not rebuild an empty queue |
+| SDK creates a fresh key for an already admitted slot | Canonical slot CAS rejects the duplicate, even with a current permit |
+| SDK converts payload, follows redirect or changes provider | Preserve exact admitted wire/scope or obtain explicit source-bound continuation; no in-place mutation |
+| Queue admission succeeds but execution outcome is unknown | Retain original operation, range frontier and exposure; no repeat offer or refund |
+
+Historical results and application acknowledgments may remain valid observations
+across owner change. They never become current queue permissions. A fresh current
+permit for a previously unqueued original operation may proceed only if all final
+checks allow; a previously queued slot stays claimed across recovery.
+
+Retain source result, queue decision and slot tombstones for the complete replay
+window. Queue compaction must preserve an authoritative outcome lookup or reject
+old references. It cannot turn a known original operation into an absent slot.
+Capacity exhaustion and unavailable durability return pending/unknown or conflict
+without executing and without releasing original budget.
+
+* Separate execution gate
+
+Queue acceptance projects to an initialized accepted broker state with zero local
+invocations. It is not delivery. The existing broker/range model then supplies
+bounded writes, per-offset at-most-one local invocation and unknown usage holds.
+The native executor must also revalidate its current logical fence and effective
+Policy at each original range offer. New source commits or revocation can therefore
+block a queued operation before its first offer; they do not erase its admission.
+
+The Quint fixture includes a separately guarded send action and durable offered-slot
+set, demonstrating that final enqueue and later local invocation are separate.
+Lean proves the admission/source product and composes an actual initialized suffix
+of the existing broker model. It does not claim a complete native asynchronous
+source/executor/storage product. Authentic receipt and range-continuation gates
+remain required; the erased abstract broker owner is not native authorization.
+
+Bytes already offered remain attributed to their original range. Owner retirement
+cannot retract them. A reconnect must not infer no execution or recreate a stream
+tail; uncertain partial writes retain the original unknown reservation. These are
+logical execution-authority rules for an AI Agent Gateway, without physical-isolation
+premises. Remote exactly-once delivery is not claimed.
+
+* Scheme, Go and Rust boundary
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme / POO Flow | Pure phase classification; original claim/profile/domain and admitted manifest semantics; source-issued canonical identity; current enqueue operation projection |
+| Cedar / cedar-poo-spec | Code as Policy over the actual authenticated enqueue operation and current authority state; all required layers allow without errors |
+| Go | Protocol/provider conversion and cloud-native lifecycle; retain original references, surface unknown/conflict, and resolve SDK retry through the original operation |
+| Rust source authority | Commit pure results with executable no-send footprint; recover exact source/account projections |
+| Rust final admission owner | Serialize complete join, Policy/history, owner fence, key/slot CAS and durable original queue decision |
+| Rust executor | Separate current bounded offer gate; original operation lookup, logical range fencing, unknown outcome retention and attributable receipts |
+
+Go exposes no direct callback that can deliver during source evaluation or result
+application. SDK auto-retry/redirect behavior must either be disabled or reduced to
+broker lookup/proposal operations. Stream reconnect and partial-write continuation
+follow the original range protocol, never an SDK's independent resend decision.
+
+* Performance boundary
+
+Cache immutable operation/result bodies, not current admission authority. The final
+CAS can use owner-local compact commitments and generation coordinates only when
+qualified canonical equality and invalidation cover the complete read set. Batch
+admissions retain separate original slot claims and exactly attributable outcomes.
+Do not widen a lease to avoid per-admission comparisons. Measure contention,
+projection catch-up stalls, queue commit latency and actual bounded offer overhead
+after native ordering/refinement qualification; no performance claim follows here.

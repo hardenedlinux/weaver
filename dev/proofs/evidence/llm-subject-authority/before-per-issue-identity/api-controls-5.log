@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-5","limit":20}
+
+  LlmSubjectAuthority
+    ok producerRotationCanReauthorizeSamePlanTest passed 1 test(s)
+    ok changedSubjectKeyCannotRewritePendingPlanTest passed 1 test(s)
+    ok oldWorkerCannotRotateFromOldParentTest passed 1 test(s)
+
+  3 passing (2288ms)
+@@DONE {"label":"api-controls-5","passed":["producerRotationCanReauthorizeSamePlanTest","changedSubjectKeyCannotRewritePendingPlanTest","oldWorkerCannotRotateFromOldParentTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

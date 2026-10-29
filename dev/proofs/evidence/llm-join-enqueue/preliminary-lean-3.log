@@ -1,0 +1,19 @@
+'Weaver.LlmJoinEnqueue.result_projection' depends on axioms: [propext]
+'Weaver.LlmJoinEnqueue.admission_source_has_no_send' depends on axioms: [propext]
+'Weaver.LlmJoinEnqueue.original_operation_never_replaced' depends on axioms: [propext]
+'Weaver.LlmJoinEnqueue.old_prefix_blocks_enqueue' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.old_owner_blocks_enqueue' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.old_policy_blocks_enqueue' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.old_queue_revision_blocks_enqueue' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.incomplete_join_blocks_enqueue' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.enqueue_has_no_source_effect' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.original_unknown_exposure_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmJoinEnqueue.original_spent_retained' depends on axioms: [propext]
+'Weaver.LlmJoinEnqueue.ready_broker_initialized' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.queue_broker_initialized' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.enqueue_has_zero_transport_calls' depends on axioms: [propext]
+'Weaver.LlmJoinEnqueue.actual_broker_suffix_once' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmJoinEnqueue.actual_broker_unknown_stays_held' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmJoinEnqueue.original_slot_never_replaced' depends on axioms: [propext]
+'Weaver.LlmJoinEnqueue.occupied_slot_blocks_retry' depends on axioms: [propext]
+'Weaver.LlmJoinEnqueue.new_admission_has_current_gate' depends on axioms: [propext]

@@ -1,0 +1,36 @@
+{
+  "status": "pass",
+  "entry": "GatewayHeadCAS",
+  "modules": {
+    "GatewayHeadCAS": {
+      "path": "proofs/lean/GatewayHeadCAS.lean",
+      "sha256": "a8f03aa567aef9376254cc04e4539ba19df072c0693693d968edf115a133f828",
+      "imports": [
+        "FiniteDomainMigration"
+      ]
+    },
+    "FiniteDomainMigration": {
+      "path": "specs/lean/FiniteDomainMigration.lean",
+      "sha256": "89a16ca38a6b6e21e4fd4892c26043c0d4f68881c7c4626a2e648cadaabf1c2d",
+      "imports": [
+        "SharedMessageBudget"
+      ]
+    },
+    "SharedMessageBudget": {
+      "path": "specs/lean/SharedMessageBudget.lean",
+      "sha256": "be3f2237e83c6d1ecf824795919d7278654aa05012d30a8c5363f1bc24a3904f",
+      "imports": [
+        "LogicalMessageAuthority"
+      ]
+    },
+    "LogicalMessageAuthority": {
+      "path": "specs/lean/LogicalMessageAuthority.lean",
+      "sha256": "649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca",
+      "imports": [
+        "Std"
+      ]
+    }
+  },
+  "standardLibrary": "Std from the recorded Lean toolchain",
+  "profile": "AI Agent Gateway logical authority and final broker admission; no hardware-model dependency"
+}

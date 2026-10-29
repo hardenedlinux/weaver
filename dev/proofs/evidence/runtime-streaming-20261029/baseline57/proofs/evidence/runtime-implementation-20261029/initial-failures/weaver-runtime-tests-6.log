@@ -1,0 +1,18 @@
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+error[E0432]: unresolved import `proptest::test_runner::ProptestConfig`
+ --> crates/weaver-ledger/tests/unit/properties.rs:2:55
+  |
+2 | use proptest::{prop_assert, prop_assert_eq, proptest, test_runner::ProptestConfig};
+  |                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `ProptestConfig` in `test_runner`
+
+error[E0433]: cannot find module or crate `prop` in this scope
+  --> crates/weaver-ledger/tests/unit/properties.rs:10:77
+   |
+10 |     fn arbitrary_replays_restarts_and_consumption_preserve_claims(events in prop::collection::vec((0u8..8,1u64..12,0u8..4),1..35)) {
+   |                                                                             ^^^^ use of unresolved module or unlinked crate `prop`
+   |
+   = help: if you wanted to use a crate named `prop`, use `cargo add prop` to add it to your `Cargo.toml`
+
+Some errors have detailed explanations: E0432, E0433.
+For more information about an error, try `rustc --explain E0432`.
+error: could not compile `weaver-ledger` (test "unit_test") due to 2 previous errors

@@ -1,0 +1,13 @@
+
+ Error [QNT000]: Expected [s,e,a,w,c,h,f] and [s,e,a,w,c,f] to be the same
+Trying to unify entities ['s', 'e', 'a', 'w', 'c', 'h', 'f'] and ['s', 'e', 'a', 'w', 'c', 'f']
+Trying to unify Read[_v21152] & Update['s', 'e', 'a', 'w', 'c', 'h', 'f'] and Read['s', 'e', 'a', 'w', 'c', 'f', 'h'] & Update['s', 'e', 'a', 'w', 'c', 'f']
+Trying to unify (Read[_v21150] & Update[_v21151], Read[_v21152] & Update[_v21151]) => Read[_v21153] & Update[_v21151] and (Read[_v21146] & Update['s', 'e', 'a', 'w', 'c', 'h', 'f'], Read['s', 'e', 'a', 'w', 'c', 'f', 'h'] & Update['s', 'e', 'a', 'w', 'c', 'f']) => _e5107
+Trying to infer effect for operator application in then(then(init, query(0, true)), installCopies(true))
+
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmAdmissionFloor.qnt:58:24
+  58:   action qualifiedInit=init.then(query(0,true)).then(installCopies(true)).then(project(0,true)).then(activate(0))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

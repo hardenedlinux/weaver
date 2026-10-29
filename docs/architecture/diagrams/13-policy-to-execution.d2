@@ -1,0 +1,164 @@
+# Core architecture: policy meaning, stateful authorization, and final effect.
+...@lib/theme
+title: CEDAR INSIDE THE ZERO TRUST GATEWAY {
+  class: title
+  near: top-center
+}
+meaning: SCHEME / GOVERNANCE AND POLICY {
+  top: 0
+  left: 0
+  width: 380
+  height: 600
+  label.near: top-center
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  style.font-size: 18
+  model: POO governance model\nOwnership / delegation / composition {
+    top: 75
+    left: 30
+    width: 320
+    height: 86
+    label.near: center-center
+    class: semantic
+  }
+  program: Cedar policy program\nRequired roots / schema / entities {
+    top: 255
+    left: 30
+    width: 320
+    height: 86
+    label.near: center-center
+    class: policy
+  }
+  operation: Exact operation and current facts\nActor / target / payload / source {
+    top: 435
+    left: 30
+    width: 320
+    height: 86
+    label.near: center-center
+    class: semantic
+  }
+}
+authorize: RUST / AUTHORIZE AND CONSUME {
+  top: 0
+  left: 470
+  width: 380
+  height: 600
+  label.near: top-center
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  style.font-size: 18
+  prepare: Prepare the operation\nReserve history and budget holds {
+    top: 75
+    left: 30
+    width: 320
+    height: 86
+    label.near: center-center
+    class: ledger
+  }
+  cedar: Authority / Cedar evaluation\nAll checks allow / no policy errors {
+    top: 255
+    left: 30
+    width: 320
+    height: 86
+    label.near: center-center
+    class: policy
+  }
+  consume: Consume the original scoped grant\nOne use / exact operation binding {
+    top: 435
+    left: 30
+    width: 320
+    height: 86
+    label.near: center-center
+    class: runtime
+  }
+}
+execute: RUST / COMMIT AND ENFORCE {
+  top: 0
+  left: 940
+  width: 380
+  height: 600
+  label.near: top-center
+  style.fill: "#f7f9fc"
+  style.stroke: "#9cacc2"
+  style.font-size: 18
+  ledger: Commit authorized send\nHistory / budget / audit / source {
+    top: 53
+    left: 30
+    width: 320
+    height: 86
+    label.near: center-center
+    class: ledger
+    shape: cylinder
+    height: 130
+  }
+  claim: Claim one dispatch attempt\nNo replay / no replacement handle {
+    top: 255
+    left: 30
+    width: 320
+    height: 86
+    label.near: center-center
+    class: runtime
+  }
+  gate: Final egress broker\nBound bytes / peer / credential / lifetime {
+    top: 435
+    left: 30
+    width: 320
+    height: 86
+    label.near: center-center
+    class: runtime
+  }
+}
+
+upstream: Tool / model / service\nOne bound external attempt {
+  top: 435
+  left: 1470
+  width: 290
+  height: 86
+  label.near: center-center
+  class: ledger
+}
+observe: Admit independent observations\nOutcome / closure / usage / settlement {
+  top: 700
+  left: 505
+  width: 330
+  height: 86
+  label.near: center-center
+  class: ledger
+}
+release: Protected response gate\nSeparate peer / label / range admission {
+  top: 700
+  left: 1450
+  width: 330
+  height: 86
+  label.near: center-center
+  class: semantic
+}
+meaning.model -> meaning.program
+meaning.program -> authorize.cedar: Policy
+meaning.operation -> authorize.prepare: Operation
+authorize.prepare -> authorize.cedar
+authorize.cedar -> authorize.consume: Issue scoped grant
+authorize.prepare -> execute.ledger: Reserve holds {
+  style.stroke-dash: 4
+}
+authorize.consume -> execute.ledger: Commit send
+execute.ledger -> execute.claim
+execute.claim -> execute.gate: Local emission handle
+execute.gate -> upstream: Bound send
+upstream -> observe: Observations
+observe -> execute.ledger: Settle / retain exposure
+upstream -> release: Result
+refuse: Refuse submission / claim stays spent\nRetirement required / no automatic retry {
+  top: 700
+  left: 970
+  width: 330
+  height: 86
+  label.near: center-center
+  class: deny
+}
+execute.gate -> refuse: Final guard fails
+rule: "Cedar decides permission. The ledger coordinates history and budget. The broker controls the credentialed effect.\nA timeout, restart or result never recreates a send right. Response release requires its own admission." {
+  shape: text
+  class: note
+  near: bottom-center
+}

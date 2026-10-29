@@ -1,0 +1,579 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "sourceSha256": {
+      "specs/lean/LogicalMessageAuthority.lean": "649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca"
+    },
+    "exit": 0,
+    "seconds": 2.262,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "sourceSha256": {
+      "specs/lean/SharedMessageBudget.lean": "be3f2237e83c6d1ecf824795919d7278654aa05012d30a8c5363f1bc24a3904f"
+    },
+    "exit": 0,
+    "seconds": 1.023,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "sourceSha256": {
+      "specs/lean/FiniteDomainMigration.lean": "89a16ca38a6b6e21e4fd4892c26043c0d4f68881c7c4626a2e648cadaabf1c2d"
+    },
+    "exit": 0,
+    "seconds": 1.9,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "GatewayHeadCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/GatewayHeadCAS.olean",
+      "proofs/lean/GatewayHeadCAS.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/GatewayHeadCAS.lean": "a8f03aa567aef9376254cc04e4539ba19df072c0693693d968edf115a133f828"
+    },
+    "exit": 0,
+    "seconds": 2.304,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "BrokerConsumptionQueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/BrokerConsumptionQueue.olean",
+      "proofs/lean/BrokerConsumptionQueue.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/BrokerConsumptionQueue.lean": "3c9f52a3fd90e965b9a96e653a40fd29e2e7942d76899167cb7d0be8d297ac6f"
+    },
+    "exit": 0,
+    "seconds": 2.252,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LogicalRangeRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LogicalRangeRecovery.olean",
+      "proofs/lean/LogicalRangeRecovery.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LogicalRangeRecovery.lean": "5b5c48048213d702a181aed1bb96e21fb251bc7bc459674423241e118133efa4"
+    },
+    "exit": 0,
+    "seconds": 2.19,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRouting",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmRouting.olean",
+      "proofs/lean/LlmRouting.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmRouting.lean": "222f1af3fae8368fcf384ffebb28bd725fedeccab5f00c033287a0a17e3769d9"
+    },
+    "exit": 0,
+    "seconds": 1.979,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAttemptLedger",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmAttemptLedger.olean",
+      "proofs/lean/LlmAttemptLedger.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmAttemptLedger.lean": "0e2492282f799210084c7c331f5d6303b05fee8b7fa960147a0e351d06da82cc"
+    },
+    "exit": 0,
+    "seconds": 0.946,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmSemanticContract",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmSemanticContract.olean",
+      "proofs/lean/LlmSemanticContract.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmSemanticContract.lean": "a2fdbbaf7b56cb7c2f8a9581045dfc33da74f5c460530982524b438c2bca3cf1"
+    },
+    "exit": 0,
+    "seconds": 1.76,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAuthoritativeScope",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmAuthoritativeScope.olean",
+      "proofs/lean/LlmAuthoritativeScope.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmAuthoritativeScope.lean": "9f29996b8651270ac6ddf91bfdd1c1e8252cf1abfe81c140b325cf75ba36ef99"
+    },
+    "exit": 0,
+    "seconds": 1.731,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRegistryPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmRegistryPublication.olean",
+      "proofs/lean/LlmRegistryPublication.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmRegistryPublication.lean": "3a77d696cb08ec6419b577de2cea90c6b4747fca6224796d420c98d17bc8fcba"
+    },
+    "exit": 0,
+    "seconds": 1.208,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmRecoveryCAS",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmRecoveryCAS.olean",
+      "proofs/lean/LlmRecoveryCAS.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmRecoveryCAS.lean": "d242ba4832ba5436b19470836fbbe0d75b8d858bab6123585b2a5c7f3b77ddf0"
+    },
+    "exit": 0,
+    "seconds": 1.161,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmPolicyPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmPolicyPublication.olean",
+      "proofs/lean/LlmPolicyPublication.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmPolicyPublication.lean": "302b7b322c955ab005c8c6a2f71a926fb5b8617e1761ed435a32cc0a17c2848e"
+    },
+    "exit": 0,
+    "seconds": 1.514,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmPolicyContinuation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmPolicyContinuation.olean",
+      "proofs/lean/LlmPolicyContinuation.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmPolicyContinuation.lean": "fd49f4d88b22349e18efc7ec1b43e500f04828f7334a2ddb2be420285dd2cbe2"
+    },
+    "exit": 0,
+    "seconds": 0.946,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmCanonicalRegistry",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmCanonicalRegistry.olean",
+      "proofs/lean/LlmCanonicalRegistry.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmCanonicalRegistry.lean": "325ff6ecd404cdee29bfbae4c25334b8a9a78712f6d209068c0cae66aee2a6a6"
+    },
+    "exit": 0,
+    "seconds": 1.421,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmMultiKeyRegistry",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmMultiKeyRegistry.olean",
+      "proofs/lean/LlmMultiKeyRegistry.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmMultiKeyRegistry.lean": "53c906914b6ba7f1175cea5dcfdd8068be90b02306b05adf770ca1325d15f633"
+    },
+    "exit": 0,
+    "seconds": 1.726,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmResultProjection",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmResultProjection.olean",
+      "proofs/lean/LlmResultProjection.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmResultProjection.lean": "c4ea3e74fb2e272004601dc2a00d12714d5cf9744841b704e803f53edea288da"
+    },
+    "exit": 0,
+    "seconds": 1.742,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmJoinEnqueue",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmJoinEnqueue.olean",
+      "proofs/lean/LlmJoinEnqueue.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmJoinEnqueue.lean": "3358b66528f34934dacb0dba895c8a572087493a86bdc1b17c10a77dc07b3d4f"
+    },
+    "exit": 0,
+    "seconds": 1.152,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmExecutorOffer",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmExecutorOffer.olean",
+      "proofs/lean/LlmExecutorOffer.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmExecutorOffer.lean": "e38fb0923723a80636dc95595f3e63685e1d7c690c0308af2efcde6838853926"
+    },
+    "exit": 0,
+    "seconds": 0.962,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmExecutionReconciliation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmExecutionReconciliation.olean",
+      "proofs/lean/LlmExecutionReconciliation.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmExecutionReconciliation.lean": "930aff05bfe233593321ada71865c1eb5c664b86d9df7a75977273e543cccf33"
+    },
+    "exit": 0,
+    "seconds": 1.404,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAccountCommit",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmAccountCommit.olean",
+      "proofs/lean/LlmAccountCommit.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmAccountCommit.lean": "b7b0e1e14463eca993f2ae7ce7ba0e1882be53ad6296d1999af492c1f1dcca15"
+    },
+    "exit": 0,
+    "seconds": 0.736,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmWalActivation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmWalActivation.olean",
+      "proofs/lean/LlmWalActivation.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmWalActivation.lean": "a6c721020b430b6d36d3a0d2696d59bbadfd58a56e7c71500ba232f0b1f60997"
+    },
+    "exit": 0,
+    "seconds": 2.291,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmCheckpointTruncation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmCheckpointTruncation.olean",
+      "proofs/lean/LlmCheckpointTruncation.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmCheckpointTruncation.lean": "f8ee23e465b183aab68575e5a0ee06d6149dcee98b464ad773bb846e0ae0f269"
+    },
+    "exit": 0,
+    "seconds": 1.964,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmManifestSwitch",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmManifestSwitch.olean",
+      "proofs/lean/LlmManifestSwitch.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmManifestSwitch.lean": "c089085bbc089395fccce1725e5be0aad5a611bae27a547ef23ac77602e5644b"
+    },
+    "exit": 0,
+    "seconds": 1.685,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAppendHandoff",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmAppendHandoff.olean",
+      "proofs/lean/LlmAppendHandoff.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmAppendHandoff.lean": "79e357507ccd9006c42746e5a6007d7083cec47cda9bf095c6f91aaa82106e51"
+    },
+    "exit": 0,
+    "seconds": 0.92,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmAdmissionFloor",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmAdmissionFloor.olean",
+      "proofs/lean/LlmAdmissionFloor.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmAdmissionFloor.lean": "41c8913e049fb17034be672b361c431d4712fadbe7221762dece3f96dcfc4aaf"
+    },
+    "exit": 0,
+    "seconds": 2.021,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmSourceJoin",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmSourceJoin.olean",
+      "proofs/lean/LlmSourceJoin.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmSourceJoin.lean": "4ceddb6ff0e3845b8fbeddac5c7ffae23c16adb5c4c5f14b592c6ca65359eb55"
+    },
+    "exit": 0,
+    "seconds": 0.567,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmSourceCustody",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmSourceCustody.olean",
+      "proofs/lean/LlmSourceCustody.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmSourceCustody.lean": "f7b94cf70c364616b4580cc92544f8c69d8a75a611c3026cb475ed52fcbf0fee"
+    },
+    "exit": 0,
+    "seconds": 1.682,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmCustodyPublication",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmCustodyPublication.olean",
+      "proofs/lean/LlmCustodyPublication.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmCustodyPublication.lean": "fb3e16ec8a74cff9cf34b8fc04ccaa16f4a69a28e959605265e0b8c4c4846758"
+    },
+    "exit": 0,
+    "seconds": 1.764,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmCallerCustody",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmCallerCustody.olean",
+      "proofs/lean/LlmCallerCustody.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmCallerCustody.lean": "172bf18d98400fc56830da2118dfdec5c848f3428c1392a396668e330aa367ee"
+    },
+    "exit": 0,
+    "seconds": 5.386,
+    "watchdogSeconds": 20,
+    "verificationMode": "Leaf-only proof-statement strengthening; 29 ancestors and every Quint input hash unchanged"
+  },
+  {
+    "label": "LlmIncarnationIssuance",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmIncarnationIssuance.olean",
+      "proofs/lean/LlmIncarnationIssuance.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmIncarnationIssuance.lean": "e612987654b6840cf45d7c271fe9972530178e54cf5b77049baee9f82f88bfb1"
+    },
+    "exit": 0,
+    "seconds": 6.033,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "LlmBootstrapInvitation",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmBootstrapInvitation.olean",
+      "proofs/lean/LlmBootstrapInvitation.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmBootstrapInvitation.lean": "80baeb073fc1c410daa5e6c6510834fce29eb21b25df5ccf923a6770f8e31244"
+    },
+    "exit": 0,
+    "seconds": 7.477,
+    "watchdogSeconds": 20
+  }
+]

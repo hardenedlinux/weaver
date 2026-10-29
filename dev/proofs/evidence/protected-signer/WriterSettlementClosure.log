@@ -1,0 +1,25 @@
+'Weaver.WriterSettlementClosure.decision_addresses_only_original_range' depends on axioms: [propext, Quot.sound]
+'Weaver.WriterSettlementClosure.typed_evidence_key_is_injective' depends on axioms: [propext, Quot.sound]
+'Weaver.WriterSettlementClosure.charged_ledger_has_canonical_settlement' depends on axioms: [propext, Quot.sound]
+'Weaver.WriterSettlementClosure.late_usage_never_changes_driver' does not depend on any axioms
+'Weaver.WriterSettlementClosure.terminal_decision_has_authentic_original_evidence' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.WriterSettlementClosure.settlement_joins_authentic_final_usage' depends on axioms: [propext, Quot.sound]
+'Weaver.WriterSettlementClosure.settlement_has_published_terminal_coverage' depends on axioms: [propext, Quot.sound]
+'Weaver.WriterSettlementClosure.every_decision_has_durable_evidence_and_closed_original_slot' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.WriterSettlementClosure.unpublished_decision_blocks_stream' depends on axioms: [propext]
+'Weaver.WriterSettlementClosure.no_visibility_from_prepared_blob' depends on axioms: [propext, Quot.sound]
+'Weaver.WriterSettlementClosure.settlement_requires_same_usage_and_closure' depends on axioms: [propext, Quot.sound]
+'Weaver.WriterSettlementClosure.decision_immutable' depends on axioms: [propext]
+'Weaver.WriterSettlementClosure.usage_immutable' depends on axioms: [propext]
+'Weaver.WriterSettlementClosure.settlement_immutable' depends on axioms: [propext]
+'Weaver.WriterSettlementClosure.settlement_covered_by_original_reservations' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.WriterSettlementClosure.account_settlement_never_exceeds_capacity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.WriterSettlementClosure.byte_affinity_survives_split_stores' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

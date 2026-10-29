@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/runtime-implementation-20261029/check-historical-seals.py", line 15, in <module>
+    assert cache[name] == expected, (str(manifest), name)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('proofs/evidence/llm-admission-floor/SHA256SUMS', 'devenv.nix')

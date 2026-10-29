@@ -1,0 +1,226 @@
+[
+  {
+    "id": "EC1",
+    "lean": "plan_retained",
+    "obligation": "Canonical subject/key assignment survives retries",
+    "quint": "producerAssignmentRequiredTest",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "EC2",
+    "lean": "credential_retained",
+    "obligation": "Credential body survives loss of reply",
+    "quint": "lostIssueReplyRecoversSameCredentialTest",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "EC3",
+    "lean": "id_retained",
+    "obligation": "ID ownership is retained",
+    "quint": "crossLaunchIdCannotBeReusedTest",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "EC4",
+    "lean": "request_retained",
+    "obligation": "Signing intent retains the committed body",
+    "quint": "lostSignerReplyRetainsExactIntentTest",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "EC5",
+    "lean": "release_retained",
+    "obligation": "Released result survives recovery",
+    "quint": "lostSignerReplyRetainsExactIntentTest",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "EC6",
+    "lean": "activation_retained",
+    "obligation": "Root outcome cannot be overwritten",
+    "quint": "activationCannotRepeatTest",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "EC7",
+    "lean": "credential_run",
+    "obligation": "Finite recovery never reopens issuance",
+    "quint": "canonicalLaunchCannotReissueTest",
+    "d2": "protocols.acp"
+  },
+  {
+    "id": "EC8",
+    "lean": "no_subject_or_key_replacement",
+    "obligation": "Subject and enrollment key cannot be replaced",
+    "quint": "authenticatedSubjectCannotNominateKeyTest",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "EC9",
+    "lean": "forwarded_subject_rejected",
+    "obligation": "Forwarded identity lacks the independent subject key",
+    "quint": "forwardedSubjectCredentialRejectedTest",
+    "d2": "protocols.mcp"
+  },
+  {
+    "id": "EC10",
+    "lean": "nominated_enrollment_key_rejected",
+    "obligation": "Subject authentication cannot nominate another key",
+    "quint": "authenticatedSubjectCannotNominateKeyTest",
+    "d2": "protocols.a2a"
+  },
+  {
+    "id": "EC11",
+    "lean": "issue_session_bound",
+    "obligation": "Issuance proofs bind the selected channel",
+    "quint": "issuanceSessionBoundTest",
+    "d2": "protocols.a2a"
+  },
+  {
+    "id": "EC12",
+    "lean": "holder_session_bound",
+    "obligation": "Recovery connection is not bootstrap possession",
+    "quint": "recoveredConnectionCannotActivateTest",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "EC13",
+    "lean": "stale_issuer_rejected",
+    "obligation": "Late callback cannot revive an old epoch",
+    "quint": "lateCallbackAfterRevocationRejectedTest",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "EC14",
+    "lean": "stale_read_rejected",
+    "obligation": "Intervening commits invalidate old observations",
+    "quint": "interveningCommitInvalidatesReadTest",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "EC15",
+    "lean": "valid_step",
+    "obligation": "Credentials retain actual authenticated peer facts",
+    "quint": "forgedSubjectCounterexampleTest",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "EC16",
+    "lean": "valid_run",
+    "obligation": "Credential provenance holds over finite traces",
+    "quint": "subjectAuthenticationRequiredTest",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "EC17",
+    "lean": "credential_id_unique",
+    "obligation": "One credential ID cannot identify two launches",
+    "quint": "secondSubjectGetsDistinctIdTest",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "EC18",
+    "lean": "requested_step",
+    "obligation": "Only a committed body can reach signing",
+    "quint": "uncommittedBodyCannotReachSignerTest",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "EC19",
+    "lean": "released_step",
+    "obligation": "Release requires the original signing intent",
+    "quint": "signatureWithoutRequestRejectedTest",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "EC20",
+    "lean": "joined_step",
+    "obligation": "Every root requires its exact released credential and outcome",
+    "quint": "missingActivationOutcomeCounterexampleTest",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "EC21",
+    "lean": "outcome_step",
+    "obligation": "Every activation outcome requires an actual root",
+    "quint": "phantomActivationOutcomeCounterexampleTest",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "EC22",
+    "lean": "qualified_step",
+    "obligation": "Complete joins survive legal transitions",
+    "quint": "erasedReleaseCounterexampleTest",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "EC23",
+    "lean": "qualified_run",
+    "obligation": "Recovery cannot silently erase credential authority",
+    "quint": "erasedCredentialCounterexampleTest",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "EC24",
+    "lean": "inconsistent_image_rejected",
+    "obligation": "Refreshing parent reads cannot repair a split image",
+    "quint": "splitRecoveryCannotBindFirstKeyTest",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "EC25",
+    "lean": "plan_origin",
+    "obligation": "Producer assignment has independent provenance",
+    "quint": "sharedWorkloadCannotAssignSubjectTest",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "EC26",
+    "lean": "issuance_authorized",
+    "obligation": "Credential derives from an independently assigned subject",
+    "quint": "sharedWorkloadCannotIssueTest",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "EC27",
+    "lean": "composition",
+    "obligation": "Authority changes project to actual predecessor runs",
+    "quint": "rootActivationDoesNotBindBeneficiaryTest",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "EC28",
+    "lean": "first_key_retained",
+    "obligation": "Recovery cannot overwrite the first beneficiary key",
+    "quint": "recoveryCannotReplaceFirstKeyTest",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "EC29",
+    "lean": "original_reservation_once",
+    "obligation": "Original account application remains conditionally unique",
+    "quint": "actualActivationPreservesOriginalBudgetTest",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "EC30",
+    "lean": "unknown_original_hold_retained",
+    "obligation": "Unknown original use preserves its hold",
+    "quint": "actualActivationPreservesOriginalBudgetTest",
+    "d2": "registry.query"
+  },
+  {
+    "id": "EC31",
+    "lean": "new_root_stages_only",
+    "obligation": "Root activation cannot bind a beneficiary or advance invitation state",
+    "quint": "rootActivationDoesNotBindBeneficiaryTest",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "EC32",
+    "lean": "new_root_has_current_holder",
+    "obligation": "Every new root has a live released credential and fresh holder proof",
+    "quint": "releasedCredentialStillNeedsHolderTest",
+    "d2": "broker.cas"
+  }
+]

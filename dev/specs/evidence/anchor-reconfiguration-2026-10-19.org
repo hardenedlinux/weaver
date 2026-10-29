@@ -1,0 +1,186 @@
+#+title: Anchor Configuration and Prefix Inheritance Check Receipt
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS abstract-checked-native-consensus-qualification-pending
+
+* Identity and scope
+
+Workspace /Users/guangtao/ghq/github.com/tao3k/weaver, branch main, tracked HEAD
+=4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Architecture/formal files remain
+untracked working-tree artifacts. No gateway implementation, upstream source or
+ABI change, dependency-pin change, native build, commit or push is included.
+
+[[file:../../../docs/architecture/27-anchor-configuration-prefix-inheritance.org][The dossier]] defines the conservative serialized joint-quorum profile and its
+language/source boundaries. [[file:reconfiguration-traces/source-review.json][The eighteen committed source blobs]] were reverified
+at POO Flow =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. Exact hashes and numbered excerpts
+are retained, including P35 lineage-prefix/domain and fork contracts. This is
+source review, not a new native consensus or source-copy acceptance result.
+
+| Final artifact | SHA-256 |
+|----------------+---------|
+| [[file:../lean/AnchorReconfiguration.lean][AnchorReconfiguration.lean]] | =eaa4b4d8d1748725d6fb16cf68501b59e27ddb69e74a3d393b48d93788aa6b50= |
+| [[file:../quint/AnchorReconfiguration.qnt][AnchorReconfiguration.qnt]] | =380661b910ac85d1dd6bc7dd10de0b35352d8e4a4b65d938dadbeb44bfd1b8f7= |
+
+[[file:reconfiguration-traces/SHA256SUMS][The final byte manifest]] covers formal dependencies, dossier/diagram, this
+receipt and retained evidence. The preceding five historical manifests remain
+valid; their models, receipts and byte identities have not been rewritten.
+
+* Final executable routes
+
+Quint =0.33.0=, TypeScript backend; Lean =4.34.1=, arm64 Darwin, Std only.
+All twelve Lean modules were rebuilt in the isolated
+/private/tmp/weaver-reconfiguration-final-proof directory. The first eleven
+unchanged sources were built once; the new module was recompiled after completing
+admission, actual activation/barrier and certified-history proof guards.
+
+[[file:reconfiguration-traces/commands.json][Twenty-one final command records]] retain exact arguments, zero exits, timings
+and watchdogs: 20 seconds for Lean/typecheck, 55 seconds for each deterministic
+route and 30 seconds for each sampled run. No timeout was widened. The failed
+full-suite export route remains separately recorded below; it is not counted
+as a final success. Check timing is not gateway performance evidence.
+
+| Final command | Exit | Seconds | Raw output |
+|---------------+------+---------+------------|
+| LogicalMessageAuthority | 0 | 2.865 | [[file:reconfiguration-traces/LogicalMessageAuthority.log][log]] |
+| SharedMessageBudget | 0 | 1.646 | [[file:reconfiguration-traces/SharedMessageBudget.log][log]] |
+| FiniteDomainMigration | 0 | 1.986 | [[file:reconfiguration-traces/FiniteDomainMigration.log][log]] |
+| AnchoredRecoveryAndEgress | 0 | 1.636 | [[file:reconfiguration-traces/AnchoredRecoveryAndEgress.log][log]] |
+| ComposedGatewayLifecycle | 0 | 2.153 | [[file:reconfiguration-traces/ComposedGatewayLifecycle.log][log]] |
+| FiniteStreamManifest | 0 | 2.028 | [[file:reconfiguration-traces/FiniteStreamManifest.log][log]] |
+| DriverCompletionRecovery | 0 | 1.151 | [[file:reconfiguration-traces/DriverCompletionRecovery.log][log]] |
+| WriterSettlementClosure | 0 | 1.281 | [[file:reconfiguration-traces/WriterSettlementClosure.log][log]] |
+| SettlementAnchorRecovery | 0 | 0.853 | [[file:reconfiguration-traces/SettlementAnchorRecovery.log][log]] |
+| GateConsumptionPersistence | 0 | 1.073 | [[file:reconfiguration-traces/GateConsumptionPersistence.log][log]] |
+| AnchorBrokerCommit | 0 | 1.215 | [[file:reconfiguration-traces/AnchorBrokerCommit.log][log]] |
+| AnchorReconfiguration | 0 | 2.206 | [[file:reconfiguration-traces/AnchorReconfiguration.log][log]] |
+| typecheck | 0 | 3.832 | [[file:reconfiguration-traces/typecheck.log][log]] |
+| tests | 0 | 27.227 | [[file:reconfiguration-traces/tests.log][log]] |
+| counterexamples | 0 | 6.348 | [[file:reconfiguration-traces/counterexamples.log][log]] |
+| emptyInit | 0 | 4.08 | [[file:reconfiguration-traces/emptyInit.log][log]] |
+| singletonInit | 0 | 4.79 | [[file:reconfiguration-traces/singletonInit.log][log]] |
+| init | 0 | 5.147 | [[file:reconfiguration-traces/init.log][log]] |
+| largerInit | 0 | 12.129 | [[file:reconfiguration-traces/largerInit.log][log]] |
+| jointPending | 0 | 15.221 | [[file:reconfiguration-traces/jointPending.log][log]] |
+| moving | 0 | 18.426 | [[file:reconfiguration-traces/moving.log][log]] |
+
+[[file:reconfiguration-traces/tests.log][66 semantic deterministic controls passed]]: 37 direct imported commit/broker
+controls and 29 new controls (25 positive/rejection schedules plus four excluded
+rules). Direct imported counts do not include every transitive test. The semantic
+route omits whole-suite ITF serialization.
+
+[[file:reconfiguration-traces/counterexamples.log][The focused counterexample export route]] separately passed all four new negative
+controls and produced [[file:reconfiguration-traces/itf][four complete final ITF traces]]. The final disjoint-replacement
+control uses new voters three/four/five after original voters zero/one/two; it is
+not merely a renamed old-configuration reset. [[file:reconfiguration-traces/counterexample-observations.json][Checked final-state observations]]
+extract two actual account applications for canonical key zero and replacement
+membership one from the imported actual write counter.
+
+emptyInit/singletonInit/init/largerInit/jointPending/moving each sampled ten traces,
+at most 25 transitions each, seed 43: 60 bounded traces total, no violation found.
+Cold fixtures use zero/one/three/five ranges, four admitted logical messages and
+two shared accounts. jointPending and moving execute the preceding real formal
+source/settlement/root pipeline and enter joint with an old held grant or original
+submitted IO respectively. They do not inject a synthetic safe transfer state.
+Quint fixtures include three immutable voter rosters, each with three voters;
+control transitions are bounded to the first two replacements. Lean quantifies
+over the arbitrary fixed quorum-family function, finite source manifests and
+finite traces along an unbounded serialized successor configuration lineage.
+Sampling is not exhaustive and no automated model/source equivalence is claimed.
+
+All final compiler logs have no warnings, errors or sorryAx. Printed inventories
+use only propext, Quot.sound and inherited Classical.choice; several projection,
+intersection and image statements require no axioms. These logical axioms do not
+establish quorum-engine durability, installation authenticity or physical fencing.
+
+* Checked composition and conditional premises
+
+| Lean declaration | Consequence |
+|------------------+-------------|
+| projection / base_reachable | Every new event stutters or projects into the actual initialized prior product |
+| prefix_step / prefix_member_preserved | Data/control history only extends; elections cannot erase old deciding records |
+| reachable_base_embeds | Every prior committed data entry remains represented in the full mixed prefix |
+| every_committed_record_has_its_historical_quorums | Historical records retain their qualified original stage/quorum certificates, rather than being reinterpreted under a new roster |
+| joint_configuration_cannot_open_new_admission | Joint membership cannot grant new economic admission |
+| configuration_identity_never_rolls_back / membership_revision_monotone | Configuration identities and transition revisions cannot roll back or reuse old publication state |
+| old_and_joint_quorums_intersect / joint_and_new_quorums_intersect | Adjacent certificate families intersect in the old/new family as appropriate |
+| replacement_voters_copy_complete_deciding_image | Every selected replacement signer has the exact current full prefix/journal/source projection |
+| image_contains_deciding_projection | Transfer image uses deciding metadata, not the new wrapper's live execution continuations |
+| one_original_consumption_and_application | Original burn, submission and actual account application counts each stay at most one |
+| original_shared_budget_conserved / original_unknown_reservation_retained | Original booked reservations and account capacity remain conserved through transfer and uncertainty |
+
+The quorum-family intersection property is a supplied contract, not a derived
+proof of a particular majority/election implementation. Quint checks all listed
+two-of-three majority pairs and disjoint rosters as finite controls. Qualified
+durable publication, exact actual installed deciding evidence, current-read
+binding, all-alias writer isolation and actual account mutation/receipt atomicity
+remain owner premises. Field equality alone authenticates none of these facts. Quorum intersection
+provides a common witness; durable non-equivocation and correct committed-prefix
+election/recovery remain store-owner duties, including after witness rollback.
+
+The prior fixed configuration field is a stable proof-projection namespace here.
+The full outer membership envelope is mandatory for native admission. Erasure
+is not a runtime compatibility API or another production log. Lean's fuller
+source-image guard and Quint's root-image/unchanged-source relation are documented
+scope differences; there is no generated translation or native copy verifier.
+Unavailable actual-owner deciding evidence blocks installation/activation, rather
+than allowing an unknown application to be filled with a guessed absent result.
+
+* Counterexamples and positive distinguishing schedules
+
+| Excluded rule | Observed failure |
+|---------------+------------------|
+| oldOnlyJointCertificateCounterexampleTest | A joint control record lacks a new quorum and fails historical certificate qualification |
+| loseInheritedDecidingPrefixCounterexampleTest | Clearing the transferred mixed prefix loses the embedding of actual prior committed operations |
+| activateJointWithoutNewScopeFenceCounterexampleTest | Opening economic admission during joint violates the phase contract; this is an admission-boundary control, not an OS isolation simulation |
+| disjointReplacementReplaysActualApplicationCounterexampleTest | An empty replacement under a disjoint new roster forgets original spent-state and completes the same account application twice |
+
+Positive/rejection controls cover old-only/new-only joint appends, missing/stale/
+unauthenticated replica images, omitted control/spent records, stale proposals,
+late original burn responses before/after a physical barrier, retired old quorum
+submission, unknown-burn retention, joint fence relabeling, elections during joint,
+two sequential replacements, lost transition responses, stale current reads and
+late actual original results across both election and membership changes.
+
+* Retained full-ITF timeout and preliminary diagnostics
+
+[[file:reconfiguration-traces/preliminary-timeout-commands.json][The initial full-suite ITF export route]] reached its preselected 55-second
+watchdog and exited 124. [[file:reconfiguration-traces/preliminary-timeout-tests.log][Its output]] and [[file:reconfiguration-traces/preliminary-timeout-itf-index.json][55 partial trace identities]] are retained;
+[[file:reconfiguration-traces/preliminary-timeout-itf.tar.gz][the compressed raw archive]] preserves the approximately 345 MB of partial
+exports. Some exports may be incomplete; none is used as a passing final trace.
+This route remains unqualified. Separating semantic execution from four focused
+trace exports changes the verification route without widening the watchdog or
+turning that failure into a pass.
+
+Reserved-prefix parsing, Boolean proof-case layout diagnostics, earlier successful
+candidate logs and [[file:reconfiguration-traces/preliminary-before-disjoint-control-fix.qnt][the earlier excluded-mutant source]] remain separately named.
+[[file:reconfiguration-traces/preliminary-before-disjoint-control-fix-itf.tar.gz][Earlier focused traces]] preserve the prior reset-only mutant before it was made
+explicitly disjoint. Final 66 semantic controls and four exported counterexamples
+ran after that correction. The final additional Lean lemmas/guards do not alter
+Quint source or sampled actions. Historical receipts were not rewritten.
+
+* Documentation and native acceptance
+
+[[file:reconfiguration-traces/document-check.log][The final documentation check]] covers all 43 English Org files, 101 pinned
+source targets, complete acceptance registers and 28 canonical D2/SVG pairs.
+[[file:reconfiguration-traces/diagram-validation.json][All D2 sources validate]]; the new bundled preview was visually inspected and
+contains core design only. [[file:reconfiguration-traces/org-export.log][Org export]] disables source evaluation; the optional
+htmlize fontification warning does not affect export. [[file:reconfiguration-traces/historical-manifests.log][Five earlier byte manifests]]
+remain unchanged and valid.
+
+Rebuild the recorded twelve Lean modules with the isolated LEAN_PATH, then run:
+
+#+begin_src sh
+quint typecheck dev/specs/quint/AnchorReconfiguration.qnt
+quint test dev/specs/quint/AnchorReconfiguration.qnt --backend typescript --max-samples 1
+quint test dev/specs/quint/AnchorReconfiguration.qnt --backend typescript --max-samples 1 --match '^(oldOnlyJointCertificate|loseInheritedDecidingPrefix|activateJointWithoutNewScopeFence|disjointReplacementReplaysActualApplication)CounterexampleTest$'
+quint run dev/specs/quint/AnchorReconfiguration.qnt --backend typescript --init moving --step step --invariant safety --max-samples 10 --max-steps 25 --seed 43 --verbosity 1
+#+end_src
+
+Native qualification must cover disjoint-member partitions, learner-copy lies or
+loss, acknowledged-prefix inheritance after leader failure, old snapshots,
+old-only signatures, lost transition acknowledgements, old FD/buffer callbacks,
+configuration-bound barriers and actual original results. A storage implementation
+that loses the committed mixed prefix violates the premise; no Policy receipt or
+model check repairs it. No native consensus acceptance, gateway implementation,
+external payment/provider proof or dependency-pin change is claimed.

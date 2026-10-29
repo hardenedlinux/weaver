@@ -1,0 +1,49 @@
+[
+  {
+    "name": "hiddenRetryCounterexampleTest",
+    "path": "proofs/evidence/routine-routing-config/itf/hiddenRetryCounterexampleTest-1.itf.json",
+    "states": 6,
+    "dispatchCount": 2,
+    "unknown": true,
+    "pinnedAllowance": 10,
+    "pinnedTargets": [
+      0,
+      6
+    ]
+  },
+  {
+    "name": "replacedRoutineCounterexampleTest",
+    "path": "proofs/evidence/routine-routing-config/itf/replacedRoutineCounterexampleTest-2.itf.json",
+    "states": 5,
+    "dispatchCount": 0,
+    "unknown": false,
+    "pinnedAllowance": 8,
+    "pinnedTargets": [
+      6
+    ]
+  },
+  {
+    "name": "rewrittenRootCounterexampleTest",
+    "path": "proofs/evidence/routine-routing-config/itf/rewrittenRootCounterexampleTest-0.itf.json",
+    "states": 5,
+    "dispatchCount": 1,
+    "unknown": false,
+    "pinnedAllowance": 10,
+    "pinnedTargets": [
+      0,
+      6
+    ]
+  },
+  {
+    "name": "weakenedConfigCounterexampleTest",
+    "path": "proofs/evidence/routine-routing-config/itf/weakenedConfigCounterexampleTest-1.itf.json",
+    "states": 5,
+    "dispatchCount": 0,
+    "unknown": false,
+    "pinnedAllowance": 20,
+    "pinnedTargets": [
+      0,
+      6
+    ]
+  }
+]

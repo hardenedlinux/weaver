@@ -1,0 +1,575 @@
+#+title: Weaver Reference Comparison and Evidence Register
+#+language: en
+#+date: 2026-10-18
+#+property: STATUS source-reviewed-not-runtime-qualified
+#+options: toc:3
+#+link: ag https://github.com/agentgateway/agentgateway/blob/955d56fae09b45f3cb8e85e797dbb1eb06134f77/%s
+#+link: pf https://github.com/tao3k/poo-flow/blob/a74fc2fd63437252175b5a67649ee54b886d3bf4/%s
+#+link: pc https://github.com/tao3k/poo-flow-core/blob/80e2e74022c9c4053445475402856c5f369aec48/%s
+#+link: ai https://github.com/tao3k/lambda-aitia/blob/cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc/%s
+#+link: cp https://github.com/hardenedlinux/cedar-poo-spec/blob/c8d1a0641120cf65e299e8a98f9fe7666ca96ab5/%s
+
+#+link: cs31 https://github.com/cedar-policy/cedar-spec/blob/e9fa9c1e6b636f29b0897d8706bd7aa5eaf06f9a/%s
+#+link: cs34 https://github.com/cedar-policy/cedar-spec/blob/017c35c3d1f856a0f8b62a66660ee6628870bbcf/%s
+#+link: lp https://github.com/tao3k/lean-poo/blob/ccb94dc44d874050dc8a8ede692bb2afac55ea37/%s
+
+#+link: pc31 https://github.com/tao3k/poo-flow-core/blob/377761072f2e8e39ae03ee26027d1fa5ad80b018/%s
+
+* Evidence scope
+
+The initial comparison inspected exact source snapshots on 2026-10-18 without
+building them. The subsequent [[file:11-source-to-execution-assurance-review.org][guard-law review]] records limited standalone
+proof checks; [[file:12-fm1-baseline-and-native-qualification.org][the isolated FM1 investigation]] now records complete owner builds,
+selected native execution and retained failures. Each receipt retains its own
+source/target/scope. Source inspection alone is not a fresh acceptance result.
+No exact-head remote CI, deployment or benchmark result is claimed here.
+
+The local Weaver checkout was =main= at
+=4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. It had environment scaffolding
+and a license but no gateway implementation or architecture documents.
+Existing untracked environment files are outside this change.
+
+| Repository | Inspected identity | Selection reason |
+|------------+--------------------+------------------|
+| agentgateway | =955d56fae09b45f3cb8e85e797dbb1eb06134f77= | Upstream main snapshot fetched for this review |
+| POO Flow | =a74fc2fd63437252175b5a67649ee54b886d3bf4= | Existing local =research/ascent-poo-flow= checkout; inspected paths were clean |
+| cedar-poo-spec | =c8d1a0641120cf65e299e8a98f9fe7666ca96ab5= | Exact Git dependency in POO Flow's Cedar binding manifest and lockfile |
+| POO Flow Core | =80e2e74022c9c4053445475402856c5f369aec48= | Actual inspected core submodule checkout, separate repository |
+| Lambda Aitia | =cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc= | Actual inspected submodule; matches the parent gitlink |
+
+Core and Lambda Aitia are separate Git repositories. The root revision pins
+Core at =377761072f2e8e39ae03ee26027d1fa5ad80b018=, while the inspected Core
+checkout is =80e2e74022c9c4053445475402856c5f369aec48=. Core architecture
+claims refer to that actual checkout, not the root gitlink. Links now identify
+each true owner and commit. This corrects earlier root-relative source links
+and does not establish a reproducible integrated build of these revisions.
+
+The remote cedar-poo-spec default branch was also fetched and identified as
+=cecf0263d707ba545a86778eb32ba45b1c760f63=. Its README and packaging were
+inspected for orientation, but the comparison below uses the pinned
+=c8d1a06= tree. That tree has =rust/Cargo.toml=; newer package paths must
+not be projected backward onto it.
+
+The subsequent coordination review reused those identities. Agentgateway is
+now cloned at =.data/agentgateway= from the previously fetched upstream snapshot,
+with its origin restored to the upstream GitHub URL. This is a local clone,
+not a newly fetched latest-head claim. The ignored checkout is research input.
+
+The cross-review retained these pinned revisions. The adjacent POO working tree
+now contains concurrent changes, including durable-store import migration.
+Those changes are outside Weaver ownership; new findings below use committed
+blobs at the listed revisions rather than treating the whole working tree as
+an integrated source baseline.
+
+* Source register
+
+** Agentgateway
+
+- A1: [[ag:architecture/configuration.md][Configuration architecture]].
+- A2: [[ag:architecture/cel.md][CEL context and dependency capture]].
+- A3: [[ag:crates/agentgateway/src/store/policy.rs][Request, response, and backend policy traits]].
+- A4: [[ag:crates/agentgateway/src/http/authorization.rs][Authorization rule composition and defaults]].
+- A5: [[ag:controller/pkg/agentgateway/translator/agw.go][Go Gateway API translation]].
+- A6: [[ag:controller/pkg/syncer/krtxds/xds.go][Go xDS synchronization]].
+- A7: [[ag:crates/agentgateway/src/store/mod.rs][Runtime stores and lock ownership]].
+- A8: [[ag:crates/policy-core/src/policy.rs][Phase-specific policy contracts]].
+- A9: [[ag:Cargo.toml][Rust workspace]] and [[ag:go.mod][Go module dependencies]].
+
+- A10: [[ag:crates/agentgateway/src/http/retry/mod.rs][Proxy retry policy and attempt predicates]].
+- A11: [[ag:crates/agentgateway/src/http/retry/body.rs][Replayable request body]].
+- A12: [[ag:crates/agentgateway/src/proxy/httpproxy.rs][HTTP proxy attempt and request mirror paths]].
+
+** POO Flow
+
+- P1: [[pc:module-system/design/160-governance-core-vertical-domain-and-cedar-provider-boundary.org][Governance, Authorization, and Cedar ownership]].
+- P2: [[pf:modules/governance/interface.ss][Governance public interface]] and [[pf:modules/authorization/objects.ss][Inert Provider and Capability construction]].
+- P3: [[pf:bindings/cedar-gerbil/README.org][Cedar binding and outer-build contract]].
+- P4: [[pf:bindings/cedar-gerbil/crates/cedar-authority/README.org][Native and Runtime Host qualification boundaries]].
+- P5: [[pf:bindings/cedar-gerbil/crates/cedar-authority/src/authority.rs][Issuer, grants, consumption, and revocation]].
+- P6: [[pf:bindings/cedar-gerbil/crates/cedar-authority/src/projection.rs][Subject preparation and source-admission requirement]].
+- P7: [[pf:bindings/cedar-gerbil/crates/cedar-authority/src/aot_host.rs][Bounded worker execution]].
+- P8: [[pf:bindings/cedar-gerbil/crates/cedar-gerbil/src/artifact.rs][Validated-case comparison with the POO-owned snapshot]].
+- P9: [[pf:packages/proofs/lean/lake-manifest.json][Cedar proof dependency lock]] and [[pf:packages/proofs/lean/lean-toolchain][Lean toolchain]].
+- P10: [[pc:module-system/design/149-01-cedar-lean-dual-engine-authorization-subject-refinement.org][Subject identity and limits of dual-engine agreement]].
+- P11: [[pf:bindings/cedar-gerbil/crates/cedar-gerbil/Cargo.toml][Pinned bridge dependency]].
+- P12: [[pf:modules/governance/policy/authorized-effect-token.ss][Pure semantic token validation and consumption]].
+- P13: [[pf:modules/governance/policy/strict-mediation.ss][Pure nonce/root mediation transition]].
+- P14: [[pf:bindings/cedar-gerbil/crates/cedar-authority/src/canonical.rs][Restricted deterministic CBOR for Rust signed representations]].
+- P15: [[ai:modules/assurance/effect-host.ss][Serialized local authorize/reserve/deliver Host]].
+- P16: [[ai:modules/assurance/host.ss][Issued preflights, exact request fingerprints and source-current checks]].
+- P17: [[pf:modules/ai-agentic-context/features/memory/durable/store-backend.ss][Durable backend negotiation and runtime ownership]].
+- P18: [[pf:packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean][Canonical registry, durable intent, claims, fences and observations]].
+- P19: [[pf:packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean][Existing cross-owner recovery bridge]].
+- P20: [[pf:packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean][Declared effect completeness and multiplicity owner]].
+- P21: [[pc:module-system/design/45-120-50-source-bound-effect-completion-recovery-committed-effect-exactly-once-bridge-closure.org][Committed-effect bridge and evidence limits]].
+- P22: [[pf:modules/ai-agentic-context/features/memory/durable/store.ss][Existing ledger-kind and capability-flag inventory]].
+- P23: [[pf:bindings/cedar-gerbil/crates/cedar-authority/src/runtime.rs][Runtime handshake, sequence and input identity]].
+- P24: [[pf:bindings/cedar-gerbil/crates/cedar-authority/tests/authorization.rs][Existing signature, recreation, expiry and preflight rejection tests]].
+- P25: [[ai:t/assurance/unit/decision-preflight-test.ss][Preflight identity, source-change and observed-rollback controls]] and [[ai:t/assurance/unit/lifecycle-boundary-test.ss][Local lifecycle boundary test source]].
+
+- P26: [[pf:bindings/cedar-gerbil/crates/cedar-authority/src/wire.rs][Outcome validation, agreement, and erroring policy identities]].
+- P27: [[pf:bindings/cedar-gerbil/crates/cedar-authority/src/case_check.rs][Explicit error-free check in the case qualification path]].
+
+- P28: [[pf:packages/proofs/quint/ContextSessionClaim.qnt][Bounded claim transitions and invariant controls]] and [[pf:packages/proofs/quint/ContextTemporalLifecycle.qnt][Temporal lifecycle model]].
+- P29: [[pf:packages/proofs/quint/source_binding.py][Quint-to-Lean metadata freshness checker and its explicit evidence limit]].
+- P30: [[pf:packages/proofs/lean-poo/ContextSessionClaim.lean][Pure claim guard contracts]] and [[pf:packages/proofs/lean-poo/ContextTemporalPolicy.lean][Temporal policy proof companion]].
+
+- P31: [[pf:packages/proofs/lean-poo/SessionAttempt.lean][Pure attempt recovery and completion guard laws]] and [[pf:packages/proofs/quint/SessionAttempt.qnt][Existing bounded attempt model]].
+- P32: [[pf:packages/proofs/lean/PooFlowProof/Enterprise/CedarDualEngineAuthorization.lean][Dual agreement and subject/engine counterexamples]].
+- P33: [[pf:packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean][Semantic and scheduling accounting]] and [[pf:packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean][Watchdog, budget and retry authority separation]].
+- P34: [[pf:packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundFingerprintHistoryClosure.lean][Progress fingerprint history closure]].
+- P35: [[pf:packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean][Rollback, fork and common publication-domain laws]] and [[pf:packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean][Finite prefix and future-context exclusion]].
+- P36: [[pf:packages/proofs/lean/lakefile.lean][Actual proof package requirements]] and [[pf:bindings/cedar-gerbil/Cargo.toml][Rust authority workspace version and feature declarations]].
+
+- P37: [[pf:packages/proofs/lean/PooFlowProof/Runtime/CedarNative.lean][Actual Lean protobuf decoder, export and semantic identity]] and [[pf:packages/proofs/lean/PooFlowProof/Runtime/CedarRuntimeHost.lean][Host link root]].
+- P38: [[pf:packages/proofs/lean/native/cedar_native_probe.c][Probe initialization/thread/ownership owner]] and [[pf:packages/proofs/lean/native/cedar_runtime_host.c][AOT Host C allocation and Lean ABI owner]].
+- P39: [[pf:bindings/cedar-gerbil/crates/cedar-authority/tests/native_ffi.rs][Native positive and malformed-input gates]] and [[pf:bindings/cedar-gerbil/crates/cedar-authority/tests/runtime_host.rs][Linked Host identity and failure isolation gates]].
+- P40: [[pf:bindings/cedar-gerbil/Cargo.lock][Complete Rust workspace lock]] and [[pf:gerbil.pkg][Separate Gerbil package dependency declarations]].
+- P41: [[pc31:dev/proofs/lean/lake-manifest.json][Parent-pinned Core proof manifest]] and [[pc31:dev/proofs/lean/lean-toolchain][Parent-pinned Core compiler]].
+
+- P42: [[pf:modules/ai-agentic-context/session-host.ss][Context Session owner, original proof binding and revalidation]].
+- P43: [[pf:modules/session/funs-attempt.ss][Pure Session claim, completion, recovery, reconciliation and close intents]].
+
+- P44: [[pf:bindings/cedar-gerbil/crates/cedar-gerbil/src/lib.rs][NativeAuthority mutable owner and full POO consume projection]].
+- P45: [[pf:t/scenarios/authorized-effect-token-test.ss][Pure token, nonce, root and unknown-observation scenario source]].
+- P46: [[pf:modules/workflow/qualification/agentic-control-plane-fixture.ss][Single canonical token/mediation/proof projection fixture]].
+
+** Cedar POO Spec at the POO Flow pin
+
+- C1: [[cp:README.org][Repository ownership and scope]].
+- C2: [[cp:docs/rfc/0002-policy-module-composition.org][Policy module composition and invalidation]].
+- C3: [[cp:docs/rfc/0003-cedar-language-export.org][Export, stable IDs, and concrete-language rejection]].
+- C4: [[cp:docs/rfc/0006-schema-bound-cedar-replay.org][Schema-bound replay and its trust boundary]].
+- C5: [[cp:rust/src/schema.rs][Strict validator, schema parsing, and replay API]].
+- C6: [[cp:rust/Cargo.toml][Bridge runtime features and Cedar version]].
+- C7: [[cp:lake-manifest.json][Cedar and Lean-POO locks]] and [[cp:lean-toolchain][Lean toolchain]].
+- C8: [[cp:CedarPooSpec/Admission/BoundOperation.lean][Effect/state projection and Host authenticity obligation]].
+
+- C9: [[cp:rust/src/lib.rs][Exported artifact, replay, and schema-bound bridge APIs]].
+
+- C10: [[cp:CedarPooSpec/CompoundAuthorization.lean][Compound receipt construction and explicit error-free Receipt.allowed predicate]].
+- C11: [[cp:CedarPooSpec/Composition.lean][Conditional evaluation and validation certificate composition]].
+- C12: [[cp:lakefile.toml][Lean package and direct dependency declarations]].
+
+- C13: [[cp:Justfile][Owner build, manifest export and replay acceptance commands]] and [[cp:Cargo.lock][Original Rust/dev/test lock]].
+
+** Transitive semantic source comparison
+
+- T1: [[cs31:cedar-lean/lean-toolchain][Cedar e9fa9c1 toolchain]] and [[cs31:cedar-lean/lakefile.lean][Cedar 4.31 dependency declarations]].
+- T2: [[cs34:cedar-lean/lean-toolchain][Cedar 017c35c toolchain]] and [[cs34:cedar-lean/lakefile.lean][Cedar 4.34 dependency declarations]].
+- T3: [[cs31:cedar-lean/Cedar/Spec/Evaluator.lean][Earlier evaluator]] and [[cs34:cedar-lean/Cedar/Spec/Evaluator.lean][Later evaluator with extHasAttr]].
+- T4: [[cs31:cedar-lean/Cedar/Spec/Ext/Datetime.lean][Earlier datetime parsing]] and [[cs34:cedar-lean/Cedar/Spec/Ext/Datetime.lean][Later datetime parsing]].
+- T5: [[cs34:cedar-lean/Cedar/Validation/Typechecker.lean][Nested attribute validation]] and [[cs34:cedar-lean/CedarProto/Expr.lean][Expression protobuf surface]].
+- T6: [[lp:lean-toolchain][Pinned LeanPoo 4.34.0 toolchain]].
+
+- T7: [[cs31:cedar-lean/Protobuf/Varint.lean][Old varint parser source]] and [[cs34:cedar-lean/Protobuf/Varint.lean][New-pin byte-identical varint parser source]].
+
+** Language ecosystem references
+
+These are upstream documentation or source references accessed on the review
+date, not dependencies selected for Weaver. Versions must be fixed before
+implementation or measurement.
+
+- E1: [[https://go.dev/src/net/http/httputil/reverseproxy.go][Go reverse proxy implementation and transport hooks]].
+- E2: [[https://go.dev/doc/gc-guide][Go GC cost and memory tradeoffs]].
+- E3: [[https://pkg.go.dev/sigs.k8s.io/controller-runtime][Kubernetes controller-runtime APIs and compatibility guidance]].
+- E4: [[https://github.com/kubernetes/client-go][Kubernetes client-go]].
+- E5: [[https://github.com/quic-go/quic-go][Go QUIC ecosystem]].
+- E6: [[https://go.dev/src/net/http/transport.go][Go HTTP transport retry, connection and proxy behavior]].
+- E7: [[https://go.dev/src/net/http/client.go][Go HTTP client redirect/method/body behavior]].
+- E8: [[https://grpc.io/docs/guides/retry/][gRPC configured and transparent retries]].
+- E6: [[https://tokio.rs/tokio/tutorial][Tokio asynchronous networking runtime]].
+- E7: [[https://docs.rs/hyper/latest/hyper/][Hyper HTTP building blocks]].
+
+** Zero Trust and AWS references
+
+These mutable upstream pages were read on 2026-10-18. They are design
+references, not pinned or qualified Weaver dependencies.
+
+- ZR1: [[https://csrc.nist.gov/pubs/sp/800/207/final][NIST SP 800-207: Zero Trust Architecture]].
+- ZR2: [[https://aws.amazon.com/blogs/opensource/introducing-strands-box-ai-agent-sandboxes-powered-by-dogwood/][AWS introduction to Strands Box]], published 2026-10-07.
+- ZR3: [[https://github.com/strands-agents/box][Strands Box repository and README]].
+- ZR4: [[https://raw.githubusercontent.com/strands-agents/box/main/SECURITY.md][Strands Box security boundary]].
+- ZR5: [[https://aws.amazon.com/blogs/opensource/introducing-the-dogwood-local-engine-temporal-governance-for-agent-actions/][AWS Dogwood Local Engine architecture]].
+
+The user's reference to an AWS "Standard Box" is interpreted as Strands Box,
+based on the recent official announcement. This identification remains an
+inference; the Zero Trust requirement stands independently of that name.
+
+* Zero Trust comparison and limits
+
+ZR1 rejects implicit trust based on location or asset ownership. Weaver adopts
+this as a required design baseline with scoped authentication and authorization,
+not as a certification obtained by using a gateway.
+
+ZR2 describes OS containment plus action-level enforcement through an egress
+gateway, interpreters, and MCP broker. Shared event history can connect actions
+across tools, and the gateway can attach credentials outside the workload.
+The announcement also distinguishes directly granted filesystem access from
+policy-observed activity and acknowledges a larger trusted computing base.
+These observations motivate explicit coverage and trust inventories in Weaver;
+they do not establish complete mediation for every deployment.
+
+ZR4 excludes within-process multi-tenant isolation and points to external
+isolation for that threat model. It treats credential misrouting, reflection,
+and redirects as security-boundary concerns. Weaver must qualify its own
+isolation and credential broker, rather than inherit protection from a language
+choice or upstream product description.
+
+ZR5 describes serialized, persisted event admission and compact temporal
+summaries. It also states that new temporal policy clauses use post-update
+history. Weaver cannot adopt a fresh-history convention where it would erase
+existing data-flow restrictions: migrate/rebuild qualified state or deny the
+affected capability until its required history is available. Stateful temporal
+decisions need their own selected semantic/state owner. No equivalence between
+Dogwood, Cedar, or POO Flow temporal semantics is claimed.
+
+* Cross-review: agreement is not an error-free runtime permit
+
+P26's =Outcome::agrees_with= compares decision, determining-policy IDs and
+erroring-policy IDs. Its validator permits nonempty erroring IDs distinct from
+determining IDs. P23 validates matching witnesses. P5's =Authority::issue=
+branches on deny versus allow after evaluation, with no explicit rejection of
+nonempty =erroring_policies= on that issue path. P27 separately calls
+=require_error_free_decision= in case qualification. That separate case check
+is not evidence that every runtime issue call enforces Weaver's error-free
+execution profile. This is a source-level gap, not a reproduced exploit.
+
+The new source-admitted authority path must reject error-bearing results before
+issuing its executable grant; until that extension is qualified, it stays
+unavailable. An additional consumer-side rejection is defense in depth and does
+not replace the issuer requirement. Do not claim that strict lockstep already
+supplies this behavior or change Cedar's own decision semantics.
+
+The language reference describes [[https://docs.cedarpolicy.com/auth/authorization.html][default deny, forbid precedence, and skip-on-error]].
+Weaver's stricter admission rule is application policy. The online reference
+clarifies terminology; the listed source commits remain the implementation
+baseline. See [[file:09-code-as-policy.org][Code as Policy]] for its complete artifact and enforcement chain.
+
+* Comparative architecture
+
+| Concern | Agentgateway observation | Existing POO/Cedar boundary | Weaver proposal |
+|---------+-------------------------+-----------------------------+-----------------|
+| Public configuration | Local and remote inputs converge to IR, A1 | POO-native semantic objects, P1/P2 | Preserve semantic authoring; project admitted runtime resources |
+| Networking | Rust workspace and Go integration/controller code, A5/A6/A9 | Host integration is narrower than a network gateway, P3/P4 | Choose Go or Rust network owner by protocol and measurement |
+| Governance | Proxy policy facilities; no equivalence to POO Governance established | Typed Profile/Source/Threat/Assessment, P1 | Reuse POO meaning and evidence ownership |
+| Authorization | CEL allow/deny/require rules, A4 | Explicit Cedar Provider and strict authority, P1/P5 | One selected authorization authority per capability |
+| Composition | Attachment and runtime policy merge, A1/A3 | C4 edits and provenance before Cedar evaluation, C2 | Separate semantic composition from attachment resolution |
+| Evaluation phases | Request, response, backend attempt, A3/A8 | Subject/receipt/grant/consume lifecycle, P5 | Bind operation and each actual effect attempt explicitly |
+| Distribution | Fine-grained custom resources over xDS, A1/A6 | Content-bound snapshots and runtime identities, P3/P5 | Incremental delivery plus complete-closure activation |
+| Resource cost | Selective expression context retention, A2 | Strict Host starts isolated workers, P7 | Budget both metadata and authority work; benchmark complete paths |
+| Evidence | Inspected source has normal proxy contracts | Proof/replay/runtime evidence have distinct authority, P4/P10/C4 | Preserve those distinctions in deployment admission |
+
+** Useful agentgateway mechanisms
+
+A1 describes separate startup settings and dynamic resources, shared IR,
+and resource references that limit update fanout. Weaver should reuse the
+principle while adding dependency-closure activation. A1 does not establish
+cross-resource atomic activation or a Weaver security proof.
+
+A2 analyzes expression dependencies at configuration time to retain only
+needed request data. It also documents incomplete detection for dynamic
+access. Weaver therefore requires conservative dependency capture: uncertain
+access retains bounded data or rejects the plan; it must not silently omit a
+security input.
+
+A3 distinguishes request policy execution from per-backend-attempt execution.
+This is a useful basis for retry semantics. A8 exposes typed request/response
+state and host-selected backend dispatch. Weaver should adopt explicit
+phase capabilities without treating arbitrary callouts as trusted facts.
+
+** Authorization behavior that requires an explicit decision
+
+At A4, =RuleSets.validate= permits access when there are no rules. It also
+permits when only deny rules exist and none matches. Allow rules use an
+allowlist default, and all require rules must match. The source comments
+warn that a deny expression error can fail to deny.
+
+Weaver protected capabilities require an installed Provider and a valid
+positive authorization result. Missing policy, unknown capability, invalid
+input, evaluation failure, and unavailable authority cannot become a permit.
+This is an application admission rule around Cedar; it does not change the
+upstream semantics of policy evaluation errors. A valid Cedar deny remains
+distinct from an invalid or failed evaluation.
+
+CEL remains a possible operational-expression adapter. No CEL-to-Cedar
+semantic equivalence has been established here. CEL filters cannot create
+grants or bypass required Cedar evaluation. Automatic translation would
+need a defined supported subset and a semantic preservation argument.
+
+** Avoid inference from dependency presence
+
+A7 currently constructs runtime stores around =Arc<RwLock<...>>=. A9 listing
+=arc-swap= does not prove that all configuration reads use immutable atomic
+snapshots. The relevant store and request path must be inspected and measured
+before making lock-free or update-consistency claims. Weaver's immutable-plan
+design is a proposal with its own reclamation and contention obligations.
+
+* POO Flow integration findings
+
+P1 owns engine-neutral Governance in POO Flow; domain contributors select
+profiles, cases, sources, and policies. P2 constructs inert Provider and
+Capability values with =runtime-executed? #f=. Weaver preserves that boundary.
+
+P8 does more than load an exported policy file: it compares schema, entities,
+policy identities, and rendered sources against a POO-owned snapshot. The
+validated Lean artifact constrains that snapshot; it cannot publish an
+authority on its own. A Weaver publication path must preserve this join.
+
+P5 binds grants to authority instance, runtime generation, policy revision,
+revocation epoch, authorization subject, intent, and exact handoff. Issuance
+is pending issuer state. Consumption removes that state before returning the
+handoff; an external execution failure does not reopen the grant. This is
+single-use issuance behavior, not exactly-once execution across a network.
+
+P7 runs Rust and Lean workers sequentially under one shared deadline. It
+starts private executable copies per request. Worker startup, input staging,
+evaluation, and receipt work belong in the critical-path budget.
+
+P6 rejects capabilities requiring source admission through the ordinary
+preparation path. P4 says a trusted current-Decision path is not installed
+there. Weaver must not infer production effect authority from an unmarked
+request or a permissive Cedar policy. The actual application-owned path and
+its currentness checks require separate integration evidence.
+
+** Additional pure-state and authentication boundaries
+
+P12's =poo-flow-authorized-effect-token-validate= checks binding, root, expiry,
+epoch, spent-nonce input, and diagnostic durability. The inspected function
+does not cryptographically verify the stored signature or authenticate its
+caller-supplied validation context. P13 returns a pure next-state value; it
+does not perform a durable write or serialize competing host commits. Two callers
+can compute transitions from the same old state unless the Host fences them.
+Names such as =strict= and =durability= describe values or intent, not storage
+or authentication evidence. This is an API evidence limit, not a new exploit
+claim or a substitute for inspecting the complete selected application path.
+
+P5 independently verifies signed Rust grants and keeps issuer-owned pending
+state. No interchangeability with the Scheme draft token follows. P12 hashes
+Scheme-written values; P14 signs/digests through restricted deterministic CBOR.
+Treat those formats as separate protocols until an owner-qualified projection
+proves their relationship. Do not invent a shared digest by matching field names.
+
+The review dispositions R1-R14 and required baseline are in
+[[file:04-zero-trust-and-review.org][Zero Trust baseline and architecture review]].
+
+** Concrete lifecycle and recovery reuse
+
+P15 enforces an exact Scheme owner thread and rejects mutation during its runtime
+handoff. It checks current request, epoch and lease, marks a grant reserved once,
+and consumes a reservation before delivery or rejection. The delivery receipt
+explicitly reports =durable? #f= and =distributed-authority? #f=. These are useful
+existing lifecycle semantics, not a durable ledger to invent again in Weaver.
+
+P16 fingerprints the actual issued request and preserves preflight-only markers.
+Its currentness predicate is a source-owned guard, not a permit. P17 assigns
+append/fsync/lease/checkpoint/repair work to the runtime backend, with Scheme
+owning selection and contract projection. Backend capability negotiation must
+still qualify serializable multi-row history/budget/claim operations.
+
+P18/P19 already define durable canonical intent, exclusive recovery claim,
+epoch/fence and provider/worker binding, fresh recovery authorization, and
+terminal effect observations. Several validity/binding relations are parameters:
+a gateway runtime must supply and justify them. P20/P21 require effect-universe
+coverage and exact multiplicity for a committed exactly-once claim. A successful
+HTTP write is not that witness. No fresh Lean compilation or physical recovery
+qualification was performed by this documentation review.
+
+The resulting concrete ordering and safe-orphan treatment are in
+[[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]]. The upstream Go source investigation
+and its distinct cloud-integration role are in
+[[file:06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]].
+
+** Source-admission, ledger and stale-worker refinement
+
+P16's =decision-preflight-bound?= deliberately requires unknown state/outcome.
+Its cut epoch invalidates old local seals on observed cut changes; it does not
+record every unobserved source revision or persist an epoch across restart.
+Source materialization copies and rehashes configured-reader inputs, while its
+comments explicitly withhold Git provenance and actual verifier-process-input
+claims. A new runtime-admitted Decision family therefore requires an owner
+extension; an adapter cannot just relabel the existing preflight.
+
+P5's =Authority::new= creates a fresh random instance and empty pending table.
+It can reuse the supplied signing seed/bootstrap, so same key or generation is
+not an instance identity. =consume= is an in-process mutation; the inspected API
+has no durable per-grant consume-status query. Its pending-count field and
+=grant-consumed-or-unknown= refusal cannot resolve a wrapper timeout. P24 contains
+recreated-context rejection tests; that is distinct from a paused old process or
+memory snapshot resuming with its original instance still alive.
+
+P22's closed capability inventory covers append/checkpoint/job and related
+operations, not the proposed gateway multi-row transaction and idempotent command
+contract. P17's descriptors remain inert, including advertised concurrent/local-
+first behavior. P18 proves that matching fence fields alone need not establish
+exclusive claim ownership and parameterizes actual claim/record validity.
+Binding those relations to real storage, broker gates and supervisor/receiver
+fencing is required runtime work, not an implied proof result.
+
+The exact reusable symbols, required owner extensions and timeout/restart
+decisions X1-X10 are in [[file:07-source-admission-ledger-fencing.org][Source admission, durable ledger, and fencing contracts]].
+All new SF acceptance cases remain unexecuted.
+
+During this pass P17 had concurrent local import-path edits. Its capability,
+negotiation and inert-receipt claims were rechecked against the pinned Git blob;
+the other inspected source paths were clean at the status check. No local POO
+changes were modified or treated as a new qualified source baseline.
+
+* Cedar POO Spec integration findings
+
+C2 compiles explicit =extend=, =overlay=, and =remove= edits through C4-based
+composition, rejects conflicting sibling edits, and retains provenance.
+Weaver policy attachment must not reinterpret these edits as generic
+last-write-wins updates. Changing schema invalidates schema-dependent proof
+premises even when a policy body stays unchanged.
+
+C3 distinguishes compiled static policy exports from editable templates and
+links. Plain Cedar source reparsing can change policy IDs; use ID-preserving
+JSON artifacts or an explicitly verified identity mapping for receipts.
+Unsupported abstract syntax must fail export rather than acquire an invented
+concrete meaning.
+
+C4/C5 distinguish schema-bound validation and replay from diagnostic replay.
+Schema-defined action hierarchy can affect the result. A finite replay receipt
+does not authenticate the supplied facts or prove all future requests correct.
+C8 binds an operation to supplied effect/state values and explicitly leaves
+their authenticity and eventual execution binding to the Host.
+
+* Compatibility and qualification gaps
+
+| Item | Source observation | Required disposition |
+|------+--------------------+----------------------|
+| Cedar Lean revision | P9 pins =e9fa9c1e6b636f29b0897d8706bd7aa5eaf06f9a=; C7 pins =017c35c3d1f856a0f8b62a66660ee6628870bbcf= | Establish compatible semantics, exports, extensions, and diagnostics; no automatic version substitution |
+| Lean toolchain | P9 uses =v4.31.0=; C7 uses =v4.34.1= | Build separately with declared interfaces; no assumed native ABI compatibility |
+| Cedar Rust | POO binding and C6 declare =4.12.0= | Match enabled features, serialization, and lock identity as well as version |
+| Native malformed input | P4 records a truncated-varint panic qualification blocker | Reproduce on the selected artifact and require typed rejection before native acceptance |
+| Native ABI evidence | P4 mentions a Lean 4.31 ABI; pinned P9 declares Lean 4.31.0, while C7 declares 4.34.1 | Matching a README and toolchain string is insufficient; inspect generated artifacts and qualify the actual Host ABI |
+| Source-bound effects | P4/P6 leave the ordinary protected path closed | Integrate the actual current-Decision owner; no bypass through client metadata |
+| Gateway protocol coverage | No Weaver implementation exists | Select protocol versions and run protocol-owner conformance before support claims |
+
+The revision and toolchain differences are compatibility questions, not
+evidence that the projects are incompatible. The documented panic is not
+claimed as a newly reproduced failure. These distinctions are release gates,
+not reasons to alter dependency caches or weaken qualification.
+
+* One-use state and differentiation follow-up
+
+[[file:15-authoritative-spent-state.org][The P13 authority review]] separates the pure state/context gap, current P15/P5
+local guards, existing test/fixture scope, versioned publication and logical
+message continuity across restart. Its symbolic counterexamples are not newly
+executed exploit or formal proof results. A late observation must not trigger
+another token consume merely to change unknown into committed.
+
+[[file:16-differentiation-and-reuse.org][The framework differentiation decision]] explains how to reuse gateway protocol,
+cloud/distribution and phase mechanisms while keeping POO-owned Governance,
+Cedar meaning and effect/recovery authority. Intended advantages remain subject
+to owner/physical/formal integration and matched operational qualification;
+this is not an assertion about all features of today's upstream product.
+
+* Reuse strategy
+
+Three reuse choices remain available: configure an upstream deployment,
+integrate upstream libraries/services, or implement a narrow independent
+gateway. A long-lived fork adds security-update and protocol-maintenance cost.
+
+Evaluate each choice against: preserving POO ownership; exact subject and
+handoff binding; default-deny protected capabilities; closure activation;
+Go networking integration value; strict Host cost; and artifact/protocol
+compatibility. Source inspection has not established a stable embedding API
+or complete fit for any choice. Record the selected commit and maintenance
+owner before implementing a reuse path.
+
+* Mandatory formal dependency review
+
+C10 already defines a nonempty, allow-only, error-free =Receipt.allowed=.
+Successful =authorizeAll= or C8 =BoundOperation.authorize= receipt construction
+does not enforce that predicate. Reuse it explicitly in protected execution;
+the ordinary Rust issue gap above is an adapter obligation, not missing Cedar
+semantics. C11 composition certificates remain conditional and can describe
+deny/error evaluations. P29 checks metadata freshness, not semantic refinement.
+
+The compatibility table above has been corrected against pinned P9 Git blobs;
+values from another working-tree state cannot describe this source baseline.
+C7/C12 declare Lean 4.34.1 and Cedar 017c35c3d1f856a0f8b62a66660ee6628870bbcf,
+whereas P9 declares Lean 4.31.0 and Cedar e9fa9c1e6b636f29b0897d8706bd7aa5eaf06f9a.
+The Rust cedar-poo-spec pin does not resolve this separate Lean closure.
+[[file:10-zero-trust-assurance.org][The mandatory Quint/Lean framework]] records compatibility selection, existing
+owner reuse and FM1-FM12 obligations. No integrated build or fresh proof run
+has been established by inspecting these sources.
+
+* Detailed proof-to-execution audit disposition
+
+[[file:11-source-to-execution-assurance-review.org][The detailed FM review]] records the exact existing declarations, their premises,
+specified counterexamples and required positive/negative receipts for every FM
+obligation. P18's exclusive-fence theorem consumes an exclusive-authority premise;
+P20's exactly-once theorem consumes an occurrence-count premise. Neither supplies
+the concrete Weaver ledger or physical receiver contract. P33/P34 budget/history
+owners are progress-oriented and cannot be silently relabeled as gateway cost
+or information-flow proofs. T1-T6 confirm that the closure difference includes
+actual evaluator/validator/protobuf changes, not just compiler version strings.
+
+* Greenfield baseline qualification follow-up
+
+[[file:12-fm1-baseline-and-native-qualification.org][The isolated FM1 investigation]] is the current owner for new complete-build
+and native qualification results. The earlier source-only and standalone-proof
+receipts above retain their original scope. Its POO build uses Core at the
+parent gitlink 377761072f2e8e39ae03ee26027d1fa5ad80b018 rather than the separate
+80e2e740 design snapshot. No pin changes or legacy compatibility layer follow
+from the investigation. Weaver selects one new semantic/native baseline.
+
+
+* Writer-isolation and settlement source review
+
+[[file:23-writer-isolation-settlement-closure.org][The split-store review]] rechecks P12/P13/P15/P17/P18/P19/P20/P22/P31/P33/P35/P43
+and C8/C10/C11 at the registered committed identities. Existing pure transitions,
+canonical receipt joins and accounting separation are reuse inputs. Authentic
+complete writer inventories, durable cross-store publication, provider finality
+and actual financial materialization remain Weaver refinement obligations.
+
+
+* Account application and anti-rollback source review
+
+[[file:24-settlement-anchor-recovery.org][The account/anchor review]] rechecks the registered canonical receipt,
+Session obligation, authoritative publication and typed-budget contracts. P18
+requires actual valid prior commit and exclusive authority; P35 explicitly shows
+that exact equality alone admits rollback replay. C8 leaves actual input
+authenticity to the Host. None supplies a protected account gate by itself.
+
+
+* Gate consumption persistence source review
+
+[[file:25-gate-consumption-persistence.org][The persistence dossier]] rechecks P12/P13/P15 spent-state ordering,
+P17/P22 storage ownership, P18-P20 conditional receipt/execution closure,
+P31/P43 recovery obligations, P33 budgets, P35 publication domains and C8/C10/C11
+actual-input/Policy composition. [[file:../../dev/specs/evidence/gate-consumption-traces/source-review.json][Eighteen committed blobs were reverified]]
+without changing source pins. Existing mechanisms supply semantic joins and
+conditional proofs; the independent durable issuance/consumption root, actual
+owner barrier and authentic account-result recovery require native qualification.
+
+
+* Anchor leadership and final broker review
+
+[[file:26-anchor-commit-broker-fencing.org][The commit/broker dossier]] rechecks all eighteen prior committed source blobs,
+including P35's same-generation fork countermodel and explicit fork-free domain
+premise. [[file:../../dev/specs/evidence/anchor-broker-traces/source-review.json][The renewed source review]] retains exact identities and extended excerpts.
+POO Flow supplies original-binding, indeterminate-spend and retained-obligation
+semantics; cedar-poo-spec supplies conditional actual-input/Policy joins. Neither
+supplies native durable quorum publication or all-alias physical writer isolation.
+
+
+* Membership transfer source review
+
+[[file:27-anchor-configuration-prefix-inheritance.org][The reconfiguration review]] reverified the eighteen pinned committed blobs,
+including P35's fork-free publication, complete lineage-prefix and domain-binding
+contracts. [[file:../../dev/specs/evidence/reconfiguration-traces/source-review.json][The review evidence]] retains exact identities and added prefix excerpts.
+These source contracts support semantic reuse; neither POO Flow nor cedar-poo-spec
+supplies a native dynamic-quorum replication or actual writer-isolation proof.
+
+
+* Quorum-node publication and rollback refinement
+
+[[file:28-quorum-durable-promises-prefix-recovery.org][The durable-promise review]] rechecks P12/P13/P15/P17/P18/P19/P20/P22/P31/P33/
+P35/P43 and C8/C10/C11 at their registered source identities. P35 fork-free
+publication is a semantic premise; backend append/fsync contracts do not supply
+antirollback quorum witnesses or exclusive signing-key custody. The extension
+keeps native qualification distinct from reusable semantic proofs.

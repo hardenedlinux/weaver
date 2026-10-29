@@ -1,0 +1,93 @@
+[
+  {
+    "id": "AH1",
+    "design": "Current and pending reconstruction paths survive finite guarded runs",
+    "quint": "oldGarbageMayDeleteAfterSwitchTest",
+    "lean": "recovery_copy_retained",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "AH2",
+    "design": "Each admitted frame follows the actual WAL flush and parent contract",
+    "quint": "appendAfterCutRetainsLiveTailTest",
+    "lean": "logical_projection",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "AH3",
+    "design": "Concurrent storage steps compose the initialized actual account/source history",
+    "quint": "restartReplaysCommittedTailTest",
+    "lean": "actual_checkpoint_composition",
+    "d2": "lean"
+  },
+  {
+    "id": "AH4",
+    "design": "Late commit cannot settle the original reservation twice",
+    "quint": "repeatOriginalCommitRejectedTest",
+    "lean": "original_reservation_once",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "AH5",
+    "design": "Unknown original source usage retains its original hold",
+    "quint": "pendingTailKeepsOriginalHoldTest",
+    "lean": "unknown_original_hold_retained",
+    "d2": "registry.query"
+  },
+  {
+    "id": "AH6",
+    "design": "Appending and switching preserve every admitted WAL record",
+    "quint": "appendBeforeCutRetainsPendingTailTest",
+    "lean": "append_prefix_retained",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "AH7",
+    "design": "Switching the base preserves the entire current live tail",
+    "quint": "switchCarriesCurrentLiveTailTest",
+    "lean": "switched_live_tail_retained",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "AH8",
+    "design": "GC cannot delete a current live tail segment",
+    "quint": "liveTailCannotDeleteTest",
+    "lean": "current_tail_not_collectible",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "AH9",
+    "design": "The retired append generation cannot be reopened by a late descriptor",
+    "quint": "oldAppendGenerationRejectedTest",
+    "lean": "append_generation_monotone",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "AH10",
+    "design": "New root observations do not regress manifest generation",
+    "quint": "lostCutResponseQueriesSameGenerationTest",
+    "lean": "root_generation_monotone",
+    "d2": "protocols.mcp"
+  },
+  {
+    "id": "AH11",
+    "design": "Cut handoff requires a current observation and durable decision",
+    "quint": "nondurableHandoffRejectedTest",
+    "lean": "durable_cut_required",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "AH12",
+    "design": "Captured cut retains all pre-cut admitted records, including pending work",
+    "quint": "preCutPendingSurvivesSwitchAndLateCommitTest",
+    "lean": "cut_records_retained",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "AH13",
+    "design": "Admitting new WAL requires both durable bytes and durable admission descriptor",
+    "quint": "nondurableAppendRejectedTest",
+    "lean": "admission_requires_durable_descriptor",
+    "d2": "recovery.projection"
+  }
+]

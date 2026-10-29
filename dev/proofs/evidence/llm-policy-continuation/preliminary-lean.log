@@ -1,0 +1,29 @@
+proofs/lean/LlmPolicyContinuation.lean:106:8: warning: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+proofs/lean/LlmPolicyContinuation.lean:230:193: error: Application type mismatch: The argument
+  registered
+has type
+  Registered s original c
+but is expected to have type
+  a ∈ s.base.base.publication.execution.children.attempts
+in the application
+  LlmPolicyPublication.unknown_usage_retains_hold (publication_projection run) registered
+'Weaver.LlmPolicyContinuation.publication_projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.initialized_winner_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.family_has_one_winner' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.committed_family_prevents_absence' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.winner_is_never_replaced' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.original_staged_intent_is_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.approvals_keep_original_semantics' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.aliases_keep_canonical_family' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.protocol_alias_is_only_data' does not depend on any axioms
+'Weaver.LlmPolicyContinuation.inspection_cannot_authorize_consumption' does not depend on any axioms
+'Weaver.LlmPolicyContinuation.stale_approval_cut_is_rejected' does not depend on any axioms
+'Weaver.LlmPolicyContinuation.stale_approval_fence_is_rejected' does not depend on any axioms
+'Weaver.LlmPolicyContinuation.current_publication_prefix_is_inherited' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.original_claim_stays_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmPolicyContinuation.original_profile_stays_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.original_allowance_stays_bounded' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.original_domains_stay_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmPolicyContinuation.unknown_usage_retains_hold' depends on axioms: [propext, sorryAx, Quot.sound]

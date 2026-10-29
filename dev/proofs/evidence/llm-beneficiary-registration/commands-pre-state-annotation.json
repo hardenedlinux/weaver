@@ -1,0 +1,20 @@
+[
+  {
+    "label": "LlmBeneficiaryRegistration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmBeneficiaryRegistration.olean",
+      "proofs/lean/LlmBeneficiaryRegistration.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmBeneficiaryRegistration.lean": "c7f5ba4a3c6463a5b15d7701276709eb8574ccd585252896ca33f2bf91effc43"
+    },
+    "exit": 1,
+    "seconds": 6.552,
+    "watchdogSeconds": 20
+  }
+]

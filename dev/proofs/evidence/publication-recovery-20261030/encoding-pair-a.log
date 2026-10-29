@@ -1,0 +1,38 @@
+Command: cargo bench -p weaver-server --all-features --bench gateway --locked --offline -j 2 -- --noplot --save-baseline publication-pair-a
+Initial output: optimized profile already built; target/release/deps/gateway-66a2d9c43724b81b
+Benchmarking server/response_encoding/protobuf_frames/1: Collecting 30 samples in estimated 2.0000 s (12M iterations)
+Benchmarking server/response_encoding/protobuf_frames/1: Analyzing
+server/response_encoding/protobuf_frames/1
+                        time:   [166.30 ns 168.38 ns 171.50 ns]
+                        thrpt:  [5.8309 Melem/s 5.9391 Melem/s 6.0132 Melem/s]
+Found 5 outliers among 30 measurements (16.67%)
+  2 (6.67%) high mild
+  3 (10.00%) high severe
+Benchmarking server/response_encoding/arrow_batch/1
+Benchmarking server/response_encoding/arrow_batch/1: Warming up for 1.0000 s
+Benchmarking server/response_encoding/arrow_batch/1: Collecting 30 samples in estimated 2.0019 s (446k iterations)
+Benchmarking server/response_encoding/arrow_batch/1: Analyzing
+server/response_encoding/arrow_batch/1
+                        time:   [4.8587 µs 5.7453 µs 6.5849 µs]
+                        thrpt:  [151.86 Kelem/s 174.06 Kelem/s 205.81 Kelem/s]
+Found 5 outliers among 30 measurements (16.67%)
+  3 (10.00%) high mild
+  2 (6.67%) high severe
+Benchmarking server/response_encoding/protobuf_frames/32
+Benchmarking server/response_encoding/protobuf_frames/32: Warming up for 1.0000 s
+Benchmarking server/response_encoding/protobuf_frames/32: Collecting 30 samples in estimated 2.0028 s (194k iterations)
+Benchmarking server/response_encoding/protobuf_frames/32: Analyzing
+server/response_encoding/protobuf_frames/32
+                        time:   [7.9527 µs 8.7970 µs 9.7117 µs]
+                        thrpt:  [3.2950 Melem/s 3.6376 Melem/s 4.0238 Melem/s]
+Benchmarking server/response_encoding/arrow_batch/32
+Benchmarking server/response_encoding/arrow_batch/32: Warming up for 1.0000 s
+Benchmarking server/response_encoding/arrow_batch/32: Collecting 30 samples in estimated 2.0005 s (205k iterations)
+Benchmarking server/response_encoding/arrow_batch/32: Analyzing
+server/response_encoding/arrow_batch/32
+                        time:   [7.8497 µs 8.5983 µs 9.4141 µs]
+                        thrpt:  [3.3992 Melem/s 3.7217 Melem/s 4.0766 Melem/s]
+Found 1 outliers among 30 measurements (3.33%)
+  1 (3.33%) high severe
+
+

@@ -1,0 +1,31 @@
+# W10: continuation of the same synchronous callback in W02, not a fresh attempt.
+...@lib/theme
+shape: sequence_diagram
+coord: Rust coordination service
+scheme: Serialized Scheme owner
+ledger: Durable ledger
+broker: Final broker
+upstream: Upstream
+coord -> coord: Continue original callback / verified positive consumption
+coord -> ledger: S4 Current-state CAS / audit / holds
+ledger -> coord: SendCommitted / own transition V to V+1
+broker -> coord: S5 Claim exact attempt
+coord -> ledger: CAS with current derived premise / fence
+ledger -> coord: One durable claim
+coord -> broker: One local emission handle
+broker -> broker: Final bytes / target / credential / deadline gate
+broker -> upstream: One application request start\nNo hidden retry / redirect / mirror
+broker -> coord: Attributable emitter closure\nNo future application submissions
+upstream -> broker: Selected attributable business result / usage
+broker -> coord: S6 Bound outcome and usage evidence
+coord -> ledger: Deduplicate observation records
+coord -> ledger: Atomic budget settlement from admitted evidence
+coord -> scheme: Callback result under capability ack contract
+scheme -> coord: Non-durable lifecycle receipt\nNever a new dispatch right
+coord.caveat: "no repeated issue or consume between W02 and W10.\nThis selected result order is not universal; W07 separates emitter, outcome and settlement."
+coord.class: runtime
+scheme.class: semantic
+ledger.class: ledger
+broker.class: runtime
+upstream.class: ledger
+coord.caveat.class: note

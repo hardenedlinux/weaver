@@ -1,0 +1,92 @@
+[
+  {
+    "source": "proofs/evidence/llm-beneficiary-registration/bundle-controls-0/LlmBeneficiaryRegistration.qnt",
+    "sha256": "5eb58fb7002ed2583d9994a42913771e8dc8046991e66fdffc6195fa99f25881",
+    "tests": [
+      "sharedWorkloadCannotCreateEntitlementTest",
+      "producerApprovalRequiredTest",
+      "rootHasNoBeneficiaryAuthorityTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-beneficiary-registration/bundle-controls-1/LlmBeneficiaryRegistration.qnt",
+    "sha256": "1db497415e43440b478099849d4aa1332099244bdd7051ae0bc2398c062075d1",
+    "tests": [
+      "sharedIdentityCannotRegisterKeyTest",
+      "forwardedBearerWithOwnKeyRejectedTest",
+      "entitlementProofRequiredTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-beneficiary-registration/bundle-controls-2/LlmBeneficiaryRegistration.qnt",
+    "sha256": "97e8e77772161059da1e97c30edf91a96d6e9dd9ebf112d07d5498113d2780fd",
+    "tests": [
+      "beneficiaryPossessionRequiredTest",
+      "substitutedSessionRejectedTest",
+      "originalScopeCannotBeRewrittenTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-beneficiary-registration/bundle-controls-3/LlmBeneficiaryRegistration.qnt",
+    "sha256": "1afd28793627b919a077dd9e45989281a7885680eb805bb25949e17f64482f5b",
+    "tests": [
+      "sharedIdentityRegistrationCounterexampleTest",
+      "firstBindingDoesNotPublishTest",
+      "lostBindingReplyRetainsFirstKeyTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-beneficiary-registration/bundle-controls-4/LlmBeneficiaryRegistration.qnt",
+    "sha256": "066367ae1aaa7d2fa632bb45387ac3f0113e02be0af0a5e737bfc27a1bd615ef",
+    "tests": [
+      "authorizedSecondKeyCannotReplaceFirstTest",
+      "oldWorkerCannotRecoverEnrollmentTest",
+      "recoveryNeedsCurrentReadPolicyTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-beneficiary-registration/bundle-controls-5/LlmBeneficiaryRegistration.qnt",
+    "sha256": "39757bb4d8c59ebcaf667187e79413a2aadf0ca701877595497e5f72a3411478",
+    "tests": [
+      "newRootInvalidatesPublicationReadTest",
+      "currentPolicyRequiredAtPublicationTest",
+      "changedPayloadCannotPublishTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-beneficiary-registration/bundle-controls-6/LlmBeneficiaryRegistration.qnt",
+    "sha256": "aa825afadb95d6debc9b7dc48bde5cb5b2d2d4ef35222f8f471245e64288288b",
+    "tests": [
+      "rootRevocationBlocksPublicationTest",
+      "missingOutcomeRegistrationCounterexampleTest",
+      "splitPublicationRegistrationCounterexampleTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-beneficiary-registration/bundle-controls-7/LlmBeneficiaryRegistration.qnt",
+    "sha256": "584164695f2d6f730acaaf05d02d98d312e08651ffb6de079cfc8600ed7b721b",
+    "tests": [
+      "lostPublicationReplyRetainsExactOutcomeTest",
+      "publicationCannotRepeatTest",
+      "rootRevocationFencesPublishedConsumptionTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  },
+  {
+    "source": "proofs/evidence/llm-beneficiary-registration/bundle-controls-8/LlmBeneficiaryRegistration.qnt",
+    "sha256": "8e46434d7e9e66e6b717652a5ccd479c89d0782f612ee8c2e438a25602db7fb6",
+    "tests": [
+      "replacedKeyRegistrationCounterexampleTest",
+      "rollbackFirstBindingRegistrationCounterexampleTest",
+      "actualActivationRetainsOriginalHoldTest"
+    ],
+    "omittedOnlyOtherRunSpans": true
+  }
+]

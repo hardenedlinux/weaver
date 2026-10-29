@@ -1,0 +1,168 @@
+#+title: Bootstrap Invitation Consumption and Issuance Recovery
+#+language: en
+#+startup: overview
+
+* Decision
+A shared Kubernetes workload identity establishes enrollment eligibility only.
+It does not establish a unique worker incarnation, beneficiary public key, or
+right to consume an invitation. A bearer invitation plus possession of an
+arbitrary caller-selected key is insufficient: the first recipient of a
+forwarded credential could enroll its own key.
+
+The authoritative producer must freeze the beneficiary assignment before delivery.
+One determining authority event consumes that exact invitation and commits the
+exact pending issuance result. Activation remains a later guarded custody CAS.
+Registration, consumption and reply delivery perform no external provider send
+and no account settlement. A missing response never proves that consumption failed.
+
+* Canonical identity and frozen assignment
+The invitation identifier belongs to the authority namespace. Its canonical
+launch maps to one immutable invitation row. Client request IDs, MCP sessions,
+A2A task IDs, reconnects and Kubernetes pod names cannot allocate a replacement
+launch or original task. Existing canonical origin/family registration remains
+a prerequisite; this category does not invent a second identity registry.
+
+The committed invitation freezes the complete intended ticket: launch identity,
+original previous capability and its original claim, profile and reservation
+association, beneficiary workload and public key, bootstrap channel/session,
+future incarnation, audience, purpose, expiration, source parent, issuer epoch
+and challenge. The invitation identifier and canonical encoding digest must be
+included in the native possession transcript, together with the complete ticket.
+A fingerprint requires a collision-resistant canonical representation; equal
+strings or user-supplied fingerprints do not authenticate a key.
+
+The formal leaf freezes a complete ticket before consumption. This is deliberately
+strict: an intervening issuance can invalidate its challenge, epoch or parent.
+It then fails closed. Challenge rebasing, invitation replacement and same-incarnation
+key rotation are outside this leaf. A future supersession protocol must retain
+original identity, old consumption outcomes and predecessor fences; reissuing a
+new invitation is not an authorized retry mechanism in this design.
+
+* Authority protocol
+** Register
+An authenticated producer with independent current launch authorization approves
+the frozen tuple. The authority compares invitation absence and canonical launch
+absence and commits the row plus launch index together. The native registration
+predicate covers the entire assignment, including original scope. A client
+boolean, Kubernetes service-account token, or claimed new public key cannot
+satisfy that predicate. Delivery is a projection of an already committed row.
+The leaf registration predicate proves assignment provenance, not temporal policy
+freshness by itself. The actual predecessor launchAuthorized check uses current
+state at consumption; a registration approval cannot substitute for that check.
+
+** Observe and prove possession
+The recipient proves possession of the previously assigned key over the exact
+invitation/ticket transcript and bootstrap session. It does not log in as the
+future incarnation. Go obtains authenticated transport facts; Rust verifies
+proof and compares the committed assignment. Scheme/Cedar decides whether the
+authentic principal, original task and current policy permit this enrollment.
+
+The current authority revision is read for the consume CAS. Any intervening
+registration, consume, issuance-state advance, revocation or restart invalidates
+that local observation. A historical lookup response cannot refresh it.
+
+** Consume and issue pending
+The single determining append/CAS checks all of the following against current
+authority, rather than a previously validated projection:
+
+- The exact registered invitation and canonical launch binding remain unchanged.
+- No consumed outcome exists for that invitation; no ticket or launch issuance
+  exists and no target incarnation is already reserved or used.
+- Possession authenticates the frozen beneficiary key and bootstrap session.
+- The original scope, source parent, issuer epoch, challenge, audience, purpose,
+  expiration, grant serial and custody fence satisfy predecessor issuance guards.
+- The observed outer revision still equals the current revision.
+
+The committed record contains invitation identity, full assignment digest,
+canonical launch, exact pending ticket, reserved incarnation, challenge transition,
+expected authority prefix and determining result identity. The consumed outcome
+and predecessor issuance are projections of this one record. A separate spent
+boolean, pre-consumption transaction, or best-effort second-store issuance write
+cannot implement this transition. The full outer pre/post state is covered by
+the durable owner contract. The inner predecessor durable contract is retained.
+
+The executable model calls the actual predecessor issue action. The Lean leaf
+uses a parameterized edge, with an explicit composition witness to the actual
+predecessor Run; it is not an independent issuance oracle. Non-consume edges
+must preserve the issued map, so another endpoint cannot mint around the bridge.
+A consume changes no active custody. A later proof receipt and activation still
+require the predecessor's current epoch/parent and atomic grant/custody outcome.
+
+** Recover the original result
+A successful append whose response is lost is an unknown local outcome, not an
+unused invitation. Retry resolves the original invitation/launch in authoritative
+storage and returns the same complete ticket. Current read policy and assigned
+key possession protect recipient recovery. A coordinator may use the predecessor's
+separately authorized launch lookup when delivery of the invitation itself was
+lost; a shared workload principal cannot use that path.
+
+Read-only historical results do not extend expiry, refresh policy validation,
+release budget, or reactivate a grant. The consumed record is retained even if
+its ticket later becomes stale or revoked. Lookup failure, timeout and storage
+unavailability leave the caller quarantined from activation. No response is
+reinterpreted as permission to allocate another invitation, key or family.
+
+* Crash, concurrency and restoration
+| Boundary | Required result |
+|----------+-----------------|
+| Before registration commits | No invitation or pending issuance exists; retry same canonical registration identity |
+| Registration commits, delivery lost | Resolve the committed assignment; never let the retry nominate another key |
+| Before consume commits | No pending issuance; local proof is insufficient to activate |
+| Consume append response lost | Resolve the original determining result; do not infer absence or compensate |
+| Outcome visible, issuance projection missing | Rebuild from the same committed record; block activation until join is complete |
+| Issuance visible, outcome projection missing | Treat storage as unqualified; restore outcome from authority, never expose an unused invitation |
+| Restart or old snapshot | Recover canonical bindings, consumed outcomes and predecessor reservations from the accepted non-rollback prefix |
+| Old worker resumes with bearer credential | Assigned key/session and current revision checks still apply; no payload-selected incarnation |
+| Concurrent consume attempts | One exact result; losers read that result, without new challenge or incarnation allocation |
+| Revocation races consume or activation | Current determining CAS orders the change; old proof or acknowledgment cannot override it |
+
+Snapshots are caches until their complete authority prefix is checked against the
+existing independent recovery floor. Restoring only the invitation table, only
+the issued map, or a projection from a different prefix is not a valid State.
+Compaction must retain consumed-result tombstones or an equally authoritative
+exact-result index. This leaf assumes durable, anti-rollback publication through
+the earlier authority protocol; it does not prove a particular database or
+Kubernetes volume implements that protocol.
+
+* Credential forwarding and the actual security boundary
+Forwarding a bearer invitation or shared service-account token alone cannot
+satisfy possession of the frozen key/session. A new self-selected key cannot
+replace the committed key, even if its signature is valid. Forwarding an already
+issued ticket is equally insufficient for later custody activation.
+
+An attacker that can use the assigned private key or an authorized signing oracle
+and relay the exact bound session is indistinguishable from that logical
+principal. These models do not prove unique physical process identity or defeat
+an authorized recipient that intentionally delegates its signing authority.
+Native enrollment must establish independent beneficiary-key provenance and
+channel binding, and define whether delegated signing is allowed. A token proxy
+must not silently turn a forwarded credential into an authenticated new
+incarnation. Signatures, confidentiality and TLS binding are explicit native
+premises, not consequences of an equality proof or Kubernetes deployment.
+
+* Scheme, Go and Rust responsibilities
+| Language | Responsibility | Authority restriction |
+|----------+----------------+-----------------------|
+| Scheme / POO / Cedar | Original semantic contract; independent launch assignment; current policy/history and original claim/reservation facts | No policy decision creates a pending issuance or sends a request |
+| Go | Kubernetes discovery and workload eligibility; protocol/session adapters; enrollment orchestration; exact-key recovery requests | No caller-selected assignment, token forwarding as identity, transparent issuance remint, or SDK send retry |
+| Rust authority / broker | Native peer and possession verification; canonical encoding; atomic invitation consumption and issuance record; recovery-prefix qualification; final custody CAS | No stale projection authorizes admission, settlement or provider I/O |
+| Rust executor | Existing dispatch ledger, current execution fence and range/message authorization at final send | Pending enrollment and activation replies are not send permits |
+
+There is no per-token cross-language policy round trip introduced here. Enrollment
+is off the streaming data path. Immutable assignment bytes can be cached by
+digest; current revision, policy/history dependencies and determining CAS cannot
+be replaced by a cache hit. Actual throughput, native ABI, storage durability and
+provider behavior remain separate qualification work.
+
+* Original claim, budget and history preservation
+The invitation carries the predecessor's original previous capability and target
+scope. It never creates an account, reservation, history domain or logical family.
+The actual predecessor trace composes with the existing publication, source join,
+account WAL and execution-reconciliation traces. Reservation-once and unknown-hold
+results require their original initialization, safe handoff and sourceReady to
+OriginalReady binding premises. Unknown usage retains the original hold; an
+invitation timeout, dead pod or missing reply supplies no no-execution evidence.
+
+These results do not claim exactly-once provider delivery. Lost external writes
+and partial streams remain unknown execution outcomes handled by the existing
+broker/executor protocol. Enrollment success alone cannot replay a dispatch.

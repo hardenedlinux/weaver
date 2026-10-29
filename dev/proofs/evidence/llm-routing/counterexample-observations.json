@@ -1,0 +1,348 @@
+[
+  {
+    "path": "proofs/evidence/llm-routing/itf/foreignWireRouteCounterexampleTest-2.itf.json",
+    "states": 3,
+    "router": {
+      "catalog": 0,
+      "dispatches": [
+        {
+          "plan": {
+            "advised": false,
+            "manifest": 999,
+            "payload": 10,
+            "ranking": 0,
+            "root": 0,
+            "target": 0,
+            "view": {
+              "catalog": 0,
+              "endpoint": 0,
+              "history": 0,
+              "policy": 0
+            }
+          },
+          "snapshot": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "endpoint": 0,
+      "history": 0,
+      "metrics": 0,
+      "plans": [
+        {
+          "advised": false,
+          "manifest": 100,
+          "payload": 10,
+          "ranking": 0,
+          "root": 0,
+          "target": 0,
+          "view": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "policy": 0,
+      "responses": [],
+      "unavailable": [],
+      "unknown": false
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-routing/itf/mixedStreamRouteCounterexampleTest-4.itf.json",
+    "states": 4,
+    "router": {
+      "catalog": 0,
+      "dispatches": [
+        {
+          "plan": {
+            "advised": false,
+            "manifest": 100,
+            "payload": 10,
+            "ranking": 0,
+            "root": 0,
+            "target": 0,
+            "view": {
+              "catalog": 0,
+              "endpoint": 0,
+              "history": 0,
+              "policy": 0
+            }
+          },
+          "snapshot": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "endpoint": 0,
+      "history": 0,
+      "metrics": 0,
+      "plans": [
+        {
+          "advised": false,
+          "manifest": 100,
+          "payload": 10,
+          "ranking": 0,
+          "root": 0,
+          "target": 0,
+          "view": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "policy": 0,
+      "responses": [
+        {
+          "advised": false,
+          "manifest": 100,
+          "payload": 10,
+          "ranking": 0,
+          "root": 1,
+          "target": 0,
+          "view": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "unavailable": [],
+      "unknown": true
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-routing/itf/newAliasRootRouteCounterexampleTest-5.itf.json",
+    "states": 3,
+    "router": {
+      "catalog": 0,
+      "dispatches": [
+        {
+          "plan": {
+            "advised": false,
+            "manifest": 100,
+            "payload": 10,
+            "ranking": 0,
+            "root": 1,
+            "target": 0,
+            "view": {
+              "catalog": 0,
+              "endpoint": 0,
+              "history": 0,
+              "policy": 0
+            }
+          },
+          "snapshot": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "endpoint": 0,
+      "history": 0,
+      "metrics": 0,
+      "plans": [
+        {
+          "advised": false,
+          "manifest": 100,
+          "payload": 10,
+          "ranking": 0,
+          "root": 0,
+          "target": 0,
+          "view": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "policy": 0,
+      "responses": [],
+      "unavailable": [],
+      "unknown": false
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-routing/itf/quotaBypassRouteCounterexampleTest-1.itf.json",
+    "states": 2,
+    "router": {
+      "catalog": 0,
+      "dispatches": [
+        {
+          "plan": {
+            "advised": false,
+            "manifest": 105,
+            "payload": 10,
+            "ranking": 0,
+            "root": 0,
+            "target": 5,
+            "view": {
+              "catalog": 0,
+              "endpoint": 0,
+              "history": 0,
+              "policy": 0
+            }
+          },
+          "snapshot": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "endpoint": 0,
+      "history": 0,
+      "metrics": 0,
+      "plans": [],
+      "policy": 0,
+      "responses": [],
+      "unavailable": [],
+      "unknown": false
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-routing/itf/stalePolicyRouteCounterexampleTest-0.itf.json",
+    "states": 4,
+    "router": {
+      "catalog": 0,
+      "dispatches": [
+        {
+          "plan": {
+            "advised": false,
+            "manifest": 100,
+            "payload": 10,
+            "ranking": 0,
+            "root": 0,
+            "target": 0,
+            "view": {
+              "catalog": 0,
+              "endpoint": 0,
+              "history": 0,
+              "policy": 0
+            }
+          },
+          "snapshot": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 1
+          }
+        }
+      ],
+      "endpoint": 0,
+      "history": 0,
+      "metrics": 0,
+      "plans": [
+        {
+          "advised": false,
+          "manifest": 100,
+          "payload": 10,
+          "ranking": 0,
+          "root": 0,
+          "target": 0,
+          "view": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "policy": 1,
+      "responses": [],
+      "unavailable": [],
+      "unknown": false
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-routing/itf/unknownRetryRouteCounterexampleTest-3.itf.json",
+    "states": 4,
+    "router": {
+      "catalog": 0,
+      "dispatches": [
+        {
+          "plan": {
+            "advised": false,
+            "manifest": 100,
+            "payload": 10,
+            "ranking": 0,
+            "root": 0,
+            "target": 0,
+            "view": {
+              "catalog": 0,
+              "endpoint": 0,
+              "history": 0,
+              "policy": 0
+            }
+          },
+          "snapshot": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        },
+        {
+          "plan": {
+            "advised": false,
+            "manifest": 106,
+            "payload": 10,
+            "ranking": 0,
+            "root": 0,
+            "target": 6,
+            "view": {
+              "catalog": 0,
+              "endpoint": 0,
+              "history": 0,
+              "policy": 0
+            }
+          },
+          "snapshot": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "endpoint": 0,
+      "history": 0,
+      "metrics": 0,
+      "plans": [
+        {
+          "advised": false,
+          "manifest": 100,
+          "payload": 10,
+          "ranking": 0,
+          "root": 0,
+          "target": 0,
+          "view": {
+            "catalog": 0,
+            "endpoint": 0,
+            "history": 0,
+            "policy": 0
+          }
+        }
+      ],
+      "policy": 0,
+      "responses": [],
+      "unavailable": [],
+      "unknown": true
+    }
+  }
+]

@@ -1,0 +1,33 @@
+    Checking weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+error: expected a pattern, found an expression
+  --> crates/ledger/src/stream_custody.rs:45:22
+   |
+45 |             revision:request.revision,
+   |                      ^^^^^^^^^^^^^^^^ not a pattern
+   |
+   = note: arbitrary expressions are not allowed in patterns: <https://doc.rust-lang.org/book/ch19-00-patterns.html>
+
+error[E0025]: field `revision` bound multiple times in the pattern
+  --> crates/ledger/src/stream_custody.rs:45:13
+   |
+43 |             revision: _,
+   |             ----------- first use of `revision`
+44 |             fence,
+45 |             revision:request.revision,
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^ multiple uses of `revision` in pattern
+
+error[E0026]: struct `StreamClaim` does not have a field named `connection_consumed`
+  --> crates/ledger/src/stream_custody.rs:46:13
+   |
+46 |             connection_consumed:false,
+   |             ^^^^^^^^^^^^^^^^^^^ struct `StreamClaim` does not have this field
+
+error[E0063]: missing fields `connection_consumed` and `revision` in initializer of `StreamOwner`
+  --> crates/ledger/src/stream_custody.rs:55:12
+   |
+55 |         Ok(StreamOwner {
+   |            ^^^^^^^^^^^ missing `connection_consumed` and `revision`
+
+Some errors have detailed explanations: E0025, E0026, E0063.
+For more information about an error, try `rustc --explain E0025`.
+error: could not compile `weaver-ledger` (lib) due to 4 previous errors

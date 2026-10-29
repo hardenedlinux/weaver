@@ -1,0 +1,976 @@
+An example execution:
+
+[State 0]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 1,
+      holds: Map(0 -> 0, 1 -> 0),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(),
+      revision: 0,
+      spent: Set(),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 1]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 1,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 0,
+      spent: Set(),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 2]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 1,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 0,
+      spent: Set(),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 3]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 1,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 0,
+      spent: Set(),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 4]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 1,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 0,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set(1)
+    }
+}
+
+[State 5]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 2,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 1,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set(1)
+    }
+}
+
+[State 6]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 3,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 2,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set(1)
+    }
+}
+
+[State 7]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 3,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 2,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 8]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 4,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 3,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 9]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 5,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 4,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 10]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 5,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 4,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 11]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 5,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 4,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 12]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 6,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 5,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 13]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 6,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 5,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 14]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 7,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 6,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 15]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 7,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 6,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 16]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 7,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 6,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 17]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 8,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 7,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 18]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 8,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 7,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 19]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 8,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 7,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 20]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 8,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 7,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 21]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 8,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 7,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 22]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 9,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 8,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 23]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 10,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 9,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 24]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 10,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 9,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 25]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 10,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 9,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 26]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 10,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 9,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 27]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 10,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 9,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 28]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 10,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 9,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 29]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 11,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 10,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 30]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 12,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 11,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 31]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 12,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 11,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 32]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 13,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 12,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 33]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 13,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 12,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 34]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 35]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 36]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 37]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 38]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 39]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 40]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 41]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 42]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 43]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 44]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 14,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 13,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 45]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 15,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 14,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 46]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 15,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 14,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 47]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 16,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 15,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 48]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 17,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 16,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 49]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 18,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 17,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[State 50]
+{
+  s:
+    {
+      calls: Map(0 -> 0, 1 -> 0),
+      fence: 18,
+      holds: Map(0 -> 0, 1 -> 6),
+      lock: false,
+      lockKey: -1,
+      qFence: Map(0 -> 1, 1 -> 1),
+      qRevision: Map(0 -> 0, 1 -> 0),
+      queued: Set(1),
+      revision: 17,
+      spent: Set(1),
+      staleSend: false,
+      tickets: Set()
+    }
+}
+
+[ok] No violation found (288ms at 3472 traces/second).
+Trace length statistics: max=51, min=51, average=51.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0x61a15 --backend=rust to reproduce.

@@ -1,0 +1,469 @@
+#+title: Weaver Unified Interfaces and Policy Model
+#+language: en
+#+date: 2026-10-18
+#+property: STATUS proposed-contracts
+#+options: toc:3
+
+* Contract status and principles
+
+Names in this document are conceptual, not declarations of implemented POO
+prototypes, Rust structs, Go interfaces, or protobuf messages. Existing owner
+APIs take precedence over speculative wrappers. Introduce a new abstraction
+only when its responsibility cannot be expressed through the existing owner.
+
+The public extension surface remains POO-native. Wire artifacts use closed,
+versioned data representations. Go and Rust may use idiomatic private types;
+they do not each acquire a separate public policy-composition language.
+
+Unification applies to identity, evidence, lifecycle, error classification,
+and execution binding. Protocol payloads retain their native schemas.
+
+All interfaces must satisfy the required [[file:04-zero-trust-and-review.org][Zero Trust baseline]]. Authenticating
+a peer does not authorize all methods. Each boundary must enforce tenant, caller
+role, audience, operation, size, and freshness constraints. Local sockets and
+same-process calls cannot create authority absent from the selected contract.
+
+The exact ordering contract is now [[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]].
+The earlier generic phrase "admission commit including consumption" means a
+journal commit bound to a verified earlier issuer consumption. It does not
+assert a transaction spanning the existing issuer and storage backend.
+
+The owner-level interface refinement is
+[[file:07-source-admission-ledger-fencing.org][Source admission, durable ledger, and fencing contracts]]. Public POO families
+and their guards require explicit owner extension; the current undecided
+preflight must not be accepted as an allow-shaped runtime admission.
+
+The [[file:10-zero-trust-assurance.org][mandatory Quint and Lean framework]] binds this contract to cedar-poo-spec,
+existing POO proof owners, explicit transition/refinement obligations and
+concrete Scheme/Go/Rust evidence. FM1-FM12 remain pending. A source digest,
+certificate constructor, bounded model run or proof of pure guards alone
+cannot qualify the complete authorization-to-execution path.
+
+* Interface planes
+
+| Plane | Producer and consumer | Meaning |
+|-------+-----------------------+---------|
+| Semantic composition | POO Flow and domain contributors | Declare and assess the governance composition |
+| Publication | Admitted composition to runtime instances | Distribute an immutable, authenticated dependency closure |
+| Operation | Protocol adapter to selected authorization Provider | Describe the actual requested action and its authenticated context |
+| Decision and grant | Authority to the final executor | Return a decision and, only when eligible, constrained execution authority |
+| Completion | Executor to lifecycle/audit owner | Record actual handoff and observed outcome |
+| Administration | Deployment owner to managed services | Discover, revoke, rotate, drain, and inspect under separate roles |
+
+An administrative resource being Accepted or Programmed is not a runtime
+permit. Kubernetes status must distinguish observed resource generation,
+staging, activation, and rejection; it must not claim all replicas are current
+from one replica's acknowledgment.
+
+* Publication contract
+
+** Resource families
+
+| Resource | Required information | Authority limit |
+|----------+----------------------+-----------------|
+| Semantic composition reference | Owner, revision, case/profile identities, assessment and source digests | Carries admission evidence, not action authority |
+| Interface contract | Protocol/version, operation mapping, input/output limits, identity and error mapping | Cannot manufacture authenticated facts |
+| Route and backend | Match rules, tenant, endpoint constraints, executor identity, credential reference | Must not expand capability scope |
+| Authorization binding | Explicit Provider, capability contract, schema/policy/entity identities, runtime requirements | No ambient fallback Provider |
+| Operational policy | Limits, inspection plan, retries, deadlines, audit obligations | May constrain execution; cannot create permits |
+| Runtime requirement | Host and component identity, supported protocol/ABI, assurance mode | Admission checks actual deployed artifacts |
+
+** Manifest and activation
+
+The publication manifest binds:
+
+- Format version, tenant, issuer role, target deployment scope, and signature key ID.
+- Monotonic publication sequence, predecessor, validity interval, and content digest.
+- Every resource identity, revision, digest, required dependency, and selected closure root.
+- Authoring source and projection/compiler versions with proof and replay references.
+- Protocol features, resource limits, and required runtime assurance mode.
+- A reference to secret identities and versions, without exporting secret values.
+
+Verify the signer's authority to make the specific change as well as its
+signature. Bind parent baseline, allowed edit scope, approval requirements,
+and tenant. A signer allowed to edit routes cannot remove mandatory Cedar,
+history, credential, or audit controls. Independent baseline admission rejects
+signed but overbroad changes. Code-bearing contributor inputs execute in an
+isolated authoring context, outside runtime credential and publication-key scope.
+
+Publication cannot claim a physical backend capability from an inert descriptor.
+The proposed coordination facet must negotiate authoritative multi-row atomicity,
+idempotent command resolution, durable claim/tombstone retention and fencing.
+Unknown required capabilities reject activation; append or job-lease support
+alone does not satisfy them.
+
+Use domain-separated digests over a versioned canonical representation.
+Define map ordering, duplicate-key rejection, absent versus null, integer
+ranges, set order, Unicode handling, and unknown-field behavior before
+generating schemas. Protobuf encoding alone is not a universal canonical
+semantic digest. A field encoded differently by Go and Rust must not identify
+different operations while appearing equivalent to the signer.
+
+Receiver lifecycle:
+
+#+begin_example
+Received -> Authenticated -> Staged -> DependencyComplete -> Validated -> Active
+                    any failed check -> Rejected
+Active -> Superseded / Expired / Revoked
+#+end_example
+
+Bound staging bytes and resource count. Missing dependencies keep a candidate
+inactive. Build indexes outside the request path and publish the closure with
+one generation change. The old plan is retained only while valid and until
+bounded in-flight references drain. Rollback is a new authorized publication;
+it cannot reset a revocation epoch or replay an older signed manifest.
+
+Persist the high-water publication/fencing state outside a replica's replaceable
+cache. On restart, restore it from an authenticated authority before accepting
+old artifacts. An empty local disk or a valid old signature must not reset the
+anti-rollback floor. Partitioned issuers lose issuance rights when their leases
+expire; they cannot renew them from their own stale state.
+
+Endpoint discovery may update within an admitted backend identity and network
+scope. A change of tenant, target security domain, required TLS identity, or
+capability mapping requires re-admission. Health information does not authorize
+an otherwise forbidden endpoint. Emergency revocation uses its own monotonic
+authority path and does not wait for a large route update.
+
+** Evolution and transport
+
+Negotiate supported contract versions and feature sets. Reject unsupported
+security-critical fields and enum values; never silently drop a required
+constraint. Additive observational metadata may be ignored only when the
+version contract explicitly allows it and it is outside the signed semantic
+projection. Retain deterministic fixtures across Scheme, Go, Rust, and Lean.
+
+Existing owner wire formats remain authoritative. In particular, the Scheme
+draft token and signed Rust grant use distinct digest protocols in the inspected
+sources. A new transport envelope cannot reinterpret either signature; an
+explicit validated adapter and independent vectors must relate their meanings.
+
+Local artifact loading, a management API, and xDS are transport candidates.
+They must produce the same admitted closure. A transport ACK is neither a
+manifest signature nor a proof of activation. Partial delivery cannot relax
+an active constraint or make an unknown route public.
+
+* Operation contract
+
+** Authenticated context
+
+Each operation has a bounded context containing:
+
+| Group | Conceptual fields |
+|-------+-------------------|
+| Correlation | Operation ID, parent/delegation ID, attempt ID, trace reference |
+| Identity | Authenticated principal and workload, issuer, credential version, assurance level |
+| Scope | Tenant, capability, action, canonical resource, selected interface contract |
+| Actual handoff | Executor, destination constraints, payload or command identity, intent digest |
+| Security state | Publication generation, policy revision, schema/entity snapshots, revocation epoch |
+| Stateful admission | History authority/scope, policy epoch, expected state version, reservation identities, issuer lease/fence |
+| Evidence | Source/assessment references, acquisition provenance, validity and freshness |
+| Resource contract | Absolute deadline plus local remaining budget, size limits, cancellation scope |
+| Protocol details | Native method, session/task/stream identity, negotiated version, media type |
+
+Trace IDs and caller-supplied operation IDs are correlation values, not
+credentials or uniqueness proofs. Trusted services derive expected runtime
+identities independently of the submitted grant. Strip or isolate reserved
+identity headers from untrusted input. Delegation chains require verified
+scope attenuation, expiry, and tenant binding.
+
+An edge-to-executor context requires authenticated peer identity and an
+integrity-protected representation of the actual operation. A valid signature
+does not make an untrusted edge a truthful observer. State the edge's trust
+role and independently verify target and payload where feasible.
+
+Bind each grant and consume RPC to an authenticated executor identity and
+audience. Resolve issuer endpoints from trusted service configuration; do not
+follow an address embedded by a caller. Bootstrap trust and key rotation require
+explicit issuer/deployment roles. Certificate validity alone does not make an
+observer truthful or authorize method access.
+
+Use a versioned clock contract across machines; convert remaining budgets to
+local monotonic deadlines. Account for transit and skew. A retry or downstream
+call must never reset the original deadline.
+
+If the selected skew/freshness bound cannot be established, reject the affected
+operation. Wall-clock expiry fields do not replace monotonic local validity or
+an authenticated current revocation/lease view.
+
+** Authorization subject
+
+Reuse the existing Provider's complete subject. At minimum the join covers
+the exact Cedar request, policy set, entity snapshot, semantic bundle, and
+epoch, with schema and engine/environment identity in the surrounding
+validated binding. Principal/action/resource/context include every attribute
+used by the selected policy, not merely a readable route or tool name.
+
+Bind the subject to the final handoff: target security domain, exact operation
+arguments or command bytes, effect kind, and relevant identity/version fields.
+If a post-authorization transformation changes a policy-relevant field or the
+handoff, re-authorize. Transport-only changes must be explicitly classified
+and shown not to change the subject or permitted effect.
+
+The frozen operation must survive until actual emission: immutable owned bytes
+or a qualified immutable reference with range, generation, and lifetime. Recheck
+the destination and credential binding in the final broker. Credential injection
+and request signing are authorized transforms with a redacted transform identity;
+they cannot change the permitted target, action, body, or account. See Z6/Z9 in
+the Zero Trust baseline for redirect, connection-pool, and reflection constraints.
+
+For policies depending on the complete request body, the body must be bounded
+and acquired before authorization. A digest of a not-yet-received stream cannot
+authorize its unknown contents. A route may instead authorize a precisely
+scoped streaming session with explicit per-message or checkpoint enforcement.
+That is a different capability, not full-body approval by implication.
+
+The [[file:13-go-adapter-broker-boundary.org][adapter/broker refinement]] further requires sealed message/range identity,
+exact source/recipient binding and rejection of mutable/lazy payload substitution.
+Internal command/upload retries are idempotent protocol actions with exact
+binding; application retries, redirects and stream reopen are distinct effects.
+A complete-body policy cannot be weakened into a prefix policy by an adapter.
+
+** Protocol-specific obligations
+
+| Protocol family | Common projection | Required native behavior |
+|-----------------+-------------------+--------------------------|
+| HTTP / gRPC | Principal, method-to-action, resource, deadline | Path/query normalization, duplicate headers, authority/SNI, trailers, status, cancellation, stream direction |
+| MCP | Server identity, tool/resource identity, arguments, delegation | Negotiated version, initialization/session lifecycle, tool visibility, each actual invocation, notifications and cancellation |
+| Model provider APIs | Model/deployment, tenant, input class, budget scope | Provider-specific events, tool calls, partial output, usage reconciliation, cancellation and failover limits |
+| Agent/task protocols | Agent identity, capability, task and delegation | Task state, asynchronous continuation, artifact/result access, subscription and cancellation authority |
+| Opaque TCP / TLS passthrough | Authenticated connection and endpoint scope | Only connection-level enforcement; no claim of application-body policy visibility |
+
+Protocol names indicate intended scope, not support. Select exact upstream
+versions and conformance suites before implementation. OpenAI-compatible
+transport does not establish equivalence of every provider's tool or stream
+semantics. A model-produced tool call is a proposal requiring its own action
+authorization. Filtering discovery results is not invocation authorization.
+
+For proxy parser disagreements, reject ambiguous input instead of letting
+frontend and backend choose different request targets. SSRF defenses cover
+scheme, DNS resolution, redirect targets, address ranges, TLS identity, and
+credential forwarding; an admitted hostname alone is insufficient.
+
+* Policy model
+
+** Code as Policy is required
+
+Weaver's Zero Trust baseline requires Code as Policy: versioned POO composition,
+Cedar policy/schema/entity artifacts, admitted executable evaluators, and their
+physical enforcement bindings form one reviewable dependency closure. The
+artifact and runtime contract is in [[file:09-code-as-policy.org][Code as Policy and Cedar integration]].
+A declaration or code digest is not itself authority to execute. Mandatory
+rules may not be replaced by unversioned Go/Rust conditionals, prompt text,
+or a contributor's arbitrary runtime code.
+
+Cedar retains its own permit/forbid and diagnostic semantics. Weaver adds an
+explicit execution-admission condition requiring error-free complete witnesses
+from all required evaluators. Equal allow decisions with equal nonempty error
+IDs fail that condition. The inspected issue path does not yet enforce it;
+P26/P27 and the source register distinguish runtime agreement from case checks.
+
+
+** Distinct kinds with explicit owners
+
+| Kind | Inputs and result | Owner and execution point |
+|------+-------------------+---------------------------|
+| Governance | Profiles, Sources, threats, assessments -> semantic eligibility | POO Flow; composition and required reassessment |
+| Authorization | Authenticated exact subject -> permit, deny, or typed failure | Explicit Provider; before the protected effect |
+| Temporal admission | Authenticated operation and versioned history -> eligible serialized transition or rejection | Explicit history/state authority; before effect or disclosure |
+| Interface | Protocol contract and payload -> valid operation or rejection | Adapter plus contract owner; before subject construction |
+| Traffic | Identity/route/budget state -> admission or bounded scheduling | Selected limiter/ledger and network executor |
+| Content | Defined content scope -> inspect, transform, reject, or unavailable | Selected inspection owner at a declared phase |
+| Audit | Operation and obligations -> accepted record or failure | Lifecycle/audit owner before required handoff |
+
+An inert policy declaration has no side effects. Content classifiers and
+guardrails are observations subject to their declared trust and failure model;
+they do not establish Cedar authority. Global spend or delegation-wide budgets
+need an atomic shared ledger. A Cedar snapshot of a counter is not an atomic
+reservation and cannot prevent concurrent overspend by itself.
+
+A single request is not the entire unit of policy truth. Cross-tool history,
+delegation-wide data flow, and concurrency limits require explicit scope and
+continuity. A Cedar context containing history-derived facts is a projection,
+not the ledger or a transaction. Temporal rules select their owner explicitly;
+no operational filter gains a second independent permit authority.
+
+** Policy declaration contract
+
+Each policy declares identity, owner, revision, kind, attachment scope,
+input dependencies, supported phase, assurance requirement, limits, failure
+behavior, provenance, and explicit override authority. Runtime expressions
+are typed and bounded. No policy can read unavailable phase state or perform
+an undeclared network call. Callout credentials and destinations are scoped.
+
+Use existing POO composition for semantic inheritance. A deployment may import
+Gateway API attachments, but their mapping into scopes and precedence must
+be explicit. Kubernetes attachment locality cannot confer domain-policy ownership.
+
+** Composition rules
+
+There are two different operations:
+
+1. Semantic composition resolves contributor ownership and policy edits through
+   the existing POO/Lean-POO contracts. Cedar retains permit/forbid semantics.
+2. Attachment resolution selects applicable operational policies for tenant,
+   gateway, listener, route, backend, and capability scopes.
+
+Do not implement a generic deep-merge for all policy kinds. Security requirements
+compose by conjunction unless their owning authority explicitly permits a
+replacement. An inner route cannot erase an outer mandatory authorization or
+audit requirement. Conflicting equal-authority declarations fail publication.
+
+Conjunction here combines required admission results; it does not rewrite Cedar
+permit/forbid evaluation or prove arbitrary policy edits are monotone. A permitted
+semantic override still requires contributor authority and applicable parent
+constraints. Where non-weakening cannot be checked by a supported contract or
+proof, require the appropriate independent approval or reject publication.
+
+| Family | Proposed combination rule |
+|--------+---------------------------|
+| Authorization | Select explicit Provider and capability; all required independent boundaries must admit |
+| Temporal admission | Same bound operation and compatible state versions; serialized commit of stateful premises |
+| Required evidence | Union required evidence identities; each retains its own freshness condition |
+| End-to-end timeout | Use the strictest applicable total deadline; reserve sub-budgets within it |
+| Size / concurrency limit | Apply each applicable constraint; same-domain ceiling may use minimum |
+| Rate / budget | Preserve every distinct key, unit, window, and scope; minimum only when domains coincide |
+| Retry | One executor owns total attempts; intersect allowed conditions and cap total work |
+| Transforms | Ordered, typed stages with explicit read/write sets; ambiguous writes fail |
+| Audit / inspection | Preserve mandatory obligations; optional sampling cannot remove them |
+
+Do not convert a local rate limit into a global guarantee by multiplying replica
+counts. Reserve shared budgets atomically with expiry, commit, and release
+rules. Reconcile actual usage after partial responses. An uncertain upstream
+result must not refund budget as if no effect occurred.
+
+** Phases and effects
+
+#+begin_example
+Connection admission -> Authentication -> Protocol validation
+-> Pre-authorization normalization -> Subject freeze
+-> Required evidence and tentative reservations -> Authorization
+-> Local lifecycle reserve/deliver -> Verified issuer consumption
+-> Durable history/budget/audit send commit -> Single dispatch claim
+-> Final credential/destination enforcement -> Backend attempt
+-> Response release under current flow constraints -> Completion and reconciliation
+#+end_example
+
+This sequence is a contract ordering, not an assumption that every step is
+network I/O. Budget reservations before authorization are tentative and must
+be released on rejection under explicit rules. Backend attempt gates recheck
+the actual destination and relevant currentness. History and shared-budget
+premises cannot simply be read and checked independently: the admission commit
+must fence their state versions. A pending sensitive read constrains concurrent
+egress before any protected bytes are released, not only after completion.
+
+All gates join the same operation and history scope. The selected reference
+uses a single serializable history/budget state domain and a safe consumed-grant
+orphan if the later journal commit fails. Tentative reservations have explicit
+crash states; they do not auto-refund after a potentially sent operation. If a
+rule spans separate history/budget stores, reject it until a qualified protocol
+exists. Audit durability alone does not supply that protocol. Policy updates
+cannot discard restrictive history; migrate/replay or deny until it is available.
+
+Initial authentication may be connection-scoped; authorization for a protected
+message is not inherited indefinitely from the connection. A response policy
+cannot retract bytes already delivered. Full-result approval requires bounded
+buffering or withholding the result; chunk inspection only approves released
+chunks under its declared context. Latency and memory costs must be disclosed.
+
+** Error and failure contract
+
+Keep internal outcomes distinct: =Denied=, =InvalidInput=, =StaleEvidence=,
+=UnsupportedContract=, =ResourceExhausted=, =AuthorityUnavailable=,
+=EvaluationFailed=, =Revoked=, =Cancelled=, and =OutcomeUnknown=.
+An internal =NoSubmissionProven= result requires broker retirement evidence;
+it is not inferred from a transport error or client cancellation.
+These conceptual tags require a versioned mapping to native protocol errors.
+
+Protected operations execute only after successful required checks and a valid
+permit/grant. Error agreement between engines is still a failure. Unknown
+obligations fail admission. Return only safe reason codes to clients; detailed
+policy and evidence diagnostics belong in authorized audit channels. Record
+both the internal cause and the chosen protocol response.
+
+Optional observability may degrade under its declared policy. Required
+authorization, audit, content restrictions, and shared-budget reservations
+cannot degrade to success when their service is unavailable.
+
+* Effect admission, replay, and recovery
+
+A valid semantic composition is inert. A decision receipt records evaluation.
+A grant carries bounded action authority. Positive consumption supplies evidence for S4;
+only a current S5 claim yields the broker's local one-use emission handle. Each join preserves the exact subject,
+runtime generation, authority instance, revision, and current epoch.
+
+The runtime-admission handle is a separate owner-issued family for a fully
+evaluated eligible Decision/source cut. Its fixed evaluation binding is part
+of the signed subject before evaluation; later phase guards attest the same
+binding's liveness without changing it or extending the original expiry.
+Copied preflights, caller-authored allow values and fresh timestamps in an old
+request cannot substitute for it.
+
+Consumption is issuer-owned and serialized per grant. Simultaneous consumers
+cannot both succeed. Forwarding replicas cannot independently accept one signed
+grant without consulting its consumption owner. Cancellation after consumption
+does not restore the grant.
+
+This serializes one grant only; it does not serialize the history, budget,
+source-currentness, or backend state used to authorize it. Bind those premises
+to the admission transition described above. The existing Rust consume API is
+not asserted to implement that whole transition. Define revocation ordering
+at its declared linearization point, and distinguish committed in-flight work
+from later admissions. Stronger remote-state guarantees need backend fencing.
+
+An executor that can alter the request after consumption remains part of the
+trusted base. Bind the authenticated consume response to the exact S4 command;
+it is not itself an emission handle. The final broker redeems the current S5
+claim once and enforces the same frozen operation and credential binding.
+
+The canonical execution lifecycle is S1-S6 and W02/W03/W07 in
+[[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]]. Preparation precedes evaluation;
+reserve returns before durable ConsumePending, which precedes deliver and
+issuer consumption. SendCommitted and DispatchClaimed are separate durable
+gates. Outcome, emitter closure, settlement and response release retain their
+independent state rather than collapsing into a generic Completed flag.
+
+The boundary between consumption and remote execution is not automatically
+transactional. A consumed grant without S4 is a safe orphan with no dispatch
+right; a claim without attributable evidence leaves the external outcome unknown. Exactly-once effects require upstream idempotency and/or a qualified
+transactional protocol, with recovery owned by the effect lifecycle system.
+Record the dispatch identity and recovery references before making such a claim.
+
+Use the existing Scheme =assurance-effect-host= authorize/reserve/deliver sequence
+as the local lifecycle integration. Its current process-local reservation is
+distinct from a signed Rust grant and explicitly non-durable. A trusted adapter
+binds both to one journal attempt; it must not mint a runtime permit from a
+Scheme preflight. POO's durable-intent and recovery owners define the semantic
+joins, while a selected runtime backend provides the actual physical commits.
+
+A retry with side effects requires a fresh admitted attempt or a protocol-defined
+idempotent continuation. Never reuse the consumed grant. A changed backend may
+change resource identity, credentials, jurisdiction, or trust; re-authorize when
+those bindings change. A failed delivery acknowledgment does not prove that
+the backend did nothing.
+
+* Example: governed tool invocation
+
+1. Scheme composes the selected domain case, Governance assessment, explicit
+   capability, and admitted Cedar artifact. Publication verifies their join.
+2. A Go or Rust adapter authenticates the caller and validates the tool request
+   against its negotiated protocol and interface contract.
+3. The adapter freezes the actual tool identity, arguments, target, delegation,
+   and applicable runtime/evidence identities into the bound operation.
+4. Required reservations and strict authorization join the same operation,
+   state versions, and required history scope. A diagnostic replay receipt
+   alone cannot issue the runtime grant.
+5. Reserve the Scheme lifecycle once, durably confirm ConsumePending, then
+   enter its configured deliver callback once. The callback uses the qualified
+   source-lease/owner-task profile and obtains verified issuer consumption, commits
+   the exact send intent/history/budget/audit state, then grants one broker
+   dispatch claim. Failure after consumption may burn the grant without a send.
+   The broker enforces the frozen request and credential at actual dispatch.
+6. Record outcome, emitter closure, usage settlement and response-release ranges
+   independently under their own evidence contracts. Revocation ordered
+   before admission blocks the attempt; later revocation follows the committed
+   in-flight contract. Unknown outcomes remain conservative pending state.
+
+Required negative controls include changed arguments, duplicate consumption,
+cross-tenant resource lookup, removed discovery visibility, expired delegation,
+stale assessment, unknown Provider, and backend mutation after authorization.

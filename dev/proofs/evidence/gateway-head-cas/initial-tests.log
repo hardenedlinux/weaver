@@ -1,0 +1,253 @@
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:146:100
+  146:   action unsafeStaleCommit = all {P::resumeOldWorker,g' = g.with("decisions",g.decisions.union(Set(g.jobs.oneOf())))}
+                                                                                                          ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:147:101
+  147:   action unsafeSecondCommit = all {P::resumeOldWorker,g' = g.with("decisions",g.decisions.union(Set(g.decisions.oneOf().with("id",99))))}
+                                                                                                           ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:148:90
+  148:   action unsafePreparedRow = all {P::resumeOldWorker,g' = g.with("rows",g.rows.union(Set(g.jobs.oneOf())))}
+                                                                                                ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:150:92
+  150:   action unsafeRouteSend = all {P::offer(0,0,8),g' = g.with("sends",g.sends.union(Set({job:g.decisions.oneOf(),view:currentView,route:1,key:0}))).with("haveJoin",false)}
+                                                                                                  ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:96:36
+  96:     val j = if (g.jobs.size() > 0) g.jobs.oneOf() else emptyJob
+                                         ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:114:69
+  114:   run preparedIsNotProjectionAuthorityTest = prepared.then(applyRow(g.jobs.oneOf(),true).fail())
+                                                                           ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:117:112
+  117:   run queuedHeadChangeRejectsCommitTest = prepared.then(changeHead(0,1,0,g.worker)).then(readHead).then(commit(g.jobs.oneOf(),g.worker,true).fail())
+                                                                                                                      ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:118:98
+  118:   run republishedHeadRejectsOldVersionTest = prepared.then(republish).then(readHead).then(commit(g.jobs.oneOf(),g.worker,true).fail())
+                                                                                                        ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:119:107
+  119:   run abaHeadPointerDoesNotRestorePermitTest = prepared.then(changeHead(0,1,0,g.worker)).then(restoreHead(g.jobs.oneOf().view.head,g.worker)).then(readHead).then(commit(g.jobs.oneOf(),g.worker,true).fail())
+                                                                                                                 ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:119:170
+  119:   run abaHeadPointerDoesNotRestorePermitTest = prepared.then(changeHead(0,1,0,g.worker)).then(restoreHead(g.jobs.oneOf().view.head,g.worker)).then(readHead).then(commit(g.jobs.oneOf(),g.worker,true).fail())
+                                                                                                                                                                                ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:120:103
+  120:   run oldWorkerCannotCommitAfterRestartTest = prepared.then(restartBroker).then(readHead).then(commit(g.jobs.oneOf(),g.worker-1,true).fail())
+                                                                                                             ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:121:98
+  121:   run newWorkerCannotRelabelOldJobTest = prepared.then(restartBroker).then(readHead).then(commit(g.jobs.oneOf(),g.worker,true).fail())
+                                                                                                        ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:123:18
+  123:     .then(commit(g.jobs.filter(j => j.id == 1).oneOf(),g.worker,true)).expect(safety and g.decisions.size() == 1)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:124:78
+  124:   run twoQueuedJobsHaveSingleWinnerTest = prepared.then(prepare).then(commit(g.jobs.filter(j => j.id == 0).oneOf(),g.worker,true))
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:125:33
+  125:     .then(readHead).then(commit(g.jobs.filter(j => j.id == 1).oneOf(),g.worker,true).fail())
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:126:88
+  126:   run staleSnapshotObservationRejectedTest = prepared.then(republish).then(observeHead(g.jobs.oneOf().view,true).fail())
+                                                                                              ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:141:90
+  141:   run authorityPartitionBlocksCommitTest = prepared.then(authorityPartition).then(commit(g.jobs.oneOf(),g.worker,true).fail())
+                                                                                                ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:110:49
+  110:   action materialized = committed.then(applyRow(g.decisions.oneOf(),true))
+                                                       ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:115:78
+  115:   run lostAuthorityCommitReplyTest = committed.then(loseReply).then(applyRow(g.decisions.oneOf(),true)).then(readJoin).expect(safety and g.decisions.size() == 1)
+                                                                                    ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:116:75
+  116:   run duplicateRootCASRejectedTest = committed.then(readHead).then(commit(g.jobs.oneOf(),g.worker,true).fail())
+                                                                                 ^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:134:93
+  134:   run lateProjectionRowDoesNotBypassFenceTest = committed.then(restartBroker).then(applyRow(g.decisions.oneOf(),true)).then(send(g.decisions.oneOf(),0,0,8,0).fail())
+                                                                                                   ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:134:130
+  134:   run lateProjectionRowDoesNotBypassFenceTest = committed.then(restartBroker).then(applyRow(g.decisions.oneOf(),true)).then(send(g.decisions.oneOf(),0,0,8,0).fail())
+                                                                                                                                        ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:128:88
+  128:   run lostProjectionReplyIsIdempotentTest = materialized.then(loseReply).then(applyRow(g.decisions.oneOf(),true)).then(readJoin).expect(safety and g.rows.size() == 1)
+                                                                                              ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:129:103
+  129:   run projectionRollbackDoesNotRecommitRootTest = materialized.then(rollbackProjection).then(applyRow(g.decisions.oneOf(),true)).then(readJoin)
+                                                                                                             ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:131:67
+  131:   run projectionWriteAloneCannotSendTest = materialized.then(send(g.decisions.oneOf(),0,0,8,0).fail())
+                                                                         ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:112:52
+  112:   run normalFinalBrokerOfferTest = ready.then(send(g.decisions.oneOf(),0,0,8,0)).expect(safety and P::s.messages.get(0).sends == 1)
+                                                          ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:113:63
+  113:   run sdkRetryCannotRepeatOriginalOfferTest = ready.then(send(g.decisions.oneOf(),0,0,8,0)).then(readJoin).then(send(g.decisions.oneOf(),0,0,8,0).fail())
+                                                                     ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:113:118
+  113:   run sdkRetryCannotRepeatOriginalOfferTest = ready.then(send(g.decisions.oneOf(),0,0,8,0)).then(readJoin).then(send(g.decisions.oneOf(),0,0,8,0).fail())
+                                                                                                                            ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:132:83
+  132:   run oldJoinCannotSurviveBrokerRestartTest = ready.then(restartBroker).then(send(g.decisions.oneOf(),0,0,8,0).fail())
+                                                                                         ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:133:103
+  133:   run historicalCommitCanRejoinCurrentBrokerTest = ready.then(restartBroker).then(readJoin).then(send(g.decisions.oneOf(),0,0,8,0)).expect(safety)
+                                                                                                             ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:135:112
+  135:   run routeChangeBlocksOldCommittedScopeTest = ready.then(changeHead(0,1,0,g.worker)).then(readJoin).then(send(g.decisions.oneOf(),0,0,8,1).fail())
+                                                                                                                      ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:136:62
+  136:   run redirectCannotWidenSelectedRouteTest = ready.then(send(g.decisions.oneOf(),0,0,8,1).fail())
+                                                                    ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:137:95
+  137:   run policyRevocationBlocksFinalOfferTest = ready.then(restrict(0)).then(readJoin).then(send(g.decisions.oneOf(),0,0,8,0).fail())
+                                                                                                     ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:139:82
+  139:   run clientRestartInvalidatesReadJoinTest = ready.then(restartClient).then(send(g.decisions.oneOf(),0,0,8,0).fail())
+                                                                                        ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:140:85
+  140:   run projectionPartitionBlocksSendTest = ready.then(projectionPartition).then(send(g.decisions.oneOf(),0,0,8,0).fail())
+                                                                                           ^^^^^^^^^^^^^^^^^^^
+
+
+ Error [QNT203]: 'oneOf' must be used inside a nondet definition
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/GatewayHeadCAS.qnt:144:110
+  144:   run streamReconnectCannotReclaimOriginalTest = ready.then(reconnectStream(0,0,8)).then(readJoin).then(send(g.decisions.oneOf(),0,0,8,0).fail())
+                                                                                                                    ^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

@@ -1,0 +1,357 @@
+[
+  {
+    "label": "LogicalMessageAuthority",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 4.455,
+    "exit": 0
+  },
+  {
+    "label": "SharedMessageBudget",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.99,
+    "exit": 0
+  },
+  {
+    "label": "FiniteDomainMigration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.115,
+    "exit": 0
+  },
+  {
+    "label": "AnchoredRecoveryAndEgress",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/AnchoredRecoveryAndEgress.olean",
+      "specs/lean/AnchoredRecoveryAndEgress.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.946,
+    "exit": 0
+  },
+  {
+    "label": "ComposedGatewayLifecycle",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/ComposedGatewayLifecycle.olean",
+      "specs/lean/ComposedGatewayLifecycle.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.183,
+    "exit": 0
+  },
+  {
+    "label": "FiniteStreamManifest",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/FiniteStreamManifest.olean",
+      "specs/lean/FiniteStreamManifest.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 1.305,
+    "exit": 0
+  },
+  {
+    "label": "DriverCompletionRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/DriverCompletionRecovery.olean",
+      "specs/lean/DriverCompletionRecovery.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.748,
+    "exit": 0
+  },
+  {
+    "label": "WriterSettlementClosure",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/WriterSettlementClosure.olean",
+      "specs/lean/WriterSettlementClosure.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.997,
+    "exit": 0
+  },
+  {
+    "label": "SettlementAnchorRecovery",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/SettlementAnchorRecovery.olean",
+      "specs/lean/SettlementAnchorRecovery.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.781,
+    "exit": 0
+  },
+  {
+    "label": "GateConsumptionPersistence",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/GateConsumptionPersistence.olean",
+      "specs/lean/GateConsumptionPersistence.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 0.676,
+    "exit": 0
+  },
+  {
+    "label": "AnchorBrokerCommit",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-anchor-broker-final-proof/AnchorBrokerCommit.olean",
+      "specs/lean/AnchorBrokerCommit.lean"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 4.989,
+    "exit": 0
+  },
+  {
+    "label": "typecheck",
+    "args": [
+      "quint",
+      "typecheck",
+      "specs/quint/AnchorBrokerCommit.qnt"
+    ],
+    "watchdogSeconds": 20,
+    "seconds": 4.286,
+    "exit": 0
+  },
+  {
+    "label": "tests",
+    "args": [
+      "quint",
+      "test",
+      "specs/quint/AnchorBrokerCommit.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--out-itf",
+      "specs/evidence/anchor-broker-traces/itf/{test}-{seq}.itf.json"
+    ],
+    "watchdogSeconds": 45,
+    "seconds": 25.006,
+    "exit": 0
+  },
+  {
+    "label": "emptyInit",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/AnchorBrokerCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "emptyInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "41",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 4.161,
+    "exit": 0
+  },
+  {
+    "label": "singletonInit",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/AnchorBrokerCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "singletonInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "41",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 4.807,
+    "exit": 0
+  },
+  {
+    "label": "init",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/AnchorBrokerCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "41",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 6.019,
+    "exit": 0
+  },
+  {
+    "label": "largerInit",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/AnchorBrokerCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "largerInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "41",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 8.933,
+    "exit": 0
+  },
+  {
+    "label": "held",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/AnchorBrokerCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "held",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "41",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 5.446,
+    "exit": 0
+  },
+  {
+    "label": "dispatched",
+    "args": [
+      "quint",
+      "run",
+      "specs/quint/AnchorBrokerCommit.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "dispatched",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "41",
+      "--verbosity",
+      "1"
+    ],
+    "watchdogSeconds": 30,
+    "seconds": 5.794,
+    "exit": 0
+  }
+]

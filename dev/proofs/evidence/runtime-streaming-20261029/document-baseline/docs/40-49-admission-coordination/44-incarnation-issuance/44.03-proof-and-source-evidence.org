@@ -1,0 +1,175 @@
+#+title: Weaver Incarnation Issuance Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Scope and source comparison
+
+[[file:44.01-incarnation-issuance.org][44.01]] defines the native protocol. The actual [[file:../../../proofs/lean/LlmIncarnationIssuance.lean][Lean]] and
+[[file:../../../proofs/qunit/LlmIncarnationIssuance.qnt][Quint]] models expand category 43's enrollment sequencing without modifying its
+sealed artifacts. [[file:../../../proofs/evidence/llm-incarnation-issuance/source-review.json][Nineteen pinned source receipts]] and
+[[file:../../../proofs/evidence/llm-incarnation-issuance/working-source-check.json][working source identities]] are freshly checked. Eighteen match the reviewed
+bytes; P17 differs only in the two previously recorded import paths. No upstream
+source or dependency pin is changed; no native ABI qualification is inferred.
+
+| Source | Reuse | Extension or boundary |
+|--------+-------+-----------------------|
+| P12 authorized-effect-token | Semantic-root and complete binding comparison, consumed nonce, revocation epoch and validity checks | Bind the original launch, ticket, exact key/channel transcript and current activation parent; token fields do not authenticate provenance |
+| P13 strict-mediation | Nonce consumption even when observation is unavailable | Lost issuance/activation replies resolve original persisted records, never another nonce or refunded hold |
+| P15 effect-host | Private issued-grant provenance, exact serialized owner, monotonic clock, revoke epoch | Extend producer-owned issuance to a protected launch/key/challenge registry; local receipt explicitly denies durable/distributed authority |
+| P17 store-backend | Runtime ownership and typed backend negotiation contracts | Native append must commit pre/post enrollment state and custody result together; capability declarations are not implementation evidence |
+| P18 PromotionTransactionRecovery | Original request/pre/post/effect observation association | Resolve the exact issuance/activation event after acknowledgement loss |
+| P19 authorized recovery bridge | Source-bound original authority and claim recovery | A new launch cannot replace the original task or pending duties |
+| P20 CommittedEffectApplicationExactlyOnce | Conditional application uniqueness over its trace/runtime premises | No proof of signature verification, persistent native append or provider delivery |
+| P22 durable-store | Locking/fsync/replay runtime contract receipts | One authority owns issuance and activation ordering; no separate-cache commit can activate |
+| P31 SessionAttempt Lean | Generation/revision and pending recovery semantics | Future incarnation is an assigned ticket field, not required bootstrap login authority |
+| P31 SessionAttempt Quint | Executable scheduling/recovery pattern | Add bootstrap key/session, duplicate launch and queued activation races |
+| P33 semantic budget | Deterministic original budget bounds | Preserve original domain and unknown hold across tickets and new incarnations |
+| P33 watchdog | Timeout/capacity observations | Missing response cannot establish no-execution or release unknown usage |
+| P35 context invalidation | Current authority generation rejects old contexts | Check protected issuer epoch and original custody parent at final activation |
+| P35 lineage prefix closure | Context belongs to a committed prefix | Recover current ticket/proof/outcome projections from an authentic protected head |
+| P43 session/funs-attempt | Consumer-session/turn binding, stale revision rejection, pending reconciliation, coordinate exhaustion | Reuse stable launch identity and reject native counter wrap; receipt remains non-published/non-authorized/non-durable |
+| P44 session/objects-attempt | Task/attempt identity, generation and anchors | Do not treat transport session metadata as an activated incarnation |
+| C8 BoundOperation | Exact typed request/effect/state comparison | Source explicitly says equality authenticates neither input; native verifier must establish launch and key facts |
+| C10 CompoundAuthorization | Required error-free decision layers over a POO root/snapshot | Source leaves authentic inputs and atomic business execution to runtime; a self-selected key's PoP does not authorize enrollment |
+| C11 Composition | Evaluation/validation dependency and invalidation preservation | Add authentic bootstrap facts, canonical encoding and whole-event publication refinement |
+
+One source-level boundary is intentionally stricter: P12 rejects only when now is
+greater than expiry, while Gateway activation requires now strictly before the
+target deadline. Equality at the deadline is denied here. Native reuse must
+implement that explicit boundary rather than silently assuming the same validity
+comparison. P15's monotonic-clock check and P43's coordinate-exhaustion rejection
+are reusable patterns, not proofs of persistent clock floors or bounded codecs.
+
+* Four-artifact correspondence
+
+| ID | Lean declaration | Quint control | Core D2 node | Property and premise |
+|----+------------------+---------------+--------------+----------------------|
+| EI1 | projection | issueDoesNotActivateCustodyTest | recovery.projection | Issuance and proof stutter the actual custody state |
+| EI2 | composition | currentBootstrapActivatesOriginalTest | broker.alias | Every finite enrollment run composes actual predecessor custody transitions |
+| EI3 | issued_retained | lostIssueReplySameLaunchCannotRemintTest | recovery.projection | One issue ID never replaces its complete stored ticket |
+| EI4 | issued_was_authorized | independentLaunchApprovalRequiredTest | registry.alias | From an empty registry every issued ticket originates at an authenticated independent launcher |
+| EI5 | launch_retained | lostIssueReplyRecoveredByLaunchLookupTest | protocols.acp | The canonical launch index cannot be renamed by a retry |
+| EI6 | outcome_retained | lostActivationReplyCannotRepeatTest | broker.alias | An existing activation result survives a later transition |
+| EI7 | issued_run | wrongTranscriptChallengeRejectedTest | recovery.fence | Every finite run retains an issued transcript binding |
+| EI8 | outcome_run | lostActivationReplyCannotRepeatTest | broker.alias | Every finite run retains known activation results |
+| EI9 | reserved_retained | reservedIncarnationCannotReissueTest | recovery.fence | Each step retains already reserved identities |
+| EI10 | launch_run | lostIssueReplyRecoveredByLaunchLookupTest | protocols.acp | Every finite run retains the original launch-to-issuance mapping |
+| EI11 | reserved_run | reservedIncarnationCannotReissueTest | recovery.fence | Every finite run retains issued-identity tombstones |
+| EI12 | challenge_monotone | wrongTranscriptChallengeRejectedTest | recovery.projection | Authority challenge allocation never decreases in a step |
+| EI13 | wrong_key_not_possession | oldWorkerCannotProveNewKeyTest | recovery.join | Shared workload eligibility cannot replace proof of the frozen key |
+| EI14 | wrong_session_not_possession | wrongBootstrapSessionRejectedTest | recovery.join | A signature cannot be replayed under a different bootstrap recipient session |
+| EI15 | stale_epoch_rejected | issuerEpochChangeRejectsQueuedActivationTest | broker.cas | Retired issuer epochs cannot activate queued tickets |
+| EI16 | stale_parent_rejected | sourcePublicationRejectsOldIssueParentTest | broker.cas | Current source/custody publication invalidates an old predecessor parent |
+| EI17 | known_outcome_cannot_activate | lostActivationReplyCannotRepeatTest | broker.alias | Known activation result excludes another activation |
+| EI18 | activation_requires_issued_proof | issuedWithoutProofCannotActivateTest | broker.cas | Actual incarnation change requires exact issued row, full stored proof and current read |
+| EI19 | activation_from_authorized_launch | selfSelectedOldKeyCannotIssueTest | registry.alias | Initial-registry provenance and exact bootstrap possession jointly constrain activation |
+| EI20 | scope_run | twoLaunchesCannotBothUseOldParentTest | registry.origin | Every finite run retains original domain/workload/task/purpose/deadline |
+| EI21 | original_result_unique | twoLaunchesCannotBothUseOldParentTest | broker.alias | Initialized actual floor prefix preserves unique original operation results |
+| EI22 | original_reservation_once | currentBootstrapActivatesOriginalTest | registry.query | Safe initialized actual account prefix applies an original reservation at most once |
+| EI23 | unknown_original_hold_retained | proofWithoutActivationHasNoGrantTest | broker.hold | Unmetered original execution with authentic source binding retains its original hold |
+
+Lean uses a Bootstrap context containing workload/key/session facts. It does not
+require the new incarnation to be authenticated before it exists. Possession
+requires a native verification witness for the complete Ticket and the exact
+bootstrap key and session. The registered future incarnation is instead frozen
+by independent launch authorization. From an empty registry, issued_was_authorized
+traces every accepted row to that actual issue transition; the activation theorem
+combines this provenance with the exact persisted proof and current activation CAS.
+
+The predecessor's enrolled predicate is made logically true only in the projected
+custody machine. This is explicit semantic factoring: the new outer layer supplies
+the issued/proven/current guard at each fresh-incarnation activation. It is not a
+claim to have proved the old arbitrary native enrolled predicate. The actual
+predecessor custody transition still supplies authentic recovery authorization,
+immutable scope, fence/serial progression and the exact custody publication.
+The weaker projected enrolled=true relation must never be exposed as an alternate
+native API. Inner durability predicates describe projections of the same outer
+commit; implementation must not activate an inner grant before that whole event.
+Native persistence is a predicate over both complete pre-state and post-state;
+pre-state durability alone cannot acknowledge an issued ticket or activation.
+
+The modeled route is fresh-incarnation custody handoff. Same-incarnation key
+rotation from category 43 is not expanded by this layer and cannot be claimed
+qualified by these checks. It needs its own qualified bootstrap/rotation protocol;
+there is no implicit rotation/rebinding fallback in this model.
+
+The original-result/account proofs compose actual predecessor runs and require
+initialized publication/custody/account prefixes. Budget results retain Safe
+handoff and the authentic original reservation/source binding. The unknown-usage
+theorem is conditional on that source remaining unmetered; identity sequencing
+does not prove source truth or financial settlement correctness by itself.
+
+* Quint projections and counterexamples
+
+The finite fixture begins at the predecessor's actual armed original operation.
+It uses two canonical launches with frozen distinct keys/sessions and two candidate
+issuance IDs, plus the old worker sharing their workload principal. Proof receipts
+retain full ticket projections rather than just a proof ID. Activation outcomes
+are represented by an applied-ID set and the corresponding immutable ticket target;
+Lean stores the full outcome grant. No automatic Quint-to-Lean refinement proof
+is claimed. Both models separately constrain the actual inherited custody chain.
+
+| Mutation | Concrete failure | Limit |
+|----------+------------------+-------|
+| sharedIdentityIssuanceCounterexampleTest | Omitting the bootstrap guard lets the actual inherited handoff activate the new capability for an invocation with the old key/session | No provider call or floor admission occurs |
+| noProofIssuanceCounterexampleTest | Actual capability activates without a persisted proof receipt | Outcomes/proofs relation fails, in addition to the qualification monitor |
+| revokedProofIssuanceCounterexampleTest | A retired issuer-epoch proof activates when the final epoch guard is removed | Actual custody fence/grant advances; no external send |
+| keySubstitutionIssuanceCounterexampleTest | An immutable issued row is rewritten to the old worker key | Deliberate registry-corruption/qualification witness, not a claim that the guarded protocol permits overwrite |
+| rollbackIssueIssuanceCounterexampleTest | Recovery loses issued/launch/reservation records while proof remains | Cross-projection recovery invariant fails; no native co-rollback detector is proved |
+| lostActivationResultIssuanceCounterexampleTest | Recovery loses the activation result while actual active custody remains | Qualification/result-retention violation; it does not demonstrate a second handoff |
+
+Fault actions are outside the guarded random step. unsafeActivate explicitly
+requires the normal activation predicate to be false before executing the real
+inherited handoff. The independent ITF decoder checks that fact's concrete
+key/session, missing-proof or epoch mismatch, actual active grant/fence, unchanged
+floor/provider state and retained account hold. Ghost qualification flags are
+not presented as transport authentication or native storage evidence.
+
+The first executable attempt caught an unset registry variable in a composed
+partial action. Its failure and source snapshot are retained. The repaired model
+threads the registry revision/read qualification through every underlying metadata
+step, matching the intended outer-owner ordering. Earlier parse/Lean diagnostics
+remain separate from accepted current receipts.
+
+* Reproduction and evidence boundary
+
+Run [[file:../../../proofs/check_llm_incarnation_issuance.py][the checker]]. It freshly compiles the new Lean leaf and verifies thirty
+unchanged ancestor source/compiled-object receipts; it does not relabel those
+thirty earlier compilations as fresh. It checks twenty-three printed declarations
+without sorryAx. Quint's official test/run pipeline typechecks before execution:
+thirty-one current controls, six exported fault traces, eight initializers with
+ten samples and up to thirty post-initialization steps each, and twenty-seven
+predecessor caller controls are checked with fixed watchdogs. The exact CLI
+seed argument and each printed reproduction seed are recorded separately; neither
+is substituted for the other.
+
+The executed new leaf is byte-identical to its raw source. The compact closure
+freshly checks eleven ancestor source/core hashes, uses official parser spans to
+omit only twenty-seven immediate parent run declarations, and verifies every
+retained ancestor non-run declaration's normalized IR. Its earlier qualified
+closure already omits 356 unrelated historical runs, giving 383 historical run
+omissions here. All types, helpers, actions and effects remain checked. Parent
+controls execute separately against the unchanged sealed caller closure. No
+omitted historical tests are claimed rerun. A first boot exploration of the
+full test-bearing leaf reached its fixed thirty-second watchdog and is retained
+as a failed attempt. The simulation closure additionally blanks the 31 already
+executed current run declarations using official parser spans. Every remaining
+declaration, including types, actions, effects and invariant, is independently
+compared with the test closure. Sampling still uses ten samples and thirty
+post-initialization steps per initializer with the original thirty-second gate.
+This avoids re-typechecking test declarations for each simulation; it does not
+weaken the explored transition relation or reclassify the failed attempt. The prior standalone twenty-second
+typecheck timeout remains a historical failed resource gate; this category does
+not rerun or convert it into a pass and makes no new fast-typecheck/performance
+claim. The installed official pipeline source/hash is checked independently.
+
+See [[file:../../../proofs/evidence/llm-incarnation-issuance/commands.json][current commands]], [[file:../../../proofs/evidence/llm-incarnation-issuance/reused-lean-receipts.json][reused ancestor receipts]],
+[[file:../../../proofs/evidence/llm-incarnation-issuance/closure-certificate.json][closure certificate]], [[file:../../../proofs/evidence/llm-incarnation-issuance/counterexample-observations.json][decoded ITFs]],
+[[file:../../../proofs/evidence/llm-incarnation-issuance/receipt.json][final receipt]] and [[file:../../../proofs/evidence/llm-incarnation-issuance/SHA256SUMS][byte manifest]].
+Acceptance also checks twenty-three four-artifact rows, English Org links/export,
+core D2 validation and visual inspection, thirty-nine historical manifests and
+unchanged pins. Finite exploration is not exhaustive model checking. Credential
+secrecy/delivery, crypto/channel verification, authentic launch facts, protected
+whole-event persistence/anti-rollback, canonical codecs, native counter bounds,
+recovery liveness and IO fault injection remain native qualification obligations.
+No Gateway runtime code or dependency pin is changed.

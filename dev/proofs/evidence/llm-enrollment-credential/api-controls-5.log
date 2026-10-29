@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-5","limit":20}
+
+  LlmEnrollmentCredential
+    ok crossLaunchIdCannotBeReusedTest passed 1 test(s)
+    ok secondSubjectGetsDistinctIdTest passed 1 test(s)
+    ok uncommittedBodyCannotReachSignerTest passed 1 test(s)
+
+  3 passing (1224ms)
+@@DONE {"label":"api-controls-5","passed":["crossLaunchIdCannotBeReusedTest","secondSubjectGetsDistinctIdTest","uncommittedBodyCannotReachSignerTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

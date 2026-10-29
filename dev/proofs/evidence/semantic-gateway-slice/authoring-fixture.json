@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "checks": [
+    "finite-json-yaml-meaning-equality",
+    "duplicate-json-key",
+    "duplicate-yaml-key",
+    "yaml-explicit-tag",
+    "yaml-anchor",
+    "yaml-merge-alias",
+    "unknown-authority-field",
+    "null-limit",
+    "boolean-limit",
+    "fraction-limit",
+    "string-limit",
+    "negative-limit",
+    "overflow-limit",
+    "changed-response-contract",
+    "unknown-target",
+    "empty-target-list",
+    "nondecimal-yaml-int",
+    "missing-optional-defaults",
+    "authored-ceiling-cannot-raise-original-reservation"
+  ],
+  "count": 19,
+  "orgSha256": "61c797f3869a6b5af34e39bfde47285e5c988b15fa3d97d90e563a9ba93294e9",
+  "boundary": "Finite JSON/YAML fixture only; native Scheme and common compiler are not executed"
+}

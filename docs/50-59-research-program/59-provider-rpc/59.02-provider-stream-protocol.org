@@ -1,0 +1,104 @@
+#+TITLE: 59.02 Provider Routing, Streaming and Recovery
+#+LANGUAGE: en
+
+* Source commitment and routing
+
+Go compiles a source-owned text streaming plan under the original Task. Rust
+rechecks its exact body digest, stream commitment, model, ordered routes, target
+endpoints, cost floor and family budget. The source commitment excludes mutable
+revision/fence observations and includes every field that changes the actual
+request or candidate selection. The body is hashed as exact UTF-8 bytes before
+its digest enters the canonical commitment.
+
+Rust chooses a configured, Cedar-permitted candidate before durable consumption.
+A missing local credential or a forbidden candidate can be skipped without a
+provider call. Selection does not probe an upstream endpoint. The chosen target
+is persisted atomically with consumption. After consumption, no network error,
+307, 503, timeout, partial request or partial response enables another route.
+The same fixed model/body applies to every candidate. Model-changing fallback
+requires a different explicitly source-authored semantic contract and is not
+silently implemented by rewriting the body.
+
+* Persistent protocol
+
+| Phase | Durable and native rule |
+|-------+-------------------------|
+| Admission | CAS the original key to its exact plan and reserve once from the shared family budget; no transport call |
+| Queued recovery | Reauthorize only the same source commitment under a current revision/fence, preserving its hold |
+| Consumption | Select an eligible permitted route and mark the original operation unknown |
+| Dispatch burn | Persist the unique dispatch burn before the possible request callback |
+| Final invocation | Recheck current Cedar, original binding, selected route and native owner under the deciding lock, then recheck the original output cancellation context immediately before invoking private HTTPS once |
+| Response read | Incrementally decode a bounded SSE stream outside the deciding write lock so publication can proceed |
+| Output capacity | Reserve an outbound queue slot before taking the deciding write lock; timeout/cancellation retains unknown execution |
+| Release burn | Persist the exact batch digest, logical sequence interval and unknown release before possible enqueue; the private affine token also binds the immutable original plan commitment, prepared encoding and ledger session |
+| Final release | Recheck current authority for every row, encode immutable data and consume the reserved slot under the deciding lock |
+| Release commit | Record that the bounded queue admission returned; this is not proof of peer receipt |
+| Completion | Require a valid provider finish and DONE, committed releases and current authority; retain the original hold |
+
+A crash after dispatch burn but before a request still remains unknown. This
+conservative profile has no authenticated zero-request transport recovery receipt.
+A queue insertion followed by lost ledger commit also remains unknown: restarting
+never replays that response or recreates the original provider call. The complete
+receipt records a finished local response pipeline, not authenticated provider
+usage settlement or exactly-once remote execution.
+
+* Provider transport and event semantics
+
+The adapter uses HTTPS, hostname verification and owner-held target credentials.
+Redirect following, environment proxy inheritance, connection reuse and library
+retries are disabled in this initial profile. Provider HTTP/1.1 is a conservative
+upstream transport setting; the internal Go/Rust RPC remains HTTP/2 gRPC.
+No generic SDK sits between the final guard and the request.
+
+The wire profile follows the [[https://developers.openai.com/api/reference/resources/chat/subresources/completions/streaming-events][official Chat Completions streaming schema]], with the
+strict subset below. Native model IDs use the bounded identifier grammar; model
+namespace translation is not an implicit adapter privilege.
+
+The SSE decoder supports data events, comments and CRLF boundaries. Provider
+=id= and =retry= fields never create reconnect behavior. It checks a stable stream
+ID, exact expected model, Chat Completions response mode, one choice, finish order,
+optional usage order and DONE. Unsupported tool/function deltas, another model,
+truncation and oversize input stop the pipeline. Exact model identifiers must be
+source-configured; automatic alias-to-dated-model translation is not admitted.
+This text profile does not implement tool invocation or content moderation.
+
+Request bytes are bounded to 1 MiB, route candidates to eight, SSE events to
+64 KiB each, the response to 4 MiB and logical response events to 4096. The request
+also requires a bounded completion-token setting and at most 64 messages.
+Declared budget credits are source-owned cost bounds, not dynamically inferred
+provider currency charges. An adequate source cost model is a proof premise;
+reported provider usage does not release or settle unknown credit.
+
+* Protobuf and optional Arrow IPC
+
+Protobuf emits one typed event per frame. Arrow IPC batches up to 32 events in a
+fixed non-null schema: sequence, kind, text and tokens. The response envelope binds
+the selected target and model. Both encodings traverse the same =emitProvider=
+Policy/fence guard for every logical row. The native queue has two frame slots;
+capacity waits occur outside the ledger lock and expire after one second.
+
+The Go client checks encoding, schema, sequence continuity, stable route/model,
+event order and the final canonical receipt. It never retries automatically.
+Cancelling its callback cancels that RPC, without returning its budget or opening
+a fallback. Switching encoding is not a new logical operation.
+
+Arrow IPC is an actual optional data channel over this gRPC service. It is not an
+independently authorized Arrow Flight endpoint. General vector/table schemas,
+Flight, shared-memory IPC and zero-copy claims require additional contracts and
+measurements; this increment implements the provider-event batch schema.
+
+* Revocation and performance boundary
+
+A new authority publication blocks the next fresh request/release guard. It
+cannot retract an already invoked provider request or data already admitted to
+gRPC/TLS/kernel buffering. Previously admitted finite buffers may drain after
+revocation. The model distinguishes that observation from granting a stale new
+release. The native request and SSE read have a ten-second overall timeout;
+filesystem stalls and host scheduling are not covered by a global shutdown proof.
+
+Immutable task/plan facts and their hashes are bound once at consumption. Each
+release reads current authority and evaluates Cedar over small cached facts; it
+does not reparse or rehash the complete request for every token. No permission
+decision is cached. The SQLite deciding lock remains held across initial request
+invocation through response headers and across final bounded queue admission.
+This serial reference profile is not a qualified high-concurrency shard design.

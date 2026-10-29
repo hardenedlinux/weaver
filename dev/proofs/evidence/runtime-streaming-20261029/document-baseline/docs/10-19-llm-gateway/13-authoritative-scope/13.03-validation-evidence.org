@@ -1,0 +1,145 @@
+#+title: Weaver Authoritative Scope Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Scope and reproduction
+
+Run [[file:../../../proofs/check_llm_authoritative_scope.py][the bounded check runner]]. The new [[file:../../../proofs/lean/LlmAuthoritativeScope.lean][Lean module]] imports the actual prior
+semantic/child/root models. The [[file:../../../proofs/qunit/LlmAuthoritativeScope.qnt][Quint model]] starts from an admitted-root fixture
+and checks canonical scope derivation, final use, recovery and settlement races.
+The Lean run additionally projects source root setup into GatewayHeadCAS.Run.
+Raw commands are in [[file:../../../proofs/evidence/llm-authoritative-scope/commands.json][commands.json]] and final results in [[file:../../../proofs/evidence/llm-authoritative-scope/receipt.json][receipt.json]].
+
+The immutable original-key-to-contract mapping, authenticated root ownership and
+canonical source configuration are premises. Root identity cannot be selected
+from raw payload equality. Profile publication membership/fork freedom, native
+transaction durability, codec/parser correctness and recovery receipt validity
+remain runtime qualification obligations. The model does not prove that existing
+upstream APIs already implement the new task-profile publication protocol.
+
+* Recorded local result
+
+The final runner completed 21 command routes: ten freshly compiled Lean modules,
+Quint typechecking, 41 controls (33 guarded scenarios and eight deliberate unsafe
+witnesses), eight focused ITF exports, seven bounded initializer runs and the
+47-control semantic-contract regression. Twenty-one new Lean declarations were
+printed for axiom inspection with no =sorryAx= in the final module log. Each
+initializer uses ten samples, at most 30 post-initializer steps and seed 163:
+70 bounded samples, not exhaustive verification.
+
+The document checks resolve 12 four-artifact rows, 83 English Org documents,
+41 D2/SVG pairs and 18 unchanged historical manifests. The source review verifies
+19 POO Flow/Cedar blobs and 12 agentgateway blobs. Compiler/typecheck diagnostics
+from preliminary iterations remain distinct from the final successful receipts.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| AS1 | Create-only original authority record | originalRecordCannotReplaceTest | record_cannot_be_replaced | original.claim |
+| AS2 | Same input does not identify a response contract | sameInputForeignTaskRejectedTest | equal_input_does_not_identify_response_contract | original.profile |
+| AS3 | Every scope derives original account identities | selfConsistentForgedBudgetRejectedTest | all_uses_keep_original_domains | scope.derive |
+| AS4 | Check the history account, not execution domain | restrictedOriginalHistoryBlocksNewScopeTest | restricted_original_history_blocks_use | original.domains |
+| AS5 | Preserve admitted response mode | downgradedResponseModeRejectedTest | all_uses_keep_response_mode | output.document |
+| AS6 | Bind actual wire metadata to authoritative task | providerConversionNeedsBodyCheckTest | actual_wire_keeps_source_context | broker.wire |
+| AS7 | Tool proposal obeys original tool/argument contract | toolProposalUsesCanonicalSetTest | proposal_keeps_source_contract | output.proposal |
+| AS8 | Preserve the existing claim | forgedOriginalClaimRejectedTest | original_claim_stays_unique | broker.gate |
+| AS9 | Child maxima fit original source allowance | qualifiedNoExecutionKeepsAllowanceTest | allocations_fit_source_allowance | scope.child |
+| AS10 | Old observation cannot authorize current use | rootRepublicationInvalidatesTicketTest | stale_image_cannot_be_used | scope.snapshot |
+| AS11 | Recovered authority retains original record | recoveryCannotReplaceProfileTest | uses_keep_registered_record | broker.recovery |
+| AS12 | Unknown usage prevents original-root settlement | unknownUsageCannotSettleRootTest | unknown_usage_blocks_root_settlement | output.settlement |
+
+* Source review: reuse versus extension
+
+The [[file:../../../proofs/evidence/llm-authoritative-scope/source-review.json][POO Flow / cedar-poo-spec register]] contains freshly checked pinned
+blobs and exact source excerpts. The [[file:../../../proofs/evidence/llm-authoritative-scope/agentgateway-source-review.json][agentgateway register]] retains the pinned
+provider conversion/routing comparison. These are source snapshots, not claims
+about an uninspected latest checkout or native ABI compatibility.
+
+| Source | Concrete observation | Reuse / extension |
+|--------+----------------------+-------------------|
+| P12 authorized-effect-token | Typed operation/root binding; pure immutable validation and consumption | Reuse exact subject matching; extend subject with original task-profile commitment and actual derived scope |
+| P13 strict-mediation | Unknown observation consumes nonce and advances state | Reuse unknown-stays-spent semantics; runtime must publish authoritative state and cannot retry via a new scope |
+| P15 effect-host | Exact serialized owner, consume before deliver; explicitly local/non-durable | Reuse logical owner boundary; add durable joined root/profile/child gate |
+| P17/P22 durable store | Runtime owns persistence/checkpoint/rebuild boundary | Reuse storage contract separation; extend recovery records to profile reference, original claim and publication membership |
+| P31 SessionAttempt | Generation/CAS and pending attempt obligations | Reuse original attempt identity/recovery intent; not a profile-authority service |
+| P43 funs-attempt | Freezes producer/contract/input/scope/source-vector/query/restriction/profile digests; result flags deny publication/action/durability authority | Reuse frozen source references and exact attempt comparison; require authoritative producer admission and root binding |
+| P44 objects-attempt | Input/task objects are inert scheduling proposals with incomplete/default fields | Shape/default/digest presence cannot issue a scope or grant |
+| P35 context monotonicity | Local monotonic generations admit split views; authoritative publication membership/fork freedom is explicit | Reuse exact-domain membership/prefix semantics; no adapter-local context may replace the shared publication domain |
+| P35 lineage prefix | A bound domain publishes only its admitted prefix | Reuse current-prefix rejection; extend task-profile membership to the original root record |
+| P18/P19 recovery bridges | Recover against source-bound prior receipts | Old data reconciles the original claim; no new profile or budget from callback success |
+| P20 exactly-once | Runtime effect-universe evidence is supplied | No inference of remote provider exactly-once or cross-store atomicity |
+| P33 budget separation | Runtime/watchdog and deterministic accounting obligations are distinct | Maintain unknown holds; a scope/profile cache miss is not a refund |
+| C8 BoundOperation | Effect/state equality explicitly does not authenticate either supplied value; Host must authenticate before execution | Add original authority resolution before constructing actual operation; equality with a forged scope is insufficient |
+| C10 CompoundAuthorization | Every required nonempty layer must allow without evaluation errors | Apply canonical-task, target, disclosure/tool and account/history layers as required |
+| C11 Composition | Validation/evaluation alignment requires explicit equal inputs | Reuse alignment obligations, not native scope publication or store recovery guarantees |
+| AGL4/5, AGS11/12 | Provider conversion carries tool maps/state and has unsupported/lossy boundaries | Adapters report data; canonical profile cannot be replaced by conversion output |
+
+The new proofs mechanically reuse Weaver's source-root and child transitions.
+The external POO Flow/Cedar files are reviewed reuse contracts; they are not
+silently imported or rebuilt as newly compatible native dependencies. No pins
+or upstream sources are changed.
+
+* Safety properties and composition boundary
+
+=initialized_audit= checks every accepted use against a derived scope and exact
+current image. =uses_keep_registered_record= ties all use records to the single
+create-only registration. Domain, response-mode and original-claim results then
+follow. =actual_wire_keeps_source_context= binds the existing EncodingBridge to
+source-derived budget/history and registry-derived response mode.
+=proposal_keeps_source_contract= reuses the semantic trace's actual proposal
+validation under that derived scope.
+
+=root_projection= and =child_projection= reuse actual source runs. They retain
+original claim uniqueness, shared-account capacity and child allocation bounds.
+=allocations_fit_source_allowance= also checks the source allowance link at child
+advancement rather than assuming an arbitrarily large routing escrow. Unknown
+usage prevents child closure, and the new root-advance guard prevents settlement
+state changes before closure. This is a logical charged-state theorem, not an
+external financial account application implementation.
+
+The wrapper admits semantic consumption only alongside the actual current
+ChildCall and encoding bridge. Semantic disclosure/proposal promotion requires an
+actually invoked child and fresh root gate; data-only transitions cannot consume,
+release output or add authoritative proposals. The actual semantic transition and
+prior typed run carry existing mode/schema/completion/argument requirements.
+Native Policy inputs must also align root, route and semantic publication
+contexts under one authenticated authority join. Equal numeric revisions from
+different namespaces are insufficient. The current owner predicates carry this
+qualification; a native Cedar evaluator/adapter alignment proof is not supplied.
+The abstraction does not prove byte offsets, every asynchronous range/settlement
+store interleaving, provider execution, native JSON validation or liveness.
+
+* Deliberate counterexamples
+
+| Removed obligation | Executable witness | Observable violation |
+|--------------------+--------------------+----------------------|
+| Resolve original budget/history | forgedDomainScopeCounterexampleTest | Accepted use points at replacement accounts |
+| Preserve response mode | responseDowngradeScopeCounterexampleTest | Accepted scope changes validated document to raw mode |
+| Bind original task/claim | foreignClaimScopeCounterexampleTest | Use contains another task's claim despite identical input |
+| Compare actual current image | staleAuthorityScopeCounterexampleTest | Consumed ticket image differs from current publication |
+| Read original history restriction | historyAliasScopeCounterexampleTest | Use recorded while original history is restricted |
+| Derive canonical tool set | toolExpansionScopeCounterexampleTest | Scope expands the tool set |
+| Preserve original child spent slot | newScopeReplayScopeCounterexampleTest | Original child call count becomes two |
+| Retain unknown budget | unknownRefundScopeCounterexampleTest | Parent settlement advances while child usage is unknown |
+
+These actions are excluded from =step=. Their [[file:../../../proofs/evidence/llm-authoritative-scope/itf][ITF traces]] are decoded and
+checked independently. Bounded simulation is not exhaustive model checking;
+Quint uses four finite child slots and two allowed targets. Lean quantifies over
+finite lists/identities under explicit owner/configuration premises.
+
+* Runtime acceptance obligations
+
+Verify authenticated root-to-profile publication, wrong-namespace profile lookup,
+identical-input/different-task substitution, missing blobs and stale/split prefix
+membership. Test profile-store acknowledgement loss, root CAS reply loss, cache
+rebuild and mixed snapshots without changing original bindings. Race head/route
+publication and original history restriction against final consume and disclosure.
+Recover old workers and queued tickets; verify they cannot re-invoke or replace
+response mode. Replay late usage and proposal callbacks against their original
+record; keep unknown holds and require fresh tool-effect admission.
+
+Use the existing queue/range/account protocols for transport and settlement
+refinement, with matched native controls. Local model proof does not establish
+native database atomicity, deployed provider behavior or performance. The
+[[file:../../../proofs/evidence/llm-authoritative-scope/SHA256SUMS][manifest]] seals this category and evidence while preserving historical receipts.

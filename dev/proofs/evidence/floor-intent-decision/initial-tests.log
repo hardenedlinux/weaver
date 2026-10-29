@@ -1,0 +1,112 @@
+
+  FloorIntentDecision
+    ok D::exactScopedIsolationAndFloorTest passed 1 test(s)
+    ok D::oldFDPreventsIsolationTest passed 1 test(s)
+    ok D::wrongProfileReceiptRejectedTest passed 1 test(s)
+    ok D::missingAliasRosterRejectedTest passed 1 test(s)
+    ok D::falseNativeIsolationReceiptRejectedTest passed 1 test(s)
+    ok D::resetInvalidatesOldIsolationReceiptTest passed 1 test(s)
+    ok D::resetDoesNotEraseCommittedFloorTest passed 1 test(s)
+    ok D::historicalFloorReadAfterResetIsValidTest passed 1 test(s)
+    ok D::historicalFloorReadCannotActivateHardwareTest passed 1 test(s)
+    ok D::oldDeviceCounterCannotRestoreFloorTest passed 1 test(s)
+    ok D::staleFloorPrefixCannotQualifyReadTest passed 1 test(s)
+    ok D::forgedFloorReadRejectedTest passed 1 test(s)
+    ok D::lostBarrierReplyStaysClosedTest passed 1 test(s)
+    ok D::authenticBarrierQueryResumesOriginalCutTest passed 1 test(s)
+    ok D::floorCommitReplyLostThenResetKeepsHistoryTest passed 1 test(s)
+    ok D::unknownFloorCommitCannotAllocateSameSuccessorTest passed 1 test(s)
+    ok D::preparedFloorIntentSurvivesResetTest passed 1 test(s)
+    ok D::unresolvedIntentPreventsNewCutTest passed 1 test(s)
+    ok D::preparedOldCutCannotCommitAfterResetTest passed 1 test(s)
+    ok D::recoveryReadCannotOmitPendingIntentTest passed 1 test(s)
+    ok D::oldCompletedDMACannotExportAfterResetTest passed 1 test(s)
+    ok D::oldDeviceCallbackCannotCompleteCurrentStateTest passed 1 test(s)
+    ok D::oldCallbackMayArchiveOriginalOnlyTest passed 1 test(s)
+    ok D::forgedLateCallbackCannotEnterArchiveTest passed 1 test(s)
+    ok D::alteredDMAGenerationRejectedTest passed 1 test(s)
+    ok D::forgedCallbackRejectedTest passed 1 test(s)
+    ok D::aliasIdentityCannotRetagAfterResetTest passed 1 test(s)
+    ok D::lostBufferDoesNotReopenJobIDTest passed 1 test(s)
+    ok D::oldCallbackCannotCompleteNewJobTest passed 1 test(s)
+    ok D::exactFreshCallbackCanReleaseOriginalPrefixTest passed 1 test(s)
+    ok D::alreadyEmittedOriginalMayDeliverAfterResetTest passed 1 test(s)
+    ok D::resetReceiptReplayCounterexampleTest passed 1 test(s)
+    ok D::omittedOldFDIsolationCounterexampleTest passed 1 test(s)
+    ok D::retainedDMABufferLeaksOnResetCounterexampleTest passed 1 test(s)
+    ok D::lateCallbackRelabelsNewJobCounterexampleTest passed 1 test(s)
+    ok D::resettableDeviceCounterRestoresFloorCounterexampleTest passed 1 test(s)
+    ok D::resetForgetsAcceptedFloorIntentCounterexampleTest passed 1 test(s)
+    ok D::floorScalarWithoutCommitPrefixCounterexampleTest passed 1 test(s)
+    ok durableAcceptanceTest passed 1 test(s)
+    ok commitBeforeFenceLostResponseTest passed 1 test(s)
+    1) historicalCommitRequiresFreshCutTest failed after 1 test(s)
+    2) fenceBeforeDecisionRejectsLateCommitTest failed after 1 test(s)
+    3) fencedResolutionDoesNotUnlockTest failed after 1 test(s)
+    4) missingObservationCannotUnlockTest failed after 1 test(s)
+    5) duplicateDecisionRejectedTest failed after 1 test(s)
+    ok staleWorkerCannotAcceptTest passed 1 test(s)
+    ok staleRecoverySessionRejectedTest passed 1 test(s)
+    ok stalePrefixRejectedTest passed 1 test(s)
+    ok falseDecisionReceiptRejectedTest passed 1 test(s)
+    ok wrongCutReceiptRejectedTest passed 1 test(s)
+    6) restartPreservesUnresolvedTest failed after 1 test(s)
+    7) resetInvalidatesObservedSessionTest failed after 1 test(s)
+    ok secondCutPreservesOriginalDecisionTest passed 1 test(s)
+    ok originalActualReleaseStillWorksTest passed 1 test(s)
+    ok timeoutUnlockCounterexampleTest passed 1 test(s)
+    ok lateCommitAfterFenceCounterexampleTest passed 1 test(s)
+    ok rollbackDecisionPrefixCounterexampleTest passed 1 test(s)
+    ok negativeResolutionUnlockCounterexampleTest passed 1 test(s)
+    ok oldWorkerReceiptRelabelCounterexampleTest passed 1 test(s)
+
+  52 passing (1672ms)
+  7 failed
+
+  1) historicalCommitRequiresFreshCutTest:
+       Error [QNT502]: Variable d not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/DeviceIsolationRecovery.qnt:38:34
+        38:   action readCurrent = readFloor(d.journal,K::k.epoch,d.service,if (d.havePending) d.pendingFloor else emptyCut,true)
+                                             ^
+    Use --seed=0xb145306e2b8e0 --match=historicalCommitRequiresFreshCutTest to repeat.
+  2) fenceBeforeDecisionRejectsLateCommitTest:
+       Error [QNT502]: Variable f not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/FloorIntentDecision.qnt:91:115
+        91:   run fenceBeforeDecisionRejectsLateCommitTest = fencedPending.then(decide(f.slot,f.worker-1).fail()).then(decide(f.slot,f.worker).fail()).expect(safety)
+                                                                                                                              ^
+    Use --seed=0xb145306e2b8e0 --match=fenceBeforeDecisionRejectsLateCommitTest to repeat.
+  3) fencedResolutionDoesNotUnlockTest:
+       Error [QNT502]: Variable f not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/FloorIntentDecision.qnt:14:22
+        14:   def unlocked = not(f.haveSlot)
+                                 ^
+    Use --seed=0xb145306e2b8e0 --match=fencedResolutionDoesNotUnlockTest to repeat.
+  4) missingObservationCannotUnlockTest:
+       Error [QNT502]: Variable d not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/DeviceIsolationRecovery.qnt:101:25
+        101:   val intentConserved = d.accepted.forall(c => d.journal.contains(c) or (d.havePending and d.pendingFloor == c))
+                                     ^
+    Use --seed=0xb145306e2b8e0 --match=missingObservationCannotUnlockTest to repeat.
+  5) duplicateDecisionRejectedTest:
+       Error [QNT502]: Variable d not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/DeviceIsolationRecovery.qnt:101:25
+        101:   val intentConserved = d.accepted.forall(c => d.journal.contains(c) or (d.havePending and d.pendingFloor == c))
+                                     ^
+    Use --seed=0xb145306e2b8e0 --match=duplicateDecisionRejectedTest to repeat.
+  6) restartPreservesUnresolvedTest:
+       Error [QNT502]: Variable d not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/DeviceIsolationRecovery.qnt:101:25
+        101:   val intentConserved = d.accepted.forall(c => d.journal.contains(c) or (d.havePending and d.pendingFloor == c))
+                                     ^
+    Use --seed=0xb145306e2b8e0 --match=restartPreservesUnresolvedTest to repeat.
+  7) resetInvalidatesObservedSessionTest:
+       Error [QNT502]: Variable f not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/FloorIntentDecision.qnt:32:41
+        32:   action readDecision = observe({intent:f.slot,kind:if (committed(f.slot)) 1 else 2},f.decisions,f.worker,true)
+                                                    ^
+    Use --seed=0xb145306e2b8e0 --match=resetInvalidatesObservedSessionTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 proofs/qunit/FloorIntentDecision.qnt
+error: Tests failed

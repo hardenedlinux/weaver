@@ -1,0 +1,1 @@
+const fs=require('fs');const printer=require(process.argv[2]);const data=JSON.parse(fs.readFileSync(process.argv[3],'utf8'));for(const m of data.modules){fs.writeFileSync(process.argv[4]+'/'+m.name+'.qnt',printer.moduleToString(m)+'\n');}

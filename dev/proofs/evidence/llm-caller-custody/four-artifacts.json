@@ -1,0 +1,156 @@
+[
+  {
+    "id": "CC1",
+    "theorem": "projection",
+    "test": "redeliveryCannotRefreshReadTest",
+    "node": "recovery.join",
+    "meaning": "Every authoritative transition refines the actual publication machine"
+  },
+  {
+    "id": "CC2",
+    "theorem": "composition",
+    "test": "currentIncarnationCanFinishOriginalTest",
+    "node": "broker.cas",
+    "meaning": "Arbitrary finite caller runs extend the actual initialized publication prefix"
+  },
+  {
+    "id": "CC3",
+    "theorem": "workload_is_insufficient",
+    "test": "sharedWorkloadCannotUseNewGrantTest",
+    "node": "protocols.mcp",
+    "meaning": "Same workload with a different incarnation cannot authenticate"
+  },
+  {
+    "id": "CC4",
+    "theorem": "old_key_rejected",
+    "test": "oldKeyAfterRotationRejectedTest",
+    "node": "recovery.projection",
+    "meaning": "A different native peer key cannot use the current capability"
+  },
+  {
+    "id": "CC5",
+    "theorem": "old_capability_rejected",
+    "test": "oldSerialAfterRotationRejectedTest",
+    "node": "broker.alias",
+    "meaning": "Exact current capability equality is required"
+  },
+  {
+    "id": "CC6",
+    "theorem": "expired_rejected",
+    "test": "expiryBetweenStageAndCommitRejectedTest",
+    "node": "broker.cas",
+    "meaning": "Expiry is rechecked at determining append"
+  },
+  {
+    "id": "CC7",
+    "theorem": "scope_retained",
+    "test": "newKeyGetsSameScopeTest",
+    "node": "registry.origin",
+    "meaning": "Each permit preserves domain/workload/original/purpose/deadline"
+  },
+  {
+    "id": "CC8",
+    "theorem": "serial_monotone",
+    "test": "lostHandoffReplyRetainsGrantTest",
+    "node": "recovery.join",
+    "meaning": "Published rotation and handoff cannot lower the grant serial"
+  },
+  {
+    "id": "CC9",
+    "theorem": "incarnation_change_requires_recovery",
+    "test": "workerCannotMintRecoveryGrantTest",
+    "node": "protocols.acp",
+    "meaning": "Changed incarnation requires independent recovery authorization and non-reuse"
+  },
+  {
+    "id": "CC10",
+    "theorem": "final_append_requires_permit",
+    "test": "claimedFenceCannotAuthenticateTest",
+    "node": "broker.cas",
+    "meaning": "Final actual append requires a native permit and the same grant envelope"
+  },
+  {
+    "id": "CC11",
+    "theorem": "no_detached_mint",
+    "test": "splitGrantCallerCounterexampleTest",
+    "node": "recovery.join",
+    "meaning": "Grant replacement cannot occur as a local/cache-only event"
+  },
+  {
+    "id": "CC12",
+    "theorem": "used_incarnations_retained",
+    "test": "incarnationReuseRejectedTest",
+    "node": "recovery.fence",
+    "meaning": "Issued incarnation history survives a step"
+  },
+  {
+    "id": "CC13",
+    "theorem": "floor_publication_has_caller_and_join",
+    "test": "currentIncarnationCanFinishOriginalTest",
+    "node": "broker.cas",
+    "meaning": "Actual floor publication requires caller permit, whole envelope and inherited Ready/join checks"
+  },
+  {
+    "id": "CC14",
+    "theorem": "scope_run",
+    "test": "reconnectPreservesOriginalGrantTest",
+    "node": "registry.origin",
+    "meaning": "Every finite run preserves immutable scope and deadline"
+  },
+  {
+    "id": "CC15",
+    "theorem": "serial_run",
+    "test": "oldSerialAfterRotationRejectedTest",
+    "node": "recovery.join",
+    "meaning": "Every finite run has a nondecreasing serial"
+  },
+  {
+    "id": "CC16",
+    "theorem": "time_run",
+    "test": "expiryBetweenStageAndCommitRejectedTest",
+    "node": "broker.cas",
+    "meaning": "Modeled trusted time cannot roll back"
+  },
+  {
+    "id": "CC17",
+    "theorem": "used_run",
+    "test": "oldWorkerAfterRestartRejectedTest",
+    "node": "recovery.fence",
+    "meaning": "Every finite run retains prior issued incarnations"
+  },
+  {
+    "id": "CC18",
+    "theorem": "original_result_unique",
+    "test": "originalCannotReadmitAfterLostReplyTest",
+    "node": "broker.alias",
+    "meaning": "Actual initialized floor prefix retains unique original outcomes"
+  },
+  {
+    "id": "CC19",
+    "theorem": "original_reservation_once",
+    "test": "lostHandoffReplyRetainsGrantTest",
+    "node": "registry.query",
+    "meaning": "Safe initialized account prefix applies each original reservation at most once"
+  },
+  {
+    "id": "CC20",
+    "theorem": "unknown_original_hold_retained",
+    "test": "redeliveryCannotRefreshReadTest",
+    "node": "broker.hold",
+    "meaning": "Unmetered original source with authentic account binding retains its hold"
+  },
+  {
+    "id": "CC21",
+    "theorem": "fits_run",
+    "test": "lostHandoffReplyRetainsGrantTest",
+    "node": "recovery.join",
+    "meaning": "Every finite run preserves grant-to-current-custody alignment from an aligned initial state"
+  },
+  {
+    "id": "CC22",
+    "theorem": "final_floor_requires_worker_proof",
+    "test": "claimedFenceCannotAuthenticateTest",
+    "node": "broker.cas",
+    "meaning": "From aligned current custody, actual floor admission requires the native worker proof; a recovery role alone cannot admit a tail"
+  }
+]

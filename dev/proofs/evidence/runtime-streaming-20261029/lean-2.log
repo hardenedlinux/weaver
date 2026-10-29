@@ -1,0 +1,33 @@
+proofs/lean/StreamingExecution.lean:51:109: error: Application type mismatch: The argument
+  t
+has type
+  State M
+but is expected to have type
+  State ?m.6
+in the application
+  Step owner budget ?m.7 t
+proofs/lean/StreamingExecution.lean:82:112: error: Application type mismatch: The argument
+  t
+has type
+  State M
+but is expected to have type
+  State ?m.6
+in the application
+  Run owner budget ?m.7 t
+proofs/lean/StreamingExecution.lean:91:10: error(lean.unknownIdentifier): Unknown identifier `safe_run`
+proofs/lean/StreamingExecution.lean:91:32: error(lean.unknownIdentifier): Unknown identifier `safe_run`
+proofs/lean/StreamingExecution.lean:100:100: error: Application type mismatch: The argument
+  t
+has type
+  State M
+but is expected to have type
+  State ?m.5
+in the application
+  Step owner budget ?m.6 t
+proofs/lean/StreamingExecution.lean:115:14: error(lean.unknownIdentifier): Unknown constant `safe_step`
+proofs/lean/StreamingExecution.lean:116:14: error(lean.unknownIdentifier): Unknown constant `safe_run`
+'Weaver.StreamingExecution.arbitrary_finite_messages_and_ranges' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.StreamingExecution.unknown_cannot_resume' depends on axioms: [propext]
+'Weaver.StreamingExecution.old_generation_cannot_pass' does not depend on any axioms
+proofs/lean/StreamingExecution.lean:120:14: error(lean.unknownIdentifier): Unknown constant `held_never_decreases`
+'Weaver.StreamingExecution.bounded_range_copy_work' depends on axioms: [propext, Quot.sound]

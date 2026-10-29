@@ -1,0 +1,125 @@
+#+title: Weaver LLM Semantic Contract Proofs and Evidence
+#+language: en
+#+options: toc:3
+
+* Checked scope
+
+[[file:../../../proofs/check_llm_semantic_contract.py][The runner]] compiles nine Lean modules in a fresh directory and checks the
+new [[file:../../../proofs/lean/LlmSemanticContract.lean][Lean]] and [[file:../../../proofs/qunit/LlmSemanticContract.qnt][Quint]] models. Commands and raw outcomes are in
+[[file:../../../proofs/evidence/llm-semantic-contract/commands.json][commands.json]]; the [[file:../../../proofs/evidence/llm-semantic-contract/receipt.json][receipt]] records final counts and limitations. Preliminary
+compiler diagnostics are retained separately from final successful elaboration.
+
+The model concerns one declared attempt scope with arbitrarily finite Lean
+argument fragments, output events and tool-call keys under configured limits.
+Quint uses three candidate call keys, a two-call cap and four argument units.
+Payload projection excludes private history/budget domains and response-mode
+metadata, which are checked separately in the sealed internal envelope.
+The baseline has one candidate per attempt and rejects implicit candidate fanout.
+Identifiers/digests/argument units abstract real bytes, hashing and JSON parsing.
+The codec projection and observation predicates are supplied owner contracts.
+They are not proofs of equivalent model behavior, a native Cedar evaluator or a
+real provider's compliance.
+
+* Recorded local validation
+
+The final route comprises nine fresh Lean modules, Quint typechecking, 47 guarded
+and deliberate-negative controls, six focused counterexample trace exports,
+seven bounded initializer runs and the 34-control attempt-ledger regression:
+20 command routes in total. Seventeen new Lean statements are printed for axiom
+inspection; the final log contains no =sorryAx=. Each initializer uses ten samples,
+at most 30 post-initializer steps and seed 157: 70 bounded samples, not exhaustive
+verification. The document checks cover 80 English Org files, 40 D2/SVG pairs,
+11 declaration-resolving four-artifact rows and 17 unchanged historical manifests.
+
+* Four-artifact mapping
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| SC1 | Preserve ordered roles and semantic projection | roleOrderCannotChangeTest | sealed_wire_preserves_projection | contract.semantics |
+| SC2 | Bind actual provider target to child | actualTargetCannotChangeTest | qualified_child_uses_actual_target | adapter.seal |
+| SC3 | Prevent mutation after seal | mutableBodyCannotReplaceSealTest | sealed_wire_cannot_be_replaced | adapter.codec |
+| SC4 | Consume exact child under original budget | consumedAttemptCannotReplayTest | qualified_child_retains_budget | broker.admit |
+| SC5 | Retire old child invocation on restart | restartCannotReinvokeOldChildTest | restart_cannot_reinvoke_old_attempt | broker.stream |
+| SC6 | Current winner and disclosure Policy | losingAttemptCannotReleaseTest | release_requires_current_winner_and_policy | broker.validation |
+| SC7 | Source-bound output cannot mix attempts | otherAttemptCannotReleaseTest | semantic_outputs_keep_original_source | tools.assembly |
+| SC8 | Validated document cannot downgrade to text | documentProfileCannotDowngradeTest | document_profile_cannot_downgrade | contract.policy |
+| SC9 | Tool fragments and proposals grant no effects | qualifiedProposalIsStillDataTest | tool_fragments_do_not_execute | tools.execution |
+| SC10 | Complete exact arguments before proposal | unfinishedArgumentsCannotProposeTest | tool_proposal_requires_finished_valid_arguments | tools.proposal |
+| SC11 | Keep private governance and response mode bound | responseModeCannotBeDowngradedTest | sealed_internal_context_is_bound | adapter.seal |
+
+* Composition and prerequisites
+
+=Audit= preserves valid sealed projection, source-bound validated outputs,
+qualified tool proposals, per-call argument bounds and zero implicit tool effects.
+=finite_call_count= separately proves the configured call-count bound. A release
+transition requires current owner epoch, committed winner, exact event ordinal,
+current disclosure Policy and an open stream. A validated-document scope must
+release a complete document, never an ordinary partial text event. Its response
+mode and private history/budget context remain in a separately sealed internal
+envelope rather than requiring transmission to the provider. Raw tool fragments can be retained
+as data but cannot become executable arguments in this model.
+
+=ChildCall= carries the exact guarded invocation of the existing attempt ledger,
+including its initialized prior run, actual record, current target/view/epoch,
+zero call slot and child authorization. =refines_actual_child_invocation= produces
+the actual prior-module transition. =EncodingBridge= binds actual wire fields and
+canonical payload to that record and checks semantic projection. The composed
+invocation retains the prior module's budget invariant. This is an explicit typed
+boundary proof; it is not a mechanically verified asynchronous product of codec
+state, all child attempts, winner CAS, byte ranges and cross-store settlement.
+
+The supplied =Scope= must come from the authoritative original task sponsorship.
+Matching a caller-supplied scope would be insufficient. The current bridge proves
+metadata equality with that supplied scope and retains the actual child's budget
+invariant; it does not derive its history/budget domain identifiers from the
+upstream domain registry. The final =sendValid= owner must check that root-to-scope
+binding, including response mode, against the authoritative task record. A fully
+checked registry-to-scope attestation bridge remains an explicit extension.
+
+The new semantic state machine's =admit= guard and a =ChildCall= witness must be
+joined in one final broker transaction at runtime; neither is permission to run
+the other independently. Qualified codec projection, injective name mapping,
+strict parser/schema checks, authoritative completion, atomic consumption,
+rollback-safe recovery and current winner/release ownership remain premises.
+An =EncodingBridge= cannot be manufactured from a body digest alone. Collision
+resistance and exact native byte ownership are not proved in this model.
+
+The semantic projection covers selected fields; attachment resolution, role
+precedence, candidate mappings, header semantics, full tool-effect admission,
+complete document buffering and native total-memory accounting require refinement.
+The model proves count/length limits, not allocated native memory or liveness.
+Usage continues through the original-root settlement contracts from category 11;
+this change cannot clear unknown costs or authorize new account domains.
+
+* Counterexamples
+
+| Missing guard | Executable control | Observable final state |
+|---------------+--------------------+------------------------|
+| Drop privileged roles | roleDropSemanticCounterexampleTest | Sealed projection loses ordered roles |
+| Mutate target after encoding | targetSwapSemanticCounterexampleTest | Sealed target differs from admitted target |
+| Mix response attempts | mixedWinnerSemanticCounterexampleTest | Output carries a different attempt |
+| Promote partial arguments | partialToolSemanticCounterexampleTest | Stored proposal lacks qualified completion |
+| Label partial JSON validated | partialSchemaSemanticCounterexampleTest | Structured output is incomplete |
+| Remove parser bounds | bufferOverflowSemanticCounterexampleTest | Argument buffer exceeds configured limit |
+
+These deliberate unsafe actions are excluded from =step=. Their six exported
+[[file:../../../proofs/evidence/llm-semantic-contract/itf][ITF traces]] are independently decoded and inspected. Guarded scenarios also
+reject alias collisions, tool-set expansion, parallel/choice/schema weakening,
+wrong history/budget domains, out-of-order fragments, overwritten arguments,
+duplicate proposals, truncated streams and old-worker release.
+
+* Runtime acceptance and source receipts
+
+Use representative golden request, response and stream fixtures across each
+qualified provider/codec profile, including negative fixtures. Verify actual
+bytes and headers, tool aliases/history round trips, unsupported constraint
+rejection, strict JSON/parser behavior, truncation/refusal semantics, interleaved
+calls/candidates, policy changes during streaming, queue crashes, delayed callbacks
+and restart recovery. Bind every receipt to exact source and runtime identity.
+Add matched first-token/throughput/memory controls; no performance claim follows
+from these local formal checks.
+
+The [[file:../../../proofs/evidence/llm-semantic-contract/source-review.json][POO Flow / cedar-poo-spec register]] and [[file:../../../proofs/evidence/llm-semantic-contract/agentgateway-source-review.json][agentgateway register]] contain
+freshly verified source hashes and excerpts. The [[file:../../../proofs/evidence/llm-semantic-contract/SHA256SUMS][manifest]] seals this category
+without modifying historical receipts. No Gateway implementation or dependency
+pin is changed. Local model checks do not establish deployed behavior.

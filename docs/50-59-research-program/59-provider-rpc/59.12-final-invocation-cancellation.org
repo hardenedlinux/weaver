@@ -1,0 +1,140 @@
+#+TITLE: 59.12 Final Invocation Cancellation After Deciding-Lock Waits
+#+LANGUAGE: en
+
+* Defect and repaired admission point
+
+The provider runtime checked output cancellation after consumption, then called
+dispatch_provider. That method can wait for a deciding write lock, durably burn
+dispatch, and wait again for the final deciding transaction. It already rechecked
+current Cedar, revision/fence, original activity and session ownership. It did
+not recheck the original output's cancellation state inside its transport callback.
+A pre-lock false observation could therefore survive cancellation during that
+interval and still enter the private HTTPS client.
+
+The production open_guarded owner now performs both the inexpensive preflight
+check and a fresh check inside the final callback, immediately before
+ProviderTransport::open. The deciding transaction remains held. This composes
+current Policy authority with cancellation of the exact output context borrowed
+by that invocation. It does not replace either check with an SDK deadline or a
+Go-provided effective principal. The transport remains private; retries, redirects
+and route fallback after consumption remain disabled.
+
+| Ordered event | Meaning |
+|---------------+---------|
+| Original task admitted and consumed | Original shared reservation and claim are retained |
+| Preflight reads running | Early observation only; no physical request admission |
+| Another writer retains the deciding lock | The callback cannot enter under its final guard yet |
+| Original context becomes stopped | Later guard reads must reject this invocation |
+| Lock becomes available and dispatch burn commits | Burn can complete after cancellation; it is not permission to send |
+| Final transaction checks current Cedar/activity and then cancellation | A stopped context returns an error before entering HTTPS |
+| New RPC/output context tries the borrowed original permit | The persistent dispatch burn rejects another callback |
+| Restart or late observation | Original unknown state/hold remain; no implicit refund or fresh claim |
+
+No public transport handle, cancellation-reset operation or alternative execution
+path is added. Scheme remains responsible for original semantics, Go for typed
+plans and propagation of cancellation, and Rust for the final current-Policy and
+original-context admission. A new nonce or caller context cannot substitute for
+the context already captured in an active callback or reset the original burn.
+
+* Native controlled ordering and counterexample
+
+The native regression registers two committed logical nodes under one task and
+an eight-credit shared budget. Each node reserves four credits. A second real
+Ledger enters a guarded callback and retains the SQLite write lock. The target
+preflight explicitly captures false before signaling its checkpoint; the
+controller then sets cancellation before releasing the writer. The target's
+callback cannot run before that release. This ordering is deterministic without
+assuming that a particular thread has already entered SQLite's sleep or a kernel
+wait at the instant the signal is delivered.
+
+The repaired callback must return an error with zero accepted TLS connections.
+A new running output context using the same borrowed permit must also fail,
+because its original dispatch was burned. Reopening the ledger must report the
+target as unknown and the full eight-credit shared hold intact. The independent
+uncancelled control must enter a real local HTTPS endpoint exactly once and
+receive admitted SSE response headers. The endpoint and lock-holder threads
+always receive bounded cleanup and are joined.
+
+The native mutation removes only the final cancellation recheck. The same target
+then receives a successful HTTPS response and the regression fails with
+"cancelled invocation entered HTTPS transport". The
+[[file:../../../dev/proofs/evidence/dispatch-cancellation-20261030/missing-final-check-counterexample.log][raw counterexample]] is retained separately. The mutation was restored before
+qualification. An early TLS control failure is also retained: accepted sockets
+inherited nonblocking mode on this host, and the fixture now explicitly switches
+them to blocking mode under the original deadlines. An unreachable/broken TLS
+fixture is never accepted as evidence that cancellation prevented a send.
+
+* Formal correspondence
+
+| Artifact | Property | Scope and premise |
+|----------+----------+-------------------|
+| SysML FinalInvocationCancellation | Preflight is not final admission; current guard and original context precede transport entry | Strict model/witness gate; no native compiler proof |
+| Quint ProviderRpc | Invocation records capture cancellation/current revision at admission; cancelled contexts cannot invoke | Durable burn is allowed to finish after cancellation; admitted transport may continue |
+| Quint DispatchCancellation | Explicit lock ownership, preflight, burn, callback, context binding and late observation | Fixed original claim; finite contexts; skipped-recheck and adopted-context counterexamples |
+| Lean ProviderRpc | Invocation histories remain uncancelled at admission across finite runs and compose with original hold safety | Faithful atomic admission projection and canonical original context are native premises |
+| Native execution tests | Zero TLS contact after ordered cancellation; successful control; burned permit cannot be revived | Actual SQLite and HTTPS transport with bounded local fixtures |
+
+ProviderRpc now stores invocation-time snapshots instead of asserting that a
+live current flag retroactively describes every past request. Its burn action no
+longer assumes a cancelled caller cannot complete an already entered durable
+burn; final invoke independently requires an uncancelled context. Twenty provider
+controls include four new cancellation/history controls. DispatchCancellation
+adds ten controls for lock and context ordering, including a fresh RPC that cannot
+transfer an already captured callback capability. Their unsafe actions produce
+concrete invariant violations.
+
+Lean adds the explicit cancelled state transition and immutable invocation
+snapshots. It also freezes revision/fence at consumption rather than refreshing
+them at burn, matching the actual Rust ProviderDispatch. A stale consumed view
+cannot create a fresh dispatch token after publication. Five checked declarations establish step/run preservation, rejection
+of cancelled invocation admission and composition with the existing original
+claim/hold proof. Past admitted snapshots remain valid after a later cancellation.
+The proof does not establish TLS/kernel cancellation, immediate remote observation,
+or arbitrary revocation inside a transport library.
+
+* Restored-source qualification
+
+The [[file:../../../dev/proofs/evidence/dispatch-cancellation-20261030/verification-current/receipt.json][final unified receipt]] passes thirty-seven stages with 156 unchanged input
+hashes. Rust reports fifty-six passing tests, including all five ASP deny gates
+and both new transport controls. Go/race integration, strict in-process SysML,
+descriptor equality, the imported Cedar bridge and prior models remain green.
+DispatchCancellation runs ten controls and 1000 sampled traces with sixty-step
+bounds; ProviderRpc runs twenty controls under its strengthened invocation
+invariant. Its twenty-five checked Lean declarations include the five new
+cancellation/view-binding declarations and print no sorryAx.
+
+The earlier [[file:../../../dev/proofs/evidence/dispatch-cancellation-20261030/verification-before-proof-alignment/receipt.json][pre-alignment receipt]] is retained under its earlier proof hash. The
+final run was repeated after moving permit-view binding to consumption and adding
+the stale-view no-token theorem; its inputs are not silently relabeled.
+
+* Irreversibility and timing limits
+
+The subsequent [[file:../../../dev/proofs/evidence/dispatch-cancellation-20261030/benchmark-current/receipt.json][measured benchmark receipt]] completes both Rust and Go stages
+and retains 156 unchanged input hashes, identical to the final unified check.
+Its [[file:../../../dev/proofs/evidence/dispatch-cancellation-20261030/benchmark-current/benchmark-summary.org][eighteen-case Rust matrix]] covers all five packages; the raw Rust log contains
+eighteen regression warnings against Criterion's local cached baseline. These
+warnings remain unresolved comparative performance evidence. They are not
+attributed to the fix, nor dismissed as host noise, without a matched experiment.
+The later per-case collector hardening changes Go verification code and has its
+own focused tests; this historical receipt is not relabeled with those inputs.
+
+The admission boundary is the final original-context read before entering the
+private transport call. If cancellation occurs after a false final read, the
+request is already admitted and DNS, TLS, socket writes or provider work may
+continue under the existing bounded transport operation. Already admitted output
+buffers may drain. No claim is made that cancellation retracts bytes, token usage
+or provider side effects. Budget remains conservative even when a local fixture
+proves zero network contact; no production no-execution/refund certificate is
+created by this change.
+
+Remote Go cancellation becomes relevant when the Rust output/runtime context
+observes it, not merely when a caller's local clock reaches a deadline. A durable
+Policy/fence publication still takes effect at its deciding CAS and is checked
+independently at the final guard. A pending publication is not a committed
+revocation. This increment preserves the write-lock-through-response-headers
+design; it does not establish a publication latency guarantee under contention.
+
+Source ownership, logical identities, original reservations, SDK retry policy,
+optional Arrow encoding and provider response limits are unchanged. No dependency
+pin or timeout is adjusted for the new controls. This remains an AI Agent Gateway
+logical execution boundary, without physical-isolation or hardware-fencing claims.

@@ -1,0 +1,187 @@
+# Core architecture only. Versions and verification receipts remain in Org.
+...@lib/theme
+title: ORIGINAL SETTLEMENT / PROTECTED ACCOUNT GATE / COHERENT RECOVERY {
+  class: title
+  near: top-center
+}
+semantic: SEMANTICS / CLOUD LIFECYCLE {
+  top: 0
+  left: 0
+  width: 340
+  height: 680
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  original: Scheme / original financial scope\nClaim / closure / account / history\nExact final usage and settlement {
+    top: 90
+    left: 25
+    width: 290
+    height: 120
+    class: semantic
+  }
+  policy: Cedar / Code as Policy\nActual effect and state binding\nNo new identity from a retry {
+    top: 290
+    left: 25
+    width: 290
+    height: 120
+    class: policy
+  }
+  goBrand: "" {
+    shape: image
+    icon: assets/go.svg
+    top: 450
+    left: 25
+    width: 46
+    height: 22
+  }
+  kubeBrand: "" {
+    shape: image
+    icon: assets/kubernetes.svg
+    top: 447
+    left: 85
+    width: 28
+    height: 28
+  }
+  worker: Go / agent and worker lifecycle\nResolve exact original operations\nNew worker is a new proposer {
+    top: 490
+    left: 25
+    width: 290
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+}
+anchor: RUST / INDEPENDENT ANCHOR {
+  top: 0
+  left: 460
+  width: 360
+  height: 680
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  intent: Immutable original application intent\nComplete settlement and lineage\nOne canonical key across workers {
+    top: 90
+    left: 25
+    width: 310
+    height: 120
+    class: ledger
+  }
+  confirmation: Exact gate receipt confirmation\nActual committed result required\nNo synthetic success or reapplication {
+    top: 290
+    left: 25
+    width: 310
+    height: 120
+    class: ledger
+  }
+  root: Independent protected publication\nSource / gate / confirmation prefixes\nOutside restorable account views {
+    top: 490
+    left: 25
+    width: 310
+    height: 120
+    class: ledger
+  }
+}
+gate: RUST / ACTUAL ACCOUNT GATE {
+  top: 0
+  left: 940
+  width: 380
+  height: 680
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  brand: "" {
+    shape: image
+    icon: assets/rust.svg
+    top: 48
+    left: 25
+    width: 28
+    height: 28
+  }
+  acceptance: Current worker / monotonic fence\nSpend canonical application slot once\nDurable original accepted operation {
+    top: 90
+    left: 25
+    width: 330
+    height: 120
+    class: runtime
+  }
+  application: Atomic account application and receipt\nProtected append-only gate journal\nAccepted original may finish after fence {
+    top: 290
+    left: 25
+    width: 330
+    height: 120
+    class: runtime
+  }
+  pending: Lost response / original result unknown\nQuery original receipt / never replay\nFull original reservation stays booked {
+    top: 490
+    left: 25
+    width: 330
+    height: 120
+    class: unknown
+  }
+}
+recovery: RECOVERY / DERIVED VIEWS {
+  top: 0
+  left: 1440
+  width: 390
+  height: 680
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  coherent: Full authenticated current image\nOriginal records and revision vector\nMixed snapshots keep readiness closed {
+    top: 90
+    left: 25
+    width: 340
+    height: 120
+    class: ledger
+  }
+  category: Same confirmed receipt materializes\nRestored database is a derived view\nRepair creates no new financial effect {
+    top: 290
+    left: 25
+    width: 340
+    height: 120
+    class: ledger
+  }
+  old: Old worker / snapshot / unknown\nNo new slot from local absence\nNo refund or new spendable envelope {
+    top: 490
+    left: 25
+    width: 340
+    height: 120
+    class: unknown
+  }
+}
+quint: QUINT\nLost account responses / mixed snapshots / old worker schedules {
+  top: 800
+  left: 290
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nOriginal receipt joins / one application / retained shared reservations {
+  top: 800
+  left: 1050
+  width: 640
+  height: 100
+  class: semantic
+}
+semantic.original -> semantic.policy
+semantic.policy -> anchor.intent: admitted original operation
+anchor.intent -> gate.acceptance: exact canonical request
+gate.acceptance -> gate.application
+gate.application -> anchor.confirmation: actual original receipt
+gate.application -> gate.pending: response may be lost
+anchor.confirmation -> anchor.root: exact confirmation
+anchor.root -> gate.pending: protected current prefixes
+gate.pending -> recovery.coherent: verified original image
+recovery.coherent -> recovery.category
+semantic.worker -> anchor.root: original status only
+gate.pending -> recovery.old: retain original obligation
+quint -> gate.pending: explore failures {
+  style.stroke-dash: 5
+}
+lean -> gate.pending: preserve booked resources {
+  style.stroke-dash: 5
+}

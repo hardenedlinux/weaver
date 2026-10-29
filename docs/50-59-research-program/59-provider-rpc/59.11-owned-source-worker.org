@@ -1,0 +1,167 @@
+#+TITLE: 59.11 Owned Source Connection and Quiescent Command Execution
+#+LANGUAGE: en
+
+* Allocation and authority boundary
+
+Source publication, original-task registration and publication-result lookup now
+use one tracked blocking worker with one private SQLite connection. The worker
+opens before serving starts, retains that connection across commands, explicitly
+closes it on termination, and returns a final result that the server observes.
+The operation ingress carries no source-worker sender. Its execution/inspection
+paths retain their own native work and private execution capabilities.
+
+Rust owns the connection, typed commands, custody and current deciding reads.
+Go owns explicit source requests, cancellation and reconciliation. Scheme/POO
+remains the semantic authority for the original intent; reusing an SQL session
+does not supply a new semantic approval. The worker accepts only Register(Task),
+Publish(Publication) and Inspect(PublicationKey) data. It cannot receive a provider
+dispatch/release handle, arbitrary SQL or callback over the wire.
+
+There are two separate resource bounds. The existing reserved native publication
+permit belongs to the worker throughout its lifetime, including idle wait and
+connection close. A separate shared command permit admits one queued or running
+command in total. The channel has one slot, but does not create an additional
+waiting-command allowance: every admitted command owns the same single command
+permit until its SQL processing and result handoff finish. Saturation fails fast.
+The sixteen-execution/two-observation bounds and separate ingress socket pools
+are unchanged; no extra unbounded task or waiting queue is introduced.
+
+* Lifecycle and fault contract
+
+| Phase | Required behavior | Knowledge boundary |
+|-------+-------------------+--------------------|
+| Startup | Open once on the tracked blocking worker and report readiness | No ingress serves before the source store is ready |
+| Command admission | Authenticate ingress first; acquire command capacity; enqueue an immutable typed DTO | No request selects another role or exports an SQL handle |
+| Before SQL | Require an autocommit/quiescent connection | An unresolved transaction cannot be reused as a stale snapshot |
+| Decision | Existing exact-ID replay or fresh deciding CAS reads actual SQLite state | No cached authority head, grant or Cedar decision is introduced |
+| After SQL | Require quiescence before handing off a result | A failed/unfinished transaction cannot be acknowledged as reusable |
+| Caller loss | Keep the command permit in native custody until actual command completion | Cancellation is not an abort certificate; original-ID reconciliation remains necessary |
+| Runtime close | Stop command intake; cancel idle receive; finish already entered SQL; dispose queued commands conservatively | Dropped/unobserved work stays unknown, with no budget release |
+| Storage fault | Retire the worker; close admission through the common runtime and observe the worker error | No automatic reopen or successful result acknowledgment |
+| Connection close | Consume Ledger through explicit close and observe its result | Close failure cannot count as successful service drain |
+
+The actor waits through the Tokio handle on the tracked blocking thread, using a
+cancellation-aware receive. SQL and connection destruction never move onto an
+async I/O executor. A scope guard requests common cancellation on every worker
+exit, including unwinding. The serving scope retains and joins the worker's final
+result in addition to RuntimeOwner task tracking. A storage/panic/close failure
+therefore causes an error return rather than a normal successful server exit.
+The fixed fifteen-second natural-exit checks and existing ten-second SQL busy
+timeout are not relaxed.
+
+Connection reuse caches neither current Policy/history observations nor execution
+authority. Every deciding operation still executes the original transaction/CAS.
+The exact publication outcome fast path remains immutable historical knowledge.
+New source requests observe changes from other writers. A stable SQL session ID
+does not become a provider permit: the source worker exposes no execution API.
+Publication, lookup, shutdown and close never modify original held budget or
+create another provider attempt.
+
+* Four-way correspondence
+
+| Artifact | Checkable property | Native premise |
+|----------+--------------------+----------------|
+| SysML OwnedSourceConnection and worker ports | Dedicated lifetime, bounded commands, quiescence, current authority and observed final result | Strict SDK/query/witness mapping, not compiler refinement |
+| Quint SourceOwner | Caller loss preserves slot; accepted SQL may finish during close; storage/close faults cannot acknowledge success; closed owner cannot reopen | Composes PublicationRecovery; finite IDs and sampled schedules |
+| Lean PublicationRecovery owner lemmas | Owner custody preserved; no reopen; success requires healthy quiescent close; composition with original decision/accounting invariants | Faithful worker/channel/transaction refinement; actual durability remains native |
+| Rust owner/ledger tests | Other-writer visibility; blocked SQL plus disconnected caller; failed startup; storage fault response; explicit unresolved transaction detection | Real SQLite and tracked runtime, no mock ledger |
+| Go integration | Existing lost-reply/restart, role/ingress, stream revocation and saturation regressions | Actual mTLS gRPC daemon and local HTTPS/SSE provider |
+
+SourceOwner contributes ten controls and runs the ten imported publication controls.
+Its explicit unsafe transitions return command capacity on caller disconnect,
+reuse a cached head, or acknowledge after close failure; each violates its
+invariant. Lean adds four checked declarations to the five publication-preservation
+declarations. The model starts with an admitted owned connection; native startup
+tests provide the separately checked allocation boundary.
+
+The native cancellation regression holds a real deciding write lock in another
+writer. After an identified source command is queued, its caller future is
+dropped. A second source command must still report ResourceExhausted. Once the
+writer finishes, the original command can commit and be queried by its unchanged
+ID. The original provider claim remains consumed and retains its four-credit hold.
+Another test changes authority through another connection and confirms that the
+reused source connection reports the new conflict head while preserving older
+historical receipts.
+
+* Source-bound verification and retained failures
+
+The [[file:../../../dev/proofs/evidence/source-owner-20261030/verification-current/receipt.json][unified receipt]] passes thirty-five stages with 154 unchanged input hashes.
+Rust reports fifty-four passing tests, including five unchanged ASP deny gates.
+The current Go/race integration, imported Cedar bridge, strict in-process SysML
+SDK, descriptor check and all sampled models pass. The new owner model retains
+1000 traces and sixty-step safety bounds. Nine publication/owner Lean declarations
+print no sorryAx.
+
+Early lockfile, ASP, custody-test compilation and Lean failures remain in the
+evidence directory. The public server lifecycle was split into named ownership
+steps to satisfy ASP rather than suppressing the gate. The only lockfile change
+is a development edge from server to the already workspace-pinned tempfile;
+package versions and pins are unchanged. A leaked transaction is rejected using
+the ledger's checked quiescence API rather than exposing its native connection.
+
+* Matched source-publication experiment
+
+Before implementation, all 150 baseline input hashes were verified against the
+preceding accepted receipt, archived in [[file:../../../dev/proofs/evidence/source-owner-20261030/baseline-sources.tar][baseline sources]], and the current
+arrow-enabled debug executable was rebuilt and retained. The
+[[file:../../../dev/proofs/evidence/source-owner-20261030/baseline-verification-receipt.json][baseline receipt]] remains separate. Its executable is an experiment fixture,
+not an alternate production route or a way to bypass current tests. TestMain
+always builds the current daemon; only the explicitly selected comparison
+benchmark accepts a baseline executable argument.
+
+The [[file:../../../dev/proofs/evidence/source-owner-20261030/source-owner-comparison-receipt.json][comparison receipt]] and [[file:../../../dev/proofs/evidence/source-owner-20261030/source-owner-comparison.log][raw log]] record balanced ABBAAB ordering. Each child
+performs exactly 256 unique typed source publications against a fresh fixture,
+with identical Policy/schema, original-parent progression, fence, TLS algorithms,
+durability settings and zero provider calls. Binary hashing and fixture startup
+are outside measured time. Both executables use the debug profile on the same
+Apple M2 Pro/Darwin host. The final run verifies all 154 current inputs unchanged.
+
+| Cohort | Reopen path ns/op | Owned path ns/op |
+|--------+-------------------+------------------|
+| First | 3850953 | 2917728 |
+| Second | 4522816 | 3223091 |
+| Third | 5127083 | 3543445 |
+| Mean of three run means | 4500284 | 3228088 |
+
+The descriptive reduction is 28.27 percent for this local debug-profile workload.
+All children report 114 Go allocations/op; these are not Rust allocations.
+Connection open/close, worker scheduling and WAL/checkpoint cadence change
+together, so the experiment does not isolate only parser or syscall cost. FULL
+synchronous WAL is unchanged. This result is not a production throughput/p99
+guarantee, a contested-lock latency bound, or resolution of all earlier benchmark
+regression warnings. Broader admission remains separate.
+An [[file:../../../dev/proofs/evidence/source-owner-20261030/comparison-exploratory.org][earlier exploratory cohort]] is retained separately and is not substituted for
+the post-verification comparison. A successful paired run validates execution and
+source identity, not statistical significance or a production latency threshold.
+
+The [[file:../../../dev/proofs/evidence/source-owner-20261030/benchmark-current/receipt.json][full current benchmark receipt]] also passes five collection stages and binds
+exactly the same 154 input hashes as verification. All eighteen Rust cases across
+the five packages were resampled; [[file:../../../dev/proofs/evidence/source-owner-20261030/benchmark-current/benchmark-summary.org][estimates and confidence intervals]] remain
+separate from the paired debug experiment. The [[file:../../../dev/proofs/evidence/source-owner-20261030/benchmark-current/grpc-benchmark.log][standard source RPC measurements]]
+are 2858273, 2755297 and 3001501 ns/op at 115 Go allocations/op. They use the
+unchanged two-second, three-run measurement protocol rather than the fixed
+256-commit comparison. No new Criterion regression warning appears in this
+cohort's raw log; this does not attribute or erase the preceding cohort's warnings.
+
+The standard benchmark matrix remains under the existing Go runner. To reproduce
+the targeted comparison with a retained compatible experiment executable, use
+Go's integration benchmark with =-bench '^BenchmarkGatewaySourceOwnerComparison$'
+-benchtime=256x -count=1 -benchmem -source-baseline /absolute/path/to/baseline=.
+Ordinary tests and default benchmarks never select that executable.
+
+* Remaining boundaries
+
+The database path/inode and its storage must remain stable during ownership. Live
+file replacement, symlink/mount retargeting, hostile snapshot rollback and
+cross-host SQLite failover are outside this local profile. Replacement requires
+coordinated drain before rebinding storage; a persistent FD is not an independent
+anti-rollback anchor. No physical-isolation claim is made.
+
+The worker still contends on the deciding SQLite store, and provider dispatch
+still holds its write lock through upstream response headers. Storage busy errors
+retire this owner conservatively, which trades availability for fail-closed
+recovery. General source-intent approval, external history publication, clustered
+issuer recovery and production contention/resource qualification remain open.
+The subsequent [[file:59.12-final-invocation-cancellation.org][final-invocation increment]] closes a separate cancellation check
+gap across deciding-lock waits. It does not change this chapter's historical
+source-owner comparison or reassign those measurements to newer sources.

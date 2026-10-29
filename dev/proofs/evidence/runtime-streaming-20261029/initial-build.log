@@ -1,0 +1,20 @@
+    Checking weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-contracts)
+    Checking rustls-platform-verifier v0.7.0
+    Checking reqwest v0.13.5
+    Checking weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-policy)
+    Checking weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+warning: field `destination` is never read
+  --> crates/weaver-ledger/src/stream_custody.rs:15:16
+   |
+12 | pub struct StreamOwner {
+   |            ----------- field in this struct
+...
+15 |     pub(crate) destination: String,
+   |                ^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `weaver-ledger` (lib) generated 1 warning
+    Checking weaver-broker v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-broker)
+    Checking weaver-cli v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.17s

@@ -1,0 +1,149 @@
+{
+  "status": "pass",
+  "boundary": "Named-reference consistency, not semantic equivalence or native extraction",
+  "contracts": [
+    {
+      "contract": "LM1",
+      "orgRule": "Task requirements precede price",
+      "quint": [
+        "capabilityAndPolicyBeforePriceTest",
+        "cheapUnsupportedModelRejectedTest",
+        "insufficientContextRejectedTest"
+      ],
+      "lean": [
+        "every_new_proposal_is_eligible",
+        "ranked_proposal_has_eligible_minimum"
+      ],
+      "d2": "router.choose"
+    },
+    {
+      "contract": "LM2",
+      "orgRule": "Region and current Policy constrain choices",
+      "quint": [
+        "wrongResidencyModelRejectedTest",
+        "lowScoreDeniedModelRejectedTest",
+        "modelCalloutIsOnlyAdviceTest"
+      ],
+      "lean": [
+        "actual_dispatch_rechecks_target",
+        "history_denial_cannot_be_undone"
+      ],
+      "d2": "scheme.policy"
+    },
+    {
+      "contract": "LM3",
+      "orgRule": "Target maximum cost fits original escrow",
+      "quint": [
+        "originalEscrowCannotBeExceededTest",
+        "advisedRouteCannotExceedEscrowTest",
+        "quotaBypassRouteCounterexampleTest"
+      ],
+      "lean": [
+        "selected_cost_within_original_escrow",
+        "selected_route_fits_source_reservation",
+        "original_account_capacity_survives"
+      ],
+      "d2": "scheme.policy"
+    },
+    {
+      "contract": "LM4",
+      "orgRule": "Hard publication changes reject stale plans",
+      "quint": [
+        "catalogChangeInvalidatesPlanTest",
+        "policyChangeInvalidatesPlanTest",
+        "historyRestrictionInvalidatesPlanTest",
+        "endpointChangeInvalidatesPlanTest",
+        "stalePolicyRouteCounterexampleTest"
+      ],
+      "lean": [
+        "actual_dispatch_rechecks_target",
+        "stale_catalog_plan_counterexample"
+      ],
+      "d2": "router.plan"
+    },
+    {
+      "contract": "LM5",
+      "orgRule": "Soft ranking data is not permission",
+      "quint": [
+        "softMetricUpdateDoesNotInvalidateAuthorityTest",
+        "newSelectionUsesNewMetricsTest",
+        "authorizedAdviceCanChooseEligibleAlternativeTest"
+      ],
+      "lean": [
+        "soft_metrics_do_not_change_authority",
+        "every_new_proposal_is_eligible"
+      ],
+      "d2": "scheme.catalog"
+    },
+    {
+      "contract": "LM6",
+      "orgRule": "Selection failover retains original identity",
+      "quint": [
+        "preAdmissionFailoverKeepsOriginalRootTest",
+        "newAliasRootRouteCounterexampleTest"
+      ],
+      "lean": [
+        "original_claim_is_not_recreated",
+        "initialized_audit"
+      ],
+      "d2": "router.choose"
+    },
+    {
+      "contract": "LM7",
+      "orgRule": "Final encoding and Policy bind actual send",
+      "quint": [
+        "wrongWireManifestRejectedTest",
+        "forgedFinalPolicyRejectedTest",
+        "foreignWireRouteCounterexampleTest"
+      ],
+      "lean": [
+        "actual_dispatch_rechecks_target",
+        "initialized_audit"
+      ],
+      "d2": "broker.send"
+    },
+    {
+      "contract": "LM8",
+      "orgRule": "Unknown does not authorize another attempt",
+      "quint": [
+        "unknownCannotAutomaticallyFailoverTest",
+        "sdkRetryCannotReadmitRootTest",
+        "unknownRetryRouteCounterexampleTest"
+      ],
+      "lean": [
+        "one_provider_admission_per_root",
+        "dispatch_record_never_disappears",
+        "duplicate_root_dispatch_counterexample"
+      ],
+      "d2": "broker.send"
+    },
+    {
+      "contract": "LM9",
+      "orgRule": "One admitted source owns a client stream",
+      "quint": [
+        "responseRequiresActualProviderAdmissionTest",
+        "responseDisclosureRequiresPolicyTest",
+        "duplicateStreamWinnerRejectedTest",
+        "mixedStreamRouteCounterexampleTest"
+      ],
+      "lean": [
+        "one_response_source_per_root",
+        "initialized_audit"
+      ],
+      "d2": "broker.stream"
+    },
+    {
+      "contract": "LM10",
+      "orgRule": "Partial outcomes retain original provenance",
+      "quint": [
+        "lateTimeoutDoesNotEraseOriginalDispatchTest",
+        "rankedPrimaryDispatchTest"
+      ],
+      "lean": [
+        "dispatch_record_never_disappears",
+        "original_claim_is_not_recreated"
+      ],
+      "d2": "providers.hosted"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+proofs/lean/LlmExecutorOffer.lean:100:48: error: Application type mismatch: The argument
+  actual
+has type
+  Registered op t✝
+but is expected to have type
+  LogicalRangeRecovery.Step op.scope rangeOwner t✝.lane
+    { base := t✝.base, lane := next✝, laneOwner := t✝.laneOwner, dequeued := t✝.dequeued, tickets := t✝.tickets,
+        burn := t✝.burn, submitted := t✝.submitted, offers := t✝.offers }.lane
+in the application
+  LogicalRangeRecovery.Run.next ih actual
+proofs/lean/LlmExecutorOffer.lean:148:37: error(lean.unknownIdentifier): Unknown identifier `op.scope`
+proofs/lean/LlmExecutorOffer.lean:172:2: error(lean.unknownIdentifier): Unknown identifier `Weaver.LogicalRangeRecovery.broker_projection`
+'Weaver.LlmExecutorOffer.queue_projection' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.range_projection' depends on axioms: [propext, sorryAx]
+'Weaver.LlmExecutorOffer.offer_at_most_once' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmExecutorOffer.original_burn_retained' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.submitted_never_reset' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.new_offer_checks_current_policy' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.offer_gate_has_current_view' does not depend on any axioms
+'Weaver.LlmExecutorOffer.old_worker_blocks_offer' does not depend on any axioms
+'Weaver.LlmExecutorOffer.unaligned_lane_blocks_offer' does not depend on any axioms
+'Weaver.LlmExecutorOffer.changed_view_blocks_offer' does not depend on any axioms
+'Weaver.LlmExecutorOffer.partial_or_timeout_has_no_authority' depends on axioms: [sorryAx]
+'Weaver.LlmExecutorOffer.original_queue_binding_retained' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.original_slot_retained' depends on axioms: [propext]
+'Weaver.LlmExecutorOffer.original_exposure_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmExecutorOffer.dequeue_has_no_invocation' does not depend on any axioms
+'Weaver.LlmExecutorOffer.burn_has_no_invocation' does not depend on any axioms
+'Weaver.LlmExecutorOffer.actual_broker_initialized' depends on axioms: [propext, sorryAx]
+'Weaver.LlmExecutorOffer.unknown_retains_broker_hold' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

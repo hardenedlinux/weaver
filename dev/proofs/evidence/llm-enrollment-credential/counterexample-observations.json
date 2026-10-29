@@ -1,0 +1,99 @@
+{
+  "faults": [
+    {
+      "name": "erasedCredentialCounterexampleTest",
+      "path": "proofs/evidence/llm-enrollment-credential/itf/erasedCredentialCounterexampleTest-2.itf.json",
+      "states": 11,
+      "credentials": [],
+      "released": [
+        0
+      ],
+      "activated": [
+        0
+      ],
+      "actualRoots": [
+        0
+      ],
+      "providerCalls": 0,
+      "unknownHold12": 2,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "erasedReleaseCounterexampleTest",
+      "path": "proofs/evidence/llm-enrollment-credential/itf/erasedReleaseCounterexampleTest-0.itf.json",
+      "states": 11,
+      "credentials": [
+        0
+      ],
+      "released": [],
+      "activated": [
+        0
+      ],
+      "actualRoots": [
+        0
+      ],
+      "providerCalls": 0,
+      "unknownHold12": 2,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "forgedSubjectCounterexampleTest",
+      "path": "proofs/evidence/llm-enrollment-credential/itf/forgedSubjectCounterexampleTest-1.itf.json",
+      "states": 5,
+      "credentials": [
+        0
+      ],
+      "released": [],
+      "activated": [],
+      "actualRoots": [],
+      "providerCalls": 0,
+      "unknownHold12": 2,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "missingActivationOutcomeCounterexampleTest",
+      "path": "proofs/evidence/llm-enrollment-credential/itf/missingActivationOutcomeCounterexampleTest-1.itf.json",
+      "states": 9,
+      "credentials": [
+        0
+      ],
+      "released": [
+        0
+      ],
+      "activated": [],
+      "actualRoots": [
+        0
+      ],
+      "providerCalls": 0,
+      "unknownHold12": 2,
+      "activeIncarnation": 0
+    },
+    {
+      "name": "phantomActivationOutcomeCounterexampleTest",
+      "path": "proofs/evidence/llm-enrollment-credential/itf/phantomActivationOutcomeCounterexampleTest-2.itf.json",
+      "states": 9,
+      "credentials": [
+        0
+      ],
+      "released": [
+        0
+      ],
+      "activated": [
+        0
+      ],
+      "actualRoots": [],
+      "providerCalls": 0,
+      "unknownHold12": 2,
+      "activeIncarnation": 0
+    }
+  ],
+  "quarantineProbe": {
+    "path": "proofs/evidence/llm-enrollment-credential/itf/splitRecoveryCannotBindFirstKeyTest-0.itf.json",
+    "classification": "Fully defined pre-rejection state; terminal fail has no admitted successor",
+    "parentReadCurrent": true,
+    "rootOutcomeJoined": false,
+    "firstBindingRejected": true,
+    "unknownHold12": 2,
+    "providerCalls": 0
+  }
+}

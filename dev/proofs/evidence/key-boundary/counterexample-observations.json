@@ -1,0 +1,159 @@
+[
+  {
+    "path": "proofs/evidence/key-boundary/itf/digestSubstitutionAtDeviceOutputCounterexampleTest-2.itf.json",
+    "states": 19,
+    "exports": [
+      {
+        "requestId": 0,
+        "handleId": 0,
+        "voter": 0,
+        "ticketEpoch": 1,
+        "emissionEpoch": 1,
+        "service": 1,
+        "gateOpen": true,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 1
+          }
+        ]
+      },
+      {
+        "requestId": 0,
+        "handleId": 0,
+        "voter": 0,
+        "ticketEpoch": 1,
+        "emissionEpoch": 1,
+        "service": 1,
+        "gateOpen": true,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 2
+          }
+        ]
+      }
+    ],
+    "epoch": 1,
+    "enabled": true,
+    "deviceIsolated": true,
+    "running": [],
+    "activeService": 1,
+    "parentServiceEpoch": 1
+  },
+  {
+    "path": "proofs/evidence/key-boundary/itf/oldRawHSMHandleAfterRestartCounterexampleTest-1.itf.json",
+    "states": 26,
+    "exports": [
+      {
+        "requestId": 0,
+        "handleId": 0,
+        "voter": 0,
+        "ticketEpoch": 1,
+        "emissionEpoch": 1,
+        "service": 1,
+        "gateOpen": true,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 1
+          }
+        ]
+      },
+      {
+        "requestId": 5,
+        "handleId": 0,
+        "voter": 0,
+        "ticketEpoch": 1,
+        "emissionEpoch": 2,
+        "service": 2,
+        "gateOpen": true,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 2
+          }
+        ]
+      }
+    ],
+    "epoch": 2,
+    "enabled": true,
+    "deviceIsolated": true,
+    "running": [],
+    "activeService": 2,
+    "parentServiceEpoch": 2
+  },
+  {
+    "path": "proofs/evidence/key-boundary/itf/queuedAutomaticReplyAfterRevocationCounterexampleTest-0.itf.json",
+    "states": 18,
+    "exports": [
+      {
+        "requestId": 0,
+        "handleId": 0,
+        "voter": 0,
+        "ticketEpoch": 1,
+        "emissionEpoch": 1,
+        "service": 1,
+        "gateOpen": false,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 1
+          }
+        ]
+      }
+    ],
+    "epoch": 1,
+    "enabled": false,
+    "deviceIsolated": false,
+    "running": [],
+    "activeService": 1,
+    "parentServiceEpoch": 1
+  },
+  {
+    "path": "proofs/evidence/key-boundary/itf/serviceRestartWithoutKeyFloorCounterexampleTest-4.itf.json",
+    "states": 18,
+    "exports": [
+      {
+        "requestId": 0,
+        "handleId": 0,
+        "voter": 0,
+        "ticketEpoch": 1,
+        "emissionEpoch": 1,
+        "service": 1,
+        "gateOpen": true,
+        "history": [
+          {
+            "revision": 0,
+            "term": 0,
+            "value": 1
+          }
+        ]
+      }
+    ],
+    "epoch": 1,
+    "enabled": true,
+    "deviceIsolated": true,
+    "running": [],
+    "activeService": 1,
+    "parentServiceEpoch": 2
+  },
+  {
+    "path": "proofs/evidence/key-boundary/itf/softwareQueueDrainIsNotIsolationCounterexampleTest-3.itf.json",
+    "states": 17,
+    "exports": [],
+    "epoch": 1,
+    "enabled": false,
+    "deviceIsolated": false,
+    "running": [
+      0
+    ],
+    "activeService": 1,
+    "parentServiceEpoch": 1
+  }
+]

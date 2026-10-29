@@ -1,0 +1,20 @@
+proofs/lean/LlmWalActivation.lean:99:24: warning: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Weaver.LlmWalActivation.core_projection' does not depend on any axioms
+'Weaver.LlmWalActivation.actual_account_composition' does not depend on any axioms
+'Weaver.LlmWalActivation.initialized_live' depends on axioms: [propext]
+'Weaver.LlmWalActivation.visible_balance_is_current' depends on axioms: [propext]
+'Weaver.LlmWalActivation.original_reservation_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmWalActivation.account_conservation' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmWalActivation.committed_application_retained' depends on axioms: [propext]
+'Weaver.LlmWalActivation.truncated_wal_cannot_be_visible' depends on axioms: [propext]
+'Weaver.LlmWalActivation.changed_epoch_invalidates_confirmation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LlmWalActivation.repair_does_not_change_account' does not depend on any axioms
+'Weaver.LlmWalActivation.unconfirmed_candidate_has_no_financial_effect' does not depend on any axioms
+'Weaver.LlmWalActivation.wal_flush_has_no_financial_effect' does not depend on any axioms
+'Weaver.LlmWalActivation.stale_worker_cannot_anchor' does not depend on any axioms
+'Weaver.LlmWalActivation.committed_prefix_retained' depends on axioms: [propext]
+'Weaver.LlmWalActivation.unknown_budget_hold_retained' depends on axioms: [propext, Quot.sound]

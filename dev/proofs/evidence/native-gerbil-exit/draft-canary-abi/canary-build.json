@@ -1,0 +1,39 @@
+{
+  "commands": [
+    {
+      "args": [
+        "/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/bin/gsc",
+        "-c",
+        "-linker-name",
+        "canary.o1",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.scm"
+      ],
+      "exit": 0,
+      "seconds": 0.036
+    },
+    {
+      "args": [
+        "/opt/homebrew/bin/gcc-16",
+        "-bundle",
+        "-undefined",
+        "dynamic_lookup",
+        "-D___DYNAMIC",
+        "-I/opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/include",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c",
+        "-isysroot",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk",
+        "-lSystem",
+        "-o",
+        "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.o1"
+      ],
+      "exit": 0,
+      "seconds": 0.725
+    }
+  ],
+  "exit": 0,
+  "sourceSha256": "8df5fa01f59022bd82bc3440a2895dc653d3929f395b124c7668138691b208ba",
+  "objectSha256": "12567836f33802f2282ec1adc1bc5ebb0c294305413b5c8525e85c67ecad10ba",
+  "output": "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.o1"
+}

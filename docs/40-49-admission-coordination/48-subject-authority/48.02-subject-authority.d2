@@ -1,0 +1,192 @@
+# Core design only; source identities and proof receipts remain in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / SUBJECT AUTHORITY / ORIGINAL ASSIGNMENT {
+  class: title
+  near: top-center
+}
+protocols: GO / CLOUD NATIVE IDENTITY {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  mcp: Shared workload is eligibility only\nConfigured tenant identity authority\nStable subject / current credential {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  a2a: Subject / producer / enrollment proofs\nOne exact assignment transcript\nAuthentic issuer / tenant / channel {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  acp: Recover the original assignment\nCurrent subject proof / read policy\nNo new key or authority from a reply {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+registry: SCHEME / ORIGINAL CONTRACT {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  origin: Original task fixes subject and producer\nCanonical claim / profile / history\nEnrollment key / budget / retained tail {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  alias: Cedar Code as Policy\nAuthenticate facts before evaluation\nCurrent identity approval at owner CAS {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  query: Credential rotation preserves identity\nMigration cannot replace enrollment key\nUnknown original use keeps its hold {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+}
+recovery: RUST / ASSIGNMENT AUTHORITY {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  projection: Import authoritative source records\nFreeze the original producer assignment\nNo credential or execution effect {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  join: Rotate credentials with exact parent CAS\nReauthorize the same frozen assignment\nA public generation is no credential {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  fence: Restore the accepted outer commit prefix\nJoin task / assignment / Plan outcome\nQuarantine incomplete recovery images {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+broker: RUST / PLAN PUBLICATION {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  cas: CAS current subject / producer / policy\nPublish Plan and exact outcome together\nNo credential or send side effects {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  alias: Fresh caller proof at new issuance\nKeep enrollment and first beneficiary keys\nFinal sends retain independent gates {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  hold: Old approval cannot borrow a new fence\nRetain original assignment and outcomes\nUnknown use keeps the budget hold {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+quint: QUINT\nIssuer confusion / credential rotation / split publication\nLost replies / stale approvals / old workers {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nAuthoritative sources / original assignment / joined Plan\nCurrent issuance and original budget composition {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+protocols.mcp -> registry.origin
+protocols.a2a -> registry.alias
+protocols.acp -> registry.query
+registry.origin -> recovery.projection
+registry.alias -> recovery.join
+registry.query -> recovery.fence { style.stroke-dash: 4 }
+recovery.projection -> recovery.join
+recovery.join -> recovery.fence
+recovery.fence -> broker.cas
+broker.cas -> broker.alias
+broker.alias -> broker.hold
+broker.hold -> broker.cas: Read current prefix { style.stroke-dash: 4 }

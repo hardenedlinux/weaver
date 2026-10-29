@@ -1,0 +1,1 @@
+(display "NATIVE-DYNAMIC-CANARY-LOADED\n")

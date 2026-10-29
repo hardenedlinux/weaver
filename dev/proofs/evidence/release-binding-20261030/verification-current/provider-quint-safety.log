@@ -1,0 +1,1654 @@
+An example execution:
+
+[State 0]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 1]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 2]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 3]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 4]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: false,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 5]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: false,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 6]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 7]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 8]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 9]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 10]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 11]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 12]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 13]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 14]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 15]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 16]
+{
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 17]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 2,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 1,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 18]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 2,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 1,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 19]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 20]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 21]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 22]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 23]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 24]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 25]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 26]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 27]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 28]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 29]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 30]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 31]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 32]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 33]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 34]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 3,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 2,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 35]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 4,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 3,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 36]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 5,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 4,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 37]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 5,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 4,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 38]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 6,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 5,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 39]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 7,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 6,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 40]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 8,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 7,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 41]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 8,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 7,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 42]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 8,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 7,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 43]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 8,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 7,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 44]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 8,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 7,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 45]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 8,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 7,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 46]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 8,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 7,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 47]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 48]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 49]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 50]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 51]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 52]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 53]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 54]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 55]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 56]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 57]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 9,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 8,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 58]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 10,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 9,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 59]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 10,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 9,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 60]
+{
+  s:
+    {
+      allow: false,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 10,
+      held: 0,
+      invocations: [],
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 9,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[ok] No violation found (239ms at 4184 traces/second).
+Trace length statistics: max=61, min=61, average=61.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0x1077ad --backend=rust to reproduce.

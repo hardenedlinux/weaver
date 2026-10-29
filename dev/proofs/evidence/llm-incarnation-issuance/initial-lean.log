@@ -1,0 +1,143 @@
+proofs/lean/LlmIncarnationIssuance.lean:69:76: error: unexpected identifier; expected '}'
+proofs/lean/LlmIncarnationIssuance.lean:108:2: error: Invalid alternative name `activate`: Expected `issue`
+proofs/lean/LlmIncarnationIssuance.lean:109:2: error: Invalid alternative name `advance`: Expected `issue`
+proofs/lean/LlmIncarnationIssuance.lean:119:4: error: Invalid target: Index in target's type is not a variable (consider using the `cases` tactic instead)
+  d✝.current
+proofs/lean/LlmIncarnationIssuance.lean:123:101: error: Application type mismatch: The argument
+  id
+has type
+  ?m.14 → ?m.14
+but is expected to have type
+  Nat
+in the application
+  s.issued id
+proofs/lean/LlmIncarnationIssuance.lean:123:130: error: Application type mismatch: The argument
+  id
+has type
+  ?m.17 → ?m.17
+but is expected to have type
+  Nat
+in the application
+  t.issued id
+proofs/lean/LlmIncarnationIssuance.lean:123:150: error: unsolved goals
+case issue
+ao : LlmAccountCommit.Owner
+wo : LlmWalActivation.Owner
+co : LlmCheckpointTruncation.Owner
+ho : LlmAppendHandoff.Owner
+fo : LlmAdmissionFloor.Owner
+jo : LlmSourceJoin.Owner
+semantic : LlmAdmissionFloor.Proposal → LlmAdmissionFloor.Proposal → Prop
+po : LlmCustodyPublication.Owner
+o : Owner
+genesis : LlmAccountCommit.Image
+s : State
+ticket t✝ : Ticket
+issuer✝ : LlmCallerCustody.Context
+known : s.issued (sorry ()) = some ticket
+authentic✝ : o.base.authentic issuer✝
+role✝ : issuer✝.recovery = true
+allowed✝ : o.launchAuthorized issuer✝ s.current t✝
+fresh✝ : s.issued t✝.id = none
+launchFresh✝ : s.launches t✝.launch = none
+incFresh✝ : ¬t✝.target.incarnation ∈ s.reserved
+unused✝ : ¬t✝.target.incarnation ∈ s.current.used
+parent✝ : t✝.parent = s.current.logical.journal.length
+previous✝ : t✝.previous = s.current.grant
+scope✝ : LlmCallerCustody.Scope s.current.grant t✝.target
+serial✝ : t✝.target.serial = s.current.grant.serial + 1
+fence✝ : t✝.target.fence = s.current.grant.fence + 1
+challenge✝ : t✝.challenge = s.challenge
+epoch✝ : t✝.epoch = s.epoch
+audience✝ : t✝.audience = t✝.target.domain
+purpose✝ : t✝.purpose = 1
+valid✝ : s.current.now < t✝.target.expires
+durable✝ : o.durable s
+⊢ sorry () = t✝.id → t✝ = ticket
+proofs/lean/LlmIncarnationIssuance.lean:126:112: error: Type mismatch
+  some id
+has type
+  Option (?m.15 → ?m.15)
+but is expected to have type
+  Option Nat
+proofs/lean/LlmIncarnationIssuance.lean:126:143: error: Type mismatch
+  some id
+has type
+  Option (?m.17 → ?m.17)
+but is expected to have type
+  Option Nat
+proofs/lean/LlmIncarnationIssuance.lean:129:104: error: Application type mismatch: The argument
+  id
+has type
+  ?m.14 → ?m.14
+but is expected to have type
+  Nat
+in the application
+  s.outcomes id
+proofs/lean/LlmIncarnationIssuance.lean:129:134: error: Application type mismatch: The argument
+  id
+has type
+  ?m.17 → ?m.17
+but is expected to have type
+  Nat
+in the application
+  t.outcomes id
+proofs/lean/LlmIncarnationIssuance.lean:130:28: warning: This simp argument is unused:
+  CanActivate
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+proofs/lean/LlmIncarnationIssuance.lean:132:93: error: Application type mismatch: The argument
+  id
+has type
+  ?m.14 → ?m.14
+but is expected to have type
+  Nat
+in the application
+  s.issued id
+proofs/lean/LlmIncarnationIssuance.lean:132:122: error: Application type mismatch: The argument
+  id
+has type
+  ?m.17 → ?m.17
+but is expected to have type
+  Nat
+in the application
+  t.issued id
+proofs/lean/LlmIncarnationIssuance.lean:137:96: error: Application type mismatch: The argument
+  id
+has type
+  ?m.14 → ?m.14
+but is expected to have type
+  Nat
+in the application
+  s.outcomes id
+proofs/lean/LlmIncarnationIssuance.lean:137:126: error: Application type mismatch: The argument
+  id
+has type
+  ?m.17 → ?m.17
+but is expected to have type
+  Nat
+in the application
+  t.outcomes id
+proofs/lean/LlmIncarnationIssuance.lean:175:2: error: Invalid alternative name `activate`: Expected `issue`
+proofs/lean/LlmIncarnationIssuance.lean:176:2: error: Invalid alternative name `advance`: Expected `issue`
+'Weaver.LlmIncarnationIssuance.projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.composition' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmIncarnationIssuance.issued_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmIncarnationIssuance.launch_retained' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.outcome_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmIncarnationIssuance.issued_run' depends on axioms: [propext, sorryAx]
+'Weaver.LlmIncarnationIssuance.outcome_run' depends on axioms: [propext, sorryAx]
+'Weaver.LlmIncarnationIssuance.reserved_retained' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.challenge_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.wrong_key_not_possession' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.wrong_incarnation_not_possession' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.stale_epoch_rejected' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.stale_parent_rejected' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.known_outcome_cannot_activate' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.activation_requires_issued_proof' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.scope_run' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmIncarnationIssuance.original_result_unique' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmIncarnationIssuance.unknown_original_hold_retained' depends on axioms: [propext, sorryAx, Quot.sound]

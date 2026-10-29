@@ -1,0 +1,199 @@
+#+title: Weaver Multi-Key Registry and Source-Ledger Serialization
+#+language: en
+#+options: toc:3
+
+* Defect and design decision
+
+An origin-local insert followed by an alias insert and then a source CAS has
+three independent success points. Two callers may register different origin keys
+for the same source family; an alias may resolve before its target/source claim
+commits; restoring one store may expose an apparently free claim after another
+store consumed it. A correct local nonce check does not close any of these gaps.
+
+The chosen authority is one logical serializable decision order for each connected
+identity/account/history consistency domain. Origin enrollment, reverse indexes,
+alias binding and protected source transitions use the same order. Separate physical
+stores are projections or prepared participants. They do not each decide admission.
+This is a logical execution-authority boundary for an AI Agent Gateway.
+
+The reference profile uses a single authoritative journal whose committed record
+contains the complete operation and source transition result, not merely a pointer
+to an independently mutable source database. A source-store CAS materializes that
+record with an expected position and exact result commitment. It cannot run as a
+second independent admission decision. If an existing source owner must retain
+independent authority, it must join a qualified recoverable atomic-commit protocol;
+that alternative is outside this model and must remain disabled until qualified.
+
+* Identity and transaction records
+
+| Record | Immutable binding |
+|--------+-------------------|
+| OriginKey | Tenant, normalized principal, issuer and source-issued operation identity |
+| OriginEntry | Exact original source registration, canonical family, original claim, profile commitment, budget and history domains |
+| Reverse family / claim index | Qualified source authority plus family or claim identity mapped to its sole origin |
+| AliasKey | Full authenticated peer, protocol, profile, incarnation and protocol locator namespace from category 18 |
+| Alias binding | Exact AliasKey to an already committed OriginKey; continuity evidence and original source binding |
+| Pending transaction | Authority namespace, unique transaction ID, exact command body, read set, source cut and owner fence |
+| Commit decision | Transaction body/result, parent prefix, new position, source before/after commitment and account/history effects |
+| Projection application | Exact decision identity, expected participant position, applied result commitment; idempotent data publication |
+
+Family and claim IDs in the finite models are qualified natural-number atoms.
+Native encodings must include issuer/source namespace and typed presence; missing
+fields cannot collapse into empty strings or zero. Profile and account/history
+bindings are immutable admitted references, not caller-supplied classifications.
+Prompt equality, ASP source fingerprints, MCP request IDs, A2A task/context IDs
+and Client ACP session IDs do not establish canonical operation identity.
+
+A multi-tenant issuer cannot evade the reverse index by changing an unqualified
+number. Legitimately new work requires a new authenticated source intent and its
+own original claim admission. Retries and reconnects resolve their original origin.
+Delegation, principal migration and domain migration require the earlier explicit
+identity/domain migration protocol; this extension grants no rename operation.
+
+* Serialized protocol
+
+** Stage the exact original intent
+
+Authenticate producer provenance, original task binding and semantic profile using
+Scheme contracts and current Cedar authorization. Persist a pending transaction
+with an exact body under a scoped transaction ID. Repeating the same stage is
+idempotent; a different body under the same ID is rejected before commit.
+Pending staging is not a send grant and creates no effective origin or alias.
+
+Do not overwrite an unresolved pending transaction when its parent becomes stale.
+Inspect the authoritative outcome, then use category-17 continuation: retain the
+original root and pending obligation, obtain fresh authorization, and record a new
+transaction linked to the old pending intent. A source fingerprint cannot authorize
+this continuation. The model retains all pending requests; automatic rebasing and
+cancellation liveness are not claimed.
+
+** Decide once against the current complete read set
+
+Rust's qualified authority checks the current parent prefix and owner fence,
+original source cut, current Policy/history generation and exact actual operation.
+The read set includes authoritative absence predicates, not merely existing rows.
+At one linearization point, register all origin/reverse-index records together
+with the source admission CAS; or bind the alias together with its source metadata
+transition; or consume the original grant with source spent-state and account
+reservation. Each transaction has one immutable result at one prefix position.
+
+Registration requires absence in all three authoritative indexes: origin, family
+and claim. For an existing exact origin, return its committed registration. A
+conflicting origin, family or claim is a conflict, never a new family allocation.
+Alias binding requires an exact committed target, full namespace, authenticated
+continuity and an unused alias key. An existing identical alias is resolved by
+lookup; another target is rejected. Target validation and insertion are atomic.
+
+Final consumption additionally requires an unspent original claim, original profile,
+current history/Policy and shared budget admission. Receipt currentness alone never
+authorizes a second consume. Changing any relevant registry/source coordinate
+invalidates a prepared read; changing the owner fence invalidates all old-owner
+mutation permits. The baseline global revision deliberately trades some concurrency
+for a clear serializable contract.
+
+** Publish projections and resolve uncertainty
+
+The journal decision precedes any effective projection or final broker permission.
+Apply each exact committed result with participant position/result CAS. Duplicate
+application returns the recorded result without adding a charge, allocating a
+family or consuming again. Application cannot perform fresh admission under newer
+Policy; the immutable decision already describes the authorized source transition.
+A mismatch quarantines that participant and blocks affected use until replay.
+
+No response means unknown. Query the exact transaction ID and body against a
+qualified current prefix. Committed returns the original decision. Pending or an
+unavailable authority retains the original obligation and budget hold. A negative
+result is usable only with complete current-prefix coverage, including pending,
+commit/tombstone and reservation indexes. A lagging replica cannot prove absence.
+There is no timeout-based abort, refund or lookup-or-create on session resume.
+
+The pending model is conservative: it does not implement cancellation or garbage
+collection. Native compaction must preserve deduplication tombstones and original
+claim/domain bindings for the entire replay/adversary window; truncation cannot
+turn a historical transaction into a fresh one. Transaction ID exhaustion closes
+admission, as existing bounded POO Flow coordinates do.
+
+* Cross-storage recovery and owner handover
+
+| Failure / interleaving | Required outcome |
+|------------------------+------------------|
+| Two registrations read empty origin/family indexes | One current parent wins; the loser retains pending and re-reads all indexes |
+| Different origin keys share a family or claim | Reverse index arbitration rejects the second registration |
+| Alias insertion races target enrollment | Alias waits for a committed target or retries after an exact conflict; no dangling binding |
+| Commit succeeds, response is lost | Query original decision; neither new transaction ID nor new alias permits replay |
+| Source materialization succeeds, acknowledgment is lost | Exact application replay is idempotent; acknowledgment is observation only |
+| Registry snapshot is newer than source/account projection | Close affected reads and replay the common authoritative prefix; no execution from a torn join |
+| Source snapshot is newer than alias projection | Restore aliases from exact decisions; do not roll source spent-state backward |
+| Participant CAS reports conflict | Block and reconcile exact position/result; do not independently recompute admission |
+| Owner restarts with an old permit or queued SDK request | New authority fence rejects mutation at the broker; old owner may query an exact historical result |
+| Policy/history changes after a read | Final source CAS checks the current source cut and Policy; stale permits fail |
+| Original transport outcome remains unknown | Keep spent-state and full unresolved reservation; do not send again to complete materialization |
+
+Recovery first authenticates a non-rollback current authority prefix and advances
+the mutation fence. It then reconstructs complete origin/reverse/alias/decision
+indexes and source/account/history state from that prefix. The affected shard stays
+closed until the join is complete. Mixed restored snapshots are inputs for replay,
+not a new authority image. Projection availability does not establish authority.
+
+A stale owner cannot finish an old multi-store transaction outside the current
+broker: participants accept only authority-certified decisions at exact positions,
+and their mutation interfaces have no independent grant path. A late committed
+result can still be observed and materialized under the new owner; this cannot
+create another consumption. All old-owner effect-capable queues must remain behind
+the logical Rust broker fence. Go SDK retries, redirects and stream reconnects
+cannot open a direct provider connection around it.
+
+Whole-authority rollback or two independent primaries violate the qualification
+premise. No local journal hash, replica revision or lease counter repairs that
+violation. Current-prefix inheritance and non-forking authority must be provided
+by the selected storage/replication protocol before native admission is enabled.
+
+* Shared budgets, history and final queue
+
+Several origins may debit one admitted account. Their reservations participate in
+the same domain serialization order. Two independent per-origin allowances are
+insufficient. The model proves a single shared pool bound across arbitrary finite
+commits and forbids refund transitions: charged represents outstanding reserved
+or spent exposure, not a final provider invoice. It intentionally retains unknown
+exposure forever until the earlier qualified settlement protocol is composed.
+Multiple independent account domains may use disjoint authorities only with proven
+read/write footprints; bridging or merging domains requires atomic enrollment.
+
+A canonical registry commit never proves that bytes reached a provider. Actual
+source consumption is the unique admission of one immutable broker operation.
+The earlier broker consumption/queue model governs durable operation lookup,
+queue adoption, partial writes and unknown outcomes. Recovery must never replay a
+committed consumption as a fresh send. Queued stream messages still use their
+original message/range claims, manifest and budget holds; aliases grant no new
+range or tail capability. Remote exactly-once delivery is not promised.
+
+* Language and proof ownership
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme | POO-native semantic contracts, original task/profile/domain bindings, canonical namespace rules, continuation constraints and pure nonce/history/Policy transitions |
+| Cedar / cedar-poo-spec | Code as Policy admission for actual registration, alias and effect operations; all required layers allow, exact authenticated input alignment |
+| Go | Cloud-native adapters, Kubernetes discovery/reconciliation, protocol sessions and provider normalization; propagate immutable transaction/origin references and surface conflicts/unknown outcomes |
+| Rust | Qualified authority journal, serializable multi-key and source CAS, reverse indexes, fenced broker, shared-account admission, recovery replay and protected provider queue |
+| Quint | Executable finite interleavings and explicit broken-protocol controls; no inference of native storage semantics |
+| Lean | Arbitrary finite transition closure, immutable mappings/decisions, reverse-index coherence, original source projection and shared exposure bound under explicit refinement premises |
+
+The common boundary passes typed immutable records and attributable outcomes:
+committed, conflict, pending/unknown and denied. Go does not synthesize source
+identities, classify unknown as failure, refund exposure or convert a historical
+receipt into a current grant. Rust authenticates Scheme's semantic inputs and binds
+them to actual bytes/route/operation; Cedar input equality alone is insufficient.
+
+* Performance boundary
+
+Begin with one authority partition for connected identity/account/history domains.
+Keep registration and alias changes off the per-token stream path. Cache only
+committed immutable rows; final currentness comes from the owner-local authority
+transaction and original source cut. Batch durable decisions only if each decision
+retains its exact parent, unique outcome and ordered source/account effects.
+
+Later sharding requires conflict-footprint and authoritative negative-read proofs.
+A cross-shard alias or shared budget cannot use sequential independent CAS calls.
+Do not relax currentness for cache hits or use an eventually consistent reverse
+index on the fast path. Measure real broker overhead, hot shared-account contention,
+recovery stalls and tail latency only after native refinement is qualified.

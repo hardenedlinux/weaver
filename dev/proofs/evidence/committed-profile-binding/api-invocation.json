@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/opt/homebrew/opt/node/bin/node",
+    "proofs/evidence/committed-profile-binding/run-quint.cjs"
+  ],
+  "exit": 0,
+  "inputs": {
+    "proofs/qunit/CommittedSemanticProfile.qnt": "02a4e772cec5bd3b20eca85289e6c03f0a23a3795a3e9984521431d7235f5509",
+    "proofs/evidence/committed-profile-binding/run-quint.cjs": "56663695fd81c0b9ae4ec2b2be17ded049891557a5172d0ead90c233876fab0d",
+    "proofs/check_routine_config_api.py": "d61834946240f0d37a7daafc66fbbd2a31a9387e255dcb13d227d9a14295022d",
+    "proofs/evidence/committed-profile-binding/bundle.qnt": "6e7c4f99249b04c4d221e2ca594ef40a1a548e4df15df11acbd28291aa2b57f1"
+  },
+  "officialPipeline": "load -> parse -> typecheck -> runTests; new Evaluator per group",
+  "expectedControls": 24
+}

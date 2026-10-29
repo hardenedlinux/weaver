@@ -1,0 +1,99 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":3,"sourceSha256":"6acfbc7d1b3368e0c0019e5eb703c642e7a2f5d057ed1c89b96a17edda930a0b"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"9150202515192d2bc17a34a39e54b26c382fe64dce30de1d00d8e0155080fb05"}
+@@START {"label":"api-controls-0","limit":20}
+
+  SemanticGatewaySlice
+    ok queueHasNoExternalSendTest passed 1 test(s)
+    ok actualDispatchUsesOriginalRouterTest passed 1 test(s)
+    ok forgedProfileCannotQueueTest passed 1 test(s)
+
+  3 passing (42ms)
+@@DONE {"label":"api-controls-0","passed":["queueHasNoExternalSendTest","actualDispatchUsesOriginalRouterTest","forgedProfileCannotQueueTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  SemanticGatewaySlice
+    ok forgedOriginCannotQueueTest passed 1 test(s)
+    ok changedResponseCannotQueueTest passed 1 test(s)
+    ok generationChangeRejectsOldPermitTest passed 1 test(s)
+
+  3 passing (107ms)
+@@DONE {"label":"api-controls-1","passed":["forgedOriginCannotQueueTest","changedResponseCannotQueueTest","generationChangeRejectsOldPermitTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  SemanticGatewaySlice
+    ok rejoinPreservesIdentityTest passed 1 test(s)
+    ok policyAfterQueueRejectsSendTest passed 1 test(s)
+    ok historyAfterQueueRejectsSendTest passed 1 test(s)
+
+  3 passing (5ms)
+@@DONE {"label":"api-controls-2","passed":["rejoinPreservesIdentityTest","policyAfterQueueRejectsSendTest","historyAfterQueueRejectsSendTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  SemanticGatewaySlice
+    ok artifactCurrentnessRequiredTest passed 1 test(s)
+    ok actualPolicyRequiredTest passed 1 test(s)
+    ok crashBeforeDispatchKeepsQueueTest passed 1 test(s)
+
+  3 passing (207ms)
+@@DONE {"label":"api-controls-3","passed":["artifactCurrentnessRequiredTest","actualPolicyRequiredTest","crashBeforeDispatchKeepsQueueTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  SemanticGatewaySlice
+    ok oldWorkerAfterRecoveryRejectedTest passed 1 test(s)
+    ok recoveryRejoinCanProgressTest passed 1 test(s)
+    ok lostReplyCannotRetryTest passed 1 test(s)
+
+  3 passing (70ms)
+@@DONE {"label":"api-controls-4","passed":["oldWorkerAfterRecoveryRejectedTest","recoveryRejoinCanProgressTest","lostReplyCannotRetryTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-5","limit":20}
+
+  SemanticGatewaySlice
+    ok crashAfterDispatchCannotRetryTest passed 1 test(s)
+    ok partialWriteRetainsUnknownHoldTest passed 1 test(s)
+    ok policyChangeStopsNextWriteTest passed 1 test(s)
+
+  3 passing (34ms)
+@@DONE {"label":"api-controls-5","passed":["crashAfterDispatchCannotRetryTest","partialWriteRetainsUnknownHoldTest","policyChangeStopsNextWriteTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-6","limit":20}
+
+  SemanticGatewaySlice
+    ok historyChangeStopsNextWriteTest passed 1 test(s)
+    ok newGenerationStopsNextWriteTest passed 1 test(s)
+    ok oldWriterCannotReleaseAfterRestartTest passed 1 test(s)
+
+  3 passing (7ms)
+@@DONE {"label":"api-controls-6","passed":["historyChangeStopsNextWriteTest","newGenerationStopsNextWriteTest","oldWriterCannotReleaseAfterRestartTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-7","limit":20}
+
+  SemanticGatewaySlice
+    ok lateReceiptIsNotFreshSendTest passed 1 test(s)
+    ok timeoutDoesNotReleaseBudgetTest passed 1 test(s)
+    ok foreignUsageReceiptRejectedTest passed 1 test(s)
+
+  3 passing (52ms)
+@@DONE {"label":"api-controls-7","passed":["lateReceiptIsNotFreshSendTest","timeoutDoesNotReleaseBudgetTest","foreignUsageReceiptRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-8","limit":20}
+
+  SemanticGatewaySlice
+    ok untrustedUsageReceiptRejectedTest passed 1 test(s)
+    ok settlementRequiresTerminalTest passed 1 test(s)
+    1) noExecutionSealFencesQueuedWorkTest failed after 1 test(s)
+
+  2 passing (130ms)
+  1 failed
+
+  1) noExecutionSealFencesQueuedWorkTest:
+       Error [QNT502]: Variable r not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/semantic-gateway-slice/bundle.qnt:50:23
+        50:   val dispatchBound = r.dispatches.forall(d => d.plan.root==root and d.plan.payload==payload and d.plan.view==d.snapshot and validWire(d.plan))
+                                  ^
+    Use --seed=0x125 --match=noExecutionSealFencesQueuedWorkTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 proofs/evidence/semantic-gateway-slice/bundle.qnt
+Error: Tests failed
+    at unwrap (/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/semantic-gateway-slice/run-quint.cjs:10:38)
+    at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/semantic-gateway-slice/run-quint.cjs:27:16

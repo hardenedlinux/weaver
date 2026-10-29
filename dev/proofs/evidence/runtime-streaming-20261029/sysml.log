@@ -1,0 +1,7 @@
+models/sysml/StreamingExecution.sysml:3:5: error: import without a visibility indicator: SysML v2 requires public, private or protected before 'import'
+    import ScalarValues::*;
+    ^~~~~~
+models/sysml/StreamingExecution.sysml:24:37: error: "message" is a reserved keyword, not a name the ID terminal admits; write 'message' to use it as a name
+    port def MessagePort { out item message : MessageProposal; }
+                                    ^~~~~~~
+sysml: models/sysml/StreamingExecution.sysml did not analyse cleanly; no check was made

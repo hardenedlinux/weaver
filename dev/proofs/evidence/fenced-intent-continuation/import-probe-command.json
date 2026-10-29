@@ -1,0 +1,17 @@
+{
+  "originalSource": "proofs/qunit/ContinuationImportProbe.qnt",
+  "archivedSource": "proofs/evidence/fenced-intent-continuation/import-probe.qnt",
+  "args": [
+    "quint",
+    "test",
+    "proofs/qunit/ContinuationImportProbe.qnt",
+    "--backend",
+    "typescript",
+    "--max-samples",
+    "1",
+    "--match",
+    "^sharedNativeStateTest$"
+  ],
+  "exit": 0,
+  "note": "Development probe verified direct and transitive imports reference the same actual key state; original temporary canonical probe removed."
+}

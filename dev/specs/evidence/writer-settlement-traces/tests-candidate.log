@@ -1,0 +1,23 @@
+
+  WriterSettlementClosure
+node:fs:3020
+    return binding.writeFileUtf8(
+                   ^
+
+Error: ENOENT: no such file or directory, open '/Users/guangtao/ghq/github.com/tao3k/weaver/specs/evidence/writer-settlement-traces/candidate/D::lostPrepareReplyTest-0.itf.json'
+    at writeFileSync (node:fs:3020:20)
+    at writeToJson (/opt/homebrew/Cellar/quint/0.33.0/libexec/lib/node_modules/@informalsystems/quint/dist/src/cliReporting.js:214:28)
+    at /opt/homebrew/Cellar/quint/0.33.0/libexec/lib/node_modules/@informalsystems/quint/dist/src/cliReporting.js:262:17
+    at Evaluator.test (/opt/homebrew/Cellar/quint/0.33.0/libexec/lib/node_modules/@informalsystems/quint/dist/src/runtime/impl/evaluator.js:352:21)
+    at /opt/homebrew/Cellar/quint/0.33.0/libexec/lib/node_modules/@informalsystems/quint/dist/src/cliCommands.js:241:58
+    at Array.map (<anonymous>)
+    at runTests (/opt/homebrew/Cellar/quint/0.33.0/libexec/lib/node_modules/@informalsystems/quint/dist/src/cliCommands.js:241:28)
+    at EitherConstructor.asyncChain (/opt/homebrew/Cellar/quint/0.33.0/libexec/lib/node_modules/@informalsystems/quint/node_modules/@sweet-monads/either/cjs/index.js:125:16)
+    at /opt/homebrew/Cellar/quint/0.33.0/libexec/lib/node_modules/@informalsystems/quint/dist/src/cli.js:58:39 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/guangtao/ghq/github.com/tao3k/weaver/specs/evidence/writer-settlement-traces/candidate/D::lostPrepareReplyTest-0.itf.json'
+}
+
+Node.js v26.10.0

@@ -1,0 +1,47 @@
+@@START {"label":"api-parse","limit":20}
+@@DONE {"label":"api-parse","modules":1,"sourceSha256":"9d69baf38ebb396ab45b1f32fd7f3127fca52160629532ccd075fb2c83a18b3a"}
+@@START {"label":"api-typecheck","limit":55}
+@@DONE {"label":"api-typecheck","typedIrDigest":"5cce7d73a717244e40cca00c73418427b11490d4053c67a7e2c6fd8607f1734e"}
+@@START {"label":"api-controls-0","limit":20}
+
+  NativeLocatorClosure
+    ok sameNameDifferentImagesTest passed 1 test(s)
+    ok oneImageCollisionRejectedTest passed 1 test(s)
+    ok incompleteProducerRejectedTest passed 1 test(s)
+
+  3 passing (10ms)
+@@DONE {"label":"api-controls-0","passed":["sameNameDifferentImagesTest","oneImageCollisionRejectedTest","incompleteProducerRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-1","limit":20}
+
+  NativeLocatorClosure
+    ok foreignBodyRejectedTest passed 1 test(s)
+    ok rewrittenEntryRejectedTest passed 1 test(s)
+    ok wrongHandleRejectedTest passed 1 test(s)
+
+  3 passing (2ms)
+@@DONE {"label":"api-controls-1","passed":["foreignBodyRejectedTest","rewrittenEntryRejectedTest","wrongHandleRejectedTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-2","limit":20}
+
+  NativeLocatorClosure
+    ok qualifiedHandleInitializesOwnerTest passed 1 test(s)
+    ok mappingIsNotInitializationTest passed 1 test(s)
+    ok closedReferenceCannotInitializeTest passed 1 test(s)
+
+  3 passing (17ms)
+@@DONE {"label":"api-controls-2","passed":["qualifiedHandleInitializesOwnerTest","mappingIsNotInitializationTest","closedReferenceCannotInitializeTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-3","limit":20}
+
+  NativeLocatorClosure
+    ok duplicateInitializationRejectedTest passed 1 test(s)
+    ok collisionBypassCounterexampleTest passed 1 test(s)
+    ok missingCompletionCounterexampleTest passed 1 test(s)
+
+  3 passing (3ms)
+@@DONE {"label":"api-controls-3","passed":["duplicateInitializationRejectedTest","collisionBypassCounterexampleTest","missingCompletionCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}
+@@START {"label":"api-controls-4","limit":20}
+
+  NativeLocatorClosure
+    ok bareLookupWrongOwnerCounterexampleTest passed 1 test(s)
+
+  1 passing (1ms)
+@@DONE {"label":"api-controls-4","passed":["bareLookupWrongOwnerCounterexampleTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

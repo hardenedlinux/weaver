@@ -1,0 +1,70 @@
+proofs/lean/BrokerConsumptionQueue.lean:60:61: error: unexpected identifier; expected '}'
+proofs/lean/BrokerConsumptionQueue.lean:98:2: error: Invalid alternative name `invoke`: Expected `consume`, `persistIntent`, `accept`, `acknowledge`, `loseReply`, `restart`, `revoke`, or `reauthorize`
+proofs/lean/BrokerConsumptionQueue.lean:103:2: error: Invalid alternative name `settle`: Expected `consume`, `persistIntent`, `accept`, `acknowledge`, `loseReply`, `restart`, `revoke`, or `reauthorize`
+proofs/lean/BrokerConsumptionQueue.lean:108:2: error: Invalid alternative name `fullReceipt`: Expected `consume`, `persistIntent`, `accept`, `acknowledge`, `loseReply`, `restart`, `revoke`, or `reauthorize`
+proofs/lean/BrokerConsumptionQueue.lean:93:32: error: Application type mismatch: The argument
+  member
+has type
+  r ∈
+    { spent := s.spent, intent := s.intent, accepted := s.accepted, acknowledged := s.acknowledged, epoch := s.epoch,
+        allowed := s.allowed, frontier := s.frontier + n, pending := s.pending, calls := s.calls, ranges := s.ranges,
+        unknown := s.unknown, completed := s.completed, usage := s.usage, settled := s.settled,
+        settlements := s.settlements }.ranges
+but is expected to have type
+  ?m.121 ∈ ?m.122 ++ ?m.123
+in the application
+  List.mem_append.mp member
+proofs/lean/BrokerConsumptionQueue.lean:127:30: error: Application type mismatch: The argument
+  ha
+has type
+  a ∈
+    { spent := s.spent, intent := s.intent, accepted := s.accepted, acknowledged := s.acknowledged, epoch := s.epoch,
+        allowed := s.allowed, frontier := s.frontier + n, pending := s.pending, calls := s.calls, ranges := s.ranges,
+        unknown := s.unknown, completed := s.completed, usage := s.usage, settled := s.settled,
+        settlements := s.settlements }.ranges
+but is expected to have type
+  ?m.70 ∈ ?m.71 ++ ?m.72
+in the application
+  List.mem_append.mp ha
+proofs/lean/BrokerConsumptionQueue.lean:163:22: error(lean.unknownIdentifier): Unknown identifier `s.epoch`
+proofs/lean/BrokerConsumptionQueue.lean:163:36: error(lean.unknownIdentifier): Unknown identifier `s.pending`
+proofs/lean/BrokerConsumptionQueue.lean:163:67: error(lean.unknownIdentifier): Unknown identifier `s.epoch`
+proofs/lean/BrokerConsumptionQueue.lean:163:86: error(lean.unknownIdentifier): Unknown identifier `s.epoch`
+proofs/lean/BrokerConsumptionQueue.lean:170:2: error: Invalid alternative name `fullReceipt`: Expected `consume`, `persistIntent`, `accept`, `acknowledge`, `loseReply`, `restart`, `revoke`, or `reauthorize`
+proofs/lean/BrokerConsumptionQueue.lean:171:17: error: unsolved goals
+case reserveWrite
+owner : ReceiptOwner
+length : Nat
+s : State
+cleared : s.pending ≠ none
+n✝ : Nat
+accepted✝ : s.accepted = true
+live✝ : s.allowed = true
+holding✝ : Held s
+known✝ : s.unknown = false
+idle✝ : s.pending = none
+positive✝ : 0 < n✝
+bounded✝ : s.frontier + n✝ ≤ length
+idle : s.pending = none
+⊢ ∃ r, s.pending = some r ∧ s.calls r.lo = 1 ∧ owner.fullValid r
+proofs/lean/BrokerConsumptionQueue.lean:179:2: error: Invalid alternative name `invoke`: Expected `consume`, `persistIntent`, `accept`, `acknowledge`, `loseReply`, `restart`, `revoke`, `reauthorize`, or `reserveWrite`
+'Weaver.BrokerConsumptionQueue.initialized_safe' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.BrokerConsumptionQueue.initialized_nonoverlapping_ranges' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.BrokerConsumptionQueue.initialized_at_most_one_invocation' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.BrokerConsumptionQueue.unknown_retains_original_hold' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.BrokerConsumptionQueue.settlement_requires_terminal_evidence' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.BrokerConsumptionQueue.durable_consumption_survives' depends on axioms: [propext]
+'Weaver.BrokerConsumptionQueue.accepted_tombstone_survives' depends on axioms: [propext]
+'Weaver.BrokerConsumptionQueue.stale_worker_cannot_invoke' depends on axioms: [propext, sorryAx]
+'Weaver.BrokerConsumptionQueue.full_receipt_rechecks_original_pending' depends on axioms: [sorryAx]
+'Weaver.BrokerConsumptionQueue.invocation_rechecks_final_gate' does not depend on any axioms
+'Weaver.BrokerConsumptionQueue.admission_has_current_policy' does not depend on any axioms
+'Weaver.BrokerConsumptionQueue.queue_refinement_preserves_original_affinity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.BrokerConsumptionQueue.queue_refinement_preserves_shared_budget' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.BrokerConsumptionQueue.repeated_sdk_invocation_counterexample' depends on axioms: [propext]
+'Weaver.BrokerConsumptionQueue.unknown_refund_counterexample' depends on axioms: [propext]
+'Weaver.BrokerConsumptionQueue.overlapping_tail_counterexample' depends on axioms: [propext]

@@ -1,0 +1,7 @@
+ℹ [99/100] Built WeaverPolicyBridge (722ms)
+info: WeaverPolicyBridge.lean:44:0: 'Weaver.PolicyBridge.matching_native_values_preserve_request' depends on axioms: [propext]
+info: WeaverPolicyBridge.lean:45:0: 'Weaver.PolicyBridge.changed_effect_rejects_bound_reuse' depends on axioms: [propext]
+info: WeaverPolicyBridge.lean:46:0: 'Weaver.PolicyBridge.compound_acceptance_requires_each_error_free_allow' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Build completed successfully (100 jobs).

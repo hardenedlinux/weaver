@@ -1,0 +1,22 @@
+#+title: Weaver External Policy and History Publication Index
+#+language: en
+#+options: toc:2
+
+* Pending, published and acknowledged
+
+Area =10-19 LLM Gateway=; category =16 Policy publication=.
+This delta makes category [[file:../15-recovery-cas/15.00-index.org][15 Recovery CAS]]'s effective-authority publication
+point explicit: durable producer staging, a fenced owner publication and an
+attributable historical acknowledgement. Producer/cache recovery never assigns
+current consumption authority.
+
+| ID | Artifact |
+|----+----------|
+| 16.00 | This index |
+| 16.01 | [[file:16.01-pending-publication-and-effectiveness.org][Publication ordering, recovery and effective acknowledgement]] |
+| 16.02 | [[file:16.02-policy-publication.d2][Core D2]] / [[file:16.02-policy-publication.svg][SVG]] |
+| 16.03 | [[file:16.03-validation-evidence.org][Source comparison, proof correspondence and evidence]] |
+
+Formal sources: [[file:../../../proofs/lean/LlmPolicyPublication.lean][Lean]] and [[file:../../../proofs/qunit/LlmPolicyPublication.qnt][Quint]].
+Run [[file:../../../proofs/check_llm_policy_publication.py][the isolated check runner]]. This work preserves prior sealed artifacts and
+changes no Gateway runtime, upstream source or dependency pin.

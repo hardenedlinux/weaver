@@ -1,0 +1,199 @@
+#+TITLE: 59.10 Atomic Publication Decisions and Lost-Response Recovery
+#+LANGUAGE: en
+
+* Stable request and decision contract
+
+Every PublishAuthority RPC now carries a required original operation_id. Its
+domain-separated commitment binds the ID, optional original expected_revision,
+requested fence, exact UTF-8 Policy hash and exact UTF-8 schema hash. Equivalent
+whitespace is still different committed content. The source keeps this request
+unchanged across an ambiguous RPC, reconnect, certificate rotation and process
+restart. IDs are scoped to the one authoritative SQLite ledger, not a connection,
+TLS leaf, Kubernetes name or current worker incarnation. Replacing or rolling
+back that ledger is outside the local non-rollback premise.
+
+A valid newly admitted request produces one immutable committed or rejected
+decision. Its receipt includes the ID/digest and the applied or conflict-observed
+revision/fence. The pair can be absent when a rejected original parent expected
+an authority that does not exist. A committed receipt always has an applied
+revision/fence. It proves historical application only: a later publication can
+supersede it. Neither receipt kind is an execution grant, current-view proof,
+budget refund, or permission to retry a consumed provider invocation.
+
+| Condition | Result | State effect |
+|-----------+--------+--------------|
+| Invalid ID, size, integer range, Cedar or schema | Admission error | No durable decision; no authority update |
+| Existing ID and exact digest | Return original committed/rejected receipt | No CAS, revalidation, grant or budget mutation |
+| Existing ID with different content, parent or fence | Binding conflict | Original record preserved |
+| Unseen ID, original parent matches, fence does not decrease | Committed receipt | Authority, schema and outcome commit atomically |
+| Unseen ID, stale/missing parent or lower fence | Rejected receipt | Persist original conflict decision without changing authority |
+| Storage error or ambiguous RPC completion | Unknown to caller | Reconcile original ID/digest; never manufacture a new parent |
+| Lookup not observed | NotFound | Not an abort certificate or proof that a delayed commit cannot arrive |
+
+The integer upper bound remains the deciding store's signed range. A head at its
+maximum cannot advance and yields a retained rejection. No wraparound creates
+a fresh generation.
+
+* One deciding transaction and shared mechanisms
+
+The new authority_publications table retains the exact request, digest and receipt.
+The authority_schema row retains the current typed schema beside the existing
+authority record. BEGIN IMMEDIATE serializes parent/fence comparison with the
+authority/schema update and outcome insert; one COMMIT publishes all of them.
+An insert or commit failure must not leave a successful authority update without
+its decision. FULL synchronous WAL remains the existing durability profile.
+
+Exact replay has a read-only immutable-result fast path. An initially missing
+record is checked again inside the deciding transaction after typed validation;
+concurrent identical calls cannot overwrite one another or each advance the head.
+Concurrent different IDs with the same parent produce one applied revision and
+a retained rejection for the loser. Result records have no TTL, deletion or
+checkpoint reclamation API in this profile.
+
+Existing trusted native publish/publish_typed setup APIs and the new source RPC
+share the same authority update helper. A typed update stores its schema in the
+same transaction; an untyped trusted native update clears typed schema metadata
+rather than retaining an unrelated schema. Those setup APIs do not retrospectively
+invent operation-ID receipts. Only the identified typed source protocol is exposed
+over gRPC; no anonymous publication fallback remains.
+
+Rust keeps the deciding store, immutable result binding and final guards. Go owns
+the retained source request and explicit reconciliation. Scheme/POO remains the
+authority for the original semantic publication intent and any newly approved
+change. An old rejected intent cannot be silently rebased by the SDK. No source
+publication or result lookup calls provider transport or changes tasks, holds,
+execution claims, dispatch burns or release records. The original final-send
+checks still use the current deciding revision/fence and Cedar Policy.
+
+* RPC and Go behavior
+
+PublishAuthority returns PublicationReceipt instead of a bare revision.
+InspectPublication accepts a PublicationKey containing the original ID and digest.
+Both require source-ingress authentication and share its bounded publication
+lane. The query cannot use an operation credential, alter state, or interpret
+ResourceExhausted as an absent decision. This is a direct protocol migration;
+an empty operation_id is rejected rather than assigned a new identity.
+
+Go's =Client.Publish= makes one RPC and checks receipt ID/digest, outcome, optional
+head consistency, integer bounds and the expected committed revision/fence. A
+retained rejection returns its receipt with =ErrPublicationRejected=.
+=Client.InspectPublication= validates the same original binding and returns the historical
+decision; it neither resubmits nor rebases. Callers must preserve their request
+record and handle NotFound/transport errors as incomplete knowledge. Protobuf
+bindings are regenerated through the existing Go tool entrypoint and checked
+against the shared descriptor.
+
+* Four-way correspondence and failure evidence
+
+| Artifact | Obligation | Evidence boundary |
+|----------+------------+-------------------|
+| SysML DurablePublicationDecision | Stable original binding, atomic authority/schema/outcome and no commit-stage sending | Strict SDK analysis and native/formal witness map |
+| Quint PublicationRecovery | Immutable decisions, one winner per parent, lost reply/restart, historical observations and retained budget | Three IDs, two content abstractions, bounded sampled schedules |
+| Lean PublicationRecovery | Every prior decision survives any finite run; head/log accounting and arbitrary original held/call totals are preserved | Any decidable request-key type; faithful exact commitment and non-rollback atomic transaction premises |
+| Rust ledger/PBT | Concurrent identical and different IDs, rollback on result insert failure, restart/replay/binding conflicts | Actual SQLite FULL/WAL with injected trigger failure and generated schedules |
+| Go mTLS fault relay | Commit succeeds upstream but caller receives Unavailable; explicit query/replay recovers after restart | Actual transport and daemon; the relay is test-only and does not model every packet-loss mechanism |
+
+Quint includes explicit unsafe transitions for changing the head without a result,
+deleting a retained outcome, and rebinding a decided ID. Each violates its invariant.
+Positive controls show that missing observation can precede a later commit and
+that a rejected original remains rejected after later valid publications. Lean
+proves five preservation/composition declarations without admitting a deleted or
+rebound decision transition. It does not prove disk fsync, anti-rollback hardware,
+TLS, Policy compilation or cryptographic collision resistance.
+The head/log lemma assumes a closed identified-publication history admitted as
+its initial state. Trusted unrecorded native setup writes are not transitions of
+that theorem. Existing ledgers with earlier unrecorded authority need a separate
+initial-state projection; no historical receipts are fabricated for those writes.
+
+The native result-insert fault occurs after authority/schema writes inside the
+transaction. The exception leaves all three tables unchanged; retrying the exact
+request after removing the injected fault can commit once. Concurrent same-ID
+writers return the same receipt at one revision. Generated replay/restart/late-read
+schedules preserve the original result.
+
+The integration test first consumes one original provider claim and retains its
+four-credit hold. A test-only mTLS relay forwards one source request, observes its
+successful durable response, then deliberately returns Unavailable to the caller.
+The Go client must make one call. Direct authenticated lookup and exact replay
+recover the original receipt. A stale-parent ID obtains a durable rejection; a
+later legitimate Policy update cannot replace either earlier decision. After a
+natural daemon restart, ID rebinding and operation-ingress queries fail, a missing
+ID stays non-terminal, and later authority cannot resend the consumed provider
+claim or release its hold.
+
+Early Rust integer-conversion and ASP failures are retained in this increment's
+evidence directory. The repair uses the existing checked integer reader, explicit
+owner imports and a named PublicationKey instead of suppressing gates. Early Lean
+key-binder/type errors are also retained; final proofs require explicit key types.
+
+* Verified restoration evidence
+
+The [[file:../../../dev/proofs/evidence/publication-recovery-20261030/verification-current/receipt.json][unified receipt]] passes all thirty-three stages with 150 unchanged SHA-256
+input hashes. Rust reports forty-nine passing tests, including all five ASP deny
+gates and the five new ledger regressions/PBT. Go race integration passes the
+actual mTLS lost-result/restart scenario alongside earlier ingress, streaming,
+partial-write, revocation and Arrow cases. PublicationRecovery has ten executable
+Quint controls and a 1000-trace, sixty-step sampled invariant run. Its five Lean
+declarations print only propext, with no sorryAx. The imported Cedar bridge,
+strict in-process SysML SDK, witness map and regenerated Protobuf descriptor also
+pass. D2 was rendered to SVG/PNG and visually checked. Resource limits and
+dependency pins were not changed to obtain these results.
+
+* Performance and remaining obligations
+
+Contracts adds a publication commitment benchmark. Ledger separately measures
+atomic commit, exact replay and historical lookup. Existing Go source-publication
+measurements now include the durable outcome record. Fresh store creation and
+teardown remain outside timed ledger closures; all package targets and Criterion
+settings remain workspace-managed.
+
+The [[file:../../../dev/proofs/evidence/publication-recovery-20261030/benchmark-current/receipt.json][benchmark execution receipt]] passes all five collection stages and binds the
+same 150 hashes as verification. All eighteen Rust cases across five packages
+were actually measured. The [[file:../../../dev/proofs/evidence/publication-recovery-20261030/benchmark-current/benchmark-summary.org][full estimates and confidence intervals]] retain
+the complete batch. New-case mean observations are 58537.604 ns for publication
+commitment, 372032.507 ns for atomic commit, 8516.272 ns for exact replay and
+3067.935 ns for historical lookup. These are local serial measurements, not
+production latency guarantees. The [[file:../../../dev/proofs/evidence/publication-recovery-20261030/benchmark-current/grpc-benchmark.log][actual source RPC samples]] are 4967394,
+5073022 and 4479093 ns/op, with 114 Go allocations/op; these include ledger open,
+validation, persistence and transport, rather than isolated gRPC overhead.
+
+Execution/collection PASS is not performance admission. Criterion reports
+historical-baseline regressions for the 16 KiB provider commitment, guarded HTTPS
+execution, consume/dispatch burn, compilation-cache churn and all four server
+encoding cases. Those warnings remain in the raw log. No matched old/new source
+experiment has yet attributed them to code or host/cohort effects.
+
+A bounded follow-up measured the four encoding cases twice with exactly the
+same optimized binary and unchanged thirty-sample, one-second warm-up and
+two-second requested-measurement settings. Run A saves the named baseline
+publication-pair-a; run B compares against it. The
+[[file:../../../dev/proofs/evidence/publication-recovery-20261030/encoding-pair-receipt.json][paired source/binary receipt]] confirms all 150 inputs unchanged and the same
+binary SHA-256 before and after. [[file:../../../dev/proofs/evidence/publication-recovery-20261030/encoding-pair-a.log][Run A]] and [[file:../../../dev/proofs/evidence/publication-recovery-20261030/encoding-pair-b.log][run B]] retain their raw output. A's named
+baseline and B's new samples remain in the adjacent data directories; no full-batch
+sample or earlier failure was replaced.
+
+| Encoding | Full batch mean ns | Same-binary A mean ns | Same-binary B mean ns |
+|----------+--------------------+-----------------------+-----------------------|
+| Protobuf, one event | 343.173 | 170.889 | 176.380 |
+| Protobuf, thirty-two frames | 10573.616 | 8900.944 | 5130.678 |
+| Arrow, one event | 9344.036 | 4936.123 | 4391.329 |
+| Arrow, thirty-two rows | 15774.455 | 9242.518 | 4812.315 |
+
+The same-code differences demonstrate substantial measurement-cohort variability.
+They neither prove that all regressions are noise nor establish a code speedup.
+Performance admission remains NOT_ESTABLISHED pending matched old/new and
+contended source-commit measurements. Safety results, measured execution and
+performance acceptance remain separate verdicts.
+
+This profile retains outcomes indefinitely and does not yet qualify source quotas,
+checkpoint reclamation, hostile filesystem rollback or cross-store restoration.
+Native ledger opening still performs schema initialization and provider dispatch
+still holds its deciding lock through response headers; no unconditional source
+commit latency is claimed. Pending external history/Policy publication, a durable
+source-intent approval bridge and independently anchored recovery remain separate
+implementation obligations. A durable local rejected decision is not evidence of
+those broader protocols.
+The subsequent [[file:59.11-owned-source-worker.org][owned-source worker increment]] removes per-source-RPC connection
+open/close and per-request blocking-task creation while preserving this decision
+protocol. It adds explicit quiescence, fatal-storage handling and observed close;
+the earlier receipts above retain their original source hashes.

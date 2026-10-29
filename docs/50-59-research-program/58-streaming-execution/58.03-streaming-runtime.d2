@@ -1,0 +1,144 @@
+# Core design only. Flagship Terrastruct is the built-in presentation theme.
+vars: {
+  d2-config: {
+    layout-engine: tala
+    theme-id: 3
+    pad: 60
+  }
+}
+classes: {
+  card: {
+    label.near: center-center
+    style.font-size: 18
+    style.border-radius: 8
+    style.stroke-width: 1
+  }
+  lane: {
+    label.near: top-center
+    style.font-size: 16
+    style.bold: true
+    style.fill: "#f6f8fc"
+    style.stroke: "#cbd5e1"
+    style.border-radius: 12
+  }
+}
+title: WEAVER / GOVERNED STREAMING {
+  shape: text
+  near: top-center
+  style.font-size: 28
+  style.bold: true
+}
+semantic: AUTHORING AND CONTROL {
+  class: lane
+  left: 0
+  top: 0
+  width: 400
+  height: 560
+  source: Scheme / POO Governance\nTask and Policy semantics {
+    class: card
+    left: 30
+    top: 70
+    width: 340
+    height: 110
+  }
+  adapter: Go Control Plane\nCloud adapters and route proposals {
+    class: card
+    icon: ../../architecture/diagrams/assets/go.svg
+    icon.near: top-left
+    left: 30
+    top: 230
+    width: 340
+    height: 110
+  }
+  proof: Quint + Lean\nSchedules and safety composition {
+    class: card
+    left: 30
+    top: 390
+    width: 340
+    height: 110
+  }
+}
+owner: RUST EXECUTION {
+  class: lane
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 480
+  top: 0
+  width: 400
+  height: 560
+  admission: Authenticated Admission\nBounded and tracked native jobs {
+    class: card
+    left: 30
+    top: 70
+    width: 340
+    height: 110
+  }
+  ledger: Durable Message Ledger\nOriginal claim and shared hold {
+    class: card
+    shape: cylinder
+    left: 30
+    top: 230
+    width: 340
+    height: 110
+  }
+  guard: Final Cedar Guard\nCurrent Policy, history and fence {
+    class: card
+    left: 30
+    top: 390
+    width: 340
+    height: 110
+  }
+}
+effect: TRANSPORT AND RECOVERY {
+  class: lane
+  left: 960
+  top: 0
+  width: 400
+  height: 560
+  transport: Private Transport Owner\nGuarded TCP / TLS range writes {
+    class: card
+    left: 30
+    top: 70
+    width: 340
+    height: 110
+  }
+  observation: Durable Outcome\nComplete, partial or unknown {
+    class: card
+    left: 30
+    top: 230
+    width: 340
+    height: 110
+  }
+  recovery: Canonical Recovery\nUnknown holds cannot replay {
+    class: card
+    left: 30
+    top: 390
+    width: 340
+    height: 110
+    style.fill: "#fff3e4"
+    style.stroke: "#b67b32"
+  }
+}
+semantic.source -> semantic.adapter: Bind
+semantic.adapter -> owner.admission: Propose
+owner.admission -> owner.ledger: Admit
+owner.ledger -> owner.guard: Consume
+owner.guard -> effect.transport: Guard
+effect.transport -> effect.observation
+effect.observation -> effect.recovery
+closing: Stop Admission\nCancel waiters and retain live writers {
+  class: card
+  left: 80
+  top: 660
+  width: 520
+  height: 95
+}
+drained: Acknowledge Drain\nNo live writer and original holds survive {
+  class: card
+  left: 820
+  top: 660
+  width: 470
+  height: 95
+}
+owner.admission -> closing: Close
+closing -> drained: Quiescent

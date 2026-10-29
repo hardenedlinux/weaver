@@ -1,0 +1,191 @@
+# Core trust, ownership and recovery only. Evidence belongs in Org.
+...@lib/theme
+title: PROTECTED QUORUM PROMISES / COMPLETE PREFIX / ORIGINAL EXECUTION {
+  class: title
+  near: top-center
+}
+semantic: SEMANTICS / CLOUD LIFECYCLE {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  identity: Scheme / original identity\nClaim / budget / history / operation\nCedar constrains the actual effect {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  lifecycle: Go / cloud-native lifecycle\nDiscovery / learners / reconciliation\nReadiness requires qualified recovery {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  unknown: Unknown outcome stays booked\nResolve the same original receipt\nNo replay / regrant / timeout refund {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  goBrand: "" {
+    shape: image
+    icon: assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+witness: PROTECTED SIGNING OWNER {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  promise: Durable full-prefix promise\nPublish before releasing an ack\nExtend only / never forget a choice {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  signer: Exclusive mediated signer\nCurrent incarnation and eligibility\nRetired identities cannot sign again {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  restore: Restored replica is quarantined\nRecover the full deciding image\nUnknown protected history blocks {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+}
+root: RUST / ROOT AND FINAL BROKER {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  joint: Serialized old / joint / new\nBoth quorums certify joint records\nCarry promises and original spent-state {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  barrier: Actual writer isolation\nCommit fence / fresh current read\nElection alone does not stop old IO {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  send: Final broker submission\nOriginal consumption and live Policy\nNo send capability from recovery {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  rustBrand: "" {
+    shape: image
+    icon: assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+obligation: ONE ORIGINAL OBLIGATION {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  prefix: Complete authoritative prefix\nConfiguration and original operations\nNo empty root for a new roster {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  application: Original account application\nRetain consumption tombstones\nUnknown writes remain unresolved {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  receipt: Authentic original result\nSettle the same usage once\nLate receipts do not recreate permits {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+quint: QUINT\nRollback / shared-witness conflict / old signer and roster resurrection {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nDurable witness growth / quorum bridges / original budget conservation {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+semantic.identity -> witness.promise
+semantic.lifecycle -> witness.signer
+witness.promise -> root.joint: bound ack
+witness.signer -> witness.restore: restore
+witness.restore -> witness.promise: qualify
+root.joint -> obligation.prefix
+root.joint -> root.barrier
+root.barrier -> root.send
+root.barrier -> obligation.application
+root.send -> obligation.receipt
+obligation.application -> obligation.receipt

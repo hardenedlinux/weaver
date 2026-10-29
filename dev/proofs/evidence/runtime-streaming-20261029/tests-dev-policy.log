@@ -1,0 +1,64 @@
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+   Compiling weaver-broker v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-broker)
+   Compiling weaver-cli v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.81s
+     Running unittests src/lib.rs (target/debug/deps/weaver_broker-33104d5c17e1cfa5)
+
+running 10 tests
+test https::tests::destination_aliases_credentials_and_http_are_rejected ... ok
+test stream_session::tests::actual_tcp_ranges_preserve_one_message_and_one_hold ... FAILED
+test stream_session::tests::tls_flush_cannot_release_a_tail_after_effective_revocation ... FAILED
+test stream_session::tests::effective_revocation_stops_actual_next_range_and_prefix_reconnect ... FAILED
+test stream_session::tests::revoke_after_range_consumption_proves_zero_call_and_recovers_original_message ... FAILED
+test stream_session::tests::recovered_old_worker_socket_cannot_use_new_custody ... FAILED
+test stream_session::tests::native_partial_write_freezes_tail_and_never_refunds ... FAILED
+test enforce_asp_rust_gate ... ok
+test https::tests::partial_transport_failure_is_unknown_and_never_retried ... ok
+test https::tests::redirect_is_observed_without_following_or_refunding ... ok
+
+failures:
+
+---- stream_session::tests::actual_tcp_ranges_preserve_one_message_and_one_hold stdout ----
+
+thread 'stream_session::tests::actual_tcp_ranges_preserve_one_message_and_one_hold' (19534630) panicked at crates/weaver-broker/src/../tests/unit/stream_wire.rs:69:10:
+queue: Denied
+
+---- stream_session::tests::tls_flush_cannot_release_a_tail_after_effective_revocation stdout ----
+
+thread 'stream_session::tests::tls_flush_cannot_release_a_tail_after_effective_revocation' (19534635) panicked at crates/weaver-broker/src/../tests/unit/stream_wire.rs:69:10:
+queue: Denied
+
+---- stream_session::tests::effective_revocation_stops_actual_next_range_and_prefix_reconnect stdout ----
+
+thread 'stream_session::tests::effective_revocation_stops_actual_next_range_and_prefix_reconnect' (19534631) panicked at crates/weaver-broker/src/../tests/unit/stream_wire.rs:69:10:
+queue: Denied
+
+---- stream_session::tests::revoke_after_range_consumption_proves_zero_call_and_recovers_original_message stdout ----
+
+thread 'stream_session::tests::revoke_after_range_consumption_proves_zero_call_and_recovers_original_message' (19534634) panicked at crates/weaver-broker/src/../tests/unit/stream_wire.rs:69:10:
+queue: Denied
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- stream_session::tests::recovered_old_worker_socket_cannot_use_new_custody stdout ----
+
+thread 'stream_session::tests::recovered_old_worker_socket_cannot_use_new_custody' (19534633) panicked at crates/weaver-broker/src/../tests/unit/stream_wire.rs:69:10:
+queue: Denied
+
+---- stream_session::tests::native_partial_write_freezes_tail_and_never_refunds stdout ----
+
+thread 'stream_session::tests::native_partial_write_freezes_tail_and_never_refunds' (19534632) panicked at crates/weaver-broker/src/../tests/unit/stream_wire.rs:69:10:
+queue: Denied
+
+
+failures:
+    stream_session::tests::actual_tcp_ranges_preserve_one_message_and_one_hold
+    stream_session::tests::effective_revocation_stops_actual_next_range_and_prefix_reconnect
+    stream_session::tests::native_partial_write_freezes_tail_and_never_refunds
+    stream_session::tests::recovered_old_worker_socket_cannot_use_new_custody
+    stream_session::tests::revoke_after_range_consumption_proves_zero_call_and_recovers_original_message
+    stream_session::tests::tls_flush_cannot_release_a_tail_after_effective_revocation
+
+test result: FAILED. 4 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.01s
+
+error: test failed, to rerun pass `-p weaver-broker --lib`

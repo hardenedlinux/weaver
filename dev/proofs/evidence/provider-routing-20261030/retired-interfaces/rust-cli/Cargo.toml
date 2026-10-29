@@ -1,0 +1,16 @@
+[package]
+name = "weaver-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+weaver-contracts.workspace = true
+weaver-ledger.workspace = true
+weaver-execution.workspace = true
+weaver-policy.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+[dev-dependencies]
+asp-rust.workspace = true
+[lints]
+workspace = true

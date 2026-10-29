@@ -1,0 +1,15 @@
+'Weaver.LlmRouting.selected_route_fits_source_reservation' depends on axioms: [propext]
+'Weaver.LlmRouting.every_new_proposal_is_eligible' depends on axioms: [propext]
+'Weaver.LlmRouting.initialized_audit' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRouting.actual_dispatch_rechecks_target' does not depend on any axioms
+'Weaver.LlmRouting.ranked_proposal_has_eligible_minimum' depends on axioms: [propext]
+'Weaver.LlmRouting.selected_cost_within_original_escrow' does not depend on any axioms
+'Weaver.LlmRouting.soft_metrics_do_not_change_authority' does not depend on any axioms
+'Weaver.LlmRouting.history_denial_cannot_be_undone' does not depend on any axioms
+'Weaver.LlmRouting.dispatch_record_never_disappears' depends on axioms: [propext]
+'Weaver.LlmRouting.one_provider_admission_per_root' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRouting.one_response_source_per_root' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRouting.original_account_capacity_survives' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmRouting.original_claim_is_not_recreated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmRouting.duplicate_root_dispatch_counterexample' depends on axioms: [propext]
+'Weaver.LlmRouting.stale_catalog_plan_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,53 @@
+proofs/lean/LlmAttemptLedger.lean:122:3: error: unexpected token 'prefix'; expected '_' or identifier
+proofs/lean/LlmAttemptLedger.lean:122:2: error: Missing alternative name: Expected `route`, `retire`, `prefix`, `commitWinner`, `finalUsage`, `restart`, `close`, or `lostReplyOrTimeout`
+proofs/lean/LlmAttemptLedger.lean:108:2: error: Alternative `route` has not been provided
+proofs/lean/LlmAttemptLedger.lean:108:2: error: Alternative `retire` has not been provided
+proofs/lean/LlmAttemptLedger.lean:108:2: error: Alternative `prefix` has not been provided
+proofs/lean/LlmAttemptLedger.lean:108:2: error: Alternative `commitWinner` has not been provided
+proofs/lean/LlmAttemptLedger.lean:108:2: error: Alternative `finalUsage` has not been provided
+proofs/lean/LlmAttemptLedger.lean:108:2: error: Alternative `restart` has not been provided
+proofs/lean/LlmAttemptLedger.lean:108:2: error: Alternative `close` has not been provided
+proofs/lean/LlmAttemptLedger.lean:108:2: error: Alternative `lostReplyOrTimeout` has not been provided
+proofs/lean/LlmAttemptLedger.lean:122:10: error: unexpected identifier; expected ':'
+proofs/lean/LlmAttemptLedger.lean:151:75: error: Type mismatch
+  some id
+has type
+  Option (?m.7 → ?m.7)
+but is expected to have type
+  Option Nat
+proofs/lean/LlmAttemptLedger.lean:151:97: error: Type mismatch
+  some id
+has type
+  Option (?m.9 → ?m.9)
+but is expected to have type
+  Option Nat
+proofs/lean/LlmAttemptLedger.lean:175:82: error: Application type mismatch: The argument
+  id
+has type
+  ?m.6 → ?m.6
+but is expected to have type
+  Nat
+in the application
+  t.calls id
+proofs/lean/LlmAttemptLedger.lean:175:95: error: Application type mismatch: The argument
+  id
+has type
+  ?m.7 → ?m.7
+but is expected to have type
+  Nat
+in the application
+  s.calls id
+'Weaver.LlmAttemptLedger.initialized_safe' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAttemptLedger.allocated_never_reopens' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAttemptLedger.each_child_invoked_at_most_once' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAttemptLedger.finite_attempt_budget_is_bounded' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAttemptLedger.winner_never_switches' does not depend on any axioms
+'Weaver.LlmAttemptLedger.unknown_usage_prevents_close' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAttemptLedger.unsettled_attempt_prevents_close' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAttemptLedger.new_allocation_requires_sponsored_retry' does not depend on any axioms
+'Weaver.LlmAttemptLedger.invocation_rechecks_current_route' depends on axioms: [sorryAx]
+'Weaver.LlmAttemptLedger.child_total_fits_original_root' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmAttemptLedger.shared_account_capacity_remains_booked' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LlmAttemptLedger.original_root_claim_remains_unique' depends on axioms: [propext, Classical.choice, Quot.sound]

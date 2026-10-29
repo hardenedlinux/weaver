@@ -1,0 +1,125 @@
+{
+  "modules": [
+    {
+      "module": "LogicalMessageAuthority",
+      "path": "specs/lean/LogicalMessageAuthority.lean",
+      "sha256": "649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca",
+      "imports": [
+        "Std"
+      ]
+    },
+    {
+      "module": "SharedMessageBudget",
+      "path": "specs/lean/SharedMessageBudget.lean",
+      "sha256": "be3f2237e83c6d1ecf824795919d7278654aa05012d30a8c5363f1bc24a3904f",
+      "imports": [
+        "LogicalMessageAuthority"
+      ]
+    },
+    {
+      "module": "FiniteDomainMigration",
+      "path": "specs/lean/FiniteDomainMigration.lean",
+      "sha256": "89a16ca38a6b6e21e4fd4892c26043c0d4f68881c7c4626a2e648cadaabf1c2d",
+      "imports": [
+        "SharedMessageBudget"
+      ]
+    },
+    {
+      "module": "GatewayHeadCAS",
+      "path": "proofs/lean/GatewayHeadCAS.lean",
+      "sha256": "a8f03aa567aef9376254cc04e4539ba19df072c0693693d968edf115a133f828",
+      "imports": [
+        "FiniteDomainMigration"
+      ]
+    },
+    {
+      "module": "BrokerConsumptionQueue",
+      "path": "proofs/lean/BrokerConsumptionQueue.lean",
+      "sha256": "3c9f52a3fd90e965b9a96e653a40fd29e2e7942d76899167cb7d0be8d297ac6f",
+      "imports": [
+        "GatewayHeadCAS"
+      ]
+    },
+    {
+      "module": "LogicalRangeRecovery",
+      "path": "proofs/lean/LogicalRangeRecovery.lean",
+      "sha256": "5b5c48048213d702a181aed1bb96e21fb251bc7bc459674423241e118133efa4",
+      "imports": [
+        "BrokerConsumptionQueue"
+      ]
+    },
+    {
+      "module": "LlmRouting",
+      "path": "proofs/lean/LlmRouting.lean",
+      "sha256": "222f1af3fae8368fcf384ffebb28bd725fedeccab5f00c033287a0a17e3769d9",
+      "imports": [
+        "LogicalRangeRecovery"
+      ]
+    },
+    {
+      "module": "LlmAttemptLedger",
+      "path": "proofs/lean/LlmAttemptLedger.lean",
+      "sha256": "0e2492282f799210084c7c331f5d6303b05fee8b7fa960147a0e351d06da82cc",
+      "imports": [
+        "LlmRouting"
+      ]
+    },
+    {
+      "module": "LlmSemanticContract",
+      "path": "proofs/lean/LlmSemanticContract.lean",
+      "sha256": "a2fdbbaf7b56cb7c2f8a9581045dfc33da74f5c460530982524b438c2bca3cf1",
+      "imports": [
+        "LlmAttemptLedger"
+      ]
+    },
+    {
+      "module": "LlmAuthoritativeScope",
+      "path": "proofs/lean/LlmAuthoritativeScope.lean",
+      "sha256": "9f29996b8651270ac6ddf91bfdd1c1e8252cf1abfe81c140b325cf75ba36ef99",
+      "imports": [
+        "LlmSemanticContract"
+      ]
+    },
+    {
+      "module": "LlmRegistryPublication",
+      "path": "proofs/lean/LlmRegistryPublication.lean",
+      "sha256": "3a77d696cb08ec6419b577de2cea90c6b4747fca6224796d420c98d17bc8fcba",
+      "imports": [
+        "LlmAuthoritativeScope"
+      ]
+    },
+    {
+      "module": "LlmRecoveryCAS",
+      "path": "proofs/lean/LlmRecoveryCAS.lean",
+      "sha256": "d242ba4832ba5436b19470836fbbe0d75b8d858bab6123585b2a5c7f3b77ddf0",
+      "imports": [
+        "LlmRegistryPublication"
+      ]
+    },
+    {
+      "module": "LlmPolicyPublication",
+      "path": "proofs/lean/LlmPolicyPublication.lean",
+      "sha256": "302b7b322c955ab005c8c6a2f71a926fb5b8617e1761ed435a32cc0a17c2848e",
+      "imports": [
+        "LlmRecoveryCAS"
+      ]
+    },
+    {
+      "module": "LlmPolicyContinuation",
+      "path": "proofs/lean/LlmPolicyContinuation.lean",
+      "sha256": "fd49f4d88b22349e18efc7ec1b43e500f04828f7334a2ddb2be420285dd2cbe2",
+      "imports": [
+        "LlmPolicyPublication"
+      ]
+    },
+    {
+      "module": "LlmCanonicalRegistry",
+      "path": "proofs/lean/LlmCanonicalRegistry.lean",
+      "sha256": "325ff6ecd404cdee29bfbae4c25334b8a9a78712f6d209068c0cae66aee2a6a6",
+      "imports": [
+        "LlmPolicyContinuation"
+      ]
+    }
+  ],
+  "scope": "Software authority only; Std belongs to the recorded toolchain"
+}

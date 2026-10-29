@@ -1,0 +1,19 @@
+proofs/lean/LlmCheckpointTruncation.lean:249:31: error(lean.invalidField): Invalid field `symm`: The environment does not contain `List.Mem.symm`, so it is not possible to project the field `symm` from an expression
+  newOther
+of type `List.Mem other [added]`
+'Weaver.LlmCheckpointTruncation.logical_projection' does not depend on any axioms
+'Weaver.LlmCheckpointTruncation.initialized_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCheckpointTruncation.actual_wal_composition' does not depend on any axioms
+'Weaver.LlmCheckpointTruncation.publication_floor_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCheckpointTruncation.published_checkpoint_retained' does not depend on any axioms
+'Weaver.LlmCheckpointTruncation.active_requires_current_checkpoint' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCheckpointTruncation.truncate_preserves_logical_account' does not depend on any axioms
+'Weaver.LlmCheckpointTruncation.published_image_is_complete' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCheckpointTruncation.old_parent_cannot_publish' does not depend on any axioms
+'Weaver.LlmCheckpointTruncation.original_reservation_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCheckpointTruncation.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCheckpointTruncation.new_publication_requires_complete_body' does not depend on any axioms
+'Weaver.LlmCheckpointTruncation.truncation_preserves_replay' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCheckpointTruncation.publication_has_no_financial_effect' does not depend on any axioms
+'Weaver.LlmCheckpointTruncation.old_checkpoint_snapshot_stays_closed' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmCheckpointTruncation.checkpoint_ids_unique' depends on axioms: [propext, sorryAx, Quot.sound]

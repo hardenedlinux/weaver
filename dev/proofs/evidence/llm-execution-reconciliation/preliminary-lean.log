@@ -1,0 +1,36 @@
+proofs/lean/LlmExecutionReconciliation.lean:87:3: error: unexpected token 'seal'; expected '_' or identifier
+proofs/lean/LlmExecutionReconciliation.lean:87:2: error: Missing alternative name: Expected `seal`, `negative`, `terminal`, `applySource`, `applyUsage`, `applyAccount`, `restart`, `recover`, or `queryOrLostReply`
+proofs/lean/LlmExecutionReconciliation.lean:85:2: error: Alternative `seal` has not been provided
+proofs/lean/LlmExecutionReconciliation.lean:85:2: error: Alternative `negative` has not been provided
+proofs/lean/LlmExecutionReconciliation.lean:85:2: error: Alternative `terminal` has not been provided
+proofs/lean/LlmExecutionReconciliation.lean:85:2: error: Alternative `applySource` has not been provided
+proofs/lean/LlmExecutionReconciliation.lean:85:2: error: Alternative `applyUsage` has not been provided
+proofs/lean/LlmExecutionReconciliation.lean:85:2: error: Alternative `applyAccount` has not been provided
+proofs/lean/LlmExecutionReconciliation.lean:85:2: error: Alternative `restart` has not been provided
+proofs/lean/LlmExecutionReconciliation.lean:85:2: error: Alternative `recover` has not been provided
+proofs/lean/LlmExecutionReconciliation.lean:85:2: error: Alternative `queryOrLostReply` has not been provided
+proofs/lean/LlmExecutionReconciliation.lean:87:9: error(lean.unknownIdentifier): Unknown constant `worker`
+proofs/lean/LlmExecutionReconciliation.lean:87:43: error: unexpected token '=>'; expected command
+proofs/lean/LlmExecutionReconciliation.lean:131:2: error: Invalid target: Index in target's type is not a variable (consider using the `cases` tactic instead)
+  s.source
+proofs/lean/LlmExecutionReconciliation.lean:135:60: error(lean.unknownIdentifier): Unknown identifier `Relation.ReflTransGen`
+proofs/lean/LlmExecutionReconciliation.lean:149:9: error(lean.unknownIdentifier): Unknown identifier `Relation.ReflTransGen`
+proofs/lean/LlmExecutionReconciliation.lean:143:8: error: (kernel) unknown constant 'Weaver.LlmExecutionReconciliation.execution_projection'
+'Weaver.LlmExecutionReconciliation.initialized_safe' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmExecutionReconciliation.source_projection' does not depend on any axioms
+'Weaver.LlmExecutionReconciliation.source_composition' depends on axioms: [sorryAx]
+'Weaver.LlmExecutionReconciliation.execution_projection' does not depend on any axioms
+'Weaver.LlmExecutionReconciliation.actual_executor_composition' depends on axioms: [propext,
+ Weaver.LlmExecutionReconciliation.actual_executor_composition]
+'Weaver.LlmExecutionReconciliation.negative_needs_dispatch_absence' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LlmExecutionReconciliation.no_source_zero_premise' does not depend on any axioms
+'Weaver.LlmExecutionReconciliation.unknown_retains_full_reservation' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmExecutionReconciliation.source_terminal_precedes_release' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmExecutionReconciliation.release_conserves_original_bound' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmExecutionReconciliation.decision_immutable' depends on axioms: [propext]
+'Weaver.LlmExecutionReconciliation.account_application_immutable' depends on axioms: [propext]
+'Weaver.LlmExecutionReconciliation.sealed_execution_cannot_rearm' does not depend on any axioms
+'Weaver.LlmExecutionReconciliation.restart_retains_records' does not depend on any axioms

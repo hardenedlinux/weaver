@@ -1,0 +1,108 @@
+proofs/lean/LlmRegistryPublication.lean:5:11: error: unexpected token ':'; expected identifier
+proofs/lean/LlmRegistryPublication.lean:9:10: error: unexpected identifier; expected 'instance'
+proofs/lean/LlmRegistryPublication.lean:12:11: error: unexpected token ':'; expected identifier
+proofs/lean/LlmRegistryPublication.lean:15:10: error: unexpected identifier; expected 'instance'
+proofs/lean/LlmRegistryPublication.lean:18:10: error: unexpected identifier; expected prec
+proofs/lean/LlmRegistryPublication.lean:21:10: error: unexpected identifier; expected 'instance'
+proofs/lean/LlmRegistryPublication.lean:26:11: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Decidable (a✝¹ = b✝¹)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+proofs/lean/LlmRegistryPublication.lean:51:65: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:51:83: error: unexpected token ':'; expected command
+proofs/lean/LlmRegistryPublication.lean:52:25: error: unexpected token '∧'; expected identifier
+proofs/lean/LlmRegistryPublication.lean:52:56: error: unexpected token '∧'; expected identifier
+proofs/lean/LlmRegistryPublication.lean:56:47: error: Invalid `⟨...⟩` notation: The expected type `Nat` has more than one constructor
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+proofs/lean/LlmRegistryPublication.lean:59:42: error(lean.invalidField): Invalid field `blob`: The environment does not contain `Weaver.LlmRegistryPublication.Binding.blob`, so it is not possible to project the field `blob` from an expression
+  b
+of type `Binding`
+proofs/lean/LlmRegistryPublication.lean:60:30: error(lean.invalidField): Invalid field `record`: The environment does not contain `Weaver.LlmRegistryPublication.Binding.record`, so it is not possible to project the field `record` from an expression
+  b
+of type `Binding`
+proofs/lean/LlmRegistryPublication.lean:66:64: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:66:82: error: unexpected token ':'; expected command
+proofs/lean/LlmRegistryPublication.lean:67:64: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:74:21: error: unexpected token 'namespace'; expected '_' or identifier
+proofs/lean/LlmRegistryPublication.lean:74:38: error: unexpected token ':'; expected command
+proofs/lean/LlmRegistryPublication.lean:76:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:80:60: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:82:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:86:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:91:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:93:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:94:118: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:97:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:99:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:101:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:103:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:104:116: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:105:118: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:107:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:110:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:113:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:120:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:125:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:127:116: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:135:21: error: unexpected token 'namespace'; expected '_' or identifier
+proofs/lean/LlmRegistryPublication.lean:135:38: error: unexpected token ':'; expected command
+proofs/lean/LlmRegistryPublication.lean:136:112: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:137:108: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:138:104: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:139:103: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:141:52: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:141:70: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:142:111: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:143:48: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:185:111: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:185:129: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:186:48: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:191:115: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:191:133: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:202:122: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:202:140: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:208:127: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:208:145: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:212:119: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:212:137: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:215:123: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:215:141: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:221:77: error(lean.invalidField): Invalid field `executionRevision`: The environment does not contain `Weaver.LlmRegistryPublication.Image.executionRevision`, so it is not possible to project the field `executionRevision` from an expression
+  p.image
+of type `Image`
+proofs/lean/LlmRegistryPublication.lean:222:25: error(lean.unknownIdentifier): Unknown constant `Weaver.LlmRegistryPublication.Image.executionRevision`
+proofs/lean/LlmRegistryPublication.lean:221:120: error: unsolved goals
+s : State
+p : Permit
+gate : Gate s p
+old : sorry ≠ s.revision
+⊢ False
+proofs/lean/LlmRegistryPublication.lean:232:124: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:232:142: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:236:126: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:236:144: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:239:134: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:239:152: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:245:126: error: unexpected token 'namespace'; expected ')'
+proofs/lean/LlmRegistryPublication.lean:245:144: error: unexpected identifier; expected command
+proofs/lean/LlmRegistryPublication.lean:247:111: error: unexpected identifier; expected command
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.initialized_safe' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.execution_projection' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.intent_is_never_replaced' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.certified_requires_exact_journal' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.one_original_publication' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.active_requires_current_join' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.stale_worker_cannot_use' depends on axioms: [sorryAx]
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.stale_execution_snapshot_cannot_use' depends on axioms: [sorryAx]
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.lost_reply_preserves_binding' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.snapshot_install_never_restores_execution' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.original_claim_remains_unique' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.original_allowance_is_preserved' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.original_scope_domains_survive_recovery' does not depend on any axioms
+'Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.unknown_usage_blocks_settlement' does not depend on any axioms
+proofs/lean/LlmRegistryPublication.lean:268:0: error: Invalid name after `end`: Expected `vector.vector`, but found `Weaver.LlmRegistryPublication`
+
+Hint: If you meant to end the outer scope(s) `Weaver.LlmRegistryPublication`, you must end all the intervening scopes `Weaver.LlmRegistryPublication.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector.vector`:
+  e̵n̵d̵ ̵W̵e̵a̵v̵e̵r̵.̵L̵l̵m̵R̵e̵g̵i̵s̵t̵r̵y̵P̵u̵b̵l̵i̵c̵a̵t̵i̵o̵n̵e̲n̲d̲
+  ̲ ̲ ̲W̲e̲a̲v̲e̲r̲.̲L̲l̲m̲R̲e̲g̲i̲s̲t̲r̲y̲P̲u̲b̲l̲i̲c̲a̲t̲i̲o̲n̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲.̲v̲e̲c̲t̲o̲r̲

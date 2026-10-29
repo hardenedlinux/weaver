@@ -1,0 +1,14 @@
+'Weaver.LlmAttemptLedger.initialized_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAttemptLedger.allocated_never_reopens' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAttemptLedger.each_child_invoked_at_most_once' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAttemptLedger.finite_attempt_budget_is_bounded' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAttemptLedger.winner_never_switches' depends on axioms: [propext]
+'Weaver.LlmAttemptLedger.unknown_usage_prevents_close' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAttemptLedger.unsettled_attempt_prevents_close' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAttemptLedger.new_allocation_requires_sponsored_retry' does not depend on any axioms
+'Weaver.LlmAttemptLedger.invocation_rechecks_current_route' does not depend on any axioms
+'Weaver.LlmAttemptLedger.child_total_fits_original_root' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAttemptLedger.shared_account_capacity_remains_booked' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LlmAttemptLedger.original_root_claim_remains_unique' depends on axioms: [propext, Classical.choice, Quot.sound]

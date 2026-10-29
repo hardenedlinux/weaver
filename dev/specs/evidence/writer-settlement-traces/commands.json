@@ -1,0 +1,258 @@
+[
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-writer-final-proof/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "log": "LogicalMessageAuthority.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 4.499
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-writer-final-proof/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "log": "SharedMessageBudget.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 1.911
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-writer-final-proof/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "log": "FiniteDomainMigration.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 1.987
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-writer-final-proof/AnchoredRecoveryAndEgress.olean",
+      "specs/lean/AnchoredRecoveryAndEgress.lean"
+    ],
+    "log": "AnchoredRecoveryAndEgress.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 2.02
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-writer-final-proof/ComposedGatewayLifecycle.olean",
+      "specs/lean/ComposedGatewayLifecycle.lean"
+    ],
+    "log": "ComposedGatewayLifecycle.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 1.593
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-writer-final-proof/FiniteStreamManifest.olean",
+      "specs/lean/FiniteStreamManifest.lean"
+    ],
+    "log": "FiniteStreamManifest.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 1.651
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-writer-final-proof/DriverCompletionRecovery.olean",
+      "specs/lean/DriverCompletionRecovery.lean"
+    ],
+    "log": "DriverCompletionRecovery.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 0.908
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-writer-final-proof/WriterSettlementClosure.olean",
+      "specs/lean/WriterSettlementClosure.lean"
+    ],
+    "log": "WriterSettlementClosure.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 1.005
+  },
+  {
+    "command": [
+      "quint",
+      "typecheck",
+      "specs/quint/WriterSettlementClosure.qnt"
+    ],
+    "log": "typecheck.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 2.809
+  },
+  {
+    "command": [
+      "quint",
+      "test",
+      "specs/quint/WriterSettlementClosure.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--out-itf",
+      "specs/evidence/writer-settlement-traces/final/{test}-{seq}.itf.json"
+    ],
+    "log": "tests.log",
+    "watchdog_seconds": 30,
+    "exit": 0,
+    "elapsed_seconds": 4.371
+  },
+  {
+    "command": [
+      "quint",
+      "run",
+      "specs/quint/WriterSettlementClosure.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "emptyInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "23",
+      "--verbosity",
+      "1"
+    ],
+    "log": "emptyInit.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 3.487
+  },
+  {
+    "command": [
+      "quint",
+      "run",
+      "specs/quint/WriterSettlementClosure.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "singletonInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "23",
+      "--verbosity",
+      "1"
+    ],
+    "log": "singletonInit.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 3.38
+  },
+  {
+    "command": [
+      "quint",
+      "run",
+      "specs/quint/WriterSettlementClosure.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "23",
+      "--verbosity",
+      "1"
+    ],
+    "log": "init.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 3.299
+  },
+  {
+    "command": [
+      "quint",
+      "run",
+      "specs/quint/WriterSettlementClosure.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "largerInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "23",
+      "--verbosity",
+      "1"
+    ],
+    "log": "largerInit.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 6.004
+  }
+]

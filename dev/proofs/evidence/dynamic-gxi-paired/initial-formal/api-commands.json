@@ -1,0 +1,73 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 1,
+    "sourceSha256": "a4ccc2118b5053eb461dc22ff88570f55ac1593e1566bef00488d4c0a554b9fe",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.074
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "f0a660aa7592c56e0396fb620fdc69a29aa8c79e9c158a834589343b39b809ee",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 1.158
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "failedFirstIsRetainedTest",
+      "originalDeadlineTest",
+      "exactlyAtDeadlineTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.016
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "liveResourceBlocksPassTest",
+      "markerAloneBlocksPassTest",
+      "duplicateSampleRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.006
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "freshInodeIsNotHostColdTest",
+      "changedObjectsRejectPairTest",
+      "changedCompilerRejectPairTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.005
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "overwriteFailureCounterexampleTest",
+      "discardColdFailureCounterexampleTest",
+      "fewerImagesCanStillBeLateTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.005
+  }
+]

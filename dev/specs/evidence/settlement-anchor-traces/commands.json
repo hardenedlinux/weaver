@@ -1,0 +1,327 @@
+[
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-settlement-anchor-final-proof/LogicalMessageAuthority.olean",
+      "specs/lean/LogicalMessageAuthority.lean"
+    ],
+    "log": "LogicalMessageAuthority.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 2.495
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-settlement-anchor-final-proof/SharedMessageBudget.olean",
+      "specs/lean/SharedMessageBudget.lean"
+    ],
+    "log": "SharedMessageBudget.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 0.726
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-settlement-anchor-final-proof/FiniteDomainMigration.olean",
+      "specs/lean/FiniteDomainMigration.lean"
+    ],
+    "log": "FiniteDomainMigration.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 0.791
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-settlement-anchor-final-proof/AnchoredRecoveryAndEgress.olean",
+      "specs/lean/AnchoredRecoveryAndEgress.lean"
+    ],
+    "log": "AnchoredRecoveryAndEgress.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 0.783
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-settlement-anchor-final-proof/ComposedGatewayLifecycle.olean",
+      "specs/lean/ComposedGatewayLifecycle.lean"
+    ],
+    "log": "ComposedGatewayLifecycle.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 0.684
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-settlement-anchor-final-proof/FiniteStreamManifest.olean",
+      "specs/lean/FiniteStreamManifest.lean"
+    ],
+    "log": "FiniteStreamManifest.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 0.953
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-settlement-anchor-final-proof/DriverCompletionRecovery.olean",
+      "specs/lean/DriverCompletionRecovery.lean"
+    ],
+    "log": "DriverCompletionRecovery.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 0.619
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-settlement-anchor-final-proof/WriterSettlementClosure.olean",
+      "specs/lean/WriterSettlementClosure.lean"
+    ],
+    "log": "WriterSettlementClosure.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 0.719
+  },
+  {
+    "command": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/private/tmp/weaver-settlement-anchor-final-proof/SettlementAnchorRecovery.olean",
+      "specs/lean/SettlementAnchorRecovery.lean"
+    ],
+    "log": "SettlementAnchorRecovery.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 0.625
+  },
+  {
+    "command": [
+      "quint",
+      "typecheck",
+      "specs/quint/SettlementAnchorRecovery.qnt"
+    ],
+    "log": "typecheck.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 2.677
+  },
+  {
+    "command": [
+      "quint",
+      "test",
+      "specs/quint/SettlementAnchorRecovery.qnt",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--out-itf",
+      "specs/evidence/settlement-anchor-traces/final/{test}-{seq}.itf.json"
+    ],
+    "log": "tests.log",
+    "watchdog_seconds": 30,
+    "exit": 0,
+    "elapsed_seconds": 5.497
+  },
+  {
+    "command": [
+      "quint",
+      "run",
+      "specs/quint/SettlementAnchorRecovery.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "emptyInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "31",
+      "--verbosity",
+      "1"
+    ],
+    "log": "emptyInit.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 3.151
+  },
+  {
+    "command": [
+      "quint",
+      "run",
+      "specs/quint/SettlementAnchorRecovery.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "singletonInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "31",
+      "--verbosity",
+      "1"
+    ],
+    "log": "singletonInit.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 3.417
+  },
+  {
+    "command": [
+      "quint",
+      "run",
+      "specs/quint/SettlementAnchorRecovery.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "init",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "31",
+      "--verbosity",
+      "1"
+    ],
+    "log": "init.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 4.001
+  },
+  {
+    "command": [
+      "quint",
+      "run",
+      "specs/quint/SettlementAnchorRecovery.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "largerInit",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "31",
+      "--verbosity",
+      "1"
+    ],
+    "log": "largerInit.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 5.788
+  },
+  {
+    "command": [
+      "quint",
+      "run",
+      "specs/quint/SettlementAnchorRecovery.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "anchored",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "31",
+      "--verbosity",
+      "1"
+    ],
+    "log": "anchored.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 4.309
+  },
+  {
+    "command": [
+      "quint",
+      "run",
+      "specs/quint/SettlementAnchorRecovery.qnt",
+      "--backend",
+      "typescript",
+      "--init",
+      "accepted",
+      "--step",
+      "step",
+      "--invariant",
+      "safety",
+      "--max-samples",
+      "10",
+      "--max-steps",
+      "25",
+      "--seed",
+      "31",
+      "--verbosity",
+      "1"
+    ],
+    "log": "accepted.log",
+    "watchdog_seconds": 20,
+    "exit": 0,
+    "elapsed_seconds": 3.975
+  }
+]

@@ -1,0 +1,175 @@
+#+title: Weaver Committed Result Recovery and Source Projection CAS
+#+language: en
+#+options: toc:3
+
+* The missing result boundary
+
+Category 19 serializes canonical identity, original source consumption and shared
+exposure, but its decision table stores requests. A persisted request cannot tell
+recovery which concrete before/after ledger state was committed. Re-running Policy,
+re-consuming the nonce or incrementing the account again would create a new effect.
+This extension records immutable exact results and models participant application.
+
+The chosen baseline remains one non-forking authoritative journal per connected
+identity/account/history domain. Its committed result owns the source transition.
+Source and account stores materialize that result; they do not independently decide
+consumption. The journal contains enough authenticated data to reconstruct the
+result without invoking the provider or re-evaluating the original operation.
+
+* Result commitment contract
+
+| Field | Required binding |
+|-------+------------------|
+| Authority identity | Original source namespace, journal identity, inherited committed prefix and schema/codec identity |
+| Transaction | Exact pending request ID/body, canonical origin/family, original claim, profile and account/history references |
+| Read side | Parent commit, full source/Policy/history cut, expected before-state commitments and namespace absence reads |
+| Result side | Exact source state after the original transition, nonce/spent-state, identity indexes, reservation/exposure and immutable decision outcome |
+| Position | Committed journal position and parent commitment; append order cannot be inferred from a participant revision |
+| Projection footprint | Required source/account/history participants and exact field subsets, expected before images and after images |
+| Broker operation | Original durable operation reference and immutable message/range/payload/route binding; no new-send instruction on replay |
+
+The Lean model stores typed exact before/after bodies, including the original
+source value, origin/reverse/alias indexes, decisions, spent-state and exposure.
+Native commitments must bind canonical bytes to all these fields with domain
+separation and attributable authority evidence. An unauthenticated digest, an
+application response or matching request ID alone is insufficient. Cryptographic
+collision resistance and canonical codec conformance remain qualification premises.
+
+Result bytes must be durable/recoverable before a commit is externally acknowledged
+or an application permission is released. If a separate blob store is used, the
+journal decision must bind an already durable immutable object and its availability
+contract. A dangling committed digest blocks recovery; it never authorizes result
+reconstruction by executing the request again. Blob persistence, journal commit and
+acknowledgment ordering need native crash-barrier tests.
+
+* Commit, apply and observe are separate transitions
+
+** Commit the original transition once
+
+Stage the exact original pending body. At the authority linearization point,
+validate the current owner/source/Policy read set, run the actual admitted pure
+source transition and append its exact result with the new authoritative state.
+The new result and source/account admission are one commit, not two writes with
+separate success semantics. Provider I/O is outside this transaction.
+
+A commit response may be lost before either participant applies anything. The
+original nonce is already spent and exposure remains reserved/charged at authority.
+The recovery path queries the exact transaction/body and returns the original
+result. A new transaction ID, new alias, SDK retry or reconnect cannot consume the
+same original claim again. Pending entries and outcome tombstones retain their
+original meaning after owner handover and compaction.
+
+** Apply an immutable result with participant CAS
+
+Each participant stores a cursor and its complete applied result image. An
+application validates all of the following in one local atomic operation:
+
+1. The caller has the current logical mutation fence and a qualified authority prefix.
+2. The exact result is committed at the next applicable position for this participant.
+3. The participant cursor and complete current before-image match the result's read side.
+4. The result's after-image and applied result identity are published together durably.
+
+The application assigns the exact after-state. It does not add the amount again,
+call Cedar again, allocate a new origin or invoke a provider. A duplicate cursor
+application performs no mutation: query the existing application receipt, compare
+its result identity/body and return observation. A CAS mismatch blocks and enters
+reconciliation; it is not a reason to recompute a new result.
+
+The reference model uses full images and the same required source/account prefix.
+A native backend may project disjoint field subsets or skip irrelevant records
+only after proving authenticated participant footprints and predecessor chains.
+Independent per-store cursors with unproved gaps cannot implement this baseline.
+Within a participant, multi-row data must remain invisible until one atomic marker
+binds the complete verified result and cursor. Torn field writes cannot count as
+an applied prefix. If that storage guarantee is unavailable, close the participant.
+
+** Observe without authorizing execution
+
+Commit acknowledgments, application acknowledgments and late callbacks are
+historical observations. None opens the broker gate or releases unknown exposure.
+The model's observe transition leaves authority and application state unchanged.
+A successful historical query may come from an old result generation; any new
+mutation still needs the current owner fence.
+
+* Partial projection and recovery ordering
+
+| Failure point | Authoritative fact | Safe continuation |
+|---------------+--------------------+-------------------|
+| Commit reply lost, no projections applied | Original transition committed; nonce spent; exposure held | Query exact result and apply it; never consume again |
+| Source CAS applied, account CAS not applied | Original result unchanged; participant join incomplete | Replay account result under the current fence; keep final queue closed |
+| Account CAS applied, reply lost | Recorded application may already be durable | Read exact application receipt/cursor; do not add an account delta |
+| Cursor advanced but fields torn | Participant cannot prove a complete result image | Quarantine, recover a verified prefix and replay; do not activate |
+| Source/account snapshots come from different positions | Authority still owns the single current result chain | Restore verified prefix images while closed, then replay in order |
+| Result body missing or commitment mismatched | Commit cannot be safely materialized | Keep pending/unknown obligations and exposure; no reconstruction by sending |
+| Owner restarts with old apply permits | Result can remain valid; mutation permit is retired | New owner qualifies prefix and applies historical results with its current fence |
+| Old owner returns with queued callbacks | Historical evidence may still identify the original result | Accept attributable observations only; reject old mutation and queue permissions |
+
+Restart advances the logical owner fence and closes admission. Prefix recovery
+authenticates the authority log and retains original decisions, identities,
+spent-state, pending work and exposure. Recovering authority does not activate
+participants. Restore each store only to an authenticated complete committed
+prefix while closed; apply remaining results with full before-image CAS. Activation
+requires source and account projections to match the current authoritative prefix
+and exact images. One participant reaching the tip cannot stand in for the other.
+
+Prefix qualification and owner fencing must serialize with participant mutation.
+A native implementation needs a participant-local non-rollback fence or an
+exclusive authority proxy that atomically mediates every apply/CAS call. Checking
+an epoch in Go before an unguarded storage write leaves an old-worker race.
+Restoring an older valid participant snapshot may rewind its cursor while closed;
+this is safe only because authority cannot roll back and old workers cannot mutate.
+Reapplication then assigns the same result and changes no original consumption.
+
+The model's qualified recovery predicate is explicit. It does not implement
+replicated consensus, journal blob recovery, a filesystem fsync protocol or a
+non-rollback witness. Full authority rollback violates the premise and closes
+recovery. An apparently empty restored participant cannot prove a transaction absent.
+
+* Final broker and unknown exposure
+
+Final queue admission requires the current logical owner and an exact current
+source/account join, plus the original operation's Policy/claim/history checks.
+The gate and its current-prefix checks must serialize with new commits and owner
+changes. A decision may commit while projections lag, but the lag does not grant
+permission to send. Projection replay never issues an additional queue operation.
+
+The Quint fixture represents durable queue deduplication with an operation-ID set.
+It is not a replacement for the earlier broker/range queue model. Streaming partial
+writes remain attributed to the original immutable message/range manifest and
+unknown reservation. A stale callback cannot create a new tail, infer delivery,
+refund exposure or repeat an offer. Bytes already offered to a transport cannot be
+retracted by changing a fence; their outcome stays attributable and unresolved.
+Remote exactly-once delivery is not claimed.
+
+Charged exposure in the new models is outstanding reserved/spent risk. It never
+decreases. Final usage or failed delivery does not unlock it here: the earlier
+qualified settlement chain must separately prove terminal coverage and exactly-once
+account application before any release. A stale account projection showing zero
+exposure has no authority to fund another operation or report available budget.
+
+* Responsibilities and optional integrations
+
+| Component | Concrete responsibility |
+|-----------+-------------------------|
+| Scheme / POO Flow | Original semantic identity, typed source cut, pure admitted before/after transition, nonce/history/profile and continuation laws |
+| Cedar / cedar-poo-spec | Code as Policy for the actual authenticated operation/state; aligned non-error allows across required layers |
+| Go | Cloud-native lifecycle, protocol/provider adapters and Kubernetes reconciliation; preserve original operation/result identity and report conflict/unknown outcomes |
+| Rust authority | Commit exact result bodies durably with source/account admission, retain outcome lookup and control logical owner fencing |
+| Rust projection owner | Atomic cursor/body CAS, result verification, idempotent observation, verified snapshot replay and closed incomplete joins |
+| Rust final broker | Current operation gate and durable queue deduplication; no fresh send during result application |
+| ASP adapter, optional | Code-tool provenance and exact source locators when an Agent uses ASP-backed tools; no ledger, Policy, consumption or recovery authority |
+
+ASP means =agent-semantic-protocols= in the reviewed repository. It is not a core
+Gateway dependency or an alternative to MCP/A2A session handling. The protocol
+above is independent of ASP. An ASP code-query packet can supply attributable
+input evidence; it cannot supply an origin registration, grant or result commitment.
+The source comparison retains ASP only to make this trust boundary explicit.
+
+* Performance and acceptance boundary
+
+Keep immutable result lookup off repeated semantic evaluation paths. Persist one
+canonical body and derive verified participant projections from it. Batch commits
+or application writes only with ordered per-result identities and atomic publication
+markers. Never replace full currentness with a cache hit or amortize a fence check
+across owner changes. Benchmark journal/barrier latency, hot shared-account CAS,
+projection lag and recovery tail latency only after native refinement qualification.

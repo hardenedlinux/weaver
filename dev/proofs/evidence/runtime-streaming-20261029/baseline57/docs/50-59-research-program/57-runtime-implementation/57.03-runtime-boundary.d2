@@ -1,0 +1,137 @@
+# Core ownership only; qualification details belong to Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / GOVERNED AGENT EXECUTION {
+  class: title
+  near: top-center
+}
+authoring: SEMANTICS AND CONTROL {
+  left: 0
+  top: 0
+  width: 350
+  height: 580
+  label.near: top-center
+  style.font-size: 16
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  scheme: Scheme / POO semantic publisher\nOriginal task and routine profile\nImmutable source commitments {
+    left: 20
+    top: 70
+    width: 310
+    height: 115
+    class: semantic
+  }
+  go: Go control and protocol adapters\nRoutine node and model selection\nConstrained proposal data {
+    left: 20
+    top: 250
+    width: 310
+    height: 115
+    class: cloud
+  }
+  input: Original family and declared node\nExact endpoint and request body\nShared reservation ceiling {
+    left: 20
+    top: 430
+    width: 310
+    height: 105
+    class: semantic
+  }
+}
+deciding: RUST / DECIDING OWNER {
+  left: 430
+  top: 0
+  width: 350
+  height: 580
+  label.near: top-center
+  style.font-size: 16
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  policy: Cedar Code as Policy\nActual operation and current state\nError-free permission required {
+    left: 20
+    top: 70
+    width: 310
+    height: 115
+    class: semantic
+  }
+  ledger: Durable deciding ledger\nOriginal claim and shared holds\nCanonical queue and spent state {
+    left: 20
+    top: 250
+    width: 310
+    height: 115
+    class: storage
+  }
+  gate: Final serialized guard\nCurrent Policy / history / fence\nConsumed permit and exact wire {
+    left: 20
+    top: 430
+    width: 310
+    height: 105
+    class: runtime
+  }
+}
+execution: RUST / EFFECT BOUNDARY {
+  left: 860
+  top: 0
+  width: 350
+  height: 580
+  label.near: top-center
+  style.font-size: 16
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  broker: Final broker and executor\nExact authenticated destination\nBounded send under deciding lock {
+    left: 20
+    top: 70
+    width: 310
+    height: 115
+    class: runtime
+  }
+  provider: LLM provider\nOne local send opportunity\nNo implicit retry or redirect {
+    left: 20
+    top: 250
+    width: 310
+    height: 115
+    class: cloud
+  }
+  unknown: Unknown or partial outcome\nRetain original spent key and hold\nNo automatic budget release {
+    left: 20
+    top: 430
+    width: 310
+    height: 105
+    class: semantic
+  }
+}
+authoring.scheme -> deciding.policy: Bind
+authoring.go -> authoring.input
+authoring.input -> deciding.ledger: Proposal
+deciding.policy -> deciding.ledger
+deciding.ledger -> deciding.gate: Consume durably
+deciding.gate -> execution.broker
+execution.broker -> execution.provider
+execution.provider -> execution.unknown
+assurance: SYSML / PBT / QUINT / LEAN\nRequirements, native properties and explicit proof premises {
+  left: 40
+  top: 660
+  width: 650
+  height: 90
+  class: semantic
+}
+development: ASP RUST / DEVELOPMENT POLICY\nDeny-mode test gates and explicit module ownership {
+  left: 760
+  top: 660
+  width: 430
+  height: 90
+  class: cloud
+}
+authoring.goLogo: "" {
+  shape: image
+  icon: ../../architecture/diagrams/assets/go.svg
+  left: 296
+  top: 220
+  width: 35
+  height: 25
+}
+execution.rustLogo: "" {
+  shape: image
+  icon: ../../architecture/diagrams/assets/rust.svg
+  left: 290
+  top: 35
+  width: 30
+  height: 30
+}

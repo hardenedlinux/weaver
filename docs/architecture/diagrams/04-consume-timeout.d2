@@ -1,0 +1,26 @@
+...@lib/theme
+# W04: one legal race outcome, with abort winning the authoritative CAS.
+shape: sequence_diagram
+coord: Original coordinator
+issuer: Original issuer
+ledger: Authoritative ledger
+broker: Broker gate
+coord -> ledger: Persist ConsumePending: exact command / attempt
+coord -> issuer: Consume original signed grant
+issuer -> issuer: Remove pending grant
+coord -> coord: Response timeout\nconsumption is unknown
+coord -> ledger: AbortNoDispatch CAS\nclaim must be absent
+ledger -> coord: Durable abort wins
+issuer -> coord: Late positive response
+coord -> ledger: Late commit proposal with original correlation
+ledger -> coord: Reject: attempt is terminal
+coord -> broker: Status observation only\nno emission handle
+broker -> broker: No SendCommitted / claim\nno send
+ledger.rule: "if abort reply is lost, resolve the durable command first.\nIf a claim won another race, abort/refund must fail."
+
+# Shared role accents; brand marks are confined to architecture headers.
+coord.class: runtime
+issuer.class: policy
+ledger.class: ledger
+broker.class: runtime
+ledger.rule.class: note

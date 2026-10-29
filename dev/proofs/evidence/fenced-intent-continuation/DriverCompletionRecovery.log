@@ -1,0 +1,25 @@
+'Weaver.DriverCompletionRecovery.terminal_result_has_exact_original_binding' depends on axioms: [propext, Quot.sound]
+'Weaver.DriverCompletionRecovery.settled_message_has_no_live_tails' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.DriverCompletionRecovery.old_driver_never_regains_tail' depends on axioms: [propext, Quot.sound]
+'Weaver.DriverCompletionRecovery.original_claim_history_and_executor_survive' depends on axioms: [propext]
+'Weaver.DriverCompletionRecovery.settlement_has_independent_final_usage' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.DriverCompletionRecovery.finish_changes_only_original_slot' depends on axioms: [propext]
+'Weaver.DriverCompletionRecovery.durable_completion_never_releases_another_slot' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.DriverCompletionRecovery.pending_is_immutable' depends on axioms: [propext]
+'Weaver.DriverCompletionRecovery.original_tail_is_immutable' depends on axioms: [propext]
+'Weaver.DriverCompletionRecovery.reachable_projection' does not depend on any axioms
+'Weaver.DriverCompletionRecovery.no_duplicate_bytes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.DriverCompletionRecovery.shared_escrow' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.DriverCompletionRecovery.retirement_requires_closed_tails' depends on axioms: [propext, Quot.sound]
+'Weaver.DriverCompletionRecovery.result_is_immutable' depends on axioms: [propext]
+'Weaver.DriverCompletionRecovery.completion_keeps_ledger' does not depend on any axioms
+'Weaver.DriverCompletionRecovery.completion_keeps_quota' depends on axioms: [propext]
+'Weaver.DriverCompletionRecovery.restart_does_not_transfer_tail' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.DriverCompletionRecovery.stale_request_cannot_finish' does not depend on any axioms

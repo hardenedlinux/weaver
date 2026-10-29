@@ -1,0 +1,28 @@
+'Weaver.RoutineRoutingConfig.eligible_is_narrowed' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.selected_target_is_declared' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.original_budget_is_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.required_capability_preserved' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.history_cannot_be_overridden' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.same_normal_same_runtime' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.all_surfaces_share_runtime' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.source_provenance_is_separate' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.provenance_changes_without_semantic_change' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.RoutineRoutingConfig.task_identity_is_fixed' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.dropped_capability_rejected' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.enlarged_allowance_rejected' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.changed_profile_rejected' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.changed_response_rejected' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.no_empty_route_fallback' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.final_dispatch_rechecks_parent' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.artifact_current_at_dispatch' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.no_extra_provider_attempt' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.no_response_splicing' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.advice_does_not_grant_authority' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.telemetry_is_not_authority' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.cost_fits_actual_step_reservation' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.shared_account_capacity_retained' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.RoutineRoutingConfig.original_claim_retained' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,73 @@
+    Checking weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-ledger)
+    Checking weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-policy)
+    Checking weaver-broker v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/weaver-broker)
+error: redundant field names in struct initialization
+  --> crates/weaver-ledger/tests/unit/stream_properties.rs:76:133
+   |
+76 | ...node:"emit",destination:&c.destination,revision:revision,fence:fence}){owner=Some(new);}},
+   |                                           ^^^^^^^^^^^^^^^^^ help: replace it with: `revision`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#redundant_field_names
+   = note: `-D clippy::redundant-field-names` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::redundant_field_names)]`
+
+error: redundant field names in struct initialization
+  --> crates/weaver-ledger/tests/unit/stream_properties.rs:76:151
+   |
+76 | ...stination:&c.destination,revision:revision,fence:fence}){owner=Some(new);}},
+   |                                               ^^^^^^^^^^^ help: replace it with: `fence`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#redundant_field_names
+
+error: this `if` statement can be collapsed
+  --> crates/weaver-ledger/tests/unit/stream_properties.rs:77:21
+   |
+77 | ...=>{if pending.is_none(){if let Some(ref o)=owner {if let Ok(p)=ledger.consume_range(o,&key,limit){pending=Some((id,limit,p));}}}},
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#collapsible_if
+   = note: `-D clippy::collapsible-if` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::collapsible_if)]`
+help: collapse nested if block
+   |
+77 -                 2=>{if pending.is_none(){if let Some(ref o)=owner {if let Ok(p)=ledger.consume_range(o,&key,limit){pending=Some((id,limit,p));}}}},
+77 +                 2=>{if pending.is_none()&& let Some(ref o)=owner {if let Ok(p)=ledger.consume_range(o,&key,limit){pending=Some((id,limit,p));}}},
+   |
+
+error: this `if` statement can be collapsed
+  --> crates/weaver-ledger/tests/unit/stream_properties.rs:77:42
+   |
+77 | ...ng.is_none(){if let Some(ref o)=owner {if let Ok(p)=ledger.consume_range(o,&key,limit){pending=Some((id,limit,p));}}}},
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#collapsible_if
+help: collapse nested if block
+   |
+77 -                 2=>{if pending.is_none(){if let Some(ref o)=owner {if let Ok(p)=ledger.consume_range(o,&key,limit){pending=Some((id,limit,p));}}}},
+77 +                 2=>{if pending.is_none(){if let Some(ref o)=owner&& let Ok(p)=ledger.consume_range(o,&key,limit){pending=Some((id,limit,p));}}},
+   |
+
+error: this `if` statement can be collapsed
+   --> crates/weaver-ledger/tests/unit/stream_properties.rs:192:17
+    |
+192 | /                 if let Ok(owner) = ledger.claim_stream(weaver_ledger::StreamClaim {
+193 | |                     family: "f",
+194 | |                     node: "emit",
+195 | |                     destination: &c.destination,
+...   |
+208 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+198 ~                 })
+199 ~                     && let Ok(permit) = ledger.consume_range(&owner, "m0", 8) {
+200 |                         ledger
+...
+206 |                             .expect("write");
+207 ~                     }
+    |
+
+error: could not compile `weaver-ledger` (test "unit_test") due to 5 previous errors
+warning: build failed, waiting for other jobs to finish...

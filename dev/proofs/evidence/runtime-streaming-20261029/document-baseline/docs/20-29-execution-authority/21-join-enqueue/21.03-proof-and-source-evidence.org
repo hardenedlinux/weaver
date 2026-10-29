@@ -1,0 +1,172 @@
+#+title: Weaver Join-to-Enqueue Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and evidence scope
+
+Run [[file:../../../proofs/check_llm_join_enqueue.py][the isolated runner]] against [[file:../../../proofs/lean/LlmJoinEnqueue.lean][Lean]] and [[file:../../../proofs/qunit/LlmJoinEnqueue.qnt][Quint]]. Results are in
+[[file:../../../proofs/evidence/llm-join-enqueue/commands.json][commands.json]], [[file:../../../proofs/evidence/llm-join-enqueue/receipt.json][receipt.json]] and [[file:../../../proofs/evidence/llm-join-enqueue/SHA256SUMS][the sealed byte manifest]]. Failed preliminary diagnostics are retained.
+
+The workload compiles 18 Lean modules and prints 19 new declarations without
+=sorryAx=. It checks 40 Quint controls, including 10 deliberate broken alternatives,
+41 category-20 regression controls and 70 sampled runs of at most 30 post-initializer
+steps with seed 211. Sampled TypeScript execution is not exhaustive model checking.
+No native atomic queue/storage or provider-conformance result is implied.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| JE1 | Source commit cannot change execution channels | noSendDuringCommitTest | admission_source_has_no_send | registry.query |
+| JE2 | Queue acceptance has zero provider invocations | admissionHasNoProviderInvocationTest | enqueue_has_zero_transport_calls | broker.claim |
+| JE3 | A newer commit invalidates the earlier join permit | caughtUpProjectionStillRejectsOldReceiptTest | old_prefix_blocks_enqueue | recovery.projection |
+| JE4 | New owner cannot use an old generation permit | ownerSwitchInvalidatesOldReceiptTest | old_owner_blocks_enqueue | recovery.fence |
+| JE5 | Policy/history change retires an old observation | policyChangeInvalidatesReceiptTest | old_policy_blocks_enqueue | registry.alias |
+| JE6 | Partial join closes actual admission | newCommitInvalidatesJoinReceiptTest | incomplete_join_blocks_enqueue | recovery.join |
+| JE7 | Original canonical slot cannot be replaced | restartPreservesQueueSlotTest | original_slot_never_replaced | recovery.join |
+| JE8 | Fresh key/current permit cannot clone a claimed slot | sdkFreshKeyCannotCloneSlotTest | occupied_slot_blocks_retry | recovery.join |
+| JE9 | Persisted admission has current join and actual Policy | finalEnqueueChecksFullCurrentImageTest | new_admission_has_current_gate | recovery.join |
+| JE10 | Concurrent queue change retires the earlier queue cut | oldQueueRevisionCannotReplayTest | old_queue_revision_blocks_enqueue | recovery.join |
+| JE11 | Enqueue cannot consume the source again | finalEnqueueChecksFullCurrentImageTest | enqueue_has_no_source_effect | broker.cas |
+| JE12 | Original admission projects into initialized broker semantics | finalEnqueueChecksFullCurrentImageTest | queue_broker_initialized | broker.cas |
+| JE13 | Actual broker suffix retains one local invocation per offset | sdkRetryCannotRepeatOfferTest | actual_broker_suffix_once | broker.hold |
+| JE14 | Unknown broker outcome retains its original hold | finalQueueDoesNotRefundUnknownTest | actual_broker_unknown_stays_held | broker.hold |
+| JE15 | Historical lookup cannot replace original operation | lostQueueReplyQueriesOriginalTest | original_operation_never_replaced | protocols.a2a |
+| JE16 | Final admission retains original source spent-state | finalQueueDoesNotRefundUnknownTest | original_spent_retained | registry.origin |
+
+JE6 reaches the final enqueue after a new commit leaves the join incomplete;
+the Lean lemma covers missing join independently of the old-prefix condition.
+JE11 compares actual source and participant images with the known committed image
+after enqueue. The fixture also demonstrates projection causes no send.
+JE13/JE14 compose the existing local broker abstraction, not remote delivery.
+
+* Executable admission-only source composition
+
+=AdmissionOnly R signals= requires an actual source transition plus exact signal
+equality. The wrapper's background transition uses category-20 =Step= with this
+filtered source relation. This excludes execution-producing source constructors
+rather than assuming a Host callback is harmless.
+
+=concreteSignals= is a compiled lens into actual category-18 state: all root
+=sends= counters, the complete child-call function and the actual route dispatch
+list. =admission_source_has_no_send= projects through category 20, category 19 and
+their actual source path, then composes equality along the path. It covers arbitrary
+finite admission-plane executions. A weaker or incomplete native footprint would
+invalidate the refinement; hidden I/O is not ruled out by counter equality alone.
+
+Admission/source state is distinct from the subsequent executor's local invocation
+state. The wrapper ends at final durable queue admission. Provider-offer events
+must enter a separate protected execution product, not be replayed as source-result
+commit/application. No whole asynchronous source/executor/storage product is claimed.
+
+* Atomic gate and original slot proofs
+
+A permit is registered by actual resolution after a complete join and original
+result lookup. Its image, prefix, owner, validation generation and queue revision
+are compared again by =Gate= in the enqueue transition itself. That transition
+also checks the current worker, actual original operation binding, effective final
+Policy, unused operation key, unused canonical slot and durable admission evidence.
+
+=new_admission_has_current_gate= proves every newly persisted admission had that
+actual gate and final Policy/scope conditions at its transition. Earlier observed
+join success is insufficient. The proof quantifies over atomic modeled transitions;
+native serialization of checks and publication remains an explicit implementation
+qualification obligation.
+
+Operation and slot tables are monotonic. =original_operation_never_replaced= and
+=original_slot_never_replaced= preserve original immutable bodies across source
+commits, owner restart/recovery, observations and SDK retries. The slot is independent
+of a new operation key, payload or route. =occupied_slot_blocks_retry= therefore
+applies even after a fresh current permit has been issued. Qualified original
+manifest validation is still required to reject overlapping or invented ranges.
+
+Final authorization is an explicit =Owner.finalPolicyValid= predicate over the
+actual operation, current result state and validation generation. =operationValid=
+authenticates original result/claim/profile/domain/range binding. Both must be
+implemented from actual Scheme/Cedar inputs and native effects, not client labels.
+The durable admission predicate includes key/slot/receipt persistence and recovery.
+
+* Actual broker composition, with bounds
+
+=brokerProjection= maps an absent operation to the actual existing broker initial
+state and an admitted operation to its actual accepted state with no invocations.
+=ready_broker_initialized= constructs the broker's real consume/persistIntent/accept
+transition chain. The abstract consume mirrors the already committed source fact;
+it is not another native nonce consumption.
+
+=queue_broker_initialized= provides that initialized history for each original
+operation. An actual =BrokerConsumptionQueue.Run= suffix then composes with that
+history. =actual_broker_suffix_once= imports its checked per-offset at-most-one
+invocation theorem; =actual_broker_unknown_stays_held= imports its actual unknown
+hold theorem. Native authentication/fencing is not obtained from the erased
+abstract broker owner. Each native suffix must refine the prior current range,
+Policy, receipt and immutable manifest gates under the original operation identity.
+
+The wrapper cannot reset an admitted operation to an absent broker cell. A fresh
+SDK key cannot create another abstract initial broker for the same canonical slot.
+This is the connection missing from a stand-alone invocation counter. The Quint
+fixture additionally represents current admission/drain gates and persistent offers;
+it does not prove parser, transport, replication or filesystem behavior.
+
+* Counterexamples and independent trace checks
+
+| Missing contract | Broken control | Required observable violation |
+|------------------+----------------+-------------------------------|
+| Compare latest prefix at final CAS | staleJoinCommitJoinCounterexampleTest | Actually issued permit predates a new committed and fully projected prefix |
+| Compare owner generation | oldOwnerJoinCounterexampleTest | An issued old permit is used after qualified new-owner recovery |
+| Compare validation generation | stalePolicyJoinCounterexampleTest | Old policy generation is admitted after history denial |
+| Keep original slot claimed | sdkReplayJoinCounterexampleTest | Fresh current permit admits the same original slot twice |
+| Slot identity independent of retry key | freshKeyCloneJoinCounterexampleTest | A different key admits the same source-authenticated slot twice |
+| Admission-only source relation | commitSendJoinCounterexampleTest | Source commit changes an execution channel |
+| Separate queueing from invocation | enqueueSendJoinCounterexampleTest | Enqueue records a provider-call change at its own decision point |
+| Bind actual converted effect | routeSwapJoinCounterexampleTest | Queued route differs from the original admitted operation |
+| Compare complete join at final CAS | partialJoinJoinCounterexampleTest | Admission occurs while a new prefix is only partly projected |
+| Retain durable queue/slot tombstones | queueRollbackJoinCounterexampleTest | Restart loses the exact previously admitted operation |
+
+Unsafe alternatives are excluded from =step=. [[file:../../../proofs/evidence/llm-join-enqueue/itf][ITFs]] are independently decoded.
+The stale-prefix control deliberately catches projections up before attempting the
+old permit, so it does not merely exploit an incomplete join. Duplicate-slot
+controls demonstrate current issued permits; safe controls first establish current
+gate success before proving original slot or Policy still blocks admission.
+
+* Source-by-source audit and reuse
+
+The [[file:../../../proofs/evidence/llm-join-enqueue/source-review.json][POO Flow / cedar-poo-spec source register]] retains exact pinned blob identities
+and excerpts, freshly verified in [[file:../../../proofs/evidence/llm-join-enqueue/source-receipt-check.json][the source receipt]]. These source identities are
+comparison evidence, not instructions to add a compatibility layer or change pins.
+
+| Source | Existing contract | Reuse / extension in this boundary |
+|--------+-------------------+-----------------------------------|
+| P12 authorized-effect-token | Original root, nonce, operation, payload/range and validity binding | Reuse exact semantic identity; final enqueue materializes the consumed original intent, not a fresh token |
+| P13 strict-mediation | Pure nonce/root transitions; indeterminate observation still consumes | Reuse original spent-state; no SDK acknowledgment or retry resets it |
+| P15 assurance effect Host | Exact serialized local owner, grant reservation without external effect, delivery in a separate configured runtime operation | Reuse phase separation; extend to current multi-store join/slot CAS and durable broker outcomes |
+| P17/P22 durable store/backend | Scheme projects contracts; runtime owns locking, leases, fsync, replay and repair | Reuse ownership boundary; native transaction must order final gate, key/slot claims and admission receipt with owner retirement |
+| P18/P19 transaction recovery | Source-bound recovery and authority exclusivity | Reuse attribution; recovering an original decision does not grant current enqueue or replace scope |
+| P20 delivery occurrence | Runtime delivery evidence remains an explicit premise | Queue accepted is not provider invoked or delivered |
+| P31 SessionAttempt / P43 funs-attempt | Pure scheduling, generation/revision guards and retained pending obligations; proposals are not action or durable authority | Reuse original lifecycle; add final enqueue operation classification and explicit no-send refinement |
+| P35 lineage | Non-forking lineage/current prefix remain prerequisites | Use exact current prefix/fence, not an earlier join observation or restored counter |
+| P33 budget / P44 original references | Deterministic cost and frozen source/profile commitments | Keep original unknown reservation and immutable context across queue retries |
+| C8 BoundOperation | Host authenticates actual inputs and binds eventual execution; equality alone is insufficient | Apply to actual final enqueue and converted payload/route/range; checking an earlier request alone leaves a gap |
+| C10 CompoundAuthorization | Nonempty required layers must allow without evaluation errors | Evaluate effective final action under aligned current Policy/history; fresh observation is not an allow |
+| C11 Composition | Evaluation/validation certificates need actual input alignment | Reuse semantic alignment; it is not a native join/enqueue atomicity proof |
+
+* Native acceptance and remaining qualification
+
+Inject a new source commit between join read and final enqueue, including a run
+where projections catch up before enqueue. Interleave owner retirement, qualified
+recovery, Policy/history publication and concurrent queue inserts at every final
+read/CAS boundary. Verify old permits fail and fresh permits retain the original
+slot, claim, profile and reservation. Query lost acknowledgments by exact original
+operation; never wake an executor from an uncommitted or duplicate admission.
+
+Instrument every SDK/provider/transport invocation. Commit, result application,
+resolution and enqueue must record zero provider calls. Try reentrant provider
+callbacks, automatic redirect, retry after partial write, stream reconnect and an
+old-worker queued callback. Only the separate current original-range executor may
+invoke. A failure after a possible offer retains the original unknown outcome.
+
+Test native atomic publication/recovery of the operation row, canonical slot claim
+and immutable receipt; a partial write or unavailable result must keep admission
+closed. Retain tombstones across snapshot restore/compaction. Full native consensus,
+non-rollback storage, canonical codecs, hidden-I/O confinement, scheduling fairness,
+settlement, remote exactly-once and performance are outside the checked local scope.

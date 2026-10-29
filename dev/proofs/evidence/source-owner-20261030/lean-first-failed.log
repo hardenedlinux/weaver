@@ -1,0 +1,68 @@
+dev/proofs/lean/PublicationRecovery.lean:123:95: error: unsolved goals
+case quiescent
+a : Owner
+h :
+  a.busy = a.slot ∧
+    (a.transaction = true → a.busy = true ∧ a.live = true) ∧
+      (a.closed = true → a.live = false) ∧
+        (a.failed = true → a.closing = true) ∧
+          (a.ack = true →
+            a.closing = true ∧
+              a.closed = true ∧ a.closeOk = true ∧ a.failed = false ∧ a.busy = false ∧ a.transaction = false)
+⊢ a.ack = true → a.slot = false
+
+case disconnect
+a : Owner
+h :
+  a.busy = a.slot ∧
+    (a.transaction = true → a.busy = true ∧ a.live = true) ∧
+      (a.closed = true → a.live = false) ∧
+        (a.failed = true → a.closing = true) ∧
+          (a.ack = true →
+            a.closing = true ∧
+              a.closed = true ∧ a.closeOk = true ∧ a.failed = false ∧ a.busy = false ∧ a.transaction = false)
+⊢ (a.transaction = true → a.slot = true) ∧ (a.ack = true → a.slot = false)
+
+case requestClose
+a : Owner
+h :
+  a.busy = a.slot ∧
+    (a.transaction = true → a.busy = true ∧ a.live = true) ∧
+      (a.closed = true → a.live = false) ∧
+        (a.failed = true → a.closing = true) ∧
+          (a.ack = true →
+            a.closing = true ∧
+              a.closed = true ∧ a.closeOk = true ∧ a.failed = false ∧ a.busy = false ∧ a.transaction = false)
+⊢ (a.transaction = true → a.slot = true) ∧ (a.ack = true → a.slot = false)
+
+case storageFailure
+a : Owner
+h :
+  a.busy = a.slot ∧
+    (a.transaction = true → a.busy = true) ∧
+      a.closed = false ∧
+        (a.failed = true → a.closing = true) ∧
+          (a.ack = true →
+            a.closing = true ∧
+              a.closed = true ∧ a.closeOk = true ∧ a.failed = false ∧ a.busy = false ∧ a.transaction = false)
+live✝ : a.live = true
+⊢ (a.transaction = true → a.slot = true) ∧ a.ack = false
+
+case closeError
+a : Owner
+h : a.slot = false ∧ a.closed = false ∧ (a.ack = true → a.closed = true ∧ a.closeOk = true ∧ a.failed = false)
+live✝ : a.live = true
+closing✝ : a.closing = true
+free✝ : a.busy = false
+quiescent✝ : a.transaction = false
+⊢ a.ack = false
+'Weaver.PublicationRecovery.owner_step_preserves_custody' depends on axioms: [propext, sorryAx]
+'Weaver.PublicationRecovery.closed_owner_cannot_reopen' depends on axioms: [propext]
+'Weaver.PublicationRecovery.successful_owner_ack_requires_close_and_no_failed_transaction' does not depend on any axioms
+'Weaver.PublicationRecovery.owned_worker_and_publication_composition' depends on axioms: [propext, sorryAx]
+'Weaver.PublicationRecovery.step_preserves_original_decisions' depends on axioms: [propext]
+'Weaver.PublicationRecovery.step_preserves_accounting' depends on axioms: [propext]
+'Weaver.PublicationRecovery.run_preserves_original_decisions' depends on axioms: [propext]
+'Weaver.PublicationRecovery.run_preserves_accounting' depends on axioms: [propext]
+'Weaver.PublicationRecovery.recovery_and_provider_accounting_composition' depends on axioms: [propext]
+

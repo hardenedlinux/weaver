@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/native-image-closure/prepare.py", line 28, in <module>
+    with ThreadPoolExecutor(max_workers=3) as pool:images=list(pool.map(one,tasks))
+                                                          ~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/nix/store/6chc08n3zaqs22bv5wylgpmh85h7ykn6-python3-3.13.12-env/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/native-image-closure/prepare.py", line 21, in one
+    assert r.returncode==0,(task,args)
+           ^^^^^^^^^^^^^^^
+AssertionError: ((0, 'control', 100, ['std/number/misc~0']), ['/opt/homebrew/bin/gcc-16', '-O1', '-pipe', '-foptimize-sibling-calls', '-bundle', '-ftrack-macro-expansion=0', '-Wno-unused', '-Wno-write-strings', '-Wdisabled-optimization', '-fwrapv', '-fno-strict-aliasing', '-fno-trapping-math', '-fno-math-errno', '-fschedule-insns2', '-fmodulo-sched', '-freschedule-modulo-scheduled-loops', '-foptimize-sibling-calls', '-fomit-frame-pointer', '-fipa-ra', '-fmove-loop-invariants', '-fPIC', '-fno-common', '-Wl,-random_uuid', '/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-image-closure-20261020/build/std/number/misc~0.o', '-isysroot', '/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk', '-lSystem', '-o', '/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-image-closure-20261020/g0/control/physical/image-100.o1'])

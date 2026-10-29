@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-10","limit":20}
+
+  LlmEnrollmentCredential
+    ok activationCannotRepeatTest passed 1 test(s)
+    ok recoveryCannotReplaceFirstKeyTest passed 1 test(s)
+    ok actualActivationPreservesOriginalBudgetTest passed 1 test(s)
+
+  3 passing (3669ms)
+@@DONE {"label":"api-controls-10","passed":["activationCannotRepeatTest","recoveryCannotReplaceFirstKeyTest","actualActivationPreservesOriginalBudgetTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

@@ -1,0 +1,139 @@
+proofs/lean/FencedIntentContinuation.lean:72:6: error(lean.ctorResultingTypeMismatch): Unexpected resulting type for constructor `Weaver.FencedIntentContinuation.Step.recut`: Expected an application of
+  Step
+but found
+  let link :=
+    { id := s.links.length, root := i, cut := cut, worker := s.legacy.worker, fence := s.legacy.fence,
+      parent := s.active.bind fun l => if l.root = i then some l.id else none };
+  Step ks ds decisionOwner continuationOwner native root s
+    {
+      legacy :=
+        let __src := s.legacy;
+        {
+          base :=
+            let __src := s.legacy.base;
+            { base := __src.base, device := __src.device, driver := __src.driver, profile := __src.profile,
+              serial := cut.serial, aliases := __src.aliases, blocked := __src.blocked, captured := some cut,
+              journal := __src.journal, pendingFloor := __src.pendingFloor, view := __src.view,
+              submissions := __src.submissions, validated := __src.validated, archived := __src.archived },
+          worker := __src.worker, fence := __src.fence, accepted := __src.accepted, decisions := __src.decisions,
+          slot := __src.slot, observed := __src.observed },
+      links := s.links ++ [link], retired := s.retired, commits := s.commits, active := some link, phase := 11 }
+proofs/lean/FencedIntentContinuation.lean:124:71: error: Function expected at
+  Step
+but this term has type
+  ?m.4
+
+Note: Expected a function because this term is being applied to the argument
+  ks
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/FencedIntentContinuation.lean:130:26: error: Unknown identifier `Step` at quotation precheck
+
+Note: You can use `set_option quotPrecheck false` to disable this check.
+proofs/lean/FencedIntentContinuation.lean:131:28: error: Unknown identifier `Run` at quotation precheck
+
+Note: You can use `set_option quotPrecheck false` to disable this check.
+proofs/lean/FencedIntentContinuation.lean:133:41: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termEvent` has not been implemented
+  Event
+proofs/lean/FencedIntentContinuation.lean:133:54: error(lean.unknownIdentifier): Unknown identifier `s.commits`
+proofs/lean/FencedIntentContinuation.lean:133:68: error(lean.unknownIdentifier): Unknown identifier `t.commits`
+proofs/lean/FencedIntentContinuation.lean:138:52: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termEvent` has not been implemented
+  Event
+proofs/lean/FencedIntentContinuation.lean:138:65: error(lean.unknownIdentifier): Unknown identifier `s.legacy.decisions`
+proofs/lean/FencedIntentContinuation.lean:138:88: error(lean.unknownIdentifier): Unknown identifier `t.legacy.decisions`
+proofs/lean/FencedIntentContinuation.lean:143:53: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termEvent` has not been implemented
+  Event
+proofs/lean/FencedIntentContinuation.lean:143:75: error(lean.unknownIdentifier): Unknown identifier `t.links`
+proofs/lean/FencedIntentContinuation.lean:144:38: error(lean.unknownIdentifier): Unknown identifier `t.legacy.slot`
+proofs/lean/FencedIntentContinuation.lean:144:63: error(lean.unknownIdentifier): Unknown identifier `t.legacy.accepted`
+proofs/lean/FencedIntentContinuation.lean:145:6: error(lean.unknownIdentifier): Unknown identifier `t.legacy.base.pendingFloor`
+proofs/lean/FencedIntentContinuation.lean:151:56: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termEvent` has not been implemented
+  Event
+proofs/lean/FencedIntentContinuation.lean:151:78: error(lean.unknownIdentifier): Unknown identifier `t.commits`
+proofs/lean/FencedIntentContinuation.lean:153:66: error(lean.unknownIdentifier): Unknown identifier `t.commits`
+proofs/lean/FencedIntentContinuation.lean:159:48: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termEvent` has not been implemented
+  Event
+proofs/lean/FencedIntentContinuation.lean:179:53: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termEvent` has not been implemented
+  Event
+proofs/lean/FencedIntentContinuation.lean:229:43: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termHistory` has not been implemented
+  History
+proofs/lean/FencedIntentContinuation.lean:234:42: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termHistory` has not been implemented
+  History
+proofs/lean/FencedIntentContinuation.lean:239:57: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termEvent` has not been implemented
+  Event
+proofs/lean/FencedIntentContinuation.lean:240:12: error(lean.unknownIdentifier): Unknown identifier `t.legacy.slot`
+proofs/lean/FencedIntentContinuation.lean:248:37: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termEvent` has not been implemented
+  Event
+proofs/lean/FencedIntentContinuation.lean:248:50: error(lean.unknownIdentifier): Unknown identifier `t.legacy.base.base`
+proofs/lean/FencedIntentContinuation.lean:248:71: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base`
+proofs/lean/FencedIntentContinuation.lean:248:95: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base`
+proofs/lean/FencedIntentContinuation.lean:248:114: error(lean.unknownIdentifier): Unknown identifier `t.legacy.base.base`
+proofs/lean/FencedIntentContinuation.lean:257:43: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termEvent` has not been implemented
+  Event
+proofs/lean/FencedIntentContinuation.lean:257:64: error(lean.unknownIdentifier): Unknown identifier `t.legacy.worker`
+proofs/lean/FencedIntentContinuation.lean:257:82: error(lean.unknownIdentifier): Unknown identifier `s.legacy.worker`
+proofs/lean/FencedIntentContinuation.lean:258:14: error(lean.unknownIdentifier): Unknown identifier `s.phase`
+proofs/lean/FencedIntentContinuation.lean:258:30: error(lean.unknownIdentifier): Unknown identifier `t.phase`
+proofs/lean/FencedIntentContinuation.lean:258:40: error(lean.unknownIdentifier): Unknown identifier `s.phase`
+proofs/lean/FencedIntentContinuation.lean:298:19: error: elaboration function for `_private.proofs.lean.FencedIntentContinuation.0.Weaver.FencedIntentContinuation.termEvent` has not been implemented
+  Event
+proofs/lean/FencedIntentContinuation.lean:304:14: error(lean.unknownIdentifier): Unknown identifier `stable_rank_nonincreasing`
+proofs/lean/FencedIntentContinuation.lean:317:203: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base`
+proofs/lean/FencedIntentContinuation.lean:315:50: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  KeyStep
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/FencedIntentContinuation.lean:326:4: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base.base.base.base.base.burnCount`
+proofs/lean/FencedIntentContinuation.lean:326:61: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base.base.base.base.dispatchCount`
+proofs/lean/FencedIntentContinuation.lean:326:117: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base.base.base.base.base.base.authority.writes`
+proofs/lean/FencedIntentContinuation.lean:325:68: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  KeyStep
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/FencedIntentContinuation.lean:330:58: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base.base.base.base.base.base`
+proofs/lean/FencedIntentContinuation.lean:330:144: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base.base.base.base.base.base.authority.source.base.base.control.journal.head.payload`
+proofs/lean/FencedIntentContinuation.lean:331:58: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base.base.base.base.base.base`
+proofs/lean/FencedIntentContinuation.lean:329:52: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  KeyStep
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/FencedIntentContinuation.lean:335:14: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base.base.base.base.base.seals`
+proofs/lean/FencedIntentContinuation.lean:334:58: error: Function expected at
+  Run
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  KeyStep
+
+Hint: The identifier `Run` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/FencedIntentContinuation.lean:336:5: error(lean.unknownIdentifier): Unknown identifier `s.legacy.base.base.base.base.base.base.base.authority.source.base.base.control.journal.head.payload.messages`
+proofs/lean/FencedIntentContinuation.lean:339:14: error(lean.unknownIdentifier): Unknown constant `commits_never_roll_back`
+proofs/lean/FencedIntentContinuation.lean:340:14: error(lean.unknownIdentifier): Unknown constant `old_attempt_decisions_never_change`
+'Weaver.FencedIntentContinuation.recut_preserves_original_obligation' depends on axioms: [sorryAx]
+'Weaver.FencedIntentContinuation.only_current_unsettled_root_can_commit' depends on axioms: [sorryAx]
+'Weaver.FencedIntentContinuation.initialized_conservation' depends on axioms: [sorryAx]
+'Weaver.FencedIntentContinuation.initialized_unique_root' depends on axioms: [sorryAx]
+proofs/lean/FencedIntentContinuation.lean:345:14: error(lean.unknownIdentifier): Unknown constant `continuation_acknowledges_original_root`
+proofs/lean/FencedIntentContinuation.lean:346:14: error(lean.unknownIdentifier): Unknown constant `stable_rank_nonincreasing`
+'Weaver.FencedIntentContinuation.fair_monotone_rank_eventually_zero' depends on axioms: [propext, Quot.sound]
+proofs/lean/FencedIntentContinuation.lean:348:14: error(lean.unknownIdentifier): Unknown constant `stable_fair_recovery_finishes`
+'Weaver.FencedIntentContinuation.initialized_product_refines_key' depends on axioms: [sorryAx]
+proofs/lean/FencedIntentContinuation.lean:350:14: error(lean.unknownIdentifier): Unknown constant `original_consumption_and_settlement_remain_unique`
+'Weaver.FencedIntentContinuation.original_budget_remains_conserved' depends on axioms: [sorryAx]
+'Weaver.FencedIntentContinuation.unknown_original_reservation_stays_held' depends on axioms: [sorryAx]

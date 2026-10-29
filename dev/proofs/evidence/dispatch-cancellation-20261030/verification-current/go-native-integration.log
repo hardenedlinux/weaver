@@ -1,0 +1,55 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.14s
+=== RUN   TestProviderSaturatedExecutionPreservesRevocationAndObservation
+--- PASS: TestProviderSaturatedExecutionPreservesRevocationAndObservation (3.50s)
+=== RUN   TestProviderConnectionBoundRetainsExistingAuthorityChannel
+--- PASS: TestProviderConnectionBoundRetainsExistingAuthorityChannel (2.35s)
+=== RUN   TestProviderPreTLSConnectionsAreBoundedAndExpire
+--- PASS: TestProviderPreTLSConnectionsAreBoundedAndExpire (4.11s)
+=== RUN   TestProviderShutdownDestroysStalledTLSBeforeAcknowledgingExit
+--- PASS: TestProviderShutdownDestroysStalledTLSBeforeAcknowledgingExit (1.12s)
+=== RUN   TestProviderGRPCStreamingAndArrowOption
+=== RUN   TestProviderGRPCStreamingAndArrowOption/PROTOBUF
+=== RUN   TestProviderGRPCStreamingAndArrowOption/ARROW_IPC
+--- PASS: TestProviderGRPCStreamingAndArrowOption (2.21s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/PROTOBUF (1.11s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/ARROW_IPC (1.10s)
+=== RUN   TestProviderFailuresNeverRetryOrFallback
+=== RUN   TestProviderFailuresNeverRetryOrFallback/overload
+=== RUN   TestProviderFailuresNeverRetryOrFallback/partial-sse
+=== RUN   TestProviderFailuresNeverRetryOrFallback/tool-proposal
+=== RUN   TestProviderFailuresNeverRetryOrFallback/redirect
+--- PASS: TestProviderFailuresNeverRetryOrFallback (4.50s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/overload (1.10s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/partial-sse (1.16s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/tool-proposal (1.10s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/redirect (1.13s)
+=== RUN   TestProviderPartialRequestAndRestartRetainUnknownClaim
+--- PASS: TestProviderPartialRequestAndRestartRetainUnknownClaim (3.33s)
+=== RUN   TestProviderRevocationDuringSSEStopsNextRelease
+--- PASS: TestProviderRevocationDuringSSEStopsNextRelease (1.18s)
+=== RUN   TestProviderArrowChecksEveryRow
+--- PASS: TestProviderArrowChecksEveryRow (1.13s)
+=== RUN   TestProviderConcurrentRPCDuplicatesInvokeOnce
+--- PASS: TestProviderConcurrentRPCDuplicatesInvokeOnce (1.13s)
+=== RUN   TestProviderRPCIdentityAndCancellation
+--- PASS: TestProviderRPCIdentityAndCancellation (1.09s)
+=== RUN   TestProviderClientCancellationCannotReplay
+--- PASS: TestProviderClientCancellationCannotReplay (1.09s)
+=== RUN   TestProviderAuthenticationPrecedesRPCBodyDecode
+--- PASS: TestProviderAuthenticationPrecedesRPCBodyDecode (1.07s)
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/forwarded-source-token
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/operation-token-with-source-key
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-key-on-operation-ingress
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-token-on-operation-ingress
+--- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod (1.16s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/forwarded-source-token (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/operation-token-with-source-key (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-key-on-operation-ingress (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-token-on-operation-ingress (0.01s)
+=== RUN   TestProviderSourceConnectionBudgetCannotBorrowOperationCapacity
+--- PASS: TestProviderSourceConnectionBudgetCannotBorrowOperationCapacity (2.14s)
+=== RUN   TestProviderPublicationLostReplyRestartAndHistoricalDecision
+--- PASS: TestProviderPublicationLostReplyRestartAndHistoricalDecision (2.19s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	36.622s

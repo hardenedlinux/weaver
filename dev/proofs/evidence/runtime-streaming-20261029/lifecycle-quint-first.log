@@ -1,0 +1,42 @@
+
+  RuntimeLifecycle
+    ok E::queueHasNoWireTest passed 1 test(s)
+    ok E::sourceIdentityRequiredTest passed 1 test(s)
+    ok E::messageOrderRequiredTest passed 1 test(s)
+    ok E::wholeMessageKeepsHoldTest passed 1 test(s)
+    ok E::completedKeyCannotRetryTest passed 1 test(s)
+    ok E::revokedBetweenBurnAndWriteTest passed 1 test(s)
+    ok E::zeroCallCanReauthorizeOriginalTest passed 1 test(s)
+    ok E::crashBeforeWriteCannotReissueTest passed 1 test(s)
+    ok E::lostCompletionBeforeCommitCannotReissueTest passed 1 test(s)
+    ok E::partialCannotReconnectTest passed 1 test(s)
+    ok E::incompleteKnownPrefixCannotReconnectTest passed 1 test(s)
+    ok E::oldWorkerCapabilityRejectedTest passed 1 test(s)
+    ok E::effectivePublicationSerializedTest passed 1 test(s)
+    ok E::warmCompilationIsNotPermissionTest passed 1 test(s)
+    ok E::duplicateRefundCounterexampleTest passed 1 test(s)
+    ok E::cachedGrantCounterexampleTest passed 1 test(s)
+    ok E::unknownResetDuplicatesRangeCounterexampleTest passed 1 test(s)
+    ok disconnectedCallerStillTrackedTest passed 1 test(s)
+    ok shutdownRejectsNewAdmissionTest passed 1 test(s)
+    ok shutdownRejectsNewRangeTest passed 1 test(s)
+    1) inFlightWriteMustDrainTest failed after 1 test(s)
+    ok noWriteAfterAcknowledgmentTest passed 1 test(s)
+    ok unknownShutdownRetainsHoldTest passed 1 test(s)
+    ok detachedUntrackCounterexampleTest passed 1 test(s)
+    ok prematureAckCounterexampleTest passed 1 test(s)
+
+  24 passing (969ms)
+  1 failed
+
+  1) inFlightWriteMustDrainTest:
+       Error [QNT502]: Variable owner not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/quint/RuntimeLifecycle.qnt:23:23
+        23:   action write = all {owner.running!=Set(),E::fullWrite,inert}
+                                  ^^^^^
+    Use --seed=0x125 --match=inFlightWriteMustDrainTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 dev/proofs/quint/RuntimeLifecycle.qnt
+error: Tests failed

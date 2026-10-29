@@ -1,0 +1,39 @@
+#+TITLE: Weaver Development Assurance Workspace
+#+LANGUAGE: en
+
+* Layout
+| Directory | Owner |
+|-----------+-------|
+| models/sysml | System allocation, typed ports, requirements and resource bounds |
+| policies | Cedar schemas, policy fixtures and specification-derived conformance cases |
+| proofs/quint | Executable state machines, schedule exploration and negative controls |
+| proofs/lean | Parametric safety/composition proofs with explicit native premises |
+| proofs/evidence | Immutable native/formal receipts, failures and source archives |
+| specs | Earlier architecture proof namespaces and their historical evidence |
+
+Rust runtime code, including the server entrypoint, belongs in crates. The Go
+control plane belongs in the top-level go directory, with go/go.mod as its
+module root and go.work at repository root. Go commands live in go/cmd,
+public protocol contracts in go/api, and module-private implementations in
+go/internal. Go development checks and the in-process OpenSysML SDK tests live
+in go/dev; go/cmd/weaver-dev is the shell-free verification entrypoint. Cargo
+dependency versions are centralized in workspace.dependencies; members inherit
+them through workspace = true. The go run ./go/cmd/weaver-dev check entrypoint
+runs the current native and development gates. No root proofs/models/specs alias
+is installed. Historical raw receipts preserve their original recorded paths;
+the source archives preserve earlier layouts. Current verification uses native
+Rust and Go tests; archived Python and shell sources remain historical evidence.
+
+Quint owns operational schedules and counterexamples. Lean owns conditional
+unbounded invariants and composition. Cedar-poo-spec owns permission semantics
+and effect/state binding contracts. Native tests establish the separately stated
+implementation evidence boundary. These verdicts must never be conflated.
+
+The default process boundary is the typed mTLS gRPC service. The old request
+CLI/stdio and HTTP interfaces are retired evidence. Use =weaver-dev generate-rpc=
+for shared bindings, =weaver-dev check= for assurance, and =weaver-dev bench= for
+actual per-package Criterion and gRPC measurements. Benchmark fixtures are in
+=dev/benchmarks=; the executable targets belong to each Rust package's =benches=.
+Operation and source publication use distinct mTLS listeners, pinned leaves and
+bearer credentials. Native admission and connection capacity are bounded
+independently; both server futures share one runtime cancellation/drain owner.

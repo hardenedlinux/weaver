@@ -1,0 +1,193 @@
+# Core design only. Native and checker evidence stays in the Org receipt.
+...@../../architecture/diagrams/lib/theme
+title: DURABLE FLOOR DECISION / CONTEXT FENCE / FINAL RELEASE {
+  class: title
+  near: top-center
+}
+semantic: SEMANTICS / CLOUD LIFECYCLE {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  identity: Scheme / original semantic obligation\nClaim / spent nonce / budget / history\nCedar constrains current authority {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  cloud: Go / cloud-native reconciliation\nRetry original identity and status\nPod restart cannot unlock intent {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  unknown: Fenced intent retains its obligation\nNo replacement cut / refund / replay\nUnknown ordering stays closed {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+native: PROTECTED INTENT / DECISION {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  manifest: Accept exact immutable floor intent\nOriginal cut / worker / context fence\nPersist original accepted obligation {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  isolation: Serialize commit and context fence\nCommit first keeps original history\nFence first retains the locked intent {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  callback: Read complete deciding image\nExact result and recovery session\nLate reply cannot relabel a decision {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+}
+owner: RUST / ACTUAL RELEASE BOUNDARY {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#faf9fd"
+  style.stroke: "#b0a7c8"
+  certificate: Reset quarantines actual output\nOld FD / DMA / queued digest paths\nNo old-context commit after fence {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  emit: Final mediated Rust broker gate\nCurrent hardware and protected commit\nOriginal consumption and live Policy {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  reset: Old worker and late completion\nReject stale session / fence / cut\nKeep original history and obligations {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+recovery: RECOVERY / FRESH QUALIFICATION {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  journal: Observe original committed decision\nCurrent session / full durable prefix\nOnly original commit unlocks its slot {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  history: Fresh current isolation cut\nOld commit remains historical\nNo hardware readiness from a receipt {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: ledger
+  }
+  activate: Qualified signer and broker activation\nCurrent isolation / floor / Policy\nNo bypass through cloud lifecycle {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: unknown
+  }
+}
+quint: QUINT\nCommit and fence races / lost replies / stale workers / retained obligations {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nUnique durable decision / retained intent / original claim and budget {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+semantic.identity -> native.manifest
+semantic.cloud -> native.manifest
+native.manifest -> native.isolation
+owner.certificate -> native.isolation
+native.isolation -> native.callback
+native.isolation -> semantic.unknown: retained {
+  style.stroke-dash: 4
+}
+native.callback -> recovery.journal
+recovery.journal -> recovery.history
+recovery.history -> recovery.activate
+owner.reset -> owner.emit
+recovery.activate -> owner.emit

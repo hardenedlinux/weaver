@@ -1,0 +1,19 @@
+'Weaver.LlmRecoveryCAS.publication_projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRecoveryCAS.initialized_audit' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRecoveryCAS.committed_at_exact_cut' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRecoveryCAS.stale_policy_generation_cannot_commit' does not depend on any axioms
+'Weaver.LlmRecoveryCAS.stale_execution_revision_cannot_commit' does not depend on any axioms
+'Weaver.LlmRecoveryCAS.stale_fence_cannot_commit' does not depend on any axioms
+'Weaver.LlmRecoveryCAS.policy_denial_blocks_commit' depends on axioms: [propext]
+'Weaver.LlmRecoveryCAS.committed_request_cannot_repeat' does not depend on any axioms
+'Weaver.LlmRecoveryCAS.late_confirmation_preserves_authority' does not depend on any axioms
+'Weaver.LlmRecoveryCAS.restored_observation_is_only_data' does not depend on any axioms
+'Weaver.LlmRecoveryCAS.policy_generation_never_decreases' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRecoveryCAS.original_claim_stays_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmRecoveryCAS.original_allowance_stays_bounded' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRecoveryCAS.original_profile_stays_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRecoveryCAS.original_domains_stay_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRecoveryCAS.original_response_mode_stays_bound' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRecoveryCAS.unknown_usage_retains_hold' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRecoveryCAS.decision_ids_remain_unique' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmRecoveryCAS.confirmed_decision_is_committed' depends on axioms: [propext, Quot.sound]

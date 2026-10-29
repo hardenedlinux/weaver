@@ -1,0 +1,14 @@
+{
+  "args": [
+    "/opt/homebrew/opt/node/bin/node",
+    "proofs/evidence/native-gerbil-exit/run-quint.cjs"
+  ],
+  "exit": 0,
+  "inputs": {
+    "proofs/qunit/NativeExitQualification.qnt": "553d3f42d5dd5b4648365b5ebc738ce2c3dd59717ddc50590b86f6e5677a8d86",
+    "proofs/evidence/native-gerbil-exit/run-quint.cjs": "d6359c99f4ff5fd2fe105ef364fabfc2b64cf8757d54bb64f9bacd51affd8c6f",
+    "proofs/check_routine_config_api.py": "d61834946240f0d37a7daafc66fbbd2a31a9387e255dcb13d227d9a14295022d"
+  },
+  "officialPipeline": "load -> parse -> typecheck -> runTests; new Evaluator per group",
+  "expectedControls": 12
+}

@@ -1,0 +1,105 @@
+[
+  {
+    "label": "LlmBeneficiaryRegistration",
+    "args": [
+      "elan",
+      "run",
+      "leanprover/lean4:v4.34.1",
+      "lean",
+      "-o",
+      "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmBeneficiaryRegistration.olean",
+      "proofs/lean/LlmBeneficiaryRegistration.lean"
+    ],
+    "sourceSha256": {
+      "proofs/lean/LlmBeneficiaryRegistration.lean": "f99a2f71f185bd3115d290d34c3f33583309bd61268448d5319b78ee6431ed0e"
+    },
+    "exit": 0,
+    "seconds": 7.282,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "verify-bundle",
+    "args": [
+      "python3",
+      "proofs/evidence/llm-beneficiary-registration/check-bundle.py"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-beneficiary-registration/check-bundle.py": "7ca2ad706e1cf42525b8e3254844d02b0c6e4d2717806d57a4ed39fa8a9ef463"
+    },
+    "exit": 0,
+    "seconds": 1.406,
+    "watchdogSeconds": 20
+  },
+  {
+    "label": "bundle-controls-0",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-beneficiary-registration/bundle-controls-0/LlmBeneficiaryRegistration.qnt",
+      "--main",
+      "LlmBeneficiaryRegistration",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(sharedWorkloadCannotCreateEntitlementTest|producerApprovalRequiredTest|rootHasNoBeneficiaryAuthorityTest)$",
+      "--out-itf",
+      "proofs/evidence/llm-beneficiary-registration/itf/{test}-{seq}.itf.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-beneficiary-registration/bundle-controls-0/LlmBeneficiaryRegistration.qnt": "5eb58fb7002ed2583d9994a42913771e8dc8046991e66fdffc6195fa99f25881"
+    },
+    "exit": 0,
+    "seconds": 39.76,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "bundle-controls-1",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-beneficiary-registration/bundle-controls-1/LlmBeneficiaryRegistration.qnt",
+      "--main",
+      "LlmBeneficiaryRegistration",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(sharedIdentityCannotRegisterKeyTest|forwardedBearerWithOwnKeyRejectedTest|entitlementProofRequiredTest)$",
+      "--out-itf",
+      "proofs/evidence/llm-beneficiary-registration/itf/{test}-{seq}.itf.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-beneficiary-registration/bundle-controls-1/LlmBeneficiaryRegistration.qnt": "1db497415e43440b478099849d4aa1332099244bdd7051ae0bc2398c062075d1"
+    },
+    "exit": 0,
+    "seconds": 34.42,
+    "watchdogSeconds": 55
+  },
+  {
+    "label": "bundle-controls-2",
+    "args": [
+      "quint",
+      "test",
+      "proofs/evidence/llm-beneficiary-registration/bundle-controls-2/LlmBeneficiaryRegistration.qnt",
+      "--main",
+      "LlmBeneficiaryRegistration",
+      "--backend",
+      "typescript",
+      "--max-samples",
+      "1",
+      "--match",
+      "^(beneficiaryPossessionRequiredTest|substitutedSessionRejectedTest|originalScopeCannotBeRewrittenTest)$",
+      "--out-itf",
+      "proofs/evidence/llm-beneficiary-registration/itf/{test}-{seq}.itf.json"
+    ],
+    "sourceSha256": {
+      "proofs/evidence/llm-beneficiary-registration/bundle-controls-2/LlmBeneficiaryRegistration.qnt": "97e8e77772161059da1e97c30edf91a96d6e9dd9ebf112d07d5498113d2780fd"
+    },
+    "exit": 124,
+    "seconds": 55.061,
+    "watchdogSeconds": 55
+  }
+]

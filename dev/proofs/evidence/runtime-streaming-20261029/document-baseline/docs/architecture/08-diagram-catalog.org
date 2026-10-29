@@ -1,0 +1,386 @@
+#+title: Weaver D2 Diagram Catalog and Maintenance Contract
+#+language: en
+#+date: 2026-10-18
+#+property: STATUS proposed-not-runtime-qualified
+#+options: toc:2
+
+* Purpose and evidence boundary
+
+Architecture, interaction flows, state transitions, and trust boundaries use
+D2 as their canonical diagram language. English Org remains the documentation
+format; =.d2= sources and generated =.svg= previews are diagram assets. Diagrams
+make guards and ownership reviewable. They do not implement or prove the
+protocol, establish process isolation, or qualify the physical data path.
+
+All twenty-eight views describe the proposed Weaver design. Existing mechanisms and
+required extensions are distinguished by the source register and X1-X10 map
+in [[file:07-source-admission-ledger-fencing.org][Source admission, durable ledger, and fencing]].
+The root, Core, and Lambda Aitia revisions in
+[[file:01-reference-comparison.org][the evidence register]] remain separate source identities.
+
+* Canonical views
+
+| ID | View | D2 source | SVG preview | Semantic owner |
+|----+------+-----------+-------------+----------------|
+| W01 | Logical language and authority boundaries | [[file:diagrams/01-system-boundaries.d2][Source]] | [[file:diagrams/01-system-boundaries.svg][Preview]] | [[file:00-system-design.org][System design]] |
+| W02 | S1-S3 preparation, evaluation and consumption | [[file:diagrams/02-admission-sequence.d2][Source]] | [[file:diagrams/02-admission-sequence.svg][Preview]] | [[file:05-authorization-execution-protocol.org][Coordination protocol]] |
+| W03 | Attempt states and recovery | [[file:diagrams/03-attempt-state.d2][Source]] | [[file:diagrams/03-attempt-state.svg][Preview]] | [[file:05-authorization-execution-protocol.org][Coordination protocol]] |
+| W04 | Consume timeout, abort-winning schedule | [[file:diagrams/04-consume-timeout.d2][Source]] | [[file:diagrams/04-consume-timeout.svg][Preview]] | [[file:07-source-admission-ledger-fencing.org][Timeout decision table]] |
+| W05 | Three fencing boundaries and paused workers | [[file:diagrams/05-fencing-boundaries.d2][Source]] | [[file:diagrams/05-fencing-boundaries.svg][Preview]] | [[file:07-source-admission-ledger-fencing.org][Fencing contract]] |
+| W06 | Runtime source-admission bridge | [[file:diagrams/06-source-admission.d2][Source]] | [[file:diagrams/06-source-admission.svg][Preview]] | [[file:07-source-admission-ledger-fencing.org][Admission contract]] |
+| W07 | Post-claim submission, emitter, outcome and accounting | [[file:diagrams/07-post-claim-outcomes.d2][Source]] | [[file:diagrams/07-post-claim-outcomes.svg][Preview]] | [[file:05-authorization-execution-protocol.org][S5/S6 orthogonal states]] |
+| W08 | Code as Policy and Cedar execution admission | [[file:diagrams/08-code-as-policy.d2][Source]] | [[file:diagrams/08-code-as-policy.svg][Preview]] | [[file:09-code-as-policy.org][Policy artifact and enforcement contract]] |
+| W09 | Late response and claim-winning race | [[file:diagrams/09-claim-wins-race.d2][Source]] | [[file:diagrams/09-claim-wins-race.svg][Preview]] | [[file:07-source-admission-ledger-fencing.org][Timeout contract]] |
+| W10 | S4-S6 commit, claim, final send and observation | [[file:diagrams/10-commit-dispatch-sequence.d2][Source]] | [[file:diagrams/10-commit-dispatch-sequence.svg][Preview]] | [[file:05-authorization-execution-protocol.org][Coordination protocol]] |
+| W11 | Mandatory Quint, Lean and runtime assurance | [[file:diagrams/11-zero-trust-assurance.d2][Source]] | [[file:diagrams/11-zero-trust-assurance.svg][Preview]] | [[file:10-zero-trust-assurance.org][Zero Trust assurance framework]] |
+
+| W12 | Concrete events, Quint actions and Lean/evidence correspondence | [[file:diagrams/12-execution-correspondence.d2][Source]] | [[file:diagrams/12-execution-correspondence.svg][Preview]] | [[file:11-source-to-execution-assurance-review.org][Source-to-execution assurance review]] |
+
+| W13 | Cedar inside the core authorization-to-execution architecture | [[file:diagrams/13-policy-to-execution.d2][Source]] | [[file:diagrams/13-policy-to-execution.svg][Preview]] | [[file:09-code-as-policy.org][Cedar selection and enforcement design]] |
+
+| W14 | Go adapter to Rust broker: immutable handoff and constrained submission | [[file:diagrams/14-adapter-broker-boundary.d2][Source]] | [[file:diagrams/14-adapter-broker-boundary.svg][Preview]] | [[file:13-go-adapter-broker-boundary.org][Adapter/broker semantic and physical contract]] |
+
+| W15 | Full-message authorization, escrow, queue and revocation | [[file:diagrams/15-stream-message-authorization.d2][Source]] | [[file:diagrams/15-stream-message-authorization.svg][Preview]] | [[file:14-stream-message-authorization.org][Stream message contract]] |
+
+| W16 | Owner-derived context, authoritative spent transition and execution joins | [[file:diagrams/16-authoritative-spent-state.d2][Source]] | [[file:diagrams/16-authoritative-spent-state.svg][Preview]] | [[file:15-authoritative-spent-state.org][Authoritative one-use state]] |
+
+| W17 | Canonical logical identity, scoped consumption, sticky claim and separate evidence | [[file:diagrams/17-logical-message-observation.d2][Source]] | [[file:diagrams/17-logical-message-observation.svg][Preview]] | [[file:15-authoritative-spent-state.org][Identity and evidence closure]] |
+
+| W18 | Canonical aliases, shared budget/history and final offer | [[file:diagrams/18-shared-identity-budget.d2][Source]] | [[file:diagrams/18-shared-identity-budget.svg][Preview]] | [[file:17-shared-identity-budget-proof.org][Cross-message identity and budget proof]] |
+
+| W19 | Finite messages, persistent domain lineage, migration and current executor | [[file:diagrams/19-finite-domains-and-migration.d2][Source]] | [[file:diagrams/19-finite-domains-and-migration.svg][Preview]] | [[file:18-finite-domains-and-migration.org][Finite-domain proof and migration contract]] |
+
+| W20 | Independent anchor, original-operation recovery and three egress cuts | [[file:diagrams/20-anchor-recovery-and-egress.d2][Source]] | [[file:diagrams/20-anchor-recovery-and-egress.svg][Preview]] | [[file:19-anchor-recovery-and-egress-contract.org][Anchor/recovery/egress contract]] |
+
+| W21 | Composed journal, owner restart and final delegation | [[file:diagrams/21-composed-journal-transport-lifecycle.d2][Source]] | [[file:diagrams/21-composed-journal-transport-lifecycle.svg][Preview]] | [[file:20-composed-journal-transport-lifecycle.org][Composed lifecycle]] |
+
+| W22 | Finite manifests, partial prefix ownership and shared escrow | [[file:diagrams/22-finite-stream-manifest.d2][Source]] | [[file:diagrams/22-finite-stream-manifest.svg][Preview]] | [[file:21-finite-stream-manifest-proof.org][Finite stream manifest contract]] |
+
+| W23 | Original driver continuity, canonical completion and separate settlement | [[file:diagrams/23-driver-completion-recovery.d2][Source]] | [[file:diagrams/23-driver-completion-recovery.svg][Preview]] | [[file:22-driver-completion-recovery.org][Driver completion and recovery]] |
+
+| W24 | Writer isolation, split-store terminal publication and original final settlement | [[file:diagrams/24-writer-settlement-closure.d2][Source]] | [[file:diagrams/24-writer-settlement-closure.svg][Preview]] | [[file:23-writer-isolation-settlement-closure.org][Writer and settlement closure]] |
+
+| W25 | Protected account application, independent anchor and coherent snapshot recovery | [[file:diagrams/25-settlement-anchor-recovery.d2][Source]] | [[file:diagrams/25-settlement-anchor-recovery.svg][Preview]] | [[file:24-settlement-anchor-recovery.org][Account application and anchor recovery]] |
+| W26 | Independent seal/grant/burn, actual receipt and conservative journal recovery | [[file:diagrams/26-gate-consumption-persistence.d2][Source]] | [[file:diagrams/26-gate-consumption-persistence.svg][Preview]] | [[file:25-gate-consumption-persistence.org][Gate consumption persistence]] |
+| W27 | Qualified root commit, actual writer barrier and original account execution | [[file:diagrams/27-anchor-commit-broker-fencing.d2][Source]] | [[file:diagrams/27-anchor-commit-broker-fencing.svg][Preview]] | [[file:26-anchor-commit-broker-fencing.org][Anchor commit and final broker]] |
+| W28 | Joint quorum, complete prefix inheritance and scoped broker activation | [[file:diagrams/28-anchor-configuration-prefix.d2][Source]] | [[file:diagrams/28-anchor-configuration-prefix.svg][Preview]] | [[file:27-anchor-configuration-prefix-inheritance.org][Membership and prefix inheritance]] |
+
+W17 makes the logical key independent of issuer and stream incarnation. Its
+observation/accounting chain has no return edge to claim or offer. Quint and
+Lean form a design/proof rail outside the request path. Exact model actions,
+theorems, results and premises live in [[file:../../specs/README.org][the formal artifact guide]], not graph labels.
+
+W01 containers group logical responsibilities. A Go adapter inside the runtime
+role group does not mean Go executes inside a Rust process. The Zero Trust
+panel is a normative legend rather than an additional service. The dashed Quint/Lean links in W01 are semantic and state-machine design
+contracts, not evaluator RPCs or proof checking on the request path. Go discovery and
+reconciliation carry scoped observations; they do not mint Policy authority,
+choose a ledger fence, or reopen a dispatch claim. Scheme owns composition and
+source/lifecycle semantics. Rust is the reference physical coordinator and
+broker placement, subject to the qualification requirements in the prose.
+
+Sequence diagrams order the selected interactions. Flowchart layout and edge
+position do not imply transaction atomicity or timing. W02's reserve, durable ConsumePending and deliver are distinct and ordered;
+its consume and W10's ledger commit are separate operations. Its coordinator actor
+represents a service with separate bounded tasks, not reentry into one blocked
+coroutine. The selected synchronous callback profile requires qualified finite
+leases and an admitted own-transition derivation without reentering Scheme. W03 distinguishes positive consumption knowledge from durable send permission
+when a later commit cannot succeed. W04 deliberately shows one race outcome; the
+normative decision table and W09 also cover a competing claim and lost abort
+replies. W07 is an evidence/record view, not a replacement admission state
+machine: NoSubmissionProven never unspends a claim, a business result does not
+close the emitter, and closure does not prove zero usage. W08 separates the
+existing Cedar decision semantics from the required error-free execution gate;
+the current runtime issue path does not yet enforce that stricter gate.
+W05 distinguishes rejection of stale database mutations from stopping an
+already accepted network operation. W06 requires a new evaluated admission
+family; the existing unknown preflight cannot authorize a runtime effect.
+
+W11 separates shared semantics, bounded model exploration, Lean proof
+obligations and physical guards. Its runtime column names the Scheme source owner,
+Go integrations and Rust coordinator/ledger/broker rather than a generic verifier. Its joins are required correspondence and
+admission obligations, not an existing automatic proof pipeline. FM1-FM12
+remain pending; documentation rendering never satisfies G6.
+
+W12 makes consume, S4, S5, transport and independent observation boundaries
+reviewable across concrete events, model actions and proof/evidence obligations.
+Rows are correspondence obligations rather than atomic operations. The claim requires
+a concrete exclusive authority; stronger effect-count assertions require a
+complete attributable execution trace.
+The caption and owning review distinguish limited guard-law checks from missing
+Weaver integration proofs.
+
+W13 focuses on permission through physical send. Its authority evaluates Cedar
+and issues the scoped grant; Cedar is not itself a grant issuer. The broker
+receives the unique local emission handle, binds actual bytes/peer/credentials,
+and refuses submission on a failed final guard while retaining the spent claim.
+The wider Go and assurance relationships are in W01 and W11.
+
+W14 shows the exact adapter/broker boundary. SDK construction has no upstream
+send authority; the broker verifies immutable input, consumes/commits/claims,
+and gates actual request starts and admitted stream ranges. Its input range
+arrow does not bypass the selected per-unit semantic checks or reservations.
+Redirect/retry responses are proposals, never a new handle. This is a logical
+view: consume, durable commit and claim remain separate S3/S4/S5 transitions.
+
+W15 specializes the stream path: complete message authority precedes durable
+queue eligibility, physical enqueue and typed claim. Parent escrow splits and
+queue credits are distinct from local reserve/consume. The writer's bounded
+OfferIntent and the stream seal are ordered by the ledger; the socket remains
+a separate physical boundary. A pre-cut ticket can outlive seal observation.
+Its retirement path ends in held/settled/unknown accounting and preserves spent
+claims; no edge returns an old message to queue eligibility. The reference has one authorized message
+slot/writer per stream and allows concurrent inert staging/independent streams.
+
+W16 distinguishes policy semantic root, execution root and authoritative state
+revision. A pure candidate is inert until the exact snapshot/command CAS commits;
+unknown results preserve spent state. The committed fact and original issuer
+positive consumption join at the same canonical operation before obligations,
+typed claim and final transport gates. The view describes contracts, not a new
+mandatory shadow-token layer: P12/P13, P15 and P5 keep their actual distinct
+protocol identities. Restart recovers facts/obligations without restoring handles.
+
+* Diagram content boundary
+
+Architecture views show responsibilities, interfaces, trust boundaries and
+state transitions. Version pins, commit IDs, build/test counts, audit findings,
+source-register IDs and qualification status belong in Org evidence tables.
+Keep those out of component labels and diagram footers. Code as Policy views
+must explain why Cedar is in the permission path and what still controls the
+actual effect. A test receipt is not a component of the target architecture.
+
+* Enterprise presentation conventions
+
+The visual references are D2/Terrastruct's [[https://terrastruct.com/examples/1/][architecture example library]] and
+[[https://d2lang.com/examples/tala/][official TALA gallery]]. This is Weaver's own presentation system, not a claim
+to use a vendor-certified Enterprise template or a paid feature. The installed
+D2 v0.9.0 bundles the [[https://d2lang.com/tour/tala/][TALA architecture layout engine]].
+
+Use compact responsibility panels, aligned nodes, readable labels, white
+component surfaces, thin borders, restrained role accents and orthogonal
+connectors. Keep the success route readable and distinguish refusal/unknown
+outcomes by both labels and colors. W01, W03, W06, W07, W08, W11, W12, W13, W14, W15 and W16 explicitly place
+nodes to preserve reading order. Coordinates have no protocol meaning.
+
+Use brand marks only to identify the actual technology in architecture headers.
+The Go wordmark replaces the rejected mascot treatment. Go, Rust and Kubernetes
+assets are bundled locally with [[file:diagrams/assets/icon-sources.org][sources and byte digests]]. Native D2 geometry,
+including ledger cylinders, identifies generic components. Do not mix flat
+illustration packs, mascots and oversized status icons into the same view.
+Shared classes live in [[file:diagrams/lib/theme.d2][the presentation theme]]. That file is an imported
+style library, not an independent diagram or policy implementation.
+
+W02 and W10 split one long sequence at its positive consumption observation.
+They are the same original attempt, source lease and synchronous callback.
+W08 folds invalid/stale/missing/error/deny branches into one labeled evaluation
+boundary exit; the predicate and CX cases retain the individual failure causes.
+A full-resolution [[file:diagrams/01-system-boundaries.png][PNG overview]] accompanies the SVG for convenient preview.
+
+* Authoring and reproducible rendering
+
+Keep one canonical D2 source per view. Org embeds the generated SVG and links
+the source; do not maintain an independent Mermaid copy of the same view.
+Change semantic prose, source labels, state guards, and acceptance references
+in the same revision. Generated previews must be refreshed after source changes.
+
+The current rendering profile uses D2 =v0.9.0=, bundled =tala= layout with seeds
+=1,2,3=, theme =3=, padding =40=, bundling and a stable per-file salt. All icons
+are local assets; rendering and viewing require no remote icon request.
+The commands below require an installed D2 CLI; they add no gateway runtime
+dependency. D2's [[https://d2lang.com/tour/install/][installation documentation]],
+[[https://d2lang.com/tour/sequence-diagrams/][sequence diagram syntax]], and
+[[https://d2lang.com/tour/containers/][container syntax]] are the language references.
+
+Run from the Weaver repository root:
+
+#+begin_src sh
+d2 version
+d2 fmt --check docs/architecture/diagrams/*.d2 docs/architecture/diagrams/lib/*.d2
+for source in docs/architecture/diagrams/*.d2; do
+  d2 validate "$source" || exit 1
+  stem="$(basename "$source" .d2)"
+  d2 --layout tala --tala-seeds 1,2,3 --theme 3 --pad 40 --bundle \
+    --salt "weaver-$stem" \
+    "$source" "${source%.d2}.svg" || exit 1
+done
+# Optional PNG convenience preview; requires librsvg's rsvg-convert.
+rsvg-convert --width 1800 --keep-aspect-ratio \
+  docs/architecture/diagrams/01-system-boundaries.svg \
+  -o docs/architecture/diagrams/01-system-boundaries.png
+#+end_src
+
+When changing the renderer version, record the version and inspect all regenerated
+views. Rendering success establishes syntax and layout availability only.
+
+* Review and validation obligations
+
+- Every added state must identify its durable owner, transition guard, and
+  recovery disposition in the owning Org contract.
+- Every authorization arrow must identify exact operation binding, currentness,
+  lifetime, authority generation, and source guard requirements in the prose.
+- A timeout never implies non-consumption or safe refund. A new worker never
+  receives a replacement emission handle for an already claimed attempt.
+- Lease expiry and database fencing never imply that a paused old process or
+  an accepted socket operation has stopped. Label physical enforcement separately.
+- English labels, resolvable local links, formatted D2, successful validation,
+  regenerated SVG, and visual inspection are required documentation checks.
+- Map security cases to the existing AC, R, G, Z, and SF registers in
+  [[file:03-performance-and-validation.org][Performance and validation]] and
+  [[file:04-zero-trust-and-review.org][Zero Trust baseline and review]]. In particular,
+  SF1-SF12 cover bridge, timeout, restart, rollback, and stale-worker obligations.
+  CX1-CX18 cover this cross-review's callback, diagnostic, race and record cases.
+  A rendered diagram does not mark any of those acceptance cases as passed.
+
+The SF and CX cases remain pending implementation and execution. No runtime, native
+acceptance, model checking, proof rerun, throughput, or latency result follows
+from these documentation checks.
+
+* Initial documentation check receipt
+
+On 2026-10-18, all six D2 sources passed formatting and syntax validation,
+rendered to SVG with the stated settings, and received visual inspection.
+All ten English Org files exported to HTML with Babel evaluation disabled.
+The exporter reported missing optional source highlighting; export still
+completed. Seventy-six local file links resolved, and forty-seven pinned
+source targets existed in the correct Git repository and revision. Acceptance
+register identifiers were checked for completeness and uniqueness. These are
+documentation checks only; SF1-SF12 and runtime qualification remain pending.
+
+* Cross-review and presentation check receipt
+
+On 2026-10-18, the revised set contains ten canonical diagrams and one imported
+presentation library. All ten sources passed D2 validation and formatting,
+rendered with the documented TALA profile and received visual inspection.
+The source register's fifty pinned Git targets resolved in their true owner
+repositories; the four runtime files underlying the new diagnostic-admission
+finding matched the pinned blobs. Twelve English Org files and 114 local links
+passed integrity checks. All twelve exported with Babel evaluation disabled;
+optional source highlighting remained unavailable without affecting export.
+The bundled SVG assets and icon digests were checked for offline completeness.
+CX1-CX18, SF1-SF12 and all runtime qualification gates remain pending.
+
+* Mandatory assurance documentation check receipt
+
+On 2026-10-18, the set contains thirteen English Org documents, eleven
+canonical D2/SVG pairs and one shared presentation library. All eleven D2
+sources passed format and syntax checks. W11 rendered with the stated TALA
+profile and received visual inspection. The 130 local links and 58 pinned
+Git source targets resolved; AC, SF, CX, R, Z, G and new FM register identifiers
+were complete and unique. All thirteen Org files exported with Babel disabled;
+optional source highlighting remained unavailable without preventing export.
+SVG assets had no remote href dependencies. These checks validate documentation
+integrity only. No Quint model, Lean proof, compatibility build, runtime test or
+FM acceptance result was executed or passed by this revision. Earlier receipts
+above retain their original scope and counts.
+
+* Source-to-execution review check receipt
+
+On 2026-10-18, fourteen English Org documents, twelve canonical D2/SVG pairs,
+147 local links and 79 pinned source targets passed integrity checks. FM1-FM12
+dossiers each include premises, a specified counterexample and required acceptance
+evidence; the canonical registers remain complete and unique. All twelve D2
+sources passed formatting and syntax checks. Revised W11 and new W12 rendered
+with the documented TALA profile and received visual inspection; SVG references
+remain offline. All fourteen Org files exported with Babel disabled; missing
+optional source highlighting did not prevent export.
+
+The separate review includes four successful existing pure-guard Lean checks
+and two exact metadata-binding checks. Those are explicitly scoped source
+qualification evidence, not diagram validation, a Quint exploration result or
+a Weaver integration proof. FM1-FM12, G6/G9 and physical/runtime gates remain
+pending. Previous check receipts retain their historical counts and scope.
+
+
+* Core-design separation check receipt
+
+On 2026-10-18, fifteen English Org documents, thirteen canonical D2/SVG pairs,
+168 local links and 93 pinned source targets passed integrity checks. All D2
+sources passed formatting and syntax checks; rendered labels contain no version
+numbers, source-register identifiers or test/build counters. SVG assets have no
+remote href dependencies. The revised policy-to-execution view received visual
+inspection. All Org documents exported with Babel evaluation disabled; optional
+source highlighting remained unavailable without preventing export.
+
+The core views explain policy meaning, language responsibilities, trust
+boundaries and the path to the actual effect. Source/build/native findings are
+recorded separately in the owning Org evidence sections, with their limits and
+failed gates preserved. Documentation checks do not qualify a deployed gateway.
+
+
+* Core relationship refinement check receipt
+
+The core relationship revision on 2026-10-18 retains fifteen English Org
+files and thirteen D2/SVG pairs. The 173 local links and 93 pinned source
+targets resolve, and canonical registers remain complete. Revised views W01,
+W11 and W13 passed formatting/syntax checks, rendering and visual inspection;
+labels contain core design only. Org export uses disabled Babel evaluation.
+No gateway, Quint model, Lean proof or dependency pin was implemented or changed
+by this documentation revision. These checks concern documentation integrity.
+
+
+* Adapter/broker refinement check receipt
+
+On 2026-10-18, sixteen English Org documents and fourteen canonical D2/SVG
+pairs passed structural checks. The 188 local links and 96 pinned source targets
+resolved; canonical registers remained complete and unique. W10's application
+request-start wording and new W14's immutable handoff/submission boundary were
+rendered; W14 received visual inspection. D2 formatting/syntax and bundled SVG
+assets were checked, with no version, source-register or build/test counters
+in rendered labels. Org export disables Babel evaluation.
+
+The inspected retry, replay-body and mirror source bytes matched the existing
+agentgateway snapshot. Official Go/gRPC references inform the hidden-effect
+review; they do not select a Weaver SDK or prove a protected transport. No
+runtime test, Quint exploration, Lean theorem or implementation is introduced
+by these documentation checks.
+
+
+* Stream-message closure review receipt
+
+On 2026-10-18, seventeen English Org documents and fifteen canonical D2/SVG
+pairs passed integrity checks. The 204 local links and 98 pinned source targets
+resolved and canonical registers stayed complete and unique. Revised W14 and
+new W15 rendered with bundled assets and received visual inspection. D2
+formatting/syntax and core-only rendered labels were checked; all Org documents
+exported with source evaluation disabled.
+
+The review inspected committed POO/owner sources for lifecycle, consumed-state
+binding, scheduling recovery and proof/budget separation. It records source-level
+counterexamples and future physical/formal requirements; no new runtime test,
+Quint exploration, Lean proof or gateway implementation is claimed. Pins and
+adjacent owner checkouts remain unchanged by this documentation work.
+
+
+* Authoritative spent-state and differentiation review receipt
+
+On 2026-10-18, nineteen English Org documents and sixteen canonical D2/SVG
+pairs passed structural checks. The 228 local links and 101 pinned source targets
+resolved; canonical registers stayed complete. W01's ownership emphasis and W16's
+context/state/issuer/execution joins rendered with bundled assets and received
+visual inspection. D2 formatting/syntax and core-only SVG labels were checked.
+Org export disables source evaluation.
+
+Committed P12/P13/P15/P5/P24/P31/P43-P46 sources distinguish pure predicates,
+local one-use guards, cold reconstruction, retained images and durable recovery
+obligations. The new negative traces, proof requirements and reuse/differentiation
+position remain design/source-review artifacts. No new runtime test, formal run,
+implementation, dependency change or comparative performance result is claimed.
+
+
+* Focused formal artifact extension
+
+The subsequent logical-identity review adds W17 and actual Quint/Lean sources,
+linked through [[file:../../specs/README.org][the formal artifact guide]]. Prior dated receipts above retain
+their original scope and counts. W17 keeps current identity, consumption,
+claim, observation and proof-role relationships in the graph; theorem names,
+tool versions, bounds and results remain in Org. Gateway implementation and
+owner dependency pins remain unchanged.
+
+
+* Protected quorum promises and restored signers
+
+[[file:diagrams/29-quorum-durable-promises.d2][Canonical D2]] and [[file:diagrams/29-quorum-durable-promises.svg][rendered view]] separate protected signing authority,
+restorable replicas, cloud-native orchestration, actual broker fencing and the
+original account obligation. [[file:28-quorum-durable-promises-prefix-recovery.org][The dossier]] explains the conservative prefix
+profile and native trust assumptions; proof/acceptance detail stays outside the
+core diagram.

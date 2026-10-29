@@ -1,0 +1,128 @@
+[
+  {
+    "id": "EO1",
+    "design": "Dequeue changes no invocation state",
+    "quint": "dequeueIsNotInvocationTest",
+    "lean": "dequeue_has_no_invocation",
+    "d2": "protocols.mcp"
+  },
+  {
+    "id": "EO2",
+    "design": "Durable burn changes no invocation state",
+    "quint": "observeAndBurnAreNotInvocationTest",
+    "lean": "burn_has_no_invocation",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "EO3",
+    "design": "Every new invocation requires the actual current gate",
+    "quint": "currentTicketNeedsFinalOfferAllowTest",
+    "lean": "invocation_requires_current_gate",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "EO4",
+    "design": "A caught-up new prefix cannot revive an old ticket",
+    "quint": "caughtUpJoinStillRejectsOldOfferTicketTest",
+    "lean": "changed_view_blocks_offer",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "EO5",
+    "design": "Old worker cannot use new-owner authority",
+    "quint": "oldWorkerCannotUseFreshRangeTicketTest",
+    "lean": "old_worker_blocks_offer",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "EO6",
+    "design": "Recovered source owner must align the range owner",
+    "quint": "newOwnerMustFenceRangeBeforeObservationTest",
+    "lean": "unaligned_lane_blocks_offer",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "EO7",
+    "design": "Executor recovery cannot reset original burn",
+    "quint": "executorRecoveryRequiresCompleteEvidenceTest",
+    "lean": "execution_recovery_preserves_burn",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "EO8",
+    "design": "Owner handover cannot create another uncertain burn",
+    "quint": "restartAfterBurnCannotCreateNewBurnTest",
+    "lean": "original_burn_retained",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "EO9",
+    "design": "Submitted state cannot be reset by recovery",
+    "quint": "originalSlotAndUnknownHoldSurviveRestartTest",
+    "lean": "submitted_never_reset",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "EO10",
+    "design": "Partial write cannot create another invocation",
+    "quint": "partialWriteCannotBeOfferedAgainTest",
+    "lean": "offer_at_most_once",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "EO11",
+    "design": "Actual range history composes into initialized broker semantics",
+    "quint": "currentOwnerCanUseRequalifiedUnusedRangeTest",
+    "lean": "actual_broker_initialized",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "EO12",
+    "design": "Unknown actual range retains original broker hold",
+    "quint": "timeoutCannotReleaseOrRearmTest",
+    "lean": "unknown_retains_broker_hold",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "EO13",
+    "design": "Original queue record survives executor recovery",
+    "quint": "originalSlotAndUnknownHoldSurviveRestartTest",
+    "lean": "original_queue_binding_retained",
+    "d2": "protocols.acp"
+  },
+  {
+    "id": "EO14",
+    "design": "Original canonical slot survives executor recovery",
+    "quint": "originalSlotAndUnknownHoldSurviveRestartTest",
+    "lean": "original_slot_retained",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "EO15",
+    "design": "Executor cannot release source exposure",
+    "quint": "lateFullReceiptAfterOwnerSwitchIsDataTest",
+    "lean": "original_exposure_retained",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "EO16",
+    "design": "New offer evaluates Policy against complete current context",
+    "quint": "freshTicketStillChecksEffectivePolicyTest",
+    "lean": "new_offer_checks_current_policy",
+    "d2": "registry.alias"
+  },
+  {
+    "id": "EO17",
+    "design": "Original partial/full observations use actual range transitions",
+    "quint": "lateFullReceiptAfterOwnerSwitchIsDataTest",
+    "lean": "range_projection",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "EO18",
+    "design": "Executor preserves actual original admission history",
+    "quint": "oneSubmitMarksOriginalUnknownTest",
+    "lean": "queue_projection",
+    "d2": "registry.query"
+  }
+]

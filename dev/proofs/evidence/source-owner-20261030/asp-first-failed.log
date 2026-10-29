@@ -1,0 +1,38 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.18s
+     Running unittests src/lib.rs (target/debug/deps/weaver_server-b4b261d087cf446e)
+
+running 12 tests
+test connections::tests::pending_listener_reservation_is_released_on_drop ... ok
+test grpc::ingress_tests::aliased_or_empty_source_identity_is_rejected_before_serving ... ok
+test runtime::tests::poisoned_admission_still_closes_and_drains ... ok
+test admission::tests::lane_interleavings_preserve_independent_bounds ... ok
+test source_owner::tests::startup_failure_closes_runtime_and_drains_native_owner ... ok
+test admission::tests::saturated_detached_execution_preserves_publication_and_observation_custody ... ok
+test connections::tests::tcp_socket_owns_capacity_until_destruction_and_preserves_io_and_peer_identity ... ok
+test runtime::tests::detached_native_writer_keeps_slot_until_drain_acknowledges_completion ... ok
+test source_owner::tests::storage_failure_does_not_acknowledge_a_reusable_result ... ok
+test runtime::tests::arbitrary_disconnect_shutdown_and_drain_schedules_keep_native_custody ... ok
+test source_owner::tests::reused_source_connection_observes_other_writer_and_preserves_historical_result ... ok
+test enforce_asp_rust_gate ... FAILED
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (21746788) panicked at crates/server/src/lib.rs:19:1:
+[RUST-AGENT-CFG-PUBLIC-016] Info: Public function owns a broad linear algorithm surface
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc.rs:84:1
+fix: split this broad function into named algorithm steps
+line: 84 | pub async fn serve_grpc(
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/server/src/grpc.rs public function `serve_grpc` spans 52 lines with 16 statements and a 14-statement block. Criteria: software-criterion/control-flow.broad-linear-phase.
+Contract: Split broad public Rust functions into small named helpers or pipeline steps so agents can edit one algorithm responsibility at a time.
+
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 11 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+error: test failed, to rerun pass `-p weaver-server --lib`
+

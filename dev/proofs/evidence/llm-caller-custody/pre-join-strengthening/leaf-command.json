@@ -1,0 +1,18 @@
+{
+  "label": "LlmCallerCustody",
+  "args": [
+    "elan",
+    "run",
+    "leanprover/lean4:v4.34.1",
+    "lean",
+    "-o",
+    "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmCallerCustody.olean",
+    "proofs/lean/LlmCallerCustody.lean"
+  ],
+  "sourceSha256": {
+    "proofs/lean/LlmCallerCustody.lean": "c31fe19083d01200f595a724d512cf6ccbb1d12f0cb24dd7f892b67665656255"
+  },
+  "exit": 0,
+  "seconds": 10.334,
+  "watchdogSeconds": 20
+}

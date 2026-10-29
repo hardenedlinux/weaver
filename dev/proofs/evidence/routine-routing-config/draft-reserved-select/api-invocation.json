@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/opt/homebrew/opt/node/bin/node",
+    "proofs/run_routine_config.cjs"
+  ],
+  "exit": 1,
+  "inputs": {
+    "proofs/qunit/RoutineRoutingConfig.qnt": "e09529544d20b59b0c7e948fc61140f12ba1319bfb722dbc385e3247c413d635",
+    "proofs/run_routine_config.cjs": "b83827a2e83edd36267f83592657448588c8d7cbd35888642f964b88e8e3badc",
+    "proofs/check_routine_config_api.py": "8c87e389dbd616bb9b985e5bac9e452fbd5b32242d777a0fe3dc892aad262472",
+    "proofs/evidence/routine-routing-config/bundle/RoutineRoutingConfig.qnt": "0d3e6fd95d11791d805d150aec95ba8b637d231fc6394e35c9c082c1a28d0140"
+  },
+  "officialPipeline": "load -> parse -> typecheck -> runTests; new Evaluator per group",
+  "expectedControls": 30
+}

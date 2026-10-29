@@ -1,0 +1,191 @@
+# Core design only; source identities and proof receipts remain in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / CANONICAL INTENT / SAFE POLICY CONTINUATION {
+  class: title
+  near: top-center
+}
+intent: SCHEME AND GO / ORIGINAL INTENT {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  protocol: Admitted protocol context\nMCP / A2A / Client ACP / AG-UI / ASP\nWire identities are canonical aliases {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  original: Durable original pending intent\nClaim / profile / source / domains\nDo not replace on timeout or conflict {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  candidate: Source-bound linked candidate\nSame semantics / fresh attempt ID\nExplicit current parent / no silent rebase {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+owner: RUST / CONFLICT AND APPROVAL {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  inspect: Qualified complete-family lookup\nResolve unknown before conflict\nCurrent prefix / no committed winner {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  approval: Fresh continuation authorization\nOriginal intent / candidate / full cut\nLedger and fence changes invalidate {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  cas: Atomic family publication CAS\nCurrent parent / Policy / empty winner\nKeep original and losing attempts {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+}
+result: RUST / ONE DURABLE WINNER {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  winner: One original-family winner\nExact source publication and result\nNew attempt cannot complete twice {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  query: Lost reply queries same family\nCanonical root / exact operation\nMissing local view is not absence {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  ack: Attributable late confirmation\nHistorical result / no authority reset\nNever reopen a completed family {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+}
+broker: RUST / ORIGINAL EXECUTION GATE {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  contract: Original contract and obligations\nClaim / profile / budget / history\nAdapter cannot widen execution scope {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  cas: Current actual-effect CAS\nPublished generation / ledger / fence\nProtocol switch is not a new grant {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  hold: Original spent-state and usage\nUnknown work retains the hold\nNo refund from task completion or ack {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+quint: QUINT\nUnknown winner / concurrent continuations\nStale approval / late ack / protocol reset {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nOne family winner / preserved original intent\nCanonical aliases / original source obligations {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+intent.protocol -> intent.original
+intent.original -> owner.inspect
+intent.candidate -> owner.approval
+owner.inspect -> owner.approval
+owner.approval -> owner.cas
+owner.cas -> result.winner
+result.winner -> result.query
+result.query -> result.ack
+result.winner -> broker.contract
+broker.contract -> broker.cas
+broker.cas -> broker.hold

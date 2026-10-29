@@ -1,0 +1,307 @@
+[
+  {
+    "path": "proofs/evidence/broker-consumption-queue/itf/enqueueBeforeIntentCounterexampleTest-4.itf.json",
+    "states": 31,
+    "finalQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 0,
+      "frontier": 0,
+      "full": [],
+      "hasPending": false,
+      "intent": false,
+      "pending": {
+        "epoch": -1,
+        "hi": -1,
+        "lo": -1
+      },
+      "ranges": [],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": false,
+      "settlements": 0,
+      "spent": true,
+      "unknown": false,
+      "usage": false
+    }
+  },
+  {
+    "path": "proofs/evidence/broker-consumption-queue/itf/overlappingTailCounterexampleTest-2.itf.json",
+    "states": 34,
+    "finalQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 0,
+      "frontier": 2,
+      "full": [],
+      "hasPending": true,
+      "intent": true,
+      "pending": {
+        "epoch": 0,
+        "hi": 2,
+        "lo": 0
+      },
+      "ranges": [
+        {
+          "epoch": 0,
+          "hi": 2,
+          "lo": 0
+        },
+        {
+          "epoch": 0,
+          "hi": 3,
+          "lo": 1
+        }
+      ],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": false,
+      "settlements": 0,
+      "spent": true,
+      "unknown": false,
+      "usage": false
+    }
+  },
+  {
+    "path": "proofs/evidence/broker-consumption-queue/itf/restartedSpentLossCounterexampleTest-3.itf.json",
+    "states": 34,
+    "finalQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 1,
+      "frontier": 0,
+      "full": [],
+      "hasPending": false,
+      "intent": true,
+      "pending": {
+        "epoch": -1,
+        "hi": -1,
+        "lo": -1
+      },
+      "ranges": [],
+      "recovered": false,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": false,
+      "settlements": 0,
+      "spent": false,
+      "unknown": false,
+      "usage": false
+    }
+  },
+  {
+    "path": "proofs/evidence/broker-consumption-queue/itf/sdkReplayCounterexampleTest-0.itf.json",
+    "states": 35,
+    "finalQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 2,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 0,
+      "frontier": 2,
+      "full": [],
+      "hasPending": true,
+      "intent": true,
+      "pending": {
+        "epoch": 0,
+        "hi": 2,
+        "lo": 0
+      },
+      "ranges": [
+        {
+          "epoch": 0,
+          "hi": 2,
+          "lo": 0
+        }
+      ],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": false,
+      "settlements": 0,
+      "spent": true,
+      "unknown": true,
+      "usage": false
+    }
+  },
+  {
+    "path": "proofs/evidence/broker-consumption-queue/itf/timeoutRefundCounterexampleTest-1.itf.json",
+    "states": 35,
+    "finalQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": false,
+      "epoch": 0,
+      "frontier": 2,
+      "full": [],
+      "hasPending": true,
+      "intent": true,
+      "pending": {
+        "epoch": 0,
+        "hi": 2,
+        "lo": 0
+      },
+      "ranges": [
+        {
+          "epoch": 0,
+          "hi": 2,
+          "lo": 0
+        }
+      ],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": true,
+      "settlements": 0,
+      "spent": true,
+      "unknown": true,
+      "usage": false
+    }
+  },
+  {
+    "path": "proofs/evidence/broker-consumption-queue/itf/unboundLateReceiptCounterexampleTest-5.itf.json",
+    "states": 35,
+    "finalQueue": {
+      "accepted": true,
+      "ack": false,
+      "allowed": true,
+      "calls": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "completed": true,
+      "epoch": 0,
+      "frontier": 2,
+      "full": [],
+      "hasPending": false,
+      "intent": true,
+      "pending": {
+        "epoch": -1,
+        "hi": -1,
+        "lo": -1
+      },
+      "ranges": [
+        {
+          "epoch": 0,
+          "hi": 2,
+          "lo": 0
+        }
+      ],
+      "recovered": true,
+      "scope": {
+        "budget": 0,
+        "claimStream": 0,
+        "claimToken": 0,
+        "domain": 0,
+        "history": 0,
+        "id": 0,
+        "key": 0,
+        "payload": 10,
+        "policy": 0,
+        "route": 0
+      },
+      "settled": true,
+      "settlements": 0,
+      "spent": true,
+      "unknown": false,
+      "usage": true
+    }
+  }
+]

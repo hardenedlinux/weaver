@@ -1,0 +1,15 @@
+'Weaver.ProviderRpc.connection_step_preserves_custody' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ProviderRpc.bounded_connections_include_handshakes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ProviderRpc.provider_and_connection_composition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ProviderRpc.lane_step_preserves_bounds' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.execution_saturation_preserves_publication_admission' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.execution_and_admission_composition' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.safe_step' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.safe_run' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.stale_authority_cannot_pass' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.consumed_unknown_retains_original_hold' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.new_rpc_nonce_cannot_select_fresh_state' does not depend on any axioms
+'Weaver.ProviderRpc.arrow_cannot_weaken_row_authority' does not depend on any axioms
+'Weaver.ProviderRpc.every_arrow_row_requires_authority' does not depend on any axioms
+'Weaver.ProviderRpc.shared_name_is_not_key_authority' does not depend on any axioms
+'Weaver.ProviderRpc.execution_and_encoding_composition' depends on axioms: [propext, Quot.sound]

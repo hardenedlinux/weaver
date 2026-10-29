@@ -1,0 +1,85 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 1,
+    "sourceSha256": "9d69baf38ebb396ab45b1f32fd7f3127fca52160629532ccd075fb2c83a18b3a",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.717
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "5cce7d73a717244e40cca00c73418427b11490d4053c67a7e2c6fd8607f1734e",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 0.611
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "sameNameDifferentImagesTest",
+      "oneImageCollisionRejectedTest",
+      "incompleteProducerRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.011
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "foreignBodyRejectedTest",
+      "rewrittenEntryRejectedTest",
+      "wrongHandleRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.001
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "qualifiedHandleInitializesOwnerTest",
+      "mappingIsNotInitializationTest",
+      "closedReferenceCannotInitializeTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.018
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "duplicateInitializationRejectedTest",
+      "collisionBypassCounterexampleTest",
+      "missingCompletionCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.004
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "bareLookupWrongOwnerCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.001
+  }
+]

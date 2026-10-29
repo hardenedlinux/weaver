@@ -1,0 +1,129 @@
+[
+  {
+    "label": "api-parse",
+    "modules": 4,
+    "sourceSha256": "6e7c4f99249b04c4d221e2ca594ef40a1a548e4df15df11acbd28291aa2b57f1",
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 1.167
+  },
+  {
+    "label": "api-typecheck",
+    "typedIrDigest": "cfbfe7aee69597f5646e3fa988cc4716366c245c709e54b1ebc8bc1321f05fcf",
+    "exit": 0,
+    "watchdogSeconds": 55,
+    "seconds": 1.975
+  },
+  {
+    "label": "api-controls-0",
+    "passed": [
+      "completeProfileReachesActualDispatchTest",
+      "missingPublicationCannotBindTest",
+      "forgedCommitmentContentRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.073
+  },
+  {
+    "label": "api-controls-1",
+    "passed": [
+      "droppedCapabilityRejectedTest",
+      "changedContextRejectedTest",
+      "changedRegionRejectedTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.016
+  },
+  {
+    "label": "api-controls-2",
+    "passed": [
+      "changedNodeRejectedTest",
+      "duplicateNodeIdentityRejectedTest",
+      "otherPublishedProfileDoesNotAuthorizeOriginalTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.012
+  },
+  {
+    "label": "api-controls-3",
+    "passed": [
+      "duplicatePublicationDoesNotOverwriteTest",
+      "duplicateBindingDoesNotRecreateClaimTest",
+      "lostPublicationReplyRecoversSameRecordTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.021
+  },
+  {
+    "label": "api-controls-4",
+    "passed": [
+      "lostBindingReplyRetainsOriginalTest",
+      "unrelatedPublicationDoesNotRepinOriginalTest",
+      "restartPreservesProfileAndBindingTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.034
+  },
+  {
+    "label": "api-controls-5",
+    "passed": [
+      "oldReadCannotEnqueueAfterRestartTest",
+      "oldReadCannotConsumeAfterRestartTest",
+      "recoveredReadAndRejoinProgressTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.021
+  },
+  {
+    "label": "api-controls-6",
+    "passed": [
+      "postConsumptionRestartCannotRetryTest",
+      "unknownSendRetainsBudgetTest",
+      "replacementProfileCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.033
+  },
+  {
+    "label": "api-controls-7",
+    "passed": [
+      "replacementBindingCounterexampleTest",
+      "rollbackPublicationCounterexampleTest",
+      "forgottenConsumptionCounterexampleTest"
+    ],
+    "failed": [],
+    "ignored": [],
+    "typedIrUnchanged": true,
+    "exit": 0,
+    "watchdogSeconds": 20,
+    "seconds": 0.024
+  }
+]

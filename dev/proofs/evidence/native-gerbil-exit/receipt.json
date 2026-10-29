@@ -1,0 +1,49 @@
+{
+  "status": "BOUNDED_AOT_NATIVE_NATURAL_EXIT_QUALIFIED",
+  "scope": "Isolated native verification entry only; ordinary dynamic gxi deadline remains failed; no Gateway implementation or full toolchain rebuild",
+  "nativeProcesses": 3,
+  "nativeBudgetSeconds": 15,
+  "nativeSeconds": [
+    0.122,
+    0.038,
+    0.02
+  ],
+  "nativeCheckNames": 11,
+  "nativeCleanup": "LU",
+  "sourceInterfaces": 39,
+  "stableNativeInputs": 327,
+  "quintControls": 12,
+  "deliberateFaultControls": 3,
+  "officialPhases": 6,
+  "leanDeclarations": 9,
+  "freshCompiledModules": 14,
+  "historicalManifests": 48,
+  "dependenciesChanged": false,
+  "auditDate": "2026-10-20",
+  "workspace": "/Users/guangtao/ghq/github.com/tao3k/weaver",
+  "head": "4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d",
+  "repair": "Prelude-aware isolated Core/POO source compilation and AOT verification entry; public load of a normal cleanup canary; explicit successful platform final link",
+  "sourceSnapshotRecords": 1003,
+  "originalFixture": {
+    "path": "proofs/evidence/committed-profile-binding/native-authoring.ss",
+    "sha256": "68a27a0b594fda7aedab994c2d230464ddb2907176e25d9b8fe5837e24203750"
+  },
+  "existingPooPin": "fdeadfa40ca5cee5fe20308985aef1577f2eb49b",
+  "nativeInputBoundary": "327 library, executable, canary and wrapper inputs captured before/after; all 1003 snapshot source records and 39 compiled module source files additionally verified after runs",
+  "preservedFailures": [
+    "Historical 15-second native exit 124",
+    "Current dynamic gxi late natural exits at 18.653 and 27.829 seconds, both failed unchanged deadline",
+    "Source/prelude, inherited SDK, whole-system-static, final-link and canary ABI/entrypoint failures"
+  ],
+  "evidenceLimitation": "One first temporary canary-prefix log was overwritten; labeled diagnosis note retained instead of fabricating raw evidence",
+  "trustedBoundary": "Installed Gerbil/Gambit/compiler/stdlib and OS libraries are reused, not a full toolchain rebuild; abstract proofs assume truthful native observations",
+  "nativeReceipt": "qualified-stable/qualified-runs.json",
+  "nativeBinarySha256": "76613e547c34ab85dd41290536a68ee11130e69e0b031dc0fbc8abf30b134afa",
+  "formalNativeBoundary": "Nine Lean declarations and twelve Quint controls do not prove the C compiler, Darwin loader or all foreign plugins; native pass never mints dispatch authority",
+  "remainingOpen": [
+    "Arbitrary dynamic gxi workload natural-exit deadline",
+    "Native YAML and full common-normal-form/default/diagnostic parity",
+    "Full provider/transport/store native fault qualification",
+    "End-to-end Gateway performance"
+  ]
+}

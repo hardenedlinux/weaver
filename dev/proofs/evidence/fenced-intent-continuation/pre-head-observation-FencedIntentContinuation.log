@@ -1,0 +1,32 @@
+'Weaver.FencedIntentContinuation.initialized_zero_phase_means_enabled' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.stable_fair_recovery_becomes_enabled' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.late_active_link_cannot_cross_new_fence' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.retired_attempts_never_reactivate' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.recut_unlock_counterexample' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.duplicate_root_commit_counterexample' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.unfair_stutter_has_no_recovery' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.commits_never_roll_back' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.old_attempt_decisions_never_change' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.recut_preserves_original_obligation' does not depend on any axioms
+'Weaver.FencedIntentContinuation.only_current_unsettled_root_can_commit' does not depend on any axioms
+'Weaver.FencedIntentContinuation.initialized_conservation' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_unique_root' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.continuation_acknowledges_original_root' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.stable_rank_nonincreasing' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.FencedIntentContinuation.fair_monotone_rank_eventually_zero' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.stable_fair_recovery_finishes' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_product_refines_key' does not depend on any axioms
+'Weaver.FencedIntentContinuation.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.original_budget_remains_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

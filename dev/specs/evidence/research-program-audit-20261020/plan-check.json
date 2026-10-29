@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "findings": 12,
+  "packages": 8,
+  "dependencies": {
+    "RP1": [],
+    "RP2": [
+      "RP1"
+    ],
+    "RP3": [
+      "RP1",
+      "RP2"
+    ],
+    "RP4": [
+      "RP1"
+    ],
+    "RP5": [
+      "RP2",
+      "RP4"
+    ],
+    "RP6": [
+      "RP3",
+      "RP4",
+      "RP5"
+    ],
+    "RP7": [
+      "RP1"
+    ],
+    "RP8": [
+      "RP3",
+      "RP4",
+      "RP5",
+      "RP6",
+      "RP7"
+    ]
+  },
+  "sourceMatches": 16
+}

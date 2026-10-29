@@ -1,0 +1,71 @@
+proofs/lean/FencedIntentContinuation.lean:266:8: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≥ 1
+  b ≥ 0
+  a ≥ 0
+  a - b ≤ -1
+where
+ a := ↑s.legacy.worker
+ b := ↑next.worker
+ c := ↑{ legacy := next, links := s.links, retired := s.retired, commits := s.commits, active := s.active,
+      observed := s.observed, phase := if next.base.base.enabled = true then 0 else 13 }.phase
+proofs/lean/FencedIntentContinuation.lean:268:23: error: No goals to be solved
+proofs/lean/FencedIntentContinuation.lean:269:27: error: No goals to be solved
+proofs/lean/FencedIntentContinuation.lean:270:24: error: No goals to be solved
+proofs/lean/FencedIntentContinuation.lean:327:43: error(lean.invalidField): Invalid field `burnCount`: The environment does not contain `Weaver.AnchorBrokerCommit.State.burnCount`, so it is not possible to project the field `burnCount` from an expression
+  s.legacy.base.base.base.base.base.base
+of type `AnchorBrokerCommit.State`
+proofs/lean/FencedIntentContinuation.lean:327:95: error(lean.invalidField): Invalid field `dispatchCount`: The environment does not contain `Weaver.AnchorReconfiguration.State.dispatchCount`, so it is not possible to project the field `dispatchCount` from an expression
+  s.legacy.base.base.base.base.base
+of type `AnchorReconfiguration.State`
+proofs/lean/FencedIntentContinuation.lean:327:161: error(lean.invalidField): Invalid field `authority`: The environment does not contain `Weaver.GateConsumptionPersistence.State.authority`, so it is not possible to project the field `authority` from an expression
+  s.legacy.base.base.base.base.base.base.base
+of type
+  GateConsumptionPersistence.State
+proofs/lean/FencedIntentContinuation.lean:331:58: error: Application type mismatch: The argument
+  s.legacy.base.base.base.base.base.base.base
+has type
+  GateConsumptionPersistence.State
+but is expected to have type
+  SettlementAnchorRecovery.State
+in the application
+  SettlementAnchorRecovery.accountMaterialized c s.legacy.base.base.base.base.base.base.base
+proofs/lean/FencedIntentContinuation.lean:331:188: error(lean.invalidField): Invalid field `authority`: The environment does not contain `Weaver.GateConsumptionPersistence.State.authority`, so it is not possible to project the field `authority` from an expression
+  s.legacy.base.base.base.base.base.base.base
+of type
+  GateConsumptionPersistence.State
+proofs/lean/FencedIntentContinuation.lean:332:58: error: Application type mismatch: The argument
+  s.legacy.base.base.base.base.base.base.base
+has type
+  GateConsumptionPersistence.State
+but is expected to have type
+  SettlementAnchorRecovery.State
+in the application
+  SettlementAnchorRecovery.accountMaterialized c s.legacy.base.base.base.base.base.base.base
+proofs/lean/FencedIntentContinuation.lean:336:53: error(lean.invalidField): Invalid field `seals`: The environment does not contain `Weaver.AnchorBrokerCommit.State.seals`, so it is not possible to project the field `seals` from an expression
+  s.legacy.base.base.base.base.base.base
+of type `AnchorBrokerCommit.State`
+proofs/lean/FencedIntentContinuation.lean:337:49: error(lean.invalidField): Invalid field `authority`: The environment does not contain `Weaver.GateConsumptionPersistence.State.authority`, so it is not possible to project the field `authority` from an expression
+  s.legacy.base.base.base.base.base.base.base
+of type
+  GateConsumptionPersistence.State
+'Weaver.FencedIntentContinuation.commits_never_roll_back' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.old_attempt_decisions_never_change' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.recut_preserves_original_obligation' does not depend on any axioms
+'Weaver.FencedIntentContinuation.only_current_unsettled_root_can_commit' does not depend on any axioms
+'Weaver.FencedIntentContinuation.initialized_conservation' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_unique_root' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.continuation_acknowledges_original_root' depends on axioms: [propext]
+'Weaver.FencedIntentContinuation.stable_rank_nonincreasing' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.fair_monotone_rank_eventually_zero' depends on axioms: [propext, Quot.sound]
+'Weaver.FencedIntentContinuation.stable_fair_recovery_finishes' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.FencedIntentContinuation.initialized_product_refines_key' does not depend on any axioms
+'Weaver.FencedIntentContinuation.original_consumption_and_settlement_remain_unique' depends on axioms: [sorryAx]
+'Weaver.FencedIntentContinuation.original_budget_remains_conserved' depends on axioms: [sorryAx]
+'Weaver.FencedIntentContinuation.unknown_original_reservation_stays_held' depends on axioms: [sorryAx]

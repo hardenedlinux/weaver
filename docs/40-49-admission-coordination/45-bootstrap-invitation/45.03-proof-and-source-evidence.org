@@ -1,0 +1,204 @@
+#+title: Bootstrap Invitation Proof and Source Evidence
+#+language: en
+#+startup: overview
+
+* Evidence boundary
+This review extends the actual incarnation-issuance model with an invitation
+registry and atomic consumption bridge. It does not implement a Gateway,
+cryptographic enrollment service, storage transaction or dependency migration.
+The original failed and interrupted routes remain recorded separately.
+
+- [[file:../../../dev/proofs/lean/LlmBootstrapInvitation.lean][Lean source]]
+- [[file:../../../dev/proofs/quint/LlmBootstrapInvitation.qnt][Quint source (directory spelling is intentional)]]
+- [[file:../../../dev/proofs/check_llm_bootstrap_invitation.py][Bounded verification runner]]
+- [[file:../../../dev/proofs/prepare_bootstrap_invitation_closure.py][Ancestor closure preparation]]
+- [[file:../../../dev/proofs/prepare_bootstrap_invitation_shards.py][Control partition and retained-IR verification]]
+- [[file:../../../dev/proofs/evidence/llm-bootstrap-invitation/commands.json][Current command receipts]]
+- [[file:../../../dev/proofs/evidence/llm-bootstrap-invitation/receipt.json][Final qualification receipt]]
+- [[file:../../../dev/proofs/evidence/llm-bootstrap-invitation/SHA256SUMS][Sealed evidence bytes]]
+- [[file:../../../dev/proofs/evidence/llm-bootstrap-invitation/source-review.json][Pinned source and exact excerpts]]
+- [[file:../../../dev/proofs/evidence/llm-bootstrap-invitation/source-receipt-check.json][Fresh pinned-blob checks]]
+- [[file:../../../dev/proofs/evidence/llm-bootstrap-invitation/working-source-check.json][Current working-source identities]]
+- [[file:../../../dev/proofs/evidence/llm-bootstrap-invitation/closure-certificate.json][Ancestor/test/simulation closure certificate]]
+- [[file:../../../dev/proofs/evidence/llm-bootstrap-invitation/control-shards.json][Current controls and retained-IR partitions]]
+- [[file:../../../dev/proofs/evidence/llm-bootstrap-invitation/counterexample-observations.json][Decoded fault observations]]
+
+* Source comparison and reuse decisions
+Nineteen pinned blobs and every recorded source excerpt were freshly read using
+Git object identity, then checked against the working source. Eighteen working
+files match exactly; P17 has only two recorded control-plane import-path changes.
+This is local source evidence, not a refreshed upstream release claim.
+No source here supplies native bootstrap invitation delivery or an atomic
+distributed enrollment transaction. The following reuse is semantic and conditional.
+
+| Source | Direct reuse | Required extension or retained premise |
+|--------+--------------+---------------------------------------|
+| P12 authorized-effect-token | Exact root and binding, nonce spent state and revocation epoch | Invitation consumption must bind the complete frozen key assignment and issued result; its state must be durably authoritative |
+| P13 strict-mediation | Consumption precedes uncertain observation; indeterminate is still consumed | Unknown issuance response cannot reopen the invitation; pure mediation is not a storage WAL |
+| P15 assurance/effect-host | Producer-issued private grant provenance, exact host association and serialized owner checks | Weak tables and current-thread identity are process-local; receipt explicitly denies durable/distributed authority |
+| P17 store-backend | Explicit native owner contract | Add one determining invitation/outcome/issuance record and exact replay join; no assumed second-store transaction |
+| P18 promotion recovery | Exact request, pre/post and observation association | Resolve the same canonical invitation and result after lost response |
+| P19 authorized recovery bridge | Original claim/authority/source binding | Recovery cannot manufacture a new launch, family, reservation or beneficiary |
+| P20 committed effect application | Conditional trace-level application uniqueness | Native commit, anti-rollback and actual executor refinement still required |
+| P22 durable store | Fsync, locking and replay ownership contracts | Qualify real invitation/index/outcome persistence before exposing restored state |
+| P31 session attempt Lean and Quint | Revision/generation and retained pending recovery | Extend to frozen bootstrap assignment and an exact consumed result |
+| P33 semantic budget/watchdog | Timeout is capacity evidence, not no-execution | Retain unknown reservation; enrollment timeout does not refund |
+| P35 context invalidation | Dependency lineage and currentness | Source parent and policy/history revision remain final-CAS inputs |
+| P43 funs-attempt | Session/turn identity, expected revision and bounded coordinates | Authentic key/session facts must come from native verification; local receipt denies publication/authorization/durability |
+| P44 objects-attempt | Typed identity/generation/anchor vocabulary | Persist canonical invitation/result and reject old-incarnation recovery |
+| C8 BoundOperation | Execution binding proof once inputs are supplied | Equality authenticates neither input; native host authenticates the beneficiary and original operation |
+| C10 CompoundAuthorization | Pure evaluation over compiled POO root and caller entity snapshot | Authentic facts, current state and atomic execution remain host obligations |
+| C11 composition family | Dependency and invalidation composition | Does not prove key custody, credential delivery, signature validity or storage anti-rollback |
+
+The metadata includes nineteen blobs because some source families above have
+multiple Lean/Quint artifacts. The exact IDs, revisions, paths, hashes and
+line excerpts are preserved in source-review.json. P12 accepts equality at its
+expiry boundary (rejects now greater than expiry); this Gateway model retains
+the stricter now less than expiry guard. It is not an ABI-equivalence claim.
+Cedar remains Code as Policy for authentic original-task facts; evaluation alone
+never consumes an invitation or authorizes a provider send.
+
+* Four-artifact obligations
+Every row binds this Org explanation to a checked Lean declaration, a concrete
+Quint control and a stable node in the core D2. Counterexample tests deliberately
+execute unsafe actions outside the guarded step relation. They are successful
+negative controls, not claims that a guarded run violates the invariant.
+
+| ID | Obligation | Lean declaration | Quint control | D2 node |
+|----+------------+------------------+---------------+---------|
+| BI1 | Registered assignment is immutable | =invitation_retained= | =registrationDoesNotIssueTest= | =recovery.projection= |
+| BI2 | Canonical launch cannot be reminted | =launch_retained= | =duplicateCanonicalLaunchRejectedTest= | =protocols.mcp= |
+| BI3 | Consumption result survives every guarded step | =consumed_retained= | =lostReplyCannotConsumeTwiceTest= | =recovery.fence= |
+| BI4 | Finite-run recovery retains the same result | =consumed_run= | =lostReplyRecoversSameResultTest= | =protocols.acp= |
+| BI5 | Known outcome rejects another consumption | =no_second_consume= | =lostReplyCannotConsumeTwiceTest= | =recovery.join= |
+| BI6 | Bearer forwarding does not establish assigned-key possession | =forwarded_bearer_wrong_key= | =forwardedInvitationNoKeyRejectedTest= | =protocols.a2a= |
+| BI7 | Transcript session remains frozen | =wrong_session= | =substitutedSessionRejectedTest= | =protocols.a2a= |
+| BI8 | Intervening publication invalidates the observation | =stale_read= | =concurrentReadInvalidatedTest= | =broker.cas= |
+| BI9 | New issuance has the same-event exact outcome and credential | =new_issue_has_bound_consumption= | =consumptionCommitsExactResultTest= | =recovery.join= |
+| BI10 | No issuance outside consumed-result coverage | =covered_step= | =bearerOnlyInvitationCounterexampleTest= | =recovery.join= |
+| BI11 | Recovery cannot erase consumption while retaining issuance | =covered_run= | =lostConsumptionRecordInvitationCounterexampleTest= | =recovery.fence= |
+| BI12 | Empty-registry trace gives producer-assignment provenance | =registration_origin= | =independentAssignmentRequiredTest= | =registry.alias= |
+| BI13 | The consumed result is immutable across finite runs | =original_result_unique= | =lostReplyRecoversSameResultTest= | =protocols.acp= |
+| BI14 | Actual predecessor run retained; no new activation path | =composition= | =recoveryDoesNotReactivateTest= | =broker.alias= |
+| BI15 | Spent outcome names its registered exact ticket | =spent_bound_step= | =splitCommitInvitationCounterexampleTest= | =recovery.join= |
+| BI16 | Binding survives recovery and late responses | =spent_bound_run= | =replacedKeyBindingInvitationCounterexampleTest= | =recovery.fence= |
+| BI17 | Issued ticket comes from the independent assignment | =issued_from_registered_assignment= | =selfSelectedKeyRejectedTest= | =registry.origin= |
+| BI18 | Conditional account-prefix composition prevents duplicate application | =original_reservation_once= | =originalUnknownBudgetRetainedTest= | =broker.hold= |
+| BI19 | Unknown original use does not authorize a refund | =unknown_original_hold_retained= | =originalUnknownBudgetRetainedTest= | =registry.query= |
+
+* Lean quantification and assumptions
+The leaf has nineteen printed declarations checked for absence of sorryAx.
+Functions indexed by Nat and inductive Run support arbitrary finite invitation
+and message populations and arbitrary finite traces. There is no two-worker
+bound in these Lean results. The Quint fixture is bounded separately.
+
+Covered states relate every issued ticket to an exact consumed outcome.
+SpentBound relates every consumed outcome to the immutable registered ticket.
+Their initial assumptions hold for empty issuance/consumption registries; a
+restored nonempty image requires a trace-derived accepted prefix, not arbitrary
+maps that merely look well formed. Producer provenance starts from an empty
+invitation registry and propagates through actual registration events.
+new_issue_has_bound_consumption exposes Ready, the complete frozen ticket,
+same-event consumed outcome, and unchanged active custody. The credential in
+Ready includes native verification and exact key/session/workload equality.
+
+The generic edge in the outer proof is intentionally not declared trustworthy.
+composition requires a witness mapping every such edge to the actual predecessor
+Run. Instantiate it with the actual LlmIncarnationIssuance.Step and the one-step
+Run constructor. That predecessor retains launch authorization, exact signature
+verification, freshness and full pre/post durability contracts. Non-consume
+outer transitions preserve the issued map. No inner commit can be independently
+published before the full outer durable event.
+
+The two financial theorems call the predecessor results with the composed run,
+actual initialized caller/publication/custody/account prefixes, Safe handoff,
+and sourceReady-to-OriginalReady binding. Unknown source use is explicit.
+A pure invitation invariant does not prove a financial invariant without those
+premises. The two matching Quint assertions are a concrete retained-hold fixture,
+not a replacement for the Lean account-prefix argument.
+
+Native signature unforgeability, independent producer/key assignment, transcript
+encoding, confidentiality, session authenticity, durable atomic publication,
+anti-rollback floors and implementation refinement are unproved owner premises.
+Neither formal language proves physical process isolation, HSM behavior, provider
+exactly-once delivery, fairness, or eventual completion. A cloned assigned key or
+a relayed authorized signing oracle is outside the bearer-only forwarding result.
+
+* Quint controls and fault interpretation
+The current source contains nineteen guarded controls and four fault controls.
+It imports the actual predecessor issue, proof, activation, revocation and crash
+actions. Its two-ticket fixture retains the original claim/reservation and shared
+workload, but gives each intended recipient a distinct assigned key/session.
+The assignment oracle is trusted producer input. The duplicate canonical launch
+test also encounters its restrictive assignment oracle; it does not independently
+qualify a native multi-key uniqueness index. Lean launch retention and actual
+registration guards express the general property.
+
+- Bearer-only issuance bypass: an unsafe action calls predecessor issue without
+  outer consumption. It creates a pending ticket without a consumed outcome;
+  it does not demonstrate stolen-key possession, active custody or a provider send.
+- Lost consumption record: delete the outer consumed record while retaining the
+  issued ticket. Coverage fails; the guarded recovery protocol never does this.
+- Split commit: mark consumed with the wrong result while issuance is absent.
+  SpentBound fails; a separate spent write is not an implementation of the CAS.
+- Replaced binding: mutate a registered assignment after consumption. Exact
+  outcome-to-assignment binding fails even though the old issued result remains.
+
+Decoded traces additionally check the actual predecessor source/account fixture:
+no provider source call, original unknown hold retained, floor log unchanged,
+and no active incarnation change for these four pending-issuance faults.
+The guarded activated initializer separately exercises the actual custody change.
+No fault test treats a missing local response as proof of failed execution.
+
+* Bounded execution and historical failures
+The initial all-control route reached its fixed 55-second watchdog. A narrower
+single-control diagnostic was manually interrupted and is not acceptance evidence.
+The first four-control recursive-import route also reached 55 seconds. Explicit
+types were then added, and the retained-hold assertion strengthened. Two recursive
+parse routes reached their 20-second limits. An all-control bundled test reached
+55 seconds as well. All these diagnostics are retained, not counted as passes.
+
+The accepted route bundles the thirteen existing modules into one file, removing
+only local import source paths while retaining module names and aliases. It then
+partitions only current run declarations into six disjoint groups. The official
+parser accepts the bundle. All twelve ancestor non-run declaration IRs match the
+sealed parent IR; the official phase-one parser's complete current leaf matches
+the bundle IR after checking its top-level lexical depth zero. Only parser IDs,
+import file paths and declaration order differ. Bodies, types and effects remain.
+Each retained test source span is unchanged and all twenty-three tests occur
+exactly once across the groups. The raw current leaf in quint-core remains
+byte-identical to dev/proofs/qunit. No watchdog is enlarged. This changes input
+organization and scheduling, not the transition relation or invariant.
+
+The simulation bundle omits only already-covered current run declarations and
+preserves all transition and invariant source. Its consumed-state exploration
+reached the original 30-second watchdog. No randomized sample is admitted as a
+current pass, and the activated-state exploration was not dispatched after the
+failure. Targeted tests and arbitrary-finite Lean proofs are distinct evidence;
+there is no current exhaustive-state or liveness claim. Requested exploration
+parameters and seed remain in exploration-commands.json.
+
+The thirty-one predecessor controls have separate sealed passing receipts; their
+source and closure identities are freshly checked and those receipts are reused,
+not described as a current rerun. Thirty-one earlier Lean source hashes, successful
+logs and compiled artifacts are also checked before reuse. Native qualification
+and remote CI are not claimed.
+
+* Reproduction
+#+begin_src sh
+python3 dev/proofs/prepare_bootstrap_invitation_bundle.py
+python3 dev/proofs/prepare_bootstrap_invitation_bundle_controls.py
+python3 dev/proofs/check_llm_bootstrap_invitation.py
+python3 dev/proofs/evidence/llm-bootstrap-invitation/check-source-receipts.py
+python3 dev/proofs/evidence/llm-bootstrap-invitation/check-working-sources.py
+python3 dev/proofs/evidence/llm-bootstrap-invitation/check-bundle.py
+#+end_src
+
+The certified parent core and bundle parse/source-map receipts are inputs to
+these commands. Recompute their parser receipts after any source edit; never
+reuse an IR for changed bytes. The historical recursive preparation routes are
+retained for diagnosis, not required as current acceptance routes. Run a new
+verification in an isolated evidence copy so sealed results are preserved.
+The preparation scripts use bounded child commands. Preserve diagnostics from a
+failed route before changing scheduling or source; do not overwrite a timeout
+with a later successful run. Historical category manifests remain immutable.

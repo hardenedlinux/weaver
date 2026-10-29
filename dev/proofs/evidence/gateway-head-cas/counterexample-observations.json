@@ -1,0 +1,1355 @@
+[
+  {
+    "path": "proofs/evidence/gateway-head-cas/itf/duplicateRootCompletionCounterexampleTest-3.itf.json",
+    "states": 28,
+    "head": {
+      "budget": 0,
+      "claimStream": 0,
+      "claimToken": 0,
+      "domain": 0,
+      "history": 0,
+      "id": 0,
+      "key": 0,
+      "payload": 10,
+      "policy": 0,
+      "route": 0
+    },
+    "version": 24,
+    "worker": 0,
+    "fence": 1,
+    "decisions": [
+      {
+        "id": 0,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        }
+      },
+      {
+        "id": 99,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        }
+      }
+    ],
+    "rows": [],
+    "casAudits": [
+      {
+        "at": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        },
+        "job": {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        }
+      }
+    ],
+    "joined": {
+      "boot": -1,
+      "decisions": [],
+      "rows": [],
+      "view": {
+        "fence": -1,
+        "head": {
+          "budget": -1,
+          "claimStream": -1,
+          "claimToken": -1,
+          "domain": -1,
+          "history": -1,
+          "id": -1,
+          "key": -1,
+          "payload": -1,
+          "policy": -1,
+          "route": -1
+        },
+        "semanticRevision": -1,
+        "version": -1,
+        "worker": -1
+      }
+    },
+    "haveJoin": false,
+    "sends": [],
+    "originalMessages": {
+      "0": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 0,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 1,
+          "1": 0,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          0
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      },
+      "1": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 1,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 0,
+          "1": 1,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          1
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/gateway-head-cas/itf/oldWorkerCASCounterexampleTest-2.itf.json",
+    "states": 28,
+    "head": {
+      "budget": 0,
+      "claimStream": 0,
+      "claimToken": 0,
+      "domain": 0,
+      "history": 0,
+      "id": 0,
+      "key": 0,
+      "payload": 10,
+      "policy": 0,
+      "route": 0
+    },
+    "version": 24,
+    "worker": 1,
+    "fence": 2,
+    "decisions": [
+      {
+        "id": 0,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        }
+      }
+    ],
+    "rows": [],
+    "casAudits": [
+      {
+        "at": {
+          "fence": 2,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 24,
+          "worker": 1
+        },
+        "job": {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        }
+      }
+    ],
+    "joined": {
+      "boot": -1,
+      "decisions": [],
+      "rows": [],
+      "view": {
+        "fence": -1,
+        "head": {
+          "budget": -1,
+          "claimStream": -1,
+          "claimToken": -1,
+          "domain": -1,
+          "history": -1,
+          "id": -1,
+          "key": -1,
+          "payload": -1,
+          "policy": -1,
+          "route": -1
+        },
+        "semanticRevision": -1,
+        "version": -1,
+        "worker": -1
+      }
+    },
+    "haveJoin": false,
+    "sends": [],
+    "originalMessages": {
+      "0": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 0,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 1,
+          "1": 0,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          0
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      },
+      "1": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 1,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 0,
+          "1": 1,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          1
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/gateway-head-cas/itf/preparedProjectionAsCommitCounterexampleTest-4.itf.json",
+    "states": 27,
+    "head": {
+      "budget": 0,
+      "claimStream": 0,
+      "claimToken": 0,
+      "domain": 0,
+      "history": 0,
+      "id": 0,
+      "key": 0,
+      "payload": 10,
+      "policy": 0,
+      "route": 0
+    },
+    "version": 23,
+    "worker": 0,
+    "fence": 1,
+    "decisions": [],
+    "rows": [
+      {
+        "id": 0,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        }
+      }
+    ],
+    "casAudits": [],
+    "joined": {
+      "boot": -1,
+      "decisions": [],
+      "rows": [],
+      "view": {
+        "fence": -1,
+        "head": {
+          "budget": -1,
+          "claimStream": -1,
+          "claimToken": -1,
+          "domain": -1,
+          "history": -1,
+          "id": -1,
+          "key": -1,
+          "payload": -1,
+          "policy": -1,
+          "route": -1
+        },
+        "semanticRevision": -1,
+        "version": -1,
+        "worker": -1
+      }
+    },
+    "haveJoin": false,
+    "sends": [],
+    "originalMessages": {
+      "0": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 0,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 1,
+          "1": 0,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          0
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      },
+      "1": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 1,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 0,
+          "1": 1,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          1
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/gateway-head-cas/itf/redirectedFinalSendCounterexampleTest-6.itf.json",
+    "states": 30,
+    "head": {
+      "budget": 0,
+      "claimStream": 0,
+      "claimToken": 0,
+      "domain": 0,
+      "history": 0,
+      "id": 0,
+      "key": 0,
+      "payload": 10,
+      "policy": 0,
+      "route": 0
+    },
+    "version": 24,
+    "worker": 0,
+    "fence": 1,
+    "decisions": [
+      {
+        "id": 0,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        }
+      }
+    ],
+    "rows": [
+      {
+        "id": 0,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        }
+      }
+    ],
+    "casAudits": [
+      {
+        "at": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        },
+        "job": {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        }
+      }
+    ],
+    "joined": {
+      "boot": 0,
+      "decisions": [
+        {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        }
+      ],
+      "rows": [
+        {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        }
+      ],
+      "view": {
+        "fence": 1,
+        "head": {
+          "budget": 0,
+          "claimStream": 0,
+          "claimToken": 0,
+          "domain": 0,
+          "history": 0,
+          "id": 0,
+          "key": 0,
+          "payload": 10,
+          "policy": 0,
+          "route": 0
+        },
+        "semanticRevision": 13,
+        "version": 24,
+        "worker": 0
+      }
+    },
+    "haveJoin": false,
+    "sends": [
+      {
+        "job": {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        },
+        "key": 0,
+        "payload": 10,
+        "route": 1,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 24,
+          "worker": 0
+        }
+      }
+    ],
+    "originalMessages": {
+      "0": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 0,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 1,
+          "1": 0,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          0
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 1,
+        "stream": 0
+      },
+      "1": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 1,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 0,
+          "1": 1,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          1
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/gateway-head-cas/itf/semanticPublicationCASCounterexampleTest-0.itf.json",
+    "states": 28,
+    "head": {
+      "budget": 0,
+      "claimStream": 0,
+      "claimToken": 0,
+      "domain": 0,
+      "history": 0,
+      "id": 0,
+      "key": 0,
+      "payload": 10,
+      "policy": 0,
+      "route": 0
+    },
+    "version": 24,
+    "worker": 0,
+    "fence": 1,
+    "decisions": [
+      {
+        "id": 0,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        }
+      }
+    ],
+    "rows": [],
+    "casAudits": [
+      {
+        "at": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 14,
+          "version": 24,
+          "worker": 0
+        },
+        "job": {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        }
+      }
+    ],
+    "joined": {
+      "boot": -1,
+      "decisions": [],
+      "rows": [],
+      "view": {
+        "fence": -1,
+        "head": {
+          "budget": -1,
+          "claimStream": -1,
+          "claimToken": -1,
+          "domain": -1,
+          "history": -1,
+          "id": -1,
+          "key": -1,
+          "payload": -1,
+          "policy": -1,
+          "route": -1
+        },
+        "semanticRevision": -1,
+        "version": -1,
+        "worker": -1
+      }
+    },
+    "haveJoin": false,
+    "sends": [],
+    "originalMessages": {
+      "0": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 0,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 1,
+          "1": 0,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          0
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      },
+      "1": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 1,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 0,
+          "1": 1,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          1
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/gateway-head-cas/itf/staleHeadCASCounterexampleTest-1.itf.json",
+    "states": 28,
+    "head": {
+      "budget": 0,
+      "claimStream": 0,
+      "claimToken": 0,
+      "domain": 0,
+      "history": 0,
+      "id": 0,
+      "key": 0,
+      "payload": 10,
+      "policy": 0,
+      "route": 0
+    },
+    "version": 24,
+    "worker": 0,
+    "fence": 1,
+    "decisions": [
+      {
+        "id": 0,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        }
+      }
+    ],
+    "rows": [],
+    "casAudits": [
+      {
+        "at": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 24,
+          "worker": 0
+        },
+        "job": {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        }
+      }
+    ],
+    "joined": {
+      "boot": -1,
+      "decisions": [],
+      "rows": [],
+      "view": {
+        "fence": -1,
+        "head": {
+          "budget": -1,
+          "claimStream": -1,
+          "claimToken": -1,
+          "domain": -1,
+          "history": -1,
+          "id": -1,
+          "key": -1,
+          "payload": -1,
+          "policy": -1,
+          "route": -1
+        },
+        "semanticRevision": -1,
+        "version": -1,
+        "worker": -1
+      }
+    },
+    "haveJoin": false,
+    "sends": [],
+    "originalMessages": {
+      "0": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 0,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 1,
+          "1": 0,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          0
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      },
+      "1": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 1,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 0,
+          "1": 1,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          1
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/gateway-head-cas/itf/staleJoinAfterNewFenceCounterexampleTest-5.itf.json",
+    "states": 30,
+    "head": {
+      "budget": 0,
+      "claimStream": 0,
+      "claimToken": 0,
+      "domain": 0,
+      "history": 0,
+      "id": 0,
+      "key": 0,
+      "payload": 10,
+      "policy": 0,
+      "route": 0
+    },
+    "version": 24,
+    "worker": 0,
+    "fence": 2,
+    "decisions": [
+      {
+        "id": 0,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        }
+      }
+    ],
+    "rows": [
+      {
+        "id": 0,
+        "view": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        }
+      }
+    ],
+    "casAudits": [
+      {
+        "at": {
+          "fence": 1,
+          "head": {
+            "budget": 0,
+            "claimStream": 0,
+            "claimToken": 0,
+            "domain": 0,
+            "history": 0,
+            "id": 0,
+            "key": 0,
+            "payload": 10,
+            "policy": 0,
+            "route": 0
+          },
+          "semanticRevision": 13,
+          "version": 23,
+          "worker": 0
+        },
+        "job": {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        }
+      }
+    ],
+    "joined": {
+      "boot": 0,
+      "decisions": [
+        {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        }
+      ],
+      "rows": [
+        {
+          "id": 0,
+          "view": {
+            "fence": 1,
+            "head": {
+              "budget": 0,
+              "claimStream": 0,
+              "claimToken": 0,
+              "domain": 0,
+              "history": 0,
+              "id": 0,
+              "key": 0,
+              "payload": 10,
+              "policy": 0,
+              "route": 0
+            },
+            "semanticRevision": 13,
+            "version": 23,
+            "worker": 0
+          }
+        }
+      ],
+      "view": {
+        "fence": 1,
+        "head": {
+          "budget": 0,
+          "claimStream": 0,
+          "claimToken": 0,
+          "domain": 0,
+          "history": 0,
+          "id": 0,
+          "key": 0,
+          "payload": 10,
+          "policy": 0,
+          "route": 0
+        },
+        "semanticRevision": 13,
+        "version": 24,
+        "worker": 0
+      }
+    },
+    "haveJoin": true,
+    "sends": [],
+    "originalMessages": {
+      "0": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 0,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 1,
+          "1": 0,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          0
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      },
+      "1": {
+        "authority": 0,
+        "candidate": {
+          "0": 0,
+          "1": 0
+        },
+        "charged": false,
+        "claimStream": 0,
+        "claimToken": 1,
+        "claimed": true,
+        "claims": 1,
+        "consumes": {
+          "0": 0,
+          "1": 1,
+          "2": 0,
+          "3": 0
+        },
+        "finalCost": false,
+        "history": true,
+        "issued": [
+          1
+        ],
+        "observed": false,
+        "reserved": true,
+        "retired": false,
+        "revision": 1,
+        "sends": 0,
+        "stream": 0
+      }
+    }
+  }
+]

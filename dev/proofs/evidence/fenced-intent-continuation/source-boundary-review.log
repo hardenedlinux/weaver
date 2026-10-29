@@ -1,0 +1,320 @@
+P12 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/authorized-effect-token.ss
+74:          (cons 'sequence-start seq-start) (cons 'sequence-end seq-end)
+75:          (cons 'arena-id arena) (cons 'arena-generation arena-gen)
+76:          (cons 'payload-offset offset) (cons 'payload-length length)
+77:          (cons 'payload-digest pld-digest) (cons 'lease-id lease))))
+108:         (.ref binding 'sequence-start) (.ref binding 'sequence-end)
+109:         (.ref binding 'arena-id) (.ref binding 'arena-generation)
+110:         (.ref binding 'payload-offset) (.ref binding 'payload-length)
+111:         (.ref binding 'payload-digest) (.ref binding 'lease-id)))
+P13 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/governance/policy/strict-mediation.ss
+51:                   (.o (kind 'poo-flow-strict-mediation-receipt)
+52:                       (accepted? #t) (outcome 'indeterminate)
+53:                       (code 'observation-unavailable)
+54:                       (token-id (.ref token 'token-id)) (nonce token-nonce)
+P15 cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc modules/assurance/effect-host.ss
+41: 
+42: ;;; Runtime authorize: Request -> CedarDecision or #f (deny/indeterminate).
+43: ;;; Runtime deliver: Request Token -> delivered / failed / indeterminate.
+44: ;;; 'delivered is an attributable acknowledgement, not inferred from start.
+45: (def (assurance-effect-host authorize deliver clock lease)
+140:                                      (vector-ref grant-state 3)))))
+141:             (unless (memq outcome '(delivered failed indeterminate))
+142:               (error "runtime delivery returned an invalid acknowledgement" outcome))
+143:             (delivery-receipt outcome #t))
+P17 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store-backend.ss
+148:    (cons 'payload payload)
+149:    (cons 'recoverable?
+150:          (poo-flow-durable-runtime-backend-option
+151:           payload
+152:           'recoverable?
+153:           #t))
+154:    (cons 'runtime-executed #f)))
+166:             (cons 'expected 'symbol)
+167:             (cons 'recoverable? #t))))))
+168: 
+169: ;; : (-> Symbol Symbol Datum [Alist])
+179:             (cons 'expected 'string)
+180:             (cons 'recoverable? #t))))))
+181: 
+182: ;; : (-> Symbol [Symbol] [Symbol] Symbol Symbol [Alist])
+198:             (cons 'allowed allowed)
+199:             (cons 'recoverable? #t)))))
+200:    ((poo-flow-durable-runtime-backend-every?
+201:      (lambda (value)
+213:             (cons 'allowed allowed)
+214:             (cons 'recoverable? #t)))))))
+215: 
+216: ;; : (-> [Symbol] [Symbol] [Symbol])
+362:                        +poo-flow-durable-runtime-store-backend-protocols+)
+363:                  (cons 'recoverable? #t)))))
+364:        (if (string? runtime-owner)
+365:          '()
+373:                  (cons 'expected 'string)
+374:                  (cons 'recoverable? #t)))))
+375:        (poo-flow-durable-runtime-backend-symbol-list-diagnostics
+376:         'unsupported-ledger-kind
+P18 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/PromotionTransactionRecovery.lean
+6: 
+7: namespace PooFlowProof.Enterprise.PromotionTransactionRecovery
+8: 
+9: open PromotionTransactionAtomicity
+12: abbrev WorkerId := String
+13: abbrev RecoveryReceiptId := String
+14: 
+15: structure TransactionRegistryEntry where
+350: 
+351: def unfencedRecoveryEligible
+352:     (record : DurableTransactionRecord)
+353:     (_worker : WorkerId) : Prop :=
+356: theorem unfencedApplyingRecordAllowsConcurrentWorkers :
+357:     unfencedRecoveryEligible applyingRecordA "worker-a" ∧
+358:       unfencedRecoveryEligible applyingRecordA "worker-b" ∧
+359:       ("worker-a" : WorkerId) ≠ "worker-b" := by
+360:   simp [unfencedRecoveryEligible, applyingRecordA]
+361: 
+362: structure RecoveryClaim where
+363:   transactionId : TransactionId
+364:   workerId : WorkerId
+368: 
+369: def recoveryClaimFieldsMatch
+370:     (record : DurableTransactionRecord)
+371:     (claim : RecoveryClaim) : Prop :=
+P19 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore.lean
+4: 
+5: import PooFlowProof.Enterprise.PromotionTransactionRecovery
+6: import PooFlowProof.Enterprise.SourceBoundEffectCompletionCrashRecoveryClosure
+7: import PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore
+8: 
+9: namespace PooFlowProof.Enterprise.SourceBoundEffectCompletionRecoveryAuthorizedTransactionRecoveryBridgeCore
+10: 
+11: open CedarDualEngineAuthorization
+13: open PromotionTransactionAtomicity
+14: open PromotionTransactionRecovery
+15: open SourceBoundCheckpointRestoreAuthorizationClosure
+16: open SourceBoundEffectCompletionCrashRecoveryClosure
+17: open SourceBoundEffectCompletionRecoveryCedarAuthorizationLifecycleCore
+18: open SourceBoundEffectCompletionRecoveryCedarAuthorizationSubjectBridgeCore
+19: open SourceBoundEffectCompletionRecoveryHumanAuthorityAtomicMaterializationBridgeCore
+20: 
+P20 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean
+6: 
+7: namespace PooFlowProof.Enterprise.CommittedEffectApplicationExactlyOnce
+8: 
+9: open PooFlowProof.Enterprise.BundleEvidenceBinding
+17: 
+18: def sourceBoundTraceExecutesUniverseExactlyOnce
+19:     (witness : SourceBoundCompositionalEffectWitness)
+20:     (traceReceipt : SourceBoundEffectExecutionTraceReceipt) : Prop :=
+24: 
+25: structure SourceBoundCommittedEffectExactlyOnceClosed
+26:     (request : SourceBoundCompositionRequestSubject)
+27:     (activeFenceToken : Nat)
+51:       traceReceipt
+52:   effectUniverseExecutesExactlyOnce :
+53:     sourceBoundTraceExecutesUniverseExactlyOnce witness traceReceipt
+54: 
+55: structure SourceBoundCommittedEffectExactlyOnceEvidence where
+56:   request : SourceBoundCompositionRequestSubject
+57:   activeFenceToken : Nat
+68:   closed :
+69:     SourceBoundCommittedEffectExactlyOnceClosed
+70:       request
+71:       activeFenceToken
+96:     (closed :
+97:       SourceBoundCommittedEffectExactlyOnceClosed
+98:         request
+99:         activeFenceToken
+P22 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/ai-agentic-context/features/memory/durable/store.ss
+127:    (cons 'payload payload)
+128:    (cons 'recoverable?
+129:          (poo-flow-durable-runtime-store-option
+130:           payload
+131:           'recoverable?
+132:           #t))))
+133: 
+140:    (list (cons 'value value)
+141:          (cons 'recoverable? #t))))
+142: 
+143: ;;; Runtime store contract construction centralizes ledger and capability
+257:             (cons 'expected 'symbol)
+258:             (cons 'recoverable? #t)))))))
+259: 
+260: ;; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])
+290:               (cons 'allowed +poo-flow-durable-runtime-store-ledger-kinds+)
+291:               (cons 'recoverable? #t))))))))
+292: 
+293: ;; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])
+324:                     +poo-flow-durable-runtime-store-capability-flags+)
+325:               (cons 'recoverable? #t))))))))
+326: 
+327: ;; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])
+440:                     contract))
+441:              (cons 'recoverable? #t)))))))
+442: 
+443: ;; : (-> PooDurableRuntimeStoreContract [PooDurableRuntimeStoreDiagnosticRow])
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean-poo/SessionAttempt.lean
+5: def quintSourceDigest : String := "sha256:2857ad1bc556179f034255a93537a136f08dcc21cd46458a6af18fef206f58b4"
+6: def quintInvariantNames : List String := ["ExactAttempt", "RecoveryPreservesObligation", "ClosedIsTerminal"]
+7: -- Pure owner-coordinate projection. Binding includes every native routing/input field.
+8: -- Producer receipt resolution and runtime publication are outside these laws.
+10:   revision : Nat
+11:   generation : Nat
+12:   closed : Bool
+13:   active : Option (Nat × α)
+14:   pending : List (Nat × α)
+15: 
+16: def recover (s : Schedule α) : Option (Schedule α) :=
+17:   if s.closed then none else
+18:     some { s with revision := s.revision + 1, generation := s.generation + 1,
+19:                   active := none, pending := s.active.toList ++ s.pending }
+20: 
+21: def complete [DecidableEq α] (s : Schedule α) (expectedRevision : Nat)
+26: 
+27: theorem closed_recovery_refused (s : Schedule α) (closed : s.closed = true) :
+28:     recover s = none := by simp [recover, closed]
+29: theorem recovery_generation_advances (s : Schedule α) (openState : s.closed = false) :
+30:     (recover s).map Schedule.generation = some (s.generation + 1) := by
+P31 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/quint/SessionAttempt.qnt
+4:   const BUG: str
+5:   var generation: int
+6:   var active: int
+7:   var pending: int
+8:   var everClosed: bool
+9:   var closed: bool
+10:   var routed: List[(int,int)]
+11:   var recoveries: List[(int,int)]
+12:   action init = all { generation' = 0, active' = -1, pending' = -1,
+13:     closed' = false, everClosed' = false, routed' = List(), recoveries' = List() }
+14:   action claim = all {
+15:     not(closed), active == -1, pending == -1, generation < 3,
+16:     generation' = generation + 1, active' = generation + 1,
+17:     pending' = pending, closed' = closed, everClosed' = everClosed, routed' = routed, recoveries' = recoveries
+18:   }
+19:   action complete(requestGeneration: int): bool = all {
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundDeterministicBudgetClosure.lean
+24: A deterministic budget plan is authorized for one fixed-point receipt and one
+25: maximum generation.  Runtime watchdog metrics are deliberately absent.
+26: -/
+27: structure SourceBoundDeterministicBudgetPlan where
+30:   fixedPointReceiptId : String
+31:   maxGeneration : Nat
+32:   ownerIdentity : String
+33:   semanticLimit : Nat
+47:   fixedPointReceiptId : String
+48:   generation : Nat
+49:   cycleObservationId : String
+50:   continuationIdentity : String
+111:   planFixedPointMatches : plan.fixedPointReceiptId = fixedPoint.receiptId
+112:   planGenerationMatches : plan.maxGeneration = fixedPoint.generation
+113:   receiptPlanMatches : receipt.planId = plan.planId
+114:   receiptRegistryMatches : receipt.registryDigest = progress.registryDigest
+115:   receiptFixedPointMatches : receipt.fixedPointReceiptId = fixedPoint.receiptId
+116:   receiptGenerationMatches : receipt.generation = progress.generation
+117:   receiptGenerationBound : receipt.generation ≤ plan.maxGeneration
+118:   receiptCycleMatches : receipt.cycleObservationId = cycle.observationId
+119:   receiptContinuationMatches :
+231:     fixedPointReceiptId := fixedPoint.receiptId
+232:     maxGeneration := fixedPoint.generation
+233:     ownerIdentity := "poo-flow-budget-owner-a"
+234:     semanticLimit := 8
+243:     fixedPointReceiptId := fixedPoint.receiptId
+244:     maxGeneration := fixedPoint.generation
+245:     ownerIdentity := "poo-flow-budget-owner-b"
+246:     semanticLimit := 8
+P33 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/SourceBoundRuntimeBudgetSeparationClosure.lean
+20:   watchdog.registryDigest = budget.registryDigest ∧
+21:     watchdog.generation = budget.generation ∧
+22:       watchdog.cycleObservationId = budget.cycleObservationId ∧
+23:         watchdog.continuationIdentity = budget.continuationIdentity
+31:     fixedPointReceiptId := "independent-fixed-point-receipt"
+32:     generation := watchdog.generation
+33:     cycleObservationId := watchdog.cycleObservationId
+34:     continuationIdentity := watchdog.continuationIdentity
+70:     fixedPointReceiptId := "independent-fixed-point-receipt"
+71:     generation := watchdog.generation
+72:     cycleObservationId := watchdog.cycleObservationId
+73:     continuationIdentity := watchdog.continuationIdentity
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean
+12: A successor context on one authority path must preserve the authority identity
+13: and strictly advance the authority generation.  Strict advancement makes the
+14: generation an anti-ABA fence rather than a mutable version label.
+15: -/
+16: def validAuthorityContextTransition
+18:   before.authorityIdentity = after.authorityIdentity ∧
+19:     before.authorityGeneration < after.authorityGeneration
+20: 
+21: theorem validAuthorityContextTransitionChangesContext
+25:   intro contextsEqual
+26:   have generationsEqual :
+27:       before.authorityGeneration = after.authorityGeneration :=
+28:     congrArg ReceiptValidationContext.authorityGeneration contextsEqual
+29:   exact (Nat.ne_of_lt transitionValid.2) generationsEqual
+30: 
+31: theorem validTransitionRejectsReceiptIssuedBeforeTransition
+57:       authorityIdentity := 61
+58:       authorityGeneration := 5
+59:       policySnapshotIdentity := 67
+60:       authorizationSnapshotIdentity := 71
+P35 a74fc2fd63437252175b5a67649ee54b886d3bf4 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean
+6: 
+7: namespace PooFlowProof.Enterprise.ReceiptContextLineagePrefixClosure
+8: 
+9: open PooFlowProof.Enterprise.ReceiptContextFreshnessClosure
+11: 
+12: structure AuthorityContextLineagePrefix where
+13:   lineage : AuthorityContextLineage
+14:   headPosition : Nat
+15: 
+16: def lineagePrefixAt
+17:     (lineage : AuthorityContextLineage)
+18:     (headPosition : Nat) : AuthorityContextLineagePrefix :=
+19:   { lineage := lineage, headPosition := headPosition }
+20: 
+21: def publishedByLineagePrefix
+22:     (lineagePrefix : AuthorityContextLineagePrefix)
+23:     (context : ReceiptValidationContext) : Prop :=
+24:   ∃ position,
+25:     position ≤ lineagePrefix.headPosition ∧
+26:       lineagePrefix.lineage.contextAt position = context
+27: 
+28: theorem lineagePrefixHeadIsPublished
+P43 a74fc2fd63437252175b5a67649ee54b886d3bf4 modules/session/funs-attempt.ss
+4: ;;; Pure scheduling intents. A Host must resolve producer receipts and publish by CAS.
+5: ;;; Recovery reconciliation cannot be inferred from a provider completion.
+6: (import (only-in :clan/poo/object .o .ref .slot? object?)
+7:         (only-in :std/list/list every) "types.ss" "objects-attempt.ss")
+8: (export poo-flow-session-schedule poo-flow-session-claim poo-flow-session-complete
+9:         poo-flow-session-recover poo-flow-session-reconcile poo-flow-session-close)
+10: (def (name? value) (and (string? value) (< 0 (string-length value) 257)))
+11: (def (freeze-input value)
+29:         ((eq? (.ref state 'status) 'closed) (receipt #f 'closed state))
+30:         ((or (= (.ref state 'revision) 65535) (= (.ref state 'generation) 65535))
+31:          (receipt #f 'coordinate-exhausted state))
+32:         (else (operation))))
+33: (def (next-state state status-value active-value obligations-value completed-value generation-value)
+34:   (let ((id-value (string-copy (.ref state 'identity))) (revision-value (+ 1 (.ref state 'revision))))
+35:     (.o (:: @ SessionSchedule.) identity: id-value revision: revision-value
+36:         generation: generation-value status: status-value active: active-value
+37:         obligations: obligations-value completed: completed-value)))
+38: (def (poo-flow-session-schedule identity-value)
+57:                    (anchors-value (map string-copy (.ref task-value 'anchor-refs)))
+58:                    (generation-value (+ 1 (.ref state 'generation)))
+59:                    (attempt-value (.o (:: @ SessionAttempt.) session: session-value task: task-id-value
+60:                      task-revision: task-revision-value identity: id-value request: request-value
+61:                      turn: turn-value generation: generation-value input: input-value anchor-refs: anchors-value)))
+62:               (receipt #t 'claimed (next-state state 'running attempt-value '()
+63:                  (.ref state 'completed) generation-value))))))))
+64: (def (same-attempt? left right)
+65:   (and (object? right)
+C8 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Admission/BoundOperation.lean
+C10 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/CompoundAuthorization.lean
+26:     receipt.responses.all (fun response =>
+27:       response.decision == .allow && response.erroringPolicies.isEmpty)
+28: 
+29: /-- Compile once, then evaluate all requests against the same policy set. -/
+49:   !receipts.isEmpty && receipts.all fun layer =>
+50:     layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty
+51: 
+52: /-- One exact compilation can serve several requests against the same root. -/
+C11 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 CedarPooSpec/Composition.lean

@@ -1,0 +1,152 @@
+{
+  "status": "pass",
+  "boundary": "Named-reference consistency, not semantic equivalence or native extraction",
+  "contracts": [
+    {
+      "contract": "BQ1",
+      "orgRule": "Original consumption survives reply loss",
+      "quint": [
+        "lostConsumeReplyTest",
+        "duplicateConsumptionRejectedTest"
+      ],
+      "lean": [
+        "durable_consumption_survives",
+        "admission_has_current_policy"
+      ],
+      "d2": "ledger.cas"
+    },
+    {
+      "contract": "BQ2",
+      "orgRule": "Intent precedes deduplicated acceptance",
+      "quint": [
+        "missingIntentCannotEnqueueTest",
+        "lostQueueReplyTest",
+        "enqueueBeforeIntentCounterexampleTest"
+      ],
+      "lean": [
+        "accepted_tombstone_survives",
+        "initialized_safe"
+      ],
+      "d2": "ledger.rows"
+    },
+    {
+      "contract": "BQ3",
+      "orgRule": "Restart retains accepted identity",
+      "quint": [
+        "crashBeforeEnqueueTest",
+        "crashAfterEnqueueTest",
+        "restartRequiresPrefixRecoveryTest",
+        "verifiedRecoveryContinuesSuffixTest",
+        "forgedRecoveryRejectedTest",
+        "restartedSpentLossCounterexampleTest"
+      ],
+      "lean": [
+        "accepted_tombstone_survives",
+        "queue_refinement_preserves_original_affinity"
+      ],
+      "d2": "ledger.join"
+    },
+    {
+      "contract": "BQ4",
+      "orgRule": "Final current worker and Policy gate",
+      "quint": [
+        "oldWorkerCannotInvokeTest",
+        "newWorkerCannotRelabelRangeTest",
+        "revocationBeforeInvokeTest",
+        "routeChangeBeforeInvokeTest",
+        "localReallowCannotUndoHistoryRestrictionTest"
+      ],
+      "lean": [
+        "invocation_rechecks_final_gate",
+        "stale_worker_cannot_invoke"
+      ],
+      "d2": "broker.gate"
+    },
+    {
+      "contract": "BQ5",
+      "orgRule": "SDK invocation slot is consumed once",
+      "quint": [
+        "sdkRetryCannotInvokeAgainTest",
+        "sdkReplayCounterexampleTest"
+      ],
+      "lean": [
+        "initialized_at_most_one_invocation",
+        "repeated_sdk_invocation_counterexample"
+      ],
+      "d2": "broker.queue"
+    },
+    {
+      "contract": "BQ6",
+      "orgRule": "Range frontier never recreates a tail",
+      "quint": [
+        "secondRangeUsesUnwrittenSuffixTest",
+        "overlappingTailCounterexampleTest",
+        "crashBeforeCallCannotAllocateTailTest"
+      ],
+      "lean": [
+        "initialized_nonoverlapping_ranges",
+        "frontier_monotone",
+        "overlapping_tail_counterexample"
+      ],
+      "d2": "broker.queue"
+    },
+    {
+      "contract": "BQ7",
+      "orgRule": "Partial or unknown writes retain hold",
+      "quint": [
+        "partialWriteKeepsHoldTest",
+        "partialWriteCannotReplayTest",
+        "timeoutCannotSettleTest",
+        "timeoutRefundCounterexampleTest"
+      ],
+      "lean": [
+        "unknown_retains_original_hold",
+        "end_to_end_unknown_preserves_obligations",
+        "unknown_refund_counterexample"
+      ],
+      "d2": "semantic.unknown"
+    },
+    {
+      "contract": "BQ8",
+      "orgRule": "Late receipts resolve only original intervals",
+      "quint": [
+        "forgedReceiptRejectedTest",
+        "lateOriginalFullReceiptTest",
+        "oldReceiptCannotClearNewTailTest",
+        "unboundLateReceiptCounterexampleTest"
+      ],
+      "lean": [
+        "full_receipt_rechecks_original_pending",
+        "settlement_has_every_original_range_receipt"
+      ],
+      "d2": "cloud.recover"
+    },
+    {
+      "contract": "BQ9",
+      "orgRule": "Terminal usage precedes single settlement",
+      "quint": [
+        "normalCompletionTest",
+        "missingFinalUsageTest",
+        "duplicateSettlementRejectedTest"
+      ],
+      "lean": [
+        "settlement_requires_terminal_evidence",
+        "initialized_receipt_coverage"
+      ],
+      "d2": "broker.fence"
+    },
+    {
+      "contract": "BQ10",
+      "orgRule": "Queue failures preserve shared obligations",
+      "quint": [
+        "nonceRetryCannotMintNewAdmissionTest",
+        "authorityBound"
+      ],
+      "lean": [
+        "queue_refinement_preserves_shared_budget",
+        "queue_refinement_preserves_original_affinity"
+      ],
+      "d2": "semantic.intent"
+    }
+  ]
+}

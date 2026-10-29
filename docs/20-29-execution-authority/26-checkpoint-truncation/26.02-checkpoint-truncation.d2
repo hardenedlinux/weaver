@@ -1,0 +1,192 @@
+# Core design only; source identities and proof receipts remain in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / PUBLISHED CHECKPOINT / SAFE WAL TRUNCATION {
+  class: title
+  near: top-center
+}
+protocols: GO / RECOVERY OBSERVATIONS {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  mcp: Publication timeout and readback\nResolve the original checkpoint body\nNo deletion from an assumed success {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  a2a: Snapshot and prefix observations\nOriginal claim and reservation binding\nUnknown usage keeps its hold {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  acp: Cloud native owner recovery\nOld descriptors grant no authority\nNo floor reset from local snapshots {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+registry: SCHEME / COMPLETE SNAPSHOT CONTRACT {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  origin: Complete original account image\nApplications / reservations / holds\nBalances / source and profile bindings {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  alias: Cedar Code as Policy at each gate\nPublish / truncate / activate\nCurrent parent / floor / owner / prefix {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  query: Checkpoint and committed suffix\nReconstruct the current account head\nUncommitted tail remains pending {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+}
+recovery: RUST / CAPTURE AND PUBLICATION {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  projection: Capture an authenticated prefix\nComplete account state and namespace\nNo missing-key reset or balance delta {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  join: Retain a durable immutable body\nRetrieve exact content before deletion\nDigest alone is not a recovery copy {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  fence: Protected publication parent CAS\nExact checkpoint ID and body\nRecovery floor never rolls back {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+broker: RUST / TRUNCATION AND RECOVERY {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  cas: Read current publication and body\nExact selection and generation\nCurrent owner and source stamps {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  alias: Delete only the covered local prefix\nPreserve later frames and candidates\nNo application or reservation reset {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  hold: Recover checkpoint and suffix\nCurrent floor / financial head / owner\nMissing evidence keeps recovery closed {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+quint: QUINT\nMissing IDs / reservations / holds / suffix records\nLost publication replies / rollback / old workers {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nActual WAL / account / source composition\nReplay equivalence / monotonic floor / unique IDs {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+protocols.mcp -> registry.origin
+protocols.a2a -> registry.alias
+protocols.acp -> registry.query
+registry.origin -> recovery.projection
+registry.alias -> recovery.join
+registry.query -> recovery.fence { style.stroke-dash: 4 }
+recovery.projection -> recovery.join
+recovery.join -> recovery.fence
+recovery.fence -> broker.cas
+broker.cas -> broker.alias
+broker.alias -> broker.hold
+broker.hold -> broker.cas: Refresh the current publication { style.stroke-dash: 4 }

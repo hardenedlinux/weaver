@@ -1,0 +1,19 @@
+'Weaver.LlmAuthoritativeScope.same_commitment_resolves_same_contract' depends on axioms: [propext]
+'Weaver.LlmAuthoritativeScope.missing_contract_blocks_use' does not depend on any axioms
+'Weaver.LlmAuthoritativeScope.allocations_fit_source_allowance' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.initialized_audit' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.all_uses_have_authoritative_scope' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.all_uses_keep_original_domains' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.all_uses_keep_response_mode' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.all_uses_keep_original_claim' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.record_cannot_be_replaced' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.current_scope_is_unique' does not depend on any axioms
+'Weaver.LlmAuthoritativeScope.stale_image_cannot_be_used' does not depend on any axioms
+'Weaver.LlmAuthoritativeScope.restricted_original_history_blocks_use' depends on axioms: [propext]
+'Weaver.LlmAuthoritativeScope.original_claim_stays_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LlmAuthoritativeScope.child_budget_stays_bounded' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.original_account_capacity_stays_booked' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LlmAuthoritativeScope.unknown_usage_blocks_root_settlement' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmAuthoritativeScope.child_total_fits_original_escrow' depends on axioms: [propext, Quot.sound]

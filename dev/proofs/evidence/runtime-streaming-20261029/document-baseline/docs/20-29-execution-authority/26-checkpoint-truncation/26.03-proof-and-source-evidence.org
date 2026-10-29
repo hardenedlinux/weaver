@@ -1,0 +1,188 @@
+#+title: Weaver Checkpoint Truncation Proof and Source Evidence
+#+language: en
+#+options: toc:3
+
+* Reproduction and bounded evidence
+
+Run [[file:../../../proofs/check_llm_checkpoint_truncation.py][the isolated checker]] for [[file:../../../proofs/lean/LlmCheckpointTruncation.lean][Lean]] and [[file:../../../proofs/qunit/LlmCheckpointTruncation.qnt][Quint]]. Retain
+[[file:../../../proofs/evidence/llm-checkpoint-truncation/commands.json][command results]], [[file:../../../proofs/evidence/llm-checkpoint-truncation/receipt.json][the receipt]] and [[file:../../../proofs/evidence/llm-checkpoint-truncation/SHA256SUMS][the byte manifest]]. Preliminary failures remain separate.
+
+The workload compiles 23 Lean modules and prints 16 new declarations without
+=sorryAx=. Quint checks 39 new controls (29 guarded and 10 deliberately broken
+protocols) plus 40 directly imported WAL controls: 79 total. A separate WAL regression
+checks 83 controls, including its imported account controls. Nine initializers each
+sample ten paths with at most 30 post-initializer steps and seed 239, including
+two-record and second-publication initializers. This is conditional formal and
+finite sampled evidence, not native checkpoint IO, exhaustive exploration or liveness.
+
+* Four-artifact correspondence
+
+| ID | Design obligation | Quint control | Lean statement | D2 node |
+|----+-------------------+---------------+----------------+---------|
+| CT1 | Checkpoint storage actions refine actual WAL transitions | lateCandidateAfterTrimReplaysThroughSuffixTest | logical_projection | broker.alias |
+| CT2 | Published image and live representation invariants hold | secondCheckpointCanTrimFurtherTest | initialized_safe | lean |
+| CT3 | Recovery retains the initialized WAL/account/source history | rollbackAfterTrimRepairsLatestCheckpointTest | actual_wal_composition | broker.hold |
+| CT4 | Old publication replies cannot lower the protected floor | oldCheckpointReplyCannotLowerNewFloorTest | publication_floor_monotone | recovery.fence |
+| CT5 | Lost publication response cannot erase its original result | lostPublishReplyQueriesSameRecordTest | published_checkpoint_retained | broker.cas |
+| CT6 | Activation requires the currently selected checkpoint | oldWorkerCannotActivateRecoveredCheckpointTest | active_requires_current_checkpoint | broker.hold |
+| CT7 | Physical deletion creates no financial delta | trimRetainsCompleteApplicationAndReservationTest | truncate_preserves_logical_account | broker.alias |
+| CT8 | Missing application/consumption/hold fields cannot qualify | checkpointWithoutApplicationsRejectedTest | published_image_is_complete | registry.origin |
+| CT9 | A fresh body still cannot publish under an old parent | staleParentCannotRepublishTest | old_parent_cannot_publish | recovery.fence |
+| CT10 | Original reservation cannot be consumed again after trimming | trimmedWalCannotReconsumeOriginalReservationTest | original_reservation_once | registry.query |
+| CT11 | Original unknown budget retains its hold | unconsumedOriginalHoldSurvivesCheckpointTest | unknown_original_hold_retained | protocols.a2a |
+| CT12 | Publication requires a complete durable body and parent CAS | unpublishedCheckpointCannotTruncateTest | new_publication_requires_complete_body | recovery.join |
+| CT13 | Removed prefix is replaced by exact replay-equivalent state | checkpointPlusSuffixReplaysCurrentHeadTest | truncation_preserves_replay | registry.query |
+| CT14 | Publication changes metadata rather than account balances | lostPublishReplyQueriesSameRecordTest | publication_has_no_financial_effect | recovery.fence |
+| CT15 | A snapshot below the published baseline remains closed | rollbackBelowPublishedFloorCannotActivateTest | old_checkpoint_snapshot_stays_closed | protocols.acp |
+| CT16 | Published checkpoint ID cannot be rebound to another body | sameCheckpointIdDifferentBodyRejectedTest | checkpoint_ids_unique | broker.cas |
+
+The mapping records complementary checks rather than theorem/test identity. CT6's
+control additionally checks the current worker; the Lean projection/step relation
+contains the owner guard. CT11's finite fixture checks an unconsumed hold. Its
+unknown-source consequence is the actual inherited account/source theorem under
+the original-key binding on every relevant commit path, not an inference that
+all unconsumed fixture reservations have unknown source usage. CT12's test checks
+truncation ordering; its theorem characterizes actual new publication premises.
+
+* Physical representation and actual composition
+
+The product stores the actual =LlmWalActivation.State=, immutable publication history,
+complete checkpoint bodies, a physical local checkpoint/suffix representation and
+a publication observation. =Valid= requires exact complete checkpoint image equality
+to the covered prefix's reference result, covered position agreement and actual
+protected financial-prefix membership.
+
+=logical_projection= maps each checkpoint action to actual WAL runs. Publication
+and truncation close the prior activation/readback; physical restore becomes a WAL
+restore; repair becomes actual WAL repair; activation uses an actual prior WAL step.
+Checkpoint body validation and publication readback include authenticated pure
+financial-head observations; they cannot manufacture provider completion receipts.
+Financial progress still follows the actual earlier WAL/account commit protocol.
+=actual_wal_composition= joins initialized actual runs through arbitrary finite
+checkpoint paths. It preserves original account uniqueness and source budget facts.
+
+=truncation_preserves_replay= states the representation law and the actual reduction
+in physical suffix record count. =expanded= combines a proof witness of the covered
+prefix with the physical suffix. The witness is ghost/reference history, not a
+native claim that deleted frames remain on disk or should be serialized inside the
+checkpoint. Native equivalence must be authenticated by the complete persisted
+image and qualified coverage lineage, not by inventing witness bytes at recovery.
+
+=initialized_safe= proves complete published images and current physical/publication
+qualification whenever active. =old_checkpoint_snapshot_stays_closed= excludes an
+old selected checkpoint even if its expanded logical WAL happens to be complete.
+The earlier WAL activation theorem independently rejects a missing committed suffix
+or stale financial confirmation. Both gates are needed.
+
+=publication_floor_monotone= is a transition theorem: no guarded restore or lost
+response decreases the protected publication floor. =checkpoint_ids_unique= proves
+that any two published entries with the same ID have the same complete checkpoint
+body. =published_checkpoint_retained= preserves original publications over restart
+and response loss. The body registry may contain speculative blobs; the exact
+published body is the authoritative identity resolution.
+
+The account authority, canonical source registry and protected original outcome
+archive are not physically pruned by this model. They remain the recovery reference.
+The new logical equivalence does not prove safe deletion of those independent
+histories or expiry of application/reservation deduplication entries.
+
+* Commit boundary and pending suffix
+
+The suffix may contain an accepted but uncommitted account candidate. Presence of
+its frame or valid after-image does not mean its financial effect occurred.
+=pendingTailIsNotReplayedAsFinancialDeltaTest= reaches that state with an active
+projection while the original hold remains intact. The financial head, not the
+physical suffix length, limits replay.
+
+=lateCandidateAfterTrimReplaysThroughSuffixTest= retains the independent candidate,
+trims only the earlier checkpoint prefix, lets the candidate commit through the
+actual account gate, and replays to the new protected head. Its checkpoint still
+contains the historical unconsumed hold; the current account correctly reflects
+the later original settlement once. =trimCannotDiscardUncommittedTailTest= rejects
+silently deleting that suffix in the selected truncation operation.
+
+* Deliberately broken protocols
+
+| Missing contract | Counterexample control | Required independently decoded observation |
+|------------------+------------------------+-------------------------------------------|
+| Complete application table | missingApplicationCheckpointCounterexampleTest | Published image omits an application present in its covered prefix |
+| Original reservation consumption | missingReservationCheckpointCounterexampleTest | Published image keeps original transaction but loses its reservation tombstone |
+| Unconsumed original hold | unknownHoldCheckpointCounterexampleTest | Checkpoint hold becomes zero although the covered prefix retains it |
+| Publication before prefix deletion | prepublicationTrimCheckpointCounterexampleTest | Physical checkpoint is installed and active without any authoritative publication |
+| Publication readback after lost response | lostReplyCheckpointCounterexampleTest | Latest body is installed but activation has no publication observation |
+| Current protected checkpoint floor | belowFloorCheckpointCounterexampleTest | Logical WAL and financial image are complete, but active local checkpoint is below publication floor |
+| Committed suffix coverage | suffixLossCheckpointCounterexampleTest | Financial image is current and qualified; physical/logical WAL lacks the later committed record |
+| Publication parent CAS | staleParentCheckpointCounterexampleTest | Complete later image advances position while using an obsolete publication parent |
+| Independent monotonic publication authority | floorRollbackCheckpointCounterexampleTest | Published floor returns to zero after an observed nonzero floor |
+| Current owner-bound publication observation | staleOwnerReceiptCheckpointCounterexampleTest | Financial WAL activation succeeds for the current owner but checkpoint observation still carries the old owner |
+
+Unsafe constructors are excluded from =step=. Their controls deliberately expect
+the named invariant to fail. The [[file:../../../proofs/evidence/llm-checkpoint-truncation/check-counterexample-observations.py][independent ITF decoder]] checks original actual
+queue/spent/exposure history, checkpoint image fields, physical suffix, publication
+parents/floors, owner stamps and qualified financial state. It also verifies that
+checkpoint actions leave the actual provider execution state unchanged after the
+checkpoint fixture has initialized.
+
+The =floorSeen= variable is an independent test monitor of prior publication floor.
+It detects the deliberately broken co-rollback transition; it is not a native source
+of authority and cannot make a co-restored system authenticate itself. Native
+non-rollback publication/fence qualification remains a separate premise. The
+unknownHold control concerns an unconsumed fixture hold; actual unknown source
+usage is covered by the inherited guarded account controls and Lean composition.
+
+* Source-by-source reuse audit
+
+[[file:../../../proofs/evidence/llm-checkpoint-truncation/source-review.json][Pinned identities and excerpts]], [[file:../../../proofs/evidence/llm-checkpoint-truncation/source-receipt-check.json][fresh blob/excerpt checks]] and
+[[file:../../../proofs/evidence/llm-checkpoint-truncation/checkpoint-source-audit.json][the focused checkpoint/recovery extract]] cover nineteen files.
+
+| Source | Grounded mechanism | Reuse | Account-checkpoint extension / qualification |
+|--------+--------------------+-------+--------------------------------------------|
+| P12 authorized-effect-token.ss | Exact immutable effect/root/nonce/payload binding | Bind original checkpoint, deletion interval and source scope | Complete image, covered-prefix and publication parent/floor binding |
+| P13 strict-mediation.ss | Indeterminate observation conservatively consumes nonce; failed validation leaves state unchanged | Response loss cannot reset consumption | Local checkpoint/WAL absence cannot prove original financial non-application |
+| P15 effect-host.ss | Inert reservation and attributable handoff; consumes on unknown/exception; durable?/distributed-authority? false | Distinguish proposal, durable body and final outcome | Native checkpoint/object/publication durability is not supplied by an in-process receipt |
+| P17 store-backend.ss | Runtime owns append/fsync/leases/checkpoint IO/rebuild/repair; Scheme projects contracts | Preserve native storage ownership | Atomic local manifest replacement, durable complete body and protected publication CAS |
+| P18 PromotionTransactionRecovery.lean | Source-bound recovery/effect observation premises | Original effect/materialization correspondence | Native checkpoint-plus-suffix recovery mapping |
+| P19 authorized recovery bridge | Exact recovery member and authority binding | Restore only source-bound original state | Whole account image and independently current checkpoint/floor membership |
+| P20 CommittedEffectApplicationExactlyOnce.lean | Exact effect occurrence depends on runtime trace/universe premise | Require every real financial effect to refine the declared account transition | Snapshot creation or a write counter does not prove deletion-safe durable equivalence |
+| P22 store.ss | Checkpoint-store reference, write-checkpoint capability and native replay/fsync ownership | Store contracts, receipt projection and explicit runtime boundary | A checkpoint-store ID/capability is not a complete account snapshot or published truncation permit |
+| P31 SessionAttempt.lean | Recovery moves active work into pending | Retain unresolved original obligations | Checkpoint cannot omit independently accepted candidates or infer terminal state |
+| P31 SessionAttempt.qnt | Pending retention and closed-state invariants | Snapshot/restart adverse ordering | Add publication/floor/committed-suffix interleavings |
+| P33 deterministic budget closure | Original deterministic cost witness | Preserve original bound/units | Full reservation holds and final usage bindings survive snapshot reconstruction |
+| P33 runtime budget separation | Watchdog and semantic resource evidence differ | Timeout cannot zero cost | Checkpoint publication/truncation never releases unknown hold |
+| P35 receipt context monotonicity | Governed monotonic context | Preserve current owner/source/publication progression | Restore cannot install checkpoint capture stamps as current authority |
+| P35 receipt lineage prefix | Explicit authenticated prefix inheritance | Verify covered financial prefix and current publication | Local position and digest alone cannot authenticate a checkpoint body or floor |
+| P43 funs-attempt.ss | Pure CAS intents; runtime-published?/action-authorized?/durable? false; reconcile is not acknowledgment | Expected generation/revision and pending retention | Publication acknowledgment and recovered terminal facts need actual runtime authority |
+| P44 objects-attempt.ss | Frozen producer/scope/profile references | Keep original canonical lineage | Restored checkpoint cannot create a new claim/family/domain to escape original obligations |
+| C8 BoundOperation.lean | Exact effect/state matching; actual Host input authentication required | Code as Policy for publish/trim/activate | Matching IDs cannot prove persisted complete map/body or current selection |
+| C10 CompoundAuthorization.lean | Required nonempty layers allow without errors; runtime owns atomic execution and authentic facts | Fail closed on missing/denying/erroring layers | Native publication/manifest/deletion transaction and final-use fencing |
+| C11 Composition.lean | Validation/evaluation alignment and governed invalidation | Reuse policy obligations only under correct semantic dependencies | No theorem here proves checkpoint serialization, fsync, retention or anti-rollback IO |
+
+The runner recompiles Weaver's actual composition chain. The upstream files are
+freshly checked pinned source bytes/excerpts; this is not an assertion that their
+entire Lean/runtime builds were rerun. No upstream source or dependency pin changes.
+
+* Native acceptance and evidence boundary
+
+[[file:../../../proofs/evidence/llm-checkpoint-truncation/working-source-check.json][Live source hashes]] separate current working files from pinned references.
+Eighteen match; P17 differs only in two control-plane import paths, recorded in
+[[file:../../../proofs/evidence/llm-checkpoint-truncation/P17-working-diff.patch][the captured working diff]]. That textual comparison does not establish runtime/ABI
+equivalence of the new import targets.
+
+| Native gate | Required executable evidence before implementation acceptance |
+|-------------+---------------------------------------------------------------|
+| Complete body | Remove one application, reservation, unknown hold, namespace/default or source binding; reject before publication |
+| Durable body retention | Crash during checkpoint write/upload and lose all local WAL copies; only an authenticated complete retained body permits recovery |
+| Atomic publication | Lose response before/after parent CAS; read back one exact checkpoint ID/body and monotonic floor |
+| Publication races | Concurrent parents, duplicate IDs/different bodies, checked counter exhaustion/overflow, financial commit during capture and late old publication replies |
+| Atomic local representation | Crash across manifest install, fsync and physical prefix deletion; recover a verified before/after representation or remain closed |
+| Snapshot rollback | Restore old checkpoint/account/WAL snapshots independently, including old checkpoint plus complete WAL; no floor downgrade or empty genesis fallback |
+| Suffix commit boundary | Preserve uncommitted frames as pending; replay only independently committed suffix entries; late candidate settles once |
+| Current fence | Old worker with fresh publication reply or truncate descriptor cannot bypass current owner/selection/floor checks |
+| Final activation/use | Financial and checkpoint confirmations must both be current; cached active bits cannot authorize a restored balance |
+| Independent authority | Publication floor, owner/source stamps, canonical registry and original outcome archive survive local rollback or qualification stays closed |
+
+The physical suffix is modeled as complete typed records. Torn bytes, parser/default
+semantics, hash/codec authenticity, object availability, atomic filesystem operations
+and distributed publication durability are native premises. The protected financial
+journal is retained; safe deletion of that authority, archive pruning, dedup expiry,
+provider delivery, performance and bounded recovery liveness are not established.

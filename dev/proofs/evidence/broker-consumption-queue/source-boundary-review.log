@@ -1,0 +1,211 @@
+
+P12 a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/governance/policy/authorized-effect-token.ss
+10: 
+11: (export poo-flow-semantic-root
+12:         poo-flow-effect-binding
+13:         poo-flow-effect-binding-digest
+14:         poo-flow-token-validity
+15:         poo-flow-authorized-effect-token
+16:         poo-flow-authorized-effect-token-digest
+17:         poo-flow-token-validation-context
+18:         poo-flow-authorized-effect-token-validate
+19:         poo-flow-authorized-effect-token-consume)
+20: 
+21: (def (canonical-digest value)
+22:   (hex-encode
+25:      (call-with-output-string (lambda (port) (write value port)))))))
+26: 
+27: (def (poo-flow-effect-binding-digest binding-object)
+28:   (unless (eq? (.ref binding-object 'kind) 'poo-flow-effect-binding)
+29:     (error "effect binding digest requires EffectBinding" binding-object))
+30:   (canonical-digest
+31:    (cons 'poo-flow.effect-binding.v1
+32:          (binding-projection binding-object))))
+33: 
+34: (def (poo-flow-authorized-effect-token-digest token-object)
+35:   (unless (eq? (.ref token-object 'kind) 'poo-flow-authorized-effect-token)
+41:            (.ref token-object 'nonce)
+42:            (.ref (.ref token-object 'semantic-root) 'digest)
+43:            (poo-flow-effect-binding-digest (.ref token-object 'binding))
+44:            (list (.ref validity 'issued-at)
+45:                  (.ref validity 'not-before)
+46:                  (.ref validity 'expiry)
+
+P13 a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/governance/policy/strict-mediation.ss
+16:   (.o (kind 'poo-flow-strict-mediation-state)
+17:       (execution-root root) (sequence seq)
+18:       (consumed-nonces spent) (revocation-epoch revocation)
+19:       (durability 'strict)))
+20: 
+21: (def (transition current-state receipt-value)
+32: 
+33: (def (poo-flow-strict-mediate state token validation-context expected-root
+34:                                observation)
+35:   (cond
+36:    ((not (equal? expected-root (.ref state 'execution-root)))
+37:     (transition state (negative-receipt 'execution-root-fork state token)))
+41:       (if (not (.ref validation 'accepted?))
+42:         (transition state (negative-receipt (.ref validation 'code) state token))
+43:         (if (not observation)
+44:           (let* ((token-nonce (.ref token 'nonce))
+45:                  (next-state
+46:                   (poo-flow-strict-mediation-state
+47:                    (.ref state 'execution-root) (+ 1 (.ref state 'sequence))
+48:                    (cons token-nonce (.ref state 'consumed-nonces))
+49:                    (.ref state 'revocation-epoch)))
+50:                  (receipt
+51:                   (.o (kind 'poo-flow-strict-mediation-receipt)
+52:                       (accepted? #t) (outcome 'indeterminate)
+53:                       (code 'observation-unavailable)
+54:                       (token-id (.ref token 'token-id)) (nonce token-nonce)
+55:                       (before-root (.ref state 'execution-root))
+56:                       (after-root (.ref state 'execution-root))
+59:           (let* ((consumption-receipt
+60:                   (poo-flow-authorized-effect-token-consume
+61:                    token validation (.ref state 'execution-root) observation))
+62:                  (token-nonce (.ref token 'nonce))
+63:                  (next-state
+64:                   (poo-flow-strict-mediation-state
+65:                    (.ref consumption-receipt 'execution-root)
+66:                    (+ 1 (.ref state 'sequence))
+67:                    (cons token-nonce (.ref state 'consumed-nonces))
+68:                    (.ref state 'revocation-epoch)))
+69:                  (receipt
+70:                   (.o (kind 'poo-flow-strict-mediation-receipt)
+
+P15 cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc:modules/assurance/effect-host.ss
+4: 
+5: ;;; Local serialized integration boundary, not a Cedar evaluator or distributed
+6: ;;; Runtime Host. Only configured runtime operations evaluate policy / deliver.
+7: ;;; Editable preflights, requests, tokens and reports never issue capabilities.
+8: (import (only-in :clan/poo/object .o .ref)
+9:         :poo-flow/lambda-aitia/modules/assurance/host
+15: (export assurance-effect-host assurance-effect-host-epoch
+16:         assurance-effect-host-authorize! assurance-effect-host-grant-current?
+17:         assurance-effect-host-reserve! assurance-effect-host-deliver!
+18:         assurance-effect-host-revoke!)
+19: 
+20: (def hosts (make-hash-table-eq weak-keys: #t))
+26:     (unless (and state (eq? (vector-ref state 0) (current-thread)))
+27:       (error "effect Host requires its exact serialized owner"))
+28:     (when (vector-ref state 7) (error "effect Host mutation during runtime handoff"))
+29:     state))
+30: (def (instant state)
+31:   (let (now ((vector-ref state 3)))
+34:     (vector-set! state 8 now)
+35:     now))
+36: (def (handoff state operation)
+37:   (dynamic-wind
+38:     (lambda () (vector-set! state 7 #t))
+39:     operation
+40:     (lambda () (vector-set! state 7 #f))))
+41: 
+42: ;;; Runtime authorize: Request -> CedarDecision or #f (deny/indeterminate).
+43: ;;; Runtime deliver: Request Token -> delivered / failed / indeterminate.
+44: ;;; 'delivered is an attributable acknowledgement, not inferred from start.
+45: (def (assurance-effect-host authorize deliver clock lease)
+46:   (unless (and (procedure? authorize) (procedure? deliver) (procedure? clock)
+47:                (exact-integer? lease) (> lease 0))
+48:     (error "invalid effect Host runtime configuration"))
+49:   (let (host (.o kind: 'aitia.effect-host.v1))
+
+P17 a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/ai-agentic-context/features/memory/durable/store-backend.ss
+6: ;;; Boundary: durable runtime store backend negotiation and Marlin handoff ABI.
+7: ;;; Invariant: Scheme selects and projects backend contracts only; the runtime
+8: ;;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs.
+9: 
+10: (import (only-in :clan/poo/object .ref .slot? object? object<-alist)
+11:         (only-in :poo-flow/modules/workflow/control-plane/runtime-protocol
+273: 
+274: (def +poo-flow-turso-durable-runtime-store-capability-flags+
+275:   (append +poo-flow-durable-runtime-store-capability-flags+
+276:           '(concurrent-writes
+277:             local-first-push-pull
+278:             ai-vector-search
+331:          (poo-flow-durable-runtime-backend-slot backend 'operation-kinds #f)))
+332:     (if (poo-flow-durable-runtime-store-backend? backend)
+333:       (append
+334:        (poo-flow-durable-runtime-backend-required-symbol-diagnostics
+335:         'missing-backend-id
+336:         'backend-id
+642:           (poo-flow-durable-runtime-backend-option options 'metadata '()))
+643:          (diagnostics
+644:           (append
+645:            (poo-flow-durable-runtime-store-contract-row-diagnostics
+646:             contract-row)
+647:            (poo-flow-durable-runtime-store-backend-row-diagnostics
+
+P20 a74fc2fd63437252175b5a67649ee54b886d3bf4:packages/proofs/lean/PooFlowProof/Enterprise/CommittedEffectApplicationExactlyOnce.lean
+50:       resolutionReceipts
+51:       traceReceipt
+52:   effectUniverseExecutesExactlyOnce :
+53:     sourceBoundTraceExecutesUniverseExactlyOnce witness traceReceipt
+54: 
+55: structure SourceBoundCommittedEffectExactlyOnceEvidence where
+152:     ∀ effectId ∈ witness.effectUniverse,
+153:       sourceBoundEffectOccurrenceCount effectId traceReceipt = 1 :=
+154:   closed.effectUniverseExecutesExactlyOnce.2
+155: 
+156: theorem evidenceExecutesEveryDeclaredEffectExactlyOnce
+157:     (evidence : SourceBoundCommittedEffectExactlyOnceEvidence) :
+
+P43 a74fc2fd63437252175b5a67649ee54b886d3bf4:modules/session/funs-attempt.ss
+7:         (only-in :std/list/list every) "types.ss" "objects-attempt.ss")
+8: (export poo-flow-session-schedule poo-flow-session-claim poo-flow-session-complete
+9:         poo-flow-session-recover poo-flow-session-reconcile poo-flow-session-close)
+10: (def (name? value) (and (string? value) (< 0 (string-length value) 257)))
+11: (def (freeze-input value)
+12:   (let* ((consumer-value (string-copy (.ref value 'consumer-session)))
+23: (def (receipt accepted-value reason-value state-value)
+24:   (.o kind: 'poo-flow.session.transition-intent.v1 accepted?: accepted-value reason: reason-value
+25:       schedule: state-value runtime-published?: #f action-authorized?: #f durable?: #f))
+26: (def (guard state expected operation)
+27:   (cond ((not (poo-flow-session-schedule-shape? state)) (receipt #f 'invalid-schedule #f))
+28:         ((not (equal? expected (.ref state 'revision))) (receipt #f 'stale-revision state))
+83:       (receipt #t 'recovery-proposed (next-state state (if (null? pending) 'idle 'recovering)
+84:         #f pending (.ref state 'completed) generation-value))))))
+85: (def (poo-flow-session-reconcile state expected attempt-value)
+86:   ;; This is an intent for trusted terminal/isolation receipt resolution, never an acknowledgment by itself.
+87:   (guard state expected (lambda ()
+88:     (if (and (eq? (.ref state 'status) 'recovering)
+
+C8 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5:CedarPooSpec/Admission/BoundOperation.lean
+4: A typed operation projects the effect and observed state into Cedar's request
+5: model. The projection is fixed when the operation is constructed; a later Host
+6: must still authenticate the actual effect and state before execution.
+7: -/
+8: 
+9: namespace CedarPooSpec.Admission
+22: 
+23: /-- Check a concrete operation against the actual effect and state supplied
+24:     by the caller. This equality check does not authenticate either input. -/
+25: def BoundOperation.matches {Effect State : Type}
+26:     {project : Effect → State → Request}
+27:     [DecidableEq Effect] [DecidableEq State]
+28:     (operation : BoundOperation Effect State project)
+39: /-- Compare the values supplied at admission with the bound operation before
+40:     reusing the proof-bearing Cedar evaluation of its request. The Host must
+41:     authenticate those values and bind any eventual execution to them. -/
+42: def BoundOperation.authorize {Effect State : Type}
+43:     {project : Effect → State → Request}
+44:     [DecidableEq Effect] [DecidableEq State]
+
+C10 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5:CedarPooSpec/CompoundAuthorization.lean
+25:   !requests.isEmpty &&
+26:     receipt.responses.all (fun response =>
+27:       response.decision == .allow && response.erroringPolicies.isEmpty)
+28: 
+29: /-- Compile once, then evaluate all requests against the same policy set. -/
+30: def authorizeAll (model : Model) (root : String) (requests : List Request)
+45: 
+46: /-- All required layers must allow without policy evaluation errors. -/
+47: def layersAllowed {model : Model} {entities : Entities}
+48:     (receipts : List (LayerReceipt model entities)) : Bool :=
+49:   !receipts.isEmpty && receipts.all fun layer =>
+50:     layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty
+51: 
+52: /-- One exact compilation can serve several requests against the same root. -/
+53: structure CompiledRoot (model : Model) where
+
+C11 c8d1a0641120cf65e299e8a98f9fe7666ca96ab5:CedarPooSpec/Composition.lean
+

@@ -1,0 +1,32 @@
+#+TITLE: Release Binding Source Correspondence
+#+LANGUAGE: en
+
+* Reviewed source identity
+
+POO Flow checkout HEAD: =e5e2b5b31dc571a27e56b3f73972aba6f575f05a=.
+The exact reviewed file hash is retained independently of checkout cleanliness.
+
+| Source | SHA-256 |
+|--------+---------|
+| POO Flow modules/session/policy-tool-grant.ss | 7098bf2cd106fe40bc0a74729b10ccdbd9aa57a33972d13a74539a4d81ffa12f |
+| cedar-poo-spec Admission/BoundOperation.lean | 6105f4f0651886ee413f5edcea44df32323543de8825ca8f0e9f098205cf2afa |
+| cedar-poo-spec Admission/AuthorityConsumption.lean | bf2e087cd9947f87963df04355e8862b5ff3ad31bacf32f96dc2c7264e5cdd42 |
+
+The Cedar files were checked in the actual imported
+=dev/proofs/cedar/.lake/packages/CedarPooSpec= checkout at the unchanged pin
+=38af276ffbd17a378408bb7886e8122faadcbcfd=. Both files compare byte-for-byte equal
+to the local implementation-reference checkout used for initial navigation.
+
+* Reuse and extension
+
+POO Flow's tool-grant predicate matches the declared tool and action; its slot
+contract explicitly keeps runtime execution outside Scheme. It cannot substitute
+for Rust's original plan/encoding/session binding or a durable release record.
+
+BoundOperation.matches checks exact effect/state equality before proof reuse.
+AuthorityLedger.check additionally binds the exact effect to the stable instance
+ID; consume is a pure transition whose transactionality belongs to the Host.
+The existing imported WeaverPolicyBridge changed-effect and per-request
+error-free-allow lemmas remain reused. The new Rust capability and local
+Quint/Lean release histories extend native host obligations without claiming
+that those upstream pure functions implement a transactional queue or transport.

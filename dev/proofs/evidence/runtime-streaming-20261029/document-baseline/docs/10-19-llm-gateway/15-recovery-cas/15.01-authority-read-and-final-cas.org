@@ -1,0 +1,171 @@
+#+title: Weaver Authority Reads, Recovery Images and Final Consumption CAS
+#+language: en
+#+options: toc:3
+
+* Finding and core decision
+
+A sequence of authenticated current reads is not an atomic authorization to
+consume. The root binding may be immutable while an external history restriction,
+owner fence or execution balance changes between reads and final consumption.
+A locally unchanged execution revision does not imply unchanged Policy authority.
+
+The final Rust consumption owner therefore validates one complete authority cut
+at the conditional mutation's linearization point. Prepared images, successful
+reads and delayed confirmations remain data. They cannot mint execution rights.
+This is the AI Agent Gateway's logical execution-authority boundary; no physical
+isolation device is required by this model.
+
+* Authority cut and operation identity
+
+| Element | Meaning | Required binding |
+|---------+---------+------------------|
+| Original semantic subject | Canonical original operation, claim, stream, input, account domains and profile commitment | Exact immutable category-14 intent and certified root publication |
+| Execution image | Original binding, publication position, ledger revision and current owner fence | Qualified execution source namespace and current prefix/state identity |
+| Policy generation | Effective external Policy/history generation at the final owner | Monotone generation of the exact admitted authority domain; no ABA reuse |
+| Prepared request | Owner-issued permit, complete expected cut, stable decision ID and exact operation | Durable request identity; retry preserves the same operation and subject |
+| Consumption decision | Request, actual cut and actual Policy result at acceptance | Durable conditional owner mutation and original spent/budget/history effects |
+| Confirmation | Exact attributable existing decision | A query result, never another consumption grant |
+
+The execution image already contains the original immutable binding. A new request
+ID, nonce, worker or recovery attempt cannot replace the binding's claim, profile,
+budget or history domain. Policy generation is not a replacement semantic profile.
+It can tighten the original contract; permission changes still use the original
+contract's domain and scope. Native request identity must bind operation kind and
+payload as well as stable root/claim/permit identity, not merely a numeric ID.
+The Lean request carries an effect commitment, and the owner commit predicate
+receives the request plus the actual source before/after states. Authenticating
+that commitment against the actual operation is an explicit Host refinement
+contract; the proof does not implement a digest codec. Quint explicitly
+distinguishes send and settlement.
+
+The model uses unbounded natural generations for one original authority domain.
+A native generation must carry namespace, lineage and exact committed-prefix
+identity. A bare counter, timestamp or wall-clock age is not sufficient evidence.
+Rollover, authority-domain migration and reconfiguration must obey the earlier
+non-rollback and prefix-inheritance contracts; they cannot reset this generation.
+
+* Separate reads and preparation
+
+Binding, execution and Policy reads may complete at different times. The model
+records them independently. Preparation can retain a previously authentic but
+now stale read set; this is safe only because preparation never consumes.
+Restored observations are treated as untrusted data and pass the same final
+checks. Authentication of a read proves its origin, not perpetual currentness.
+
+A read of Allow followed by a history denial before the ledger read produces a
+torn image. A later Allow does not repair that old image: Policy generation must
+advance on every effective change, including permission restoration. The final
+CAS must reject the old generation even when the effective Boolean matches.
+A current owner may reread and prepare a fresh request, while keeping the same
+original claim and unresolved obligations.
+
+* Final conditional mutation
+
+Before accepting a new mutation, the owner must establish all of the following
+in the same serialization domain as the mutation:
+
+1. The exact request was prepared from an owner-issued permit; no caller fields
+   substitute for the original binding, profile or account domains.
+2. No durable decision already exists for that stable request ID. An existing
+   decision is returned by exact query, without rerunning the effect.
+3. The request's full expected cut matches the actual authoritative cut: binding,
+   publication position, execution revision, owner fence and Policy generation.
+4. All required actual-operation Policy layers allow without errors, and current
+   original-history, original-budget, child, scope and response constraints hold.
+5. A qualified durable conditional decision commits the actual original-ledger
+   transition. The transition advances the execution revision and invalidates
+   earlier execution images and permits.
+
+The proof composes this mutation with category 14's actual =advance= transition.
+It cannot execute an arbitrary update to a restored execution snapshot. Background
+source steps preserve use records, call counts, root offer and settlement state;
+all protected advances cross the new final gate. Original child/range admission,
+consume-to-queue handoff and uncertain partial-write rules remain in force.
+A successful read or CAS reply is not proof of remote provider execution.
+
+* Cross-store serialization is an implementation contract
+
+A local database CAS over the execution revision alone is insufficient if an
+independent Policy/history authority can change without participating. A second
+remote validation immediately before that CAS still has a check-to-use window.
+Two sequential successful CAS operations also do not automatically form one
+atomic authorization decision.
+
+The recommended realization uses one logical consumption owner. Its publication
+sequence is: stage an authenticated change as pending data; durably publish the
+new effective authority generation at the owner; then acknowledge that exact
+change as effective. A lost publication reply is reconciled against the same
+change identity. A late producer acknowledgement cannot advance or restore the
+owner generation. Before owner publication the update is pending, not an
+independently effective restriction. The model's =policyChange= transition is
+that owner publication point; producer staging/acknowledgement is not itself a
+modeled durable participant protocol.
+
+A native realization must qualify one explicit arrangement:
+
+- Publish effective authority changes through a single logical consumption owner
+  or shared serialization log. Its generation changes before the update is
+  acknowledged as effective. The final mutation compares that generation and
+  ledger state in its own conditional transaction.
+- Use a qualified serializable multi-participant protocol whose commit excludes
+  conflicting authority changes through final consumption. A read certificate
+  alone is not such a protocol. Any lease must exclude conflicting changes until
+  commit or abort and must fence recovered holders; a worker-local timer does not.
+
+If a separately effective revocation cannot be enrolled in either arrangement,
+this deployment does not meet the model's =Current= / =commitValid= contract.
+The gateway must keep the relevant use path unavailable, rather than treating a
+cached Allow as safe. Go reconciliation cannot acknowledge an independent update
+as effective and asynchronously advance the consumption fence afterward.
+
+In Lean, the source state and external Policy generation are in one logical
+transition system and =owner.commitValid= is an explicit native owner premise.
+This describes the required serialization, not a proof that independent cloud
+stores already implement it. Policy generation/fence/decision logs must retain
+non-rollback recovery under the earlier deployment failure-domain contracts.
+
+* Fence changes, lost replies and late confirmations
+
+| Interleaving | Safe result |
+|--------------+-------------|
+| Ledger mutation after image read | Revision mismatch rejects old request |
+| External history restriction without ledger write | Policy-generation mismatch or actual denial rejects old request |
+| Policy Allow / Deny / Allow | Monotone generation rejects the old Allow image |
+| Owner restart or revocation after preparation | Current fence rejects the old issued permit |
+| CAS commits and reply is lost | Preserve spent state and unknown hold; query the exact existing decision |
+| No decision is yet committed | Reconcile using qualified authority lookup; retry the same request only if its cut is still current |
+| Old success confirmation arrives after a new fence | Record/query the original decision; do not activate old permit or enqueue again |
+| Fresh request after uncertain consumption | Original claim/child slot remains spent; fresh identity cannot reset it |
+| Late usage result | Reconcile the original slot using qualified source evidence; unknown hold persists until valid settlement |
+
+Confirmation never writes the execution authority, changes a fence, issues a
+permit or appends another decision. A query must compare the full operation and
+binding, rather than find any row with the same client-supplied ID. An unknown
+result is not absence. The abstract model retains authoritative committed rows;
+restoring stale decision-store projections requires the prior qualified-prefix
+recovery protocol, not a retry based on an empty local cache.
+
+The logical CAS serialization point determines whether a racing fence/history
+change precedes or follows consumption. A later revocation does not retract
+already accepted bytes. New streaming messages, ranges and retries still need
+their existing current gates. An old callback never creates tail capability.
+No remote exactly-once, guaranteed progress or transport cancellation is proved.
+
+* Responsibilities and performance
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme / POO Flow | Original claim/profile semantics, source-bound Policy projection, scope and original account obligations |
+| Go | Kubernetes/configuration lifecycle, provider integration and attributable observations; route effective changes through the authority publication protocol |
+| Rust authority owner | Serialize effective Policy/history generation, fences and exact durable decision lookup with consumption; reject stale/torn cuts |
+| Rust final broker | Consume only the accepted original operation; preserve actual send/range and unknown-handoff rules |
+| Cedar | Evaluate the actual authenticated effect and state with every required layer; input equality does not authenticate its source or freshness |
+| Quint / Lean | Exercise ordering faults and compose actual source transitions under explicit durable-owner and serialization premises |
+
+Cache immutable profile bytes and certified original bindings. Keep current
+revision, Policy generation and fence checks at final consumption. The preferred
+native fast path is one owner conditional mutation over a locally maintained
+authoritative cut, with qualified publication of external changes. This avoids
+requiring a network read for each token without weakening effective revocation.
+Measure publication lag, conditional-commit latency, contention, first-token delay
+and recovery backlog before claiming throughput. No benchmark is provided here.

@@ -1,0 +1,111 @@
+P13 modules/governance/policy/strict-mediation.ss
+5: ;;; Boundary: Strict mediation owns pure nonce/root state transitions.
+6: ;;; Invariant: a token is consumed at most once and roots never fork silently.
+18:       (consumed-nonces spent) (revocation-epoch revocation)
+28:       (token-id (.ref effect-token 'token-id)) (nonce (.ref effect-token 'nonce))
+37:     (transition state (negative-receipt 'execution-root-fork state token)))
+44:           (let* ((token-nonce (.ref token 'nonce))
+48:                    (cons token-nonce (.ref state 'consumed-nonces))
+54:                       (token-id (.ref token 'token-id)) (nonce token-nonce)
+59:           (let* ((consumption-receipt
+60:                   (poo-flow-authorized-effect-token-consume
+62:                  (token-nonce (.ref token 'nonce))
+65:                    (.ref consumption-receipt 'execution-root)
+67:                    (cons token-nonce (.ref state 'consumed-nonces))
+72:                       (token-id (.ref token 'token-id)) (nonce token-nonce)
+74:                       (after-root (.ref consumption-receipt 'execution-root))
+75:                       (consumption consumption-receipt) (durability 'strict))))
+
+P17 modules/ai-agentic-context/features/memory/durable/store-backend.ss
+8: ;;; owns append, fsync, leases, checkpoint IO, index rebuild, and repair jobs.
+164:       'error
+177:       'error
+194:       'error
+210:       'error
+358:            'error
+370:            'error
+397:         'error
+502:       'error
+511:       'error
+531:       'error
+540:       'error
+560:       'error
+861:   (error-message "durable runtime store negotiation serialization requires a list"))
+
+P22 modules/ai-agentic-context/features/memory/durable/store.ss
+8: ;;; owns storage, locking, leases, fsync, backfill, replay, and side effects.
+139:    'error
+253:       'error
+286:         'error
+319:         'error
+437:        'error
+667:     (error "durable runtime store contract batch projection requires a list"
+674:   (error-message
+
+P35 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextMonotonicityClosure.lean
+45: `C₀ → C₁ → C₀` rollback replay.
+47: theorem exactEqualityAlonePermitsRollbackReplay :
+146: theorem validTransitionsAlonePermitSameGenerationFork :
+191: def ForkFreeContextPublication
+192:     (published : ReceiptValidationContext → Prop) : Prop :=
+194:     published left →
+195:       published right →
+200: def publishedByLineage
+205: theorem lineagePublicationIsForkFree
+207:     ForkFreeContextPublication (publishedByLineage lineage) := by
+208:   intro left right leftPublished rightPublished _ generationsEqual
+209:   rcases leftPublished with ⟨leftPosition, leftContext⟩
+210:   rcases rightPublished with ⟨rightPosition, rightContext⟩
+228: theorem forkFreePublicationMakesGenerationUnique
+229:     {published : ReceiptValidationContext → Prop}
+230:     (publicationForkFree : ForkFreeContextPublication published)
+232:     (leftPublished : published left)
+233:     (rightPublished : published right)
+239:   publicationForkFree
+240:     leftPublished
+241:     rightPublished
+247: context published by one authority at the same generation.  Local monotonicity
+306:   published : ReceiptValidationContext → Prop
+309:       published context →
+
+P35 packages/proofs/lean/PooFlowProof/Enterprise/ReceiptContextLineagePrefixClosure.lean
+21: def publishedByLineagePrefix
+28: theorem lineagePrefixHeadIsPublished
+30:     publishedByLineagePrefix
+35: theorem lineagePositionAtOrBeforeHeadIsPublished
+39:     publishedByLineagePrefix
+44: theorem lineagePositionAfterHeadIsNotPublished
+48:     ¬ publishedByLineagePrefix
+51:   intro published
+52:   rcases published with ⟨publishedPosition, beforeHead, contextsEqual⟩
+53:   have publishedBeforeFuture : publishedPosition < position :=
+57:       lineagePrefix.lineage publishedBeforeFuture)
+60: theorem lineagePrefixPublicationIsForkFree
+62:     ForkFreeContextPublication (publishedByLineagePrefix lineagePrefix) := by
+63:   intro left right leftPublished rightPublished sameAuthority sameGeneration
+64:   apply lineagePublicationIsForkFree lineagePrefix.lineage
+65:   · rcases leftPublished with ⟨position, _, contextEqual⟩
+67:   · rcases rightPublished with ⟨position, _, contextEqual⟩
+79:   published := publishedByLineagePrefix lineagePrefix
+81:     intro context published
+82:     rcases published with ⟨position, _, contextEqual⟩
+85:   forkFree := lineagePrefixPublicationIsForkFree lineagePrefix
+92:   publishedExact :
+94:       domain.published context ↔
+95:         publishedByLineagePrefix lineagePrefix context
+
+C10 CedarPooSpec/CompoundAuthorization.lean
+7: responsible for atomic business execution and authentic input facts.
+22: /-- Every query must allow, and no query may have a policy evaluation error. -/
+27:       response.decision == .allow && response.erroringPolicies.isEmpty)
+31:     (entities : Entities) : Except PolicyModules.Error (Receipt model root requests entities) :=
+33:   | .error error => .error error
+46: /-- All required layers must allow without policy evaluation errors. -/
+50:     layer.response.decision == .allow && layer.response.erroringPolicies.isEmpty
+73:     (root : String) : Except PolicyModules.Error
+79:       | .error error => .error error
+85:     (entities : Entities) : Except PolicyModules.Error (List (LayerReceipt model entities)) :=
+89:       Except PolicyModules.Error (List (LayerReceipt model entities)) := do
+
+C11 CedarPooSpec/Composition.lean
+

@@ -1,0 +1,205 @@
+
+  SettlementAnchorRecovery
+    ok W::evidenceReplyLostKeepsStreamTest passed 1 test(s)
+    ok W::committedButUnpublishedBlocksStreamTest passed 1 test(s)
+    ok W::publishMissingDecisionRejectedTest passed 1 test(s)
+    ok W::commitReplyLostRecoveryTest passed 1 test(s)
+    ok W::uncommittedFinishRestartRejectsTest passed 1 test(s)
+    ok W::separateIsolationEvidenceAfterFinishIntentTest passed 1 test(s)
+    ok W::partialOldFdCannotResumeTest passed 1 test(s)
+    ok W::fenceAcknowledgmentRequiredTest passed 1 test(s)
+    ok W::wrongWriterInventoryRejectedTest passed 1 test(s)
+    ok W::wrongBufferInventoryRejectedTest passed 1 test(s)
+    ok W::forgedAuthenticityRejectedTest passed 1 test(s)
+    ok W::unpublishedPreventsRetirementTest passed 1 test(s)
+    ok W::lateOriginalPublishKeepsSuccessorTest passed 1 test(s)
+    ok W::noFinalUsageFromFinishTest passed 1 test(s)
+    ok W::lateUsageDoesNotReleaseStreamTest passed 1 test(s)
+    ok W::finalUsageLostReplyResolveTest passed 1 test(s)
+    ok W::duplicateFinalUsageRejectedTest passed 1 test(s)
+    ok W::conflictingLateUsageRejectedTest passed 1 test(s)
+    ok W::wrongClosureUsageRejectedTest passed 1 test(s)
+    ok W::wrongUnitUsageRejectedTest passed 1 test(s)
+    ok W::wrongAccountUsageRejectedTest passed 1 test(s)
+    ok W::wrongTokenUsageRejectedTest passed 1 test(s)
+    ok W::progressUsageRejectedTest passed 1 test(s)
+    ok W::overEnvelopeUsageRejectedTest passed 1 test(s)
+    ok W::settlementRetryCannotChargeTwiceTest passed 1 test(s)
+    ok W::isolatedUnknownHoldRetainedTest passed 1 test(s)
+    ok W::forgedFinalUsageRejectedTest passed 1 test(s)
+    ok W::isolationWinningRejectsFinishTest passed 1 test(s)
+    ok W::finishWinningRejectsIsolationTest passed 1 test(s)
+    ok W::sharedAccountFinalizationTest passed 1 test(s)
+    ok W::settlementDecisionLostReplyBeforeAccountApplyTest passed 1 test(s)
+    ok W::accountApplyRetryRejectedTest passed 1 test(s)
+    ok W::evidenceOnlyPublicationCounterexampleTest passed 1 test(s)
+    ok W::duplicatedFinancialApplyCounterexampleTest passed 1 test(s)
+    ok W::lateFinalOverwriteCounterexampleTest passed 1 test(s)
+    ok W::usageCreatesClosureCounterexampleTest passed 1 test(s)
+    ok W::commitReplyLossErasesDecisionCounterexampleTest passed 1 test(s)
+    ok W::restoredFdRetagCounterexampleTest passed 1 test(s)
+    ok W::incompleteWriterUniverseCounterexampleTest passed 1 test(s)
+    ok W::completionIsBillingCounterexampleTest passed 1 test(s)
+    1) anchorReplyLostTest failed after 1 test(s)
+    2) acceptReplyLostPreventsNewWorkerPermitTest failed after 1 test(s)
+    3) accountWriteReplyLostTest failed after 1 test(s)
+    4) duplicateApplyRejectedTest failed after 1 test(s)
+    5) oldWorkerNewAcceptRejectedTest failed after 1 test(s)
+    6) acceptedBeforeFenceMayCompleteOnceTest failed after 1 test(s)
+    7) gateReceiptRequiredForConfirmationTest failed after 1 test(s)
+    8) mixedGateSnapshotRejectedTest failed after 1 test(s)
+    9) mixedSourceSnapshotRejectedTest failed after 1 test(s)
+    10) matchingRevisionWrongRowRejectedTest failed after 1 test(s)
+    11) wrongReceiptAccountRejectedTest failed after 1 test(s)
+    12) lateWrongReceiptRejectedTest failed after 1 test(s)
+    13) confirmationLostReplyTest failed after 1 test(s)
+    14) unknownWriteRetainsFullScopeTest failed after 1 test(s)
+    15) staleCacheCannotAuthorizeTest failed after 1 test(s)
+    16) oldSnapshotFreshRecoveryDoesNotReplayTest failed after 1 test(s)
+    17) gateSnapshotRollbackCounterexampleTest failed after 1 test(s)
+    18) cacheEqualityOnlyCounterexampleTest failed after 1 test(s)
+    19) replayUnknownWriteCounterexampleTest failed after 1 test(s)
+    20) unknownRefundCounterexampleTest failed after 1 test(s)
+    21) confirmationWithoutWriteCounterexampleTest failed after 1 test(s)
+    22) oldWorkerFenceBypassCounterexampleTest failed after 1 test(s)
+
+  40 passing (4402ms)
+  22 failed
+
+  1) anchorReplyLostTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=anchorReplyLostTest to repeat.
+  2) acceptReplyLostPreventsNewWorkerPermitTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=acceptReplyLostPreventsNewWorkerPermitTest to repeat.
+  3) accountWriteReplyLostTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=accountWriteReplyLostTest to repeat.
+  4) duplicateApplyRejectedTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=duplicateApplyRejectedTest to repeat.
+  5) oldWorkerNewAcceptRejectedTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=oldWorkerNewAcceptRejectedTest to repeat.
+  6) acceptedBeforeFenceMayCompleteOnceTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=acceptedBeforeFenceMayCompleteOnceTest to repeat.
+  7) gateReceiptRequiredForConfirmationTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=gateReceiptRequiredForConfirmationTest to repeat.
+  8) mixedGateSnapshotRejectedTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=mixedGateSnapshotRejectedTest to repeat.
+  9) mixedSourceSnapshotRejectedTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=mixedSourceSnapshotRejectedTest to repeat.
+  10) matchingRevisionWrongRowRejectedTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=matchingRevisionWrongRowRejectedTest to repeat.
+  11) wrongReceiptAccountRejectedTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=wrongReceiptAccountRejectedTest to repeat.
+  12) lateWrongReceiptRejectedTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=lateWrongReceiptRejectedTest to repeat.
+  13) confirmationLostReplyTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=confirmationLostReplyTest to repeat.
+  14) unknownWriteRetainsFullScopeTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=unknownWriteRetainsFullScopeTest to repeat.
+  15) staleCacheCannotAuthorizeTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=staleCacheCannotAuthorizeTest to repeat.
+  16) oldSnapshotFreshRecoveryDoesNotReplayTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=oldSnapshotFreshRecoveryDoesNotReplayTest to repeat.
+  17) gateSnapshotRollbackCounterexampleTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=gateSnapshotRollbackCounterexampleTest to repeat.
+  18) cacheEqualityOnlyCounterexampleTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=cacheEqualityOnlyCounterexampleTest to repeat.
+  19) replayUnknownWriteCounterexampleTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=replayUnknownWriteCounterexampleTest to repeat.
+  20) unknownRefundCounterexampleTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=unknownRefundCounterexampleTest to repeat.
+  21) confirmationWithoutWriteCounterexampleTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=confirmationWithoutWriteCounterexampleTest to repeat.
+  22) oldWorkerFenceBypassCounterexampleTest:
+       Error [QNT502]: Variable a not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/specs/quint/SettlementAnchorRecovery.qnt:90:107
+        90:   action sourceFixture = all {a.intents.size() == 0,a.accepted.size() == 0,W::terminal,a' = sourceChanged(a)}
+                                                                                                                      ^
+    Use --seed=0x67f7d9a873523 --match=oldWorkerFenceBypassCounterexampleTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 specs/quint/SettlementAnchorRecovery.qnt
+error: Tests failed

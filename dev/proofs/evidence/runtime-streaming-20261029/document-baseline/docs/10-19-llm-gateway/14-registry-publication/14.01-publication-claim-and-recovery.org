@@ -1,0 +1,201 @@
+#+title: Weaver Registry Publication, Original Claim and Durable Recovery
+#+language: en
+#+options: toc:3
+
+* Core decision
+
+A successful registry lookup is not enough to recover task authority. The lookup
+must name the exact immutable profile bound to the original claim, and the final
+gate must join that publication with the current execution authority. A correct
+old profile must not restore an old nonce slot, reservation, account state or
+history snapshot.
+
+The publication protocol therefore uses an intent-first independent binding CAS,
+an exact durable root journal decision, independent certification and a fresh
+execution recovery image. A pending or confirmed original binding is never
+cleared because a reply was lost or a local snapshot lacks the journal row.
+Recovery cannot choose a replacement response contract, tool set or account domain.
+
+This is logical separation of execution authority for an AI Agent Gateway. The
+protocol requires a non-rollback failure domain and authenticated durable owners;
+it does not require a physical-isolation device or assume that an in-memory
+worker counter survives a machine snapshot.
+
+* Persistent identities and storage ownership
+
+| Object | Immutable contents | Authority |
+|--------+--------------------+-----------|
+| Profile object | Namespace, commitment, exact typed contract, source vector | Qualified immutable object store and original Scheme producer evidence |
+| Original binding | Stable operation key, namespace, original record/claim token/stream, input/domain references and exact profile object | Independent intent CAS keyed by canonical original task |
+| Root journal decision | Exact original binding and durable publication position | Linearizable source-owned compare-and-append journal |
+| Certification | Same intent and exact root journal prefix | Independent anchor confirmation; not a local cache acknowledgement |
+| Execution checkpoint identity | Original binding, authoritative execution revision and current owner fence | Existing consumption/budget/history ledger authority with qualified current-prefix read |
+| Recovery projection | Exact binding, publication position, owner fence and execution revision | Cached data checked against the authoritative sources |
+| Use permit | Issued recovery image and owner session/fence | Final broker conditional use; invalidated by later writes or owner change |
+
+The typed binding carries the original record's budget/history references and
+semantic contract. The source vector identifies admitted producer/publication
+inputs and ledger namespaces; it is not a caller-selected tag. The operation key
+is stable under retries and recovery. A fresh operation ID cannot target the same
+original claim as an unrelated publication.
+
+A profile key is scoped by namespace and commitment. A second object under that
+key must be byte/contract identical; conflicting source vectors, modes or tool
+sets are rejected. Different commitments may exist as inert objects. Their
+presence does not authorize replacement of an existing task binding.
+
+* Publish in four ordered phases
+
+| Phase | Required fact | Permission produced |
+|-------+---------------+---------------------|
+| Store immutable profile | Exact object and source vector have a qualified durable receipt | Stored data only |
+| Reserve original binding intent | Authenticated original canonical claim, exact source/registry relationship, current publisher session and publication Policy; independent CAS slot empty | Sticky binding, no inference/send grant |
+| Commit root decision | Same intent, exact stable operation key, current publisher fence, durable root append | Root publication record, still not an execution grant |
+| Certify publication | Exact root decision/prefix and same intent confirmed by the independent authority | Publication evidence usable for a later current join |
+
+The intent is established before a root journal decision can be acknowledged as
+published. This prevents a rollback of local journal visibility from reopening
+profile selection. An unconfirmed but possibly committed intent remains bound
+to the same original claim and profile. The current owner may reconcile and
+complete it; timeout cannot clear it or select another profile.
+
+Intent reservation does not consume the original task claim a second time. It
+binds the already canonical source claim and immutable semantic subject. The
+new native root publication transaction must include, or reference authenticated
+prior publication of, that exact claim disposition. A raw token/stream tuple
+from a caller is insufficient. The model obtains the subject through the actual
+prior authority state and Origin predicate. The bootstrap source transitions
+remain separate from usable Gateway admission until certification and joining.
+
+The independent intent/confirmation store is an explicit extension. Its CAS,
+monotone owner fence, pending-intent retention and exact prefix confirmation
+must survive the rollback domain of a cache or worker snapshot. A second file
+in the same rolled-back image does not satisfy this requirement. A qualified
+cloud/database/consensus authority can provide the contract; this design does not
+implement or prove any particular backend's quorum or filesystem behavior.
+
+* Lost replies and late completion
+
+| Uncertain window | Required reconciliation | Prohibited inference |
+|------------------+-------------------------+----------------------|
+| Profile put committed, reply lost | Query/verify the same namespace and commitment | Missing reply does not permit a different object under the key |
+| Intent CAS committed, reply lost | Query the original task's stable binding slot | Local absence does not imply the slot is free |
+| Root append committed, reply lost | Query the exact original operation against the authority journal | Do not append a second original root or consume a new claim |
+| Certification committed, reply lost | Read the existing certificate and matching prefix | Do not treat the publication as unbound |
+| Old worker returns with a commit receipt | Accept attributable data; current owner may reconcile the same intent | Receipt does not restore old session or send authority |
+| Object/journal projection is missing | Restore exact data from qualified current sources or remain unavailable | No default profile, weakened schema, new namespace or fresh budget/history domain |
+
+The model distinguishes authoritative journal contents from a readable local
+projection. Losing the projection changes visibility, not the authoritative
+committed decision. If the authority journal itself is unavailable, read/commit
+must remain blocked rather than guessing absence. Native recovery needs a
+qualified committed-prefix/operation lookup; an unqualified local database query
+is not that evidence. Late confirmation can complete only the exact sticky
+binding, and certification/append requires the current publisher fence.
+
+Pending intent cancellation and garbage collection are not implemented by this
+baseline. A future abort protocol must exclude late commit, fence all holders and
+retain original claim and unknown-budget obligations. Keeping the slot reserved
+can reduce availability, but cannot silently change its semantics.
+
+* Recovery is an exact current join
+
+Recovery must establish all of the following before activation:
+
+1. The independent intent still names the same full original binding.
+2. The root journal and certification agree on that binding and committed prefix.
+3. The exact profile object is readable and its namespace, source vector and contract match.
+4. The authoritative execution ledger is recovered at its current checkpoint.
+5. The cached recovery image names that checkpoint and the current owner fence.
+6. The original registered task record still matches the committed binding.
+
+Only then may the current owner issue a use permit. Successful activation checks
+the image again; preparation is not permission. The final broker compares the
+permit with the current image at each consuming write. Every authoritative
+execution transition advances the execution revision; restart also advances the
+owner fence. Old permits fail even if the profile and root publication position
+are unchanged.
+
+A recovery projection never assigns the authoritative execution state. Loading
+an older profile/journal/cache snapshot cannot reset call counts, budgets, usage,
+claim state or history. The new model's execution state changes only through
+actual LlmAuthoritativeScope transitions, and those project into the existing
+root and child ledgers. Data-only progress cannot consume a child, release an
+output/proposal, offer the root or advance settlement. Source recovery itself
+uses the existing qualified recovery transition and preserves ledger contents.
+
+The abstract execution revision is scoped by the original binding and admitted
+source vector. Native current-read evidence must authenticate the exact ledger
+namespace, committed prefix/state identity and currentness, not just compare two
+numeric counters. Fork freedom and non-rollback source recovery remain explicit
+owner contracts. If every authoritative execution log and its currentness witness
+roll back together, the registry alone cannot protect spent-state. Such a
+deployment does not meet this protocol's recovery premise.
+
+* Original budgets, history and response semantics
+
+Registry recovery does not create another claim or reservation. The composed
+proof retains original claim uniqueness and the source allowance bound. Current
+use still checks the original history account through category [[file:../13-authoritative-scope/13.01-original-task-and-authoritative-scope.org][13]]. Restoring
+an earlier profile cannot make a restricted history disappear; a fresh recovery
+image also cannot override current original-history denial.
+
+Unknown child usage prevents child closure. The prior root coupling then blocks
+settlement state changes. Cache loss, new registry workers, old receipts and
+fresh permits do not release that unknown amount. A late qualified usage result
+may reconcile the original slot; external account application still needs its
+existing idempotent decision/anchor protocol. This model proves logical charge
+state safety, not an external financial credit operation.
+
+Profile resolution derived from the durable binding agrees with the original
+admitted registry contract at the original key. Validated-document mode, allowed
+tools and limits therefore survive publication and recovery. Tool proposals
+remain source-bound data; any actual tool effect requires its separate current
+Policy/claim/budget admission. No callback, profile object or registry certificate
+is a model-generation or tool-execution grant.
+
+* Worker recovery, concurrency and final sending
+
+A publisher or broker restart closes activation, advances the non-rollback fence,
+retires old child admission eligibility and requires source-ledger recovery.
+An old worker may possess a receipt, queued action or previously issued permit;
+all consuming operations recheck current fence and execution revision. Old
+workers cannot append/certify with their prior fence, or replay an old permit
+once another write has advanced the ledger. Session revocation or expiry must
+advance the authoritative fence before further consumption can be accepted; a
+worker-local expiry timer is insufficient. The formal model represents revocation
+through that fence transition, rather than a separate real-time lease model.
+
+Two current callers may race with permits from the same image. The first accepted
+conditional transition advances the execution revision, making the other image
+stale. The underlying child ledger still owns its one-shot call slot. Actual
+consume/enqueue gaps and partial streaming use categories [[file:../../30-39-assurance/37-broker-consumption-queue/37.00-index.org][37]] and [[file:../../30-39-assurance/38-logical-range-recovery/38.00-index.org][38]];
+unknown handoff remains spent and held. This protocol revokes logical authority;
+it does not claim to retract already accepted transport bytes or remote work.
+
+The new proof treats each final conditional transition as atomic. Native root,
+anchor, object and execution stores do not automatically become a distributed
+transaction. Their authenticated receipts and exact join must implement the
+specified ordering. Root/route/semantic Policy inputs must also align under the
+current authority context; Cedar value equality alone cannot authenticate them.
+
+* Language responsibilities and fast path
+
+| Owner | Concrete responsibility |
+|-------+-------------------------|
+| Scheme / POO Flow | Freeze task/profile/source references, define intent/claim semantics and publication/consumption Policy projection |
+| Go | Kubernetes lifecycle and provider/capability reconciliation; report source-bound observations without selecting replacement task contracts or refunding unknown work |
+| Rust publication owner | Immutable object put, original intent CAS, exact journal commit/certification and stable-operation reconciliation |
+| Rust source-ledger owner | Authoritative claim/consumption/budget/history persistence and current checkpoint recovery |
+| Rust final broker | Current publication/checkpoint join, logical fence, exact permit consumption and actual send/range gates |
+| Cedar | Authorize the actual authenticated publication/use operation and all required layers; deny/error/indeterminate closes the gate |
+| Quint / Lean | Check fault/concurrency traces and compose typed source transitions under explicit storage/owner premises |
+
+Cache immutable verified profile bytes. Publication certification is per original
+binding, not per token. Current execution revision, history and fence checks stay
+at the final gate; they cannot be replaced by a profile-cache hit. A native fast
+path may fuse current image refresh and conditional consumption when it preserves
+the exact linearization semantics. The explicit model invalidates activation after
+each execution write to expose the boundary; it is not a throughput prescription.
+Measure cold recovery, profile misses, join/CAS latency, first-token delay and
+reconciliation backlog with matched controls before making performance claims.

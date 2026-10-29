@@ -1,0 +1,46 @@
+proofs/lean/RoutineRoutingConfig.lean:29:78: error: unexpected identifier; expected '}'
+proofs/lean/RoutineRoutingConfig.lean:53:4: error: Type mismatch: After simplification, term
+  catalog
+ has type
+  m ∈ base.catalog s.catalog
+but is expected to have type
+  m ∈ base.catalog s.catalog ∧ m ∈ n.targets
+proofs/lean/RoutineRoutingConfig.lean:55:79: error: Application type mismatch: The argument
+  valid.allowance
+has type
+  n.allowance ≤ base.escrow
+but is expected to have type
+  (lower base n).escrow ≤ base.escrow
+in the application
+  Nat.le_trans cost valid.allowance
+proofs/lean/RoutineRoutingConfig.lean:59:4: error: Type mismatch: After simplification, term
+  eligible.left
+ has type
+  m ∈ base.catalog s.catalog
+but is expected to have type
+  m ∈ base.catalog s.catalog ∧ m ∈ n.targets
+'Weaver.RoutineRoutingConfig.eligible_is_narrowed' depends on axioms: [sorryAx]
+'Weaver.RoutineRoutingConfig.selected_target_is_declared' depends on axioms: [sorryAx]
+'Weaver.RoutineRoutingConfig.original_budget_is_bound' depends on axioms: [sorryAx]
+'Weaver.RoutineRoutingConfig.required_capability_preserved' depends on axioms: [sorryAx]
+'Weaver.RoutineRoutingConfig.history_cannot_be_overridden' depends on axioms: [sorryAx]
+'Weaver.RoutineRoutingConfig.same_normal_same_runtime' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.all_surfaces_share_runtime' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.source_provenance_is_separate' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.task_identity_is_fixed' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.dropped_capability_rejected' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.enlarged_allowance_rejected' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.changed_profile_rejected' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.changed_response_rejected' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.no_empty_route_fallback' depends on axioms: [propext, sorryAx]
+'Weaver.RoutineRoutingConfig.final_dispatch_rechecks_parent' depends on axioms: [sorryAx]
+'Weaver.RoutineRoutingConfig.artifact_current_at_dispatch' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.no_extra_provider_attempt' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.no_response_splicing' depends on axioms: [propext, Quot.sound]
+'Weaver.RoutineRoutingConfig.advice_does_not_grant_authority' depends on axioms: [propext, sorryAx]
+'Weaver.RoutineRoutingConfig.telemetry_is_not_authority' does not depend on any axioms
+'Weaver.RoutineRoutingConfig.cost_fits_actual_step_reservation' depends on axioms: [propext]
+'Weaver.RoutineRoutingConfig.shared_account_capacity_retained' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.RoutineRoutingConfig.original_claim_retained' depends on axioms: [propext, Classical.choice, Quot.sound]

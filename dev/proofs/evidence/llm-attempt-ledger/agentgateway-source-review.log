@@ -1,0 +1,268 @@
+AGL1 955d56fae09b45f3cb8e85e797dbb1eb06134f77 controller/api/v1alpha1/agentgateway/agentgateway_model_types.go 3dc64cf826ffb45a44f9130b4432f3cdc616ba074f7f2b3af646af97fabef4ec
+AGL2 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/llm/model_router.rs b28f5459b107893459bc5cc84d728a7c80386eca31822a2f3a1fa04b4b61ceb3
+158: 
+159: pub fn classify_route(path: &str) -> Option<llm::RouteType> {
+160: 	for (matcher, kind, _) in SERVING_ENDPOINTS.iter() {
+161: 		let matched = match matcher {
+162: 			EndpointMatch::Exact(expected) => expected.as_str() == path,
+163: 			EndpointMatch::Regex(regex) => regex.is_match(path),
+164: 		};
+182: #[apply(schema_ser_schema!)]
+183: pub enum VirtualModelRouting {
+184: 	Weighted(Vec<WeightedTarget>),
+185: 	Failover { backend: RouteBackendReference },
+186: 	Conditional(Vec<ConditionalTarget>),
+187: 	Callout(Arc<llm::router_callout::VirtualModelCallout>),
+188: }
+192: #[derive(Debug, Clone, PartialEq, Eq)]
+193: pub struct OriginalModel(pub String);
+194: 
+195: #[apply(schema_ser_schema!)]
+196: pub struct WeightedTarget {
+197: 	pub model: String,
+198: 	pub weight: usize,
+345: 		};
+346: 		if !api_key_model_authorized(req, &requested_model.model) {
+347: 			return ResolveResult::DirectResponse(api_key_model_authorization_denied_response());
+348: 		}
+349: 		req
+350: 			.extensions_mut()
+351: 			.insert(OriginalModel(requested_model.model.clone()));
+373: 
+374: 	fn model_list_response(&self, req: &Request, catalog: &llm::catalog::ModelCatalog) -> Response {
+375: 		let catalog = catalog.snapshot();
+376: 		let expand = self.discovery == llm::discovery::Discovery::Catalog;
+377: 		let data = self
+378: 			.models
+379: 			.iter()
+380: 			.filter(|model| model.visibility == ModelVisibility::Public)
+381: 			.filter(|model| model_authorized(model, req))
+382: 			.flat_map(|model| {
+383: 				if expand
+384: 					&& let Some(discovery) = &model.discovery
+385: 					&& discovery.expands(&model.name)
+386: 					&& let Some(model_ids) = catalog.model_ids(&discovery.provider)
+394: 							// Now check it still matches the model match (e.g 'foo/*') and we are authorized for this model
+395: 							model_name_matches(&model.name, name) && api_key_model_authorized(req, name)
+396: 						})
+397: 						.map(|(id, name)| {
+398: 							llm::model_list::ModelInfo::new(
+399: 								name.into_owned(),
+400: 								model.created,
+415: 					.iter()
+416: 					.filter(|model| api_key_model_authorized(req, &model.name))
+417: 					.map(|model| self.virtual_model_info(model, &catalog)),
+418: 			)
+419: 			.unique_by(|model| model.id.clone())
+420: 			.collect::<Vec<_>>();
+421: 		let path = req.uri().path().trim_end_matches('/');
+485: 
+486: 	async fn resolve_virtual_model(
+487: 		&self,
+488: 		virtual_model: &VirtualModelRoute,
+489: 		req: &mut Request,
+490: 		location: RequestedModelLocation,
+491: 		client: &PolicyClient,
+495: 			VirtualModelRouting::Weighted(targets) => {
+496: 				match targets.choose_weighted(&mut rand::rng(), |target| target.weight) {
+497: 					Ok(target) => (target.model.clone(), target.invalid),
+498: 					Err(err) => {
+499: 						tracing::debug!(%err, "failed to select weighted virtual model target");
+500: 						return ResolveResult::DirectResponse(llm_error_response(
+501: 							::http::StatusCode::NOT_FOUND,
+540: 					Ok(selection) => {
+541: 						tracing::debug!(
+542: 							virtual_model = %virtual_model.name,
+543: 							target_model = %selection.model,
+544: 							"virtual model callout selected unknown model",
+545: 						);
+546: 						None
+547: 					},
+548: 					Err(err) => {
+549: 						tracing::debug!(virtual_model = %virtual_model.name, %err, "virtual model callout failed");
+550: 						None
+551: 					},
+552: 				};
+553: 				match (selection, &callout.failure_mode) {
+554: 					(Some(selection), _) => {
+555: 						fields = selection.fields;
+556: 						(selection.model, false)
+557: 					},
+558: 					(None, VirtualModelCalloutFailureMode::Fallback(model)) => (model.clone(), false),
+559: 					(None, VirtualModelCalloutFailureMode::FailClosed) => {
+560: 						return ResolveResult::DirectResponse(llm_error_response(
+561: 							::http::StatusCode::SERVICE_UNAVAILABLE,
+562: 							&format!("Virtual model {} callout failed", virtual_model.name),
+563: 							"virtual_model_callout_failed",
+564: 						));
+565: 					},
+566: 				}
+567: 			},
+568: 		};
+569: 		if invalid {
+570: 			tracing::debug!(
+571: 				virtual_model = %virtual_model.name,
+572: 				target_model = %target,
+573: 				"virtual model selected an invalid target",
+574: 			);
+575: 			return ResolveResult::DirectResponse(llm_error_response(
+576: 				::http::StatusCode::NOT_FOUND,
+577: 				&format!(
+578: 					"Virtual model {} selected invalid target {target}",
+579: 					virtual_model.name
+580: 				),
+581: 				"virtual_model_target_not_found",
+582: 			));
+583: 		}
+584: 
+585: 		if let Err(resp) = Box::pin(rewrite_request_model(req, location, &target, fields)).await {
+586: 			return ResolveResult::DirectResponse(*resp);
+587: 		}
+588: 		match self.resolve_concrete_model(&target, true, req) {
+589: 			Ok(Some(route)) => ResolveResult::Backend(route),
+590: 			Ok(None) => {
+591: 				tracing::debug!(
+592: 					virtual_model = %virtual_model.name,
+593: 					target_model = %target,
+594: 					"virtual model selected target with no declared concrete model",
+595: 				);
+596: 				ResolveResult::DirectResponse(llm_error_response(
+597: 					::http::StatusCode::NOT_FOUND,
+598: 					&format!(
+599: 						"Virtual model {} selected target {target}, but no matching model was found",
+600: 						virtual_model.name
+601: 					),
+602: 					"virtual_model_target_not_found",
+603: 				))
+604: 			},
+605: 			Err(()) => ResolveResult::DirectResponse(model_authorization_denied_response()),
+606: 		}
+607: 	}
+608: 
+609: 	fn has_model(&self, model: &str) -> bool {
+610: 		self
+611: 			.models
+612: 			.iter()
+613: 			.any(|route| model_name_matches(&route.name, model))
+614: 	}
+615: 
+616: 	fn resolve_concrete_model(
+617: 		&self,
+618: 		requested_model: &str,
+619: 		allow_internal: bool,
+620: 		req: &Request,
+621: 	) -> Result<Option<ResolvedBackend>, ()> {
+622: 		// `models` can store things like `provider/*`. The concrete `requested_model` will be like `provider/real-model`.
+623: 		let matches = |model: &ModelRoute| {
+624: 			(allow_internal || model.visibility == ModelVisibility::Public)
+625: 				&& model_name_matches(&model.name, requested_model)
+626: 				&& header_matches(&model.header_matches, req)
+627: 		};
+628: 		let Some(model) = self
+629: 			.models
+630: 			.iter()
+631: 			.find(|model| matches(model) && model_authorized(model, req))
+632: 		else {
+633: 			return if self.models.iter().any(matches) {
+634: 				Err(())
+635: 			} else {
+636: 				Ok(None)
+637: 			};
+638: 		};
+639: 		Ok(Some(ResolvedBackend {
+640: 			backend: model.backend.clone(),
+641: 			route_type: classify_route(req.uri().path()).unwrap_or(
+642: 				model
+643: 					.policies
+644: 					.passthrough
+645: 					.unwrap_or(llm::RouteType::Passthrough),
+646: 			),
+647: 			llm_policy: model.policies.llm.clone(),
+648: 		}))
+649: 	}
+650: }
+AGL3 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/llm/catalog/model.rs ab6fadbb408e74b6c15011c43f1071629cf7f3ba7607036709b0ac6089a74d12
+AGL4 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/llm/mod.rs fe83aec161add58845f51bff2f61011faa3d8bde2db2e606e4c1bb9f3e90cad0
+79: #[serde(rename_all = "camelCase")]
+80: pub struct AIBackend {
+81: 	#[serde(skip_serializing)]
+82: 	pub default_health: Option<http::health::Policy>,
+83: 	pub providers: crate::types::loadbalancer::EndpointSet<NamedAIProvider>,
+84: }
+85: 
+324: 
+325: /// Result of translating a chat request before it is sent upstream.
+326: ///
+327: /// `body` is the upstream request payload. `provider_state` carries any
+328: /// conversion state needed to translate the later response/stream back to the
+329: /// original `InputFormat`; most providers do not need it.
+330: struct RenderedChatRequest {
+687: 
+688: 	fn stream(&self, resp: Response, ctx: ChatStreamContext) -> Response {
+689: 		match self.output {
+690: 			ChatFormat::OpenAICompletions => match self.input {
+691: 				InputFormat::Completions => {
+692: 					conversion::completions::passthrough_stream(ctx.logger, ctx.log_content, resp)
+693: 				},
+1769: 			req.stream_options = Some(types::completions::StreamOptions {
+1770: 				include_usage: true,
+1771: 				rest: Default::default(),
+1772: 			});
+1773: 		}
+1774: 		if matches!(
+1775: 			self,
+1842: 			return Ok(RequestResult::Rejected(google_invalid_argument(
+1843: 				"streamGenerateContent requires alt=sse; the JSON-array streaming variant is not supported",
+1844: 			)));
+1845: 		}
+1846: 		let (parts, managed_body, mut req) = self
+1847: 			.read_gemini_body_and_default_model::<types::gemini::Request>(policies, req, log)
+1848: 			.await?;
+AGL5 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/llm/src/conversion/mod.rs a0adbc97ce8029ebafd9a5d02e2eeff088f5ed9e8ffbf45071fd60624a552bcd
+AGL6 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/llm/router_callout.rs ce1342254288a8175cf290fc431880c01028fcc21f5412d2e8849c6517e1c08b
+AGL7 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/types/loadbalancer.rs cdb3651dddaffcb6e3952adea8a2f9494e3dce49395077bfcc59ba469d9eea1d
+AGL8 955d56fae09b45f3cb8e85e797dbb1eb06134f77 controller/pkg/agentgateway/translator/model_collections.go 23971f9580fdf949206c7dd8ff3f22c07bf0dd5229521f1275cf0b84d2b73ce0
+AGL9 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/agentgateway/src/http/retry/mod.rs f8b5b9dad5379dfdcdf7fcad13d0eb5f33064b4c955edf29b6a6dae8ec382f20
+6: 
+7: pub use body::ReplayBody;
+8: 
+9: use crate::cel::Expression;
+10: use crate::store::HasExpressions;
+11: use crate::*;
+12: 
+14: #[cfg_attr(feature = "schema", schemars(rename = "RetryPolicy"))]
+15: pub struct Policy {
+16: 	/// Total number of attempts, including the original request.
+17: 	#[serde(default = "default_attempts")]
+18: 	pub attempts: NonZeroU8,
+19: 	/// Delay between retry attempts.
+20: 	#[serde(
+21: 		default,
+22: 		skip_serializing_if = "Option::is_none",
+23: 		with = "serde_dur_option"
+24: 	)]
+32: 	/// retries are disabled (only the initial attempt is made), e.g. `request.method == "GET"`.
+33: 	/// Retrying requires buffering the request body in memory for replay, so this lets us skip
+34: 	/// that cost when the request is known to be non-retriable (e.g. streaming or websockets).
+35: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+36: 	pub precondition: Option<Arc<Expression>>,
+37: 	/// CEL expression evaluated against each response to decide whether to retry. A response
+38: 	/// is retried when its status code is in `codes` *or* this expression evaluates to `true`.
+39: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+40: 	pub condition: Option<Arc<Expression>>,
+41: }
+42: 
+43: impl HasExpressions for Policy {
+44: 	/// Exposes the precondition/condition expressions so the proxy snapshots the
+45: 	/// request/response attributes they reference.
+46: 	fn expressions(&self) -> impl Iterator<Item = &Expression> {
+47: 		self
+48: 			.precondition
+54: 
+55: pub fn de_codes<'de: 'a, 'a, D>(deserializer: D) -> Result<Box<[http::StatusCode]>, D::Error>
+56: where
+57: 	D: Deserializer<'de>,
+58: {
+59: 	let raw = Vec::<u16>::deserialize(deserializer)?;
+60: 	let boxed = raw
+AGL10 955d56fae09b45f3cb8e85e797dbb1eb06134f77 crates/llm/src/golden_tests.rs dc8fd8724c8052c0b9eb610fe12d343ba3f811d24c9f59a36f95846450b9f763

@@ -1,0 +1,31 @@
+#+TITLE: Stale Generated Hook Configuration and Evidence Preservation
+#+LANGUAGE: en
+
+* Observed first commit attempt
+
+Clippy, Nixfmt and Shellcheck passed. The generated local Ruff hook failed while
+scanning historical Python verification helpers, reporting 412 findings, 26
+automatic fixes and 386 remaining findings. The hook changed 394 Python files.
+No commit was created by that failed attempt.
+
+Those automatic edits were restored byte-for-byte from the already staged
+original versions. The restore was limited to the modified Python paths; no
+gateway source or unrelated work was reverted. The resulting working-tree diff
+against the index was empty. Historical helpers are retained research assets;
+the active implementation verification entrypoint is the Go dev runner.
+
+* Current authoritative configuration
+
+The ignored local configuration symlink still pointed to an older generated
+Nix store file. Evaluating the current project Nix source reports
+=git-hooks.hooks.ruff.enable=false=. Its actual generated hook inventory is
+Clippy, Nixfmt and Shellcheck. The project configuration was not changed to
+disable a failing check: it already declared that inventory.
+
+=devenv build --offline git-hooks.configFile= generated the current configuration,
+and the local symlink was synchronized to that output. No hook was bypassed and
+no skip environment variable was used. =devenv.lock= retained SHA-256
+=fc018f67b8d35c6a0f1188027640c620318b5695854ac9161938183bcfe9870f=.
+The evaluation and build logs are adjacent. The final 164 source-input checksums
+were checked again after restoring the historical files and synchronizing the
+generated hook configuration.

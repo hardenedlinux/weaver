@@ -1,0 +1,22 @@
+#+TITLE: Native Rust Benchmark Baseline
+#+LANGUAGE: en
+
+* Scope
+Local empirical baseline, not a throughput guarantee. Values are nanoseconds per measured iteration. CPU, compiler and client environment are in the adjacent stage logs. Go RPC client allocations are not Rust allocations.
+
+| Benchmark | Mean ns | Lower confidence bound ns | Upper confidence bound ns |
+|-----------+---------+---------------------------+---------------------------|
+| contracts_provider_commitment/128 | 4186.278 | 4025.454 | 4362.674 |
+| contracts_provider_commitment/16384 | 54861.175 | 53216.427 | 56923.432 |
+| contracts_provider_commitment/524288 | 1730516.229 | 1646114.743 | 1833816.868 |
+| execution_https_guarded_sse_three_events | 3517278.704 | 3131228.381 | 3994539.009 |
+| ledger_consume_and_dispatch_burn | 373445.770 | 361853.515 | 387121.406 |
+| ledger_fresh_admission | 332679.582 | 268794.573 | 424995.390 |
+| ledger_idempotent_admission | 92512.872 | 91575.990 | 93738.968 |
+| policy_compilation_cache_churn | 95157.454 | 82292.688 | 116102.060 |
+| policy_typed_schema_validation | 181895.898 | 174496.830 | 191424.098 |
+| policy_warm_compilation_current_decision | 55590.798 | 51601.846 | 61500.618 |
+| server_response_encoding/arrow_batch/1 | 4276.750 | 4143.612 | 4494.493 |
+| server_response_encoding/arrow_batch/32 | 5170.717 | 4874.526 | 5572.920 |
+| server_response_encoding/protobuf_frames/1 | 170.260 | 166.407 | 175.098 |
+| server_response_encoding/protobuf_frames/32 | 5241.426 | 5126.971 | 5395.314 |

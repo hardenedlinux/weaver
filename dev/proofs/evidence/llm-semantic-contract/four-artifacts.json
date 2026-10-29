@@ -1,0 +1,79 @@
+[
+  {
+    "id": "SC1",
+    "design": "Preserve ordered roles and semantic projection",
+    "quint": "roleOrderCannotChangeTest",
+    "lean": "sealed_wire_preserves_projection",
+    "d2": "contract.semantics"
+  },
+  {
+    "id": "SC2",
+    "design": "Bind actual provider target to child",
+    "quint": "actualTargetCannotChangeTest",
+    "lean": "qualified_child_uses_actual_target",
+    "d2": "adapter.seal"
+  },
+  {
+    "id": "SC3",
+    "design": "Prevent mutation after seal",
+    "quint": "mutableBodyCannotReplaceSealTest",
+    "lean": "sealed_wire_cannot_be_replaced",
+    "d2": "adapter.codec"
+  },
+  {
+    "id": "SC4",
+    "design": "Consume exact child under original budget",
+    "quint": "consumedAttemptCannotReplayTest",
+    "lean": "qualified_child_retains_budget",
+    "d2": "broker.admit"
+  },
+  {
+    "id": "SC5",
+    "design": "Retire old child invocation on restart",
+    "quint": "restartCannotReinvokeOldChildTest",
+    "lean": "restart_cannot_reinvoke_old_attempt",
+    "d2": "broker.stream"
+  },
+  {
+    "id": "SC6",
+    "design": "Current winner and disclosure Policy",
+    "quint": "losingAttemptCannotReleaseTest",
+    "lean": "release_requires_current_winner_and_policy",
+    "d2": "broker.validation"
+  },
+  {
+    "id": "SC7",
+    "design": "Source-bound output cannot mix attempts",
+    "quint": "otherAttemptCannotReleaseTest",
+    "lean": "semantic_outputs_keep_original_source",
+    "d2": "tools.assembly"
+  },
+  {
+    "id": "SC8",
+    "design": "Validated document cannot downgrade to text",
+    "quint": "documentProfileCannotDowngradeTest",
+    "lean": "document_profile_cannot_downgrade",
+    "d2": "contract.policy"
+  },
+  {
+    "id": "SC9",
+    "design": "Tool fragments and proposals grant no effects",
+    "quint": "qualifiedProposalIsStillDataTest",
+    "lean": "tool_fragments_do_not_execute",
+    "d2": "tools.execution"
+  },
+  {
+    "id": "SC10",
+    "design": "Complete exact arguments before proposal",
+    "quint": "unfinishedArgumentsCannotProposeTest",
+    "lean": "tool_proposal_requires_finished_valid_arguments",
+    "d2": "tools.proposal"
+  },
+  {
+    "id": "SC11",
+    "design": "Keep private governance and response mode bound",
+    "quint": "responseModeCannotBeDowngradedTest",
+    "lean": "sealed_internal_context_is_bound",
+    "d2": "adapter.seal"
+  }
+]

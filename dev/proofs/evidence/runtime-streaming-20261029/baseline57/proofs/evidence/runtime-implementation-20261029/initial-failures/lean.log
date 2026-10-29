@@ -1,0 +1,11 @@
+proofs/lean/RuntimeAdmission.lean:31:19: error: Application type mismatch: The argument
+  bound
+has type
+  0 < fresh
+but is expected to have type
+  { spent := s.spent, calls := s.calls, held := fresh, revision := s.revision, fence := s.fence }.held ≤ budget
+in the application
+  And.intro bound
+'Weaver.RuntimeAdmission.safe_step' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.RuntimeAdmission.stale_fence_cannot_match' does not depend on any axioms
+'Weaver.RuntimeAdmission.unknown_retains_original_hold' does not depend on any axioms

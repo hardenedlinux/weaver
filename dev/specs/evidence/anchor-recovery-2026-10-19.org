@@ -1,0 +1,146 @@
+#+title: Anti-Rollback, Canonical Recovery and Egress Formal Evidence
+#+language: en
+#+date: 2026-10-19
+#+options: toc:2
+
+* Exact checked inputs
+
+Quint 0.33.0 used the TypeScript backend. Lean 4.34.1 was selected explicitly
+through elan. All three imported Weaver proofs were rebuilt from current source
+into isolated temporary output before checking the new consumer. No owner code,
+existing proof source, dependency pin or native ABI was modified. Prior evidence
+receipts retain their exact source identities.
+
+| Source input | SHA-256 |
+|--------------+---------|
+| AnchoredRecoveryAndEgress.qnt | a520bbdbb6aa3b60b24bcfafd82e47e4e624d13c3f83afcf4a97f334102aee63 |
+| AnchoredRecoveryAndEgress.lean | e7c827316b6e2d89ef379dbf12b3918aefccdb6557fc28b36414e66c8ef2b9fc |
+| FiniteDomainMigration.lean | 89a16ca38a6b6e21e4fd4892c26043c0d4f68881c7c4626a2e648cadaabf1c2d |
+| SharedMessageBudget.lean | be3f2237e83c6d1ecf824795919d7278654aa05012d30a8c5363f1bc24a3904f |
+| LogicalMessageAuthority.lean | 649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca |
+
+[[file:../README.org][The formal guide]] provides exact reproduction commands.
+[[file:../../../docs/architecture/19-anchor-recovery-and-egress-contract.org][The contract dossier]] maps owner sources, assumptions, actions, theorems and
+pending physical acceptance. This receipt binds the final bytes above.
+
+* Executed evidence
+
+- Quint typecheck exited zero.
+- Nineteen deterministic controls passed: thirteen permitted/rejection/witness controls and six expected counterexamples.
+- The normal step relation completed 3,000 sampled traces with at most 100 transitions each, seed 20261019, invariant safety; no violation was found.
+- The sampled run completed with exit zero inside a 60-second watchdog. No timeout was widened or relabeled.
+- Imported Lean proofs and AnchoredRecoveryAndEgress.lean compiled with exit zero; the printed inventories contain no sorryAx or custom axiom.
+
+Quint simulation is sampled exploration, not exhaustive model checking.
+Lean induction covers the declared journal and single original-range relations;
+the conditional publication/ProtectedHandoff results expose their premises.
+Normal propext, Quot.sound and inherited Classical.choice are logical axioms,
+not unfinished proofs. No full source-to-network refinement, native acceptance
+or deployed Zero Trust profile is admitted by these results.
+
+* Interpretation and limits
+
+The journal proof preserves reachability of the actual arbitrary finite ledger
+payload and derives recovered account conservation only from an authenticated
+complete current image. Operation records are immutable across host rollback,
+lost replies and lookups. The decision counter is audit ghost state; publication
+does not consult it as a runtime authority guard. Freshness comes from the actual
+independent canonical journal and its command/operation CAS contract.
+
+The orthogonal range model starts after one range has been admitted, with its
+epoch normalized to zero. ProtectedHandoff separately requires a real anchored
+original claim, recovered state and actual-owner gate. The journal's empty initial
+state is not silently treated as containing that claim. Request projection,
+cryptographic input authentication and real transport refinement remain premises.
+
+The normal post-cut drain witness passes safety while showing an old range can
+be exposed after seal. A receiver fence can reject its business application
+without preventing those wire bytes. The wire counter denotes bounded
+application-range exposure events, not packet/TCP retransmission counts or exact
+partial-write offsets. The single-range bound requires the qualified delegation
+contract and cannot be generalized to arbitrary SDK behavior.
+
+Co-rollback counterexamples retain specification/observational audit facts to
+expose lost authority or repeated effects. Those ghosts are not a hidden runtime
+oracle. If all freshness and owner/deduplication authority rolls back with the
+host, local equality cannot establish safety. The dossier requires independently
+qualified identity, durability, actual-writer mediation and receiver evidence.
+
+Several rejection controls end in Quint's fail combinator and have no successor
+s in their final trace entry. That is test semantics, not persistent state loss.
+Passing negative tests mean the weaker design produced its expected violation;
+those invalid actions remain excluded from normal step.
+
+All twelve physical acceptance rows AR1-AR12 remain Pending. No VM rollback,
+database fsync/crash, native SDK/kernel, actual receiver or wire-capture
+qualification was executed. Simulator time below is not gateway performance.
+
+* Actual test output
+
+#+begin_example
+AnchoredRecoveryAndEgress
+    ok lostCommitReplyTest passed 1 test(s)
+    ok newCommandSameOperationRejectedTest passed 1 test(s)
+    ok bindingSubstitutionRejectedTest passed 1 test(s)
+    ok missingIsNotAbortTest passed 1 test(s)
+    ok abortBlocksLateCommitTest passed 1 test(s)
+    ok anchorOutageRetainsBufferTest passed 1 test(s)
+    ok snapshotRollbackRejectedTest passed 1 test(s)
+    ok sameHeightMissingPayloadRejectedTest passed 1 test(s)
+    ok sameHeightForeignLineageRejectedTest passed 1 test(s)
+    ok sealCannotReopenWithoutCommitTest passed 1 test(s)
+    ok postCutDrainWitnessTest passed 1 test(s)
+    ok receiverFenceDoesNotPreventWireTest passed 1 test(s)
+    ok receiverDedupSurvivesHostRollbackTest passed 1 test(s)
+    ok newCommandRetryCounterexampleTest passed 1 test(s)
+    ok sequenceOnlyRecoveryCounterexampleTest passed 1 test(s)
+    ok cachedCheckToSocketCounterexampleTest passed 1 test(s)
+    ok coRollbackTransportOwnerCounterexampleTest passed 1 test(s)
+    ok coRollbackAnchorCounterexampleTest passed 1 test(s)
+    ok unauthenticatedEpochRelabelCounterexampleTest passed 1 test(s)
+
+  19 passing (49ms)
+#+end_example
+
+* Actual sampled run
+
+#+begin_example
+[ok] No violation found (19928ms at 151 traces/second).
+Use --seed=0x135289b --backend=typescript to reproduce.
+#+end_example
+
+* Actual Lean axiom inventory
+
+#+begin_example
+'Weaver.AnchoredRecoveryAndEgress.Journal.reachable_invariant' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.Journal.recovered_budget_conservation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.Journal.operation_receipt_is_immutable' depends on axioms: [propext]
+'Weaver.AnchoredRecoveryAndEgress.Egress.reachable_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.Egress.post_seal_wire_emission_is_reachable' depends on axioms: [propext]
+'Weaver.AnchoredRecoveryAndEgress.joint_publication_preserves' depends on axioms: [propext, Quot.sound]
+'Weaver.AnchoredRecoveryAndEgress.protected_handoff_requires_original_claim' does not depend on any axioms
+#+end_example
+
+* Retained traces
+
+- [[file:anchor-traces/abortBlocksLateCommitTest-4.itf.json][abortBlocksLateCommitTest-4.itf]]
+- [[file:anchor-traces/anchorOutageRetainsBufferTest-5.itf.json][anchorOutageRetainsBufferTest-5.itf]]
+- [[file:anchor-traces/bindingSubstitutionRejectedTest-2.itf.json][bindingSubstitutionRejectedTest-2.itf]]
+- [[file:anchor-traces/cachedCheckToSocketCounterexampleTest-15.itf.json][cachedCheckToSocketCounterexampleTest-15.itf]]
+- [[file:anchor-traces/coRollbackAnchorCounterexampleTest-17.itf.json][coRollbackAnchorCounterexampleTest-17.itf]]
+- [[file:anchor-traces/coRollbackTransportOwnerCounterexampleTest-16.itf.json][coRollbackTransportOwnerCounterexampleTest-16.itf]]
+- [[file:anchor-traces/lostCommitReplyTest-0.itf.json][lostCommitReplyTest-0.itf]]
+- [[file:anchor-traces/missingIsNotAbortTest-3.itf.json][missingIsNotAbortTest-3.itf]]
+- [[file:anchor-traces/newCommandRetryCounterexampleTest-13.itf.json][newCommandRetryCounterexampleTest-13.itf]]
+- [[file:anchor-traces/newCommandSameOperationRejectedTest-1.itf.json][newCommandSameOperationRejectedTest-1.itf]]
+- [[file:anchor-traces/postCutDrainWitnessTest-10.itf.json][postCutDrainWitnessTest-10.itf]]
+- [[file:anchor-traces/receiverDedupSurvivesHostRollbackTest-12.itf.json][receiverDedupSurvivesHostRollbackTest-12.itf]]
+- [[file:anchor-traces/receiverFenceDoesNotPreventWireTest-11.itf.json][receiverFenceDoesNotPreventWireTest-11.itf]]
+- [[file:anchor-traces/sameHeightForeignLineageRejectedTest-8.itf.json][sameHeightForeignLineageRejectedTest-8.itf]]
+- [[file:anchor-traces/sameHeightMissingPayloadRejectedTest-7.itf.json][sameHeightMissingPayloadRejectedTest-7.itf]]
+- [[file:anchor-traces/sealCannotReopenWithoutCommitTest-9.itf.json][sealCannotReopenWithoutCommitTest-9.itf]]
+- [[file:anchor-traces/sequenceOnlyRecoveryCounterexampleTest-14.itf.json][sequenceOnlyRecoveryCounterexampleTest-14.itf]]
+- [[file:anchor-traces/snapshotRollbackRejectedTest-6.itf.json][snapshotRollbackRejectedTest-6.itf]]
+- [[file:anchor-traces/unauthenticatedEpochRelabelCounterexampleTest-18.itf.json][unauthenticatedEpochRelabelCounterexampleTest-18.itf]]

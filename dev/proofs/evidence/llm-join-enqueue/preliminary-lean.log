@@ -1,0 +1,67 @@
+proofs/lean/LlmJoinEnqueue.lean:96:2: error: Invalid target: Index in target's type is not a variable (consider using the `cases` tactic instead)
+  t.base.base.source
+proofs/lean/LlmJoinEnqueue.lean:123:40: error: unexpected token 'partial'; expected '_' or identifier
+proofs/lean/LlmJoinEnqueue.lean:123:47: error: unexpected token ':'; expected 'abbrev', 'axiom', 'builtin_initialize', 'class', 'coinductive', 'def', 'example', 'inductive', 'initialize', 'instance', 'opaque', 'structure' or 'theorem'
+proofs/lean/LlmJoinEnqueue.lean:124:27: error: unexpected identifier; expected 'abbrev', 'axiom', 'builtin_initialize', 'class', 'coinductive', 'def', 'example', 'inductive', 'initialize', 'instance', 'opaque', 'structure' or 'theorem'
+proofs/lean/LlmJoinEnqueue.lean:155:29: error: Tactic `rfl` failed: The left-hand side
+  (brokerProjection s key).calls offset
+is not definitionally equal to the right-hand side
+  0
+
+case none
+S : Type
+s : State S
+key offset : Nat
+h : s.queued key = none
+⊢ (brokerProjection s key).calls offset = 0
+proofs/lean/LlmJoinEnqueue.lean:155:29: error: Tactic `rfl` failed: The left-hand side
+  (brokerProjection s key).calls offset
+is not definitionally equal to the right-hand side
+  0
+
+case some
+S : Type
+s : State S
+key offset : Nat
+val✝ : Operation
+h : s.queued key = some val✝
+⊢ (brokerProjection s key).calls offset = 0
+proofs/lean/LlmJoinEnqueue.lean:159:7: error: unexpected token 'prefix'; expected '(', ':=', '|' or term
+proofs/lean/LlmJoinEnqueue.lean:159:7: error: Missing cases:
+proofs/lean/LlmJoinEnqueue.lean:158:155: error: unsolved goals
+S : Type
+next : BrokerConsumptionQueue.State
+s : State S
+key offset length : Nat
+suffix : BrokerConsumptionQueue.Run LogicalRangeRecovery.abstractOwner length (brokerProjection s key) next
+⊢ next.calls offset ≤ 1
+proofs/lean/LlmJoinEnqueue.lean:159:13: error: unexpected token ':='; expected ':'
+proofs/lean/LlmJoinEnqueue.lean:162:26: error: unexpected token '|'; expected ':'
+proofs/lean/LlmJoinEnqueue.lean:169:7: error: unexpected token 'prefix'; expected '(', ':=', '|' or term
+proofs/lean/LlmJoinEnqueue.lean:169:7: error: Missing cases:
+proofs/lean/LlmJoinEnqueue.lean:168:81: error: unsolved goals
+S : Type
+next : BrokerConsumptionQueue.State
+s : State S
+key length : Nat
+suffix : BrokerConsumptionQueue.Run LogicalRangeRecovery.abstractOwner length (brokerProjection s key) next
+unknown : next.unknown = true
+⊢ BrokerConsumptionQueue.Held next
+proofs/lean/LlmJoinEnqueue.lean:169:13: error: unexpected token ':='; expected ':'
+proofs/lean/LlmJoinEnqueue.lean:172:26: error: unexpected token '|'; expected ':'
+'Weaver.LlmJoinEnqueue.result_projection' depends on axioms: [propext]
+'Weaver.LlmJoinEnqueue.admission_source_has_no_send' depends on axioms: [propext, sorryAx]
+'Weaver.LlmJoinEnqueue.original_operation_never_replaced' depends on axioms: [propext]
+'Weaver.LlmJoinEnqueue.old_prefix_blocks_enqueue' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.old_owner_blocks_enqueue' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.old_policy_blocks_enqueue' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.old_queue_revision_blocks_enqueue' does not depend on any axioms
+proofs/lean/LlmJoinEnqueue.lean:183:14: error(lean.unknownIdentifier): Unknown constant `incomplete_join_blocks_enqueue`
+'Weaver.LlmJoinEnqueue.enqueue_has_no_source_effect' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.original_unknown_exposure_retained' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmJoinEnqueue.original_spent_retained' depends on axioms: [propext]
+'Weaver.LlmJoinEnqueue.ready_broker_initialized' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.queue_broker_initialized' does not depend on any axioms
+'Weaver.LlmJoinEnqueue.enqueue_has_zero_transport_calls' depends on axioms: [sorryAx]
+'Weaver.LlmJoinEnqueue.actual_broker_suffix_once' depends on axioms: [sorryAx]
+'Weaver.LlmJoinEnqueue.actual_broker_unknown_stays_held' depends on axioms: [sorryAx]

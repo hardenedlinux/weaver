@@ -1,0 +1,134 @@
+#+title: Quorum Durable Promises and Prefix Recovery Check Receipt
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS conditional-semantic-product-checked-native-owner-pending
+
+* Identity and scope
+
+Workspace /Users/guangtao/ghq/github.com/tao3k/weaver, branch main, tracked HEAD
+=4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Architecture and formal artifacts
+remain untracked working-tree documents. No gateway code, upstream source,
+dependency pin, native consensus backend, commit or push is included.
+
+[[file:../../docs/architecture/28-quorum-durable-promises-prefix-recovery.org][The dossier]] defines the conservative sticky-prefix profile and its deliberate
+availability restriction. [[file:quorum-promise-traces/source-review.json][Eighteen committed source blobs]] were rehashed against
+POO Flow =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=; all hashes match. Numbered source
+excerpts remain available, including P35 equality rollback, fork-free publication
+and lineage-prefix/domain contracts. [[file:quorum-promise-traces/source-owner-boundaries.log][The bounded source search]] shows the runtime
+append/fsync/lease ownership boundary in the reviewed files. It does not establish
+repository-wide absence of consensus implementations.
+
+* Reproducible checks
+
+Lean =4.34.1=, arm64 Darwin, Std only; Quint =0.33.0=, TypeScript backend.
+All thirteen Lean modules were freshly built in the isolated directory
+/private/tmp/weaver-quorum-promise-final-proof. [[file:quorum-promise-traces/commands.json][Twenty-one exact command records]]
+retain arguments, timings, watchdogs and zero exits. Watchdogs remain 20 seconds
+for compilation/typecheck, 55 seconds for deterministic tests and 30 seconds for
+each bounded sampled route. Timing is checking cost, not gateway throughput.
+
+| Command | Exit | Seconds | Raw output |
+|---------+------+---------+------------|
+| LogicalMessageAuthority | 0 | 0.671 | [[file:quorum-promise-traces/LogicalMessageAuthority.log][log]] |
+| SharedMessageBudget | 0 | 0.72 | [[file:quorum-promise-traces/SharedMessageBudget.log][log]] |
+| FiniteDomainMigration | 0 | 0.675 | [[file:quorum-promise-traces/FiniteDomainMigration.log][log]] |
+| AnchoredRecoveryAndEgress | 0 | 0.729 | [[file:quorum-promise-traces/AnchoredRecoveryAndEgress.log][log]] |
+| ComposedGatewayLifecycle | 0 | 0.617 | [[file:quorum-promise-traces/ComposedGatewayLifecycle.log][log]] |
+| FiniteStreamManifest | 0 | 0.784 | [[file:quorum-promise-traces/FiniteStreamManifest.log][log]] |
+| DriverCompletionRecovery | 0 | 0.61 | [[file:quorum-promise-traces/DriverCompletionRecovery.log][log]] |
+| WriterSettlementClosure | 0 | 0.663 | [[file:quorum-promise-traces/WriterSettlementClosure.log][log]] |
+| SettlementAnchorRecovery | 0 | 0.662 | [[file:quorum-promise-traces/SettlementAnchorRecovery.log][log]] |
+| GateConsumptionPersistence | 0 | 0.564 | [[file:quorum-promise-traces/GateConsumptionPersistence.log][log]] |
+| AnchorBrokerCommit | 0 | 0.67 | [[file:quorum-promise-traces/AnchorBrokerCommit.log][log]] |
+| AnchorReconfiguration | 0 | 0.909 | [[file:quorum-promise-traces/AnchorReconfiguration.log][log]] |
+| QuorumDurablePromises | 0 | 0.507 | [[file:quorum-promise-traces/QuorumDurablePromises.log][log]] |
+| typecheck | 0 | 0.704 | [[file:quorum-promise-traces/typecheck.log][log]] |
+| tests | 0 | 0.777 | [[file:quorum-promise-traces/tests.log][log]] |
+| counterexamples | 0 | 0.722 | [[file:quorum-promise-traces/counterexamples.log][log]] |
+| init | 0 | 0.816 | [[file:quorum-promise-traces/init.log][log]] |
+| committed | 0 | 0.781 | [[file:quorum-promise-traces/committed.log][log]] |
+| joint | 0 | 0.94 | [[file:quorum-promise-traces/joint.log][log]] |
+| replacement | 0 | 1.189 | [[file:quorum-promise-traces/replacement.log][log]] |
+| inherited-account-replay | 0 | 5.711 | [[file:quorum-promise-traces/inherited-account-replay.log][log]] |
+
+The new Quint module has 24 deterministic controls: 20 positive/rejection
+controls and four intentional counterexamples. Four separate initializers
+(empty, committed, joint and stable replacement) each ran 10 sampled traces of
+up to 25 steps at seed 61. Forty bounded samples are not exhaustive exploration,
+liveness or arbitrary-native-concurrency evidence. The preceding model's actual
+forked-root duplicate-account-application counterexample was rerun separately;
+it is not one of the 24 new controls. Its retained historical ITF and byte
+manifest remain in [[file:reconfiguration-traces/SHA256SUMS][the prior receipt's manifest]].
+
+* Counterexample artifacts and observed failure
+
+[[file:quorum-promise-traces/counterexample-observations.json][Decoded final observations]] are extracted from the four final ITF files.
+The shared-witness trace contains two equal-length conflicting certified
+histories, =[1]= under voters ={0,1}= and =[2]= under voters ={1,2}=. Voter 1
+acknowledges both at incarnation 0 after the unsafe promise reset. This is an
+observed conflict, not merely a disabled guard or a claimed duplicate payment.
+
+| Excluded rule | Retained ITF | Observed violation |
+|---------------+--------------+--------------------|
+| Roll back a shared witness after acknowledgement | [[file:quorum-promise-traces/itf/rollbackSharedWitnessCounterexampleTest-0.itf.json][shared witness]] | Intersecting quorums certify conflicting full prefixes |
+| Re-enroll the same signer with empty promises | [[file:quorum-promise-traces/itf/reEnrollSameSignerCounterexampleTest-1.itf.json][same signer]] | Historical acknowledgement no longer extends into protected state |
+| Restore an old roster after stable replacement | [[file:quorum-promise-traces/itf/oldRosterResurrectionCounterexampleTest-2.itf.json][old roster]] | Old-only fork disagrees with committed joint/new history |
+| Restore every protected promise root | [[file:quorum-promise-traces/itf/allRollbackRootsLostCounterexampleTest-3.itf.json][all roots lost]] | Same quorum can certify a conflict after total witness loss |
+
+These unsafe actions are outside =step=. External acknowledgement/certificate
+history is retained only as the test oracle. The operational protocol does not
+recover erased history from that oracle. Full protected-domain rollback remains
+outside the safe failure model and must leave the service unavailable.
+
+* Lean composition and unproved premises
+
+[[file:../lean/QuorumDurablePromises.lean][The new Lean module]] proves protected-history extension for every permitted
+step and finite run, historical witness retention, equal-position certificate
+uniqueness across recovery, both membership quorum bridges, irrevocable
+retirement, old-incarnation inequality and protected witnesses for every new
+root publication. Its initialized product refines the preceding configuration
+machine and inherits original burn/dispatch/account-write uniqueness, shared
+budget conservation and retention of original unknown reservations.
+
+[[file:quorum-promise-traces/QuorumDurablePromises.log][Printed axiom dependencies]] contain no =sorryAx= or added axioms. Some theorems
+need no axioms; inherited results use only standard =propext=, =Quot.sound= and
+=Classical.choice=. This is a conditional logical result: the original source
+owner/store contracts, authenticated quorum family and full installation guards
+remain inputs. The new component protects structural records. Native digest
+encoding and signature binding of the complete source deciding image are not
+proved by its list-prefix lemmas.
+
+Quint uses six voters, four prefix slots, concrete old/joint/new majority rules
+and integer operation choices. Lean uses arbitrary finite structural histories
+and Nat-indexed voters over the existing initialized source model. There is no
+extracted/refinement proof equating the two representations to native execution.
+The sticky profile cannot replace an abandoned promise with a different term or
+envelope. An election can therefore block forever; no liveness claim is made.
+
+Native acceptance still requires atomic promise-before-sign under concurrency,
+antirollback key/incarnation/retirement custody, fresh full-prefix recovery,
+old-signer physical or mediated isolation, authenticated reconfiguration and
+actual broker/account-writer FD isolation. Signer retirement is not evidence of
+transport isolation. The original pre-barrier late-burn window and already
+submitted IO completion rules remain intact. No arbitrary provider/payment
+exactly-once or crash-tested native durability result is claimed.
+
+* Diagnostics, documentation and byte identity
+
+Preliminary diagnostics are retained under =quorum-promise-traces/preliminary-*=.
+The initial Lean draft used incorrect constructor-pattern/refl names; the initial
+Quint draft redefined the built-in =append=. Corrected final sources were freshly
+compiled/typechecked and tested as listed above. Draft diagnostics are not final
+passing evidence. The earlier full-ITF export timeout remains unchanged in the
+prior receipt; this route exports only the four small focused counterexamples.
+
+[[file:quorum-promise-traces/document-check.log][Org/link/source-register checks]], [[file:quorum-promise-traces/org-export.log][Org export without Babel]],
+[[file:quorum-promise-traces/diagram-validation.json][all D2 validations]], [[file:quorum-promise-traces/visual-check.log][new SVG inspection]] and
+[[file:quorum-promise-traces/historical-manifests.log][six historical byte manifests]] are recorded separately. The diagram contains
+only core identities, ownership and protocol relationships, with bundled Go,
+Kubernetes and Rust assets; no versions or acceptance evidence appears in it.
+
+[[file:quorum-promise-traces/SHA256SUMS][The final manifest]] covers all formal dependency sources, this dossier and
+receipt, D2/SVG, current index crosslinks and retained raw evidence. Historical
+models, receipts and manifests remain unchanged. No dependency pin was edited.

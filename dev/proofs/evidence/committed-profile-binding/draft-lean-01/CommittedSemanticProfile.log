@@ -1,0 +1,115 @@
+proofs/lean/CommittedSemanticProfile.lean:54:79: error: Application type mismatch: The argument
+  id
+has type
+  ?m.6 → ?m.6
+but is expected to have type
+  Nat
+in the application
+  s.profiles id
+proofs/lean/CommittedSemanticProfile.lean:55:15: error: Application type mismatch: The argument
+  id
+has type
+  ?m.9 → ?m.9
+but is expected to have type
+  Nat
+in the application
+  t.profiles id
+proofs/lean/CommittedSemanticProfile.lean:58:25: error: Type mismatch
+  sId
+has type
+  Nat
+but is expected to have type
+  ?m.58 → ?m.58
+proofs/lean/CommittedSemanticProfile.lean:59:12: error: Unexpected term `@id`; expected single reference to variable
+proofs/lean/CommittedSemanticProfile.lean:60:4: error: unsolved goals
+case neg
+source : GatewayHeadCAS.Config
+a : Assignment
+s : State
+p : Profile
+stored : s.profiles sorry = some p
+sId : Nat
+new : Profile
+fresh : s.profiles sId = none
+valid : ValidProfile new
+ready : s.recovered = true
+same : ¬sorry
+⊢ sorry () = sId → new = p
+proofs/lean/CommittedSemanticProfile.lean:60:12: warning: This simp argument is unused:
+  same
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [stored]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+proofs/lean/CommittedSemanticProfile.lean:96:71: error: Application type mismatch: The argument
+  id
+has type
+  ?m.6 → ?m.6
+but is expected to have type
+  Nat
+in the application
+  s.profiles id
+proofs/lean/CommittedSemanticProfile.lean:96:97: error: Application type mismatch: The argument
+  id
+has type
+  ?m.9 → ?m.9
+but is expected to have type
+  Nat
+in the application
+  t.profiles id
+proofs/lean/CommittedSemanticProfile.lean:106:89: error: Application type mismatch: The argument
+  id
+has type
+  ?m.7 → ?m.7
+but is expected to have type
+  Nat
+in the application
+  s.profiles id
+proofs/lean/CommittedSemanticProfile.lean:107:24: error: Application type mismatch: The argument
+  id
+has type
+  ?m.10 → ?m.10
+but is expected to have type
+  Nat
+in the application
+  t.profiles id
+proofs/lean/CommittedSemanticProfile.lean:125:9: error: unexpected token ':'; expected term
+proofs/lean/CommittedSemanticProfile.lean:139:8: error(lean.invalidField): Invalid field `matches`: The environment does not contain `Weaver.CommittedSemanticProfile.Resolved.matches`, so it is not possible to project the field `matches` from an expression
+  r
+of type `Resolved s key`
+proofs/lean/CommittedSemanticProfile.lean:138:115: error: unsolved goals
+source : GatewayHeadCAS.Config
+a : Assignment
+s : State
+key : Nat
+safe : Safe source a s
+r : Resolved s key
+⊢ r.node.rule.node = a.node key
+'Weaver.CommittedSemanticProfile.profile_retained_step' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.CommittedSemanticProfile.binding_retained_step' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.safe_step' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.initialized_safe' depends on axioms: [propext, Quot.sound]
+'Weaver.CommittedSemanticProfile.profile_retained' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Weaver.CommittedSemanticProfile.binding_retained' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.conflicting_profile_cannot_replace' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Weaver.CommittedSemanticProfile.conflicting_binding_cannot_replace' depends on axioms: [propext]
+'Weaver.CommittedSemanticProfile.resolved_binding_is_original' depends on axioms: [sorryAx]
+'Weaver.CommittedSemanticProfile.resolved_node_is_assigned' depends on axioms: [sorryAx]
+'Weaver.CommittedSemanticProfile.resolved_contract_is_published' depends on axioms: [propext, sorryAx]
+'Weaver.CommittedSemanticProfile.original_record_covers_full_profile' depends on axioms: [propext, sorryAx]
+'Weaver.CommittedSemanticProfile.external_template_cannot_replace_constraints' depends on axioms: [sorryAx]
+'Weaver.CommittedSemanticProfile.node_context_cannot_be_lowered' depends on axioms: [propext, sorryAx]
+'Weaver.CommittedSemanticProfile.original_budget_cannot_be_raised' depends on axioms: [propext, sorryAx]
+'Weaver.CommittedSemanticProfile.actual_route_preserves_committed_capability' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.CommittedSemanticProfile.actual_semantic_use_keeps_published_schema' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]

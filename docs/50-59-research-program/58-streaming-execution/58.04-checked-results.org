@@ -1,0 +1,63 @@
+#+TITLE: 58.04 Checked Implementation Results and Limits
+#+LANGUAGE: en
+
+* Retained evidence
+
+The development receipt is under
+[[file:../../../dev/proofs/evidence/runtime-streaming-20261029/go-verification-current/receipt.json][the Go verification receipt]], with an independent log for every stage.
+The executable gate is =go run ./go/cmd/weaver-dev check=; current verification
+does not invoke the archived Python or Bash entrypoints.
+
+The final receipt reports PASS for all 18 stages, with no failing stage. Go
+assurance and native integration were rerun with =-count=1=; their final logs
+contain fresh execution results rather than cached test outcomes. Earlier
+cached-run receipts remain separate and do not replace this current receipt.
+
+The checked suite contains 18 stages: Rust format/tests/clippy, Go race tests,
+three bounded Go fuzz targets, streaming and lifecycle Quint controls and sampled
+invariants, Lean execution/lifecycle declarations, the imported Cedar proof
+bridge, the original admission model, and Go-to-Rust native integration replay.
+Rust tests include the six crate-owned ASP deny gates. The development SDK test
+checks strict SysML analysis and all 13 currently declared requirement mappings.
+
+Lifecycle evidence includes a disconnected native caller retaining its slot,
+drain remaining pending until the writer returns, poisoned admission closing
+safely, generated submit/disconnect/close/drain schedules, incomplete HTTP bodies
+being cancelled, and a complete message surviving service restart without another
+transport connection. Existing partial-write, revocation, old-owner, shared-hold
+and TLS-buffer tests remain in the workspace gate.
+
+Quint RuntimeLifecycle includes eight lifecycle controls in addition to the
+17 imported streaming controls, including unsafe-untracking and premature-drain
+counterexamples. Sampling uses the existing 1000-trace, 60-step limits. Lean
+prints the axioms of eleven streaming/lifecycle declarations; native task
+registration, durable CAS and faithful transport observations remain explicit
+premises, rather than inferred compiler or storage proofs.
+
+* Preserved failures
+
+Earlier attempts remain separate files in the evidence directory. These include
+restricted-sandbox socket failures, a build launched before its new test
+dependency was available, the initial Quint failed-action continuation mistake,
+the initial SDK traversal of an anonymous symbol, and the incorrect assumption
+that Cargo dependency sources include a fragment hash. The Go model check now
+uses the public SDK query interface and validates Cargo's actual revision query
+field. These are corrected test/integration assumptions, not discarded controls.
+
+Earlier diagram attempts are logged separately. ELK rejected locked positions;
+the final core diagram uses TALA and the built-in Flagship Terrastruct theme.
+Rendered inspection caught external cylinder/icon labels; explicit centered
+labels now keep text out of the connector paths. Versions and test counts are
+kept in this Org document, outside the core graphic.
+
+* Remaining production boundaries
+
+This is a local authenticated owner profile. The checked HTTP service exposes
+the loopback qualification sink, while hostname-verified TLS remains available
+through the execution library. Full provider streaming adapters, Kubernetes
+controllers, Scheme publication admission, external history ingestion, independent
+anti-rollback anchors and final usage settlement remain separate implementation
+gates. Local complete writes are not provider exactly-once execution receipts.
+Process-signal handlers are installed by the executable; the focused lifecycle
+suite drives the same shutdown API directly and does not qualify orchestrator
+termination deadlines or arbitrary kernel/filesystem stalls.

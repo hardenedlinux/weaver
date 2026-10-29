@@ -1,0 +1,148 @@
+{
+  "status": "pass",
+  "boundary": "Named-reference consistency, not semantic equivalence or native extraction",
+  "contracts": [
+    {
+      "contract": "LR1",
+      "orgRule": "Stable range, replaceable current permit",
+      "quint": [
+        "restartBeforeCallCanContinueSameRangeTest",
+        "currentWorkerCannotRelabelOldPermitTest"
+      ],
+      "lean": [
+        "invocation_rechecks_current_permit",
+        "initialized_safe"
+      ],
+      "d2": "semantic.intent"
+    },
+    {
+      "contract": "LR2",
+      "orgRule": "Fence precedes authoritative zero cut",
+      "quint": [
+        "callBeforeFenceCannotRearmTest",
+        "fenceBeforeCallRejectsOldWorkerTest",
+        "cutRequiresFenceTest"
+      ],
+      "lean": [
+        "call_slot_never_resets",
+        "consumed_slot_cannot_rearm"
+      ],
+      "d2": "ledger.cas"
+    },
+    {
+      "contract": "LR3",
+      "orgRule": "Exact current cut and authentic durable job",
+      "quint": [
+        "forgedCutRejectedTest",
+        "wrongRootCutRejectedTest",
+        "staleCutCannotActivateTest"
+      ],
+      "lean": [
+        "initialized_job_provenance",
+        "activation_rechecks_original_cut"
+      ],
+      "d2": "ledger.rows"
+    },
+    {
+      "contract": "LR4",
+      "orgRule": "Lost response is not cancellation",
+      "quint": [
+        "lostReadReplyDoesNotCancelJobTest",
+        "lostActivationReplyTest",
+        "lostFenceResponseCanReconcileTest",
+        "duplicateActivationRejectedTest"
+      ],
+      "lean": [
+        "decisions_never_roll_back",
+        "revision_never_decreases"
+      ],
+      "d2": "ledger.join"
+    },
+    {
+      "contract": "LR5",
+      "orgRule": "Original slot consumed at most once",
+      "quint": [
+        "replayAfterUnknownRejectedTest",
+        "recoveryReplayCounterexampleTest",
+        "resetConsumedSlotCounterexampleTest"
+      ],
+      "lean": [
+        "at_most_one_original_invocation",
+        "forgotten_slot_counterexample"
+      ],
+      "d2": "broker.gate"
+    },
+    {
+      "contract": "LR6",
+      "orgRule": "No stale permit or stale zero cut",
+      "quint": [
+        "oldPermitAfterFenceRejectedTest",
+        "stalePermitCounterexampleTest",
+        "staleNoCallCutCounterexampleTest"
+      ],
+      "lean": [
+        "published_fence_clears_execution",
+        "stale_permit_counterexample",
+        "consumed_rearm_counterexample"
+      ],
+      "d2": "broker.queue"
+    },
+    {
+      "contract": "LR7",
+      "orgRule": "Unknown keeps the original hold",
+      "quint": [
+        "timeoutDoesNotRearmTest",
+        "timeoutAsFullCounterexampleTest"
+      ],
+      "lean": [
+        "unknown_refines_original_hold",
+        "unknown_as_full_counterexample"
+      ],
+      "d2": "semantic.unknown"
+    },
+    {
+      "contract": "LR8",
+      "orgRule": "Late receipt is exact original data",
+      "quint": [
+        "lateOriginalReceiptAfterFenceTest",
+        "wrongManifestReceiptRejectedTest",
+        "wrongPermitReceiptRejectedTest",
+        "foreignReceiptCounterexampleTest"
+      ],
+      "lean": [
+        "receipt_rechecks_original_call"
+      ],
+      "d2": "cloud.recover"
+    },
+    {
+      "contract": "LR9",
+      "orgRule": "Local completion is not settlement",
+      "quint": [
+        "partialReceiptCannotCompleteTest",
+        "duplicateReceiptIsDataOnlyTest",
+        "lateTimeoutCannotUndoFullReceiptTest",
+        "localFullReceiptCannotSettleStreamTest"
+      ],
+      "lean": [
+        "initialized_data_path_refines_queue",
+        "recovery_preserves_original_obligations"
+      ],
+      "d2": "broker.fence"
+    },
+    {
+      "contract": "LR10",
+      "orgRule": "Conditional progress preserves original identity",
+      "quint": [
+        "initialRecoveryTest",
+        "changedPolicyInvalidatesCutTest",
+        "oldActivationAllowCannotAuthorizeInvokeTest",
+        "forgedFinalPolicyRejectedTest"
+      ],
+      "lean": [
+        "prepared_unused_range_has_progress_path",
+        "projection_step_or_stutter"
+      ],
+      "d2": "cloud.observe"
+    }
+  ]
+}

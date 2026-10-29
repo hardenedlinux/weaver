@@ -1,0 +1,23 @@
+#+title: Weaver Authoritative Task-to-Scope Binding Index
+#+language: en
+#+options: toc:2
+
+* Original task authority through LLM semantics
+
+Area =10-19 LLM Gateway=; category =13 Authoritative scope=.
+This category closes the supplied-scope gap identified in [[file:../12-semantic-contracts/12.03-validation-evidence.org][12.03]] at the abstract
+protocol boundary. It joins the original claim and domain ledger to the canonical
+semantic-contract registry, actual child invocation and semantic event gates.
+The closure is conditional on authoritative registry publication and the existing
+owner/storage contracts; it is not an implementation of those contracts.
+
+| ID | Artifact |
+|----+----------|
+| 13.00 | This index |
+| 13.01 | [[file:13.01-original-task-and-authoritative-scope.org][Task authority, immutable profile resolution and final gates]] |
+| 13.02 | [[file:13.02-authoritative-scope.d2][Core D2]] / [[file:13.02-authoritative-scope.svg][SVG]] |
+| 13.03 | [[file:13.03-validation-evidence.org][Source comparison, proofs, counterexamples and runtime qualification]] |
+
+Formal sources: [[file:../../../proofs/lean/LlmAuthoritativeScope.lean][Lean]] and [[file:../../../proofs/qunit/LlmAuthoritativeScope.qnt][Quint]].
+Run [[file:../../../proofs/check_llm_authoritative_scope.py][the isolated local check runner]]. Earlier sealed categories remain historical.
+No Gateway runtime, upstream source or dependency pin is changed.

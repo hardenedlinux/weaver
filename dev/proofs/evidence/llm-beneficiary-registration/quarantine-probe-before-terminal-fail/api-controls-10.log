@@ -1,0 +1,22 @@
+@@START {"label":"api-controls-10","limit":20}
+
+  LlmBeneficiaryRegistration
+    ok rollbackFirstBindingRegistrationCounterexampleTest passed 1 test(s)
+    1) unjoinedImageCannotConsumeTest failed after 1 test(s)
+
+  1 passing (335ms)
+  1 failed
+
+  1) unjoinedImageCannotConsumeTest:
+       Error [QNT502]: Variable registry not set
+        at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/llm-beneficiary-registration/bundle/LlmBeneficiaryRegistration.qnt:1484:143
+        1484:   run unjoinedImageCannotConsumeTest=bound.then(publishWithoutOutcome).then(all {P::read,enrollment'=enrollment}).then(consume.fail()).expect(I::registry.issued==Set() and auth.grant.inc==0 and a.anchor.holds.get(12)==2)
+                                                                                                                                                            ^^^^^^^^^^^
+    Use --seed=0x125 --match=unjoinedImageCannotConsumeTest to repeat.
+
+
+  Use --verbosity=3 to show executions.
+  Further debug with: quint test --verbosity=3 proofs/evidence/llm-beneficiary-registration/bundle/LlmBeneficiaryRegistration.qnt
+Error: Tests failed
+    at unwrap (/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/run_beneficiary_registration.cjs:10:38)
+    at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/run_beneficiary_registration.cjs:27:16

@@ -1,0 +1,40 @@
+{
+  "status": "INITIAL_LOCAL_OWNER_RUNTIME_QUALIFIED",
+  "date": "2026-10-29",
+  "rustModules": 5,
+  "nativeTests": 20,
+  "aspDenyGates": 5,
+  "rustPbtCases": 64,
+  "quintControls": 13,
+  "quintSampledTraces": 1000,
+  "quintTransitionsPerTrace": 50,
+  "leanDeclarations": 4,
+  "sysmlRequirements": 7,
+  "sysmlTypedPortsValidated": true,
+  "realLoopbackTls": true,
+  "crossLanguageQueueReplay": true,
+  "currentClippyAndTrace": true,
+  "developmentOnlyAspRust": "1ca41124b846dec947f3d05119cafa07eaa57924",
+  "historicalSourceDrift": [
+    {
+      "manifest": "specs/evidence/quorum-promise-traces/SHA256SUMS",
+      "target": "docs/architecture/01-reference-comparison.org",
+      "expected": "f5922fe8fbd81062c50136fd4055b101526ee3c2f7533c44cf00b46b1fc9d2af",
+      "actual": "19c512756dadc1d5436b3f7b0dea655781df019cfcf598cfbb3c264192f28296",
+      "observedModifiedAt": "2026-10-24T04:46:45.335866+00:00",
+      "handling": "Unowned document left unchanged; no historical receipt reclassified."
+    }
+  ],
+  "originalTaskAndCostBound": true,
+  "unknownBudgetNeverReleased": true,
+  "historicalManifestsRewritten": false,
+  "existingDependencyPinsChanged": false,
+  "runtimeImplemented": true,
+  "productionGatewayComplete": false,
+  "upstreamLeanWorkerIntegrated": false,
+  "schemeNativePublisherIntegrated": false,
+  "authorityBoundary": "Trusted local management; one non-rollback deciding SQLite store",
+  "transportBoundary": "Bounded non-streaming HTTPS; no redirects, retries or response-body disclosure",
+  "performanceClaim": false,
+  "providerExactlyOnceClaim": false
+}

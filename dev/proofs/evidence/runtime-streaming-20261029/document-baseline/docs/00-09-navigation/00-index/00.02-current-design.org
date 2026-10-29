@@ -1,0 +1,24 @@
+#+title: Weaver Current Design Entry Points
+#+language: en
+#+options: toc:2
+
+* Read the LLM product path first
+
+Weaver's core is LLM inference for agents. Model catalog, task-aware routing,
+provider adaptation, streams and usage are first-class product architecture.
+Governance and formal assurance constrain that path.
+
+| Current entry | Purpose |
+|---------------+---------|
+| [[file:../../10-19-llm-gateway/10-routing-and-inference/10.00-index.org][10 LLM Gateway core]] | Product architecture, catalog, model routing, providers, streaming and delivery |
+| [[file:../../10-19-llm-gateway/10-routing-and-inference/10.03-differentiation-and-delivery.org][10.03 Differentiation]] | Turn POO Flow/Cedar/Go/Rust foundations into task, cost and operational value |
+| [[file:../../30-39-assurance/36-gateway-head-cas/36.00-index.org][36 Logical head and root CAS]] | Current AI Agent Gateway authority profile |
+| [[file:../../30-39-assurance/37-broker-consumption-queue/37.00-index.org][37 Consumption and final queue]] | Durable consumption, write intervals and unknown-budget holds |
+| [[file:../../30-39-assurance/38-logical-range-recovery/38.00-index.org][38 Same-range recovery]] | Logical fencing and safe continuation of uninvoked original ranges |
+
+Each current category links English Org, core D2, executable Quint/Lean and its
+validation receipt. Historical sealed documents retain their source and evidence
+identities. Earlier hardware-oriented explorations are not prerequisites for the
+current software Gateway profile. Routing and native provider behavior remain
+proposed until qualified; no runtime implementation or dependency migration is
+performed by these architecture changes.

@@ -1,0 +1,34 @@
+[
+  {
+    "args": [
+      "/opt/homebrew/opt/node/bin/node",
+      "proofs/evidence/llm-enrollment-credential/parse-raw-leaf.cjs"
+    ],
+    "exit": 0,
+    "seconds": 0.5823575420072302,
+    "watchdogSeconds": 20
+  },
+  {
+    "args": [
+      "quint",
+      "parse",
+      "proofs/evidence/llm-enrollment-credential/bundle/LlmEnrollmentCredential.qnt",
+      "--out",
+      "proofs/evidence/llm-enrollment-credential/bundle-parsed.json",
+      "--source-map",
+      "proofs/evidence/llm-enrollment-credential/bundle-source-map.json"
+    ],
+    "exit": 0,
+    "seconds": 4.690895208041184,
+    "watchdogSeconds": 20
+  },
+  {
+    "args": [
+      "python3",
+      "proofs/evidence/llm-enrollment-credential/check-bundle.py"
+    ],
+    "exit": 0,
+    "seconds": 0.27139787503983825,
+    "watchdogSeconds": 20
+  }
+]

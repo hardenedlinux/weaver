@@ -1,0 +1,11 @@
+
+ Error [QNT000]: Couldn't unify set and list
+Trying to unify Set[_t22] and List[{ rows: Set[int], permitted: Set[int], guardRevision: int, currentRevision: int }]
+Trying to unify (Set[_t22], (_t22) => bool) => bool and (List[{ rows: Set[int], permitted: Set[int], guardRevision: int, currentRevision: int }], ({ rows: Set[_t15], permitted: Set[_t15], guardRevision: _t18, currentRevision: _t18 | $$$tail__t13$tail__t14$tail__t17$tail__t18 }) => bool) => _t23
+
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/dev/proofs/quint/ProviderRpc.qnt:9:5
+  9:     s.releases.forall(r=>r.rows.subseteq(r.permitted) and r.guardRevision==r.currentRevision) and
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: typechecking failed

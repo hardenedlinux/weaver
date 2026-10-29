@@ -1,0 +1,67 @@
+proofs/lean/LlmIncarnationIssuance.lean:70:81: error: unexpected identifier; expected '}'
+proofs/lean/LlmIncarnationIssuance.lean:109:2: error: Invalid alternative name `activate`: Expected `issue`
+proofs/lean/LlmIncarnationIssuance.lean:110:2: error: Invalid alternative name `advance`: Expected `issue`
+proofs/lean/LlmIncarnationIssuance.lean:127:152: error: unsolved goals
+case issue
+ao : LlmAccountCommit.Owner
+wo : LlmWalActivation.Owner
+co : LlmCheckpointTruncation.Owner
+ho : LlmAppendHandoff.Owner
+fo : LlmAdmissionFloor.Owner
+jo : LlmSourceJoin.Owner
+semantic : LlmAdmissionFloor.Proposal → LlmAdmissionFloor.Proposal → Prop
+po : LlmCustodyPublication.Owner
+o : Owner
+genesis : LlmAccountCommit.Image
+s : State
+key : Nat
+ticket : Ticket
+known : s.issued key = some ticket
+t✝ : Ticket
+issuer✝ : LlmCallerCustody.Context
+authentic✝ : o.base.authentic issuer✝
+role✝ : issuer✝.recovery = true
+allowed✝ : o.launchAuthorized issuer✝ s.current t✝
+fresh✝ : s.issued t✝.id = none
+launchFresh✝ : s.launches t✝.launch = none
+incFresh✝ : ¬t✝.target.incarnation ∈ s.reserved
+unused✝ : ¬t✝.target.incarnation ∈ s.current.used
+parent✝ : t✝.parent = s.current.logical.journal.length
+previous✝ : t✝.previous = s.current.grant
+scope✝ : LlmCallerCustody.Scope s.current.grant t✝.target
+serial✝ : t✝.target.serial = s.current.grant.serial + 1
+fence✝ : t✝.target.fence = s.current.grant.fence + 1
+challenge✝ : t✝.challenge = s.challenge
+epoch✝ : t✝.epoch = s.epoch
+audience✝ : t✝.audience = t✝.target.domain
+purpose✝ : t✝.purpose = 1
+valid✝ : s.current.now < t✝.target.expires
+durable✝ : o.durable s
+⊢ key = t✝.id → t✝ = ticket
+proofs/lean/LlmIncarnationIssuance.lean:134:28: warning: This simp argument is unused:
+  CanActivate
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+proofs/lean/LlmIncarnationIssuance.lean:179:2: error: Invalid alternative name `activate`: Expected `issue`
+proofs/lean/LlmIncarnationIssuance.lean:180:2: error: Invalid alternative name `advance`: Expected `issue`
+'Weaver.LlmIncarnationIssuance.projection' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.composition' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.issued_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmIncarnationIssuance.launch_retained' depends on axioms: [propext]
+'Weaver.LlmIncarnationIssuance.outcome_retained' depends on axioms: [propext]
+'Weaver.LlmIncarnationIssuance.issued_run' depends on axioms: [propext, sorryAx]
+'Weaver.LlmIncarnationIssuance.outcome_run' depends on axioms: [propext]
+'Weaver.LlmIncarnationIssuance.reserved_retained' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.challenge_monotone' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.wrong_key_not_possession' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.wrong_incarnation_not_possession' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.stale_epoch_rejected' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.stale_parent_rejected' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.known_outcome_cannot_activate' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.activation_requires_issued_proof' does not depend on any axioms
+'Weaver.LlmIncarnationIssuance.scope_run' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.original_result_unique' depends on axioms: [propext, Quot.sound]
+'Weaver.LlmIncarnationIssuance.unknown_original_hold_retained' depends on axioms: [propext, Quot.sound]

@@ -1,0 +1,26 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.17s
+goos: darwin
+goarch: arm64
+pkg: github.com/HardenedLinux/weaver/go/dev
+cpu: Apple M2 Pro
+BenchmarkGatewaySourceOwnerComparison/A1-reopen-12         	     256	   3850953 ns/op	    6835 B/op	     114 allocs/op
+--- BENCH: BenchmarkGatewaySourceOwnerComparison/A1-reopen-12
+    source_owner_bench_test.go:43: binary=/Users/guangtao/ghq/github.com/tao3k/weaver/.data/source-owner-baseline/weaver-server sha256=dde7a7514e319e9766d8eb3d08d4c78ab252eff7ade7973b6d37e1fa6182d506
+BenchmarkGatewaySourceOwnerComparison/B1-owned-12          	     256	   2917728 ns/op	    6637 B/op	     114 allocs/op
+--- BENCH: BenchmarkGatewaySourceOwnerComparison/B1-owned-12
+    source_owner_bench_test.go:43: binary=/Users/guangtao/ghq/github.com/tao3k/weaver/target/debug/weaver-server sha256=3e726f8724cc9b4bb758d9f27a16a9fc0398a914c230838bc842e01dda69977f
+BenchmarkGatewaySourceOwnerComparison/B2-owned-12          	     256	   3223091 ns/op	    6635 B/op	     114 allocs/op
+--- BENCH: BenchmarkGatewaySourceOwnerComparison/B2-owned-12
+    source_owner_bench_test.go:43: binary=/Users/guangtao/ghq/github.com/tao3k/weaver/target/debug/weaver-server sha256=3e726f8724cc9b4bb758d9f27a16a9fc0398a914c230838bc842e01dda69977f
+BenchmarkGatewaySourceOwnerComparison/A2-reopen-12         	     256	   4522816 ns/op	    6710 B/op	     114 allocs/op
+--- BENCH: BenchmarkGatewaySourceOwnerComparison/A2-reopen-12
+    source_owner_bench_test.go:43: binary=/Users/guangtao/ghq/github.com/tao3k/weaver/.data/source-owner-baseline/weaver-server sha256=dde7a7514e319e9766d8eb3d08d4c78ab252eff7ade7973b6d37e1fa6182d506
+BenchmarkGatewaySourceOwnerComparison/A3-reopen-12         	     256	   5127083 ns/op	    6631 B/op	     114 allocs/op
+--- BENCH: BenchmarkGatewaySourceOwnerComparison/A3-reopen-12
+    source_owner_bench_test.go:43: binary=/Users/guangtao/ghq/github.com/tao3k/weaver/.data/source-owner-baseline/weaver-server sha256=dde7a7514e319e9766d8eb3d08d4c78ab252eff7ade7973b6d37e1fa6182d506
+BenchmarkGatewaySourceOwnerComparison/B3-owned-12          	     256	   3543445 ns/op	    6590 B/op	     114 allocs/op
+--- BENCH: BenchmarkGatewaySourceOwnerComparison/B3-owned-12
+    source_owner_bench_test.go:43: binary=/Users/guangtao/ghq/github.com/tao3k/weaver/target/debug/weaver-server sha256=3e726f8724cc9b4bb758d9f27a16a9fc0398a914c230838bc842e01dda69977f
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	13.361s
+

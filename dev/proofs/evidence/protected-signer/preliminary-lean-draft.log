@@ -1,0 +1,90 @@
+proofs/lean/ProtectedSignerRelease.lean:24:38: error(lean.unknownIdentifier): Unknown identifier `root`
+proofs/lean/ProtectedSignerRelease.lean:27:10: error: Invalid argument name `root` for function `Current`
+
+Hint: Perhaps you meant one of the following parameter names:
+  • `s`: r̵o̵o̵t̵s̲
+  • `q`: r̵o̵o̵t̵q̲
+proofs/lean/ProtectedSignerRelease.lean:42:64: error: Invalid argument name `root` for function `Formed`
+
+Hint: Perhaps you meant one of the following parameter names:
+  • `s`: r̵o̵o̵t̵s̲
+  • `q`: r̵o̵o̵t̵q̲
+proofs/lean/ProtectedSignerRelease.lean:46:51: error: Invalid argument name `root` for function `Formed`
+
+Hint: Perhaps you meant one of the following parameter names:
+  • `s`: r̵o̵o̵t̵s̲
+  • `q`: r̵o̵o̵t̵q̲
+proofs/lean/ProtectedSignerRelease.lean:55:53: error: Invalid argument name `root` for function `Current`
+
+Hint: Perhaps you meant one of the following parameter names:
+  • `s`: r̵o̵o̵t̵s̲
+  • `q`: r̵o̵o̵t̵q̲
+proofs/lean/ProtectedSignerRelease.lean:74:21: error: Function expected at
+  Step
+but this term has type
+  ?m.4
+
+Note: Expected a function because this term is being applied to the argument
+  c
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/ProtectedSignerRelease.lean:77:4: error(lean.unknownIdentifier): Unknown identifier `s.base`
+proofs/lean/ProtectedSignerRelease.lean:77:13: error(lean.unknownIdentifier): Unknown identifier `t.base`
+proofs/lean/ProtectedSignerRelease.lean:77:131: error(lean.unknownIdentifier): Unknown identifier `s.base`
+proofs/lean/ProtectedSignerRelease.lean:77:138: error(lean.unknownIdentifier): Unknown identifier `t.base`
+proofs/lean/ProtectedSignerRelease.lean:76:40: error: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  c
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/ProtectedSignerRelease.lean:84:13: error: Function expected at
+  Step
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  c
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/ProtectedSignerRelease.lean:86:11: error(lean.unknownIdentifier): Unknown identifier `parent_step_or_stutter`
+proofs/lean/ProtectedSignerRelease.lean:86:45: error: Tactic `rcases` failed: `x✝ : ?m.10` is not an inductive datatype
+proofs/lean/ProtectedSignerRelease.lean:100:11: error(lean.unknownIdentifier): Unknown identifier `s.committed`
+proofs/lean/ProtectedSignerRelease.lean:100:38: error(lean.unknownIdentifier): Unknown identifier `t.committed`
+proofs/lean/ProtectedSignerRelease.lean:99:13: error: Function expected at
+  Step
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  c
+
+Hint: The identifier `Step` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+proofs/lean/ProtectedSignerRelease.lean:121:52: error: Invalid argument name `c` for function
+proofs/lean/ProtectedSignerRelease.lean:130:156: error(lean.unknownIdentifier): Unknown identifier `s.base`
+proofs/lean/ProtectedSignerRelease.lean:127:59: error: Invalid argument name `c` for function
+proofs/lean/ProtectedSignerRelease.lean:139:4: error(lean.unknownIdentifier): Unknown identifier `s.base.base.base.base.burnCount`
+proofs/lean/ProtectedSignerRelease.lean:139:44: error(lean.unknownIdentifier): Unknown identifier `s.base.base.base.dispatchCount`
+proofs/lean/ProtectedSignerRelease.lean:139:83: error(lean.unknownIdentifier): Unknown identifier `s.base.base.base.base.base.authority.writes`
+proofs/lean/ProtectedSignerRelease.lean:137:72: error: Invalid argument name `c` for function
+proofs/lean/ProtectedSignerRelease.lean:144:58: error(lean.unknownIdentifier): Unknown identifier `s.base.base.base.base.base`
+proofs/lean/ProtectedSignerRelease.lean:144:127: error(lean.unknownIdentifier): Unknown identifier `s.base.base.base.base.base.authority.source.base.base.control.journal.head.payload`
+proofs/lean/ProtectedSignerRelease.lean:145:58: error(lean.unknownIdentifier): Unknown identifier `s.base.base.base.base.base`
+proofs/lean/ProtectedSignerRelease.lean:142:56: error: Invalid argument name `c` for function
+proofs/lean/ProtectedSignerRelease.lean:150:14: error(lean.unknownIdentifier): Unknown identifier `s.base.base.base.base.seals`
+proofs/lean/ProtectedSignerRelease.lean:148:62: error: Invalid argument name `c` for function
+proofs/lean/ProtectedSignerRelease.lean:151:5: error(lean.unknownIdentifier): Unknown identifier `s.base.base.base.base.base.authority.source.base.base.control.journal.head.payload.messages`
+'Weaver.ProtectedSignerRelease.every_released_statement_keeps_its_promise' depends on axioms: [sorryAx]
+'Weaver.ProtectedSignerRelease.commit_response_loss_cannot_erase_commitment' depends on axioms: [sorryAx]
+'Weaver.ProtectedSignerRelease.restart_does_not_restore_old_service_handle' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ProtectedSignerRelease.released_certificates_cannot_conflict' does not depend on any axioms
+'Weaver.ProtectedSignerRelease.initialized_release_invariant' depends on axioms: [sorryAx]
+'Weaver.ProtectedSignerRelease.initialized_product_refines_promises' depends on axioms: [sorryAx]
+proofs/lean/ProtectedSignerRelease.lean:160:14: error(lean.unknownIdentifier): Unknown constant `original_consumption_and_settlement_remain_unique`
+'Weaver.ProtectedSignerRelease.original_budget_remains_conserved' depends on axioms: [sorryAx]
+'Weaver.ProtectedSignerRelease.unknown_original_reservation_stays_held' depends on axioms: [sorryAx]

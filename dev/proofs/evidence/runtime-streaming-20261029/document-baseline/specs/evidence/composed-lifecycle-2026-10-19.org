@@ -1,0 +1,120 @@
+#+title: Composed Lifecycle Formal Validation Receipt
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS local-abstract-checks-passed-physical-qualification-pending
+#+options: toc:2
+
+* Identity and scope
+
+Workspace HEAD at inspection: =4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=,
+branch =main=. Architecture/specification files are untracked local work; no
+commit, push, runtime implementation or dependency-pin change was performed.
+Earlier component artifacts and receipts retain their historical identities.
+
+| Primary artifact | SHA-256 |
+|------------------+---------|
+| [[file:../../specs/lean/ComposedGatewayLifecycle.lean][ComposedGatewayLifecycle.lean]] | =3008c5a4312de6b6b400ae84766656b976ff73e572d1e6cb35ba41fa7a279be1= |
+| [[file:../../specs/quint/ComposedGatewayLifecycle.qnt][ComposedGatewayLifecycle.qnt]] | =9ca44e3ab83115b3f0fb4284dd33f0f64fcc4a25667a4727c363dd35fd273d43= |
+
+The Lean proof imports current Weaver sources through AnchoredRecoveryAndEgress,
+FiniteDomainMigration, SharedMessageBudget and LogicalMessageAuthority. All four
+imports were rebuilt from source in isolated temporary output before the new
+consumer check. No owner package was built or modified. The independent actor,
+authentic durable store and actual-writer mediation premises remain unproved
+physical obligations; see [[file:../../docs/architecture/20-composed-journal-transport-lifecycle.org][the composition dossier]].
+
+Source comparison used committed POO Flow
+=a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. Native Authority removal-before-return,
+pure strict-mediation sequence/spent update, runtime-owned durable IO, canonical
+registry/receipt binding, authoritative publication membership, Session pending
+obligations, BoundOperation projection and error-free compound-layer predicates
+were inspected directly. These contracts do not establish actual store/driver
+refinement. Source links and additional inherited premises remain in the
+[[file:../../docs/architecture/01-reference-comparison.org][source register]]. No live dependency updates were used.
+
+* Executed checks
+
+| Check | Result and exact evidence boundary |
+|-------+------------------------------------|
+| Quint 0.33.0 typecheck | Passed for the final model |
+| Quint TypeScript deterministic tests | 28 passed: 18 normal/rejection/boundary controls and 10 expected bad-design counterexamples; [[file:composed-traces/quint-tests.log][raw output]] |
+| Quint TypeScript simulation | 3000 sampled traces, at most 100 steps, seed 20261019, safety invariant; no violation found in 33454 ms; [[file:composed-traces/quint-simulation.log][raw output]] |
+| Lean 4.34.1 | All imported sources rebuilt successfully; final consumer compiled with checked composition and trace proofs; [[file:composed-traces/lean-check.log][raw axiom inventory]] |
+| Proof-hole audit | No sorry, admit, unsafe or custom axiom declaration in the five Weaver Lean sources |
+| Native/runtime/physical qualification | Not performed; physical acceptance rows remain Pending |
+
+Simulation used a 60-second subprocess watchdog and completed naturally with
+exit zero. The final sampled run includes the driver-capability consumption guard and
+restart/queue-reconstruction controls. Later edits to the specifications were
+comments only; final typecheck and Lean compilation passed after those edits. This is sampled
+exploration, not exhaustive model checking, and the reported duration is not a
+gateway performance measurement.
+
+The printed theorem dependencies contain only =propext=, =Quot.sound= and, for
+inherited finite-budget arithmetic, =Classical.choice=. There is no =sorryAx= or
+custom durability/driver axiom declaration. Physical premises instead remain in
+the declared abstract transition relation; absence of new axioms does not prove
+those premises about a running system.
+
+* Reproduce without modifying pins
+
+#+begin_src sh :eval never
+mkdir -p /private/tmp/weaver-composed-proof
+elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-composed-proof/LogicalMessageAuthority.olean specs/lean/LogicalMessageAuthority.lean
+LEAN_PATH=/private/tmp/weaver-composed-proof elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-composed-proof/SharedMessageBudget.olean specs/lean/SharedMessageBudget.lean
+LEAN_PATH=/private/tmp/weaver-composed-proof elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-composed-proof/FiniteDomainMigration.olean specs/lean/FiniteDomainMigration.lean
+LEAN_PATH=/private/tmp/weaver-composed-proof elan run leanprover/lean4:v4.34.1 lean -o /private/tmp/weaver-composed-proof/AnchoredRecoveryAndEgress.olean specs/lean/AnchoredRecoveryAndEgress.lean
+LEAN_PATH=/private/tmp/weaver-composed-proof elan run leanprover/lean4:v4.34.1 lean specs/lean/ComposedGatewayLifecycle.lean
+quint typecheck specs/quint/ComposedGatewayLifecycle.qnt
+quint test specs/quint/ComposedGatewayLifecycle.qnt --backend typescript --max-samples 1 --out-itf '/private/tmp/composed-{test}-{seq}.itf.json'
+quint run specs/quint/ComposedGatewayLifecycle.qnt --backend typescript --max-samples 3000 --max-steps 100 --seed 20261019 --invariants safety --verbosity 1
+#+end_src
+
+* Document and diagram checks
+
+All 29 English Org documents exported with Babel evaluation disabled. The local
+link/source check validated 426 file links and 101 pinned Git source targets.
+All 21 canonical D2 sources passed validation and formatting checks. The new
+bundled SVG was rendered and visually inspected; visible labels contain core
+design only, with no version, hash, proof-row or acceptance-count labels.
+Emacs reported missing optional htmlize source-block fontification; exports
+still completed naturally with exit zero.
+
+* Retained deterministic traces
+
+Failing-action controls terminate in =.fail()=. Their last ITF state can contain
+only test metadata because the rejected action supplies no successor state;
+the raw test output records the expected rejection. Mutant controls end in a
+concrete unsafe state and retain historical counters instead of resetting them.
+
+| Test | Retained evidence |
+|------+-------------------|
+| lostCommitReplyTest | [[file:composed-traces/lostCommitReplyTest-0.itf.json][ITF trace]] |
+| competingCommitRejectedTest | [[file:composed-traces/competingCommitRejectedTest-1.itf.json][ITF trace]] |
+| competingSealRejectedTest | [[file:composed-traces/competingSealRejectedTest-2.itf.json][ITF trace]] |
+| wrongActivationRejectedTest | [[file:composed-traces/wrongActivationRejectedTest-3.itf.json][ITF trace]] |
+| newCommandRetryRejectedTest | [[file:composed-traces/newCommandRetryRejectedTest-4.itf.json][ITF trace]] |
+| abortAndLateCommitRejectedTest | [[file:composed-traces/abortAndLateCommitRejectedTest-5.itf.json][ITF trace]] |
+| missingIsNotAbortTest | [[file:composed-traces/missingIsNotAbortTest-6.itf.json][ITF trace]] |
+| restartBeforeCommitTest | [[file:composed-traces/restartBeforeCommitTest-7.itf.json][ITF trace]] |
+| staleActivationIncarnationRejectedTest | [[file:composed-traces/staleActivationIncarnationRejectedTest-8.itf.json][ITF trace]] |
+| restartRetainsDelegationTest | [[file:composed-traces/restartRetainsDelegationTest-9.itf.json][ITF trace]] |
+| restartRejectsOldHandleTest | [[file:composed-traces/restartRejectsOldHandleTest-10.itf.json][ITF trace]] |
+| sharedHistoryBlocksOtherMessageTest | [[file:composed-traces/sharedHistoryBlocksOtherMessageTest-11.itf.json][ITF trace]] |
+| staleHostAfterRestrictionRejectedTest | [[file:composed-traces/staleHostAfterRestrictionRejectedTest-12.itf.json][ITF trace]] |
+| oldBufferCanDrainAfterRestartAndMigrationTest | [[file:composed-traces/oldBufferCanDrainAfterRestartAndMigrationTest-13.itf.json][ITF trace]] |
+| lostSealReplyAcrossRestartTest | [[file:composed-traces/lostSealReplyAcrossRestartTest-14.itf.json][ITF trace]] |
+| lostActivateReplyAcrossRestartTest | [[file:composed-traces/lostActivateReplyAcrossRestartTest-15.itf.json][ITF trace]] |
+| sealWinsAgainstDelegationTest | [[file:composed-traces/sealWinsAgainstDelegationTest-16.itf.json][ITF trace]] |
+| freshNonceCannotReplaceOriginalClaimTest | [[file:composed-traces/freshNonceCannotReplaceOriginalClaimTest-17.itf.json][ITF trace]] |
+| wrongSealCounterexampleTest | [[file:composed-traces/wrongSealCounterexampleTest-18.itf.json][ITF trace]] |
+| wrongReceiptCounterexampleTest | [[file:composed-traces/wrongReceiptCounterexampleTest-19.itf.json][ITF trace]] |
+| forgettingOwnerRecordsCounterexampleTest | [[file:composed-traces/forgettingOwnerRecordsCounterexampleTest-20.itf.json][ITF trace]] |
+| historyBypassCounterexampleTest | [[file:composed-traces/historyBypassCounterexampleTest-21.itf.json][ITF trace]] |
+| incompleteRecoveryCounterexampleTest | [[file:composed-traces/incompleteRecoveryCounterexampleTest-22.itf.json][ITF trace]] |
+| newAuthorityRebindingCounterexampleTest | [[file:composed-traces/newAuthorityRebindingCounterexampleTest-23.itf.json][ITF trace]] |
+| pendingSealReopenCounterexampleTest | [[file:composed-traces/pendingSealReopenCounterexampleTest-24.itf.json][ITF trace]] |
+| duplicateAfterLostReplyCounterexampleTest | [[file:composed-traces/duplicateAfterLostReplyCounterexampleTest-25.itf.json][ITF trace]] |
+| rebuildingTransportQueueCounterexampleTest | [[file:composed-traces/rebuildingTransportQueueCounterexampleTest-26.itf.json][ITF trace]] |
+| rawFdBypassCounterexampleTest | [[file:composed-traces/rawFdBypassCounterexampleTest-27.itf.json][ITF trace]] |

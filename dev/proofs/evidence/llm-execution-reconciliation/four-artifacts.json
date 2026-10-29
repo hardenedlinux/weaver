@@ -1,0 +1,121 @@
+[
+  {
+    "id": "ER1",
+    "design": "Source zero cannot certify execution absence",
+    "quint": "sourceZeroAfterActualOfferTest",
+    "lean": "no_source_zero_premise",
+    "d2": "protocols.a2a"
+  },
+  {
+    "id": "ER2",
+    "design": "Uncertain burn excludes no-execution",
+    "quint": "uncertainBurnCannotCertifyAbsenceTest",
+    "lean": "negative_needs_dispatch_absence",
+    "d2": "recovery.join"
+  },
+  {
+    "id": "ER3",
+    "design": "Closed absence remains absent under permitted execution steps",
+    "quint": "sealedCannotDriveTest",
+    "lean": "absence_after_seal",
+    "d2": "recovery.projection"
+  },
+  {
+    "id": "ER4",
+    "design": "Original executor history composes rather than resetting calls",
+    "quint": "restartRetainsUnknownTest",
+    "lean": "actual_executor_composition",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "ER5",
+    "design": "Source terminal changes use actual source transitions",
+    "quint": "completeAbsenceCanResolveTest",
+    "lean": "source_projection",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "ER6",
+    "design": "Reconciliation extends the initialized source history",
+    "quint": "currentWorkerCanReconcileOldDecisionTest",
+    "lean": "source_composition",
+    "d2": "broker.cas"
+  },
+  {
+    "id": "ER7",
+    "design": "Terminal without usage cannot release budget",
+    "quint": "terminalIsNotFinalUsageTest",
+    "lean": "unknown_retains_full_reservation",
+    "d2": "registry.query"
+  },
+  {
+    "id": "ER8",
+    "design": "Financial application requires source terminal",
+    "quint": "accountRequiresSourceAndUsageTest",
+    "lean": "source_terminal_precedes_release",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "ER9",
+    "design": "Usage and released remainder conserve the original bound",
+    "quint": "usageCannotExceedOriginalBoundTest",
+    "lean": "release_conserves_original_bound",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "ER10",
+    "design": "Lost source response cannot create another resolution",
+    "quint": "sourceLostReplyCannotApplyTwiceTest",
+    "lean": "decision_immutable",
+    "d2": "recovery.fence"
+  },
+  {
+    "id": "ER11",
+    "design": "Lost account response cannot apply another financial delta",
+    "quint": "accountLostReplyCannotApplyTwiceTest",
+    "lean": "account_application_immutable",
+    "d2": "broker.hold"
+  },
+  {
+    "id": "ER12",
+    "design": "Late full receipt does not reprice a completed payment",
+    "quint": "lateFullAfterPaymentIsDataTest",
+    "lean": "account_application_immutable",
+    "d2": "broker.alias"
+  },
+  {
+    "id": "ER13",
+    "design": "Restart preserves authoritative decisions and financial result",
+    "quint": "restoredAccountCannotPayAgainTest",
+    "lean": "restart_retains_records",
+    "d2": "protocols.acp"
+  },
+  {
+    "id": "ER14",
+    "design": "Original sponsor capacity remains bounded",
+    "quint": "negativeUsageMustBeZeroTest",
+    "lean": "actual_source_capacity",
+    "d2": "registry.origin"
+  },
+  {
+    "id": "ER15",
+    "design": "Unknown actual source usage prevents source close",
+    "quint": "sourceTerminalDoesNotRefundTest",
+    "lean": "actual_source_unknown_prevents_close",
+    "d2": "registry.query"
+  },
+  {
+    "id": "ER16",
+    "design": "Guarded product preserves its linked evidence invariant",
+    "quint": "completeAbsenceCanResolveTest",
+    "lean": "initialized_safe",
+    "d2": "lean"
+  },
+  {
+    "id": "ER17",
+    "design": "Sealed logical execution cannot regain possible-offer power",
+    "quint": "negativeNeedsClosedExecutionTest",
+    "lean": "sealed_execution_cannot_rearm",
+    "d2": "recovery.projection"
+  }
+]

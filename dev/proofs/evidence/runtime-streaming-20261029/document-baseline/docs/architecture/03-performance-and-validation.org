@@ -1,0 +1,482 @@
+#+title: Weaver High-Performance Paths and Validation Plan
+#+language: en
+#+date: 2026-10-18
+#+property: STATUS proposed-not-executed
+#+options: toc:3
+
+* Claim boundary
+
+No Weaver runtime, benchmark, protocol-conformance result, new Lean theorem,
+or model-checking result is delivered by this architecture change. All gates
+in this document are future requirements. Existing source and documentation
+observations are registered in [[file:01-reference-comparison.org][Reference comparison and evidence]].
+
+High performance means meeting a declared workload and assurance contract
+with bounded resources. Throughput measured after disabling required security
+checks does not qualify that contract. Source review, local tests, formal
+proofs, exact-head CI, and deployed behavior are distinct evidence classes.
+
+The selected ordering and recovery behavior are in
+[[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]]. The Go cloud-integration scope and
+its independent validation needs are in [[file:06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]].
+
+The [[file:04-zero-trust-and-review.org][Zero Trust baseline]] is a required input to every architecture experiment.
+Hold mediation coverage, credential isolation, internal RPC authorization,
+history consistency, durability, and revocation bounds constant as well as
+the policy corpus. A faster design with a broader trusted base or weaker
+failure behavior must be reported as a different assurance contract.
+
+* Workload contract before numeric targets
+
+Before selecting a network owner, fix:
+
+- Protocol and negotiated versions, request mix, sizes, and streaming directions.
+- Active connections, messages per connection, tenant count, and route cardinality.
+- Arrival process, offered load, burst size, duration, and overload envelope.
+- Identity method, authorization mode, policy count/complexity, and entity size.
+- Body-dependent checks, external service behavior, audit durability, and quotas.
+- Publication update frequency, discovery churn, credential rotation, and revocation load.
+- CPU/memory limits, platform, network topology, TLS mode, and upstream behavior.
+- Required percentile latency, error/rejection rate, throughput, memory, and recovery bounds.
+- Mediation/containment profile, history scope and write rate, admission consistency,
+  issuer lease duration, allowed clock skew, and credential-broker topology.
+
+The first supported use case must populate these values before acceptance.
+No unmeasured millisecond target or requests-per-second claim is set here.
+Target selection is an explicit product/deployment decision with measured
+feasibility, not a result inferred from language reputation.
+
+* Critical-path model
+
+#+begin_example
+T_operation = T_queue + T_authentication + T_protocol + T_plan_lookup
+            + T_evidence + T_reservation + T_authorization
+            + T_required_audit + T_admission_commit + T_credential_dispatch
+            + T_upstream + T_release
+
+T_authorization_strict = T_input_preparation + T_host_transport
+                       + T_rust_worker_start + T_rust_evaluation
+                       + T_lean_worker_start + T_lean_evaluation
+                       + T_join_and_receipt
+#+end_example
+
+For the concrete conservative protocol, include prepare commit, owner-thread
+Scheme verification/lifecycle calls, signed issuer consumption, send commit,
+dispatch-claim commit, final credential handling, and settlement. The grant/store
+boundary is ordered, not atomic. Report consumed-but-aborted grants, stranded
+holds, unknown exposure, conflict rejection/re-evaluation, and disclosure waiting
+time as explicit availability/resource outcomes.
+
+These are attribution terms, not an assumption that all work is sequential.
+Admission commit includes grant consumption plus the selected history/budget
+and fencing protocol. Credential dispatch includes final destination validation,
+credential binding, signing, and immutable handoff enforcement. Count every
+required IPC hop and durable write; they do not disappear into evaluator time.
+Record actual overlapping spans and their dependency critical path. Never
+sum stage p99 values and call the result end-to-end p99.
+
+The inspected POO Host runs its two isolated workers sequentially under one
+deadline. Measure worker startup, temporary input handling, Host queueing,
+evaluation, output parsing, signatures, and grant consumption separately.
+Long-lived network connections do not amortize per-operation authorization
+unless the capability explicitly authorizes a bounded session.
+
+* Planned high-performance paths
+
+** Publication path
+
+Resolve composition, validate policy/schema artifacts, analyze data needs,
+and compile route and policy plans on publication changes. Preserve dependency
+identities so unchanged artifacts can be reused only under valid premises.
+Validate full source, toolchain, projection, and checker identity before reuse.
+
+Transport fine-grained deltas and stage a complete closure. Activation is one
+local pointer/generation transition. Reclaim retired plans after readers drain,
+with caps on retained generations and bytes. Slow streams must not pin unlimited
+historical configurations. Expired or revoked operations cannot continue merely
+because a reader retains an old immutable plan.
+
+For attachment scopes, retain shared parent objects and compile only affected
+effective plans. Measure dependency fanout, recomputation, bytes sent, staging
+memory, activation delay, and reader contention. Do not trade update fanout for
+an unmeasured large per-request merge.
+
+** Metadata and streaming path
+
+Parse and normalize once within the owning network process. Build a bounded,
+typed operation context. Retain only needed fields and use conservative capture
+when an expression's dependencies are uncertain. A missing security dependency
+is a rejection or safe bounded capture, never an optimization success.
+
+Reuse connections and bounded buffers. Preserve backpressure through the
+upstream and downstream stream rather than collecting an entire body by default.
+Measure copies and allocations; do not claim zero-copy across TLS, parsing,
+inspection, or cross-process transport without evidence.
+
+Do not remove receiver-side authorization because an internal channel was
+authenticated once. Connection reuse may amortize handshake cost while each
+method/message retains its required role, tenant, and capability checks.
+Pooling cannot reuse an upstream identity/credential scope for another tenant.
+Caller-writable shared memory cannot replace immutable handoff enforcement;
+measure sealing, generation checks, and digest/ownership costs in that lane.
+
+For header-only policy, body streaming may start after its required authorization
+and consumption. Full-body policy requires bounded acquisition. Full-response
+approval requires withholding the response; incremental inspection provides a
+different release guarantee. Compare these paths separately.
+
+** Authorization path
+
+Cache parsed policies and compiled plans under exact content/schema/engine
+identity. Cache fact acquisition only with declared freshness, revocation,
+provenance, and trust rules. Do not cache grants or reuse a consumed permit.
+Decision caching is deferred until a complete dependency key and invalidation
+argument covers changing entities, context, evidence, and epochs.
+
+Use bounded authority queues and explicit per-request deadlines. Keep blocking
+evaluation outside network event loops. Separate tenant and workload admission
+so one expensive policy set cannot exhaust every worker.
+
+Potential strict-Host optimizations include prevalidated immutable input,
+bounded persistent workers, batching independent requests, and parallel engine
+evaluation. Each is a new qualified execution mode: preserve per-request
+witnesses, distinct engine identities, exact input, fault containment, deadlines,
+state isolation, and artifact identity. Batching must not delay urgent revocation
+or hide one request's failure inside another's success.
+
+Evaluation may run speculatively in parallel, but stateful admission must still
+commit against compatible current versions. Conflicts require re-evaluation or
+rejection. History/budget sharding is valid only where policy scopes are disjoint
+or a qualified coordination protocol preserves their join. Per-tenant sharding
+cannot establish a delegation-wide constraint spanning tenants or workers.
+
+Group commit may amortize durability cost only if no allow result, secret,
+protected byte, or dispatch becomes visible before its required durable commit.
+Benchmark fsync/replication failure and restart at that boundary. A compact
+temporal summary needs a correctness relation to the admitted event history;
+policy changes cannot reuse an insufficient summary or reset it to empty.
+
+Reuse P15's serialized owner-thread discipline without assuming one owner can
+serve unrelated domains in parallel during its delivery callback. Measure that
+critical section and reentrancy/clock costs. Shard only proven independent
+history/budget scopes. The physical backend must negotiate and demonstrate the
+serializable multi-row transitions; an advertised append/fsync capability is
+insufficient. Optimize durable prepare/send/claim batching only after all
+permission and disclosure barriers remain intact under crash tests.
+
+A Rust-only or sampled dual-engine mode cannot be reported as the current
+strict per-request mode. Any weaker mode requires an explicit revised assurance
+contract and owning-authority acceptance. It is not a transparent performance fix.
+
+** Go and Rust resource behavior
+
+Go experiments measure allocation rate, heap live size, GC CPU, pause/assist
+work, goroutine lifetime, scheduler delay, connection reuse, and cancellation.
+Exercise the actual transport/SDK path; a bare HTTP handler is not a gateway
+comparison. GC and memory settings are part of the recorded configuration.
+
+Rust experiments measure allocations, retained buffers, task lifetime, lock
+contention, scheduler starvation, blocking-pool saturation, cancellation, and
+native ownership. Ownership types alone do not prove leak freedom or bounded
+queueing. Allocator and runtime configuration are recorded inputs.
+
+For both, report CPU-seconds per admitted operation, RSS/peak memory, steady
+and burst behavior, successful goodput, and rejection/failure rates. A fast
+rejecting service must not appear as a throughput win over successful execution.
+
+* Resource and overload contracts
+
+| Resource | Required bound | Overload behavior |
+|----------+----------------+-------------------|
+| Connections / handshakes | Per-instance and per-tenant limits | Reject or bounded admission before expensive work |
+| Headers / messages / bodies | Encoded, decoded, decompressed, and nesting limits | Typed input/resource failure; no unbounded buffering |
+| Authorization | Queue depth, workers, CPU and wall deadline, output size | Fail protected operation; cancel and reap work |
+| Callouts | Concurrency, response bytes, redirects, remaining deadline | Required check fails; optional behavior explicitly declared |
+| Streams | Buffered bytes, idle/lifetime limits, tenant fairness | Propagate backpressure, then declared termination |
+| Pending grants | Issuer state count and lifetime | Reject issuance; preserve single-use checks |
+| Policy plans / staging | Resource count, dependency depth, generation retention | Reject candidate; retain only still-valid active closure |
+| Retries / fanout | One total attempt and concurrency budget | Stop amplification; preserve unknown-outcome state |
+| Audit / telemetry | Queue and durable storage budget | Required audit blocks handoff; optional telemetry records drops |
+| Shared budgets | Atomic reservations, expiry, reconciliation capacity | Reject unavailable reservation; never assume unused funds |
+| History / admission state | Scope count, pending actions, log retention, summary/window size | Reject missing/uncertain state; never interpret eviction as a clean history |
+| Issuer leases / credentials | Freshness window, rotation, broker concurrency, signing scope | Fence stale issuer; deny misbound or expired credential use |
+
+Include limits for decompression bombs, regex/expression work, entity graph
+size, malformed encodings, and protocol nesting. Cancellation must propagate
+and release owned resources; a client disconnect cannot leave invisible worker
+growth. Killing a timed-out worker requires reaping its process and descendants.
+
+* Matched architecture experiments
+
+** Network-owner experiment
+
+Compare candidate A (Go network owner) and candidate B (Rust network owner)
+against the same independent authority/Host service, corpus, policy artifacts,
+required audit, shared budget service, hardware allocation, TLS, and upstream.
+This holds authorization IPC constant while evaluating networking ownership.
+
+Then measure any proposed colocation/native optimization separately. It must
+not be folded into a language claim because it changes process topology and
+fault containment. For route-selected candidate C, measure the actual connector
+route with its extra hop, payload copies, and full enforcement obligations.
+
+Record integration effort as well as runtime results: protocol conformance
+gaps, SDK coverage, dependency maintenance, artifact size, cold start, operating
+complexity, and patch ownership. A small runtime difference can be outweighed
+by a materially safer mature protocol integration.
+
+** Path matrix
+
+| Lane | Purpose | Claim limit |
+|------+---------+-------------|
+| Direct upstream | Establish client/upstream baseline | No gateway security assurance |
+| Proxy only | Attribute network/runtime overhead | Diagnostic; not protected production acceptance |
+| Identity + interface | Attribute verification and parser costs | No authorization acceptance |
+| Full strict authorization + consumption | Measure complete protected request | Requires qualified exact Host and actual dispatch binding |
+| Required audit + global budget | Include durable/consistent service cost | State exact service topology and durability |
+| Full-body / response inspection | Quantify buffering and release guarantees | Compare only equivalent inspection semantics |
+| Long-lived multiplexed streams | Flow control, fairness, cancellation | Per-message/session authority must be specified |
+| Update / revoke / rotate | Concurrent control-plane changes | Measure stale-operation rejection and convergence |
+| Overload / fault | Saturation and recovery | Report dropped, timed-out, and rejected work explicitly |
+| Full mediation / stateful commit | Containment, event history, final credential dispatch | Equal coverage, durability, and revocation semantics across language candidates |
+
+Run small and large payloads, cold and warm caches, policy/entity sizes, slow
+readers, hot tenants, many tenants, and update bursts. Use an offered-load
+generator that measures queueing and avoids coordinated-omission distortion.
+Count started, admitted, completed, rejected, failed, cancelled, and unknown
+operations independently. Include time to first byte/token, completion latency,
+and inter-chunk delay for streams.
+
+Randomize paired run order, retain repetitions and raw samples, and identify
+external compiler activity or host contention. A contaminated timing run remains
+in the evidence with its limitation; rerunning cannot erase it. Set run deadlines
+and progress conditions in advance. Timeout or stale input is incomplete evidence,
+not zero failures or a reason to widen the timeout until it passes.
+
+* Semantic and security validation
+
+** Independent oracles and conformance
+
+- Check full operation projections against hand-authored expected subjects;
+  do not derive all expectations through the implementation under test.
+- Replay schema-bound cases through the selected official Cedar Rust engine
+  and pinned Lean specification, comparing decisions, reasons, and errors.
+- Maintain cross-language canonicalization golden vectors and independent
+  malformed-input cases, including duplicate keys and integer/Unicode edges.
+- Run selected protocol-owner conformance suites and adversarial proxy tests
+  for normalization, header trust, streaming, retries, and cancellation.
+- Verify actual effect target and payload against authorization; use a recording
+  upstream to detect post-authorization mutation and duplicate dispatch.
+
+Dual-engine agreement alone does not prove semantic correctness. Check exact
+subject equality, distinct engine/receipt identity, engine-specific validity,
+and the binding between proof assumptions and actual observations.
+
+** Required rejection and race cases
+
+| Case | Required observation |
+|------+----------------------|
+| Unknown Provider or capability | No grant and no dispatch |
+| Missing/stale/forged governance evidence | No protected effect |
+| Cross-tenant route or entity reference | Rejected before unauthorized disclosure |
+| Policy, schema, entity, intent, or payload drift | Subject/handoff mismatch rejected |
+| Same grant consumed concurrently | At most one successful consumption at the issuer |
+| Issuer restart / replica switch | Old pending grant cannot be accepted by a new issuer instance |
+| Revocation ordered before admission commit | Admission rejects under the qualified current authority view |
+| Partial closure delivery | Candidate remains inactive; no mixed policy/route activation |
+| Unsupported critical contract feature | Publication or operation rejected |
+| Engine crash, malformed response, timeout, panic | Typed failure and no permit |
+| Cancellation / slow client under load | Bounded retained tasks, workers, and memory |
+| Failure after consumption | Grant remains consumed; outcome and recovery are explicit |
+| Budget fanout race | Total committed/reserved work respects the declared shared scope |
+| Response rejected after partial release | Receipt reports released scope; no false claim of full withholding |
+| Valid mTLS with wrong method/tenant/audience | RPC denied without privileged work |
+| Signed manifest from an insufficiently scoped contributor | Mandatory parent controls cannot be removed |
+| Direct IP, IPv6, UDP/QUIC, metadata, local socket, child process | Bypass blocked or explicitly excluded from the declared profile |
+| Sensitive read racing with egress across tools/workers | Pending flow restriction committed before data release and enforced on send |
+| History crash, truncation, policy update or replica switch | No permission gain from lost or reset state |
+| Same history version used by competing admissions | At most the compatible serialized transitions commit |
+| SDK redirect/retry or pooled connection across credential scopes | No secret misrouting, attempt bypass, or confused-deputy signing |
+| Buffer mutation after hashing/consumption | Actual emission rejected or immutable bytes preserved |
+| Partitioned issuer after lease expiry / rollback after restart | No stale issuance or lowered epoch/high-water state |
+| Crash during group commit or credential dispatch | No pre-durable permission/secret release; uncertain effects remain fenced |
+| Arbitrary Scheme token signature or caller-chosen spent-nonce context | Pure receipt is not accepted as authenticated host authority |
+| Competing pure transitions from the same old root | Host commit rejects a stale state version; value equality alone cannot commit both |
+| Callout, mirror, callback, or telemetry destination expansion | Separate scoped effect/disclosure authority; no bypass through an internal service role |
+
+The issue/consume revocation row concerns the authority's ordered state view.
+It does not establish instantaneous global revocation. Also test the
+consumption-to-dispatch window and the committed/in-flight policy, with explicit
+linearization records. A stale issuer checking its own old epoch is not a pass.
+
+** Formal obligations
+
+Extend existing proof owners instead of creating shadow definitions of Cedar
+or Governance. Quint and Lean are mandatory parts of the protected profile,
+with the dependency closure and FM1-FM12 requirements in
+[[file:10-zero-trust-assurance.org][Zero Trust assurance]]. Required Lean obligations cover projection preservation,
+canonical identity, subject/handoff correspondence, policy-composition limits,
+and source-currentness premises. Every theorem states its authenticated-input
+and runtime assumptions explicitly.
+
+Add explicit obligations for history-summary preservation, policy-epoch state
+migration, state-version joins, and disclosure-before-egress ordering. Pure Scheme
+transition proofs do not establish signature verification, a concurrent host CAS,
+or a durable log. Qualify those implementation boundaries independently.
+
+The required Quint model must cover staging/activation, issue/consume/revoke,
+issuer restart, stream checkpoints, and crash recovery. It must include
+counterexamples for mixed generations, duplicate consumption, stale epochs,
+and a consumed grant reopened after unknown execution. Model shared quotas
+and publication scope only to the degree implemented by the selected owner.
+
+Extend the model with pending sensitive reads, concurrent sends, policy-history
+reset, lease expiry under partition, and crash before/after durable admission.
+Require counterexamples for independent stale state checks and authorization
+followed by payload mutation. A model that assumes an atomic cross-owner commit
+must state that assumption and cannot qualify an implementation lacking it.
+
+Finite model completion is not a general runtime refinement theorem. A model
+receipt requires stable inputs, tool versions, selected invariants, natural
+completion, and no unfinished frontier. Proof/model success does not close
+native ABI, parser robustness, deployment, or protocol-conformance gates.
+
+* Acceptance gates and evidence
+
+** Coordination acceptance cases
+
+All AC rows are pending requirements for the concrete protocol. A recording
+upstream and broker/ledger observations must agree; counting grants or log
+entries alone cannot show actual send multiplicity.
+
+| Case | Boundary exercised | Required observation |
+|------+--------------------+----------------------|
+| AC1 | POO source-bound lifecycle / strict authority adapter | Exact owner thread, current issued request, trusted source path, complete result binding; edited preflights and caller-made permits rejected |
+| AC2 | Serializable prepare and budget upper bounds | Last-capacity races yield bounded total exposure; no automatic refund of a possibly sent attempt |
+| AC3 | History, send claims, and disclosure | Both race orders tested; pending sensitive reads block later claims, prior live emitters delay disclosure, missing history denies |
+| AC4 | Consume timeout and late callback | Aborted row cannot become send-committed; late success burns a grant but produces zero sends |
+| AC5 | State changes after verified consumption | Stale history/source/lease/publication/holds reject send commit; safe orphan never dispatches |
+| AC6 | Crash at prepare, consume, send commit, claim and settlement | No pre-durable send; old local objects cannot be reconstructed into permission; exact conservative states survive |
+| AC7 | Duplicate callers and competing brokers | One canonical attempt, one claim, at most one upstream attempt, including internal SDK behavior |
+| AC8 | Pause, partition, coordinator/Pod replacement and fencing | Unknown old claim never yields successor resend; distinguish local fence checks from backend-enforced revocation |
+| AC9 | Response, partial stream and usage settlement | Errors/disconnects retain possible charges; trusted usage settles atomically; labels precede protected byte release |
+| AC10 | Recovery and optional provider idempotency | Fresh recovery authority and exact provenance required; unknown non-idempotent effect not resent; expired provider key disables replay |
+| AC11 | Go cloud-native integration | Watch restart, selectors, namespace/tenant, identity, xDS and status generation cannot expand capability or reset runtime claims |
+| AC12 | Owner/transport resource lifecycle | No reentrant effect Host mutation, lost strong references, hidden retries, unbounded holds/queues, or permission release before durable group commit |
+
+Map these cases to the actual POO and physical owner artifacts. Reuse existing
+focused owner tests and recovery predicates before adding adapter-specific
+checks. Do not claim a complete gateway transaction from a local P15 lifecycle
+test, a P18/P19 proof, or a backend-only qualification in isolation.
+
+** Source-admission, ledger and fencing acceptance cases
+
+Before implementation, apply the following additional source/ledger/fencing
+controls from [[file:07-source-admission-ledger-fencing.org][Source admission, durable ledger, and fencing contracts]]. All are
+pending. Existing P24/P25 owner-test sources are starting controls, not fresh
+gateway acceptance. SF labels identify required integration evidence.
+
+| Case | Boundary | Required observation |
+|------+----------+----------------------|
+| SF1 | Issued runtime admission versus preflight | Current unknown preflight, copied allow object and missing Decision eligibility cannot issue/consume a protected grant; ordinary refusal controls unchanged |
+| SF2 | Source inventory, observed/unobserved change, restart | Mandatory byte/provenance coverage; immutable-cut claims distinguished from latest-source guarantees; owner epoch/incarnation cannot revive old admission |
+| SF3 | Fixed evaluation binding and fresh phase guards | Same exact input at evaluation/consume; changing source or context requires new grant; liveness refresh cannot extend expiry or bypass full-request projection |
+| SF4 | Consume response uncertainty | Pending count/refusal/error cannot become positive consumption or delivery; safe orphan abort produces zero sends |
+| SF5 | Late callbacks, abort and owner change | All relevant race orders: one durable CAS order, no reopening abort, no old-fence commit, no refund if claim won |
+| SF6 | Lost ledger/claim replies and duplicate commands | Authoritative result query; same ID/different digest rejected; historical success cannot recreate a send right or second emission handle |
+| SF7 | Atomic history/budget/send/abort/claim state | One-store invariants survive concurrent operations, zero-row CAS, failed fsync and restart; no partial holds/releases or pre-durable permission |
+| SF8 | Scheme/issuer/Runtime process replacement | No local-handle replay; recreated same-key authority rejects old grant; Runtime generation/input/sequence mismatch fails closed |
+| SF9 | Old coordinator resumes with original instance/fence | Every mutation, including settlement/refund, checks live lineage/owner inside transaction; read-only historical evidence is not new authority |
+| SF10 | Paused broker, takeover, queued sends and physical barrier | Database fence alone is insufficient; retain spent claims/exposure; no conflicting disclosure/successor activation without the selected stop/drain or receiver fence |
+| SF11 | Store restore, forked images, tombstone GC and compaction | External high-water or qualified new-lineage barrier; incomplete/rolled-back prefix cannot erase claims, history or unsettled budget |
+| SF12 | Recovery and late observations | Fresh scoped recovery admission for inspect/settle/abort/resend separately; original attributable result may be evidence but never reinstates old mutation or send authority |
+
+Bind each result to actual source/authority/ledger/broker incarnations, not just
+worker names or matching numeric fences. Distinguish a recreated process test
+from resuming its original memory image. Run failure injection at every durable
+edge and at the broker's final transport boundary. A database-only simulation
+cannot qualify receiver fencing or physical process/socket retirement.
+
+** Cross-review concurrency and Code as Policy cases
+
+CX1-CX18 are proposed executable acceptance requirements, all pending. They
+supplement AC1-AC12 and SF1-SF12 rather than relabeling historical checks.
+Each schedule records actual authority instances, active fence/lineage, source
+and publication roots, command IDs, store results, transport-entry counts,
+emission-closure evidence, byte-release ranges and budget bucket movements.
+Use an independent expected-state trace and recording receiver. Inject faults
+before/after each durable boundary and RPC response; a process pause/resume is
+separate from process replacement. No diagram render executes these tests.
+
+| ID | Missing or ambiguous case | Required evidence / result |
+|----+---------------------------+----------------------------|
+| CX1 | Reserve, pending write, delivery order | W02 order: reserve returns, ConsumePending is durably known, then deliver callback once; duplicate reserve/deliver cannot repeat issuer consume; rejected duplicate receipt cannot mean no prior execution |
+| CX2 | Authorization denial and unavailable/invalid evaluation | No executable grant; Prepared cleanup by current CAS, ambiguous cleanup retains holds; no silent fallback |
+| CX3 | Equal error-bearing allow witnesses | Synthetic allow plus identical error IDs fails execution admission before grant; determining/error IDs checked; case checker alone is insufficient |
+| CX4 | Lost Prepare, SendCommit, Abort and Settlement replies | Stable command resolution distinguishes absent/pending/committed; no duplicate hold, stale success, guessed refund or repeated accounting release |
+| CX5 | Abort/late positive/commit/claim races | W04 abort-winning and W09 claim-winning schedules; one store order, no terminal reopening, spent claim and exposure retained if claim won |
+| CX6 | Own state advance versus unrelated concurrent change | S4 V to V+1 supports the exact declared S5 derivation; unrelated changed premises reject; no subject rewrite or infinite self-invalidation |
+| CX7 | Lost claim reply, duplicate redemption and broker replacement | Exactly one local emission handle at most; query/retry never reconstructs it, original broker may still act |
+| CX8 | Claimed attempt fails final destination/credential/deadline check | Zero submissions only with qualified handle/queue retirement; NoSubmissionProven settles unused exposure but leaves claim spent |
+| CX9 | Crash immediately before/after transport entry | Both unknown without attributable evidence; durable marker or zero-byte counter is not proof of no remote effect |
+| CX10 | Result, emission closure and usage arrive independently | Exercise all relevant orders; result cannot close emitter, closure cannot imply zero usage, pending settlement retains exposure |
+| CX11 | Duplicate/conflicting/late usage and over-limit report | Monotonic evidence/usage IDs prevent double release; conflict or excessive usage freezes/quarantines without erasing recorded exposure |
+| CX12 | Cancel/revoke/expire at S1-S6 | Before claim no send only after winning abort; after claim stop best effort, unknown retained; strict late clock sample and bounded revocation semantics |
+| CX13 | Mandatory audit sink timeout and stale receipt | No S4 without the selected bound acceptance; sink call has scoped authority, duplicate receipt cannot approve a different attempt |
+| CX14 | Synchronous callback reentry and blocked owner revocation | P15 handoff forbids mutation; no same-task/owner wait cycle; finite qualified lease or route disabled; queued revocation not reported as already enforced |
+| CX15 | Code/policy/schema/entity/projection/engine substitution | Closure mismatch, unsupported feature, unauthorized baseline edit or stale root rejects activation/issue; no Go/Rust/agent fallback policy |
+| CX16 | Response withheld after charged execution; stream cancellation | Protected peer/range decision precedes each release; deny retains provider usage; released/unknown ranges and history survive lost replies/restart |
+| CX17 | Cross-language subject and policy diagnostic vectors | Default deny, explicit forbid, malformed input, missing context, request/entity mismatch and policy errors match independent expectations; no allow-only parity test |
+| CX18 | Cleanup/recovery role loss and stale broker evidence | Old worker cannot settle/refund; fresh owner admits only bound deduplicated evidence; expired application grant neither authorizes nor disables separately scoped safe cleanup |
+
+** Gate register
+
+All rows are pending. They specify what a later implementation must deliver.
+
+| Gate | Required evidence | Exit condition |
+|------+-------------------+----------------|
+| G0 Source baseline | Exact repository/commit/toolchain/dependency inventory | Reproducible selected inputs and clean ownership boundaries |
+| G1 Semantic mapping | Owner review, independent subject vectors, composition negatives | No competing governance or Cedar semantics |
+| G2 Baseline consistency | Exports, schema validation, feature inventory, diagnostics replay | One selected Cedar/Lean semantic baseline and qualified consumer mapping; no backward-compatibility requirement |
+| G3 Native qualification | Exact artifact tests, malformed inputs, signals/threads/ownership, shutdown | Typed failures and qualified Host lifecycle; documented blockers resolved |
+| G4 Interface/protocol | Cross-language vectors and selected protocol conformance | Actual supported versions and rejection behavior established |
+| G5 Authority/effect | Race/fault tests with recording upstream and issuer state | Exact dispatch binding and single-use behavior; no false exactly-once claim |
+| G6 Lifecycle/formal | FM1-FM12; source-bound Quint exploration and mutation controls; Lean obligations, explicit correspondence and axiom review | Required invariants and non-vacuity established within stated bounds/assumptions; runtime mapping qualified separately |
+| G7 Performance/resource | Matched lanes, raw receipts, overload and cancellation runs | Agreed workload targets met with required assurance enabled |
+| G8 Integration/deployment | Exact-head CI, network/credential isolation, rotation and revocation drills | Actual deployed path matches the qualified artifacts and contracts |
+| G9 Zero Trust closure | Mandatory G6 plus Z1-Z10 coverage and R1-R14 adversarial/race controls for the chosen topology | Explicit trust/mediation inventory; no implicit RPC, effect, credential, history, or stale-issuer authority |
+
+Each receipt records the command, source and artifact digests, tool versions,
+corpus identity, runtime configuration, assurance mode, timestamps, completion
+status, failures/timeouts, and evidence location. Never label skipped or missing
+native inputs as a pass. Historical negative results remain part of the record.
+
+* Implementation sequence after architecture review
+
+1. Resolve ownership, internal baseline consistency, and the first workload/assurance contract.
+   Select the Zero Trust coverage profile, trust roots, final broker, and stateful
+   admission owners before building the affected request path.
+2. Define interoperable projections and rejection vectors before transport code.
+   Establish the Quint/Lean state, action and predicate correspondence and
+   mutation/non-vacuity plan; required FM evidence precedes protected activation.
+3. Close selected Host/native and source-currentness gates with their owners.
+4. Qualify one complete protocol slice through authorization and real dispatch.
+5. Compare Go and Rust network placement under the same semantic requirements.
+6. Select deployment and reuse strategy from measured integration and runtime evidence.
+7. Add protocols or worker optimizations only with their own conformance and
+   assurance gates; keep one coherent publication and authority model.
+
+This sequence is a future plan. The present deliverable ends at architecture
+documentation, document-integrity checks and separately scoped read-only
+existing guard-law checks; no Weaver model or proof implementation is included.
+
+* Source-to-execution assurance refinement
+
+[[file:11-source-to-execution-assurance-review.org][The detailed FM1-FM12 review]] is normative for proof reuse and correspondence.
+It distinguishes physical/authoritative state from caller knowledge, defines
+required concrete-event joins and gives each FM property's premises, specified
+counterexamples and acceptance evidence. Conditional POO effect/recovery
+statements do not construct a durable claim or prove physical retirement.
+Progress budgets/history do not substitute for cost/disclosure conservation.
+The limited P30 guard checks passed under two compilers; Cedar integration,
+Weaver models/refinement and physical qualification remain pending.

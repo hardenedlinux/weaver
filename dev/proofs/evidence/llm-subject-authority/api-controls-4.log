@@ -1,0 +1,9 @@
+@@START {"label":"api-controls-4","limit":20}
+
+  LlmSubjectAuthority
+    ok subjectRotationInvalidatesOldApprovalTest passed 1 test(s)
+    ok producerRotationInvalidatesOldApprovalTest passed 1 test(s)
+    ok sameKeyCredentialRotationCanReauthorizeTest passed 1 test(s)
+
+  3 passing (2762ms)
+@@DONE {"label":"api-controls-4","passed":["subjectRotationInvalidatesOldApprovalTest","producerRotationInvalidatesOldApprovalTest","sameKeyCredentialRotationCanReauthorizeTest"],"failed":[],"ignored":[],"typedIrUnchanged":true}

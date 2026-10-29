@@ -1,0 +1,1000 @@
+[
+  {
+    "path": "proofs/evidence/llm-policy-publication/itf/idAliasPolicyCounterexampleTest-6.itf.json",
+    "states": 3,
+    "authority": {
+      "ackVisible": [],
+      "acks": [],
+      "allowed": true,
+      "calls": 0,
+      "charged": false,
+      "fence": 0,
+      "generation": 1,
+      "hold": 6,
+      "log": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": true,
+            "content": 101,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          }
+        }
+      ],
+      "revision": 0,
+      "spent": false,
+      "stageVisible": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "staged": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visible": 0
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-publication/itf/lateAckRollbackPolicyCounterexampleTest-3.itf.json",
+    "states": 9,
+    "authority": {
+      "ackVisible": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": true,
+            "content": 101,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        }
+      ],
+      "acks": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": true,
+            "content": 101,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        }
+      ],
+      "allowed": true,
+      "calls": 1,
+      "charged": false,
+      "fence": 0,
+      "generation": 1,
+      "hold": 6,
+      "log": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": true,
+            "content": 101,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        },
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": false,
+            "content": 102,
+            "domain": 9,
+            "id": 11,
+            "parentGeneration": 1,
+            "parentTip": 10,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 2,
+          "worker": 0
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          }
+        },
+        {
+          "fence": 0,
+          "generation": 1,
+          "id": 1,
+          "revision": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          }
+        }
+      ],
+      "revision": 1,
+      "spent": true,
+      "stageVisible": [
+        {
+          "allowed": false,
+          "content": 102,
+          "domain": 9,
+          "id": 11,
+          "parentGeneration": 1,
+          "parentTip": 10,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        },
+        {
+          "allowed": true,
+          "content": 101,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "staged": [
+        {
+          "allowed": false,
+          "content": 102,
+          "domain": 9,
+          "id": 11,
+          "parentGeneration": 1,
+          "parentTip": 10,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        },
+        {
+          "allowed": true,
+          "content": 101,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "usage": -1,
+      "uses": [
+        {
+          "actualFence": 0,
+          "actualGeneration": 2,
+          "actualRevision": 0,
+          "allowed": false,
+          "permit": {
+            "fence": 0,
+            "generation": 1,
+            "id": 1,
+            "revision": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            }
+          }
+        }
+      ],
+      "visible": 2
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-publication/itf/lostReplyReplayPolicyCounterexampleTest-1.itf.json",
+    "states": 5,
+    "authority": {
+      "ackVisible": [],
+      "acks": [],
+      "allowed": false,
+      "calls": 0,
+      "charged": false,
+      "fence": 0,
+      "generation": 2,
+      "hold": 6,
+      "log": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": false,
+            "content": 100,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        },
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": false,
+            "content": 100,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 2,
+          "worker": 0
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          }
+        }
+      ],
+      "revision": 0,
+      "spent": false,
+      "stageVisible": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "staged": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visible": 0
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-publication/itf/oldPublisherPolicyCounterexampleTest-4.itf.json",
+    "states": 5,
+    "authority": {
+      "ackVisible": [],
+      "acks": [],
+      "allowed": false,
+      "calls": 0,
+      "charged": false,
+      "fence": 1,
+      "generation": 1,
+      "hold": 6,
+      "log": [
+        {
+          "acceptedFence": 1,
+          "change": {
+            "allowed": false,
+            "content": 100,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          }
+        }
+      ],
+      "revision": 1,
+      "spent": false,
+      "stageVisible": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "staged": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visible": 0
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-publication/itf/prematureAckPolicyCounterexampleTest-0.itf.json",
+    "states": 3,
+    "authority": {
+      "ackVisible": [],
+      "acks": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": false,
+            "content": 100,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        }
+      ],
+      "allowed": true,
+      "calls": 0,
+      "charged": false,
+      "fence": 0,
+      "generation": 0,
+      "hold": 6,
+      "log": [],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          }
+        }
+      ],
+      "revision": 0,
+      "spent": false,
+      "stageVisible": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "staged": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visible": 0
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-publication/itf/staleParentPolicyCounterexampleTest-2.itf.json",
+    "states": 5,
+    "authority": {
+      "ackVisible": [],
+      "acks": [],
+      "allowed": true,
+      "calls": 0,
+      "charged": false,
+      "fence": 0,
+      "generation": 2,
+      "hold": 6,
+      "log": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": false,
+            "content": 100,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        },
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": true,
+            "content": 101,
+            "domain": 9,
+            "id": 11,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 2,
+          "worker": 0
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          }
+        }
+      ],
+      "revision": 0,
+      "spent": false,
+      "stageVisible": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        },
+        {
+          "allowed": true,
+          "content": 101,
+          "domain": 9,
+          "id": 11,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "staged": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        },
+        {
+          "allowed": true,
+          "content": 101,
+          "domain": 9,
+          "id": 11,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "usage": -1,
+      "uses": [],
+      "visible": 1
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-publication/itf/tornRecoveryPolicyCounterexampleTest-5.itf.json",
+    "states": 7,
+    "authority": {
+      "ackVisible": [],
+      "acks": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": false,
+            "content": 100,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        }
+      ],
+      "allowed": false,
+      "calls": 1,
+      "charged": false,
+      "fence": 0,
+      "generation": 1,
+      "hold": 6,
+      "log": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": false,
+            "content": 100,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          }
+        }
+      ],
+      "revision": 0,
+      "spent": true,
+      "stageVisible": [],
+      "staged": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "usage": -1,
+      "uses": [
+        {
+          "actualFence": 0,
+          "actualGeneration": 1,
+          "actualRevision": 0,
+          "allowed": false,
+          "permit": {
+            "fence": 0,
+            "generation": 0,
+            "id": 0,
+            "revision": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            }
+          }
+        }
+      ],
+      "visible": 0
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-policy-publication/itf/unknownRefundPolicyCounterexampleTest-7.itf.json",
+    "states": 6,
+    "authority": {
+      "ackVisible": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": false,
+            "content": 100,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        }
+      ],
+      "acks": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": false,
+            "content": 100,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        }
+      ],
+      "allowed": false,
+      "calls": 1,
+      "charged": true,
+      "fence": 0,
+      "generation": 1,
+      "hold": 0,
+      "log": [
+        {
+          "acceptedFence": 0,
+          "change": {
+            "allowed": false,
+            "content": 100,
+            "domain": 9,
+            "id": 10,
+            "parentGeneration": 0,
+            "parentTip": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            },
+            "vector": 30
+          },
+          "generation": 1,
+          "worker": 0
+        }
+      ],
+      "online": true,
+      "permits": [
+        {
+          "fence": 0,
+          "generation": 0,
+          "id": 0,
+          "revision": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          }
+        }
+      ],
+      "revision": 1,
+      "spent": true,
+      "stageVisible": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "staged": [
+        {
+          "allowed": false,
+          "content": 100,
+          "domain": 9,
+          "id": 10,
+          "parentGeneration": 0,
+          "parentTip": 0,
+          "subject": {
+            "budget": 5,
+            "claim": 11,
+            "commitment": 20,
+            "history": 9
+          },
+          "vector": 30
+        }
+      ],
+      "usage": -1,
+      "uses": [
+        {
+          "actualFence": 0,
+          "actualGeneration": 0,
+          "actualRevision": 0,
+          "allowed": true,
+          "permit": {
+            "fence": 0,
+            "generation": 0,
+            "id": 0,
+            "revision": 0,
+            "subject": {
+              "budget": 5,
+              "claim": 11,
+              "commitment": 20,
+              "history": 9
+            }
+          }
+        }
+      ],
+      "visible": 1
+    }
+  }
+]

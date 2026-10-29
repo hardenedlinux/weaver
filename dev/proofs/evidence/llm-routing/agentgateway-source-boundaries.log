@@ -1,0 +1,801 @@
+AGL1 controller/api/v1alpha1/agentgateway/agentgateway_model_types.go
+247: // ModelMatch contains conditions for selecting a model.
+248: type ModelMatch struct {
+249: 	// Model name matched against client requests. It may be exact, a suffix
+250: 	// wildcard such as `gpt-*`, a prefix wildcard such as `*-latest`, or `*`.
+251: 	// When omitted, the model matches metadata.name exactly.
+252: 	// +kubebuilder:validation:XValidation:rule="!self.contains('*') || (self.indexOf('*') == self.lastIndexOf('*') && (self.indexOf('*') == 0 || self.indexOf('*') == size(self) - 1))",message="model wildcards must be '*', a suffix like 'gpt-*', or a prefix like '*-latest'"
+253: 	// +optional
+289: // +k8s:enum
+290: type ModelVisibility string
+291: 
+292: const (
+293: 	// ModelVisibilityPublic allows direct client requests and includes the model
+294: 	// in model discovery responses.
+295: 	ModelVisibilityPublic ModelVisibility = "Public"
+301: // +kubebuilder:validation:ExactlyOneOf=weighted;failover;conditional;callout
+302: type VirtualModel struct {
+303: 	// Weight-based model selection.
+304: 	// +optional
+305: 	Weighted *WeightedModelRouting `json:"weighted,omitempty"`
+306: 
+307: 	// Priority-based model selection with failover between priority groups.
+348: 
+349: 	// Priority of this target. Lower values are preferred. Targets at the same
+350: 	// priority are selected using a score that considers health and latency. The
+351: 	// next priority is used only when every target at this priority is degraded.
+352: 	// Configure policies.health on concrete target models to customize
+353: 	// degradation and eviction behavior.
+354: 	// +kubebuilder:validation:Minimum=0
+360: type ConditionalModelRouting struct {
+361: 	// Concrete model targets evaluated in order. The first matching condition is
+362: 	// selected. One final target may omit when to act as the fallback.
+363: 	// +kubebuilder:validation:MinItems=1
+364: 	// +kubebuilder:validation:MaxItems=64
+365: 	// +kubebuilder:validation:XValidation:message="conditional targets without when must be last",rule="self.filter(e, !has(e.when)).size() <= 1 && (!self.exists(e, !has(e.when)) || !has(self[size(self) - 1].when))"
+366: 	// +required
+379: // +kubebuilder:validation:ExactlyOneOf=backendRef;url
+380: type CalloutModelRouting struct {
+381: 	// Service that selects the model. Supported types: `Service` and `Backend`.
+382: 	// A `url` may include the request path, such as `https://router.example.com/v1/route`.
+383: 	// The callout request is sent with the `POST` method.
+384: 	PolicyBackendEndpoint `json:",inline"`
+385: 
+422: 
+423: type CalloutCache struct {
+424: 	// Ordered list of CEL expressions evaluated against the request to
+425: 	// construct the cache key.
+426: 	// +kubebuilder:validation:MinItems=1
+427: 	// +kubebuilder:validation:MaxItems=16
+428: 	// +required
+
+AGL2 crates/agentgateway/src/llm/model_router.rs
+158: 
+159: pub fn classify_route(path: &str) -> Option<llm::RouteType> {
+160: 	for (matcher, kind, _) in SERVING_ENDPOINTS.iter() {
+161: 		let matched = match matcher {
+162: 			EndpointMatch::Exact(expected) => expected.as_str() == path,
+163: 			EndpointMatch::Regex(regex) => regex.is_match(path),
+164: 		};
+182: #[apply(schema_ser_schema!)]
+183: pub enum VirtualModelRouting {
+184: 	Weighted(Vec<WeightedTarget>),
+185: 	Failover { backend: RouteBackendReference },
+186: 	Conditional(Vec<ConditionalTarget>),
+187: 	Callout(Arc<llm::router_callout::VirtualModelCallout>),
+188: }
+192: #[derive(Debug, Clone, PartialEq, Eq)]
+193: pub struct OriginalModel(pub String);
+194: 
+195: #[apply(schema_ser_schema!)]
+196: pub struct WeightedTarget {
+197: 	pub model: String,
+198: 	pub weight: usize,
+345: 		};
+346: 		if !api_key_model_authorized(req, &requested_model.model) {
+347: 			return ResolveResult::DirectResponse(api_key_model_authorization_denied_response());
+348: 		}
+349: 		req
+350: 			.extensions_mut()
+351: 			.insert(OriginalModel(requested_model.model.clone()));
+373: 
+374: 	fn model_list_response(&self, req: &Request, catalog: &llm::catalog::ModelCatalog) -> Response {
+375: 		let catalog = catalog.snapshot();
+376: 		let expand = self.discovery == llm::discovery::Discovery::Catalog;
+377: 		let data = self
+378: 			.models
+379: 			.iter()
+380: 			.filter(|model| model.visibility == ModelVisibility::Public)
+381: 			.filter(|model| model_authorized(model, req))
+382: 			.flat_map(|model| {
+383: 				if expand
+384: 					&& let Some(discovery) = &model.discovery
+385: 					&& discovery.expands(&model.name)
+386: 					&& let Some(model_ids) = catalog.model_ids(&discovery.provider)
+394: 							// Now check it still matches the model match (e.g 'foo/*') and we are authorized for this model
+395: 							model_name_matches(&model.name, name) && api_key_model_authorized(req, name)
+396: 						})
+397: 						.map(|(id, name)| {
+398: 							llm::model_list::ModelInfo::new(
+399: 								name.into_owned(),
+400: 								model.created,
+415: 					.iter()
+416: 					.filter(|model| api_key_model_authorized(req, &model.name))
+417: 					.map(|model| self.virtual_model_info(model, &catalog)),
+418: 			)
+419: 			.unique_by(|model| model.id.clone())
+420: 			.collect::<Vec<_>>();
+421: 		let path = req.uri().path().trim_end_matches('/');
+485: 
+486: 	async fn resolve_virtual_model(
+487: 		&self,
+488: 		virtual_model: &VirtualModelRoute,
+489: 		req: &mut Request,
+490: 		location: RequestedModelLocation,
+491: 		client: &PolicyClient,
+495: 			VirtualModelRouting::Weighted(targets) => {
+496: 				match targets.choose_weighted(&mut rand::rng(), |target| target.weight) {
+497: 					Ok(target) => (target.model.clone(), target.invalid),
+498: 					Err(err) => {
+499: 						tracing::debug!(%err, "failed to select weighted virtual model target");
+500: 						return ResolveResult::DirectResponse(llm_error_response(
+501: 							::http::StatusCode::NOT_FOUND,
+540: 					Ok(selection) => {
+541: 						tracing::debug!(
+542: 							virtual_model = %virtual_model.name,
+543: 							target_model = %selection.model,
+544: 							"virtual model callout selected unknown model",
+545: 						);
+546: 						None
+547: 					},
+548: 					Err(err) => {
+549: 						tracing::debug!(virtual_model = %virtual_model.name, %err, "virtual model callout failed");
+550: 						None
+551: 					},
+552: 				};
+553: 				match (selection, &callout.failure_mode) {
+554: 					(Some(selection), _) => {
+555: 						fields = selection.fields;
+556: 						(selection.model, false)
+557: 					},
+558: 					(None, VirtualModelCalloutFailureMode::Fallback(model)) => (model.clone(), false),
+559: 					(None, VirtualModelCalloutFailureMode::FailClosed) => {
+560: 						return ResolveResult::DirectResponse(llm_error_response(
+561: 							::http::StatusCode::SERVICE_UNAVAILABLE,
+562: 							&format!("Virtual model {} callout failed", virtual_model.name),
+563: 							"virtual_model_callout_failed",
+564: 						));
+565: 					},
+566: 				}
+567: 			},
+568: 		};
+569: 		if invalid {
+570: 			tracing::debug!(
+571: 				virtual_model = %virtual_model.name,
+572: 				target_model = %target,
+573: 				"virtual model selected an invalid target",
+574: 			);
+575: 			return ResolveResult::DirectResponse(llm_error_response(
+576: 				::http::StatusCode::NOT_FOUND,
+577: 				&format!(
+578: 					"Virtual model {} selected invalid target {target}",
+579: 					virtual_model.name
+580: 				),
+581: 				"virtual_model_target_not_found",
+582: 			));
+583: 		}
+584: 
+585: 		if let Err(resp) = Box::pin(rewrite_request_model(req, location, &target, fields)).await {
+586: 			return ResolveResult::DirectResponse(*resp);
+587: 		}
+588: 		match self.resolve_concrete_model(&target, true, req) {
+589: 			Ok(Some(route)) => ResolveResult::Backend(route),
+590: 			Ok(None) => {
+591: 				tracing::debug!(
+592: 					virtual_model = %virtual_model.name,
+593: 					target_model = %target,
+594: 					"virtual model selected target with no declared concrete model",
+595: 				);
+596: 				ResolveResult::DirectResponse(llm_error_response(
+597: 					::http::StatusCode::NOT_FOUND,
+598: 					&format!(
+599: 						"Virtual model {} selected target {target}, but no matching model was found",
+600: 						virtual_model.name
+601: 					),
+602: 					"virtual_model_target_not_found",
+603: 				))
+604: 			},
+605: 			Err(()) => ResolveResult::DirectResponse(model_authorization_denied_response()),
+606: 		}
+607: 	}
+608: 
+609: 	fn has_model(&self, model: &str) -> bool {
+610: 		self
+611: 			.models
+612: 			.iter()
+613: 			.any(|route| model_name_matches(&route.name, model))
+614: 	}
+615: 
+616: 	fn resolve_concrete_model(
+617: 		&self,
+618: 		requested_model: &str,
+619: 		allow_internal: bool,
+620: 		req: &Request,
+621: 	) -> Result<Option<ResolvedBackend>, ()> {
+622: 		// `models` can store things like `provider/*`. The concrete `requested_model` will be like `provider/real-model`.
+623: 		let matches = |model: &ModelRoute| {
+624: 			(allow_internal || model.visibility == ModelVisibility::Public)
+625: 				&& model_name_matches(&model.name, requested_model)
+626: 				&& header_matches(&model.header_matches, req)
+627: 		};
+628: 		let Some(model) = self
+629: 			.models
+630: 			.iter()
+631: 			.find(|model| matches(model) && model_authorized(model, req))
+632: 		else {
+633: 			return if self.models.iter().any(matches) {
+634: 				Err(())
+635: 			} else {
+636: 				Ok(None)
+637: 			};
+638: 		};
+639: 		Ok(Some(ResolvedBackend {
+640: 			backend: model.backend.clone(),
+641: 			route_type: classify_route(req.uri().path()).unwrap_or(
+642: 				model
+643: 					.policies
+644: 					.passthrough
+645: 					.unwrap_or(llm::RouteType::Passthrough),
+646: 			),
+647: 			llm_policy: model.policies.llm.clone(),
+648: 		}))
+649: 	}
+650: }
+
+AGL3 crates/agentgateway/src/llm/catalog/model.rs
+50: 	fn check(&self, strict: bool) -> anyhow::Result<()> {
+51: 		let reject_unknown = |path: &dyn fmt::Display, unknown: &Unknown| {
+52: 			if strict && let Some(k) = unknown.keys().next() {
+53: 				anyhow::bail!("{path}: unknown field {k:?}");
+54: 			}
+55: 			Ok(())
+56: 		};
+57: 		reject_unknown(&"catalog", &self.unknown)?;
+58: 		if let Some(metadata) = &self.metadata {
+59: 			reject_unknown(&"metadata", &metadata.unknown)?;
+60: 		}
+61: 		for (provider, entry) in &self.providers {
+62: 			reject_unknown(provider, &entry.unknown)?;
+63: 			for (model, pricing) in &entry.models {
+64: 				reject_unknown(&format_args!("{provider}/{model}"), &pricing.unknown)?;
+65: 				for (field, unknown) in [
+66: 					("rates", &pricing.rates.unknown),
+67: 					("limits", &pricing.limits.unknown),
+68: 					("modalities", &pricing.modalities.unknown),
+69: 					("capabilities", &pricing.capabilities.unknown),
+71: 				] {
+72: 					reject_unknown(&format_args!("{provider}/{model} {field}"), unknown)?;
+73: 				}
+74: 				if let Some(budget) = &pricing.reasoning.budget_tokens {
+75: 					reject_unknown(
+76: 						&format_args!("{provider}/{model} reasoning budgetTokens"),
+77: 						&budget.unknown,
+78: 					)?;
+79: 				}
+80: 				let mut previous = BTreeMap::new();
+81: 				for (index, tier) in pricing.tiers.iter().enumerate() {
+82: 					reject_unknown(
+83: 						&format_args!("{provider}/{model} tier {index}"),
+84: 						&tier.unknown,
+85: 					)?;
+86: 					reject_unknown(
+87: 						&format_args!("{provider}/{model} tier {index} rates"),
+88: 						&tier.rates.unknown,
+89: 					)?;
+90: 					if let Some(prior) = previous.insert(tier.service_tier, tier.context_over)
+91: 						&& tier.context_over <= prior
+93: 						anyhow::bail!(
+94: 							"{provider}/{model}: tier {index} contextOver must increase within its serviceTier"
+95: 						);
+96: 					}
+97: 				}
+98: 			}
+99: 		}
+221: pub struct Model {
+222: 	/// Human-readable display name.
+223: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+224: 	pub name: Option<String>,
+225: 	/// Lifecycle stage (alpha, beta, deprecated); absent means generally available.
+226: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+227: 	pub status: Option<String>,
+228: 	/// Release date, as YYYY-MM-DD or YYYY-MM.
+229: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+230: 	pub released: Option<String>,
+231: 	/// Base pricing rates for this model.
+232: 	#[serde(default, skip_serializing_if = "Rates::is_empty")]
+233: 	pub rates: Rates,
+234: 	/// Pricing rules ordered by increasing context threshold within each service tier.
+235: 	#[serde(default, skip_serializing_if = "Vec::is_empty")]
+236: 	pub tiers: Vec<Tier>,
+237: 	/// Freeform capability/routing tags for this model.
+238: 	#[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
+239: 	pub tags: BTreeSet<String>,
+240: 	/// Token limits.
+241: 	#[serde(default, skip_serializing_if = "crate::serdes::is_default")]
+242: 	pub limits: Limits,
+243: 	/// Supported input and output modalities.
+244: 	#[serde(default, skip_serializing_if = "crate::serdes::is_default")]
+245: 	pub modalities: Modalities,
+246: 	/// Supported features. Absent fields are unknown.
+247: 	#[serde(default, skip_serializing_if = "crate::serdes::is_default")]
+248: 	pub capabilities: Capabilities,
+249: 	/// How reasoning can be controlled.
+250: 	#[serde(default, skip_serializing_if = "crate::serdes::is_default")]
+251: 	pub reasoning: Reasoning,
+252: 	/// Fields not understood by this version.
+253: 	#[serde(flatten, skip_serializing)]
+254: 	#[cfg_attr(feature = "schema", schemars(skip))]
+255: 	pub unknown: Unknown,
+256: }
+257: 
+258: #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ::cel::DynamicType)]
+259: #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+260: #[cfg_attr(feature = "schema", schemars(deny_unknown_fields))]
+261: #[serde(rename_all = "camelCase")]
+262: pub struct Limits {
+263: 	/// Total context window, shared by input and output.
+264: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+265: 	pub context: Option<u64>,
+266: 	/// Maximum input tokens, when tighter than the context window allows.
+267: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+268: 	pub input: Option<u64>,
+269: 	/// Maximum output tokens.
+270: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+271: 	pub output: Option<u64>,
+272: 	/// Fields not understood by this version.
+273: 	#[serde(flatten, skip_serializing)]
+274: 	#[cfg_attr(feature = "schema", schemars(skip))]
+275: 	#[dynamic(skip)]
+276: 	pub unknown: Unknown,
+277: }
+278: 
+279: #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ::cel::DynamicType)]
+280: #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+281: #[cfg_attr(feature = "schema", schemars(deny_unknown_fields))]
+282: #[serde(rename_all = "camelCase")]
+283: pub struct Modalities {
+284: 	/// Input modalities, such as text, image, pdf, audio, or video.
+285: 	#[serde(default, skip_serializing_if = "Vec::is_empty")]
+286: 	pub input: Vec<String>,
+287: 	/// Output modalities, such as text, image, audio, or video.
+288: 	#[serde(default, skip_serializing_if = "Vec::is_empty")]
+289: 	pub output: Vec<String>,
+290: 	/// Fields not understood by this version.
+291: 	#[serde(flatten, skip_serializing)]
+292: 	#[cfg_attr(feature = "schema", schemars(skip))]
+293: 	#[dynamic(skip)]
+294: 	pub unknown: Unknown,
+295: }
+296: 
+297: #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ::cel::DynamicType)]
+298: #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+299: #[cfg_attr(feature = "schema", schemars(deny_unknown_fields))]
+300: #[serde(rename_all = "camelCase")]
+301: pub struct Capabilities {
+302: 	/// Whether the model supports reasoning.
+303: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+304: 	pub reasoning: Option<bool>,
+305: 	/// Whether the model supports JSON Schema structured outputs.
+306: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+307: 	#[dynamic(rename = "structuredOutput")]
+308: 	pub structured_output: Option<bool>,
+309: 	/// Whether the model supports tool calling.
+310: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+311: 	#[dynamic(rename = "toolCall")]
+312: 	pub tool_call: Option<bool>,
+313: 	/// Whether the model accepts the temperature parameter.
+314: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+315: 	pub temperature: Option<bool>,
+316: 	/// Fields not understood by this version.
+317: 	#[serde(flatten, skip_serializing)]
+318: 	#[cfg_attr(feature = "schema", schemars(skip))]
+319: 	#[dynamic(skip)]
+320: 	pub unknown: Unknown,
+321: }
+322: 
+323: #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ::cel::DynamicType)]
+324: #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+325: #[cfg_attr(feature = "schema", schemars(deny_unknown_fields))]
+326: #[serde(rename_all = "camelCase")]
+
+AGL4 crates/agentgateway/src/llm/mod.rs
+79: #[serde(rename_all = "camelCase")]
+80: pub struct AIBackend {
+81: 	#[serde(skip_serializing)]
+82: 	pub default_health: Option<http::health::Policy>,
+83: 	pub providers: crate::types::loadbalancer::EndpointSet<NamedAIProvider>,
+84: }
+85: 
+324: 
+325: /// Result of translating a chat request before it is sent upstream.
+326: ///
+327: /// `body` is the upstream request payload. `provider_state` carries any
+328: /// conversion state needed to translate the later response/stream back to the
+329: /// original `InputFormat`; most providers do not need it.
+330: struct RenderedChatRequest {
+687: 
+688: 	fn stream(&self, resp: Response, ctx: ChatStreamContext) -> Response {
+689: 		match self.output {
+690: 			ChatFormat::OpenAICompletions => match self.input {
+691: 				InputFormat::Completions => {
+692: 					conversion::completions::passthrough_stream(ctx.logger, ctx.log_content, resp)
+693: 				},
+1769: 			req.stream_options = Some(types::completions::StreamOptions {
+1770: 				include_usage: true,
+1771: 				rest: Default::default(),
+1772: 			});
+1773: 		}
+1774: 		if matches!(
+1775: 			self,
+1842: 			return Ok(RequestResult::Rejected(google_invalid_argument(
+1843: 				"streamGenerateContent requires alt=sse; the JSON-array streaming variant is not supported",
+1844: 			)));
+1845: 		}
+1846: 		let (parts, managed_body, mut req) = self
+1847: 			.read_gemini_body_and_default_model::<types::gemini::Request>(policies, req, log)
+1848: 			.await?;
+
+AGL5 crates/llm/src/conversion/mod.rs
+1: pub mod bedrock;
+2: pub mod completions;
+3: pub mod gemini;
+4: pub mod messages;
+5: pub mod namespace_tools;
+6: pub mod openai_compat;
+7: pub mod responses;
+8: pub mod systemone;
+9: pub mod vertex;
+10: pub mod vertex_gemini;
+11: 
+12: #[derive(Default)]
+13: struct ProviderUsage {
+14: 	input_tokens: u64,
+15: 	total_tokens: u64,
+
+AGL6 crates/agentgateway/src/llm/router_callout.rs
+25: #[apply(schema!)]
+26: pub struct VirtualModelCallout {
+27: 	/// Service that selects the model, and the backend policies used when connecting to it.
+28: 	/// A `host` URL may include the request path, such as `https://router.example.com/v1/route`.
+29: 	#[serde(flatten)]
+30: 	pub target: SimpleBackendReferenceWithPoliciesAndPath,
+31: 	/// Headers to set on the callout request, computed from CEL expressions.
+61: #[derive(Default)]
+62: pub enum VirtualModelCalloutFailureMode {
+63: 	/// Reject the request.
+64: 	#[default]
+65: 	FailClosed,
+66: 	/// Route to this model, which is resolved against llm.models, without applying `transformation`.
+67: 	Fallback(String),
+76: #[derive(Debug)]
+77: pub struct CalloutSelection {
+78: 	pub model: String,
+79: 	/// Request payload fields to set. `None` removes the field.
+80: 	pub fields: Vec<(String, Option<JsonValue>)>,
+81: }
+82: 
+91: 
+92: 	pub async fn select(
+93: 		&self,
+94: 		client: &PolicyClient,
+95: 		req: &mut Request,
+96: 	) -> anyhow::Result<CalloutSelection> {
+97: 		let cache_key = self.cache_key(req);
+
+AGL7 crates/agentgateway/src/types/loadbalancer.rs
+34: // on this u64 and the cached endpoint hashes below.
+35: pub(crate) fn hash_affinity_key(value: &[u8]) -> u64 {
+36: 	XxHash3_64::oneshot_with_seed(AFFINITY_KEY_HASH_SEED, value)
+37: }
+38: 
+39: fn hash_endpoint_key(value: &[u8]) -> u64 {
+40: 	XxHash3_64::oneshot_with_seed(ENDPOINT_KEY_HASH_SEED, value)
+59: 	fn with_capacity(key: &EndpointKey, ep: T, capacity: u32) -> Self {
+60: 		// Endpoint identities change far less often than requests arrive. Pay for XXH3 at creation
+61: 		// so the request hot path never reads and hashes an arbitrary-length endpoint key.
+62: 		Self {
+63: 			endpoint: Arc::new(ep),
+64: 			info: Default::default(),
+65: 			capacity,
+71: #[derive(Debug, Clone, Default)]
+72: pub enum Sampler {
+73: 	/// Every endpoint has the default capacity of 1. No need for weighted sampling.
+74: 	#[default]
+75: 	Uniform,
+76: 	/// Weighted sampling by capacity via a cached prefix sum.
+77: 	Weighted(WeightedIndex<u64>),
+89: 
+90: fn build_sampler<T>(active: &IndexMap<EndpointKey, EndpointWithInfo<T>>) -> Sampler {
+91: 	if active.is_empty() {
+92: 		return Sampler::default();
+93: 	}
+94: 	let mut all_ones = true;
+95: 	let mut any_nonzero = false;
+1295: 		let (endpoints, discovery) = affinity_fixture(endpoint_count, |_| 1);
+1296: 		let affinity_key = hash_affinity_key(b"affinity-benchmark-client");
+1297: 
+1298: 		b.bench_local(|| {
+1299: 			black_box(endpoints.select_affinity(&discovery.workloads, 80, 8080, black_box(affinity_key)))
+1300: 		});
+1301: 	}
+1306: 		let (endpoints, discovery) = affinity_fixture(endpoint_count, |i| (i % 4 + 1) as u32);
+1307: 		let affinity_key = hash_affinity_key(b"affinity-benchmark-client");
+1308: 
+1309: 		b.bench_local(|| {
+1310: 			black_box(endpoints.select_affinity(&discovery.workloads, 80, 8080, black_box(affinity_key)))
+1311: 		});
+1312: 	}
+1320: 	fn rendezvous_score_is_stable_and_respects_weight() {
+1321: 		let affinity_key = hash_affinity_key(b"client-a");
+1322: 		let endpoint_a = hash_endpoint_key(b"endpoint-a");
+1323: 		let first = weighted_rendezvous_score(affinity_key, endpoint_a, 1);
+1324: 		assert_eq!(
+1325: 			first,
+1326: 			weighted_rendezvous_score(affinity_key, endpoint_a, 1)
+1996: 	#[test]
+1997: 	fn build_sampler_reflects_active_state() {
+1998: 		let mut group = EndpointGroup::<()>::default();
+1999: 		add_with_capacity(&mut group, "a", 1);
+2000: 		add_with_capacity(&mut group, "b", 1);
+2001: 		assert!(matches!(group.sampler, Sampler::Uniform));
+2002: 
+
+AGL8 controller/pkg/agentgateway/translator/model_collections.go
+32: 
+33: func AgwModelCollection(
+34: 	queue *status.StatusCollections,
+35: 	models krt.Collection[*agentgateway.AgentgatewayModel],
+36: 	inputs RouteContextInputs,
+37: 	krtopts krtutil.KrtOptions,
+38: ) (krt.Collection[agwir.AgwResource], krt.Collection[*plugins.RouteAttachment], krt.Collection[*utils.AncestorBackend]) {
+65: // failover targets, and its callout backend.
+66: func extractModelAncestorBackends(ctx RouteContext, model *agentgateway.AgentgatewayModel) []*utils.AncestorBackend {
+67: 	source := utils.TypedNamespacedName{
+68: 		Namespace: model.Namespace,
+69: 		Name:      model.Name,
+70: 		Kind:      wellknown.AgentgatewayModelGVK.Kind,
+71: 	}
+150: // backendRef can only target Service or InferencePool (CEL constraint); Kind defaults to Service.
+151: func backendRefToTypedNamespacedName(namespace string, ref *agentgateway.LocalBackendObjectReference) utils.TypedNamespacedName {
+152: 	kind := wellknown.ServiceKind
+153: 	if ref.Kind != nil {
+154: 		kind = *ref.Kind
+155: 	}
+156: 	return utils.TypedNamespacedName{
+165: // policy behavior; models populate its generated LLM router backend.
+166: func extractModelParentReferenceInfo(ctx RouteContext, model *agentgateway.AgentgatewayModel) []RouteParentReference {
+167: 	parents := extractParentReferenceInfo(ctx, ctx.RouteParents, model)
+168: 	for _, ref := range model.Spec.ParentRefs {
+169: 		if NormalizeReference(ref.Group, ref.Kind, wellknown.GatewayGVK.GroupKind()) != wellknown.HTTPRouteGVK.GroupKind() {
+170: 			continue
+171: 		}
+224: 
+225: func modelParentRuleIndex(rules []gwv1.HTTPRouteRule, sectionName *gwv1.SectionName) (int, error) {
+226: 	if sectionName == nil {
+227: 		if len(rules) != 1 {
+228: 			return -1, fmt.Errorf("model HTTPRoute parentRef without sectionName requires exactly one rule")
+229: 		}
+230: 		return 0, nil
+239: 
+240: func modelServingRuleMatchesRoot(rule gwv1.HTTPRouteRule) bool {
+241: 	if len(rule.Matches) == 0 {
+242: 		return true
+243: 	}
+244: 	for _, match := range rule.Matches {
+245: 		if match.Path == nil {
+255: 
+256: func rootModelRouteDirectListenerConflicts(ctx RouteContext, route *gwv1.HTTPRoute) []string {
+257: 	routeListeners := make(map[string]struct{})
+258: 	for _, parent := range FilteredReferences(extractParentReferenceInfo(ctx, ctx.RouteParents, route)) {
+259: 		routeListeners[parent.ListenerKey] = struct{}{}
+260: 	}
+261: 	if len(routeListeners) == 0 {
+280: 
+281: func rootModelRouteConflictMessage(listeners []string) string {
+282: 	return fmt.Sprintf("root model-serving HTTPRoute conflicts with directly attached models on listeners: %s", strings.Join(listeners, ", "))
+283: }
+284: 
+285: func modelServingRuleRouterKey(namespace, route string, ruleIndex int, rule gwv1.HTTPRouteRule) (string, bool, error) {
+286: 	modelBackendRefs := make([]gwv1.HTTPBackendRef, 0, 1)
+287: 	for _, backend := range rule.BackendRefs {
+288: 		if NormalizeReference(backend.Group, backend.Kind, wellknown.ServiceGVK.GroupKind()) == wellknown.AgentgatewayModelGVK.GroupKind() {
+289: 			modelBackendRefs = append(modelBackendRefs, backend)
+290: 		}
+330: 
+331: func modelRouterBackendKey(namespace, route, rule string) string {
+332: 	return fmt.Sprintf("/llm:router:httproute:%s:%s:%s", namespace, route, rule)
+333: }
+334: 
+335: func translateModelForParents(
+336: 	ctx RouteContext,
+545: 			Routing: &api.ModelRoute_VirtualModel_Conditional_{
+546: 				Conditional: &api.ModelRoute_VirtualModel_Conditional{Targets: targets},
+547: 			},
+548: 		}, nil, errors.Join(errs...)
+549: 	case vm.Callout != nil:
+550: 		callout, err := plugins.TranslateModelCallout(modelPolicyCtx(ctx), model.Namespace, vm.Callout)
+551: 		if fallback := vm.Callout.Fallback; fallback != nil {
+552: 			modelName, ferr := resolveModelTargetName(ctx, model.Namespace, *fallback)
+553: 			if ferr != nil {
+554: 				err = errors.Join(err, ferr)
+555: 			} else {
+556: 				callout.FallbackModel = &modelName
+557: 			}
+558: 		}
+559: 		return &api.ModelRoute_VirtualModel{
+560: 			Routing: &api.ModelRoute_VirtualModel_Callout_{Callout: callout},
+561: 		}, nil, err
+562: 	case vm.Failover != nil:
+563: 		backend, err := modelFailoverBackend(ctx, model, parent)
+564: 		if backend == nil {
+565: 			return nil, nil, err
+566: 		}
+567: 		return &api.ModelRoute_VirtualModel{
+568: 			Routing: &api.ModelRoute_VirtualModel_Failover_{
+569: 				Failover: &api.ModelRoute_VirtualModel_Failover{Backend: backendRef(backend.Key)},
+570: 			},
+571: 		}, []*api.Resource{backendResource(backend)}, err
+572: 	default:
+573: 		return nil, nil, fmt.Errorf("virtualModel must define weighted, conditional, failover, or callout")
+574: 	}
+575: }
+576: 
+577: func modelConcreteBackend(ctx RouteContext, model *agentgateway.AgentgatewayModel, parent RouteParentReference, selectedModel *string) (*api.Backend, error) {
+578: 	provider, err := translateModelLLMProvider(ctx, model.Namespace, &model.Spec, utils.SingularLLMProviderSubBackendName, selectedModel)
+579: 	if err != nil {
+580: 		return nil, err
+581: 	}
+582: 	return &api.Backend{
+583: 		Key:  modelBackendKey(model, parent, "backend"),
+584: 		Name: plugins.ResourceName(model),
+585: 		Kind: &api.Backend_Ai{
+586: 			Ai: &api.AIBackend{
+587: 				ProviderGroups: []*api.AIBackend_ProviderGroup{{Providers: []*api.AIBackend_Provider{provider}}},
+588: 			},
+589: 		},
+590: 	}, nil
+591: }
+592: 
+593: func modelFailoverBackend(ctx RouteContext, model *agentgateway.AgentgatewayModel, parent RouteParentReference) (*api.Backend, error) {
+594: 	groups := map[int32][]*api.AIBackend_Provider{}
+595: 	var errs []error
+596: 	for _, target := range model.Spec.VirtualModel.Failover.Targets {
+597: 		_, provider, err := translateFailoverTarget(ctx, model.Namespace, target)
+598: 		if err != nil {
+599: 			errs = append(errs, err)
+600: 			continue
+601: 		}
+602: 		groups[target.Priority] = append(groups[target.Priority], provider)
+603: 	}
+604: 	if len(groups) == 0 {
+605: 		err := errors.Join(errs...)
+606: 		if err == nil {
+607: 			err = fmt.Errorf("failover requires at least one valid target")
+608: 		}
+609: 		return nil, err
+610: 	}
+611: 
+612: 	priorities := make([]int32, 0, len(groups))
+613: 	for p := range groups {
+614: 		priorities = append(priorities, p)
+615: 	}
+616: 	slices.Sort(priorities)
+617: 
+618: 	backend := &api.AIBackend{}
+619: 	for _, priority := range priorities {
+620: 		providers := groups[priority]
+621: 		slices.SortFunc(providers, func(a, b *api.AIBackend_Provider) int {
+622: 			return strings.Compare(a.GetName(), b.GetName())
+623: 		})
+624: 		backend.ProviderGroups = append(backend.ProviderGroups, &api.AIBackend_ProviderGroup{Providers: providers})
+625: 	}
+626: 
+627: 	return &api.Backend{
+628: 		Key:  modelBackendKey(model, parent, "failover"),
+629: 		Name: plugins.ResourceName(model),
+630: 		Kind: &api.Backend_Ai{Ai: backend},
+631: 	}, errors.Join(errs...)
+632: }
+633: 
+634: // translateFailoverTarget resolves and translates one failover target. Callers omit targets
+635: // that return an error so the ancestry index and generated failover backend stay consistent.
+636: func translateFailoverTarget(
+637: 	ctx RouteContext,
+638: 	namespace string,
+639: 	target agentgateway.FailoverModelTarget,
+640: ) (*agentgateway.AgentgatewayModel, *api.AIBackend_Provider, error) {
+641: 	refModel, modelName, err := resolveModelTarget(ctx, namespace, target.ModelTargetReference)
+642: 	if err != nil {
+643: 		return nil, nil, err
+644: 	}
+645: 	if refModel.Spec.Provider == nil {
+
+AGL9 crates/agentgateway/src/http/retry/mod.rs
+6: 
+7: pub use body::ReplayBody;
+8: 
+9: use crate::cel::Expression;
+10: use crate::store::HasExpressions;
+11: use crate::*;
+12: 
+14: #[cfg_attr(feature = "schema", schemars(rename = "RetryPolicy"))]
+15: pub struct Policy {
+16: 	/// Total number of attempts, including the original request.
+17: 	#[serde(default = "default_attempts")]
+18: 	pub attempts: NonZeroU8,
+19: 	/// Delay between retry attempts.
+20: 	#[serde(
+21: 		default,
+22: 		skip_serializing_if = "Option::is_none",
+23: 		with = "serde_dur_option"
+24: 	)]
+32: 	/// retries are disabled (only the initial attempt is made), e.g. `request.method == "GET"`.
+33: 	/// Retrying requires buffering the request body in memory for replay, so this lets us skip
+34: 	/// that cost when the request is known to be non-retriable (e.g. streaming or websockets).
+35: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+36: 	pub precondition: Option<Arc<Expression>>,
+37: 	/// CEL expression evaluated against each response to decide whether to retry. A response
+38: 	/// is retried when its status code is in `codes` *or* this expression evaluates to `true`.
+39: 	#[serde(default, skip_serializing_if = "Option::is_none")]
+40: 	pub condition: Option<Arc<Expression>>,
+41: }
+42: 
+43: impl HasExpressions for Policy {
+44: 	/// Exposes the precondition/condition expressions so the proxy snapshots the
+45: 	/// request/response attributes they reference.
+46: 	fn expressions(&self) -> impl Iterator<Item = &Expression> {
+47: 		self
+48: 			.precondition
+54: 
+55: pub fn de_codes<'de: 'a, 'a, D>(deserializer: D) -> Result<Box<[http::StatusCode]>, D::Error>
+56: where
+57: 	D: Deserializer<'de>,
+58: {
+59: 	let raw = Vec::<u16>::deserialize(deserializer)?;
+60: 	let boxed = raw
+
+AGL10 crates/llm/src/golden_tests.rs
+14: 
+15: fn fixture_path(relative_path: &str) -> PathBuf {
+16: 	Path::new("src/tests").join(relative_path)
+17: }
+18: 
+19: fn snapshot_path_and_name(relative_path: &str, provider: &str) -> (String, String) {
+20: 	let rel = Path::new(relative_path);
+21: 	let parent = rel.parent().unwrap_or_else(|| Path::new(""));
+22: 	let stem = rel
+23: 		.file_stem()
+24: 		.unwrap_or_else(|| panic!("{relative_path}: missing filename"))
+89: 		};
+90: 		let (snapshot_path, snapshot_name) = snapshot_path_and_name(relative_path, provider);
+91: 
+92: 		insta::with_settings!({
+93: 			info => &input_raw,
+94: 			filters => vec![(r#""id": "msg_[0-9a-f]{16}""#, r#""id": "msg_redacted""#)],
+95: 			description => input_path.to_string_lossy().to_string(),
+96: 			omit_expression => true,
+97: 			prepend_module_to_snapshot => false,
+98: 			snapshot_path => snapshot_path,
+99: 		}, {
+100: 			insta::assert_json_snapshot!(snapshot_name, report, {
+101: 				".request.id" => "[id]",
+102: 				".request.created" => "[date]",
+103: 				".request.metadata" => insta::sorted_redaction(),
+104: 				".request.additionalModelRequestFields.metadata" => insta::sorted_redaction(),
+105: 			});
+257: 
+258: 	/// Native Gemini inbound bodies, used for both the render snapshots and the fidelity assertions
+259: 	/// in [`gemini_request_passthrough_is_lossless`].
+260: 	const GEMINI_REQUESTS: &[&str] = &[
+261: 		"text",
+262: 		"tools",
+263: 		"thinking",
+598: 	fn gemini_native() {
+599: 		// Native Gemini inbound: the "translation" is a re-serialize, so these snapshots exist to make
+600: 		// any change to the wire body visible in review. `gemini_request_passthrough_is_lossless`
+601: 		// asserts the fidelity property itself.
+602: 		for name in GEMINI_REQUESTS {
+603: 			let path = format!("requests/gemini/{name}.json");
+604: 			test_request(GEMINI_NATIVE, &path, |i: &mut types::gemini::Request| {
+677: 
+678: 			let (snapshot_path, snapshot_name) = snapshot_path_and_name(fixture, provider);
+679: 			insta::with_settings!({
+680: 				info => &raw,
+681: 				description => path.to_string_lossy().to_string(),
+682: 				omit_expression => true,
+683: 				prepend_module_to_snapshot => false,
+684: 				snapshot_path => snapshot_path,
+685: 			}, {
+686: 				insta::assert_json_snapshot!(snapshot_name, messages);
+687: 			});
+688: 		}

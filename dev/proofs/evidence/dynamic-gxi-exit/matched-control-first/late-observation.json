@@ -1,0 +1,21 @@
+{
+  "originalGate": "FAILED at 15 seconds",
+  "observerReturnedAtSeconds": 40.002,
+  "originalExitStatus": null,
+  "laterOwnPidCheck": {
+    "pid": 9793,
+    "command": "/bin/ps -p 9793 -o pid,stat,etime,comm",
+    "exit": 1,
+    "output": "header only; process absent"
+  },
+  "cleanupCounter": {
+    "moduleOpens": 261,
+    "moduleCloses": 261,
+    "outstandingModuleRefs": 0,
+    "closeErrors": 0,
+    "overflow": 0,
+    "peakDyldImages": 307
+  },
+  "classification": "Late cleanup observed and process absent; original exit code was not reaped and remains unknown; never promoted to pass",
+  "timingBoundary": "Initial ABBA sequence may overlap this overdue control; no quiet-host latency claim"
+}

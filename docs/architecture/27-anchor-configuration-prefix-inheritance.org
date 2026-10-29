@@ -1,0 +1,262 @@
+#+title: Weaver Anchor Configuration Changes and Committed Prefix Inheritance
+#+language: en
+#+date: 2026-10-19
+#+property: STATUS abstract-composition-checked-native-consensus-qualification-pending
+#+options: toc:3
+
+* Decision and scope
+
+Use one serialized configuration lineage and one authoritative prefix containing
+both original data operations and configuration transitions. A replacement quorum
+inherits the full deciding history, including original seals, issuance/burn
+records, authentic results and unresolved obligations. It never initializes a
+fresh financial or Policy domain. During joint configuration, neither the old
+nor the new quorum can independently approve a root append.
+
+This extends [[file:26-anchor-commit-broker-fencing.org][the fixed-membership commit/broker review]]. The selected conservative
+profile requires old and new quorum certificates for both entering and finishing
+joint configuration. New economic admission stays closed throughout the joint
+phase and until fresh configuration-bound physical fencing and activation.
+Original previously committed confirmations and submitted IO remain resolvable.
+No timeout, failed migration or election rolls the configuration back to old-only.
+
+[[file:../../dev/specs/lean/AnchorReconfiguration.lean][The Lean extension]] composes with the actual initialized eleven-layer Weaver
+model; [[file:../../dev/specs/quint/AnchorReconfiguration.qnt][the Quint extension]] exercises concrete majority families, copied-prefix
+faults, elections, late confirmations and actual account replay counterexamples.
+These are formal semantic models, not extracted proofs of Scheme/Go/Rust or a
+consensus engine. [[file:../../dev/specs/evidence/anchor-reconfiguration-2026-10-19.org][The check receipt]] keeps that boundary explicit. [[file:diagrams/28-anchor-configuration-prefix.d2][Canonical D2]]
+and [[file:diagrams/28-anchor-configuration-prefix.svg][its preview]] contain core design only.
+
+The tracked external effect is the original internal account application. Its
+execution never authorizes provider bytes or stream-tail reconstruction. Earlier
+Policy/revocation, source-admission and transport-owner contracts remain required;
+no external payment/provider exactly-once claim is made.
+
+* Identity and full envelope
+
+Keep root publication identity, configuration lineage, active membership, joint
+transition, leadership term, committed position and actual writer epoch distinct.
+A configuration change does not change canonical message, claim, account,
+budget/history lineage, original usage, closure or application purpose. New
+members and their credentials do not create new spending authority.
+
+The concrete commit envelope binds the root, immutable membership descriptors,
+current old/joint/new stage, transition revision, leadership term, one physical
+committed position, complete original payload and determining prefix/source roots.
+A joint envelope carries qualified old and new certificates. Replica installation,
+barrier, current-read and activation receipts bind this same stage/revision and
+exact original domain. Reusing an old signature or relabeling a barrier receipt
+with the new membership descriptor is not valid evidence.
+
+Membership IDs are immutable and never reused. The model chooses a serialized
+successor lineage; returning to an earlier voter roster requires a new identity,
+not restoration of its old publication context. There is one in-flight joint
+transition, with no skipped or concurrent membership replacement. A native
+configuration registry must authenticate descriptor-to-ID binding and reject
+counter exhaustion, alias collisions and unauthorized member changes.
+
+* Old, joint and new authority
+
+| Stage / append | Required quorum authority | Required inheritance / execution condition |
+|----------------+---------------------------+--------------------------------------------|
+| Stable old data | Qualified old quorum | Full current determining prefix; original operation and Policy binding |
+| Enter joint | Old quorum and replacement quorum | Both acknowledge the exact prior prefix and deciding image before committing transition |
+| Joint result or fence data | Old quorum and new quorum | Same joint stage/revision; original result or actual owner fence evidence |
+| Joint new economic admission | Closed | No seal/grant/burn merely because either quorum is available |
+| Finish joint | Old quorum and new quorum | Exact prefix now includes joint entry and any intervening data/results/fences |
+| Stable new data | Qualified new quorum | Full inherited prefix; fresh new-stage activation before new economic admission |
+
+Old data versus enter-joint intersect in the old quorum system; joint versus
+stable-new intersect in the new quorum system. Old and new voter sets themselves
+may be disjoint. This does not justify independently publishing under both sets:
+the joint bridge and prefix transfer must be committed before new-only authority
+is usable. Each quorum system's intersection property is an explicit Lean family
+contract; Quint checks concrete two-of-three families and disjoint roster examples.
+Intersection supplies a common witness, not agreement by itself. Durable
+non-equivocation at that witness and committed-prefix election/recovery rules
+remain qualified store-owner obligations. The model does not prove a consensus
+voting/election algorithm from these facts.
+
+The selected dual-quorum enter rule is stricter than protocols that enter joint
+state under old-only commitment with additional election rules. Those protocols
+are not qualified by this model. This profile can block indefinitely if the
+replacement cannot inherit the prefix or either required quorum is unavailable.
+It does not fall back to a cached configuration or a new empty root.
+
+* Complete deciding image and installation
+
+Install a candidate as a learner before treating it as an acknowledging member.
+A qualified installation receipt authenticates the exact committed data/control
+prefix and original determining state at the transition cut. In the checked
+profile, every signer used by the selected certificate has installed that image.
+A certificate may choose another valid quorum when a member is unavailable; it
+cannot include a signer whose installation is missing or stale.
+
+| Image component | Required purpose |
+|-----------------+------------------|
+| Complete mixed data/control prefix | Preserve the committed configuration stage and every earlier original operation; matching a maximum index is insufficient |
+| Seals, issuance tombstones, burns and authentic results | Preserve original spent-state even with a missing reply or missing account projection |
+| Original source authority and producer roots | Preserve claims, original reservations, budget/history domains, final usage and confirmation identity |
+| Configuration lineage / stage / revision | Prevent old-only publication or old receipt acceptance as current new authority |
+| Actual owner reference and unresolved obligations | Resolve original IO conservatively; never deserialize an execution continuation |
+
+The Lean image carries the full prefix, consumption-root journal and the prior
+source recovery projection with account observation counters erased. It excludes
+live grant/burn response continuations, execution capabilities and the new
+wrapper's dispatch counters. Source model values are semantic determining records,
+not runnable descriptors or a native snapshot serialization recipe.
+
+Quint checks the mixed prefix and full consumption-root image, including complete
+sealed permits with original usage/history binding. It preserves the imported
+source relation across every control transition rather than duplicating the
+entire source image in each replica fixture. Lean checks the fuller source-image
+installation guard. This is a documented correspondence and scope difference;
+there is no automated Quint/Lean translation or native copy verifier.
+
+The exact image is a qualified available cut, not access to unseen semantic
+execution facts. If required actual-owner deciding evidence cannot be materialized,
+installation/finalization is unavailable. Preserve uncertainty; never fill an
+absent application receipt with a claim that no effect occurred.
+
+Installation is not admission. It neither reissues a capability nor enqueues an
+unknown operation. A newer prefix after any append requires fresh installation
+for the next selected certificate in this conservative model. Real incremental
+replication can replace full-copy work only with a qualified complete-prefix
+receipt; it cannot weaken deciding-record coverage.
+
+* Ordering, response loss and old acknowledgements
+
+1. Authenticate the proposed membership change as an actual Governance operation.
+   Stage the exact old/new descriptor pair under the existing root and lineage.
+2. Install the current deciding prefix on the selected old and new signers.
+   Commit enter-joint once with both certificates; close new economic admission.
+   A lost response resolves this same committed control record and stage.
+3. Preserve the complete joint state across elections. Any root result/fence
+   append while joint requires both quorums and current-prefix evidence. A stale
+   old-scope proposal cannot commit even if its data-only index still matches.
+4. Before finish-joint, install the updated full prefix, including enter-joint
+   and all intervening appends. Commit finish-joint under both quorums. Retire
+   old-only publication authority without erasing historical old certificates.
+5. Obtain actual writer isolation, commit a fence under the current configuration,
+   resolve unknown burns and read the complete current prefix/source image.
+   Activate only stable-new with matching stage/revision, term and actual writer
+   epoch. A prior joint-stage barrier/fence/read cannot be relabeled as new-stage
+   activation evidence. If fencing was deferred until stable-new, one fresh fence
+   can suffice; fencing performed in joint does not remove the final-stage join.
+
+A genuinely committed old record remains historical evidence after reconfiguration.
+Its original live grant/burn response can still arrive before the actual writer
+barrier, and the old broker may submit that original operation once. An old-only
+acknowledgement for an uncommitted or newly proposed entry is not such evidence.
+Membership commitment does not instantly isolate old FD/callback/offload aliases.
+Physical isolation ends new old-writer submissions; already submitted original IO
+may finish later and supply its exact authentic result.
+
+An old result can be archived under the current quorum rules without changing
+its original operation identity. It cannot produce a fresh budget envelope or
+another application. Missing original burn/application results remain unknown;
+finalization may preserve those obligations, but full-shard execution activation
+cannot open until the existing conservative recovery condition is met.
+
+| Interleaving | Required result |
+|--------------+-----------------|
+| Old data commits before enter-joint | Transition inherits it; late original confirmation can resolve the same record |
+| Enter-joint commits before old data proposal | Reject stale scope/revision/physical-head proposal; no old-only append |
+| Enter/finish commit response lost | Resolve the exact current prefix/stage; no repeated control effect or new membership identity |
+| New leader appears during joint | Inherit joint stage and both-quorum rule; never reset to stable old |
+| Replica has correct data position but omits control or spent record | Installation fails exact determining-image comparison |
+| Old and new quorums coexist but only one can respond | No joint commit; unknown original obligations remain held |
+| Finish-joint races old barrier acknowledgement | Old stage/revision receipt cannot activate stable new |
+| Another election follows a barrier | Rebind qualified actual owner evidence to current term/stage; old callback metadata cannot substitute |
+| Old burn reply arrives before actual barrier | Only original committed once-only IO may enter old writer gate |
+| Old burn reply arrives after actual barrier | No new submission; historical status/result resolution only |
+| New members start from an empty application ledger | Reject missing inherited image; excluded fork mutant applies the same account effect twice |
+
+* Formal composition without a runtime compatibility interface
+
+The prior AnchorBrokerCommit entry uses a fixed configuration field. The new
+proof retains it only as a stable logical projection namespace, while the outer
+envelope carries the active membership stage/revision and one physical mixed
+prefix. Erasure deletes membership-control records and projects data entries to
+the earlier semantic relation. Its data-only indices are proof bookkeeping;
+they are not a second production log, public API or current-membership selector.
+
+Native admission must validate the full new envelope. Accepting the prior bare
+entry or fixed-field certificate alone would bypass the new quorum and transfer
+guards. No runtime compatibility layer or dependency migration is implemented.
+This preserves prior theorem reuse without claiming that a fixed-membership
+certificate already proves dynamic membership safety.
+
+| Event | Quint action | Lean correspondence |
+|-------+--------------+---------------------|
+| Install exact deciding image | install / installAll | install with actual imageValid plus exact image equality |
+| Data/root commit | commit | Actual prior root event plus current membership certificate, copied prefix, economic/fence guards |
+| Enter joint / finish joint | enterJoint / finishJoint | Append control record, advance membership revision, preserve base authority and close admission |
+| Election / original execution | changeLeader / acknowledge / dispatch / complete | core projects to prior event; control prefix unchanged |
+| Configuration-bound actual barrier | acceptBarrier / isolateWriter | isolate with actual owner predicate and full scope/revision/term/epoch binding |
+| Current read / activate | readCurrent / activate | Full mixed-prefix cut plus prior actual writer activation and stable-stage guards |
+
+Lean proves append-only mixed prefixes, historical quorum qualification for every
+committed record, embedding of every prior committed data
+entry, monotone configuration identities/revisions, closed joint economic
+admission, adjacent quorum intersections, exact installed-image requirements and
+preservation of original consumption/dispatch/application counts, shared budget
+coverage and unknown reservations. It starts from the actual initialized prior
+product and quantifies over arbitrary finite manifests and finite traces along
+the serialized configuration lineage, under immutable quorum-family contracts.
+
+These proofs remain conditional on authentic durable publication and installation,
+qualified current reads, actual all-alias barriers and actual account effect/
+receipt atomicity. Prefix invariants do not prove arbitrary external certificate
+agreement. The new quorum layer refines admission to the existing abstract single
+prefix; it does not prove that a storage engine implements that prefix or its
+membership transfer correctly. The retained negative traces expose those failed
+premises rather than converting them into success assumptions.
+
+* Source-grounded reuse and language responsibilities
+
+[[file:01-reference-comparison.org][The source register]] and [[file:../../dev/specs/evidence/reconfiguration-traces/source-review.json][renewed eighteen-blob review]] retain exact pinned source
+identity, including P35's fork and complete lineage-prefix/domain contracts.
+
+| Sources | Reuse | Required extension / limitation |
+|---------+-------+--------------------------------|
+| P12 / P13 authorized token and strict mediation | Full effect binding; indeterminate outcome still consumes nonce/sequence | Publish original spent-state through dynamic membership; no reset from unchanged semantic root or new Authority |
+| P15 effect-host.ss | Consumption before callback and currentness checks | Full membership envelope and actual broker scope; local guards do not implement quorum transfer |
+| P17 / P22 durable backend contracts | Scheme projects contracts; runtime owns append/fsync/leases/recovery | Authenticate installed complete prefixes and durable dual-quorum control records; backend metadata is not a persistence receipt |
+| P18 canonical recovery receipts | Actual valid prior commit required; matching fences alone do not prove exclusivity | Bind old historical entry versus current publication authority; no uncommitted old acknowledgement as new commit |
+| P19 authorized recovery bridge | Conditional source/authorization/recovery identity joins | Authorize the actual member-change operation and its unchanged original effect domain |
+| P20 declared effect-universe exactly-once closure | Conditional composition of actual original execution | Its exactly-once input is not a quorum/election/replication theorem |
+| P31 / P43 attempt recovery | Advance generation/revision and retain pending obligations | Configuration recovery preserves unknown operations; pending work is not a replayable application job |
+| P33 budget separation | Economic reservations are not runtime watchdog budgets | Lost quorum, timeout or failed transition does not release unknown money |
+| P35 monotonicity / lineage-prefix closure | Single-generation forks are possible without fork-free publication; deciding prefixes and domain binding are explicit | Extend to mixed data/control prefix, immutable membership identities and joint transfer; physical publication remains an owner premise |
+| C8 BoundOperation | Fixed effect/state projection match | Authenticate actual membership, source and writer state; matching caller fields are insufficient |
+| C10 compound authorization | All nonempty required layers allow without evaluation errors | Policy allow does not replace quorum/installation/fencing evidence |
+| C11 evaluation/validation composition | Conditional certificates with explicit expression/policy alignment | No native consensus, source-copy or physical alias-isolation proof is supplied |
+
+Scheme owns original identity, claim/history/budget semantics and Governance
+requirements. Cedar constrains the actual membership-change and original effect
+requests against authenticated determining state. Go owns cloud-native discovery,
+Kubernetes/workload identity, learner orchestration and reconciliation of exact
+committed stages; ConfigMap/lease changes are proposals, not commit authority.
+Rust validates complete membership envelopes, installation/prefix joins and the
+actual broker barrier/activation contract. Qualified storage/effect owners supply
+the physical facts. No language implementation is changed by this review.
+
+* Native acceptance and performance boundary
+
+Exercise disjoint rosters, old-only/new-only partitions, learner promotion before
+copy completion, old snapshots omitting control entries or burns, old leader
+restoration, a quorum witness restored from a pre-acknowledgement snapshot,
+lost enter/finish acknowledgements, elections at each transition,
+old FD/callback/buffer recovery and fence/read/finish races. Require identical
+original consumption history and booked obligations before and after transfer.
+Validate late original receipts against their historical prefix while rejecting
+fresh old-only appends. Never repair an unknown prefix by starting a new domain.
+
+Reconfiguration is a slow control path but may pause hot economic admission.
+Full copied-image guards here are a conservative semantic cut, not a measured
+replication design. Incremental replication, batching and quorum selection need
+qualified equivalent receipts before making performance claims. Original shared
+budget/history domains cannot be split to create capacity. No benchmark, native
+consensus acceptance or gateway implementation is claimed; dependency pins stay
+unchanged.

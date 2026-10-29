@@ -1,0 +1,15 @@
+
+ Error [QNT101]: Built-in name 'next' is redefined in module 'LlmAppendHandoff'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmAppendHandoff.qnt:12:12
+  12:   pure val next={id:11,records:List(C::fOther)}
+                 ^^^^
+
+
+ Error [QNT101]: Built-in name 'append' is redefined in module 'LlmAppendHandoff'
+
+  at /Users/guangtao/ghq/github.com/tao3k/weaver/proofs/qunit/LlmAppendHandoff.qnt:37:10
+  37:   action append(worker,generation,frontier,durable)=all {descriptor(worker,generation,frontier),durable,h.allocated.forall(seg=>seg.id!=next.id),
+               ^^^^^^
+
+error: parsing failed

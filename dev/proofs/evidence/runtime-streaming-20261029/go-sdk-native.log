@@ -1,0 +1,14 @@
+go: downloading google.golang.org/genproto v0.0.0-20240123012728-ef4313101c80
+=== RUN   TestSysMLSDKAndRequirementTrace
+    model_test.go:68: opensysml: LookupSymbol: symbol not found: StreamingExecution::
+--- FAIL: TestSysMLSDKAndRequirementTrace (0.20s)
+=== RUN   TestSysMLSDKRejectsSemanticErrors
+--- PASS: TestSysMLSDKRejectsSemanticErrors (0.26s)
+=== RUN   TestCargoWorkspaceAndDevelopmentGates
+    workspace_test.go:111: invalid ASP development edge: weaver-contracts
+--- FAIL: TestCargoWorkspaceAndDevelopmentGates (0.95s)
+=== RUN   TestSysMLSDKIsAbsentFromProductionBuild
+--- PASS: TestSysMLSDKIsAbsentFromProductionBuild (0.17s)
+FAIL
+FAIL	github.com/HardenedLinux/weaver/go/dev	2.764s
+FAIL

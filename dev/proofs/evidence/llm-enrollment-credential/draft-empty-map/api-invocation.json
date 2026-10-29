@@ -1,0 +1,15 @@
+{
+  "args": [
+    "/opt/homebrew/opt/node/bin/node",
+    "proofs/run_enrollment_credential.cjs"
+  ],
+  "exit": 1,
+  "inputs": {
+    "proofs/qunit/LlmEnrollmentCredential.qnt": "0c5e9983594160c0cffdfa1602c1c9dc3d4b308cd2e6f24900e27f187c67364e",
+    "proofs/run_enrollment_credential.cjs": "d9f4ca095e56a0cde78b9bb2d7a9ea1c863514ce592a57eb0d431470816ad864",
+    "proofs/check_enrollment_api.py": "68d0dca876f679dd6186234af3fd5cbf13545e2afa400b231fccf8712da8abb3",
+    "proofs/evidence/llm-enrollment-credential/bundle/LlmEnrollmentCredential.qnt": "699cdbc97e2b29a374acf876f82812089c2085ff15cff749a948ecd78baf664e"
+  },
+  "officialPipeline": "load -> parse -> typecheck -> runTests; new Evaluator per group",
+  "expectedControls": 40
+}

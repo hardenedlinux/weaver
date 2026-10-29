@@ -1,0 +1,192 @@
+# Core architecture only; source identities and proof receipts remain in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / ORIGINAL TASK AUTHORITY / DERIVED SEMANTIC SCOPE {
+  class: title
+  near: top-center
+}
+original: SCHEME AND RUST / ORIGINAL TASK {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  claim: Original task and claim\nCanonical key / claim token / stream\nCreate-only authority record {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  profile: Admitted semantic commitment\nSource-bound profile and publication\nRoles / tools / response mode / limits {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  domains: Canonical account domains\nShared budget / original history\nCurrent restrictions and obligations {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+scope: RUST / AUTHORITY RESOLUTION {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  derive: Derive authoritative scope\nResolve original task and profile\nNo authority from caller scope {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  child: Join actual child attempt\nRegistered target / input / manifest\nAllowance under original root {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  snapshot: Current authority image\nHead / route view / owner boot\nObservation is not a grant {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+broker: GO AND RUST / FINAL BOUNDARY {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  wire: Provider adapter and wire seal\nGo integrations / Rust final ownership\nPreserve the admitted contract {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  gate: Final currentness and Policy gate\nActual child and semantic consume\nOriginal claim / history / spent-state {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  recovery: Durable source-bound recovery\nOriginal record / exact profile prefix\nRetire old worker and queued authority {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+output: RUST / RESPONSE AND OBLIGATIONS {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#a3b4c0"
+  document: Winner-bound response release\nCurrent disclosure and range gate\nNo validated-document downgrade {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  proposal: Original-scope tool proposal\nComplete arguments / allowed tool\nData only / separate effect admission {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  settlement: Original-root settlement\nEvery child resolved before closure\nUnknown usage retains the hold {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+}
+quint: QUINT\nForged scope / foreign claim / stale image\nHistory alias / replay / unknown refund {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nOriginal domains / profile / actual child\nSource-bound wire / proposal / budget hold {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+original.claim -> scope.derive
+original.profile -> scope.derive { style.stroke-dash: 4 }
+original.domains -> scope.snapshot { style.stroke-dash: 4 }
+scope.derive -> scope.child
+scope.child -> scope.snapshot
+scope.child -> broker.wire
+broker.wire -> broker.gate
+scope.snapshot -> broker.gate
+broker.recovery -> broker.gate { style.stroke-dash: 4 }
+broker.gate -> output.document
+broker.gate -> output.proposal
+broker.recovery -> output.settlement { style.stroke-dash: 4 }

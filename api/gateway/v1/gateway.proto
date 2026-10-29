@@ -1,0 +1,34 @@
+syntax = "proto3";
+package weaver.gateway.v1;
+option go_package = "github.com/HardenedLinux/weaver/go/api/gateway/v1;gatewayv1";
+service Gateway {
+  rpc ExecuteProvider(ProviderRequest) returns (stream ProviderFrame);
+  rpc Inspect(OperationKey) returns (ProviderReceipt);
+  rpc RegisterTask(RegisterTaskRequest) returns (Empty);
+  rpc PublishAuthority(PublishRequest) returns (PublicationReceipt);
+  rpc InspectPublication(PublicationKey) returns (PublicationReceipt);
+}
+message Empty {}
+message OperationKey { string family = 1; string node = 2; }
+message Route { string target = 1; string endpoint = 2; }
+message ProviderPlan {
+  string family = 1; string node = 2; string profile = 3; string model = 4;
+  bytes body = 5; repeated Route routes = 6; uint64 ceiling = 7;
+  uint64 revision = 8; uint64 fence = 9;
+}
+enum Encoding { PROTOBUF = 0; ARROW_IPC = 1; }
+message ProviderRequest { ProviderPlan plan = 1; Encoding encoding = 2; uint32 batch_rows = 3; }
+message Event { uint64 sequence = 1; string kind = 2; string text = 3; uint64 tokens = 4; }
+message ArrowBatch { bytes ipc = 1; uint64 first_sequence = 2; uint32 rows = 3; }
+message ProviderFrame { string target = 1; string model = 2; oneof payload { Event event = 3; ArrowBatch arrow = 4; } }
+message ProviderReceipt { string family = 1; string node = 2; string digest = 3; string state = 4; string target = 5; uint64 reserved = 6; uint64 held = 7; uint64 events = 8; }
+message Task {
+  string family = 1; string principal = 2; string profile = 3; repeated string nodes = 4; repeated string targets = 5;
+  map<string,string> endpoints = 6; map<string,string> body_digests = 7; map<string,uint64> node_cost_bounds = 8;
+  map<string,string> stream_contracts = 9; repeated string models = 10; uint64 budget = 11;
+}
+message RegisterTaskRequest { Task task = 1; }
+message PublishRequest { optional uint64 expected_revision = 1; uint64 fence = 2; string policy = 3; string schema = 4; string operation_id = 5; }
+enum PublicationOutcome { PUBLICATION_OUTCOME_UNSPECIFIED = 0; COMMITTED = 1; REJECTED = 2; }
+message PublicationReceipt { string operation_id = 1; string digest = 2; PublicationOutcome outcome = 3; optional uint64 revision = 4; optional uint64 fence = 5; }
+message PublicationKey { string operation_id = 1; string digest = 2; }

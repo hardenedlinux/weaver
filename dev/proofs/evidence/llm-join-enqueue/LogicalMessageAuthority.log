@@ -1,0 +1,7 @@
+'Weaver.LogicalMessageAuthority.reachable_safe' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LogicalMessageAuthority.logical_message_offered_at_most_once' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LogicalMessageAuthority.claim_origin_is_sticky' depends on axioms: [propext]
+'Weaver.LogicalMessageAuthority.budget_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LogicalMessageAuthority.consume_invalidates_captured_revision' depends on axioms: [propext, Quot.sound]

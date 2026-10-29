@@ -1,0 +1,104 @@
+proofs/lean/LlmWalActivation.lean:27:60: error(lean.inferBinderTypeFailed): Failed to infer type of binder `genesis`
+
+Note: Because this declaration's type has been explicitly provided, all parameter types and holes (e.g., `_`) in its header are resolved before its body is processed; information from the declaration body cannot be used to infer what these values should be
+proofs/lean/LlmWalActivation.lean:43:126: error: unexpected identifier; expected '}'
+proofs/lean/LlmWalActivation.lean:72:2: error: Invalid alternative name `rotate`: Expected `flush` or `submit`
+proofs/lean/LlmWalActivation.lean:73:2: error: Invalid alternative name `invalidateSource`: Expected `flush` or `submit`
+proofs/lean/LlmWalActivation.lean:74:2: error: Invalid alternative name `qualifySource`: Expected `flush` or `submit`
+proofs/lean/LlmWalActivation.lean:75:2: error: Invalid alternative name `install`: Expected `flush` or `submit`
+proofs/lean/LlmWalActivation.lean:76:2: error: Invalid alternative name `activateRecovered`: Expected `flush` or `submit`
+proofs/lean/LlmWalActivation.lean:71:68: error: Application type mismatch: The argument
+  LlmAccountCommit.Step.commit s.core p stored ready durable
+has type
+  LlmAccountCommit.Step ao s.core
+    { authority := LlmAccountCommit.applyImage s.core.authority p.transaction,
+      journal :=
+        s.core.journal ++ [{ proposal := p, after := LlmAccountCommit.applyImage s.core.authority p.transaction }],
+      localImage := s.core.localImage, epoch := s.core.epoch, qualified := false, prepared := s.core.prepared,
+      observations := s.core.observations, sourceGeneration := s.core.sourceGeneration,
+      sourceQualified := s.core.sourceQualified }
+but is expected to have type
+  LlmAccountCommit.Step ao s.core
+    {
+        core :=
+          let __src := s.core;
+          { authority := LlmAccountCommit.applyImage s.core.authority p.transaction, journal := __src.journal,
+            localImage := __src.localImage, epoch := __src.epoch, qualified := __src.qualified,
+            prepared := __src.prepared, observations := __src.observations, sourceGeneration := __src.sourceGeneration,
+            sourceQualified := __src.sourceQualified },
+        wal := s.wal, submitted := s.submitted, receipt := s.receipt, active := s.active }.core
+in the application
+  LlmAccountCommit.Run.next (LlmAccountCommit.Run.refl s.core)
+    (LlmAccountCommit.Step.commit s.core p stored ready durable)
+proofs/lean/LlmWalActivation.lean:101:2: error: Invalid alternative name `observe`: Expected `submit` or `anchor`
+proofs/lean/LlmWalActivation.lean:104:2: error: Invalid alternative name `activateRecovered`: Expected `submit` or `anchor`
+proofs/lean/LlmWalActivation.lean:106:2: error: Invalid alternative name `activateCurrent`: Expected `submit` or `anchor`
+proofs/lean/LlmWalActivation.lean:100:24: warning: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+proofs/lean/LlmWalActivation.lean:108:6: error: unsolved goals
+case anchor
+s : State
+ao : LlmAccountCommit.Owner
+o : Owner
+safe : Live s
+p✝ : LlmAccountCommit.Proposal
+accepted✝ : frame p✝ ∈ s.submitted
+stored✝ : p✝ ∈ s.core.prepared
+ready✝ : LlmAccountCommit.Ready ao s.core p✝
+durable✝ : ao.commitDurable { proposal := p✝, after := LlmAccountCommit.applyImage s.core.authority p✝.transaction }
+⊢ s.active = true →
+    s.core.qualified = true ∧
+      s.core.localImage = LlmAccountCommit.applyImage s.core.authority p✝.transaction ∧
+        s.core.sourceQualified = true ∧
+          Current
+              {
+                core :=
+                  { authority := LlmAccountCommit.applyImage s.core.authority p✝.transaction, journal := s.core.journal,
+                    localImage := s.core.localImage, epoch := s.core.epoch, qualified := s.core.qualified,
+                    prepared := s.core.prepared, observations := s.core.observations,
+                    sourceGeneration := s.core.sourceGeneration, sourceQualified := s.core.sourceQualified },
+                wal := s.wal, submitted := s.submitted, receipt := s.receipt, active := s.active } ∧
+            CompleteWal
+              {
+                core :=
+                  { authority := LlmAccountCommit.applyImage s.core.authority p✝.transaction, journal := s.core.journal,
+                    localImage := s.core.localImage, epoch := s.core.epoch, qualified := s.core.qualified,
+                    prepared := s.core.prepared, observations := s.core.observations,
+                    sourceGeneration := s.core.sourceGeneration, sourceQualified := s.core.sourceQualified },
+                wal := s.wal, submitted := s.submitted, receipt := s.receipt, active := s.active }
+proofs/lean/LlmWalActivation.lean:131:2: error: Invalid target: Index in target's type is not a variable (consider using the `cases` tactic instead)
+  t.core
+proofs/lean/LlmWalActivation.lean:162:125: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.61 = ?m.61
+but is expected to have type
+  {
+          core :=
+            let __src := s.core;
+            { authority := LlmAccountCommit.applyImage s.core.authority p.transaction, journal := __src.journal,
+              localImage := __src.localImage, epoch := __src.epoch, qualified := __src.qualified,
+              prepared := __src.prepared, observations := __src.observations,
+              sourceGeneration := __src.sourceGeneration, sourceQualified := __src.sourceQualified },
+          wal := s.wal, submitted := s.submitted, receipt := s.receipt, active := s.active }.core.journal =
+    s.core.journal ++ [{ proposal := p, after := LlmAccountCommit.applyImage s.core.authority p.transaction }]
+in the application
+  Exists.intro [{ proposal := p, after := LlmAccountCommit.applyImage s.core.authority p.transaction }] rfl
+'Weaver.LlmWalActivation.core_projection' depends on axioms: [sorryAx]
+'Weaver.LlmWalActivation.actual_account_composition' depends on axioms: [sorryAx]
+'Weaver.LlmWalActivation.initialized_live' depends on axioms: [propext, sorryAx]
+'Weaver.LlmWalActivation.visible_balance_is_current' depends on axioms: [propext, sorryAx]
+'Weaver.LlmWalActivation.original_reservation_once' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmWalActivation.account_conservation' depends on axioms: [propext, sorryAx, Quot.sound]
+'Weaver.LlmWalActivation.committed_application_retained' depends on axioms: [sorryAx]
+'Weaver.LlmWalActivation.truncated_wal_cannot_be_visible' depends on axioms: [propext, sorryAx]
+'Weaver.LlmWalActivation.changed_epoch_invalidates_confirmation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LlmWalActivation.repair_does_not_change_account' does not depend on any axioms
+'Weaver.LlmWalActivation.unconfirmed_candidate_has_no_financial_effect' does not depend on any axioms
+'Weaver.LlmWalActivation.wal_flush_has_no_financial_effect' does not depend on any axioms
+'Weaver.LlmWalActivation.stale_worker_cannot_anchor' does not depend on any axioms
+'Weaver.LlmWalActivation.committed_prefix_retained' depends on axioms: [propext, sorryAx]
+'Weaver.LlmWalActivation.unknown_budget_hold_retained' depends on axioms: [propext, sorryAx, Quot.sound]

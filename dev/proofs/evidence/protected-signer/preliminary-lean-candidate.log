@@ -1,0 +1,16 @@
+'Weaver.ProtectedSignerRelease.every_released_statement_keeps_its_promise' depends on axioms: [propext]
+'Weaver.ProtectedSignerRelease.commit_response_loss_cannot_erase_commitment' depends on axioms: [propext]
+'Weaver.ProtectedSignerRelease.restart_does_not_restore_old_service_handle' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ProtectedSignerRelease.released_certificates_cannot_conflict' does not depend on any axioms
+'Weaver.ProtectedSignerRelease.initialized_release_invariant' depends on axioms: [propext]
+'Weaver.ProtectedSignerRelease.initialized_product_refines_promises' does not depend on any axioms
+'Weaver.ProtectedSignerRelease.original_consumption_and_settlement_remain_unique' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.ProtectedSignerRelease.original_budget_remains_conserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ProtectedSignerRelease.unknown_original_reservation_stays_held' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

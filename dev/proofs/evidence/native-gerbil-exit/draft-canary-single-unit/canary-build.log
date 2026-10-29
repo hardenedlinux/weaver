@@ -1,0 +1,324 @@
+In file included from /nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:90,
+                 from /opt/homebrew/Cellar/gerbil-scheme@0.19/0.19.20261009110849.1cfb032.patch618d76f9eb72/current/include/gambit.h:907,
+                 from /Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c:39:
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:69:8: error: unknown type name 'FILE'
+   69 | extern FILE *__stdinp;
+      |        ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:67:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+   66 | #include <sys/_types/_seek_set.h>
+  +++ |+#include <stdio.h>
+   67 | 
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:70:8: error: unknown type name 'FILE'
+   70 | extern FILE *__stdoutp;
+      |        ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:70:8: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:71:8: error: unknown type name 'FILE'
+   71 | extern FILE *__stderrp;
+      |        ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:71:8: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:134:19: error: unknown type name 'FILE'
+  134 | void     clearerr(FILE *);
+      |                   ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:134:19: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:135:17: error: unknown type name 'FILE'
+  135 | int      fclose(FILE *);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:135:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:136:15: error: unknown type name 'FILE'
+  136 | int      feof(FILE *);
+      |               ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:136:15: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:137:17: error: unknown type name 'FILE'
+  137 | int      ferror(FILE *);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:137:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:138:17: error: unknown type name 'FILE'
+  138 | int      fflush(FILE *);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:138:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:139:16: error: unknown type name 'FILE'
+  139 | int      fgetc(FILE *);
+      |                ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:139:16: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:140:18: error: unknown type name 'FILE'
+  140 | int      fgetpos(FILE * __restrict, fpos_t *);
+      |                  ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:140:18: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:140:37: error: unknown type name 'fpos_t'
+  140 | int      fgetpos(FILE * __restrict, fpos_t *);
+      |                                     ^~~~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:140:37: note: 'fpos_t' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:141:40: error: unknown type name 'FILE'
+  141 | char    *fgets(char * __restrict, int, FILE *);
+      |                                        ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:141:40: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:145:1: error: unknown type name 'FILE'
+  145 | FILE    *fopen(const char * __restrict __filename, const char * __restrict __mode) __DARWIN_ALIAS_STARTING(__MAC_10_6, __IPHONE_2_0, __DARWIN_ALIAS(fopen));
+      | ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:145:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:147:18: error: unknown type name 'FILE'
+  147 | int      fprintf(FILE * __restrict, const char * __restrict, ...) __printflike(2, 3);
+      |                  ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:147:18: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:148:21: error: unknown type name 'FILE'
+  148 | int      fputc(int, FILE *);
+      |                     ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:148:21: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:149:41: error: unknown type name 'FILE'
+  149 | int      fputs(const char * __restrict, FILE * __restrict) __DARWIN_ALIAS(fputs);
+      |                                         ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:149:41: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:150:73: error: unknown type name 'FILE'
+  150 | size_t   fread(void * __restrict __ptr, size_t __size, size_t __nitems, FILE * __restrict __stream);
+      |                                                                         ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:150:73: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:151:1: error: unknown type name 'FILE'
+  151 | FILE    *freopen(const char * __restrict, const char * __restrict,
+      | ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:151:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:152:18: error: unknown type name 'FILE'
+  152 |                  FILE * __restrict) __DARWIN_ALIAS(freopen);
+      |                  ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:152:18: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:153:17: error: unknown type name 'FILE'
+  153 | int      fscanf(FILE * __restrict, const char * __restrict, ...) __scanflike(2, 3);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:153:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:154:16: error: unknown type name 'FILE'
+  154 | int      fseek(FILE *, long, int);
+      |                ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:154:16: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:155:18: error: unknown type name 'FILE'
+  155 | int      fsetpos(FILE *, const fpos_t *);
+      |                  ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:155:18: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:155:32: error: unknown type name 'fpos_t'
+  155 | int      fsetpos(FILE *, const fpos_t *);
+      |                                ^~~~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:155:32: note: 'fpos_t' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:156:16: error: unknown type name 'FILE'
+  156 | long     ftell(FILE *);
+      |                ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:156:16: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:157:80: error: unknown type name 'FILE'
+  157 | size_t   fwrite(const void * __restrict __ptr, size_t __size, size_t __nitems, FILE * __restrict __stream) __DARWIN_ALIAS(fwrite);
+      |                                                                                ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:157:80: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:158:15: error: unknown type name 'FILE'
+  158 | int      getc(FILE *);
+      |               ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:158:15: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:168:20: error: unknown type name 'FILE'
+  168 | int      putc(int, FILE *);
+      |                    ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:168:20: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:173:17: error: unknown type name 'FILE'
+  173 | void     rewind(FILE *);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:173:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:175:17: error: unknown type name 'FILE'
+  175 | void     setbuf(FILE * __restrict, char * __restrict);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:175:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:176:18: error: unknown type name 'FILE'
+  176 | int      setvbuf(FILE * __restrict, char * __restrict, int, size_t);
+      |                  ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:176:18: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:185:1: error: unknown type name 'FILE'
+  185 | FILE    *tmpfile(void);
+      | ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:185:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:193:22: error: unknown type name 'FILE'
+  193 | int      ungetc(int, FILE *);
+      |                      ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:193:22: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:194:19: error: unknown type name 'FILE'
+  194 | int      vfprintf(FILE * __restrict, const char * __restrict, va_list) __printflike(2, 0);
+      |                   ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:194:19: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:220:1: error: unknown type name 'FILE'
+  220 | FILE    *fdopen(int, const char *) __DARWIN_ALIAS_STARTING(__MAC_10_6, __IPHONE_2_0, __DARWIN_ALIAS(fdopen));
+      | ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:220:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:222:17: error: unknown type name 'FILE'
+  222 | int      fileno(FILE *);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:222:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:233:17: error: unknown type name 'FILE'
+  233 | int      pclose(FILE *) __swift_unavailable("Use posix_spawn APIs or NSTask instead. (On iOS, process spawning is unavailable.)");
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:233:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:237:1: error: unknown type name 'FILE'
+  237 | FILE    *popen(const char *, const char *) __DARWIN_ALIAS_STARTING(__MAC_10_6, __IPHONE_2_0, __DARWIN_ALIAS(popen)) __swift_unavailable("Use posix_spawn APIs or NSTask instead. (On iOS, process spawning is unavailable.)");
+      | ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:237:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:252:17: error: unknown type name 'FILE'
+  252 | int     __srget(FILE *);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:252:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:253:20: error: unknown type name 'FILE'
+  253 | int     __svfscanf(FILE *, const char *, va_list) __scanflike(2, 0);
+      |                    ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:253:20: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:254:22: error: unknown type name 'FILE'
+  254 | int     __swbuf(int, FILE *);
+      |                      ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:254:22: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:263:44: error: unknown type name 'FILE'
+  263 | __header_always_inline int __sputc(int _c, FILE *_p) {
+      |                                            ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:263:44: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:289:20: error: unknown type name 'FILE'
+  289 | void     flockfile(FILE *);
+      |                    ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:289:20: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:290:23: error: unknown type name 'FILE'
+  290 | int      ftrylockfile(FILE *);
+      |                       ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:290:23: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:291:22: error: unknown type name 'FILE'
+  291 | void     funlockfile(FILE *);
+      |                      ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:291:22: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:292:24: error: unknown type name 'FILE'
+  292 | int      getc_unlocked(FILE *);
+      |                        ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:292:24: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:294:29: error: unknown type name 'FILE'
+  294 | int      putc_unlocked(int, FILE *);
+      |                             ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:294:29: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:299:15: error: unknown type name 'FILE'
+  299 | int      getw(FILE *);
+      |               ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:299:15: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:300:20: error: unknown type name 'FILE'
+  300 | int      putw(int, FILE *);
+      |                    ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:300:20: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:330:17: error: unknown type name 'FILE'
+  330 | int      fseeko(FILE * __stream, off_t __offset, int __whence);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:330:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:331:17: error: unknown type name 'FILE'
+  331 | off_t    ftello(FILE * __stream);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:331:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:338:18: error: unknown type name 'FILE'
+  338 | int      vfscanf(FILE * __restrict __stream, const char * __restrict __format, va_list) __scanflike(2, 0);
+      |                  ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:338:18: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:357:95: error: unknown type name 'FILE'
+  357 | ssize_t getdelim(char ** __restrict __linep, size_t * __restrict __linecapp, int __delimiter, FILE * __restrict __stream) __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_4_3);
+      |                                                                                               ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:357:95: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:358:77: error: unknown type name 'FILE'
+  358 | ssize_t getline(char ** __restrict __linep, size_t * __restrict __linecapp, FILE * __restrict __stream) __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_4_3);
+      |                                                                             ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:358:77: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:359:1: error: unknown type name 'FILE'
+  359 | FILE *fmemopen(void * __restrict __buf, size_t __size, const char * __restrict __mode) __API_AVAILABLE(macos(10.13), ios(11.0), tvos(11.0), watchos(4.0));
+      | ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:359:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:360:1: error: unknown type name 'FILE'
+  360 | FILE *open_memstream(char **__bufp, size_t *__sizep) __API_AVAILABLE(macos(10.13), ios(11.0), tvos(11.0), watchos(4.0));
+      | ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:360:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:375:17: error: unknown type name 'FILE'
+  375 | char    *fgetln(FILE *, size_t *);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:375:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:377:17: error: unknown type name 'FILE'
+  377 | int      fpurge(FILE *);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:377:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:378:20: error: unknown type name 'FILE'
+  378 | void     setbuffer(FILE *, char *, int);
+      |                    ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:378:20: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:379:21: error: unknown type name 'FILE'
+  379 | int      setlinebuf(FILE *);
+      |                     ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:379:21: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:386:1: error: unknown type name 'FILE'
+  386 | FILE    *funopen(const void *,
+      | ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:386:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:389:18: error: unknown type name 'fpos_t'
+  389 |                  fpos_t (* _Nullable)(void *, fpos_t, int),
+      |                  ^~~~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/stdio.h:389:18: note: 'fpos_t' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:98:16: error: unknown type name 'FILE'
+   98 | wint_t  fgetwc(FILE *);
+      |                ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:93:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+   92 | #include <_wctype.h>
+  +++ |+#include <stdio.h>
+   93 | 
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:99:44: error: unknown type name 'FILE'
+   99 | wchar_t *fgetws(wchar_t * __restrict, int, FILE * __restrict);
+      |                                            ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:99:44: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:100:25: error: unknown type name 'FILE'
+  100 | wint_t  fputwc(wchar_t, FILE *);
+      |                         ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:100:25: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:101:44: error: unknown type name 'FILE'
+  101 | int     fputws(const wchar_t * __restrict, FILE * __restrict);
+      |                                            ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:101:44: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:102:15: error: unknown type name 'FILE'
+  102 | int     fwide(FILE *, int);
+      |               ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:102:15: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:103:18: error: unknown type name 'FILE'
+  103 | int     fwprintf(FILE * __restrict, const wchar_t * __restrict, ...);
+      |                  ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:103:18: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:104:17: error: unknown type name 'FILE'
+  104 | int     fwscanf(FILE * __restrict, const wchar_t * __restrict, ...);
+      |                 ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:104:17: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:105:15: error: unknown type name 'FILE'
+  105 | wint_t  getwc(FILE *);
+      |               ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:105:15: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:113:24: error: unknown type name 'FILE'
+  113 | wint_t  putwc(wchar_t, FILE *);
+      |                        ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:113:24: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:117:25: error: unknown type name 'FILE'
+  117 | wint_t  ungetwc(wint_t, FILE *);
+      |                         ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:117:25: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:118:19: error: unknown type name 'FILE'
+  118 | int     vfwprintf(FILE * __restrict, const wchar_t * __restrict,
+      |                   ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:118:19: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:170:18: error: unknown type name 'FILE'
+  170 | int     vfwscanf(FILE * __restrict, const wchar_t * __restrict,
+      |                  ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:170:18: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:205:1: error: unknown type name 'FILE'
+  205 | FILE *open_wmemstream(wchar_t ** __bufp, size_t * __sizep) __API_AVAILABLE(macos(10.13), ios(11.0), tvos(11.0), watchos(4.0));
+      | ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:205:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:215:18: error: unknown type name 'FILE'
+  215 | wchar_t *fgetwln(FILE * __restrict, size_t *) __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_4_3);
+      |                  ^~~~
+/nix/store/q2dccg26bm7bn6ia1q30qkl5jck7wwgb-apple-sdk-14.4/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/usr/include/wchar.h:215:18: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c: In function 'weaver_canary_event':
+/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c:98:5: error: unknown type name 'FILE'
+   98 |     FILE *file = fopen(path, "a");
+      |     ^~~~
+/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c:95:1: note: 'FILE' is defined in header '<stdio.h>'; this is probably fixable by adding '#include <stdio.h>'
+   94 | #include <stdlib.h>
+  +++ |+#include <stdio.h>
+   95 | static void weaver_canary_event(char event) {
+/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c:99:25: error: implicit declaration of function 'fputc' [-Wimplicit-function-declaration]
+   99 |     if (file != NULL) { fputc(event, file); fclose(file); }
+      |                         ^~~~~
+/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c:99:25: note: include '<stdio.h>' or provide a declaration of 'fputc'
+/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.c:99:45: error: implicit declaration of function 'fclose' [-Wimplicit-function-declaration]
+   99 |     if (file != NULL) { fputc(event, file); fclose(file); }
+      |                                             ^~~~~~

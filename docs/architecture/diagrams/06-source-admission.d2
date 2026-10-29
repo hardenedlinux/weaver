@@ -1,0 +1,126 @@
+# W06: rejected preflight and three explicit owner-extension stages.
+...@lib/theme
+preflight: Existing preflight\nDecision state / outcome = unknown {
+  top: 80
+  left: 0
+  width: 280
+  height: 90
+  class: unknown
+}
+refusal: Ordinary protected path refuses\nNo marker stripping or flag weakening {
+  top: 270
+  left: 0
+  width: 280
+  height: 90
+  class: deny
+}
+admit: 01 / SEMANTIC ELIGIBILITY {
+  top: 0
+  left: 380
+  width: 350
+  height: 600
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  decision: POO owner evaluates Decision\nSupport / validity / authority {
+    top: 80
+    left: 30
+    width: 290
+    height: 90
+    class: semantic
+  }
+  issued: New issued runtime admission\nEvaluated / owner-issued / current {
+    top: 270
+    left: 30
+    width: 290
+    height: 90
+    class: semantic
+  }
+  binding: Fixed operation / source binding\nFreeze before evaluation {
+    top: 460
+    left: 30
+    width: 290
+    height: 90
+    class: policy
+  }
+}
+verify: 02 / PROTECTED EVALUATION {
+  top: 0
+  left: 840
+  width: 350
+  height: 600
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#f8f9fc"
+  style.stroke: "#a3abc0"
+  trusted: Trusted prepare / issue path\nExact binding / strict validation {
+    top: 80
+    left: 30
+    width: 290
+    height: 90
+    class: policy
+  }
+  dual: Exact Rust + Lean evaluation\nSame bytes / full result verified {
+    top: 270
+    left: 30
+    width: 290
+    height: 90
+    class: runtime
+  }
+  post: Recheck owner / cut / Decision\nReject drift and erroring policy IDs {
+    top: 460
+    left: 30
+    width: 290
+    height: 90
+    class: verified
+  }
+}
+use: 03 / BOUND USE AND CLAIM {
+  top: 0
+  left: 1300
+  width: 350
+  height: 600
+  label.near: top-center
+  style.font-size: 18
+  style.fill: "#f7f9fc"
+  style.stroke: "#9cacc2"
+  grant: Signed exact grant\nNew protected issue gate required {
+    top: 80
+    left: 30
+    width: 290
+    height: 90
+    class: policy
+  }
+  consume: Fresh guard / full re-projection\nOriginal issuer consumes once {
+    top: 270
+    left: 30
+    width: 290
+    height: 90
+    class: runtime
+  }
+  ledger: S4 / S5 current source premise\nLive lineage / fence / state {
+    top: 460
+    left: 30
+    width: 290
+    height: 90
+    class: ledger
+  }
+}
+preflight -> refusal: Not executable authority
+admit.decision -> admit.issued: Issued identity / no caller-made allow
+admit.issued -> admit.binding: Original validity / exact subject
+admit.binding -> verify.trusted: Authenticated designated role
+verify.trusted -> verify.dual
+verify.dual -> verify.post: No error-bearing executable result
+verify.post -> use.grant: Complete eligible result only
+use.grant -> use.consume: Same fixed binding / no expiry extension
+use.consume -> use.ledger: Positive response is necessary\nNot sufficient to send
+rule: "latest-state semantics require an actual guarded source contract.\nImmutable snapshots are not latest-state claims. New evaluated admission, protected issue and phase guards need owner qualification." {
+  shape: text
+  class: note
+  near: bottom-center
+}
+
+preflight.label.near: center-center
+refusal.label.near: center-center

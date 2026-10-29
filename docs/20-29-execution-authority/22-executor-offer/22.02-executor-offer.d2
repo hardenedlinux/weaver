@@ -1,0 +1,191 @@
+# Core design only; source identities and proof receipts remain in Org.
+...@../../architecture/diagrams/lib/theme
+title: WEAVER / ORIGINAL EXECUTOR RANGE / CURRENT FINAL OFFER {
+  class: title
+  near: top-center
+}
+protocols: GO / INERT SDK PROPOSALS {
+  top: 0
+  left: 0
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  mcp: SDK dequeue request\nOriginal durable operation and scope\nNo direct provider send handle {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  a2a: SDK retry and reconnect proposals\nResolve original operation outcome\nNo independent range resubmission {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  acp: Owner lifecycle observations\nSource recovery alone stays closed\nNo funding or tail authority {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: cloud
+  }
+  goBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/go.svg
+    top: 247
+    left: 24
+    width: 42
+    height: 22
+  }
+  kubernetesBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/kubernetes.svg
+    top: 247
+    left: 82
+    width: 28
+    height: 28
+  }
+}
+registry: SCHEME / SEMANTIC CONTRACT {
+  top: 0
+  left: 440
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  origin: Original operation and exact range\nClaim / profile / payload / route\nBudget / history / manifest binding {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  alias: Cedar Code as Policy at final offer\nComplete current execution context\nReserve and offer are distinct actions {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  query: Pure source / execution ledger join\nNo source-only no-execution evidence\nOriginal unknown exposure stays held {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+}
+recovery: RUST / QUALIFIED EXECUTOR {
+  top: 0
+  left: 880
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  projection: Source / queue / dispatch recovery\nBurn / invocation / pending receipts\nQualify and align current lane owner {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  join: Current offer authorization cut\nPolicy / global owner / lane permit\nRecheck at final transport handoff {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  fence: Durable original dispatch burn\nStill no provider invocation\nRetain any uncertain original burn {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+}
+broker: RUST / FINAL TRANSPORT OWNER {
+  top: 0
+  left: 1320
+  width: 350
+  height: 690
+  label.near: top-center
+  style.font-size: 17
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  cas: Final current-gate submission\nAffine marker + actual range invoke\nOne original possible offer {
+    top: 90
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: runtime
+  }
+  alias: Partial progress or timeout\nSame interval stays spent / unknown\nNo replay or implicit tail capability {
+    top: 295
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: policy
+  }
+  hold: Original full receipt and holds\nCompletion evidence remains data\nNo new send or automatic settlement {
+    top: 500
+    left: 20
+    width: 310
+    height: 120
+    label.near: center-center
+    class: semantic
+  }
+  rustBrand: "" {
+    shape: image
+    icon: ../../architecture/diagrams/assets/rust.svg
+    top: 40
+    left: 156
+    width: 34
+    height: 34
+  }
+}
+quint: QUINT\nPolicy after dequeue / owner and lane handover\nPartial replay / snapshot reset / forged completion {
+  top: 810
+  left: 220
+  width: 610
+  height: 100
+  class: policy
+}
+lean: LEAN\nActual admission + logical range product\nCurrent invocation gate / original broker hold {
+  top: 810
+  left: 960
+  width: 610
+  height: 100
+  class: semantic
+}
+protocols.mcp -> registry.origin
+protocols.a2a -> registry.alias
+protocols.acp -> registry.query
+registry.origin -> recovery.projection
+registry.alias -> recovery.join
+registry.query -> recovery.projection { style.stroke-dash: 4 }
+recovery.projection -> recovery.join
+recovery.join -> recovery.fence
+recovery.fence -> broker.cas
+broker.cas -> broker.alias
+broker.alias -> broker.hold

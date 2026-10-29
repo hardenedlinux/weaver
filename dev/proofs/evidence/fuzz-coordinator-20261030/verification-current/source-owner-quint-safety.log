@@ -1,0 +1,3667 @@
+An example execution:
+
+[State 0]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: false,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: true,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 1]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: false,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 2]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 3]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 4]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 5]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 6]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 7]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 8]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 9]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 10]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 11]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 12]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 13]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 14]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 15]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 16]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 17]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 18]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 19]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 20]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 21]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 22]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 23]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 24]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 25]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 26]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 27]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 28]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 29]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 30]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 31]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 32]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 33]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 34]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 35]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 36]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 37]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 38]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 39]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 40]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 41]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 42]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 43]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 44]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 45]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 46]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 47]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 48]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 49]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 50]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 51]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 52]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 53]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 54]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 55]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 56]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 57]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 58]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 59]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[State 60]
+{
+  owner:
+    {
+      ack: false,
+      busy: false,
+      closeOk: false,
+      closed: false,
+      closing: true,
+      failed: false,
+      live: false,
+      reads: [],
+      receiver: false,
+      slot: false,
+      started: false,
+      transaction: false
+    },
+  s:
+    {
+      calls: 1,
+      commits: [],
+      fence: 1,
+      head: -1,
+      held: 4,
+      log: [],
+      policy: 0,
+      records:
+        Map(
+          0 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          1 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            },
+          2 ->
+            {
+              outcome: 0,
+              parent: -1,
+              payload: 0,
+              requestedFence: 1,
+              resultFence: 1,
+              resultHead: -1
+            }
+        ),
+      schema: 0
+    }
+}
+
+[ok] No violation found (366ms at 2732 traces/second).
+Trace length statistics: max=61, min=61, average=61.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0xea3b3 --backend=rust to reproduce.

@@ -1,0 +1,67 @@
+{
+  "args": [
+    "gxi",
+    "/Users/guangtao/ghq/github.com/tao3k/weaver/proofs/evidence/committed-profile-binding/native-authoring.ss"
+  ],
+  "exit": 124,
+  "watchdogSeconds": 15,
+  "seconds": 15.085,
+  "completionOutputAtSeconds": 11.62077970802784,
+  "events": [
+    {
+      "seconds": 11.621,
+      "line": "CHECK scheme-object-contract PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "CHECK native-json-contract PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "CHECK native-negative-ceiling PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "CHECK native-boolean-ceiling PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "CHECK native-string-ceiling PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "CHECK native-null-ceiling PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "CHECK native-unknown-authority-field PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "CHECK native-changed-node PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "CHECK native-overflow-ceiling PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "CHECK native-empty-targets PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "CHECK native-duplicate-targets PASS"
+    },
+    {
+      "seconds": 11.621,
+      "line": "OBSERVATION duplicate-json-contract-accepted decoder-rejected"
+    },
+    {
+      "seconds": 11.621,
+      "line": "NATIVE-AUTHORING-CHECKS-COMPLETE"
+    }
+  ],
+  "sampledOwnProcess": true,
+  "sourceSha256": "68a27a0b594fda7aedab994c2d230464ddb2907176e25d9b8fe5837e24203750",
+  "qualification": "Diagnostic run only; an isolated success does not resolve the prior unexplained timeout"
+}

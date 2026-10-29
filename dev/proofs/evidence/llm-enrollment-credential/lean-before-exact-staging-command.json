@@ -1,0 +1,19 @@
+{
+  "args": [
+    "elan",
+    "run",
+    "leanprover/lean4:v4.34.1",
+    "lean",
+    "-o",
+    "/var/folders/pj/n33bqzy94yn9wxggj3rny0d00000gn/T/weaver-llm-caller-custody-bm0q9pc1/LlmEnrollmentCredential.olean",
+    "proofs/lean/LlmEnrollmentCredential.lean"
+  ],
+  "exit": 0,
+  "seconds": 7.109599165967666,
+  "watchdogSeconds": 20,
+  "label": "LlmEnrollmentCredential",
+  "sourceSha256": {
+    "proofs/lean/LlmEnrollmentCredential.lean": "ba2221fb8cb51b2024b19f5e031c257d922efc4db8ee5e97d485a00b84a0fa00"
+  },
+  "compiledSha256": "db80260ee9e36404a68a1590a7feabda3334899fa587ad29ae3bf5dd661dbc40"
+}

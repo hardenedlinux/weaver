@@ -1,0 +1,75 @@
+module LlmCustodyPublication {
+  type Command = { kind: int, holder: int, fence: int }
+  pure val emptyCommand = Rec("kind", 0, "holder", 0, "fence", 0)
+  import LlmSourceCustody as C from "./LlmSourceCustody"
+  import LlmAdmissionFloor.Proposal from "./LlmAdmissionFloor"
+  import LlmAdmissionFloor.Record from "./LlmAdmissionFloor"
+  import LlmAdmissionFloor.f from "./LlmAdmissionFloor"
+  import LlmAdmissionFloor.pAppend from "./LlmAdmissionFloor"
+  import LlmAdmissionFloor.seed from "./LlmAdmissionFloor"
+  def image = Rec("fence", field(C::custody, "fence"), "holder", field(C::custody, "holder"), "original", field(C::custody, "original"), "haveIntent", field(C::custody, "haveIntent"), "outcome", field(C::custody, "outcome"), "haveOutcome", field(C::custody, "haveOutcome"), "floor", field(f, "log"))
+  type Entry = { fence: int, holder: int, original: Proposal, haveIntent: bool, outcome: Record, haveOutcome: bool, floor: List[Record] }
+  action noEffect = actionAll(C::idle, assign(C::custody, C::custody))
+  pure val initialEntry = Rec("fence", 0, "holder", 0, "original", pAppend, "haveIntent", true, "outcome", seed, "haveOutcome", false, "floor", List(seed))
+  type Publication = { log: List[Entry], commands: List[Command], parents: List[int], staged: Set[int], copy: Entry, seen: int, qualified: bool, haveCopy: bool, reply: int, haveReply: bool, lastChecked: bool }
+  pure val initialPublication = Rec("log", List(initialEntry), "commands", List(emptyCommand, emptyCommand), "parents", List(0, 0), "staged", Set(), "copy", initialEntry, "seen", 0, "qualified", false, "haveCopy", false, "reply", 0, "haveReply", false, "lastChecked", true)
+  var pub: Publication
+  action splitOutcome = actionAll(C::publish(0, 0), assign(pub, with(with(pub, "reply", iadd(length(field(pub, "log")), 1)), "haveReply", true)))
+  action dropOutcome = actionAll(C::idle, assign(C::custody, with(with(C::custody, "haveOutcome", false), "outcome", seed)), assign(pub, pub))
+  action dropOriginal = actionAll(C::idle, assign(C::custody, with(C::custody, "haveIntent", false)), assign(pub, pub))
+  action trustUnqualifiedCopy = actionAll(noEffect, assign(pub, with(with(pub, "qualified", true), "lastChecked", field(pub, "qualified"))))
+  action ackAsFreshness = actionAll(noEffect, assign(pub, with(with(with(with(with(pub, "reply", 1), "haveReply", true), "qualified", true), "seen", length(field(pub, "log"))), "lastChecked", false)))
+  def aligned = eq(nth(field(pub, "log"), isub(length(field(pub, "log")), 1)), image)
+  def ready = and(and(and(field(pub, "qualified"), field(pub, "haveCopy")), eq(field(pub, "seen"), length(field(pub, "log")))), eq(field(pub, "copy"), image))
+  action boot = actionAll(C::armed, assign(pub, initialPublication))
+  def noted = ((entry, deliver) => with(with(with(with(pub, "log", append(field(pub, "log"), entry)), "qualified", false), "reply", iadd(length(field(pub, "log")), 1)), "haveReply", deliver))
+  action restore = ((copy, seen) => actionAll(noEffect, assign(pub, with(with(with(with(pub, "copy", copy), "seen", seen), "haveCopy", true), "qualified", false))))
+  action crash = actionAll(noEffect, assign(pub, with(with(with(pub, "haveCopy", false), "qualified", false), "haveReply", false)))
+  action acknowledge = ((index) => actionAll(ilte(0, index), ilt(index, length(field(pub, "log"))), noEffect, assign(pub, with(with(pub, "reply", iadd(index, 1)), "haveReply", true))))
+  action loseReply = actionAll(noEffect, assign(pub, with(pub, "haveReply", false)))
+  action splitFence = actionAll(C::transfer(1, true), assign(pub, with(with(pub, "reply", iadd(length(field(pub, "log")), 1)), "haveReply", true)))
+  action oldWorkerPublication = actionAll(C::unsafeOldPublish, assign(pub, noted(with(with(with(image, "outcome", Rec("proposal", field(C::custody, "attempt"))), "haveOutcome", true), "floor", append(field(f, "log"), Rec("proposal", field(C::custody, "attempt")))), true)))
+  def gate = ((slot) => and(and(contains(field(pub, "staged"), slot), ready), eq(nth(field(pub, "parents"), slot), length(field(pub, "log")))))
+  val invariant = and(and(C::safety, aligned), field(pub, "lastChecked"))
+  action readAuthority = ((authentic) => actionAll(authentic, aligned, noEffect, assign(pub, with(with(with(with(pub, "copy", image), "seen", length(field(pub, "log"))), "haveCopy", true), "qualified", true))))
+  action stage = ((slot, kind, holder, fence) => actionAll(contains(Set(0, 1), slot), ilte(0, kind), ilte(kind, 5), ready, noEffect, assign(pub, with(with(with(pub, "commands", replaceAt(field(pub, "commands"), slot, Rec("kind", kind, "holder", holder, "fence", fence))), "parents", replaceAt(field(pub, "parents"), slot, length(field(pub, "log")))), "staged", union(field(pub, "staged"), Set(slot))))))
+  action armed = boot
+  run splitFencePublicationCounterexampleTest = expect(then(armed, splitFence), not(invariant))
+  action commit = ((slot, deliver) => val cmd = nth(field(pub, "commands"), slot) { actionAll(gate(slot), actionAny(actionAll(eq(field(cmd, "kind"), 0), C::publish(field(cmd, "holder"), field(cmd, "fence")), assign(pub, noted(with(with(with(image, "outcome", Rec("proposal", field(C::custody, "attempt"))), "haveOutcome", true), "floor", append(field(f, "log"), Rec("proposal", field(C::custody, "attempt")))), deliver))), actionAll(eq(field(cmd, "kind"), 1), C::transfer(field(cmd, "holder"), true), assign(pub, noted(with(with(image, "fence", iadd(field(C::custody, "fence"), 1)), "holder", field(cmd, "holder")), deliver))), actionAll(eq(field(cmd, "kind"), 2), C::resolve(field(cmd, "holder"), field(cmd, "fence"), true), assign(pub, noted(image, deliver))), actionAll(eq(field(cmd, "kind"), 3), C::validate, assign(pub, noted(image, deliver))), actionAll(eq(field(cmd, "kind"), 4), C::arm(field(cmd, "holder"), field(cmd, "fence"), true), assign(pub, noted(image, deliver))), actionAll(eq(field(cmd, "kind"), 5), C::close(field(cmd, "holder"), field(cmd, "fence")), assign(pub, noted(image, deliver))))) })
+  action stagedFloor = then(then(armed, readAuthority(true)), stage(0, 0, 0, 0))
+  run splitOutcomePublicationCounterexampleTest = expect(then(stagedFloor, splitOutcome), not(invariant))
+  action applyCommand = ((slot, kind, holder, fence) => then(then(readAuthority(true), stage(slot, kind, holder, fence)), commit(slot, true)))
+  action committed = then(stagedFloor, commit(0, false))
+  action step = nondet slot = oneOf(Set(0, 1)) { nondet kind = oneOf(Set(0, 1, 2, 3, 4, 5)) { nondet holder = oneOf(Set(0, 1)) { nondet fence = oneOf(Set(0, 1, 2, field(C::custody, "fence"))) { actionAny(readAuthority(true), stage(slot, kind, holder, fence), commit(slot, true), commit(slot, false), restore(initialEntry, 1), restore(image, length(field(pub, "log"))), crash, acknowledge(0), loseReply) } } } }
+  run stagedIntentHasNoFloorEffectTest = expect(stagedFloor, and(and(invariant, eq(length(field(f, "log")), 1)), not(field(C::custody, "haveOutcome"))))
+  run unknownOutcomeCannotCloseTest = then(then(then(boot, readAuthority(true)), stage(0, 5, 0, 0)), fail(commit(0, true)))
+  run lostTransferReplyRecoveredTest = expect(then(then(then(then(then(stagedFloor, readAuthority(true)), stage(1, 1, 1, 0)), commit(1, false)), crash), readAuthority(true)), and(and(invariant, eq(field(C::custody, "fence"), 1)), not(field(C::custody, "haveOutcome"))))
+  run concurrentTransferLosesToCommitTest = then(then(then(then(stagedFloor, stage(1, 1, 1, 0)), commit(0, false)), readAuthority(true)), fail(commit(1, true)))
+  run lostOutcomePublicationCounterexampleTest = expect(then(committed, dropOutcome), not(invariant))
+  run droppedOriginalPublicationCounterexampleTest = expect(then(committed, dropOriginal), not(invariant))
+  action handed = then(stagedFloor, applyCommand(1, 1, 1, 0))
+  action transferredCommit = then(committed, applyCommand(1, 1, 1, 0))
+  action restored = then(committed, restore(initialEntry, 1))
+  action exactCopyRestored = then(committed, restore(image, length(field(pub, "log"))))
+  action restarted = then(committed, crash)
+  run lostFloorReplyRetainsOutcomeTest = expect(committed, and(and(and(invariant, field(C::custody, "haveOutcome")), not(field(pub, "haveReply"))), eq(length(field(f, "log")), 2)))
+  run lateAckPreservesCurrentReadTest = expect(then(then(committed, readAuthority(true)), acknowledge(0)), and(invariant, ready))
+  run committedOperationCannotReadmitTest = then(then(then(committed, readAuthority(true)), stage(0, 0, 0, 0)), fail(commit(0, true)))
+  run untrustedCopyPublicationCounterexampleTest = expect(then(exactCopyRestored, trustUnqualifiedCopy), and(not(invariant), ready))
+  run lateAckPublicationCounterexampleTest = expect(then(exactCopyRestored, ackAsFreshness), and(not(invariant), ready))
+  action recovered = then(then(then(handed, applyCommand(1, 2, 1, 1)), applyCommand(1, 3, 1, 1)), applyCommand(1, 4, 1, 1))
+  action resolvedCommit = then(transferredCommit, applyCommand(1, 2, 1, 1))
+  run transferPreservesCommittedOutcomeTest = expect(transferredCommit, and(and(invariant, eq(field(C::custody, "fence"), 1)), eq(field(field(C::custody, "outcome"), "proposal"), pAppend)))
+  run oldParentRejectedAfterTransferTest = then(then(handed, readAuthority(true)), fail(commit(0, true)))
+  run restoreCannotEraseOutcomeTest = expect(restored, and(and(and(invariant, not(ready)), field(C::custody, "haveOutcome")), eq(length(field(f, "log")), 2)))
+  run restoredCopyCannotPublishTest = then(restored, fail(commit(0, true)))
+  run exactUntrustedCopyCannotPublishTest = then(exactCopyRestored, fail(commit(0, true)))
+  run restartRetainsOriginalOutcomeTest = expect(then(restarted, readAuthority(true)), and(invariant, eq(field(field(C::custody, "outcome"), "proposal"), pAppend)))
+  run lateAckCannotRefreshOldCopyTest = expect(then(restored, acknowledge(0)), and(and(invariant, not(ready)), eq(field(pub, "seen"), 1)))
+  run unauthenticatedAuthorityReadRejectedTest = then(restored, fail(readAuthority(false)))
+  run oldWorkerPublicationCounterexampleTest = expect(then(recovered, oldWorkerPublication), and(not(invariant), eq(length(field(f, "log")), 2)))
+  action finished = then(resolvedCommit, applyCommand(1, 5, 1, 1))
+  run oldWorkerRejectedAtFreshParentTest = then(then(then(recovered, readAuthority(true)), stage(0, 0, 0, 0)), fail(commit(0, true)))
+  run newWorkerOriginalAppendTest = expect(then(recovered, applyCommand(0, 0, 1, 1)), and(invariant, eq(length(field(f, "log")), 2)))
+  run closeAfterOutcomeResolutionTest = expect(finished, and(and(invariant, eq(field(C::custody, "phase"), 4)), eq(length(field(f, "log")), 2)))
+}

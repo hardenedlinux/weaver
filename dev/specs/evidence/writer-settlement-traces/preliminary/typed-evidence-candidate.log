@@ -1,0 +1,29 @@
+specs/lean/WriterSettlementClosure.lean:59:18: warning: Variable name `m` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _m
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+specs/lean/WriterSettlementClosure.lean:306:71: error: unexpected token 'local'; expected rcasesPat
+specs/lean/WriterSettlementClosure.lean:306:77: error: unexpected token '|'; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+specs/lean/WriterSettlementClosure.lean:307:69: error: unexpected identifier; expected 'binder_predicate', 'builtin_cbv_simproc', 'builtin_dsimproc', 'builtin_simproc', 'cbv_simproc', 'dsimproc', 'elab', 'elab_rules', 'grind_pattern', 'infix', 'infixl', 'infixr', 'instance', 'macro', 'macro_rules', 'notation', 'postfix', 'prefix', 'simproc', 'syntax' or 'unif_hint'
+'Weaver.WriterSettlementClosure.settlement_has_published_terminal_coverage' depends on axioms: [propext,
+ sorryAx,
+ Quot.sound]
+'Weaver.WriterSettlementClosure.every_decision_has_durable_evidence_and_closed_original_slot' depends on axioms: [propext,
+ Quot.sound]
+'Weaver.WriterSettlementClosure.unpublished_decision_blocks_stream' depends on axioms: [propext]
+'Weaver.WriterSettlementClosure.no_visibility_from_prepared_blob' depends on axioms: [propext, Quot.sound]
+'Weaver.WriterSettlementClosure.settlement_requires_same_usage_and_closure' depends on axioms: [propext, Quot.sound]
+'Weaver.WriterSettlementClosure.decision_immutable' depends on axioms: [propext]
+'Weaver.WriterSettlementClosure.usage_immutable' depends on axioms: [propext]
+'Weaver.WriterSettlementClosure.settlement_immutable' depends on axioms: [propext]
+'Weaver.WriterSettlementClosure.settlement_covered_by_original_reservations' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.WriterSettlementClosure.account_settlement_never_exceeds_capacity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.WriterSettlementClosure.byte_affinity_survives_split_stores' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

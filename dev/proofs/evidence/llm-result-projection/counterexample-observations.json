@@ -1,0 +1,1459 @@
+[
+  {
+    "path": "proofs/evidence/llm-result-projection/itf/accountDeltaRetryCounterexampleTest-2.itf.json",
+    "states": 7,
+    "violation": "accountDeltaRetry",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 6,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activations": [],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "calls": 0,
+      "denied": false,
+      "epoch": 0,
+      "everExposure": 3,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "qualified": true,
+      "queued": [],
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-result-projection/itf/duplicateConsumptionCounterexampleTest-1.itf.json",
+    "states": 5,
+    "violation": "duplicateConsumption",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      },
+      "activations": [],
+      "applications": [],
+      "authority": {
+        "budget": 5,
+        "exposure": 6,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "calls": 0,
+      "denied": false,
+      "epoch": 0,
+      "everExposure": 6,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "qualified": true,
+      "queued": [],
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-result-projection/itf/lateObservationResendCounterexampleTest-8.itf.json",
+    "states": 9,
+    "violation": "lateObservationResend",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activations": [],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "calls": 2,
+      "denied": false,
+      "epoch": 0,
+      "everExposure": 3,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [
+        1
+      ],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "qualified": true,
+      "queued": [
+        1
+      ],
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-result-projection/itf/mixedSnapshotActivationCounterexampleTest-7.itf.json",
+    "states": 8,
+    "violation": "mixedSnapshotActivation",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      },
+      "activations": [
+        false
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "calls": 0,
+      "denied": false,
+      "epoch": 1,
+      "everExposure": 3,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "qualified": true,
+      "queued": [],
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-result-projection/itf/oldOwnerApplicationCounterexampleTest-4.itf.json",
+    "states": 7,
+    "violation": "oldOwnerApplication",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      },
+      "activations": [],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 1,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "calls": 0,
+      "denied": false,
+      "epoch": 1,
+      "everExposure": 3,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "open": false,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "qualified": true,
+      "queued": [],
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-result-projection/itf/profileReplacementCounterexampleTest-9.itf.json",
+    "states": 4,
+    "violation": "profileReplacement",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      },
+      "activations": [],
+      "applications": [],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 99,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "calls": 0,
+      "denied": false,
+      "epoch": 0,
+      "everExposure": 3,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "qualified": true,
+      "queued": [],
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-result-projection/itf/resultReplacementCounterexampleTest-0.itf.json",
+    "states": 5,
+    "violation": "resultReplacement",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      },
+      "activations": [],
+      "applications": [],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "calls": 0,
+      "denied": false,
+      "epoch": 0,
+      "everExposure": 3,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "qualified": true,
+      "queued": [],
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-result-projection/itf/skippedPrefixCounterexampleTest-5.itf.json",
+    "states": 6,
+    "violation": "skippedPrefix",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      },
+      "activations": [],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 5,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11,
+                12
+              ],
+              "version": 2
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "position": 2,
+            "request": {
+              "amount": 2,
+              "epoch": 0,
+              "id": 2,
+              "nonce": 12,
+              "parent": 1
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 5,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11,
+          12
+        ],
+        "version": 2
+      },
+      "calls": 0,
+      "denied": false,
+      "epoch": 0,
+      "everExposure": 5,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        },
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 5,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11,
+              12
+            ],
+            "version": 2
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "position": 2,
+          "request": {
+            "amount": 2,
+            "epoch": 0,
+            "id": 2,
+            "nonce": 12,
+            "parent": 1
+          }
+        }
+      ],
+      "observed": [],
+      "open": true,
+      "pending": [
+        {
+          "amount": 2,
+          "epoch": 0,
+          "id": 2,
+          "nonce": 12,
+          "parent": 1
+        },
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "qualified": true,
+      "queued": [],
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-result-projection/itf/tornSourceRowCounterexampleTest-3.itf.json",
+    "states": 5,
+    "violation": "tornSourceRow",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      },
+      "activations": [],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "calls": 0,
+      "denied": false,
+      "epoch": 0,
+      "everExposure": 3,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "qualified": true,
+      "queued": [],
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 1
+        },
+        "position": 1
+      }
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-result-projection/itf/unknownRefundCounterexampleTest-6.itf.json",
+    "states": 5,
+    "violation": "unknownRefund",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 0,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [],
+          "version": 0
+        },
+        "position": 0
+      },
+      "activations": [],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 0,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "calls": 0,
+      "denied": false,
+      "epoch": 0,
+      "everExposure": 3,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "qualified": true,
+      "queued": [],
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      }
+    }
+  }
+]

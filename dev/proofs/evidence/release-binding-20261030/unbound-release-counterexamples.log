@@ -1,0 +1,31 @@
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.06s
+     Running tests/unit_test.rs (target/debug/deps/unit_test-b77cb9e85a1d6574)
+
+running 4 tests
+test provider::release_encoding_cannot_change_after_preparation ... FAILED
+test provider::affine_provider_dispatch_and_revoked_batch_never_repeat_or_refund ... ok
+test provider::equal_batch_digests_cannot_transfer_release_between_original_nodes ... FAILED
+test provider::arbitrary_provider_replays_restarts_and_release_batches_keep_original_claim ... ok
+
+failures:
+
+---- provider::release_encoding_cannot_change_after_preparation stdout ----
+
+thread 'provider::release_encoding_cannot_change_after_preparation' (22334512) panicked at crates/ledger/tests/unit/provider.rs:93:5:
+prepared encoding changed at final release
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- provider::equal_batch_digests_cannot_transfer_release_between_original_nodes stdout ----
+
+thread 'provider::equal_batch_digests_cannot_transfer_release_between_original_nodes' (22334511) panicked at crates/ledger/tests/unit/provider.rs:64:5:
+foreign logical node admitted release
+
+
+failures:
+    provider::equal_batch_digests_cannot_transfer_release_between_original_nodes
+    provider::release_encoding_cannot_change_after_preparation
+
+test result: FAILED. 2 passed; 2 failed; 0 ignored; 0 measured; 13 filtered out; finished in 2.76s
+
+error: test failed, to rerun pass `-p weaver-ledger --test unit_test`

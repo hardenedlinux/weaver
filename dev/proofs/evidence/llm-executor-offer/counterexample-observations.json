@@ -1,0 +1,4768 @@
+[
+  {
+    "path": "proofs/evidence/llm-executor-offer/itf/dequeueSendExecutorCounterexampleTest-9.itf.json",
+    "states": 8,
+    "violation": "dequeueSend",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activation": -1,
+      "activations": [],
+      "admissions": [
+        {
+          "afterCalls": 0,
+          "beforeCalls": 0,
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "joined": true,
+          "permit": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 0
+          },
+          "policy": 0,
+          "position": 1,
+          "revision": 0
+        }
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "burns": [],
+      "calls": 0,
+      "denied": false,
+      "dequeued": true,
+      "entries": [
+        {
+          "hi": 4,
+          "key": 1,
+          "lo": 0,
+          "nonce": 11,
+          "payload": 30,
+          "profile": 30,
+          "route": 100,
+          "slot": 11,
+          "source": 1
+        }
+      ],
+      "epoch": 0,
+      "everExposure": 3,
+      "executionQualified": true,
+      "executions": [],
+      "fenced": false,
+      "full": false,
+      "jobs": [],
+      "laneCalls": 1,
+      "laneOwner": 0,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "offers": [],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "permits": [
+        {
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "operation": {
+            "hi": 4,
+            "key": 1,
+            "lo": 0,
+            "nonce": 11,
+            "payload": 30,
+            "profile": 30,
+            "route": 100,
+            "slot": 11,
+            "source": 1
+          },
+          "policy": 0,
+          "position": 1,
+          "queueRevision": 0
+        }
+      ],
+      "policyVersion": 0,
+      "qualified": true,
+      "queueRevision": 1,
+      "queued": [
+        1
+      ],
+      "rangeAllowed": true,
+      "rangeEpoch": 0,
+      "receipts": [],
+      "revision": 0,
+      "seen": -1,
+      "sourceCalls": 0,
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "submitted": false,
+      "tickets": [],
+      "unknown": false
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-executor-offer/itf/forgedCompletionExecutorCounterexampleTest-7.itf.json",
+    "states": 17,
+    "violation": "forgedCompletion",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activation": -1,
+      "activations": [],
+      "admissions": [
+        {
+          "afterCalls": 0,
+          "beforeCalls": 0,
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "joined": true,
+          "permit": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 0
+          },
+          "policy": 0,
+          "position": 1,
+          "revision": 0
+        }
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "burns": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "calls": 1,
+      "denied": false,
+      "dequeued": true,
+      "entries": [
+        {
+          "hi": 4,
+          "key": 1,
+          "lo": 0,
+          "nonce": 11,
+          "payload": 30,
+          "profile": 30,
+          "route": 100,
+          "slot": 11,
+          "source": 1
+        }
+      ],
+      "epoch": 0,
+      "everExposure": 3,
+      "executionQualified": true,
+      "executions": [
+        {
+          "activation": 2,
+          "actual": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          },
+          "allowed": true,
+          "laneOwner": 0,
+          "owner": 0,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "ticket": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "fenced": false,
+      "full": true,
+      "jobs": [
+        1
+      ],
+      "laneCalls": 1,
+      "laneOwner": 0,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "offers": [
+        11
+      ],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "permits": [
+        {
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "operation": {
+            "hi": 4,
+            "key": 1,
+            "lo": 0,
+            "nonce": 11,
+            "payload": 30,
+            "profile": 30,
+            "route": 100,
+            "slot": 11,
+            "source": 1
+          },
+          "policy": 0,
+          "position": 1,
+          "queueRevision": 0
+        }
+      ],
+      "policyVersion": 0,
+      "qualified": true,
+      "queueRevision": 1,
+      "queued": [
+        1
+      ],
+      "rangeAllowed": true,
+      "rangeEpoch": 1,
+      "receipts": [
+        {
+          "bytes": 2,
+          "call": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "full": false
+        },
+        {
+          "bytes": 2,
+          "call": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "full": true
+        }
+      ],
+      "revision": 3,
+      "seen": -1,
+      "sourceCalls": 0,
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "submitted": true,
+      "tickets": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "unknown": false
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-executor-offer/itf/oldOwnerExecutorCounterexampleTest-1.itf.json",
+    "states": 18,
+    "violation": "oldOwner",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activation": 2,
+      "activations": [
+        true
+      ],
+      "admissions": [
+        {
+          "afterCalls": 0,
+          "beforeCalls": 0,
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "joined": true,
+          "permit": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 0
+          },
+          "policy": 0,
+          "position": 1,
+          "revision": 0
+        }
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "burns": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "calls": 1,
+      "denied": false,
+      "dequeued": true,
+      "entries": [
+        {
+          "hi": 4,
+          "key": 1,
+          "lo": 0,
+          "nonce": 11,
+          "payload": 30,
+          "profile": 30,
+          "route": 100,
+          "slot": 11,
+          "source": 1
+        }
+      ],
+      "epoch": 1,
+      "everExposure": 3,
+      "executionQualified": false,
+      "executions": [
+        {
+          "activation": 2,
+          "actual": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 1,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          },
+          "allowed": true,
+          "laneOwner": 0,
+          "owner": 1,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "ticket": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "fenced": false,
+      "full": false,
+      "jobs": [
+        1
+      ],
+      "laneCalls": 1,
+      "laneOwner": 0,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "offers": [
+        11
+      ],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "permits": [
+        {
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "operation": {
+            "hi": 4,
+            "key": 1,
+            "lo": 0,
+            "nonce": 11,
+            "payload": 30,
+            "profile": 30,
+            "route": 100,
+            "slot": 11,
+            "source": 1
+          },
+          "policy": 0,
+          "position": 1,
+          "queueRevision": 0
+        }
+      ],
+      "policyVersion": 0,
+      "qualified": true,
+      "queueRevision": 1,
+      "queued": [
+        1
+      ],
+      "rangeAllowed": true,
+      "rangeEpoch": 1,
+      "receipts": [],
+      "revision": 2,
+      "seen": -1,
+      "sourceCalls": 0,
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "submitted": true,
+      "tickets": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "unknown": true
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-executor-offer/itf/partialRetryExecutorCounterexampleTest-4.itf.json",
+    "states": 17,
+    "violation": "partialRetry",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activation": -1,
+      "activations": [],
+      "admissions": [
+        {
+          "afterCalls": 0,
+          "beforeCalls": 0,
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "joined": true,
+          "permit": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 0
+          },
+          "policy": 0,
+          "position": 1,
+          "revision": 0
+        }
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "burns": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "calls": 2,
+      "denied": false,
+      "dequeued": true,
+      "entries": [
+        {
+          "hi": 4,
+          "key": 1,
+          "lo": 0,
+          "nonce": 11,
+          "payload": 30,
+          "profile": 30,
+          "route": 100,
+          "slot": 11,
+          "source": 1
+        }
+      ],
+      "epoch": 0,
+      "everExposure": 3,
+      "executionQualified": true,
+      "executions": [
+        {
+          "activation": 2,
+          "actual": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          },
+          "allowed": true,
+          "laneOwner": 0,
+          "owner": 0,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "ticket": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "worker": 0
+        },
+        {
+          "activation": -1,
+          "actual": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          },
+          "allowed": true,
+          "laneOwner": 0,
+          "owner": 0,
+          "rangeEpoch": 1,
+          "revision": 3,
+          "ticket": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "fenced": false,
+      "full": false,
+      "jobs": [
+        1
+      ],
+      "laneCalls": 2,
+      "laneOwner": 0,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "offers": [
+        11
+      ],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "permits": [
+        {
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "operation": {
+            "hi": 4,
+            "key": 1,
+            "lo": 0,
+            "nonce": 11,
+            "payload": 30,
+            "profile": 30,
+            "route": 100,
+            "slot": 11,
+            "source": 1
+          },
+          "policy": 0,
+          "position": 1,
+          "queueRevision": 0
+        }
+      ],
+      "policyVersion": 0,
+      "qualified": true,
+      "queueRevision": 1,
+      "queued": [
+        1
+      ],
+      "rangeAllowed": true,
+      "rangeEpoch": 1,
+      "receipts": [
+        {
+          "bytes": 2,
+          "call": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "full": false
+        }
+      ],
+      "revision": 3,
+      "seen": -1,
+      "sourceCalls": 0,
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "submitted": true,
+      "tickets": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "unknown": true
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-executor-offer/itf/snapshotResetExecutorCounterexampleTest-5.itf.json",
+    "states": 18,
+    "violation": "snapshotReset",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activation": -1,
+      "activations": [],
+      "admissions": [
+        {
+          "afterCalls": 0,
+          "beforeCalls": 0,
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "joined": true,
+          "permit": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 0
+          },
+          "policy": 0,
+          "position": 1,
+          "revision": 0
+        }
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "burns": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "calls": 1,
+      "denied": false,
+      "dequeued": true,
+      "entries": [
+        {
+          "hi": 4,
+          "key": 1,
+          "lo": 0,
+          "nonce": 11,
+          "payload": 30,
+          "profile": 30,
+          "route": 100,
+          "slot": 11,
+          "source": 1
+        }
+      ],
+      "epoch": 1,
+      "everExposure": 3,
+      "executionQualified": false,
+      "executions": [
+        {
+          "activation": 2,
+          "actual": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          },
+          "allowed": true,
+          "laneOwner": 0,
+          "owner": 0,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "ticket": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "fenced": false,
+      "full": false,
+      "jobs": [
+        1
+      ],
+      "laneCalls": 0,
+      "laneOwner": 0,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "offers": [
+        11
+      ],
+      "open": false,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "permits": [
+        {
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "operation": {
+            "hi": 4,
+            "key": 1,
+            "lo": 0,
+            "nonce": 11,
+            "payload": 30,
+            "profile": 30,
+            "route": 100,
+            "slot": 11,
+            "source": 1
+          },
+          "policy": 0,
+          "position": 1,
+          "queueRevision": 0
+        }
+      ],
+      "policyVersion": 0,
+      "qualified": false,
+      "queueRevision": 1,
+      "queued": [
+        1
+      ],
+      "rangeAllowed": true,
+      "rangeEpoch": 1,
+      "receipts": [
+        {
+          "bytes": 2,
+          "call": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "full": false
+        }
+      ],
+      "revision": 3,
+      "seen": -1,
+      "sourceCalls": 0,
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "submitted": false,
+      "tickets": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "unknown": false
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-executor-offer/itf/stalePolicyExecutorCounterexampleTest-0.itf.json",
+    "states": 16,
+    "violation": "stalePolicy",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activation": 2,
+      "activations": [],
+      "admissions": [
+        {
+          "afterCalls": 0,
+          "beforeCalls": 0,
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "joined": true,
+          "permit": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 0
+          },
+          "policy": 0,
+          "position": 1,
+          "revision": 0
+        }
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "burns": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "calls": 1,
+      "denied": true,
+      "dequeued": true,
+      "entries": [
+        {
+          "hi": 4,
+          "key": 1,
+          "lo": 0,
+          "nonce": 11,
+          "payload": 30,
+          "profile": 30,
+          "route": 100,
+          "slot": 11,
+          "source": 1
+        }
+      ],
+      "epoch": 0,
+      "everExposure": 3,
+      "executionQualified": true,
+      "executions": [
+        {
+          "activation": 2,
+          "actual": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 1,
+            "position": 1,
+            "queueRevision": 1
+          },
+          "allowed": false,
+          "laneOwner": 0,
+          "owner": 0,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "ticket": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "fenced": false,
+      "full": false,
+      "jobs": [
+        1
+      ],
+      "laneCalls": 1,
+      "laneOwner": 0,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "offers": [
+        11
+      ],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "permits": [
+        {
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "operation": {
+            "hi": 4,
+            "key": 1,
+            "lo": 0,
+            "nonce": 11,
+            "payload": 30,
+            "profile": 30,
+            "route": 100,
+            "slot": 11,
+            "source": 1
+          },
+          "policy": 0,
+          "position": 1,
+          "queueRevision": 0
+        }
+      ],
+      "policyVersion": 1,
+      "qualified": true,
+      "queueRevision": 1,
+      "queued": [
+        1
+      ],
+      "rangeAllowed": true,
+      "rangeEpoch": 1,
+      "receipts": [],
+      "revision": 2,
+      "seen": -1,
+      "sourceCalls": 0,
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "submitted": true,
+      "tickets": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "unknown": true
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-executor-offer/itf/stalePrefixExecutorCounterexampleTest-3.itf.json",
+    "states": 19,
+    "violation": "stalePrefix",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 5,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11,
+            12
+          ],
+          "version": 2
+        },
+        "position": 2
+      },
+      "activation": 2,
+      "activations": [],
+      "admissions": [
+        {
+          "afterCalls": 0,
+          "beforeCalls": 0,
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "joined": true,
+          "permit": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 0
+          },
+          "policy": 0,
+          "position": 1,
+          "revision": 0
+        }
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "position": 1
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 5,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11,
+                12
+              ],
+              "version": 2
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "position": 2,
+            "request": {
+              "amount": 2,
+              "epoch": 0,
+              "id": 2,
+              "nonce": 12,
+              "parent": 1
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "position": 1
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 5,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11,
+                12
+              ],
+              "version": 2
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "position": 2,
+            "request": {
+              "amount": 2,
+              "epoch": 0,
+              "id": 2,
+              "nonce": 12,
+              "parent": 1
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 5,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11,
+          12
+        ],
+        "version": 2
+      },
+      "burns": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "calls": 1,
+      "denied": false,
+      "dequeued": true,
+      "entries": [
+        {
+          "hi": 4,
+          "key": 1,
+          "lo": 0,
+          "nonce": 11,
+          "payload": 30,
+          "profile": 30,
+          "route": 100,
+          "slot": 11,
+          "source": 1
+        }
+      ],
+      "epoch": 0,
+      "everExposure": 5,
+      "executionQualified": true,
+      "executions": [
+        {
+          "activation": 2,
+          "actual": {
+            "body": {
+              "budget": 5,
+              "exposure": 5,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11,
+                12
+              ],
+              "version": 2
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 2,
+            "queueRevision": 1
+          },
+          "allowed": true,
+          "laneOwner": 0,
+          "owner": 0,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "ticket": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "fenced": false,
+      "full": false,
+      "jobs": [
+        1
+      ],
+      "laneCalls": 1,
+      "laneOwner": 0,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        },
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 5,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11,
+              12
+            ],
+            "version": 2
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "position": 2,
+          "request": {
+            "amount": 2,
+            "epoch": 0,
+            "id": 2,
+            "nonce": 12,
+            "parent": 1
+          }
+        }
+      ],
+      "observed": [],
+      "offers": [
+        11
+      ],
+      "open": true,
+      "pending": [
+        {
+          "amount": 2,
+          "epoch": 0,
+          "id": 2,
+          "nonce": 12,
+          "parent": 1
+        },
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "permits": [
+        {
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "operation": {
+            "hi": 4,
+            "key": 1,
+            "lo": 0,
+            "nonce": 11,
+            "payload": 30,
+            "profile": 30,
+            "route": 100,
+            "slot": 11,
+            "source": 1
+          },
+          "policy": 0,
+          "position": 1,
+          "queueRevision": 0
+        }
+      ],
+      "policyVersion": 0,
+      "qualified": true,
+      "queueRevision": 1,
+      "queued": [
+        1
+      ],
+      "rangeAllowed": true,
+      "rangeEpoch": 1,
+      "receipts": [],
+      "revision": 2,
+      "seen": -1,
+      "sourceCalls": 0,
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 5,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11,
+            12
+          ],
+          "version": 2
+        },
+        "position": 2
+      },
+      "submitted": true,
+      "tickets": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "unknown": true
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-executor-offer/itf/tailRewriteExecutorCounterexampleTest-8.itf.json",
+    "states": 15,
+    "violation": "tailRewrite",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activation": 2,
+      "activations": [],
+      "admissions": [
+        {
+          "afterCalls": 0,
+          "beforeCalls": 0,
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "joined": true,
+          "permit": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 0
+          },
+          "policy": 0,
+          "position": 1,
+          "revision": 0
+        }
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "burns": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "calls": 1,
+      "denied": false,
+      "dequeued": true,
+      "entries": [
+        {
+          "hi": 4,
+          "key": 1,
+          "lo": 0,
+          "nonce": 11,
+          "payload": 30,
+          "profile": 30,
+          "route": 100,
+          "slot": 11,
+          "source": 1
+        }
+      ],
+      "epoch": 0,
+      "everExposure": 3,
+      "executionQualified": true,
+      "executions": [
+        {
+          "activation": 2,
+          "actual": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          },
+          "allowed": true,
+          "laneOwner": 0,
+          "owner": 0,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "ticket": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 2,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "fenced": false,
+      "full": false,
+      "jobs": [
+        1
+      ],
+      "laneCalls": 1,
+      "laneOwner": 0,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "offers": [
+        11
+      ],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "permits": [
+        {
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "operation": {
+            "hi": 4,
+            "key": 1,
+            "lo": 0,
+            "nonce": 11,
+            "payload": 30,
+            "profile": 30,
+            "route": 100,
+            "slot": 11,
+            "source": 1
+          },
+          "policy": 0,
+          "position": 1,
+          "queueRevision": 0
+        }
+      ],
+      "policyVersion": 0,
+      "qualified": true,
+      "queueRevision": 1,
+      "queued": [
+        1
+      ],
+      "rangeAllowed": true,
+      "rangeEpoch": 1,
+      "receipts": [],
+      "revision": 2,
+      "seen": -1,
+      "sourceCalls": 0,
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "submitted": true,
+      "tickets": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "unknown": true
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-executor-offer/itf/unfencedRangeExecutorCounterexampleTest-2.itf.json",
+    "states": 17,
+    "violation": "unfencedRange",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activation": 2,
+      "activations": [
+        true
+      ],
+      "admissions": [
+        {
+          "afterCalls": 0,
+          "beforeCalls": 0,
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "joined": true,
+          "permit": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 0
+          },
+          "policy": 0,
+          "position": 1,
+          "revision": 0
+        }
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 3,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "burns": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 1,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "calls": 1,
+      "denied": false,
+      "dequeued": true,
+      "entries": [
+        {
+          "hi": 4,
+          "key": 1,
+          "lo": 0,
+          "nonce": 11,
+          "payload": 30,
+          "profile": 30,
+          "route": 100,
+          "slot": 11,
+          "source": 1
+        }
+      ],
+      "epoch": 1,
+      "everExposure": 3,
+      "executionQualified": false,
+      "executions": [
+        {
+          "activation": 2,
+          "actual": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 1,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          },
+          "allowed": true,
+          "laneOwner": 0,
+          "owner": 1,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "ticket": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 1,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "worker": 1
+        }
+      ],
+      "fenced": false,
+      "full": false,
+      "jobs": [
+        1
+      ],
+      "laneCalls": 1,
+      "laneOwner": 0,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "offers": [
+        11
+      ],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "permits": [
+        {
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "operation": {
+            "hi": 4,
+            "key": 1,
+            "lo": 0,
+            "nonce": 11,
+            "payload": 30,
+            "profile": 30,
+            "route": 100,
+            "slot": 11,
+            "source": 1
+          },
+          "policy": 0,
+          "position": 1,
+          "queueRevision": 0
+        }
+      ],
+      "policyVersion": 0,
+      "qualified": true,
+      "queueRevision": 1,
+      "queued": [
+        1
+      ],
+      "rangeAllowed": true,
+      "rangeEpoch": 1,
+      "receipts": [],
+      "revision": 2,
+      "seen": -1,
+      "sourceCalls": 0,
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "submitted": true,
+      "tickets": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "unknown": true
+    }
+  },
+  {
+    "path": "proofs/evidence/llm-executor-offer/itf/unknownRefundExecutorCounterexampleTest-6.itf.json",
+    "states": 17,
+    "violation": "unknownRefund",
+    "final": {
+      "accountStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "activation": -1,
+      "activations": [],
+      "admissions": [
+        {
+          "afterCalls": 0,
+          "beforeCalls": 0,
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "joined": true,
+          "permit": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 0
+          },
+          "policy": 0,
+          "position": 1,
+          "revision": 0
+        }
+      ],
+      "applications": [
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        },
+        {
+          "before": {
+            "body": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 0
+          },
+          "epoch": 0,
+          "result": {
+            "after": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "before": {
+              "budget": 5,
+              "exposure": 0,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [],
+              "version": 0
+            },
+            "position": 1,
+            "request": {
+              "amount": 3,
+              "epoch": 0,
+              "id": 1,
+              "nonce": 11,
+              "parent": 0
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "authority": {
+        "budget": 5,
+        "exposure": 0,
+        "history": 9,
+        "profile": 30,
+        "root": 10,
+        "spent": [
+          11
+        ],
+        "version": 1
+      },
+      "burns": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "calls": 1,
+      "denied": false,
+      "dequeued": true,
+      "entries": [
+        {
+          "hi": 4,
+          "key": 1,
+          "lo": 0,
+          "nonce": 11,
+          "payload": 30,
+          "profile": 30,
+          "route": 100,
+          "slot": 11,
+          "source": 1
+        }
+      ],
+      "epoch": 0,
+      "everExposure": 3,
+      "executionQualified": true,
+      "executions": [
+        {
+          "activation": 2,
+          "actual": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          },
+          "allowed": true,
+          "laneOwner": 0,
+          "owner": 0,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "ticket": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "worker": 0
+        }
+      ],
+      "fenced": false,
+      "full": false,
+      "jobs": [
+        1
+      ],
+      "laneCalls": 1,
+      "laneOwner": 0,
+      "log": [
+        {
+          "after": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "before": {
+            "budget": 5,
+            "exposure": 0,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [],
+            "version": 0
+          },
+          "position": 1,
+          "request": {
+            "amount": 3,
+            "epoch": 0,
+            "id": 1,
+            "nonce": 11,
+            "parent": 0
+          }
+        }
+      ],
+      "observed": [],
+      "offers": [
+        11
+      ],
+      "open": true,
+      "pending": [
+        {
+          "amount": 3,
+          "epoch": 0,
+          "id": 1,
+          "nonce": 11,
+          "parent": 0
+        }
+      ],
+      "permits": [
+        {
+          "body": {
+            "budget": 5,
+            "exposure": 3,
+            "history": 9,
+            "profile": 30,
+            "root": 10,
+            "spent": [
+              11
+            ],
+            "version": 1
+          },
+          "epoch": 0,
+          "operation": {
+            "hi": 4,
+            "key": 1,
+            "lo": 0,
+            "nonce": 11,
+            "payload": 30,
+            "profile": 30,
+            "route": 100,
+            "slot": 11,
+            "source": 1
+          },
+          "policy": 0,
+          "position": 1,
+          "queueRevision": 0
+        }
+      ],
+      "policyVersion": 0,
+      "qualified": true,
+      "queueRevision": 1,
+      "queued": [
+        1
+      ],
+      "rangeAllowed": true,
+      "rangeEpoch": 1,
+      "receipts": [
+        {
+          "bytes": 2,
+          "call": {
+            "activation": 2,
+            "rangeEpoch": 1,
+            "revision": 2,
+            "view": {
+              "body": {
+                "budget": 5,
+                "exposure": 3,
+                "history": 9,
+                "profile": 30,
+                "root": 10,
+                "spent": [
+                  11
+                ],
+                "version": 1
+              },
+              "epoch": 0,
+              "operation": {
+                "hi": 4,
+                "key": 1,
+                "lo": 0,
+                "nonce": 11,
+                "payload": 30,
+                "profile": 30,
+                "route": 100,
+                "slot": 11,
+                "source": 1
+              },
+              "policy": 0,
+              "position": 1,
+              "queueRevision": 1
+            }
+          },
+          "full": false
+        }
+      ],
+      "revision": 3,
+      "seen": -1,
+      "sourceCalls": 0,
+      "sourceStore": {
+        "body": {
+          "budget": 5,
+          "exposure": 3,
+          "history": 9,
+          "profile": 30,
+          "root": 10,
+          "spent": [
+            11
+          ],
+          "version": 1
+        },
+        "position": 1
+      },
+      "submitted": true,
+      "tickets": [
+        {
+          "activation": 2,
+          "rangeEpoch": 1,
+          "revision": 2,
+          "view": {
+            "body": {
+              "budget": 5,
+              "exposure": 3,
+              "history": 9,
+              "profile": 30,
+              "root": 10,
+              "spent": [
+                11
+              ],
+              "version": 1
+            },
+            "epoch": 0,
+            "operation": {
+              "hi": 4,
+              "key": 1,
+              "lo": 0,
+              "nonce": 11,
+              "payload": 30,
+              "profile": 30,
+              "route": 100,
+              "slot": 11,
+              "source": 1
+            },
+            "policy": 0,
+            "position": 1,
+            "queueRevision": 1
+          }
+        }
+      ],
+      "unknown": true
+    }
+  }
+]

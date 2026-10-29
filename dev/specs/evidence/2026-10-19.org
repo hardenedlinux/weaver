@@ -1,0 +1,91 @@
+#+title: Weaver Focused Formal Validation Receipt
+#+language: en
+#+date: 2026-10-19
+#+options: toc:2
+
+* Artifact identity and result boundary
+
+Local execution used Quint 0.33.0 with its TypeScript simulator and standalone
+Lean 4.34.1 selected through elan. No gateway runtime, owner dependency pin,
+Cedar import closure or native ABI was modified or qualified. This receipt
+binds the exact source bytes below, not a claim about later edits.
+
+| Artifact | SHA-256 |
+|----------+---------|
+| LogicalMessageAuthority.qnt | fe403c9bbe8d98ec0eedf67bd2114ec6df68dd69963562a0c3e5da1b39e91cfa |
+| LogicalMessageAuthority.lean | 649a70e26011dbc311afb16f4d76117835a5e02438bc9bd50c90ccb4f63868ca |
+
+Quint typechecking exited zero. Eight deterministic tests passed: three positive
+controls and five controls that require a deliberately invalid transition to
+violate the relevant safety invariant. The traces below retain their complete
+state history. A negative test's ITF status passed means its expected violation
+was observed; it does not certify the invalid design.
+
+The normal step relation was separately sampled for 2,000 traces with at most
+60 transitions per trace, seed 20261019, invariant safety. No violation was
+found. This is simulation, not exhaustive exploration or an Apalache/TLC proof.
+No fairness, termination or deployment qualification is claimed.
+
+The Lean file compiled with exit zero. Its reachability induction covers every
+finite trace of its declared abstract transition relation. The printed inventories
+below contain normal Lean logical axioms only, with no sorryAx. No new axiom,
+sorry, admit, unsafe proof escape or external theorem assumption was added.
+The unimplemented storage, identity, admission and physical premises remain
+explicit in [[file:../README.org][the formal artifact guide]]. Source/model refinement is pending.
+
+* Reproduction
+
+Use the commands in [[file:../README.org][the guide]]. To retain test traces as well:
+
+#+begin_src sh :eval never
+quint test dev/specs/quint/LogicalMessageAuthority.qnt --backend typescript --max-samples 1 --out-itf '/private/tmp/weaver-formal-{test}-{seq}.itf.json'
+#+end_src
+
+The run below checks source specifications; elapsed simulator time is not a
+gateway performance measurement. Full FM1-FM12 acceptance remains pending.
+
+* Actual test output
+
+#+begin_example
+LogicalMessageAuthority
+    ok normalLifecycleTest passed 1 test(s)
+    ok concurrencyTest passed 1 test(s)
+    ok rotationAndReconnectTest passed 1 test(s)
+    ok rootOnlyCounterexampleTest passed 1 test(s)
+    ok freshNonceCounterexampleTest passed 1 test(s)
+    ok reconnectCounterexampleTest passed 1 test(s)
+    ok lateObservationCounterexampleTest passed 1 test(s)
+    ok prematureSettlementCounterexampleTest passed 1 test(s)
+
+  8 passing (102ms)
+#+end_example
+
+* Actual sampled-run output
+
+#+begin_example
+[ok] No violation found (7541ms at 265 traces/second).
+Use --seed=0x135289b --backend=typescript to reproduce.
+#+end_example
+
+* Actual Lean axiom inventory output
+
+#+begin_example
+'Weaver.LogicalMessageAuthority.reachable_safe' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LogicalMessageAuthority.logical_message_offered_at_most_once' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.LogicalMessageAuthority.claim_origin_is_sticky' depends on axioms: [propext]
+'Weaver.LogicalMessageAuthority.budget_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.LogicalMessageAuthority.consume_invalidates_captured_revision' depends on axioms: [propext, Quot.sound]
+#+end_example
+
+* Retained positive and negative traces
+
+- [[file:traces/concurrencyTest-1.itf.json][concurrencyTest-1.itf]]
+- [[file:traces/freshNonceCounterexampleTest-4.itf.json][freshNonceCounterexampleTest-4.itf]]
+- [[file:traces/lateObservationCounterexampleTest-6.itf.json][lateObservationCounterexampleTest-6.itf]]
+- [[file:traces/normalLifecycleTest-0.itf.json][normalLifecycleTest-0.itf]]
+- [[file:traces/prematureSettlementCounterexampleTest-7.itf.json][prematureSettlementCounterexampleTest-7.itf]]
+- [[file:traces/reconnectCounterexampleTest-5.itf.json][reconnectCounterexampleTest-5.itf]]
+- [[file:traces/rootOnlyCounterexampleTest-3.itf.json][rootOnlyCounterexampleTest-3.itf]]
+- [[file:traces/rotationAndReconnectTest-2.itf.json][rotationAndReconnectTest-2.itf]]

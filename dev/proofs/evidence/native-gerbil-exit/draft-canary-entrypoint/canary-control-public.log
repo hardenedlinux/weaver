@@ -1,0 +1,8 @@
+*** WARNING -- Could not find object file entry point "___LNK_canary_2e_o1"
+*** ERROR -- dlsym(0x74c96ea0, ___LNK_canary_2e_o1): symbol not found
+(load "/Users/guangtao/ghq/github.com/tao3k/weaver/.data/native-gerbil-canary-20261020/canary.o1")
+--- continuation backtrace:
+[0] ##primordial-exception-handler-hook                                                                                                                                     
+[1] (interaction)                                                                                                                                                                                                                                                                                                                                        (load (getenv "WEAVER_NATIVE_CANARY"))
+[2] gerbil/main#gxi-main                                                                                                                                                    
+[3] gerbil/main#gxi-main                                                                                                                                                    
