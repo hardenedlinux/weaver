@@ -131,6 +131,10 @@ the earlier Go 1.25.0 receipts are not relabeled as this development profile.
 The [[file:59.16-provider-request-bounds.org][request-bound increment]] tightens provider admission inside the existing
 contracts commitment benchmark path. The original cases and thirty-sample
 measurement settings remain unchanged; its measurements require a new receipt.
+Its subsequent paired committed run retains the complete matrix under identical
+175-input verification/measurement hashes, but seventeen cached-baseline
+regression warnings and observed concurrent compilation leave performance
+admission unestablished. See that chapter's exact evidence and limits.
 
 The subsequent [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/benchmark-summary.org][per-package measured baseline]] qualifies all eighteen Rust cases
 under the stricter sample gate, with thirty paired samples per case. Coverage is

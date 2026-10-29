@@ -19,6 +19,10 @@ there is no transport-specific precedence or normalization. Go rejects requests
 larger than one MiB before hashing/decoding and mirrors the existing Rust bounds
 of one through 64 messages and one completion choice. Request bytes, route order,
 original key, cost bound and Policy generation remain committed as before.
+Existing ambiguous commitments are not rewritten or given a fresh logical key
+by a validation error. Unknown consumed reservations remain held. Tightening a
+validator in a new binary is not retroactive revocation of an already running
+old worker; deployment fencing and drain remain separate required contracts.
 
 | Owner | Responsibility |
 |-------+----------------|
@@ -67,6 +71,12 @@ Its premises include faithful typed decoding, immutable original-body binding,
 and a provider interpreting the single supported cap faithfully. It does not
 prove external token accounting, pricing, provider honesty, final settlement,
 or refunds. Provider usage remains an observation, never account authority.
+The current body checker is not a closed provider-specific request schema:
+arbitrary extension fields are not covered by the two-field selection proof.
+Admission of a registered provider/profile schema and semantic preservation of
+all extensions remain an implementation obligation. A compatible endpoint must
+honor the supported field; the proof does not authorize assuming the same
+meaning for another protocol or an unregistered provider-specific alias.
 
 * Dependency and performance scope
 
@@ -110,3 +120,30 @@ including passing final source identity and actual provider integration. The
 correction moves implementation under =tests/unit/provider_bounds.rs=, mounts it
 from the existing thin =unit_test.rs= aggregate and uses explicit owner imports.
 No ASP rule is suppressed and no focused result reclassifies this run as passing.
+
+The corrected implementation commit =13834198e396a87ad1996d041ba0d55cf56e9163=
+passes the [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-check/receipt.json][complete committed check]]: forty-seven stages and 175 unchanged source
+inputs, including sixty-three Rust tests, all five ASP deny gates, the added
+three-second Go fuzz target, strict SysML, Quint, Lean and real provider recovery
+tests. The earlier rejected receipt remains failed. This qualifies the declared
+local SDK profile, not Linux CI or external provider billing behavior.
+
+The [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-bench/receipt.json][complete measured run]] passes seven stages and retains all eighteen Rust
+cases with thirty paired samples each, plus three repetitions of each actual
+gRPC benchmark. The [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/paired-source-identity.json][paired identity check]] confirms the same implementation
+revision and all 175 input hashes in verification and measurement.
+
+Performance admission remains =NOT_ESTABLISHED=. The retained
+[[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-bench/rust-benchmarks.log][Criterion log]] reports seventeen regressions and one no-significant-change
+comparison against the local cached baseline. A late-run
+[[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/provider-bounds-host-load.log][host observation]] records load averages of 35.45, 25.88 and 20.06 on a
+[[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/provider-bounds-host-cpus.log][twelve-logical-CPU host]], with
+[[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/provider-bounds-host-processes.log][concurrent Gerbil/GCC processes]]. This observation establishes interference
+at that observation, not its timing across every sample or causal attribution
+of the comparisons. No process was interrupted, warning discarded or benchmark
+retried to obtain a passing comparison. A controlled matched performance
+experiment is still required. The [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-bench/benchmark-summary.org][sample summary]] is empirical data, not an
+accepted throughput/latency result.
+
+Independent [[https://github.com/hardenedlinux/weaver/actions/runs/40956764509][Linux CI for this implementation]] was observed pending behind
+the earlier running assurance job. Local results do not establish that outcome.

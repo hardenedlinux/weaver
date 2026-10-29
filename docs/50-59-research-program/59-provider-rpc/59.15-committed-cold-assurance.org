@@ -168,3 +168,10 @@ actual HTTPS/mTLS provider scenarios. It does not execute privileged cleanup
 on the developer machine. The [[https://github.com/hardenedlinux/weaver/actions/runs/40954543662][new exact-commit Linux run]] was independently
 observed live at hosted capacity preparation after its fixed SDK identity step
 succeeded; its final bootstrap/native/formal/benchmark outcome remains pending.
+
+A later [[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40954543662-live-steps.json][authoritative step observation]] shows both hosted capacity preparation and
+the locked dependency bootstrap completed successfully; the same run is then
+executing native/formal verification. This demonstrates progress beyond the
+previous Lean extraction failure. The run is still live at that observation;
+its final verification/benchmark result and raw stage receipts are not admitted
+from this intermediate job status.
