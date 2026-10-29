@@ -116,3 +116,16 @@ stages. Documentation-only and historical-evidence-only pushes do not repeat the
 compiled-input workflow. Changes to any declared verification source still
 trigger it. Repository checks and artifacts remain separately observable at the
 [[https://github.com/hardenedlinux/weaver/actions/workflows/assurance.yml][assurance workflow]].
+
+For commit =6177ce3=, the [[file:../../../dev/proofs/evidence/cold-assurance-20261030/committed-bootstrap/receipt.json][committed local bootstrap]] passes seven stages and the
+[[file:../../../dev/proofs/evidence/cold-assurance-20261030/committed-check/receipt.json][committed local check]] passes forty-six, with 171 unchanged inputs. These are
+the actual declared Darwin SDK profile, not Linux acceptance.
+
+The [[https://github.com/hardenedlinux/weaver/actions/runs/40951720087][first Linux run]] failed at SDK CLI argument parsing before any Go dependency,
+native or formal stage. Its [[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40951720087-first-failed.log][raw failure log]] is retained. The fixed SDK was
+invoked through =nix run= with global profile arguments; it interpreted =ci= as
+the old test alias and rejected =shell=. The next workflow explicitly selects
+the fixed package with =nix shell --command devenv= and attaches the profile
+option to =shell=. The reference and dependency locks remain unchanged. Actual
+success of that entrypoint must still be observed; no retry reclassifies the
+failed run as passing.

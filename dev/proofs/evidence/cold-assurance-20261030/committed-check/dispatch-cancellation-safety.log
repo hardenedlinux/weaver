@@ -1,0 +1,1166 @@
+An example execution:
+
+[State 0]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 0,
+      events: [],
+      held: 4,
+      locked: true,
+      permitRevision: 0,
+      phase: 0,
+      revision: 0,
+      stopped: Set(),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 1]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 0,
+      events: [],
+      held: 4,
+      locked: true,
+      permitRevision: 0,
+      phase: 0,
+      revision: 1,
+      stopped: Set(),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 2]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: true,
+      permitRevision: 0,
+      phase: 0,
+      revision: 1,
+      stopped: Set(),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 3]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: true,
+      permitRevision: 0,
+      phase: 0,
+      revision: 1,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 4]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 1,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 5]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 1,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 6]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 2,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 7]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 2,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 8]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 2,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 9]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 2,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 10]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 3,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 11]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 3,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 12]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 3,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 13]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 3,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 14]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 3,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 15]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 4,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 16]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 4,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 17]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 1,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 4,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 18]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 4,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 19]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 4,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 20]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 4,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 21]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 4,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 22]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 5,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 23]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 5,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 24]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 5,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 25]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 5,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 26]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 5,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 27]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 5,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 28]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 5,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 29]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 6,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 30]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 31]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 32]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 33]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 34]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 35]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 36]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 37]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 38]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 39]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 40]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 41]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 42]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 43]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 7,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 44]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 8,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 45]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 8,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 46]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 8,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 47]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 8,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 48]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 9,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 49]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 9,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 50]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 9,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 51]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 9,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 52]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 9,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 53]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 9,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 54]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 9,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 55]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 10,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 56]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 10,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 57]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 10,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 58]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 10,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 59]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 10,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[State 60]
+{
+  s:
+    {
+      burned: false,
+      calls: 0,
+      context: 2,
+      events: [],
+      held: 4,
+      locked: false,
+      permitRevision: 0,
+      phase: 0,
+      revision: 10,
+      stopped: Set(0, 1, 2),
+      token: false,
+      tokenOwner: 0
+    }
+}
+
+[ok] No violation found (1729ms at 578 traces/second).
+Trace length statistics: max=61, min=61, average=61.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0x125 --backend=typescript to reproduce.

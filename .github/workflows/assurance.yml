@@ -38,12 +38,14 @@ jobs:
             cores = 2
             extra-substituters = https://devenv.cachix.org
             extra-trusted-public-keys = devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=
+      - name: Record fixed SDK CLI identity
+        run: nix shell github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv --command devenv --version
       - name: Fetch locked dependencies
-        run: nix run github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv -- --profile ci shell -- go run ./go/cmd/weaver-dev -clean-source bootstrap
+        run: nix shell github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv --command devenv shell --profile ci -- go run ./go/cmd/weaver-dev -clean-source bootstrap
       - name: Verify native and formal contracts
-        run: nix run github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv -- --profile ci shell -- go run ./go/cmd/weaver-dev -clean-source check
+        run: nix shell github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv --command devenv shell --profile ci -- go run ./go/cmd/weaver-dev -clean-source check
       - name: Measure all Rust packages and gRPC
-        run: nix run github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv -- --profile ci shell -- go run ./go/cmd/weaver-dev -clean-source bench
+        run: nix shell github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv --command devenv shell --profile ci -- go run ./go/cmd/weaver-dev -clean-source bench
       - name: Retain source-bound receipts and failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
