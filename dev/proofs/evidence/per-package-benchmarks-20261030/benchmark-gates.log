@@ -1,0 +1,35 @@
+• Validating lock
+✓ Validating lock in 636µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.56ms
+• Evaluating shell
+✓ Evaluating shell in 20.2ms (cached)
+✓ Configuring shell in 24.6ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 1.01ms (cached)
+✓ Loading tasks in 1.96ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 15.5ms
+• Running devenv:files
+✓ Running devenv:files in 29.3ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 55.6ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 18.9ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 10.5µs (no command)
+✓ Running tasks in 120ms
+💡 The dotenv file '.env' was not found.
+go: downloading github.com/Open-MBEE/OpenSysML v0.10.1
+go: downloading google.golang.org/protobuf v1.36.11
+go: downloading google.golang.org/grpc v1.75.0
+go: downloading google.golang.org/genproto/googleapis/rpc v0.0.0-20250707201910-8d1bb00bc6a7
+go: downloading golang.org/x/net v0.53.0
+go: downloading golang.org/x/sys v0.45.0
+go: downloading golang.org/x/text v0.37.0
+go: downloading connectrpc.com/connect v1.20.0
+ok  	github.com/HardenedLinux/weaver/go/internal/devrunner	2.297s
+ok  	github.com/HardenedLinux/weaver/go/dev	2.768s

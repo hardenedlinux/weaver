@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"math"
 	"os"
 	"path/filepath"
 	"slices"
@@ -31,6 +32,52 @@ var rustBenchmarkCases = []string{
 	"server_response_encoding/protobuf_frames/32",
 	"server_response_encoding/arrow_batch/1",
 	"server_response_encoding/arrow_batch/32",
+}
+
+// Criterion sanitizes the package/group separator to an underscore on disk.
+func benchmarkPackage(name string) (string, error) {
+	for _, member := range []string{"contracts", "policy", "ledger", "execution", "server"} {
+		if strings.HasPrefix(name, member+"_") {
+			return "weaver-" + member, nil
+		}
+	}
+	return "", fmt.Errorf("benchmark has no package owner: %s", name)
+}
+
+// An estimate alone is insufficient: retain the original thirty measured samples.
+func benchmarkSamples(path string, begin time.Time) (int, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return 0, err
+	}
+	if info.ModTime().Before(begin) {
+		return 0, fmt.Errorf("stale benchmark samples: %s", path)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return 0, err
+	}
+	var sample struct {
+		Iterations []float64 `json:"iters"`
+		Times      []float64 `json:"times"`
+	}
+	if err := json.Unmarshal(data, &sample); err != nil {
+		return 0, err
+	}
+	if len(sample.Iterations) != 30 || len(sample.Times) != 30 {
+		return 0, fmt.Errorf("benchmark requires thirty paired samples: %s", path)
+	}
+	for i, iterations := range sample.Iterations {
+		elapsed := sample.Times[i]
+		if !positiveFinite(iterations) || math.Trunc(iterations) != iterations || !positiveFinite(elapsed) {
+			return 0, fmt.Errorf("invalid benchmark sample %d: %s", i, path)
+		}
+	}
+	return len(sample.Times), nil
+}
+
+func positiveFinite(value float64) bool {
+	return value > 0 && !math.IsInf(value, 0) && !math.IsNaN(value)
 }
 
 // Copy only structured Criterion data; raw stage logs retain Go/Rust environment receipts.
@@ -94,8 +141,20 @@ func collectBenchmarks(root, directory, started string) error {
 			if !slices.Contains(rustBenchmarkCases, name) {
 				return fmt.Errorf("unmapped Rust benchmark case: %s", name)
 			}
+			if !positiveFinite(mean.Point) || !positiveFinite(mean.Interval.Lower) ||
+				!positiveFinite(mean.Interval.Upper) || mean.Interval.Lower > mean.Point || mean.Point > mean.Interval.Upper {
+				return fmt.Errorf("invalid benchmark mean or confidence bounds: %s", name)
+			}
+			owner, err := benchmarkPackage(name)
+			if err != nil {
+				return err
+			}
+			samples, err := benchmarkSamples(filepath.Join(filepath.Dir(path), "sample.json"), begin)
+			if err != nil {
+				return fmt.Errorf("%s: %w", name, err)
+			}
 			measured[name] = true
-			rows = append(rows, fmt.Sprintf("| %s | %.3f | %.3f | %.3f |", name, mean.Point, mean.Interval.Lower, mean.Interval.Upper))
+			rows = append(rows, fmt.Sprintf("| %s | %s | %d | %.3f | %.3f | %.3f |", owner, name, samples, mean.Point, mean.Interval.Lower, mean.Interval.Upper))
 		}
 		return nil
 	})
@@ -108,6 +167,6 @@ func collectBenchmarks(root, directory, started string) error {
 		}
 	}
 	slices.Sort(rows)
-	report := "#+TITLE: Native Rust Benchmark Baseline\n#+LANGUAGE: en\n\n* Scope\nLocal empirical baseline, not a throughput guarantee. Values are nanoseconds per measured iteration. CPU, compiler and client environment are in the adjacent stage logs. Go RPC client allocations are not Rust allocations.\n\n| Benchmark | Mean ns | Lower confidence bound ns | Upper confidence bound ns |\n|-----------+---------+---------------------------+---------------------------|\n" + strings.Join(rows, "\n") + "\n"
+	report := "#+TITLE: Native Rust Benchmark Baseline\n#+LANGUAGE: en\n\n* Scope\nLocal empirical baseline, not a throughput guarantee. Values are nanoseconds per measured iteration. CPU, compiler and client environment are in the adjacent stage logs. Go RPC client allocations are not Rust allocations.\n\n| Package | Benchmark | Samples | Mean ns | Lower confidence bound ns | Upper confidence bound ns |\n|---------+-----------+---------+---------+---------------------------+---------------------------|\n" + strings.Join(rows, "\n") + "\n"
 	return os.WriteFile(filepath.Join(directory, "benchmark-summary.org"), []byte(report), 0600)
 }

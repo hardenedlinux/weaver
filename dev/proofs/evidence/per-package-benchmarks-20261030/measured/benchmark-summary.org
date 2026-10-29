@@ -1,0 +1,26 @@
+#+TITLE: Native Rust Benchmark Baseline
+#+LANGUAGE: en
+
+* Scope
+Local empirical baseline, not a throughput guarantee. Values are nanoseconds per measured iteration. CPU, compiler and client environment are in the adjacent stage logs. Go RPC client allocations are not Rust allocations.
+
+| Package | Benchmark | Samples | Mean ns | Lower confidence bound ns | Upper confidence bound ns |
+|---------+-----------+---------+---------+---------------------------+---------------------------|
+| weaver-contracts | contracts_provider_commitment/128 | 30 | 3754.821 | 3632.034 | 3927.687 |
+| weaver-contracts | contracts_provider_commitment/16384 | 30 | 55077.929 | 51286.457 | 61906.447 |
+| weaver-contracts | contracts_provider_commitment/524288 | 30 | 1540621.483 | 1533371.416 | 1549208.099 |
+| weaver-contracts | contracts_publication_commitment | 30 | 52263.792 | 51688.137 | 52978.489 |
+| weaver-execution | execution_https_guarded_sse_three_events | 30 | 2853931.564 | 2650178.792 | 3082437.243 |
+| weaver-ledger | ledger_consume_and_dispatch_burn | 30 | 427298.591 | 388699.358 | 477830.232 |
+| weaver-ledger | ledger_fresh_admission | 30 | 241022.275 | 231182.033 | 252234.518 |
+| weaver-ledger | ledger_idempotent_admission | 30 | 94631.052 | 92339.408 | 98402.768 |
+| weaver-ledger | ledger_publication_atomic_commit | 30 | 337370.958 | 309001.580 | 384631.495 |
+| weaver-ledger | ledger_publication_exact_replay | 30 | 8598.986 | 8529.678 | 8685.900 |
+| weaver-ledger | ledger_publication_historical_lookup | 30 | 2916.718 | 2840.215 | 3009.963 |
+| weaver-policy | policy_compilation_cache_churn | 30 | 84031.322 | 80449.316 | 88360.383 |
+| weaver-policy | policy_typed_schema_validation | 30 | 169721.153 | 167801.688 | 172121.331 |
+| weaver-policy | policy_warm_compilation_current_decision | 30 | 49992.351 | 49286.658 | 51110.883 |
+| weaver-server | server_response_encoding/arrow_batch/1 | 30 | 4376.141 | 4247.300 | 4611.726 |
+| weaver-server | server_response_encoding/arrow_batch/32 | 30 | 4908.774 | 4887.351 | 4934.420 |
+| weaver-server | server_response_encoding/protobuf_frames/1 | 30 | 170.773 | 161.452 | 184.205 |
+| weaver-server | server_response_encoding/protobuf_frames/32 | 30 | 5162.123 | 5113.108 | 5226.608 |

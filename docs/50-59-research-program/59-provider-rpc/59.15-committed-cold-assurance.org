@@ -129,3 +129,33 @@ the fixed package with =nix shell --command devenv= and attaches the profile
 option to =shell=. The reference and dependency locks remain unchanged. Actual
 success of that entrypoint must still be observed; no retry reclassifies the
 failed run as passing.
+
+The [[https://github.com/hardenedlinux/weaver/actions/runs/40952881893][second Linux run]] reaches the actual Go bootstrap at =848cfa5=. Its retained
+[[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40952881893-bootstrap-failed/receipt.json][source-bound failure receipt]] shows Rust and Go dependency preparation and
+both committed-source guards passing. Elan fails while unpacking the unchanged
+Lean toolchain with =No space left on device=. The imported proof dependency
+stage also fails; native, formal and benchmark qualification did not run.
+The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/pinned-cli-local-entry.log][fixed SDK entrypoint completes locally]] without forcing process exit.
+CLI invocation is therefore no longer the observed Linux blocker. Failed-run
+logs were unavailable from the run/job endpoints at observation time; the
+uploaded per-stage failure artifact provides the retained failure evidence.
+
+The next workflow prepares capacity through the existing Go development tool,
+using the explicit =prepare-ci-host= command. It admits only privileged Linux
+GitHub-hosted jobs with the expected hosted-runner markers. Its fixed deletion
+list contains only preinstalled Android, .NET, Haskell and CodeQL SDK locations;
+no caller-provided cleanup path is accepted. Nix, Elan, project sources and
+verification caches are not cleanup targets. Final SDK symlinks are unlinked,
+ancestor symlinks are rejected, and local controls operate exclusively in
+temporary roots. Hosted-image immutability during preparation is a trust
+premise; environment markers are guardrails, not an authentication protocol.
+Ordinary bootstrap/check/bench never perform host cleanup. This command is not
+a service or a production Gateway execution interface.
+
+Checkout also excludes historical proof/specification evidence from expansion.
+Every declared runtime, model, proof, benchmark and verification source remains
+present and subject to the unchanged committed-blob check. No dependency pin,
+compiler, timeout, model sample count or required gate is relaxed to fit the
+runner. The rebuilt hosted workflow must independently qualify available disk
+capacity and all original stages; local cleanup controls alone cannot establish
+Linux acceptance.

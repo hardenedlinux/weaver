@@ -31,6 +31,24 @@ Every case is required: a partial package, stale estimate or unmapped case fails
 artifact collection. Adding or renaming a case requires updating the Go collector
 and this workload contract together. The workspace development gate separately
 checks every member's Criterion development edge and executable target.
+Adding a Rust workspace member therefore requires its own =benches/gateway.rs=,
+=benches/README.org= workload contract, inherited development-only Criterion,
+and a harness-free benchmark target. Its measured cases must be registered in
+the Go collector and the workspace package gate; an existing package's results
+cannot qualify the new member. Keep benchmark fixtures and instrumentation out
+of the production dependency graph and preserve the ASP Rust deny gate.
+
+Each summary row names its owning Rust package and measured sample count.
+An estimate qualifies only with a fresh =new/sample.json= containing exactly
+thirty paired iteration/time measurements. Every iteration count must be a
+positive integer; every elapsed time must be positive and finite. Mean estimates
+and confidence bounds must be positive, finite and ordered. A successful Cargo
+exit, an estimate without samples, or a stale sample file cannot qualify a
+package. Collector controls omit each of the eighteen cases individually and
+inject missing, stale, shortened, mismatched and invalid measurements; no
+successful summary may be published for these controls. These are artifact
+integrity checks under the trusted runner/toolchain premise, not proof that
+timestamps or synthetic JSON authenticate execution against a malicious host.
 A separate
 =generate-rpc= mode reproduces the pinned Go bindings without a shell.
 
@@ -107,3 +125,18 @@ The [[file:59.14-go-fuzz-coordinator.org][Go fuzz coordinator increment]] then q
 package with the upstream source backport and reruns the complete measured
 entrypoint. Its verification and benchmark receipts bind the same 164 inputs;
 the earlier Go 1.25.0 receipts are not relabeled as this development profile.
+
+* Per-package evidence gate qualification
+
+The subsequent [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/benchmark-summary.org][per-package measured baseline]] qualifies all eighteen Rust cases
+under the stricter sample gate, with thirty paired samples per case. Coverage is
+four contracts, three Policy, six ledger, one execution and four server cases.
+The [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/receipt.json][receipt]] records all five stages passing and binds 171 worktree inputs;
+this run does not assert committed-source admission or Linux CI qualification.
+The [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/benchmark-evidence-controls.log][collector controls]] and
+[[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/benchmark-gates.log][workspace development gate]] pass with the race detector enabled.
+The [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/grpc-benchmark.log][RPC measurements]] retain three repetitions each of warm Inspect,
+reconnect Inspect and authority publication, with Go allocation counters.
+All [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/rust-benchmarks.log][Criterion comparisons and outliers]] remain preserved. This is a fresh
+local baseline and artifact-integrity qualification; comparisons against the
+local cached baseline are not a matched performance acceptance experiment.

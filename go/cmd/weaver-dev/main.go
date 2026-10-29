@@ -16,8 +16,15 @@ func main() {
 	clean := flag.Bool("clean-source", false, "Require every verification input to match the same committed revision")
 	flag.Parse()
 	if flag.NArg() != 1 {
-		fmt.Fprintln(os.Stderr, "usage: weaver-dev [-go-bin PATH] [-clean-source] bootstrap|check|bench|generate-rpc")
+		fmt.Fprintln(os.Stderr, "usage: weaver-dev [-go-bin PATH] [-clean-source] bootstrap|check|bench|generate-rpc|prepare-ci-host")
 		os.Exit(2)
+	}
+	if flag.Arg(0) == "prepare-ci-host" {
+		if err := devrunner.PrepareHostedCI(os.Stdout); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		return
 	}
 	working, err := os.Getwd()
 	if err != nil {
