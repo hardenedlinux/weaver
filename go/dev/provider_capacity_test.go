@@ -41,7 +41,7 @@ func TestProviderSaturatedExecutionPreservesRevocationAndObservation(t *testing.
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	const streams = 16 // Unchanged production default execution capacity.
-	task := v1.Task{Family: "f-load", Principal: "alice", Profile: "p", Models: []string{"model-a"}, Budget: streams * 4,
+	task := v1.Task{ProviderProfile: providerProfile(), Family: "f-load", Principal: "alice", Profile: "p", Models: []string{"model-a"}, Budget: streams * 4,
 		Endpoints: map[string]string{}, BodyDigests: map[string]string{}, NodeCostBounds: map[string]uint64{}, StreamContracts: map[string]string{}}
 	for _, route := range f.plan.Routes {
 		task.Targets = append(task.Targets, route.Target)

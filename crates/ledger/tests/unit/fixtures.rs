@@ -6,6 +6,7 @@ pub const POLICY: &str = r#"permit(principal == Weaver::Principal::"alice", acti
 pub fn task() -> Task {
     let body = body();
     Task {
+        provider_profile: None,
         family: "family".into(),
         principal: "alice".into(),
         profile: "profile".into(),

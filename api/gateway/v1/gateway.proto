@@ -15,6 +15,7 @@ message ProviderPlan {
   string family = 1; string node = 2; string profile = 3; string model = 4;
   bytes body = 5; repeated Route routes = 6; uint64 ceiling = 7;
   uint64 revision = 8; uint64 fence = 9;
+  string profile_commitment = 10;
 }
 enum Encoding { PROTOBUF = 0; ARROW_IPC = 1; }
 message ProviderRequest { ProviderPlan plan = 1; Encoding encoding = 2; uint32 batch_rows = 3; }
@@ -26,7 +27,9 @@ message Task {
   string family = 1; string principal = 2; string profile = 3; repeated string nodes = 4; repeated string targets = 5;
   map<string,string> endpoints = 6; map<string,string> body_digests = 7; map<string,uint64> node_cost_bounds = 8;
   map<string,string> stream_contracts = 9; repeated string models = 10; uint64 budget = 11;
+  ProviderProfile provider_profile = 12;
 }
+message ProviderProfile { string id = 1; string protocol = 2; uint64 max_output_tokens = 3; uint64 max_messages = 4; uint64 max_body_bytes = 5; }
 message RegisterTaskRequest { Task task = 1; }
 message PublishRequest { optional uint64 expected_revision = 1; uint64 fence = 2; string policy = 3; string schema = 4; string operation_id = 5; }
 enum PublicationOutcome { PUBLICATION_OUTCOME_UNSPECIFIED = 0; COMMITTED = 1; REJECTED = 2; }

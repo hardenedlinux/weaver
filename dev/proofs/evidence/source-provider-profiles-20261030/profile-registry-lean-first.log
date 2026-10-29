@@ -1,0 +1,215 @@
+• Validating lock
+✓ Validating lock in 664µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.19ms
+• Evaluating shell
+✓ Evaluating shell in 28.8ms (cached)
+✓ Configuring shell in 32.3ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 1.37ms (cached)
+✓ Loading tasks in 2.64ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 27.5ms
+• Running devenv:files
+✓ Running devenv:files in 36.2ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 60.0ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 20.5ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 25.0µs (no command)
+✓ Running tasks in 145ms
+💡 The dotenv file '.env' was not found.
+'Weaver.ProviderRpc.admitted_provider_cap_is_bounded' depends on axioms: [propext]
+'Weaver.ProviderRpc.competing_provider_caps_cannot_be_admitted' depends on axioms: [propext]
+'Weaver.ProviderRpc.preferred_cap_precedence_counterexample' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.request_bounds_and_affine_execution_composition' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.release_step_preserves_original_binding' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.release_run_preserves_original_binding' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.foreign_plan_cannot_release' does not depend on any axioms
+'Weaver.ProviderRpc.changed_encoding_cannot_release' does not depend on any axioms
+'Weaver.ProviderRpc.restarted_session_cannot_release' does not depend on any axioms
+'Weaver.ProviderRpc.release_binding_and_execution_composition' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.invocation_history_step' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.invocation_history_run' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.cancelled_context_cannot_admit' depends on axioms: [propext]
+'Weaver.ProviderRpc.stale_consumed_view_cannot_create_dispatch_token' depends on axioms: [propext]
+'Weaver.ProviderRpc.cancellation_and_original_hold_composition' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.operation_leaf_cannot_publish_on_source' does not depend on any axioms
+'Weaver.ProviderRpc.source_ingress_cannot_execute' depends on axioms: [propext]
+'Weaver.ProviderRpc.publication_requires_source_ingress_and_leaf' does not depend on any axioms
+'Weaver.ProviderRpc.ingress_step_preserves_independent_custody' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ProviderRpc.operation_transition_preserves_source_state' does not depend on any axioms
+'Weaver.ProviderRpc.connection_step_preserves_custody' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ProviderRpc.bounded_connections_include_handshakes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ProviderRpc.provider_and_connection_composition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ProviderRpc.lane_step_preserves_bounds' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.execution_saturation_preserves_publication_admission' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.execution_and_admission_composition' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.safe_step' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.safe_run' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.stale_authority_cannot_pass' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.consumed_unknown_retains_original_hold' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.new_rpc_nonce_cannot_select_fresh_state' does not depend on any axioms
+'Weaver.ProviderRpc.arrow_cannot_weaken_row_authority' does not depend on any axioms
+'Weaver.ProviderRpc.every_arrow_row_requires_authority' does not depend on any axioms
+'Weaver.ProviderRpc.shared_name_is_not_key_authority' does not depend on any axioms
+'Weaver.ProviderRpc.execution_and_encoding_composition' depends on axioms: [propext, Quot.sound]
+dev/proofs/lean/ProviderRpc.lean:385:42: error: Application type mismatch: The argument
+  Task
+has type
+  Type → Type
+but is expected to have type
+  Type
+in the application
+  ProfileBindings Task
+dev/proofs/lean/ProviderRpc.lean:388:43: error: Application type mismatch: The argument
+  Task
+has type
+  Type → Type
+but is expected to have type
+  Type
+in the application
+  ProfileBindings Task
+dev/proofs/lean/ProviderRpc.lean:391:51: error: Application type mismatch: The argument
+  Task
+has type
+  Type → Type
+but is expected to have type
+  Type
+in the application
+  ProfileBindings Task
+dev/proofs/lean/ProviderRpc.lean:391:79: error: type expected, got
+  (Task : Type ?u.6 → Type ?u.6)
+dev/proofs/lean/ProviderRpc.lean:394:47: error: Application type mismatch: The argument
+  Task
+has type
+  Type → Type
+but is expected to have type
+  Type
+in the application
+  ProfileBindings Task
+dev/proofs/lean/ProviderRpc.lean:397:45: error: Application type mismatch: The argument
+  Task
+has type
+  Type → Type
+but is expected to have type
+  Type
+in the application
+  ProfileBindings Task
+dev/proofs/lean/ProviderRpc.lean:397:73: error: type expected, got
+  (Task : Type ?u.6 → Type ?u.6)
+dev/proofs/lean/ProviderRpc.lean:402:16: error: Function expected at
+  roots
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  task
+
+Hint: The identifier `roots` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+dev/proofs/lean/ProviderRpc.lean:403:4: error: Function expected at
+  RegisterProfile
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  roots
+
+Hint: The identifier `RegisterProfile` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+dev/proofs/lean/ProviderRpc.lean:407:19: error: Function expected at
+  RegisterProfile
+but this term has type
+  ?m.4
+
+Note: Expected a function because this term is being applied to the argument
+  roots
+
+Hint: The identifier `RegisterProfile` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+dev/proofs/lean/ProviderRpc.lean:409:2: error: Tactic `generalize` failed: result is not type correct
+  da = db
+
+Profile✝ Digest✝ : Type
+roots : ProfileBindings sorry Profile✝ Digest✝
+profile : Profile✝
+digest : Digest✝
+x✝ : Sort u_1
+RegisterProfile : x✝
+safe : NoProfileFork roots
+floor : ProfileFloor roots profile digest
+a b : sorry
+p : ?m.17 safe floor
+da db : ?m.18 safe floor
+ha : sorry a p da
+hb : sorry b p db
+⊢ da = db
+dev/proofs/lean/ProviderRpc.lean:416:8: warning: declaration uses `sorry`
+dev/proofs/lean/ProviderRpc.lean:423:51: error: Function expected at
+  TaskProfileCompatible
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  roots
+
+Hint: The identifier `TaskProfileCompatible` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+dev/proofs/lean/ProviderRpc.lean:424:23: error: Function expected at
+  RegisterProfile
+but this term has type
+  ?m.3
+
+Note: Expected a function because this term is being applied to the argument
+  roots
+
+Hint: The identifier `RegisterProfile` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+dev/proofs/lean/ProviderRpc.lean:426:2: error: Tactic `generalize` failed: result is not type correct
+  p = q ∧ d = e
+
+Profile✝ Digest✝ : Type
+roots : ProfileBindings sorry Profile✝ Digest✝
+x✝¹ : Sort u_1
+TaskProfileCompatible : x✝¹
+x✝ : Sort u_2
+RegisterProfile : x✝
+safe : NoTaskProfileFork roots
+compatible : sorry
+task : sorry
+p q : ?m.14 safe compatible
+d e : ?m.15 safe compatible
+ha : sorry task p d
+hb : sorry task q e
+⊢ p = q ∧ d = e
+dev/proofs/lean/ProviderRpc.lean:436:16: error: Function expected at
+  roots
+but this term has type
+  ?m.8
+
+Note: Expected a function because this term is being applied to the argument
+  key
+
+Hint: The identifier `roots` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+dev/proofs/lean/ProviderRpc.lean:436:44: error: Function expected at
+  RegisterProfile
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  roots
+
+Hint: The identifier `RegisterProfile` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+'Weaver.ProviderRpc.registration_preserves_original_profile_binding' does not depend on any axioms
+dev/proofs/lean/ProviderRpc.lean:520:14: error(lean.unknownIdentifier): Unknown constant `profile_registration_cannot_fork`
+dev/proofs/lean/ProviderRpc.lean:521:14: error(lean.unknownIdentifier): Unknown constant `original_task_registration_cannot_rebind`
+'Weaver.ProviderRpc.missing_registry_cannot_erase_original_floor' depends on axioms: [sorryAx]
+'Weaver.ProviderRpc.exact_profile_registration_is_idempotent' depends on axioms: [sorryAx]
+'Weaver.ProviderRpc.source_profile_and_native_execution_step' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.source_profile_and_native_execution_run' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.profile_recovery_retains_original_hold' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.profile_registry_mismatch_cannot_send' does not depend on any axioms
+'Weaver.ProviderRpc.unknown_extension_cannot_authorize_profile_effect' depends on axioms: [propext]
+'Weaver.ProviderRpc.profile_identity_and_digest_are_jointly_guarded' does not depend on any axioms

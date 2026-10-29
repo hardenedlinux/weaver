@@ -1,0 +1,64 @@
+• Validating lock
+✓ Validating lock in 659µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.30ms
+• Evaluating shell
+✓ Evaluating shell in 19.1ms (cached)
+✓ Configuring shell in 22.4ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 854µs (cached)
+✓ Loading tasks in 2.02ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 16.3ms
+• Running devenv:files
+✓ Running devenv:files in 24.5ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 52.2ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 18.7ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 13.1µs (no command)
+✓ Running tasks in 112ms
+💡 The dotenv file '.env' was not found.
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.57s
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-930e053f6ced3ce5)
+
+running 1 test
+test enforce_asp_rust_gate ... FAILED
+
+failures:
+
+---- enforce_asp_rust_gate stdout ----
+
+thread 'enforce_asp_rust_gate' (24063937) panicked at crates/contracts/src/lib.rs:24:1:
+[RUST-AGENT-DOCS-MODULE-001] Info: Public module lacks an intent doc
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts/src/provider_profile/artifact.rs:1:1
+fix: add a module intent doc using doc_markdown style
+line: 1 | use crate::{Error, MAX_BODY_BYTES, Result, body_digest, identifier};
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts/src/provider_profile/artifact.rs has public Rust surface without a module intent doc.
+Contract: Add a concise `//!` module-level intent doc using `clippy::doc_markdown` style, with technical identifiers in backticks.
+
+[RUST-AGENT-API-TYPE-012] Info: Public semantic identifier uses a primitive type
+@ /Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts/src/provider_profile/artifact.rs:25:1
+fix: wrap this identifier in an owner-named newtype or document why the primitive boundary is intentional
+line: 25 |     pub fn chat_text(id: &str, tokens: u64, messages: u64, bytes: u64) -> Result<Self> {
+Help: /Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts/src/provider_profile/artifact.rs exposes public function `chat_text` parameter `id` as primitive `&str`.
+Contract: Give public semantic identifiers a named domain type so agents can preserve invariants without guessing from parameter names.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    enforce_asp_rust_gate
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+error: test failed, to rerun pass `-p weaver-contracts --lib`

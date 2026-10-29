@@ -16,6 +16,7 @@ pub struct ProviderPlan {
     pub family: String,
     pub node: String,
     pub profile: String,
+    pub profile_commitment: String,
     pub model: String,
     pub body: String,
     pub routes: Vec<ProviderRoute>,
@@ -27,6 +28,14 @@ impl ProviderPlan {
     pub fn validate(&self) -> Result<()> {
         for id in [&self.family, &self.node, &self.profile, &self.model] {
             identifier(id)?;
+        }
+        if self.profile_commitment.len() != 64
+            || !self
+                .profile_commitment
+                .bytes()
+                .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+        {
+            return Err(Error::Invalid("provider profile commitment"));
         }
         if self.routes.is_empty()
             || self.routes.len() > 8
@@ -77,10 +86,11 @@ impl ProviderPlan {
     pub fn digest(&self) -> Result<String> {
         self.validate()?;
         Ok(body_digest(&serde_json::to_string(&(
-            "weaver.provider-plan.v1",
+            "weaver.provider-plan.v2",
             &self.family,
             &self.node,
             &self.profile,
+            &self.profile_commitment,
             &self.model,
             body_digest(&self.body),
             &self.routes,
@@ -88,7 +98,10 @@ impl ProviderPlan {
         ))?))
     }
     pub fn matches(&self, task: &Task) -> Result<bool> {
-        Ok(task.family == self.family
+        Ok(self.binding(task)?.is_some())
+    }
+    pub fn binding(&self, task: &Task) -> Result<Option<crate::ProviderRequestFacts>> {
+        if !(task.family == self.family
             && task.profile == self.profile
             && task.nodes.contains(&self.node)
             && task.models.contains(&self.model)
@@ -103,6 +116,16 @@ impl ProviderPlan {
                 task.targets.contains(&r.target)
                     && task.endpoints.get(&r.target) == Some(&r.endpoint)
             }))
+        {
+            return Ok(None);
+        }
+        let Some(profile) = &task.provider_profile else {
+            return Ok(None);
+        };
+        if profile.id != self.profile || profile.digest()? != self.profile_commitment {
+            return Ok(None);
+        }
+        Ok(Some(profile.request_facts(&self.body)?))
     }
 }
 /// Closed response event kinds; tools never become executable capabilities.

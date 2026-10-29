@@ -12,6 +12,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/HardenedLinux/weaver/go/internal/devrunner"
 )
 
 func tool(t *testing.T, binary string, args ...string) []byte {
@@ -66,6 +68,13 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 	}
 	for _, n := range metadata.Resolve.Nodes {
 		nodes[n.ID] = n
+	}
+	members := make([]string, 0, len(metadata.Members))
+	for _, id := range metadata.Members {
+		members = append(members, packages[id].Name)
+	}
+	if err := devrunner.ValidateBenchmarkPackages(members); err != nil {
+		t.Fatal(err)
 	}
 	layers := map[string]string{
 		"weaver-contracts": "", "weaver-policy": "weaver-contracts",
@@ -148,6 +157,22 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 		}
 		if criterion != 1 || !bench {
 			t.Fatalf("missing executable benchmark: %s", p.Name)
+		}
+		benchRoot := filepath.Join(filepath.Dir(p.ManifestPath), "benches")
+		for _, name := range []string{"gateway.rs", "README.org"} {
+			info, err := os.Stat(filepath.Join(benchRoot, name))
+			if err != nil || !info.Mode().IsRegular() || info.Size() == 0 {
+				t.Fatalf("missing package benchmark asset: %s/%s: %v", p.Name, name, err)
+			}
+		}
+		contract, err := os.ReadFile(filepath.Join(benchRoot, "README.org"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, section := range []string{"#+LANGUAGE: en", "* Workload", "* Measurement boundary", "* Entrypoints"} {
+			if !strings.Contains(string(contract), section) {
+				t.Fatalf("missing benchmark contract section: %s: %s", p.Name, section)
+			}
 		}
 		seen := map[string]bool{}
 		todo := []string{id}

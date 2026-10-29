@@ -117,6 +117,8 @@ pub struct Task {
     pub family: String,
     pub principal: String,
     pub profile: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub provider_profile: Option<crate::ProviderProfile>,
     pub nodes: Vec<String>,
     pub targets: Vec<String>,
     pub endpoints: std::collections::BTreeMap<String, String>,
@@ -131,6 +133,12 @@ impl Task {
     pub fn validate(&self) -> Result<()> {
         for s in [&self.family, &self.principal, &self.profile] {
             identifier(s)?;
+        }
+        if let Some(profile) = &self.provider_profile {
+            profile.validate()?;
+            if profile.id != self.profile {
+                return Err(Error::Invalid("task profile identity"));
+            }
         }
         for set in [&self.nodes, &self.targets, &self.models] {
             validate_set(set)?;
@@ -177,7 +185,8 @@ impl Task {
     }
     /// Require the original task profile, node, target, model and body commitments.
     pub fn admits(&self, p: &Proposal) -> bool {
-        self.family == p.family
+        self.provider_profile.is_none()
+            && self.family == p.family
             && self.profile == p.profile
             && self.nodes.contains(&p.node)
             && self.targets.contains(&p.target)

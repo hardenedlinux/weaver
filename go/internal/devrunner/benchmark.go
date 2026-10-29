@@ -18,6 +18,10 @@ var rustBenchmarkCases = []string{
 	"contracts_provider_commitment/16384",
 	"contracts_provider_commitment/524288",
 	"contracts_publication_commitment",
+	"contracts_profile_commitment",
+	"contracts_profile_request_validation/128",
+	"contracts_profile_request_validation/16384",
+	"contracts_profile_request_validation/524288",
 	"policy_typed_schema_validation",
 	"policy_warm_compilation_current_decision",
 	"policy_compilation_cache_churn",
@@ -27,6 +31,9 @@ var rustBenchmarkCases = []string{
 	"ledger_publication_atomic_commit",
 	"ledger_publication_exact_replay",
 	"ledger_publication_historical_lookup",
+	"ledger_profile_task_registration",
+	"ledger_profile_task_replay/1",
+	"ledger_profile_task_replay/256",
 	"execution_https_guarded_sse_three_events",
 	"server_response_encoding/protobuf_frames/1",
 	"server_response_encoding/protobuf_frames/32",
@@ -42,6 +49,39 @@ func benchmarkPackage(name string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("benchmark has no package owner: %s", name)
+}
+
+// ValidateBenchmarkPackages joins the measured inventory to Cargo's actual members.
+// Neither a benchmark in another package nor a target without measured cases qualifies.
+func ValidateBenchmarkPackages(members []string) error {
+	owners := map[string]bool{}
+	cases := map[string]bool{}
+	for _, name := range rustBenchmarkCases {
+		owner, err := benchmarkPackage(name)
+		if err != nil {
+			return err
+		}
+		if cases[name] {
+			return fmt.Errorf("duplicate benchmark case: %s", name)
+		}
+		cases[name], owners[owner] = true, true
+	}
+	seen := map[string]bool{}
+	for _, member := range members {
+		if seen[member] {
+			return fmt.Errorf("duplicate workspace member: %s", member)
+		}
+		seen[member] = true
+		if !owners[member] {
+			return fmt.Errorf("workspace member has no measured benchmark cases: %s", member)
+		}
+	}
+	for owner := range owners {
+		if !seen[owner] {
+			return fmt.Errorf("benchmark owner is absent from workspace: %s", owner)
+		}
+	}
+	return nil
 }
 
 // An estimate alone is insufficient: retain the original thirty measured samples.

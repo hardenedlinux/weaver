@@ -14,6 +14,7 @@ fn exact_source_cache_is_bounded_and_never_caches_permission() {
         fence: 1,
     };
     let task = Task {
+        provider_profile: None,
         family: "f".into(),
         principal: "alice".into(),
         profile: "p".into(),

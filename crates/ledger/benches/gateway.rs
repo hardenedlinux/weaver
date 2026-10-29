@@ -1,4 +1,4 @@
-use criterion::{BatchSize, Criterion, criterion_group, criterion_main};
+use criterion::{BatchSize, BenchmarkId, Criterion, criterion_group, criterion_main};
 use std::{collections::BTreeSet, hint::black_box, time::Duration};
 #[path = "../../../dev/benchmarks/contracts.rs"]
 mod fixtures;
@@ -99,5 +99,51 @@ fn publication_operations(c: &mut Criterion) {
         })
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,publication_operations}
+fn profile_registration(c: &mut Criterion) {
+    let (task, _) = fixtures::task_plan(128, "https://provider.invalid/v1/chat/completions");
+    c.bench_function("ledger/profile_task_registration", |b| {
+        b.iter_batched(
+            || {
+                let temp = tempfile::tempdir().expect("temporary store");
+                let ledger =
+                    weaver_ledger::Ledger::open(temp.path().join("profile.db")).expect("ledger");
+                (temp, ledger)
+            },
+            |(temp, mut ledger)| {
+                ledger
+                    .register_task(&task)
+                    .expect("atomic profile and task");
+                black_box((temp, ledger))
+            },
+            BatchSize::PerIteration,
+        )
+    });
+    let mut group = c.benchmark_group("ledger/profile_task_replay");
+    for count in [1, 256] {
+        let (_temp, mut ledger, plan) =
+            stores::fresh(128, "https://provider.invalid/v1/chat/completions");
+        for i in 1..count {
+            let mut other = task.clone();
+            let mut bound = plan.clone();
+            other.family = format!("profile-family-{i}");
+            bound.family = other.family.clone();
+            other
+                .stream_contracts
+                .insert(bound.node.clone(), bound.digest().expect("binding"));
+            ledger
+                .register_task(&other)
+                .expect("shared profile floor fixture");
+        }
+        group.bench_with_input(BenchmarkId::from_parameter(count), &count, |b, _| {
+            b.iter(|| {
+                ledger
+                    .register_task(black_box(&task))
+                    .expect("exact original replay");
+                black_box(())
+            })
+        });
+    }
+    group.finish();
+}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,publication_operations,profile_registration}
 criterion_main!(benches);

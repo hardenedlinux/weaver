@@ -20,6 +20,13 @@ func TestRefinement(t *testing.T) {
 		t.Fatalf("invalid refinement: %+v %v", p, err)
 	}
 }
+func TestProviderProfileCannotUseUntypedRequestPath(t *testing.T) {
+	task, request := fixture()
+	task.ProviderProfile = &contract.ProviderProfile{ID: task.Profile, Protocol: contract.ChatTextSSE, MaxOutputTokens: 4096, MaxMessages: 64, MaxBodyBytes: 1 << 20}
+	if _, err := Compile(task, request, contract.View{}); err == nil {
+		t.Fatal("provider semantic contract bypassed by an untyped request")
+	}
+}
 
 func FuzzCeilingNeverExpands(f *testing.F) {
 	f.Add(uint64(1))

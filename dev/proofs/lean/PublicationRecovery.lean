@@ -95,19 +95,23 @@ structure Owner where
   closeOk : Bool := false
   failed : Bool := false
   ack : Bool := false
+  commandAck : Bool := false
 
 def OwnerSafe (o : Owner) : Prop := o.busy = o.slot ∧
   (o.transaction = true → o.busy = true ∧ o.live = true) ∧
   (o.closed = true → o.live = false) ∧ (o.failed = true → o.closing = true) ∧
-  (o.ack = true → o.closing = true ∧ o.closed = true ∧ o.closeOk = true ∧ o.failed = false ∧ o.busy = false ∧ o.transaction = false)
+  (o.ack = true → o.closing = true ∧ o.closed = true ∧ o.closeOk = true ∧ o.failed = false ∧ o.busy = false ∧ o.transaction = false) ∧
+  (o.commandAck = true → o.busy = false ∧ o.slot = false ∧ o.transaction = false)
 
 inductive OwnerStep : Owner → Owner → Prop where
   | admit (o) (live : o.live = true) (openForWork : o.closing = false) (free : o.busy = false) :
-      OwnerStep o {o with busy := true, slot := true}
+      OwnerStep o {o with busy := true, slot := true, commandAck := false}
   | begin (o) (busy : o.busy = true) (live : o.live = true) (healthy : o.failed = false) :
       OwnerStep o {o with transaction := true}
   | quiescent (o) : OwnerStep o {o with transaction := false}
   | finishCommand (o) (idleTransaction : o.transaction = false) : OwnerStep o {o with busy := false, slot := false}
+  | commandReply (o) (free : o.busy = false) (quiescent : o.transaction = false) (healthy : o.failed = false) :
+      OwnerStep o {o with commandAck := true}
   | disconnect (o) : OwnerStep o o
   | requestClose (o) : OwnerStep o {o with closing := true}
   | storageFailure (o) (live : o.live = true) : OwnerStep o {o with failed := true, closing := true}
@@ -128,7 +132,10 @@ theorem closed_owner_cannot_reopen (step : OwnerStep a b) (closed : a.live = fal
 
 theorem successful_owner_ack_requires_close_and_no_failed_transaction (h : OwnerSafe o) (ack : o.ack = true) :
     o.closed = true ∧ o.closeOk = true ∧ o.failed = false ∧ o.busy = false ∧ o.transaction = false := by
-  exact (h.2.2.2.2 ack).2
+  exact (h.2.2.2.2.1 ack).2
+
+theorem command_ack_requires_returned_capacity (h : OwnerSafe o) (ack : o.commandAck = true) :
+    o.busy = false ∧ o.slot = false ∧ o.transaction = false := h.2.2.2.2.2 ack
 
 theorem owned_worker_and_publication_composition [DecidableEq Key]
     (logical : Safe held calls s) (publication : Step s t)
@@ -136,6 +143,7 @@ theorem owned_worker_and_publication_composition [DecidableEq Key]
   ⟨step_preserves_accounting logical publication, owner_step_preserves_custody owned owner⟩
 
 #print axioms owner_step_preserves_custody
+#print axioms command_ack_requires_returned_capacity
 #print axioms closed_owner_cannot_reopen
 #print axioms successful_owner_ack_requires_close_and_no_failed_transaction
 #print axioms owned_worker_and_publication_composition

@@ -5,6 +5,8 @@ permit (
 ) when {
     context.family == "f" && context.node == "infer" && context.profile == "p" &&
     context.model == "model-a" && context.ceiling >= 4 && context.sequence < 4096 &&
+    context.profile_digest != "" && context.protocol == "openai.chat-text-sse.v1" &&
+    context.output_token_limit > 0 && context.output_token_limit <= 4096 && context.message_count <= 64 &&
     ["protobuf", "arrow"].contains(context.format)
 };
 forbid (principal, action, resource == Weaver::Target::"denied");

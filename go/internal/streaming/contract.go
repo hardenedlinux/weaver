@@ -52,6 +52,9 @@ func (c Contract) Digest() (string, error) {
 
 // Compile emits no authority: Rust rechecks the original registry, cost, Policy and fence.
 func Compile(task contract.Task, c Contract, id, payload string, ceiling uint64, view contract.View) (Message, error) {
+	if task.ProviderProfile != nil {
+		return Message{}, errors.New("provider profile cannot use an untyped stream path")
+	}
 	var zero Message
 	digest, err := c.Digest()
 	if err != nil || task.StreamContracts[c.Node] != digest {

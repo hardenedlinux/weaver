@@ -10,13 +10,28 @@ No runtime transport or writable handle is exported to make a benchmark possible
 server encoding is a pure bounded data API, and actual provider I/O still uses
 the guarded executor.
 
+| Workspace package | Required measured cases | Package-local target |
+|-------------------+-------------------------+----------------------|
+| weaver-contracts | 8 | crates/contracts/benches/gateway.rs |
+| weaver-policy | 3 | crates/policy/benches/gateway.rs |
+| weaver-ledger | 9 | crates/ledger/benches/gateway.rs |
+| weaver-execution | 1 | crates/execution/benches/gateway.rs |
+| weaver-server | 4 | crates/server/benches/gateway.rs |
+
+The optimized all-features matrix contains 25 Rust cases. Three additional Go
+benchmarks exercise the actual Rust service through mTLS gRPC, each repeated
+three times. These complement the package-local costs rather than replacing
+them with a single aggregate number.
+
 | Package | Benchmarks | Measured boundary |
 |---------+------------+-------------------|
 | contracts | Provider commitments at 128 B, 16 KiB and 512 KiB source payloads | Validation, canonical request hashing and plan commitment; byte throughput reported |
 | contracts | Publication commitment with a 16 KiB Policy comment plus typed fixture | Exact Policy/schema hashing and stable parent/fence/ID binding |
+| contracts | Immutable provider profile commitment; closed request validation at 128 B, 16 KiB and 512 KiB | Full semantic descriptor hashing and duplicate-aware request schema, message and sampling validation |
 | policy | Typed schema validation; warmed compilation with a fresh decision; sixteen-source cache churn | Schema/parse cost and actual Cedar evaluation; no decision-cache benchmark |
 | ledger | Fresh admission; consumption plus dispatch burn; idempotent admission | SQLite FULL/WAL operations, current authorization and original hold checks |
 | ledger | Atomic publication commit; exact publication replay; historical outcome lookup | Joint authority/schema/outcome commit versus immutable result observation; setup/teardown outside timed closure |
+| ledger | Atomic task/profile registration; exact task replay with one and 256 retained tasks | Durable immutable profile join and indexed original-task semantic floors; population and teardown outside timing |
 | execution | Guarded HTTPS SSE request with three response events | Cold TLS connection, actual loopback provider request, source admission, durable burns, bounded parsing and final release guards |
 | server | Protobuf versus Arrow at one and 32 equivalent events | Pure frame creation and actual Protobuf/Arrow IPC serialization; record throughput reported |
 | server through Go | Warm mTLS gRPC Inspect on an already completed operation | Actual authenticated RPC, principal join and canonical ledger observation; Go client allocations reported separately |
@@ -26,11 +41,15 @@ the guarded executor.
 =go run ./go/cmd/weaver-dev bench= runs optimized Rust benchmarks and the actual
 RPC benchmark. It records Rust/Go environment output, raw logs, a source-bound
 receipt, Criterion structured data and an English Org summary. Only result files
-created during the current run can qualify its eighteen explicitly mapped cases.
+created during the current run can qualify its twenty-five explicitly mapped cases.
 Every case is required: a partial package, stale estimate or unmapped case fails
 artifact collection. Adding or renaming a case requires updating the Go collector
-and this workload contract together. The workspace development gate separately
-checks every member's Criterion development edge and executable target.
+and this workload contract together. Before measurement, the Go entrypoint runs
+the workspace development gate and collector controls. Cargo's actual member
+names must match the measured case owners exactly; a new member without cases,
+an orphan owner, or a duplicate member fails. The gate checks each member's
+Criterion development edge, executable target and nonempty package-local Org
+workload contract with explicit timing and entrypoint sections.
 Adding a Rust workspace member therefore requires its own =benches/gateway.rs=,
 =benches/README.org= workload contract, inherited development-only Criterion,
 and a harness-free benchmark target. Its measured cases must be registered in
@@ -44,7 +63,7 @@ thirty paired iteration/time measurements. Every iteration count must be a
 positive integer; every elapsed time must be positive and finite. Mean estimates
 and confidence bounds must be positive, finite and ordered. A successful Cargo
 exit, an estimate without samples, or a stale sample file cannot qualify a
-package. Collector controls omit each of the eighteen cases individually and
+package. Collector controls omit each of the twenty-five cases individually and
 inject missing, stale, shortened, mismatched and invalid measurements; no
 successful summary may be published for these controls. These are artifact
 integrity checks under the trusted runner/toolchain premise, not proof that
@@ -148,3 +167,23 @@ reconnect Inspect and authority publication, with Go allocation counters.
 All [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/rust-benchmarks.log][Criterion comparisons and outliers]] remain preserved. This is a fresh
 local baseline and artifact-integrity qualification; comparisons against the
 local cached baseline are not a matched performance acceptance experiment.
+
+* Current twenty-five-case coverage qualification
+
+The [[file:../../../dev/proofs/evidence/per-package-benchmark-coverage-20261030/README.org][expanded per-package qualification]] measures all 25 cases in the current
+matrix, including immutable profile hashing, closed request validation, atomic
+task/profile registration and one/256-task replay. Each case has thirty fresh
+paired samples. Three actual Go-to-Rust mTLS RPC benchmarks each complete three
+repetitions. The six-stage receipt passes and binds 196 unchanged worktree
+inputs; it does not claim committed-source admission or remote CI qualification.
+
+The package coverage preflight now runs inside the benchmark entrypoint, before
+measurement, as well as through normal Go development tests. The race-enabled
+coverage and artifact controls pass. New members without registered measured
+cases and missing package-local workload contracts fail the package gate.
+
+The eighteen cached comparisons contain four regressions, eight improvements
+and six cases without significant change; seven new cases have no comparison.
+All raw warnings and outliers remain preserved. Increased observed host load
+does not explain away the regressions, and successful artifact collection does
+not establish production performance acceptance.

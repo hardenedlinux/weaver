@@ -17,7 +17,7 @@ pub(crate) struct SourceOwner {
 }
 enum Command {
     Register {
-        task: Task,
+        task: Box<Task>,
         reply: oneshot::Sender<Result<()>>,
         slot: OwnedSemaphorePermit,
     },
@@ -101,8 +101,12 @@ impl SourceOwner {
             .map_err(|_| Status::failed_precondition("source authority or state rejected"))
     }
     pub(crate) async fn register(&self, task: Task) -> std::result::Result<(), Status> {
-        self.submit(|reply, slot| Command::Register { task, reply, slot })
-            .await
+        self.submit(|reply, slot| Command::Register {
+            task: Box::new(task),
+            reply,
+            slot,
+        })
+        .await
     }
     pub(crate) async fn publish(
         &self,
@@ -165,34 +169,39 @@ fn process(
         ledger.require_quiescent()?;
         match command {
             Command::Register { task, reply, slot } => {
-                let _slot = slot;
                 let result = register(ledger, &task);
-                answer(ledger, reply, result)?;
+                answer(ledger, reply, result, slot)?;
             }
             Command::Publish {
                 change,
                 reply,
                 slot,
             } => {
-                let _slot = slot;
                 let result = ledger.publish_authority(&change);
-                answer(ledger, reply, result)?;
+                answer(ledger, reply, result, slot)?;
             }
             Command::Inspect { key, reply, slot } => {
-                let _slot = slot;
                 let result = ledger.publication_receipt(&key);
-                answer(ledger, reply, result)?;
+                answer(ledger, reply, result, slot)?;
             }
         }
     }
 }
-fn answer<T>(ledger: &Ledger, reply: oneshot::Sender<Result<T>>, result: Result<T>) -> Result<()> {
+fn answer<T>(
+    ledger: &Ledger,
+    reply: oneshot::Sender<Result<T>>,
+    result: Result<T>,
+    slot: OwnedSemaphorePermit,
+) -> Result<()> {
     ledger.require_quiescent()?;
     if matches!(&result, Err(Error::Storage(_))) {
         return Err(Error::Conflict(
             "source storage outcome unknown; owner cannot be reused",
         ));
     }
+    // Acknowledgment permits immediate reuse. Retain custody through SQL and its
+    // quiescence check, then return capacity before a caller can observe success.
+    drop(slot);
     let _ = reply.send(result);
     Ok(())
 }

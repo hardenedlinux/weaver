@@ -4,10 +4,15 @@
 * Workload
 
 Provider request commitments for 128 B, 16 KiB and 512 KiB source payloads; publication commitment for a 16 KiB Policy comment and typed schema.
+Immutable provider profile commitment and closed request validation at the same
+three payload sizes. Eight measured cases belong to this package.
 
 * Measurement boundary
 
 Canonical hashing and commitment construction. Fixtures are created before timing; byte throughput is reported. This does not measure network transport.
+Profile validation includes duplicate-aware decoding, closed fields, message and
+sampling checks; profile hashing includes all semantic limits. The input bodies
+are valid text requests; this is not an adversarial-parser throughput claim.
 
 * Entrypoints
 

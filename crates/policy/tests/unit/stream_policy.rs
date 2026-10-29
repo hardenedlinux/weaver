@@ -26,6 +26,7 @@ fn specification_derived_policy_is_typed_and_constrains_actual_range_facts() {
         }],
     };
     let t = Task {
+        provider_profile: None,
         family: "f".into(),
         principal: "alice".into(),
         profile: "p".into(),

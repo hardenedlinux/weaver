@@ -2,6 +2,8 @@
 mod json;
 mod model;
 mod provider;
+mod provider_profile;
+pub use provider_profile::{CHAT_TEXT_SSE, ProviderProfile, ProviderRequestFacts};
 mod publication;
 pub use provider::{
     ProviderEvent, ProviderEventKind, ProviderPlan, ProviderReceipt, ProviderRoute, ProviderState,

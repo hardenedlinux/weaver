@@ -15,6 +15,7 @@ func Plan(goBinary string) []Stage {
 		{"rust-default-profile", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
 		{"rust-tests", "cargo", []string{"test", "--workspace", "--all-features", "--locked", "--offline"}},
 		{"rust-clippy", "cargo", []string{"clippy", "--workspace", "--all-features", "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
+		{"go-fuzz-control-build", goBinary, []string{"test", "-c", "./go/internal/devrunner/testdata/fuzzcontrol", "-o", ".data/fuzz-control.test"}},
 		{"go-tests", goBinary, []string{"test", "-count=1", "-race", "./go/..."}},
 		{"go-routing-pbt", goBinary, []string{"test", "./go/internal/routing", "-run", "^$", "-fuzz", "FuzzCeilingNeverExpands", "-fuzztime=3s", "-parallel=1"}},
 		{"go-decoder-pbt", goBinary, []string{"test", "./go/api/v1", "-run", "^$", "-fuzz", "FuzzDecoderNeverPanics", "-fuzztime=3s", "-parallel=1"}},
@@ -31,6 +32,10 @@ func Plan(goBinary string) []Stage {
 		{"lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/RuntimeAdmission.lean"}},
 		{"provider-routing-pbt", goBinary, []string{"test", "./go/internal/routing", "-run", "^$", "-fuzz", "FuzzProviderPlanCannotExpandAuthority", "-fuzztime=3s", "-parallel=1"}},
 		{"provider-request-bounds-pbt", goBinary, []string{"test", "./go/internal/routing", "-run", "^$", "-fuzz", "FuzzProviderRequestBounds", "-fuzztime=3s", "-parallel=1"}},
+		{"provider-profile-schema-pbt", goBinary, []string{"test", "./go/api/v1", "-run", "^$", "-fuzz", "FuzzProviderProfileRequestFacts", "-fuzztime=3s", "-parallel=1"}},
+		{"provider-profile-config-pbt", goBinary, []string{"test", "./go/internal/config", "-run", "^$", "-fuzz", "FuzzProviderProfileConfiguration", "-fuzztime=3s", "-parallel=1"}},
+		{"profile-registry-quint-tests", "quint", []string{"test", "dev/proofs/quint/ProviderProfile.qnt", "--main", "ProviderProfile", "--seed", "293"}},
+		{"profile-registry-quint-safety", "quint", []string{"run", "dev/proofs/quint/ProviderProfile.qnt", "--main", "ProviderProfile", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"provider-quint-tests", "quint", []string{"test", "dev/proofs/quint/ProviderRpc.qnt", "--main", "ProviderRpc", "--seed", "293"}},
 		{"provider-quint-safety", "quint", []string{"run", "dev/proofs/quint/ProviderRpc.qnt", "--main", "ProviderRpc", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"provider-lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/ProviderRpc.lean"}},
@@ -67,6 +72,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		return []Stage{
 			{"rust-environment", "rustc", []string{"-vV"}},
 			{"go-environment", goBinary, []string{"version"}},
+			{"benchmark-package-contract", goBinary, []string{"test", "-count=1", "./go/dev", "./go/internal/devrunner", "-run", "^Test(CargoWorkspaceAndDevelopmentGates|Benchmark.*)$"}},
 			{"rust-benchmarks", "cargo", []string{"bench", "--workspace", "--all-features", "--bench", "gateway", "--locked", "--offline", "-j", "2", "--", "--noplot"}},
 			{"grpc-benchmark", goBinary, []string{"test", "-tags=integration", "./go/dev", "-run", "^$", "-bench", "^BenchmarkGateway(Inspect|InspectReconnect|AuthorityPublish)$", "-benchtime=2s", "-count=3", "-benchmem"}},
 		}, nil

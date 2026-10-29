@@ -22,7 +22,9 @@ permit belongs to the worker throughout its lifetime, including idle wait and
 connection close. A separate shared command permit admits one queued or running
 command in total. The channel has one slot, but does not create an additional
 waiting-command allowance: every admitted command owns the same single command
-permit until its SQL processing and result handoff finish. Saturation fails fast.
+permit through SQL processing and the final quiescence check. It returns command
+capacity before sending the observable result, so acknowledgment permits immediate
+reuse. Saturation fails fast while actual work remains outstanding.
 The sixteen-execution/two-observation bounds and separate ingress socket pools
 are unchanged; no extra unbounded task or waiting queue is introduced.
 
@@ -35,6 +37,7 @@ are unchanged; no extra unbounded task or waiting queue is introduced.
 | Before SQL | Require an autocommit/quiescent connection | An unresolved transaction cannot be reused as a stale snapshot |
 | Decision | Existing exact-ID replay or fresh deciding CAS reads actual SQLite state | No cached authority head, grant or Cedar decision is introduced |
 | After SQL | Require quiescence before handing off a result | A failed/unfinished transaction cannot be acknowledged as reusable |
+| Command acknowledgment | Return the completed command permit before sending its result | A successful reply cannot race with capacity still owned by that completed command |
 | Caller loss | Keep the command permit in native custody until actual command completion | Cancellation is not an abort certificate; original-ID reconciliation remains necessary |
 | Runtime close | Stop command intake; cancel idle receive; finish already entered SQL; dispose queued commands conservatively | Dropped/unobserved work stays unknown, with no budget release |
 | Storage fault | Retire the worker; close admission through the common runtime and observe the worker error | No automatic reopen or successful result acknowledgment |
@@ -82,6 +85,16 @@ ID. The original provider claim remains consumed and retains its four-credit hol
 Another test changes authority through another connection and confirms that the
 reused source connection reports the new conflict head while preserving older
 historical receipts.
+
+The later [[file:59.17-source-provider-profiles.org][profile increment]] retains a Linux CI counterexample to the earlier
+handoff order: the worker sent a reply before dropping the command permit. The
+next sequential command could therefore report ResourceExhausted despite a
+successful predecessor. Capacity now returns after the checked SQL boundary and
+before reply send. Caller loss during SQL still retains capacity. Quint adds a
+command-reply transition and an explicit reply-before-capacity counterexample;
+Lean adds =command_ack_requires_returned_capacity= and composes it with the
+existing publication/accounting owner invariant. Command replies and successful
+service-drain acknowledgments remain distinct states.
 
 * Source-bound verification and retained failures
 

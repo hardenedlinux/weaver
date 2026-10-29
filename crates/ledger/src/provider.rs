@@ -339,6 +339,7 @@ fn guard(
     if (p.revision, p.fence) != (revision, fence) {
         return Err(Error::Conflict("stale provider authority"));
     }
+    crate::provider_profiles::require(tx, p)?;
     let record: String = tx
         .query_row(
             "SELECT record FROM tasks WHERE family=?1",
@@ -373,6 +374,7 @@ fn guard_live(
     if (revision, fence) != (p.plan.revision, p.plan.fence) {
         return Err(Error::Conflict("stale provider release authority"));
     }
+    crate::provider_profiles::require(tx, &p.plan)?;
     p.binding.authorize(
         &source,
         weaver_policy::ProviderCheck {

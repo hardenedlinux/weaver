@@ -37,8 +37,10 @@ impl StreamContract {
     }
     /// Require the same source task, profile, node, target and original input commitment.
     pub fn matches(&self, task: &Task) -> bool {
-        self.digest()
-            .is_ok_and(|d| task.stream_contracts.get(&self.node) == Some(&d))
+        task.provider_profile.is_none()
+            && self
+                .digest()
+                .is_ok_and(|d| task.stream_contracts.get(&self.node) == Some(&d))
             && self.family == task.family
             && self.profile == task.profile
             && task.nodes.contains(&self.node)

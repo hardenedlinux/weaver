@@ -19,6 +19,7 @@ fn fixture(path: &std::path::Path) -> (Ledger, StreamContract) {
         .expect("publish");
     let input = body_digest("original");
     let mut task = Task {
+        provider_profile: None,
         family: "f".into(),
         principal: "alice".into(),
         profile: "p".into(),

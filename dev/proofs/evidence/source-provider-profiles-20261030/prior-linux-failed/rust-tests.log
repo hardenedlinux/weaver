@@ -1,0 +1,416 @@
+   Compiling unicode-ident v1.0.27
+   Compiling libc v0.2.191
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling cfg-if v1.0.5
+   Compiling syn v3.0.9
+   Compiling memchr v2.8.3
+   Compiling syn v2.0.119
+   Compiling jobserver v0.1.35
+   Compiling cc v1.9.0
+   Compiling equivalent v1.0.3
+   Compiling foldhash v0.2.0
+   Compiling hashbrown v0.17.1
+   Compiling serde_core v1.0.229
+   Compiling itoa v1.0.18
+   Compiling regex-syntax v0.8.11
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling indexmap v2.14.2
+   Compiling log v0.4.34
+   Compiling libm v0.2.16
+   Compiling num-traits v0.2.19
+   Compiling once_cell v1.21.4
+   Compiling fnv v1.0.7
+   Compiling smallvec v1.16.3
+   Compiling serde_derive v1.0.229
+   Compiling bytes v1.12.1
+   Compiling aho-corasick v1.1.5
+   Compiling serde v1.0.229
+   Compiling regex-automata v0.4.18
+   Compiling bitflags v2.13.2
+   Compiling typenum v1.20.1
+   Compiling zerocopy-derive v0.8.59
+   Compiling zerocopy v0.8.59
+   Compiling zmij v1.0.23
+   Compiling serde_json v1.0.154
+   Compiling pin-project-lite v0.2.17
+   Compiling same-file v1.0.6
+   Compiling walkdir v2.5.0
+   Compiling generic-array v0.14.7
+   Compiling regex v1.13.1
+   Compiling synstructure v0.14.0
+   Compiling futures-core v0.3.34
+   Compiling either v1.19.0
+   Compiling parking_lot_core v0.9.12
+   Compiling object v0.39.1
+   Compiling zerofrom-derive v0.1.8
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling half v2.7.1
+   Compiling thiserror-impl v2.0.21
+   Compiling errno v0.3.14
+   Compiling darling_core v0.24.1
+   Compiling thiserror v2.0.21
+   Compiling signal-hook-registry v1.4.8
+   Compiling ar_archive_writer v0.5.3
+   Compiling parking_lot v0.12.5
+   Compiling digest v0.10.7
+   Compiling zerofrom v0.1.8
+   Compiling yoke-derive v0.8.4
+   Compiling tokio-macros v2.7.2
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.3
+   Compiling iana-time-zone v0.1.65
+   Compiling stable_deref_trait v1.2.1
+   Compiling string_cache v0.8.9
+   Compiling sha3 v0.10.9
+   Compiling yoke v0.8.3
+   Compiling chrono v0.4.45
+   Compiling tokio v1.53.2
+   Compiling darling_macro v0.24.1
+   Compiling psm v0.1.32
+   Compiling getrandom v0.3.4
+   Compiling lalrpop-util v0.22.2
+   Compiling petgraph v0.7.1
+   Compiling ena v0.14.4
+   Compiling semver v1.0.28
+   Compiling cmake v0.1.58
+   Compiling linux-raw-sys v0.12.1
+   Compiling futures-sink v0.3.34
+   Compiling lalrpop v0.22.2
+   Compiling aws-lc-sys v0.45.0
+   Compiling rustix v1.1.5
+   Compiling darling v0.24.1
+   Compiling getrandom v0.4.3
+   Compiling http v1.5.0
+   Compiling stacker v0.1.25
+   Compiling blake3 v1.8.7
+   Compiling enum-ordinalize-derive v4.4.2
+   Compiling zerovec-derive v0.11.6
+   Compiling futures-macro v0.3.34
+   Compiling futures-task v0.3.34
+   Compiling futures-io v0.3.34
+   Compiling tinyvec v1.13.3
+   Compiling fastrand v2.5.0
+   Compiling slab v0.4.12
+   Compiling cpufeatures v0.2.17
+   Compiling cpufeatures v0.3.1
+   Compiling futures-util v0.3.34
+   Compiling sha2 v0.10.9
+   Compiling unicode-normalization v0.1.25
+   Compiling cedar-policy-core v4.12.0
+   Compiling zerovec v0.11.8
+   Compiling enum-ordinalize v4.4.2
+   Compiling serde_with_macros v3.24.0
+   Compiling logos-codegen v0.16.1
+   Compiling hybrid-array v0.4.15
+   Compiling linked-hash-map v0.5.6
+   Compiling tracing-core v0.1.36
+   Compiling ring v0.17.14
+   Compiling miette-derive v7.6.0
+   Compiling tracing-attributes v0.1.31
+   Compiling displaydoc v0.2.7
+   Compiling ref-cast-impl v1.0.27
+   Compiling constant_time_eq v0.4.2
+   Compiling unicode-script v0.5.8
+   Compiling unicode-width v0.1.14
+   Compiling zeroize v1.9.1
+   Compiling hex v0.4.3
+   Compiling arrayvec v0.7.8
+   Compiling miette v7.6.0
+   Compiling unicode-security v0.1.2
+   Compiling ref-cast v1.0.27
+   Compiling tracing v0.1.44
+   Compiling linked_hash_set v0.1.6
+   Compiling logos-derive v0.16.1
+   Compiling serde_with v3.24.0
+   Compiling tokio-util v0.7.19
+   Compiling educe v0.7.6
+   Compiling http-body v1.1.0
+   Compiling itertools v0.15.0
+   Compiling nonempty v0.12.0
+   Compiling smol_str v0.3.6
+   Compiling winnow v1.0.4
+   Compiling typed-arena v2.0.2
+   Compiling unicode-width v0.2.2
+   Compiling rustc-literal-escaper v0.0.8
+   Compiling arrayvec v0.5.2
+   Compiling pretty v0.12.5
+   Compiling aws-lc-rs v1.18.1
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling logos v0.16.1
+   Compiling asp-rust-build-support v0.1.0 (https://github.com/tao3k/asp-rust?rev=1ca41124b846dec947f3d05119cafa07eaa57924#1ca41124)
+   Compiling weaver-contracts v0.1.0 (/home/runner/work/weaver/weaver/crates/contracts)
+   Compiling rustls-pki-types v1.15.1
+   Compiling block-buffer v0.12.1
+   Compiling crypto-common v0.2.2
+   Compiling serde_spanned v1.1.2
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling alloca v0.4.0
+   Compiling getrandom v0.2.17
+   Compiling clap_lex v1.1.1
+   Compiling toml_writer v1.1.3+spec-1.1.0
+   Compiling anstyle v1.0.14
+   Compiling untrusted v0.9.0
+   Compiling const-oid v0.10.2
+   Compiling percent-encoding v2.3.2
+   Compiling ciborium-io v0.2.2
+   Compiling tower-service v0.3.3
+   Compiling ciborium-ll v0.2.2
+   Compiling digest v0.11.3
+   Compiling clap_builder v4.6.7
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling asp-rust v0.1.2 (https://github.com/tao3k/asp-rust?rev=1ca41124b846dec947f3d05119cafa07eaa57924#1ca41124)
+   Compiling cedar-policy-formatter v4.12.0
+   Compiling tinystr v0.8.4
+   Compiling itertools v0.13.0
+   Compiling bstr v1.13.1
+   Compiling cast v0.3.0
+   Compiling litemap v0.8.3
+   Compiling writeable v0.6.4
+   Compiling criterion-plot v0.8.2
+   Compiling icu_locale_core v2.3.0
+   Compiling globset v0.4.21
+   Compiling cedar-policy v4.12.0
+   Compiling cargo_toml v1.0.1
+   Compiling clap v4.6.7
+   Compiling sha2 v0.11.1
+   Compiling ciborium v0.2.2
+   Compiling zerotrie v0.2.5
+   Compiling potential_utf v0.1.6
+   Compiling rand_core v0.9.5
+   Compiling tinytemplate v1.2.1
+   Compiling page_size v0.6.0
+   Compiling try-lock v0.2.5
+   Compiling atomic-waker v1.1.2
+   Compiling utf8_iter v1.0.4
+   Compiling base64 v0.22.1
+   Compiling anes v0.1.6
+   Compiling oorandom v11.1.5
+   Compiling icu_collections v2.3.0
+   Compiling criterion v0.8.2
+   Compiling h2 v0.4.19
+   Compiling libsqlite3-sys v0.38.2
+   Compiling want v0.3.1
+   Compiling rustls v0.23.46
+   Compiling icu_provider v2.3.1
+   Compiling rustls-webpki v0.103.15
+   Compiling httparse v1.10.1
+   Compiling futures-channel v0.3.34
+   Compiling sync_wrapper v1.0.2
+   Compiling subtle v2.6.1
+   Compiling httpdate v1.0.3
+   Compiling tower-layer v0.3.3
+   Compiling hyper v1.11.1
+   Compiling icu_normalizer_data v2.3.0
+   Compiling icu_properties_data v2.3.0
+   Compiling weaver-policy v0.1.0 (/home/runner/work/weaver/weaver/crates/policy)
+   Compiling tempfile v3.27.0
+   Compiling ppv-lite86 v0.2.21
+   Compiling wait-timeout v0.2.1
+   Compiling ipnet v2.12.2
+   Compiling quick-error v1.2.3
+   Compiling bit-vec v0.8.0
+   Compiling rusty-fork v0.3.1
+   Compiling bit-set v0.8.0
+   Compiling hyper-util v0.1.20
+   Compiling rand_chacha v0.9.0
+   Compiling icu_properties v2.3.0
+   Compiling icu_normalizer v2.3.0
+   Compiling prost-derive v0.14.4
+   Compiling tower v0.5.3
+   Compiling rand_xorshift v0.4.0
+   Compiling rand v0.9.5
+   Compiling http-body-util v0.1.5
+   Compiling hashlink v0.12.2
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling fallible-iterator v0.3.0
+   Compiling unarray v0.1.4
+   Compiling proptest v1.11.0
+   Compiling rusqlite v0.40.2
+   Compiling idna_adapter v1.2.2
+   Compiling tokio-rustls v0.26.5
+   Compiling idna v1.1.0
+   Compiling form_urlencoded v1.2.2
+   Compiling num-integer v0.1.47
+   Compiling openssl-probe v0.2.1
+   Compiling rustls-native-certs v0.8.4
+   Compiling pulldown-cmark v0.13.4
+   Compiling prost v0.14.4
+   Compiling num-bigint v0.4.8
+   Compiling url v2.5.8
+   Compiling prettyplease v0.2.37
+   Compiling weaver-ledger v0.1.0 (/home/runner/work/weaver/weaver/crates/ledger)
+   Compiling ahash v0.8.12
+   Compiling rustc_version v0.4.1
+   Compiling arrow-buffer v58.4.0
+   Compiling tower-http v0.6.11
+   Compiling prost-types v0.14.4
+   Compiling pulldown-cmark-to-cmark v22.0.1
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling petgraph v0.8.3
+   Compiling hyper-rustls v0.27.9
+   Compiling base64 v0.23.1
+   Compiling arrow-schema v58.4.0
+   Compiling mime v0.3.17
+   Compiling prost-build v0.14.4
+   Compiling axum-core v0.5.6
+   Compiling arrow-data v58.4.0
+   Compiling reqwest v0.13.5
+   Compiling flatbuffers v25.12.19
+   Compiling tonic-build v0.14.6
+   Compiling num-complex v0.4.6
+   Compiling pin-project-internal v1.1.13
+   Compiling matchit v0.8.4
+   Compiling axum v0.8.9
+   Compiling pin-project v1.1.13
+   Compiling arrow-array v58.4.0
+   Compiling tonic-prost-build v0.14.6
+   Compiling hyper-timeout v0.5.2
+   Compiling tokio-stream v0.1.19
+   Compiling async-trait v0.1.92
+   Compiling tonic v0.14.6
+   Compiling weaver-server v0.1.0 (/home/runner/work/weaver/weaver/crates/server)
+   Compiling arrow-select v58.4.0
+   Compiling weaver-execution v0.1.0 (/home/runner/work/weaver/weaver/crates/execution)
+   Compiling deranged v0.5.8
+   Compiling time-core v0.1.9
+   Compiling num-conv v0.2.2
+   Compiling powerfmt v0.2.1
+   Compiling time v0.3.55
+   Compiling tonic-prost v0.14.6
+   Compiling arrow-ipc v58.4.0
+   Compiling yasna v0.6.0
+   Compiling pem v3.0.6
+   Compiling rcgen v0.14.9
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4m 02s
+     Running unittests src/lib.rs (target/debug/deps/weaver_contracts-da51d7cfdcc35908)
+
+running 1 test
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-2c09f38a0345ce68)
+
+running 4 tests
+test decoder::duplicate_keys_unknown_fields_and_streams_are_rejected ... ok
+test provider_bounds::competing_provider_limits_are_rejected_even_when_the_preferred_one_is_bounded ... ok
+test provider_bounds::provider_cap_must_be_a_positive_bounded_integer ... ok
+test provider_bounds::exactly_one_provider_cap_is_bounded ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_execution-829e18df435e4511)
+
+running 14 tests
+test broker::stream_session::tests::effective_revocation_stops_actual_next_range_and_prefix_reconnect ... ok
+test broker::stream_session::tests::actual_tcp_ranges_preserve_one_message_and_one_hold ... ok
+test broker::stream_session::tests::recovered_old_worker_socket_cannot_use_new_custody ... ok
+test broker::stream_session::tests::revoke_after_range_consumption_proves_zero_call_and_recovers_original_message ... ok
+test broker::stream_session::tests::tls_flush_cannot_release_a_tail_after_effective_revocation ... ok
+test enforce_asp_rust_gate ... ok
+test provider::runtime::dispatch_tests::cancellation_during_sql_wait_blocks_transport_and_keeps_spent_claim ... ok
+test provider::runtime::dispatch_tests::uncancelled_control_reaches_real_https_transport_once ... ok
+test provider::sse::tests::arbitrary_network_fragmentation_preserves_sse_identity ... ok
+test provider::sse::tests::truncated_oversized_and_wrong_model_streams_are_not_completed ... ok
+test transport::https::tests::destination_aliases_credentials_and_http_are_rejected ... ok
+test broker::stream_session::tests::native_partial_write_freezes_tail_and_never_refunds ... ok
+test transport::https::tests::partial_transport_failure_is_unknown_and_never_retried ... ok
+test transport::https::tests::redirect_is_observed_without_following_or_refunding ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.36s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_ledger-8561c813f66099d3)
+
+running 7 tests
+test enforce_asp_rust_gate ... ok
+test publication::tests::concurrent_publications_serialize_one_winner_and_one_stable_conflict ... ok
+test publication::tests::concurrent_same_identity_commits_only_one_revision ... ok
+test publication::tests::connection_reuse_rejects_an_unresolved_explicit_transaction ... ok
+test publication::tests::historical_decisions_survive_restart_and_cannot_rebase_or_replace_original_id ... ok
+test publication::tests::outcome_insert_failure_rolls_back_policy_schema_and_result_together ... ok
+test publication::tests::arbitrary_replay_restart_and_late_observation_schedules_keep_decisions ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.50s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-4a0279ad0b85e00a)
+
+running 19 tests
+test concurrency::concurrent_consumers_invoke_once ... ok
+test concurrency::concurrent_nodes_share_one_capacity ... ok
+test provider::affine_provider_dispatch_and_revoked_batch_never_repeat_or_refund ... ok
+test properties::arbitrary_replays_restarts_and_consumption_preserve_claims ... ok
+test provider::equal_batch_digests_cannot_transfer_release_between_original_nodes ... ok
+test provider::rejected_competing_caps_leave_no_claim_or_hold_after_restart ... ok
+test provider::arbitrary_provider_replays_restarts_and_release_batches_keep_original_claim ... ok
+test provider::release_encoding_cannot_change_after_preparation ... ok
+test recovery::authored_ceiling_cannot_underreserve_the_original_wire_cost ... ok
+test recovery::crash_after_consumption_never_reopens_or_refunds ... ok
+test recovery::lost_enqueue_reply_recovers_same_hold_and_rejects_changed_wire ... ok
+test recovery::original_task_body_and_profile_cannot_be_replaced ... ok
+test recovery::publication_between_consume_and_send_closes_old_permit ... ok
+test recovery::token_cannot_move_to_a_second_ledger_handle ... ok
+test serialization::effective_publication_cannot_overtake_the_locked_send_boundary ... ok
+test stream_properties::arbitrary_stream_crashes_reauthorizations_and_ranges_preserve_identity ... ok
+test stream_properties::concurrent_stream_registration_and_consumption_do_not_duplicate_holds_or_writes ... ok
+test stream_properties::unknown_range_after_restart_blocks_new_nonce_and_authority ... ok
+test provider::release_capabilities_bind_plan_encoding_and_restart_session ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.63s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_policy-b3b4e22237e47b2e)
+
+running 2 tests
+test compiled::tests::compiled_storage_caps_slots_and_exact_hits_do_not_allocate_new_entries ... ok
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/unit_test.rs (target/debug/deps/unit_test-06aaa8411da3781e)
+
+running 3 tests
+test decisions::default_deny_forbid_and_evaluation_error_are_fail_closed ... ok
+test stream_policy::specification_derived_policy_is_typed_and_constrains_actual_range_facts ... ok
+test compiled_cache::exact_source_cache_is_bounded_and_never_caches_permission ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running unittests src/lib.rs (target/debug/deps/weaver_server-a5e9c854c44df52e)
+
+running 13 tests
+test admission::tests::saturated_detached_execution_preserves_publication_and_observation_custody ... ok
+test connections::tests::pending_listener_reservation_is_released_on_drop ... ok
+test connections::tests::tcp_socket_owns_capacity_until_destruction_and_preserves_io_and_peer_identity ... ok
+test admission::tests::lane_interleavings_preserve_independent_bounds ... ok
+test grpc::ingress_tests::aliased_or_empty_source_identity_is_rejected_before_serving ... ok
+test runtime::tests::arbitrary_disconnect_shutdown_and_drain_schedules_keep_native_custody ... ok
+test runtime::tests::detached_native_writer_keeps_slot_until_drain_acknowledges_completion ... ok
+test runtime::tests::poisoned_admission_still_closes_and_drains ... ok
+test source_owner::tests::disconnected_source_caller_keeps_capacity_until_original_sql_work_finishes ... FAILED
+test source_owner::tests::reused_source_connection_observes_other_writer_and_preserves_historical_result ... FAILED
+test source_owner::tests::startup_failure_closes_runtime_and_drains_native_owner ... ok
+test source_owner::tests::storage_failure_does_not_acknowledge_a_reusable_result ... ok
+test enforce_asp_rust_gate ... ok
+
+failures:
+
+---- source_owner::tests::disconnected_source_caller_keeps_capacity_until_original_sql_work_finishes stdout ----
+
+thread 'source_owner::tests::disconnected_source_caller_keeps_capacity_until_original_sql_work_finishes' (33098) panicked at crates/server/src/../tests/unit/source_owner.rs:118:32:
+task: Status { code: ResourceExhausted, message: "source command lane full", source: None }
+
+---- source_owner::tests::reused_source_connection_observes_other_writer_and_preserves_historical_result stdout ----
+
+thread 'source_owner::tests::reused_source_connection_observes_other_writer_and_preserves_historical_result' (33102) panicked at crates/server/src/../tests/unit/source_owner.rs:60:10:
+query: Status { code: ResourceExhausted, message: "source command lane full", source: None }
+
+
+failures:
+    source_owner::tests::disconnected_source_caller_keeps_capacity_until_original_sql_work_finishes
+    source_owner::tests::reused_source_connection_observes_other_writer_and_preserves_historical_result
+
+test result: FAILED. 11 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+error: test failed, to rerun pass `-p weaver-server --lib`

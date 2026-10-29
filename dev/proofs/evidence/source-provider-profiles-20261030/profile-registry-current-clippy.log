@@ -1,0 +1,31 @@
+• Validating lock
+✓ Validating lock in 3.17ms
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 5.86ms
+• Evaluating shell
+✓ Evaluating shell in 312ms (cached)
+✓ Configuring shell in 427ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 31.5ms (cached)
+✓ Loading tasks in 53.4ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 71.7ms
+• Running devenv:files
+✓ Running devenv:files in 221ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 196ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 155ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 193µs (no command)
+✓ Running tasks in 646ms
+💡 The dotenv file '.env' was not found.
+    Checking weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+    Checking weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+    Checking weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+    Checking weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+    Checking weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.20s

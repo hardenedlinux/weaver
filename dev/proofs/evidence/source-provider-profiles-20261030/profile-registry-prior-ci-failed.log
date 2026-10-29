@@ -1,0 +1,88 @@
+assurance	Verify native and formal contracts	﻿2026-10-29T21:59:17.5056255Z ##[group]Run nix shell github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv --command devenv shell --profile ci -- go run ./go/cmd/weaver-dev -clean-source check
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5058578Z [36;1mnix shell github:cachix/devenv/55d2bb4a3cc710ba82cc8644f4419db3a802e1a4#devenv --command devenv shell --profile ci -- go run ./go/cmd/weaver-dev -clean-source check[0m
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5117289Z shell: /usr/bin/bash -e {0}
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5117781Z env:
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5118171Z   GOTOOLCHAIN: local
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5118581Z   CARGO_BUILD_JOBS: 2
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5119009Z   GOMAXPROCS: 2
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5119418Z   TMPDIR: /home/runner/work/_temp
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5120085Z   NIX_PROFILES: /nix/var/nix/profiles/default /home/runner/.nix-profile
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5120875Z   NIX_SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5121435Z ##[endgroup]
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5824781Z warning: ignoring untrusted flake configuration setting 'extra-substituters'.
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5829307Z Pass '--accept-flake-config' to trust it
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5831641Z warning: ignoring untrusted flake configuration setting 'extra-trusted-public-keys'.
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.5836359Z Pass '--accept-flake-config' to trust it
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.6529076Z Configuring shell
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.6585740Z Configuring shell in 5.72ms
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.6874688Z Loading tasks
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.6890572Z Loading tasks in 1.59ms
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.6908702Z Running tasks     devenv:enterShell
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.6914926Z 
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.6915330Z Running tasks
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.6915932Z Running           devenv:files:cleanup
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7053456Z Succeeded         devenv:files:cleanup (14.35ms)
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7056340Z Running           devenv:files
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7266293Z Succeeded         devenv:files (21.27ms)
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7267398Z Running           devenv:git-hooks:install
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7504591Z Succeeded         devenv:git-hooks:install (23.37ms)
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7508457Z Running           devenv:enterShell
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7632836Z Succeeded         devenv:enterShell (13.02ms)
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7633654Z Running tasks in 72.9ms
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7635425Z Running           devenv:enterTest
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7636217Z No command        devenv:enterTest
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7636858Z 1 Skipped, 4 Succeeded
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7637440Z Configuring shell
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7668609Z Configuring shell in 3.32ms
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.7950875Z 💡 The dotenv file '.env' was not found.
+assurance	Verify native and formal contracts	2026-10-29T21:59:17.9647382Z PASS committed-source-before
+assurance	Verify native and formal contracts	2026-10-29T21:59:18.0573543Z PASS rust-environment
+assurance	Verify native and formal contracts	2026-10-29T21:59:18.0617323Z PASS go-environment
+assurance	Verify native and formal contracts	2026-10-29T21:59:18.6943814Z PASS quint-environment
+assurance	Verify native and formal contracts	2026-10-29T21:59:18.7611161Z PASS proof-environment
+assurance	Verify native and formal contracts	2026-10-29T21:59:18.8594307Z PASS workflow-contract
+assurance	Verify native and formal contracts	2026-10-29T21:59:19.1058510Z PASS rust-format
+assurance	Verify native and formal contracts	2026-10-29T22:01:54.6581900Z PASS rust-default-profile
+assurance	Verify native and formal contracts	2026-10-29T22:06:15.1204959Z FAIL rust-tests
+assurance	Verify native and formal contracts	2026-10-29T22:06:39.2436663Z PASS rust-clippy
+assurance	Verify native and formal contracts	2026-10-29T22:09:47.0560733Z FAIL go-tests
+assurance	Verify native and formal contracts	2026-10-29T22:09:53.8608990Z PASS go-routing-pbt
+assurance	Verify native and formal contracts	2026-10-29T22:09:57.2450491Z PASS go-decoder-pbt
+assurance	Verify native and formal contracts	2026-10-29T22:10:01.6148645Z PASS go-stream-pbt
+assurance	Verify native and formal contracts	2026-10-29T22:10:03.7766727Z PASS quint-stream-tests
+assurance	Verify native and formal contracts	2026-10-29T22:10:14.0551518Z PASS quint-stream-safety
+assurance	Verify native and formal contracts	2026-10-29T22:10:16.4161159Z PASS quint-lifecycle-tests
+assurance	Verify native and formal contracts	2026-10-29T22:10:26.0569633Z PASS quint-lifecycle-safety
+assurance	Verify native and formal contracts	2026-10-29T22:10:26.6252151Z PASS lean-stream
+assurance	Verify native and formal contracts	2026-10-29T22:10:28.2438971Z PASS cedar-proof-bridge
+assurance	Verify native and formal contracts	2026-10-29T22:10:29.4768514Z PASS quint-typecheck
+assurance	Verify native and formal contracts	2026-10-29T22:10:30.8060032Z PASS quint-tests
+assurance	Verify native and formal contracts	2026-10-29T22:10:35.2008059Z PASS quint-safety
+assurance	Verify native and formal contracts	2026-10-29T22:10:35.5593053Z PASS lean
+assurance	Verify native and formal contracts	2026-10-29T22:10:39.8071776Z PASS provider-routing-pbt
+assurance	Verify native and formal contracts	2026-10-29T22:10:43.1324776Z PASS provider-request-bounds-pbt
+assurance	Verify native and formal contracts	2026-10-29T22:10:44.8845069Z PASS provider-quint-tests
+assurance	Verify native and formal contracts	2026-10-29T22:10:53.3674720Z PASS provider-quint-safety
+assurance	Verify native and formal contracts	2026-10-29T22:10:54.8557906Z PASS provider-lean
+assurance	Verify native and formal contracts	2026-10-29T22:10:56.0742652Z PASS dispatch-cancellation-tests
+assurance	Verify native and formal contracts	2026-10-29T22:11:00.7433963Z PASS dispatch-cancellation-safety
+assurance	Verify native and formal contracts	2026-10-29T22:11:02.0218108Z PASS release-binding-tests
+assurance	Verify native and formal contracts	2026-10-29T22:11:06.5523965Z PASS release-binding-safety
+assurance	Verify native and formal contracts	2026-10-29T22:11:07.5570339Z PASS admission-quint-tests
+assurance	Verify native and formal contracts	2026-10-29T22:11:11.0497058Z PASS admission-quint-safety
+assurance	Verify native and formal contracts	2026-10-29T22:11:12.1610200Z PASS connection-quint-tests
+assurance	Verify native and formal contracts	2026-10-29T22:11:15.6599126Z PASS connection-quint-safety
+assurance	Verify native and formal contracts	2026-10-29T22:11:16.7893703Z PASS source-ingress-quint-tests
+assurance	Verify native and formal contracts	2026-10-29T22:11:21.5700496Z PASS source-ingress-quint-safety
+assurance	Verify native and formal contracts	2026-10-29T22:11:22.9019522Z PASS publication-quint-tests
+assurance	Verify native and formal contracts	2026-10-29T22:11:27.8530169Z PASS publication-quint-safety
+assurance	Verify native and formal contracts	2026-10-29T22:11:28.6545775Z PASS publication-lean
+assurance	Verify native and formal contracts	2026-10-29T22:11:45.1856498Z PASS source-owner-quint-tests
+assurance	Verify native and formal contracts	2026-10-29T22:11:53.0760261Z PASS source-owner-quint-safety
+assurance	Verify native and formal contracts	2026-10-29T22:14:37.0895138Z PASS go-native-integration
+assurance	Verify native and formal contracts	2026-10-29T22:14:37.1020421Z PASS source-currentness
+assurance	Verify native and formal contracts	2026-10-29T22:14:37.1258223Z PASS committed-source-after
+assurance	Verify native and formal contracts	2026-10-29T22:14:37.1267288Z Evidence: /home/runner/work/weaver/weaver/.data/verification-3429820332
+assurance	Verify native and formal contracts	2026-10-29T22:14:37.1268986Z verification did not pass; retained stage logs and receipt.json
+assurance	Verify native and formal contracts	2026-10-29T22:14:37.1304170Z exit status 1
+assurance	Verify native and formal contracts	2026-10-29T22:14:37.1538245Z ##[error]Process completed with exit code 1.

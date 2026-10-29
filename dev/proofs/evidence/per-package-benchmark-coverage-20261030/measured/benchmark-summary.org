@@ -1,0 +1,33 @@
+#+TITLE: Native Rust Benchmark Baseline
+#+LANGUAGE: en
+
+* Scope
+Local empirical baseline, not a throughput guarantee. Values are nanoseconds per measured iteration. CPU, compiler and client environment are in the adjacent stage logs. Go RPC client allocations are not Rust allocations.
+
+| Package | Benchmark | Samples | Mean ns | Lower confidence bound ns | Upper confidence bound ns |
+|---------+-----------+---------+---------+---------------------------+---------------------------|
+| weaver-contracts | contracts_profile_commitment | 30 | 631.715 | 617.467 | 655.544 |
+| weaver-contracts | contracts_profile_request_validation/128 | 30 | 1747.676 | 1704.063 | 1822.163 |
+| weaver-contracts | contracts_profile_request_validation/16384 | 30 | 4166.286 | 4040.649 | 4353.010 |
+| weaver-contracts | contracts_profile_request_validation/524288 | 30 | 81697.049 | 78060.501 | 87002.127 |
+| weaver-contracts | contracts_provider_commitment/128 | 30 | 4145.175 | 4048.993 | 4265.849 |
+| weaver-contracts | contracts_provider_commitment/16384 | 30 | 56938.026 | 52886.025 | 64414.652 |
+| weaver-contracts | contracts_provider_commitment/524288 | 30 | 1547838.240 | 1539018.930 | 1558981.510 |
+| weaver-contracts | contracts_publication_commitment | 30 | 53493.851 | 52154.599 | 55640.976 |
+| weaver-execution | execution_https_guarded_sse_three_events | 30 | 3746777.582 | 3249667.369 | 4341321.476 |
+| weaver-ledger | ledger_consume_and_dispatch_burn | 30 | 499618.488 | 459377.712 | 559972.631 |
+| weaver-ledger | ledger_fresh_admission | 30 | 297310.347 | 280135.359 | 318624.385 |
+| weaver-ledger | ledger_idempotent_admission | 30 | 130553.891 | 129418.489 | 131819.113 |
+| weaver-ledger | ledger_profile_task_registration | 30 | 248482.487 | 181453.268 | 333382.040 |
+| weaver-ledger | ledger_profile_task_replay/1 | 30 | 36236.445 | 33261.495 | 40042.334 |
+| weaver-ledger | ledger_profile_task_replay/256 | 30 | 37831.362 | 35345.507 | 40596.333 |
+| weaver-ledger | ledger_publication_atomic_commit | 30 | 391986.871 | 367491.827 | 420911.697 |
+| weaver-ledger | ledger_publication_exact_replay | 30 | 10201.701 | 9649.578 | 10968.869 |
+| weaver-ledger | ledger_publication_historical_lookup | 30 | 2797.703 | 2735.591 | 2913.067 |
+| weaver-policy | policy_compilation_cache_churn | 30 | 103982.666 | 98513.635 | 110312.664 |
+| weaver-policy | policy_typed_schema_validation | 30 | 232507.710 | 205056.844 | 272216.742 |
+| weaver-policy | policy_warm_compilation_current_decision | 30 | 64245.318 | 59897.905 | 69584.767 |
+| weaver-server | server_response_encoding/arrow_batch/1 | 30 | 10374.545 | 8155.398 | 12896.423 |
+| weaver-server | server_response_encoding/arrow_batch/32 | 30 | 9501.891 | 7690.953 | 11493.047 |
+| weaver-server | server_response_encoding/protobuf_frames/1 | 30 | 279.804 | 251.671 | 308.800 |
+| weaver-server | server_response_encoding/protobuf_frames/32 | 30 | 7591.337 | 6921.302 | 8338.773 |

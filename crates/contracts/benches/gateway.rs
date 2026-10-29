@@ -29,5 +29,29 @@ fn commitments(c: &mut Criterion) {
         b.iter(|| black_box(publication.digest().expect("publication commitment")))
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=commitments}
+fn profile_contracts(c: &mut Criterion) {
+    let profile: weaver_contracts::ProviderProfile = weaver_contracts::decode(include_bytes!(
+        "../../../dev/policies/provider/profile.json"
+    ))
+    .expect("profile");
+    c.bench_function("contracts/profile_commitment", |b| {
+        b.iter(|| black_box(profile.digest().expect("profile digest")))
+    });
+    let mut group = c.benchmark_group("contracts/profile_request_validation");
+    for bytes in [128, 16384, 524288] {
+        let (_, plan) = fixtures::task_plan(bytes, "https://provider.invalid/v1/chat/completions");
+        group.throughput(Throughput::Bytes(plan.body.len() as u64));
+        group.bench_with_input(BenchmarkId::from_parameter(bytes), &plan, |b, p| {
+            b.iter(|| {
+                black_box(
+                    profile
+                        .request_facts(black_box(&p.body))
+                        .expect("closed request"),
+                )
+            })
+        });
+    }
+    group.finish();
+}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=commitments,profile_contracts}
 criterion_main!(benches);

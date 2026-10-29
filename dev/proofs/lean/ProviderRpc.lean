@@ -375,4 +375,166 @@ theorem request_bounds_and_affine_execution_composition
 #print axioms every_arrow_row_requires_authority
 #print axioms shared_name_is_not_key_authority
 #print axioms execution_and_encoding_composition
+/- Profile registry refinement premises: authenticated source registration, atomic
+   task/profile commit, canonical artifact/hash agreement, faithful closed-schema
+   interpretation, durable original task floors and final checks serialized with
+   native invocation. Whole-image rollback, provider honesty and compiler correctness
+   are not conclusions of these declarations. Keys and digests are arbitrary types. -/
+section ProfileRegistryProofs
+variable {TaskKey ProfileKey Digest : Type}
+def ProfileBindings (TaskKey ProfileKey Digest : Type) := TaskKey → ProfileKey → Digest → Prop
+variable {roots : ProfileBindings TaskKey ProfileKey Digest}
+
+def ProfileFloor (roots : ProfileBindings TaskKey ProfileKey Digest) (profile : ProfileKey) (digest : Digest) : Prop :=
+  ∀ key original, roots key profile original → original = digest
+
+def NoProfileFork (roots : ProfileBindings TaskKey ProfileKey Digest) : Prop :=
+  ∀ a b profile da db, roots a profile da → roots b profile db → da = db
+
+def TaskProfileCompatible (roots : ProfileBindings TaskKey ProfileKey Digest) (key : TaskKey) (profile : ProfileKey) (digest : Digest) : Prop :=
+  ∀ p d, roots key p d → p = profile ∧ d = digest
+
+def NoTaskProfileFork (roots : ProfileBindings TaskKey ProfileKey Digest) : Prop :=
+  ∀ key p q d e, roots key p d → roots key q e → p = q ∧ d = e
+
+def RegisterProfile (roots : ProfileBindings TaskKey ProfileKey Digest) (key : TaskKey) (profile : ProfileKey) (digest : Digest) :
+    ProfileBindings TaskKey ProfileKey Digest :=
+  fun k p d => roots k p d ∨ (k = key ∧ p = profile ∧ d = digest)
+
+theorem registration_preserves_original_profile_binding
+    (original : roots task profile digest) :
+    RegisterProfile roots key candidate proposed task profile digest := Or.inl original
+
+theorem profile_registration_cannot_fork
+    (safe : NoProfileFork roots) (floor : ProfileFloor roots profile digest) :
+    NoProfileFork (RegisterProfile roots key profile digest) := by
+  intro a b p da db ha hb
+  rcases ha with oldA | ⟨_, profileA, digestA⟩ <;>
+    rcases hb with oldB | ⟨_, profileB, digestB⟩
+  · exact safe a b p da db oldA oldB
+  · subst p; subst db; exact floor a da oldA
+  · subst p; subst da; exact (floor b db oldB).symm
+  · exact digestA.trans digestB.symm
+
+theorem missing_registry_cannot_erase_original_floor
+    (original : roots task profile digest) (changed : digest ≠ proposed) :
+    ¬ ProfileFloor roots profile proposed := by
+  intro floor
+  exact changed (floor task digest original)
+
+theorem original_task_registration_cannot_rebind
+    (safe : NoTaskProfileFork roots) (compatible : TaskProfileCompatible roots key profile digest) :
+    NoTaskProfileFork (RegisterProfile roots key profile digest) := by
+  intro task p q d e ha hb
+  rcases ha with oldA | ⟨taskA,profileA,digestA⟩ <;>
+    rcases hb with oldB | ⟨taskB,profileB,digestB⟩
+  · exact safe task p q d e oldA oldB
+  · subst task; subst q; subst e; exact compatible p d oldA
+  · subst task; subst p; subst d
+    have h := compatible q e oldB
+    exact ⟨h.1.symm,h.2.symm⟩
+  · exact ⟨profileA.trans profileB.symm,digestA.trans digestB.symm⟩
+
+theorem exact_profile_registration_is_idempotent
+    (original : roots key profile digest) : RegisterProfile roots key profile digest = roots := by
+  funext t p d
+  apply propext
+  constructor
+  · intro registered
+    rcases registered with old | ⟨rfl,rfl,rfl⟩
+    · exact old
+    · exact original
+  · exact Or.inl
+
+structure ProfileEffect (Digest : Type) where
+  original : Digest
+  proposal : Digest
+  registry : Option Digest
+  floorMatches : Bool
+  schemaClosed : Bool
+  providerPath : Bool
+  policyAllowed : Bool
+
+def ProfileEffectAuthorized (e : ProfileEffect Digest) : Prop :=
+  e.proposal = e.original ∧ e.registry = some e.original ∧
+  e.floorMatches = true ∧ e.schemaClosed = true ∧ e.providerPath = true ∧ e.policyAllowed = true
+
+theorem profile_identity_and_digest_are_jointly_guarded (event : ProfileEffect (String × String))
+    (checked : ProfileEffectAuthorized event) :
+    event.proposal.1 = event.original.1 ∧ event.proposal.2 = event.original.2 :=
+  ⟨congrArg Prod.fst checked.1,congrArg Prod.snd checked.1⟩
+
+structure ProfileExecution (Digest : Type) where
+  native : State
+  effects : List (ProfileEffect Digest)
+
+def ProfileExecutionSafe (cost budget : Nat) (s : ProfileExecution Digest) : Prop :=
+  Safe cost budget s.native ∧ (∀ e ∈ s.effects, ProfileEffectAuthorized e) ∧ s.effects.length = s.native.calls
+
+inductive ProfileExecutionStep (cost budget : Nat) : ProfileExecution Digest → ProfileExecution Digest → Prop where
+  | internal (s) (native : Step cost budget s.native target) (noSend : target.calls = s.native.calls) :
+      ProfileExecutionStep cost budget s ⟨target,s.effects⟩
+  | invoke (s) (native : Step cost budget s.native target) (oneSend : target.calls = s.native.calls + 1)
+      (checked : ProfileEffectAuthorized event) :
+      ProfileExecutionStep cost budget s ⟨target,s.effects ++ [event]⟩
+
+theorem source_profile_and_native_execution_step
+    (safe : ProfileExecutionSafe cost budget s) (step : ProfileExecutionStep cost budget s t) :
+    ProfileExecutionSafe cost budget t := by
+  rcases safe with ⟨execution, effects, count⟩
+  cases step with
+  | internal s native noSend => exact ⟨safe_step execution native,effects,by simpa [noSend] using count⟩
+  | invoke s native oneSend checked =>
+    refine ⟨safe_step execution native, ?_, ?_⟩
+    · intro e member
+      simp only [List.mem_append, List.mem_singleton] at member
+      rcases member with old | rfl
+      · exact effects e old
+      · exact checked
+    · simp [List.length_append, count, oneSend]
+
+theorem profile_registry_mismatch_cannot_send
+    (mismatch : event.registry ≠ some event.original) : ¬ ProfileEffectAuthorized event := by
+  intro checked
+  exact mismatch checked.2.1
+
+inductive ProfileExecutionRun (cost budget : Nat) : ProfileExecution Digest → ProfileExecution Digest → Prop where
+  | refl (s) : ProfileExecutionRun cost budget s s
+  | next : ProfileExecutionRun cost budget a b → ProfileExecutionStep cost budget b c → ProfileExecutionRun cost budget a c
+
+theorem source_profile_and_native_execution_run
+    (initial : ProfileExecutionSafe cost budget s) (run : ProfileExecutionRun cost budget s t) :
+    ProfileExecutionSafe cost budget t := by
+  induction run with
+  | refl => exact initial
+  | next history step ih => exact source_profile_and_native_execution_step ih step
+
+theorem profile_recovery_retains_original_hold
+    (initial : ProfileExecutionSafe cost budget s) (run : ProfileExecutionRun cost budget s t)
+    (consumed : t.native.stage ≥ 1) :
+    t.native.held = cost ∧ t.native.calls ≤ 1 ∧ (∀ e ∈ t.effects, ProfileEffectAuthorized e) := by
+  have safe := source_profile_and_native_execution_run initial run
+  exact ⟨safe.1.2.2.2.1 consumed,safe.1.2.1,safe.2.1⟩
+
+theorem unknown_extension_cannot_authorize_profile_effect
+    (unknown : event.schemaClosed = false) : ¬ ProfileEffectAuthorized event := by
+  simp [ProfileEffectAuthorized, unknown]
+
+theorem untyped_fallback_cannot_authorize_profile_effect
+    (wrong : event.providerPath = false) : ¬ ProfileEffectAuthorized event := by
+  simp [ProfileEffectAuthorized, wrong]
+
+#print axioms registration_preserves_original_profile_binding
+#print axioms profile_registration_cannot_fork
+#print axioms original_task_registration_cannot_rebind
+#print axioms missing_registry_cannot_erase_original_floor
+#print axioms exact_profile_registration_is_idempotent
+#print axioms source_profile_and_native_execution_step
+#print axioms source_profile_and_native_execution_run
+#print axioms profile_recovery_retains_original_hold
+#print axioms profile_registry_mismatch_cannot_send
+#print axioms unknown_extension_cannot_authorize_profile_effect
+#print axioms untyped_fallback_cannot_authorize_profile_effect
+#print axioms profile_identity_and_digest_are_jointly_guarded
+end ProfileRegistryProofs
 end Weaver.ProviderRpc

@@ -1,0 +1,49 @@
+• Validating lock
+✓ Validating lock in 656µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.55ms
+• Evaluating shell
+✓ Evaluating shell in 25.2ms (cached)
+✓ Configuring shell in 28.8ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 1.05ms (cached)
+✓ Loading tasks in 2.60ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 16.9ms
+• Running devenv:files
+✓ Running devenv:files in 22.2ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 41.7ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 17.4ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 8.71µs (no command)
+✓ Running tasks in 99.1ms
+💡 The dotenv file '.env' was not found.
+   Compiling cedar-policy-core v4.12.0
+   Compiling half v2.7.1
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+   Compiling proptest v1.11.0
+   Compiling ciborium-ll v0.2.2
+   Compiling ciborium v0.2.2
+   Compiling criterion v0.8.2
+   Compiling cedar-policy-formatter v4.12.0
+   Compiling cedar-policy v4.12.0
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 19.94s
+     Running unittests src/lib.rs (target/debug/deps/weaver_server-54c9e5275502db14)
+
+running 5 tests
+test source_owner::tests::startup_failure_closes_runtime_and_drains_native_owner ... ok
+test source_owner::tests::completed_source_acknowledgment_returns_command_capacity ... ok
+test source_owner::tests::storage_failure_does_not_acknowledge_a_reusable_result ... ok
+test source_owner::tests::reused_source_connection_observes_other_writer_and_preserves_historical_result ... ok
+test source_owner::tests::disconnected_source_caller_keeps_capacity_until_original_sql_work_finishes ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.05s
+

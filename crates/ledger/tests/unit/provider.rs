@@ -22,9 +22,16 @@ fn fixture_nodes(path: &std::path::Path, nodes: &[&str]) -> (Ledger, ProviderPla
     ledger
         .publish_typed(None, &policy, SCHEMA, 1)
         .expect("typed policy");
-    let plan=ProviderPlan{family:"f".into(),node:"infer".into(),profile:"p".into(),model:"model-a".into(),body:r#"{"model":"model-a","stream":true,"messages":[{"role":"user","content":"hello"}],"max_completion_tokens":32}"#.into(),routes:vec![ProviderRoute{target:"primary".into(),endpoint:"https://provider.invalid/v1/chat/completions".into()}],ceiling:4,revision:0,fence:1};
+    let profile: weaver_contracts::ProviderProfile =
+        weaver_contracts::decode(include_bytes!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../dev/policies/provider/profile.json"
+        )))
+        .expect("source profile");
+    let plan=ProviderPlan{family:"f".into(),node:"infer".into(),profile:"p".into(),profile_commitment:profile.digest().expect("commitment"),model:"model-a".into(),body:r#"{"model":"model-a","stream":true,"messages":[{"role":"user","content":"hello"}],"max_completion_tokens":32}"#.into(),routes:vec![ProviderRoute{target:"primary".into(),endpoint:"https://provider.invalid/v1/chat/completions".into()}],ceiling:4,revision:0,fence:1};
     ledger
         .register_task(&Task {
+            provider_profile: Some(profile),
             family: "f".into(),
             principal: "alice".into(),
             profile: "p".into(),

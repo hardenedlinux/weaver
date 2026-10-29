@@ -2,3 +2,5 @@
 mod decoder;
 #[path = "unit/provider_bounds.rs"]
 mod provider_bounds;
+#[path = "unit/provider_profiles.rs"]
+mod provider_profiles;

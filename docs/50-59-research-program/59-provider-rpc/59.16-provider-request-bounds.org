@@ -145,5 +145,9 @@ retried to obtain a passing comparison. A controlled matched performance
 experiment is still required. The [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-bench/benchmark-summary.org][sample summary]] is empirical data, not an
 accepted throughput/latency result.
 
-Independent [[https://github.com/hardenedlinux/weaver/actions/runs/40956764509][Linux CI for this implementation]] was observed pending behind
-the earlier running assurance job. Local results do not establish that outcome.
+Independent [[https://github.com/hardenedlinux/weaver/actions/runs/40956764509][Linux CI for this implementation]] subsequently completed with failures
+in Rust source-owner sequential handoff tests and the native Go fuzz-control
+watchdog. The [[file:59.17-source-provider-profiles.org][next increment]] retains its exact failed receipt, repairs
+the source acknowledgment/capacity race, and separates fuzz fixture compilation
+from native runtime controls while keeping the original watchdog. This earlier
+Linux run remains failed; neither its passing stages nor local results qualify it.

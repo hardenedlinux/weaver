@@ -34,6 +34,7 @@ func SourceInputs(root string) (map[string]string, error) {
 		"dev/proofs/lean/RuntimeAdmission.lean", "dev/proofs/lean/StreamingExecution.lean", "dev/proofs/lean/ProviderRpc.lean", "dev/proofs/lean/PublicationRecovery.lean",
 		"dev/proofs/quint/RuntimeAdmission.qnt", "dev/proofs/quint/StreamingExecution.qnt", "dev/proofs/quint/RuntimeLifecycle.qnt", "dev/proofs/quint/ProviderRpc.qnt", "dev/proofs/quint/DispatchCancellation.qnt", "dev/proofs/quint/NativeAdmission.qnt", "dev/proofs/quint/ConnectionAdmission.qnt", "dev/proofs/quint/SourceIngress.qnt", "dev/proofs/quint/PublicationRecovery.qnt", "dev/proofs/quint/SourceOwner.qnt",
 		"dev/proofs/quint/ReleaseBinding.qnt",
+		"dev/proofs/quint/ProviderProfile.qnt",
 		"dev/proofs/cedar/lakefile.toml", "dev/proofs/cedar/lake-manifest.json", "dev/proofs/cedar/lean-toolchain", "dev/proofs/cedar/WeaverPolicyBridge.lean"} {
 		if err := add(filepath.Join(root, path)); err != nil {
 			return nil, err
@@ -53,7 +54,7 @@ func SourceInputs(root string) (map[string]string, error) {
 				return nil
 			}
 			switch filepath.Ext(path) {
-			case ".go", ".rs", ".toml", ".json", ".proto", ".sysml", ".cedar":
+			case ".go", ".rs", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar":
 				return add(path)
 			}
 			return nil

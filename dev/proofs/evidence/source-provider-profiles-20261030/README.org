@@ -1,0 +1,81 @@
+#+TITLE: Source Provider Profile Evidence
+#+LANGUAGE: en
+
+* Evidence boundaries
+
+The implementation and formal contract are described in
+[[file:../../../../docs/50-59-research-program/59-provider-rpc/59.17-source-provider-profiles.org][chapter 59.17]]. Focused results precede the full committed gate and are not
+substitutes for it. The worktree benchmark record is separately retained under
+[[file:../per-package-benchmark-coverage-20261030/README.org][per-package measurement evidence]].
+
+* Pre-change counterexamples
+
+=pre-change/profile-schema-before-revision.txt= records the archived source
+revision. The two added negative witnesses are retained beside their raw logs.
+They run against that isolated original source with unchanged dependency pins.
+Both assertions fail: the original Rust checker and exact-source Go compiler
+accept an unregistered =max_output_tokens= extension alongside the recognized
+cap. The source request and plan commitments are updated together in the Go
+witness, so a stale body hash cannot explain its result. This is an admission
+counterexample, not proof of an external provider charge or actual overspend.
+
+* Failed development iterations
+
+- =profile-registry-first-native.log=: ASP rejects missing module intent and a
+  primitive semantic identifier constructor. The constructor was removed and
+  fixtures use the declared profile artifact; no rule is suppressed.
+- =profile-registry-second-native.log=: SQLite scalar tests used unsupported
+  unsigned row decoding. The corrected tests use signed SQL counts.
+- =profile-registry-clippy.log= and =profile-registry-clippy-fixed.log=: nested
+  conditions and the enlarged source command enum fail strict Clippy. Conditions
+  were simplified and the owned task is boxed; limits and custody remain intact.
+- =profile-registry-quint-first.log=: a model variable collided with a reserved
+  builtin; the corrected variable has a distinct name.
+- =profile-registry-lean-first.log=: the implicit task key collided with Lean's
+  built-in Task type. This failed log contains incomplete elaboration output and
+  must never be counted as a proof receipt. Explicit key type parameters repair
+  the declarations.
+- [[file:bootstrap-checksum-hydration/receipt.json][The first bootstrap receipt]] fails source currentness after Go legitimately
+  hydrates the upstream YAML test-module manifest checksum. Its four dependency
+  stages pass. The checksum is explicitly retained without changing a version;
+  a later stable-source receipt is required for acceptance.
+
+* Focused corrected results
+
+=profile-registry-sixth-native.log= records 76 passing Rust tests including the
+five ASP deny gates, recovery/fallback controls and composite index-plan checks.
+=profile-registry-current-clippy.log= passes strict workspace all-target Clippy.
+=profile-registry-final-go.log= passes the race-enabled Go suite, including strict
+SysML witness checks. =profile-registry-rpc-first.log= records actual mTLS source
+registration, Cedar-denied valid schema, unsupported extension, Arrow execution
+and natural server restart witnesses.
+
+=profile-registry-quint-final.log= records twenty directed controls passing.
+=profile-registry-lean-final.log= compiles the corrected parametric/composition
+proofs with explicit axiom output and no =sorryAx=. Sampling and full current
+source admission remain separate until their complete receipts are recorded.
+
+* Independent historical Linux failure and handoff correction
+
+[[file:profile-registry-prior-ci.json][Run 40956764509 metadata]] and
+[[file:prior-linux-failed/receipt.json][its original failed receipt]] identify revision 13834198. Two source-owner
+tests observe ResourceExhausted immediately after a successful prior command.
+The old implementation sends its reply while still holding command capacity.
+The correction returns the permit only after SQL/quiescence completion, before
+the reply becomes observable. The existing blocked-writer/disconnected-caller
+control still retains capacity until actual SQL completion.
+
+[[file:source-ack-focused.log][All five focused source-owner tests]] pass, including the new acknowledgment
+capacity check. The updated SourceOwner model distinguishes a command reply
+from service-drain acknowledgment, and includes an unsafe early-reply witness.
+The updated Lean owner invariant proves replies require returned capacity.
+
+The same Linux run fails the FuzzNoop thirty-second watchdog after printing PASS;
+that is not successful native termination. An isolated empty-cache Darwin run in
+[[file:fuzz-coordinator-cold-control.log][the cold control log]] finishes naturally in 9.66 seconds and does not reproduce
+it. Compilation preparation and first-output/total timing are added without
+changing the workload or watchdog. The first diagnostic iteration embedded
+bytes.Buffer, whose ReaderFrom optimization bypassed the Write timestamp; its
+retained log reports first-output=none. The corrected private buffer records
+actual pipe writes and requires timing whenever output exists. Linux causal
+attribution and current CI qualification remain separate obligations.

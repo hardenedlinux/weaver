@@ -1,0 +1,17 @@
+?   	github.com/HardenedLinux/weaver/go/api/gateway/v1	[no test files]
+ok  	github.com/HardenedLinux/weaver/go/api/v1	1.022s
+?   	github.com/HardenedLinux/weaver/go/cmd/weaver-dev	[no test files]
+ok  	github.com/HardenedLinux/weaver/go/dev	5.060s
+--- FAIL: TestGoFuzzCoordinatorPreservesNativePropertyFailure (31.34s)
+    --- FAIL: TestGoFuzzCoordinatorPreservesNativePropertyFailure/FuzzNoop (30.86s)
+        toolchain_test.go:46: native fuzz control did not finish within its watchdog: fuzz: elapsed: 0s, gathering baseline coverage: 0/1 completed
+            fuzz: elapsed: 0s, gathering baseline coverage: 1/1 completed, now fuzzing with 1 workers
+            fuzz: elapsed: 3s, execs: 2465 (821/sec), new interesting: 0 (total: 1)
+            fuzz: elapsed: 3s, execs: 2465 (0/sec), new interesting: 0 (total: 1)
+            PASS
+FAIL
+FAIL	github.com/HardenedLinux/weaver/go/internal/devrunner	33.421s
+ok  	github.com/HardenedLinux/weaver/go/internal/gatewayclient	1.025s
+ok  	github.com/HardenedLinux/weaver/go/internal/routing	1.026s
+ok  	github.com/HardenedLinux/weaver/go/internal/streaming	1.015s
+FAIL

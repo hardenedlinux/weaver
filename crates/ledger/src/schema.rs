@@ -11,6 +11,15 @@ CREATE TABLE IF NOT EXISTS authority_publications (
 CREATE TABLE IF NOT EXISTS tasks (
  family TEXT PRIMARY KEY, record TEXT NOT NULL,
  budget INTEGER NOT NULL CHECK(budget>0), held INTEGER NOT NULL DEFAULT 0 CHECK(held>=0 AND held<=budget));
+CREATE TABLE IF NOT EXISTS provider_profiles (
+ id TEXT PRIMARY KEY, digest TEXT NOT NULL, record TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS task_profile_semantics ON tasks (
+ json_extract(record,'$.profile'),
+ json_array(json_extract(record,'$.provider_profile.id'),json_extract(record,'$.provider_profile.protocol'),
+  json_extract(record,'$.provider_profile.max_output_tokens'),json_extract(record,'$.provider_profile.max_messages'),
+  json_extract(record,'$.provider_profile.max_body_bytes'),
+  json_remove(json_extract(record,'$.provider_profile'),'$.id','$.protocol','$.max_output_tokens','$.max_messages','$.max_body_bytes')))
+ WHERE json_type(record,'$.provider_profile') IS NOT NULL AND json_type(record,'$.provider_profile') != 'null';
 CREATE TABLE IF NOT EXISTS operations (
  family TEXT NOT NULL REFERENCES tasks(family), node TEXT NOT NULL,
  digest TEXT NOT NULL, proposal TEXT NOT NULL, reserved INTEGER NOT NULL CHECK(reserved>0),

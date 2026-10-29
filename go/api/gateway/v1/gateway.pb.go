@@ -257,18 +257,19 @@ func (x *Route) GetEndpoint() string {
 }
 
 type ProviderPlan struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Family        string                 `protobuf:"bytes,1,opt,name=family,proto3" json:"family,omitempty"`
-	Node          string                 `protobuf:"bytes,2,opt,name=node,proto3" json:"node,omitempty"`
-	Profile       string                 `protobuf:"bytes,3,opt,name=profile,proto3" json:"profile,omitempty"`
-	Model         string                 `protobuf:"bytes,4,opt,name=model,proto3" json:"model,omitempty"`
-	Body          []byte                 `protobuf:"bytes,5,opt,name=body,proto3" json:"body,omitempty"`
-	Routes        []*Route               `protobuf:"bytes,6,rep,name=routes,proto3" json:"routes,omitempty"`
-	Ceiling       uint64                 `protobuf:"varint,7,opt,name=ceiling,proto3" json:"ceiling,omitempty"`
-	Revision      uint64                 `protobuf:"varint,8,opt,name=revision,proto3" json:"revision,omitempty"`
-	Fence         uint64                 `protobuf:"varint,9,opt,name=fence,proto3" json:"fence,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Family            string                 `protobuf:"bytes,1,opt,name=family,proto3" json:"family,omitempty"`
+	Node              string                 `protobuf:"bytes,2,opt,name=node,proto3" json:"node,omitempty"`
+	Profile           string                 `protobuf:"bytes,3,opt,name=profile,proto3" json:"profile,omitempty"`
+	Model             string                 `protobuf:"bytes,4,opt,name=model,proto3" json:"model,omitempty"`
+	Body              []byte                 `protobuf:"bytes,5,opt,name=body,proto3" json:"body,omitempty"`
+	Routes            []*Route               `protobuf:"bytes,6,rep,name=routes,proto3" json:"routes,omitempty"`
+	Ceiling           uint64                 `protobuf:"varint,7,opt,name=ceiling,proto3" json:"ceiling,omitempty"`
+	Revision          uint64                 `protobuf:"varint,8,opt,name=revision,proto3" json:"revision,omitempty"`
+	Fence             uint64                 `protobuf:"varint,9,opt,name=fence,proto3" json:"fence,omitempty"`
+	ProfileCommitment string                 `protobuf:"bytes,10,opt,name=profile_commitment,json=profileCommitment,proto3" json:"profile_commitment,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ProviderPlan) Reset() {
@@ -362,6 +363,13 @@ func (x *ProviderPlan) GetFence() uint64 {
 		return x.Fence
 	}
 	return 0
+}
+
+func (x *ProviderPlan) GetProfileCommitment() string {
+	if x != nil {
+		return x.ProfileCommitment
+	}
+	return ""
 }
 
 type ProviderRequest struct {
@@ -763,6 +771,7 @@ type Task struct {
 	StreamContracts map[string]string      `protobuf:"bytes,9,rep,name=stream_contracts,json=streamContracts,proto3" json:"stream_contracts,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Models          []string               `protobuf:"bytes,10,rep,name=models,proto3" json:"models,omitempty"`
 	Budget          uint64                 `protobuf:"varint,11,opt,name=budget,proto3" json:"budget,omitempty"`
+	ProviderProfile *ProviderProfile       `protobuf:"bytes,12,opt,name=provider_profile,json=providerProfile,proto3" json:"provider_profile,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -874,6 +883,89 @@ func (x *Task) GetBudget() uint64 {
 	return 0
 }
 
+func (x *Task) GetProviderProfile() *ProviderProfile {
+	if x != nil {
+		return x.ProviderProfile
+	}
+	return nil
+}
+
+type ProviderProfile struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Protocol        string                 `protobuf:"bytes,2,opt,name=protocol,proto3" json:"protocol,omitempty"`
+	MaxOutputTokens uint64                 `protobuf:"varint,3,opt,name=max_output_tokens,json=maxOutputTokens,proto3" json:"max_output_tokens,omitempty"`
+	MaxMessages     uint64                 `protobuf:"varint,4,opt,name=max_messages,json=maxMessages,proto3" json:"max_messages,omitempty"`
+	MaxBodyBytes    uint64                 `protobuf:"varint,5,opt,name=max_body_bytes,json=maxBodyBytes,proto3" json:"max_body_bytes,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ProviderProfile) Reset() {
+	*x = ProviderProfile{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProviderProfile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProviderProfile) ProtoMessage() {}
+
+func (x *ProviderProfile) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProviderProfile.ProtoReflect.Descriptor instead.
+func (*ProviderProfile) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *ProviderProfile) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ProviderProfile) GetProtocol() string {
+	if x != nil {
+		return x.Protocol
+	}
+	return ""
+}
+
+func (x *ProviderProfile) GetMaxOutputTokens() uint64 {
+	if x != nil {
+		return x.MaxOutputTokens
+	}
+	return 0
+}
+
+func (x *ProviderProfile) GetMaxMessages() uint64 {
+	if x != nil {
+		return x.MaxMessages
+	}
+	return 0
+}
+
+func (x *ProviderProfile) GetMaxBodyBytes() uint64 {
+	if x != nil {
+		return x.MaxBodyBytes
+	}
+	return 0
+}
+
 type RegisterTaskRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Task          *Task                  `protobuf:"bytes,1,opt,name=task,proto3" json:"task,omitempty"`
@@ -883,7 +975,7 @@ type RegisterTaskRequest struct {
 
 func (x *RegisterTaskRequest) Reset() {
 	*x = RegisterTaskRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -895,7 +987,7 @@ func (x *RegisterTaskRequest) String() string {
 func (*RegisterTaskRequest) ProtoMessage() {}
 
 func (x *RegisterTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -908,7 +1000,7 @@ func (x *RegisterTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterTaskRequest.ProtoReflect.Descriptor instead.
 func (*RegisterTaskRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{10}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RegisterTaskRequest) GetTask() *Task {
@@ -931,7 +1023,7 @@ type PublishRequest struct {
 
 func (x *PublishRequest) Reset() {
 	*x = PublishRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -943,7 +1035,7 @@ func (x *PublishRequest) String() string {
 func (*PublishRequest) ProtoMessage() {}
 
 func (x *PublishRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -956,7 +1048,7 @@ func (x *PublishRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishRequest.ProtoReflect.Descriptor instead.
 func (*PublishRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{11}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *PublishRequest) GetExpectedRevision() uint64 {
@@ -1007,7 +1099,7 @@ type PublicationReceipt struct {
 
 func (x *PublicationReceipt) Reset() {
 	*x = PublicationReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1019,7 +1111,7 @@ func (x *PublicationReceipt) String() string {
 func (*PublicationReceipt) ProtoMessage() {}
 
 func (x *PublicationReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1032,7 +1124,7 @@ func (x *PublicationReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicationReceipt.ProtoReflect.Descriptor instead.
 func (*PublicationReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{12}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *PublicationReceipt) GetOperationId() string {
@@ -1080,7 +1172,7 @@ type PublicationKey struct {
 
 func (x *PublicationKey) Reset() {
 	*x = PublicationKey{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1092,7 +1184,7 @@ func (x *PublicationKey) String() string {
 func (*PublicationKey) ProtoMessage() {}
 
 func (x *PublicationKey) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1105,7 +1197,7 @@ func (x *PublicationKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicationKey.ProtoReflect.Descriptor instead.
 func (*PublicationKey) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{13}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *PublicationKey) GetOperationId() string {
@@ -1133,7 +1225,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x04node\x18\x02 \x01(\tR\x04node\";\n" +
 	"\x05Route\x12\x16\n" +
 	"\x06target\x18\x01 \x01(\tR\x06target\x12\x1a\n" +
-	"\bendpoint\x18\x02 \x01(\tR\bendpoint\"\xfc\x01\n" +
+	"\bendpoint\x18\x02 \x01(\tR\bendpoint\"\xab\x02\n" +
 	"\fProviderPlan\x12\x16\n" +
 	"\x06family\x18\x01 \x01(\tR\x06family\x12\x12\n" +
 	"\x04node\x18\x02 \x01(\tR\x04node\x12\x18\n" +
@@ -1143,7 +1235,9 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x06routes\x18\x06 \x03(\v2\x18.weaver.gateway.v1.RouteR\x06routes\x12\x18\n" +
 	"\aceiling\x18\a \x01(\x04R\aceiling\x12\x1a\n" +
 	"\brevision\x18\b \x01(\x04R\brevision\x12\x14\n" +
-	"\x05fence\x18\t \x01(\x04R\x05fence\"\x9e\x01\n" +
+	"\x05fence\x18\t \x01(\x04R\x05fence\x12-\n" +
+	"\x12profile_commitment\x18\n" +
+	" \x01(\tR\x11profileCommitment\"\x9e\x01\n" +
 	"\x0fProviderRequest\x123\n" +
 	"\x04plan\x18\x01 \x01(\v2\x1f.weaver.gateway.v1.ProviderPlanR\x04plan\x127\n" +
 	"\bencoding\x18\x02 \x01(\x0e2\x1b.weaver.gateway.v1.EncodingR\bencoding\x12\x1d\n" +
@@ -1173,7 +1267,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x06target\x18\x05 \x01(\tR\x06target\x12\x1a\n" +
 	"\breserved\x18\x06 \x01(\x04R\breserved\x12\x12\n" +
 	"\x04held\x18\a \x01(\x04R\x04held\x12\x16\n" +
-	"\x06events\x18\b \x01(\x04R\x06events\"\xfe\x05\n" +
+	"\x06events\x18\b \x01(\x04R\x06events\"\xcd\x06\n" +
 	"\x04Task\x12\x16\n" +
 	"\x06family\x18\x01 \x01(\tR\x06family\x12\x1c\n" +
 	"\tprincipal\x18\x02 \x01(\tR\tprincipal\x12\x18\n" +
@@ -1186,7 +1280,8 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x10stream_contracts\x18\t \x03(\v2,.weaver.gateway.v1.Task.StreamContractsEntryR\x0fstreamContracts\x12\x16\n" +
 	"\x06models\x18\n" +
 	" \x03(\tR\x06models\x12\x16\n" +
-	"\x06budget\x18\v \x01(\x04R\x06budget\x1a<\n" +
+	"\x06budget\x18\v \x01(\x04R\x06budget\x12M\n" +
+	"\x10provider_profile\x18\f \x01(\v2\".weaver.gateway.v1.ProviderProfileR\x0fproviderProfile\x1a<\n" +
 	"\x0eEndpointsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
@@ -1198,7 +1293,13 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1aB\n" +
 	"\x14StreamContractsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"B\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb2\x01\n" +
+	"\x0fProviderProfile\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
+	"\bprotocol\x18\x02 \x01(\tR\bprotocol\x12*\n" +
+	"\x11max_output_tokens\x18\x03 \x01(\x04R\x0fmaxOutputTokens\x12!\n" +
+	"\fmax_messages\x18\x04 \x01(\x04R\vmaxMessages\x12$\n" +
+	"\x0emax_body_bytes\x18\x05 \x01(\x04R\fmaxBodyBytes\"B\n" +
 	"\x13RegisterTaskRequest\x12+\n" +
 	"\x04task\x18\x01 \x01(\v2\x17.weaver.gateway.v1.TaskR\x04task\"\xc1\x01\n" +
 	"\x0ePublishRequest\x120\n" +
@@ -1246,7 +1347,7 @@ func file_gateway_v1_gateway_proto_rawDescGZIP() []byte {
 }
 
 var file_gateway_v1_gateway_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_gateway_v1_gateway_proto_goTypes = []any{
 	(Encoding)(0),               // 0: weaver.gateway.v1.Encoding
 	(PublicationOutcome)(0),     // 1: weaver.gateway.v1.PublicationOutcome
@@ -1260,14 +1361,15 @@ var file_gateway_v1_gateway_proto_goTypes = []any{
 	(*ProviderFrame)(nil),       // 9: weaver.gateway.v1.ProviderFrame
 	(*ProviderReceipt)(nil),     // 10: weaver.gateway.v1.ProviderReceipt
 	(*Task)(nil),                // 11: weaver.gateway.v1.Task
-	(*RegisterTaskRequest)(nil), // 12: weaver.gateway.v1.RegisterTaskRequest
-	(*PublishRequest)(nil),      // 13: weaver.gateway.v1.PublishRequest
-	(*PublicationReceipt)(nil),  // 14: weaver.gateway.v1.PublicationReceipt
-	(*PublicationKey)(nil),      // 15: weaver.gateway.v1.PublicationKey
-	nil,                         // 16: weaver.gateway.v1.Task.EndpointsEntry
-	nil,                         // 17: weaver.gateway.v1.Task.BodyDigestsEntry
-	nil,                         // 18: weaver.gateway.v1.Task.NodeCostBoundsEntry
-	nil,                         // 19: weaver.gateway.v1.Task.StreamContractsEntry
+	(*ProviderProfile)(nil),     // 12: weaver.gateway.v1.ProviderProfile
+	(*RegisterTaskRequest)(nil), // 13: weaver.gateway.v1.RegisterTaskRequest
+	(*PublishRequest)(nil),      // 14: weaver.gateway.v1.PublishRequest
+	(*PublicationReceipt)(nil),  // 15: weaver.gateway.v1.PublicationReceipt
+	(*PublicationKey)(nil),      // 16: weaver.gateway.v1.PublicationKey
+	nil,                         // 17: weaver.gateway.v1.Task.EndpointsEntry
+	nil,                         // 18: weaver.gateway.v1.Task.BodyDigestsEntry
+	nil,                         // 19: weaver.gateway.v1.Task.NodeCostBoundsEntry
+	nil,                         // 20: weaver.gateway.v1.Task.StreamContractsEntry
 }
 var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	4,  // 0: weaver.gateway.v1.ProviderPlan.routes:type_name -> weaver.gateway.v1.Route
@@ -1275,27 +1377,28 @@ var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	0,  // 2: weaver.gateway.v1.ProviderRequest.encoding:type_name -> weaver.gateway.v1.Encoding
 	7,  // 3: weaver.gateway.v1.ProviderFrame.event:type_name -> weaver.gateway.v1.Event
 	8,  // 4: weaver.gateway.v1.ProviderFrame.arrow:type_name -> weaver.gateway.v1.ArrowBatch
-	16, // 5: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
-	17, // 6: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
-	18, // 7: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
-	19, // 8: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
-	11, // 9: weaver.gateway.v1.RegisterTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	1,  // 10: weaver.gateway.v1.PublicationReceipt.outcome:type_name -> weaver.gateway.v1.PublicationOutcome
-	6,  // 11: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
-	3,  // 12: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
-	12, // 13: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
-	13, // 14: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	15, // 15: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
-	9,  // 16: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
-	10, // 17: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
-	2,  // 18: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
-	14, // 19: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
-	14, // 20: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
-	16, // [16:21] is the sub-list for method output_type
-	11, // [11:16] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	17, // 5: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
+	18, // 6: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
+	19, // 7: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
+	20, // 8: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
+	12, // 9: weaver.gateway.v1.Task.provider_profile:type_name -> weaver.gateway.v1.ProviderProfile
+	11, // 10: weaver.gateway.v1.RegisterTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	1,  // 11: weaver.gateway.v1.PublicationReceipt.outcome:type_name -> weaver.gateway.v1.PublicationOutcome
+	6,  // 12: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
+	3,  // 13: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
+	13, // 14: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
+	14, // 15: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	16, // 16: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
+	9,  // 17: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
+	10, // 18: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
+	2,  // 19: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
+	15, // 20: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
+	15, // 21: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
+	17, // [17:22] is the sub-list for method output_type
+	12, // [12:17] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_gateway_v1_gateway_proto_init() }
@@ -1307,15 +1410,15 @@ func file_gateway_v1_gateway_proto_init() {
 		(*ProviderFrame_Event)(nil),
 		(*ProviderFrame_Arrow)(nil),
 	}
-	file_gateway_v1_gateway_proto_msgTypes[11].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[12].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[13].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gateway_v1_gateway_proto_rawDesc), len(file_gateway_v1_gateway_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   18,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

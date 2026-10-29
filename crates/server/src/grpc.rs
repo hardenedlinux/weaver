@@ -441,6 +441,7 @@ fn plan(p: pb::ProviderPlan) -> std::result::Result<ProviderPlan, Status> {
         family: p.family,
         node: p.node,
         profile: p.profile,
+        profile_commitment: p.profile_commitment,
         model: p.model,
         body,
         routes: p
@@ -460,6 +461,15 @@ fn plan(p: pb::ProviderPlan) -> std::result::Result<ProviderPlan, Status> {
 }
 fn task_contract(t: pb::Task) -> Task {
     Task {
+        provider_profile: t
+            .provider_profile
+            .map(|profile| weaver_contracts::ProviderProfile {
+                id: profile.id,
+                protocol: profile.protocol,
+                max_output_tokens: profile.max_output_tokens,
+                max_messages: profile.max_messages,
+                max_body_bytes: profile.max_body_bytes,
+            }),
         family: t.family,
         principal: t.principal,
         profile: t.profile,

@@ -11,6 +11,19 @@ import (
 	"time"
 )
 
+// One comparable writer is shared by both child pipes; os/exec serializes writes.
+type nativeControlOutput struct {
+	buffer         bytes.Buffer
+	started, first time.Time
+}
+
+func (output *nativeControlOutput) Write(data []byte) (int, error) {
+	if output.first.IsZero() && len(data) > 0 {
+		output.first = time.Now()
+	}
+	return output.buffer.Write(data)
+}
+
 // Source admission identifies the reviewed backport, independently of whether
 // one probabilistic fuzz run happens to encounter the cancellation window.
 func TestGoFuzzCoordinatorParentDeadlineAdmission(t *testing.T) {
@@ -39,9 +52,21 @@ func TestGoFuzzCoordinatorPreservesNativePropertyFailure(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 			defer cancel()
 			cmd := exec.CommandContext(ctx, filepath.Join(runtime.GOROOT(), "bin/go"), "test",
-				"./go/internal/devrunner/testdata/fuzzcontrol", "-run", "^$", "-fuzz", "^"+target+"$", "-fuzztime=3s", "-parallel=1")
+				"./go/internal/devrunner/testdata/fuzzcontrol", "-v", "-run", "^$", "-fuzz", "^"+target+"$", "-fuzztime=3s", "-parallel=1")
 			cmd.Dir = root
-			output, err := cmd.CombinedOutput()
+			captured := &nativeControlOutput{started: time.Now()}
+			cmd.Stdout, cmd.Stderr = captured, captured
+			err := cmd.Run()
+			elapsed := time.Since(captured.started)
+			first := "none"
+			if !captured.first.IsZero() {
+				first = captured.first.Sub(captured.started).String()
+			}
+			t.Logf("native control=%s elapsed=%s first-output=%s watchdog=30s", target, elapsed, first)
+			output := captured.buffer.Bytes()
+			if len(output) > 0 && captured.first.IsZero() {
+				t.Fatal("native output timing was not observed")
+			}
 			if ctx.Err() != nil {
 				t.Fatalf("native fuzz control did not finish within its watchdog: %s", output)
 			}

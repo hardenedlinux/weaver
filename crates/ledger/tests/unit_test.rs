@@ -6,6 +6,8 @@ mod fixtures;
 mod properties;
 #[path = "unit/provider.rs"]
 mod provider;
+#[path = "unit/provider_profiles.rs"]
+mod provider_profiles;
 #[path = "unit/recovery.rs"]
 mod recovery;
 #[path = "unit/serialization.rs"]

@@ -197,6 +197,25 @@
     {"file":"go/dev/provider_bounds_test.go","pattern":"func TestProviderCompetingCapsCannotReachDispatch"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run preferredCapPrecedenceCounterexampleTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem request_bounds_and_affine_execution_composition"}]},
+  {"id":"SourceProviderProfileBinding","witnesses":[
+    {"file":"go/dev/provider_profiles_test.go","pattern":"func TestProviderSourceProfileAndCedarBindFinalSendAcrossRestart"},
+    {"file":"crates/ledger/tests/unit/provider_profiles.rs","pattern":"fn concurrent_profile_registrations_cannot_fork_one_identity"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem original_task_registration_cannot_rebind"}]},
+  {"id":"ClosedProviderRequestSchema","witnesses":[
+    {"file":"crates/ledger/tests/unit/provider_profiles.rs","pattern":"fn provider_profile_cannot_fall_back_to_untyped_request_or_raw_stream"},
+    {"file":"crates/contracts/tests/unit/provider_profiles.rs","pattern":"fn shared_closed_request_corpus_has_the_declared_semantics"},
+    {"file":"go/api/v1/provider_profile_test.go","pattern":"func TestProviderProfileSharedClosedRequestCorpus"},
+    {"file":"go/dev/provider_profiles_test.go","pattern":"func TestProviderSourceCommittedExtensionsCannotBypassProfile"},
+    {"file":"dev/proofs/quint/ProviderProfile.qnt","pattern":"run missingSchemaGuardCounterexampleTest"}]},
+  {"id":"RecoverableProfileFloor","witnesses":[
+    {"file":"crates/ledger/tests/unit/provider_profiles.rs","pattern":"fn original_task_floor_prevents_missing_registry_from_rebinding_identity"},
+    {"file":"crates/ledger/tests/unit/profile_floor_plan.rs","pattern":"fn semantic_floor_uses_two_composite_range_seeks"},
+    {"file":"dev/proofs/quint/ProviderProfile.qnt","pattern":"run missingFloorCounterexampleTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem missing_registry_cannot_erase_original_floor"}]},
+  {"id":"CanonicalProfileConfiguration","witnesses":[
+    {"file":"go/internal/config/provider_profile_test.go","pattern":"func TestProviderProfileJSONAndYAMLHaveOneCanonicalCommitment"},
+    {"file":"go/internal/config/provider_profile_test.go","pattern":"func TestProviderProfileRejectsAmbiguousConfiguration"},
+    {"file":"go/internal/config/provider_profile_test.go","pattern":"func FuzzProviderProfileConfiguration"}]},
   {"id":"AffineProviderAttempt","witnesses":[
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn arbitrary_provider_replays_restarts_and_release_batches_keep_original_claim"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run sdkRetryCannotConsumeAgainTest"},
@@ -231,6 +250,9 @@
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run deletedOutcomeCounterexampleTest"},
     {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem recovery_and_provider_accounting_composition"}]},
   {"id":"OwnedSourceConnection","witnesses":[
+    {"file":"crates/server/tests/unit/source_owner.rs","pattern":"async fn completed_source_acknowledgment_returns_command_capacity"},
+    {"file":"dev/proofs/quint/SourceOwner.qnt","pattern":"run replyBeforeCapacityCounterexampleTest"},
+    {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem command_ack_requires_returned_capacity"},
     {"file":"crates/server/tests/unit/source_owner.rs","pattern":"async fn reused_source_connection_observes_other_writer_and_preserves_historical_result"},
     {"file":"crates/server/tests/unit/source_owner.rs","pattern":"async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finishes"},
     {"file":"crates/ledger/tests/unit/publication.rs","pattern":"fn connection_reuse_rejects_an_unresolved_explicit_transaction"},

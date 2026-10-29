@@ -9,6 +9,50 @@ import (
 	"time"
 )
 
+func TestBenchmarkPackagesRequireExactWorkspaceCoverage(t *testing.T) {
+	members := []string{"weaver-contracts", "weaver-policy", "weaver-ledger", "weaver-execution", "weaver-server"}
+	if err := ValidateBenchmarkPackages(members); err != nil {
+		t.Fatal(err)
+	}
+	for _, missing := range members {
+		t.Run("absent="+missing, func(t *testing.T) {
+			var subset []string
+			for _, member := range members {
+				if member != missing {
+					subset = append(subset, member)
+				}
+			}
+			if err := ValidateBenchmarkPackages(subset); err == nil || !strings.Contains(err.Error(), missing) {
+				t.Fatalf("orphaned measured owner accepted: %v", err)
+			}
+		})
+	}
+	for _, additional := range []string{"weaver-new-member", "weaver-server"} {
+		if err := ValidateBenchmarkPackages(append(append([]string{}, members...), additional)); err == nil || !strings.Contains(err.Error(), additional) {
+			t.Fatalf("unqualified or duplicate workspace member accepted: %v", err)
+		}
+	}
+}
+
+func TestBenchmarkPlanChecksPackageContractBeforeMeasurement(t *testing.T) {
+	stages, err := Stages("bench", "go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	checked := false
+	for _, stage := range stages {
+		if stage.Name == "benchmark-package-contract" {
+			checked = true
+		}
+		if stage.Name == "rust-benchmarks" && !checked {
+			t.Fatal("measurement can run without its workspace coverage gate")
+		}
+	}
+	if !checked {
+		t.Fatal("benchmark package contract stage missing")
+	}
+}
+
 func writeBenchmarkEstimate(t *testing.T, root, name string) {
 	t.Helper()
 	path := filepath.Join(root, "target/criterion", name, "new/estimates.json")

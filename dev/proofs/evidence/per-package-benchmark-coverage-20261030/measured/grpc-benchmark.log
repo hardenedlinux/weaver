@@ -1,0 +1,21 @@
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.93s
+goos: darwin
+goarch: arm64
+pkg: github.com/HardenedLinux/weaver/go/dev
+cpu: Apple M2 Pro
+BenchmarkGatewayInspect-12             	    2934	    842479 ns/op	    6544 B/op	     115 allocs/op
+BenchmarkGatewayInspect-12             	    2589	   1280407 ns/op	    6531 B/op	     115 allocs/op
+BenchmarkGatewayInspect-12             	    1575	   1305626 ns/op	    6543 B/op	     115 allocs/op
+BenchmarkGatewayInspectReconnect-12    	     693	   3425250 ns/op	  181287 B/op	    1272 allocs/op
+BenchmarkGatewayInspectReconnect-12    	     943	   3588056 ns/op	  181104 B/op	    1274 allocs/op
+BenchmarkGatewayInspectReconnect-12    	     892	   3492484 ns/op	  181091 B/op	    1274 allocs/op
+BenchmarkGatewayAuthorityPublish-12    	     694	   3884439 ns/op	    6629 B/op	     115 allocs/op
+BenchmarkGatewayAuthorityPublish-12    	     663	   3424777 ns/op	    6577 B/op	     114 allocs/op
+BenchmarkGatewayAuthorityPublish-12    	     633	   3887521 ns/op	    6575 B/op	     114 allocs/op
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	48.183s

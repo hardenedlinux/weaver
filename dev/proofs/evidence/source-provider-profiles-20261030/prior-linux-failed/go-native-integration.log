@@ -1,0 +1,171 @@
+   Compiling quote v1.0.47
+   Compiling aho-corasick v1.1.5
+   Compiling syn v3.0.9
+   Compiling syn v2.0.119
+   Compiling synstructure v0.14.0
+   Compiling regex-automata v0.4.18
+   Compiling typenum v1.20.1
+   Compiling generic-array v0.14.7
+   Compiling zerofrom-derive v0.1.8
+   Compiling zerofrom v0.1.8
+   Compiling yoke-derive v0.8.4
+   Compiling tokio-macros v2.7.2
+   Compiling yoke v0.8.3
+   Compiling block-buffer v0.10.4
+   Compiling zerovec-derive v0.11.6
+   Compiling tokio v1.53.2
+   Compiling futures-macro v0.3.34
+   Compiling futures-util v0.3.34
+   Compiling zerovec v0.11.8
+   Compiling regex v1.13.1
+   Compiling tracing-attributes v0.1.31
+   Compiling displaydoc v0.2.7
+   Compiling tracing v0.1.44
+   Compiling tokio-util v0.7.19
+   Compiling serde_derive v1.0.229
+   Compiling crypto-common v0.1.7
+   Compiling darling_core v0.24.1
+   Compiling serde v1.0.229
+   Compiling digest v0.10.7
+   Compiling tinystr v0.8.4
+   Compiling icu_locale_core v2.3.0
+   Compiling darling_macro v0.24.1
+   Compiling sha3 v0.10.9
+   Compiling lalrpop-util v0.22.2
+   Compiling zerotrie v0.2.5
+   Compiling potential_utf v0.1.6
+   Compiling semver v1.0.28
+   Compiling icu_collections v2.3.0
+   Compiling h2 v0.4.19
+   Compiling lalrpop v0.22.2
+   Compiling icu_provider v2.3.1
+   Compiling prost-derive v0.14.4
+   Compiling darling v0.24.1
+   Compiling zerocopy-derive v0.8.59
+   Compiling enum-ordinalize-derive v4.4.2
+   Compiling thiserror-impl v2.0.21
+   Compiling hyper v1.11.1
+   Compiling thiserror v2.0.21
+   Compiling enum-ordinalize v4.4.2
+   Compiling cedar-policy-core v4.12.0
+   Compiling zerocopy v0.8.59
+   Compiling serde_with_macros v3.24.0
+   Compiling linked-hash-map v0.5.6
+   Compiling logos-codegen v0.16.1
+   Compiling miette-derive v7.6.0
+   Compiling ref-cast-impl v1.0.27
+   Compiling bitflags v2.13.2
+   Compiling rustix v1.1.5
+   Compiling hyper-util v0.1.20
+   Compiling ref-cast v1.0.27
+   Compiling miette v7.6.0
+   Compiling getrandom v0.4.3
+   Compiling logos-derive v0.16.1
+   Compiling linked_hash_set v0.1.6
+   Compiling icu_normalizer v2.3.0
+   Compiling icu_properties v2.3.0
+   Compiling serde_with v3.24.0
+   Compiling educe v0.7.6
+   Compiling tower v0.5.3
+   Compiling nonempty v0.12.0
+   Compiling getrandom v0.3.4
+   Compiling pulldown-cmark v0.13.4
+   Compiling prost v0.14.4
+   Compiling idna_adapter v1.2.2
+   Compiling logos v0.16.1
+   Compiling prettyplease v0.2.37
+   Compiling half v2.7.1
+   Compiling tokio-rustls v0.26.5
+   Compiling tempfile v3.27.0
+   Compiling sha2 v0.10.9
+   Compiling arrow-buffer v58.4.0
+   Compiling idna v1.1.0
+   Compiling prost-types v0.14.4
+   Compiling pulldown-cmark-to-cmark v22.0.1
+   Compiling rustc_version v0.4.1
+   Compiling prost-build v0.14.4
+   Compiling weaver-contracts v0.1.0 (/home/runner/work/weaver/weaver/crates/contracts)
+   Compiling arrow-data v58.4.0
+   Compiling url v2.5.8
+   Compiling flatbuffers v25.12.19
+   Compiling ahash v0.8.12
+   Compiling tonic-build v0.14.6
+   Compiling cedar-policy-formatter v4.12.0
+   Compiling cedar-policy v4.12.0
+   Compiling pin-project-internal v1.1.13
+   Compiling axum v0.8.9
+   Compiling rusqlite v0.40.2
+   Compiling pin-project v1.1.13
+   Compiling arrow-array v58.4.0
+   Compiling weaver-policy v0.1.0 (/home/runner/work/weaver/weaver/crates/policy)
+   Compiling tonic-prost-build v0.14.6
+   Compiling tower-http v0.6.11
+   Compiling hyper-rustls v0.27.9
+   Compiling hyper-timeout v0.5.2
+   Compiling tokio-stream v0.1.19
+   Compiling async-trait v0.1.92
+   Compiling reqwest v0.13.5
+   Compiling tonic v0.14.6
+   Compiling weaver-server v0.1.0 (/home/runner/work/weaver/weaver/crates/server)
+   Compiling weaver-ledger v0.1.0 (/home/runner/work/weaver/weaver/crates/ledger)
+   Compiling arrow-select v58.4.0
+   Compiling tonic-prost v0.14.6
+   Compiling weaver-execution v0.1.0 (/home/runner/work/weaver/weaver/crates/execution)
+   Compiling arrow-ipc v58.4.0
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2m 07s
+=== RUN   TestProviderCompetingCapsCannotReachDispatch
+--- PASS: TestProviderCompetingCapsCannotReachDispatch (1.11s)
+=== RUN   TestProviderSaturatedExecutionPreservesRevocationAndObservation
+--- PASS: TestProviderSaturatedExecutionPreservesRevocationAndObservation (1.70s)
+=== RUN   TestProviderConnectionBoundRetainsExistingAuthorityChannel
+--- PASS: TestProviderConnectionBoundRetainsExistingAuthorityChannel (2.16s)
+=== RUN   TestProviderPreTLSConnectionsAreBoundedAndExpire
+--- PASS: TestProviderPreTLSConnectionsAreBoundedAndExpire (4.16s)
+=== RUN   TestProviderShutdownDestroysStalledTLSBeforeAcknowledgingExit
+--- PASS: TestProviderShutdownDestroysStalledTLSBeforeAcknowledgingExit (1.05s)
+=== RUN   TestProviderGRPCStreamingAndArrowOption
+=== RUN   TestProviderGRPCStreamingAndArrowOption/PROTOBUF
+=== RUN   TestProviderGRPCStreamingAndArrowOption/ARROW_IPC
+--- PASS: TestProviderGRPCStreamingAndArrowOption (2.18s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/PROTOBUF (1.09s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/ARROW_IPC (1.09s)
+=== RUN   TestProviderFailuresNeverRetryOrFallback
+=== RUN   TestProviderFailuresNeverRetryOrFallback/redirect
+=== RUN   TestProviderFailuresNeverRetryOrFallback/overload
+=== RUN   TestProviderFailuresNeverRetryOrFallback/partial-sse
+=== RUN   TestProviderFailuresNeverRetryOrFallback/tool-proposal
+--- PASS: TestProviderFailuresNeverRetryOrFallback (4.27s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/redirect (1.06s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/overload (1.07s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/partial-sse (1.07s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/tool-proposal (1.07s)
+=== RUN   TestProviderPartialRequestAndRestartRetainUnknownClaim
+--- PASS: TestProviderPartialRequestAndRestartRetainUnknownClaim (2.73s)
+=== RUN   TestProviderRevocationDuringSSEStopsNextRelease
+--- PASS: TestProviderRevocationDuringSSEStopsNextRelease (1.08s)
+=== RUN   TestProviderArrowChecksEveryRow
+--- PASS: TestProviderArrowChecksEveryRow (1.07s)
+=== RUN   TestProviderConcurrentRPCDuplicatesInvokeOnce
+--- PASS: TestProviderConcurrentRPCDuplicatesInvokeOnce (1.10s)
+=== RUN   TestProviderRPCIdentityAndCancellation
+--- PASS: TestProviderRPCIdentityAndCancellation (1.06s)
+=== RUN   TestProviderClientCancellationCannotReplay
+--- PASS: TestProviderClientCancellationCannotReplay (1.08s)
+=== RUN   TestProviderAuthenticationPrecedesRPCBodyDecode
+--- PASS: TestProviderAuthenticationPrecedesRPCBodyDecode (1.04s)
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/forwarded-source-token
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/operation-token-with-source-key
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-key-on-operation-ingress
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-token-on-operation-ingress
+--- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod (1.12s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/forwarded-source-token (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/operation-token-with-source-key (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-key-on-operation-ingress (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-token-on-operation-ingress (0.01s)
+=== RUN   TestProviderSourceConnectionBudgetCannotBorrowOperationCapacity
+--- PASS: TestProviderSourceConnectionBudgetCannotBorrowOperationCapacity (2.10s)
+=== RUN   TestProviderPublicationLostReplyRestartAndHistoricalDecision
+--- PASS: TestProviderPublicationLostReplyRestartAndHistoricalDecision (2.14s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	159.901s

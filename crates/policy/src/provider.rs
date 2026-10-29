@@ -19,7 +19,8 @@ pub fn bind_provider(
     plan: &ProviderPlan,
     route: &ProviderRoute,
 ) -> Result<BoundProviderPolicy> {
-    if !plan.matches(task)? || !plan.routes.contains(route) {
+    let facts = plan.binding(task)?.ok_or(Error::Denied)?;
+    if !plan.routes.contains(route) {
         return Err(Error::Denied);
     }
     Ok(BoundProviderPolicy {
@@ -29,6 +30,8 @@ pub fn bind_provider(
             "family":plan.family,"node":plan.node,"profile":plan.profile,"model":plan.model,
             "endpoint":route.endpoint,"body_digest":body_digest(&plan.body),"plan_digest":plan.digest()?,
             "ceiling":plan.ceiling,"revision":plan.revision,"fence":plan.fence
+            ,"profile_digest":plan.profile_commitment,"protocol":task.provider_profile.as_ref().ok_or(Error::Denied)?.protocol,
+            "output_token_limit":facts.output_token_limit,"message_count":facts.message_count
         }),
     })
 }

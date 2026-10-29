@@ -1,0 +1,53 @@
+#+TITLE: Per-Package Benchmark Coverage Qualification
+#+LANGUAGE: en
+
+* Result
+
+The unified Go benchmark entrypoint completed naturally with six passing stages,
+including package coverage preflight, optimized Rust measurement, actual mTLS
+gRPC measurement and source currentness. The receipt binds 196 worktree inputs;
+this run does not assert committed-source qualification or remote CI acceptance.
+
+| Rust package | Measured cases | Samples per case |
+|--------------+----------------+------------------|
+| weaver-contracts | 8 | 30 |
+| weaver-policy | 3 | 30 |
+| weaver-ledger | 9 | 30 |
+| weaver-execution | 1 | 30 |
+| weaver-server | 4 | 30 |
+
+The three Go RPC benchmarks each completed three repetitions with allocation
+reporting. Their counters describe the Go client, not Rust allocations.
+
+* Reproduction and controls
+
+Run =devenv --profile ci shell -- go run ./go/cmd/weaver-dev bench=.
+Package-local commands and timing boundaries are documented in every
+=crates/*/benches/README.org=. All use workspace-inherited, development-only
+Criterion. The original thirty samples, one-second warm-up and two-second
+requested measurement remain unchanged.
+
+The preflight joins Cargo member names to measured case owners, requires each
+package's executable target and English Org workload contract, and runs collector
+controls. Unknown or duplicate members, orphan owners, omitted cases and invalid
+samples cannot produce a passing receipt. The separate race-enabled gate run is
+retained in [[file:package-benchmark-gates.log][the gate log]].
+
+* Evidence and interpretation
+
+- [[file:measured/receipt.json][Source-bound receipt and natural process exit codes]]
+- [[file:measured/benchmark-summary.org][All 25 means, confidence intervals and sample counts]]
+- [[file:measured/rust-benchmarks.log][Unfiltered Rust measurement log, comparisons and outliers]]
+- [[file:measured/grpc-benchmark.log][All nine actual RPC measurements]]
+- [[file:measured/source-currentness.log][Unchanged source inputs during execution]]
+- [[file:package-benchmark-host-before.txt][Host load before execution]]
+- [[file:package-benchmark-host-after.txt][Host load after execution]]
+
+Among the eighteen cases with cached comparisons, Criterion reported four
+regressions, eight improvements and six cases without significant change. Seven
+new cases have no prior comparison. These cached comparisons are not a matched
+experiment. Host one-minute load increased from 7.98 to 19.65 on the reported
+12-CPU host; the observation does not establish the cause of any measured change.
+Production performance admission remains unestablished: this serial local run
+does not qualify concurrent throughput, p99, provider inference latency or
+end-to-end zero-copy. No workload, timeout or negative control was relaxed.

@@ -78,11 +78,29 @@ async fn storage_failure_does_not_acknowledge_a_reusable_result() {
         answer(
             &ledger,
             reply,
-            Err::<(), _>(weaver_contracts::Error::Storage("injected failure".into()))
+            Err::<(), _>(weaver_contracts::Error::Storage("injected failure".into())),
+            Arc::new(Semaphore::new(1))
+                .try_acquire_owned()
+                .expect("command slot"),
         )
         .is_err()
     );
     assert!(receiver.await.is_err());
+}
+
+#[tokio::test]
+async fn completed_source_acknowledgment_returns_command_capacity() {
+    let directory = tempfile::tempdir().expect("directory");
+    let ledger = Ledger::open(directory.path().join("source.db")).expect("ledger");
+    let capacity = Arc::new(Semaphore::new(1));
+    for result in [Ok(()), Err(weaver_contracts::Error::Conflict("rejected"))] {
+        let slot = capacity.clone().try_acquire_owned().expect("slot");
+        let (reply, receiver) = oneshot::channel();
+        assert_eq!(capacity.available_permits(), 0);
+        answer(&ledger, reply, result, slot).expect("quiescent decision");
+        let _decision = receiver.await.expect("acknowledgment");
+        assert_eq!(capacity.available_permits(), 1);
+    }
 }
 
 #[tokio::test]

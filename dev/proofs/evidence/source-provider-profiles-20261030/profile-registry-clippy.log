@@ -1,0 +1,78 @@
+• Validating lock
+✓ Validating lock in 745µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 4.51ms
+• Evaluating shell
+✓ Evaluating shell in 63.3ms (cached)
+✓ Configuring shell in 73.6ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 1.11ms (cached)
+✓ Loading tasks in 3.32ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 33.7ms
+• Running devenv:files
+✓ Running devenv:files in 52.9ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 76.7ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 34.0ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 13.4µs (no command)
+✓ Running tasks in 198ms
+💡 The dotenv file '.env' was not found.
+    Blocking waiting for file lock on build directory
+    Checking weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+error: this `if` statement can be collapsed
+  --> crates/contracts/src/provider_profile/sampling.rs:33:5
+   |
+33 | /     if let Some(value) = body.get("stream_options") {
+34 | |         if value
+35 | |             .as_object()
+36 | |             .is_none_or(|fields| fields.keys().any(|k| k != "include_usage"))
+...  |
+41 | |     }
+   | |_____^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#collapsible_if
+   = note: `-D clippy::collapsible-if` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::collapsible_if)]`
+help: collapse nested if block
+   |
+33 ~     if let Some(value) = body.get("stream_options")
+34 ~         && (value
+35 |             .as_object()
+36 |             .is_none_or(|fields| fields.keys().any(|k| k != "include_usage"))
+37 ~             || value.get("include_usage").is_some_and(|v| !v.is_boolean()))
+38 |         {
+39 |             return Err(Error::Invalid("stream options"));
+40 ~         }
+   |
+
+error: this `if` statement can be collapsed
+  --> crates/contracts/src/provider_profile/sampling.rs:42:5
+   |
+42 | /     if let Some(value) = body.get("response_format") {
+43 | |         if value.as_object().is_none_or(|fields| fields.len() != 1)
+44 | |             || value.get("type").and_then(Value::as_str) != Some("text")
+...  |
+48 | |     }
+   | |_____^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#collapsible_if
+help: collapse nested if block
+   |
+42 ~     if let Some(value) = body.get("response_format")
+43 ~         && (value.as_object().is_none_or(|fields| fields.len() != 1)
+44 ~             || value.get("type").and_then(Value::as_str) != Some("text"))
+45 |         {
+46 |             return Err(Error::Invalid("text response format required"));
+47 ~         }
+   |
+
+error: could not compile `weaver-contracts` (lib) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `weaver-contracts` (lib test) due to 2 previous errors

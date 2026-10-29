@@ -1,0 +1,177 @@
+• Validating lock
+✓ Validating lock in 673µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.55ms
+• Evaluating shell
+✓ Evaluating shell in 20.6ms (cached)
+✓ Configuring shell in 25.4ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 848µs (cached)
+✓ Loading tasks in 1.57ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 16.4ms
+• Running devenv:files
+✓ Running devenv:files in 28.9ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 95.4ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 20.6ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 8.42µs (no command)
+✓ Running tasks in 162ms
+💡 The dotenv file '.env' was not found.
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+error[E0277]: the trait bound `u64: FromSql` is not satisfied
+   --> crates/ledger/tests/unit/provider_profiles.rs:45:27
+    |
+ 45 |                 .get::<_, u64>(0))
+    |                  ---      ^^^ the trait `FromSql` is not implemented for `u64`
+    |                  |
+    |                  required by a bound introduced by this call
+    |
+    = help: the following other types implement trait `FromSql`:
+              f32
+              f64
+              i16
+              i32
+              i64
+              i8
+              isize
+              u16
+            and 2 others
+note: required by a bound in `Row::<'_>::get`
+   --> /Users/guangtao/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rusqlite-0.40.2/src/row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'_>::get`
+
+error[E0277]: the trait bound `u64: FromSql` is not satisfied
+   --> crates/ledger/tests/unit/provider_profiles.rs:51:73
+    |
+ 51 |             .query_row("SELECT count(*) FROM tasks", [], |r| r.get::<_, u64>(0))
+    |                                                                ---      ^^^ the trait `FromSql` is not implemented for `u64`
+    |                                                                |
+    |                                                                required by a bound introduced by this call
+    |
+    = help: the following other types implement trait `FromSql`:
+              f32
+              f64
+              i16
+              i32
+              i64
+              i8
+              isize
+              u16
+            and 2 others
+note: required by a bound in `Row::<'_>::get`
+   --> /Users/guangtao/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rusqlite-0.40.2/src/row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'_>::get`
+
+error[E0277]: the trait bound `u64: FromSql` is not satisfied
+   --> crates/ledger/tests/unit/provider_profiles.rs:104:32
+    |
+104 |                 |r| r.get::<_, u64>(0)
+    |                       ---      ^^^ the trait `FromSql` is not implemented for `u64`
+    |                       |
+    |                       required by a bound introduced by this call
+    |
+    = help: the following other types implement trait `FromSql`:
+              f32
+              f64
+              i16
+              i32
+              i64
+              i8
+              isize
+              u16
+            and 2 others
+note: required by a bound in `Row::<'_>::get`
+   --> /Users/guangtao/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rusqlite-0.40.2/src/row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'_>::get`
+
+error[E0277]: the trait bound `u64: FromSql` is not satisfied
+   --> crates/ledger/tests/unit/provider_profiles.rs:114:32
+    |
+114 |                 |r| r.get::<_, u64>(0)
+    |                       ---      ^^^ the trait `FromSql` is not implemented for `u64`
+    |                       |
+    |                       required by a bound introduced by this call
+    |
+    = help: the following other types implement trait `FromSql`:
+              f32
+              f64
+              i16
+              i32
+              i64
+              i8
+              isize
+              u16
+            and 2 others
+note: required by a bound in `Row::<'_>::get`
+   --> /Users/guangtao/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rusqlite-0.40.2/src/row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'_>::get`
+
+error[E0277]: the trait bound `u64: FromSql` is not satisfied
+   --> crates/ledger/tests/unit/provider_profiles.rs:245:27
+    |
+245 |                 .get::<_, u64>(0))
+    |                  ---      ^^^ the trait `FromSql` is not implemented for `u64`
+    |                  |
+    |                  required by a bound introduced by this call
+    |
+    = help: the following other types implement trait `FromSql`:
+              f32
+              f64
+              i16
+              i32
+              i64
+              i8
+              isize
+              u16
+            and 2 others
+note: required by a bound in `Row::<'_>::get`
+   --> /Users/guangtao/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rusqlite-0.40.2/src/row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'_>::get`
+
+error[E0277]: the trait bound `u64: FromSql` is not satisfied
+   --> crates/ledger/tests/unit/provider_profiles.rs:251:73
+    |
+251 |             .query_row("SELECT count(*) FROM tasks", [], |r| r.get::<_, u64>(0))
+    |                                                                ---      ^^^ the trait `FromSql` is not implemented for `u64`
+    |                                                                |
+    |                                                                required by a bound introduced by this call
+    |
+    = help: the following other types implement trait `FromSql`:
+              f32
+              f64
+              i16
+              i32
+              i64
+              i8
+              isize
+              u16
+            and 2 others
+note: required by a bound in `Row::<'_>::get`
+   --> /Users/guangtao/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rusqlite-0.40.2/src/row.rs:285:32
+    |
+285 |     pub fn get<I: RowIndex, T: FromSql>(&self, idx: I) -> Result<T> {
+    |                                ^^^^^^^ required by this bound in `Row::<'_>::get`
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `weaver-ledger` (test "unit_test") due to 6 previous errors
+warning: build failed, waiting for other jobs to finish...

@@ -1,0 +1,37 @@
+• Validating lock
+✓ Validating lock in 4.25ms
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 12.8ms
+• Evaluating shell
+✓ Evaluating shell in 635ms (cached)
+✓ Configuring shell in 696ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 60.7ms (cached)
+✓ Loading tasks in 116ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 99.4ms
+• Running devenv:files
+✓ Running devenv:files in 214ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 232ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 92.6ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 35.4µs (no command)
+✓ Running tasks in 639ms
+💡 The dotenv file '.env' was not found.
+'Weaver.PublicationRecovery.owner_step_preserves_custody' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.PublicationRecovery.command_ack_requires_returned_capacity' does not depend on any axioms
+'Weaver.PublicationRecovery.closed_owner_cannot_reopen' depends on axioms: [propext]
+'Weaver.PublicationRecovery.successful_owner_ack_requires_close_and_no_failed_transaction' does not depend on any axioms
+'Weaver.PublicationRecovery.owned_worker_and_publication_composition' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.PublicationRecovery.step_preserves_original_decisions' depends on axioms: [propext]
+'Weaver.PublicationRecovery.step_preserves_accounting' depends on axioms: [propext]
+'Weaver.PublicationRecovery.run_preserves_original_decisions' depends on axioms: [propext]
+'Weaver.PublicationRecovery.run_preserves_accounting' depends on axioms: [propext]
+'Weaver.PublicationRecovery.recovery_and_provider_accounting_composition' depends on axioms: [propext]

@@ -1,0 +1,37 @@
+• Validating lock
+✓ Validating lock in 2.26ms
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 2.53ms
+• Evaluating shell
+✓ Evaluating shell in 9.89ms (cached)
+✓ Configuring shell in 28.0ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 1.01ms (cached)
+✓ Loading tasks in 2.20ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 30.2ms
+• Running devenv:files
+✓ Running devenv:files in 41.7ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 75.0ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 21.0ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 26.7µs (no command)
+✓ Running tasks in 168ms
+💡 The dotenv file '.env' was not found.
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.70s
+=== RUN   TestProviderSourceProfileAndCedarBindFinalSendAcrossRestart
+--- PASS: TestProviderSourceProfileAndCedarBindFinalSendAcrossRestart (3.53s)
+=== RUN   TestProviderSourceCommittedExtensionsCannotBypassProfile
+--- PASS: TestProviderSourceCommittedExtensionsCannotBypassProfile (1.08s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	13.433s

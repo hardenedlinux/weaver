@@ -85,6 +85,7 @@ fn exercise(response: Option<&'static [u8]>) -> (SendObservation, usize, u64) {
     let endpoint = format!("https://localhost:{port}/v1/chat/completions");
     let body = r#"{"model":"m","messages":[]}"#.to_string();
     let task = Task {
+        provider_profile: None,
         family: "f".into(),
         principal: "alice".into(),
         profile: "p".into(),

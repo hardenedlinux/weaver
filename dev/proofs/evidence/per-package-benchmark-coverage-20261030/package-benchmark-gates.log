@@ -1,0 +1,27 @@
+• Validating lock
+✓ Validating lock in 646µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.94ms
+• Evaluating shell
+✓ Evaluating shell in 23.8ms (cached)
+✓ Configuring shell in 30.0ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 844µs (cached)
+✓ Loading tasks in 1.71ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 17.8ms
+• Running devenv:files
+✓ Running devenv:files in 104ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 63.7ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 19.0ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 14.9µs (no command)
+✓ Running tasks in 205ms
+💡 The dotenv file '.env' was not found.
+ok  	github.com/HardenedLinux/weaver/go/dev	2.896s
+ok  	github.com/HardenedLinux/weaver/go/internal/devrunner	2.960s

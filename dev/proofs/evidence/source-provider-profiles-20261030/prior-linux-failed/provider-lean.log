@@ -1,0 +1,37 @@
+'Weaver.ProviderRpc.admitted_provider_cap_is_bounded' depends on axioms: [propext]
+'Weaver.ProviderRpc.competing_provider_caps_cannot_be_admitted' depends on axioms: [propext]
+'Weaver.ProviderRpc.preferred_cap_precedence_counterexample' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.request_bounds_and_affine_execution_composition' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.release_step_preserves_original_binding' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.release_run_preserves_original_binding' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.foreign_plan_cannot_release' does not depend on any axioms
+'Weaver.ProviderRpc.changed_encoding_cannot_release' does not depend on any axioms
+'Weaver.ProviderRpc.restarted_session_cannot_release' does not depend on any axioms
+'Weaver.ProviderRpc.release_binding_and_execution_composition' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.invocation_history_step' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.invocation_history_run' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.cancelled_context_cannot_admit' depends on axioms: [propext]
+'Weaver.ProviderRpc.stale_consumed_view_cannot_create_dispatch_token' depends on axioms: [propext]
+'Weaver.ProviderRpc.cancellation_and_original_hold_composition' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.operation_leaf_cannot_publish_on_source' does not depend on any axioms
+'Weaver.ProviderRpc.source_ingress_cannot_execute' depends on axioms: [propext]
+'Weaver.ProviderRpc.publication_requires_source_ingress_and_leaf' does not depend on any axioms
+'Weaver.ProviderRpc.ingress_step_preserves_independent_custody' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Weaver.ProviderRpc.operation_transition_preserves_source_state' does not depend on any axioms
+'Weaver.ProviderRpc.connection_step_preserves_custody' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ProviderRpc.bounded_connections_include_handshakes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ProviderRpc.provider_and_connection_composition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Weaver.ProviderRpc.lane_step_preserves_bounds' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.execution_saturation_preserves_publication_admission' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.execution_and_admission_composition' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.safe_step' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.safe_run' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.stale_authority_cannot_pass' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.consumed_unknown_retains_original_hold' depends on axioms: [propext, Quot.sound]
+'Weaver.ProviderRpc.new_rpc_nonce_cannot_select_fresh_state' does not depend on any axioms
+'Weaver.ProviderRpc.arrow_cannot_weaken_row_authority' does not depend on any axioms
+'Weaver.ProviderRpc.every_arrow_row_requires_authority' does not depend on any axioms
+'Weaver.ProviderRpc.shared_name_is_not_key_authority' does not depend on any axioms
+'Weaver.ProviderRpc.execution_and_encoding_composition' depends on axioms: [propext, Quot.sound]

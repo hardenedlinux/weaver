@@ -40,10 +40,14 @@ func Plan(p v1.ProviderPlan) *pb.ProviderPlan {
 	for _, r := range p.Routes {
 		routes = append(routes, &pb.Route{Target: r.Target, Endpoint: r.Endpoint})
 	}
-	return &pb.ProviderPlan{Family: p.Family, Node: p.Node, Profile: p.Profile, Model: p.Model, Body: []byte(p.Body), Routes: routes, Ceiling: p.Ceiling, Revision: p.Revision, Fence: p.Fence}
+	return &pb.ProviderPlan{Family: p.Family, Node: p.Node, Profile: p.Profile, ProfileCommitment: p.ProfileCommitment, Model: p.Model, Body: []byte(p.Body), Routes: routes, Ceiling: p.Ceiling, Revision: p.Revision, Fence: p.Fence}
 }
 func Task(t v1.Task) *pb.Task {
-	return &pb.Task{Family: t.Family, Principal: t.Principal, Profile: t.Profile, Nodes: t.Nodes, Targets: t.Targets, Endpoints: t.Endpoints, BodyDigests: t.BodyDigests, NodeCostBounds: t.NodeCostBounds, StreamContracts: t.StreamContracts, Models: t.Models, Budget: t.Budget}
+	var profile *pb.ProviderProfile
+	if p := t.ProviderProfile; p != nil {
+		profile = &pb.ProviderProfile{Id: p.ID, Protocol: p.Protocol, MaxOutputTokens: p.MaxOutputTokens, MaxMessages: p.MaxMessages, MaxBodyBytes: p.MaxBodyBytes}
+	}
+	return &pb.Task{Family: t.Family, Principal: t.Principal, Profile: t.Profile, ProviderProfile: profile, Nodes: t.Nodes, Targets: t.Targets, Endpoints: t.Endpoints, BodyDigests: t.BodyDigests, NodeCostBounds: t.NodeCostBounds, StreamContracts: t.StreamContracts, Models: t.Models, Budget: t.Budget}
 }
 
 // Execute never retries. A disconnected, partial or indeterminate operation must

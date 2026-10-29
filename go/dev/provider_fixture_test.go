@@ -135,6 +135,9 @@ type fixture struct {
 func newFixture(t testing.TB, handler http.HandlerFunc, large bool) *fixture {
 	return fixtureWithBinary(t, handler, large, serverBinary)
 }
+func providerProfile() *v1.ProviderProfile {
+	return &v1.ProviderProfile{ID: "p", Protocol: v1.ChatTextSSE, MaxOutputTokens: 4096, MaxMessages: 64, MaxBodyBytes: 1 << 20}
+}
 func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binary string) *fixture {
 	t.Helper()
 	f := &fixture{directory: t.TempDir(), pki: pki(t), binary: binary}
@@ -168,6 +171,7 @@ func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binar
 		data, _ := json.Marshal(request)
 		f.plan.Body = string(data)
 	}
+	f.plan.ProfileCommitment, _ = providerProfile().Digest()
 	digest, err := f.plan.Digest()
 	if err != nil {
 		t.Fatal(err)
@@ -179,7 +183,7 @@ func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binar
 		endpoints[route.Target] = route.Endpoint
 		targets = append(targets, route.Target)
 	}
-	task := v1.Task{Family: "f", Principal: "alice", Profile: "p", Nodes: []string{"infer"}, Targets: targets, Endpoints: endpoints, BodyDigests: map[string]string{"infer": hex.EncodeToString(sum[:])}, NodeCostBounds: map[string]uint64{"infer": 4}, StreamContracts: map[string]string{"infer": digest}, Models: []string{"model-a"}, Budget: 8}
+	task := v1.Task{ProviderProfile: providerProfile(), Family: "f", Principal: "alice", Profile: "p", Nodes: []string{"infer"}, Targets: targets, Endpoints: endpoints, BodyDigests: map[string]string{"infer": hex.EncodeToString(sum[:])}, NodeCostBounds: map[string]uint64{"infer": 4}, StreamContracts: map[string]string{"infer": digest}, Models: []string{"model-a"}, Budget: 8}
 	f.plan, err = routing.CompileProvider(task, f.plan, v1.View{Revision: 0, Fence: 1})
 	if err != nil {
 		t.Fatal(err)

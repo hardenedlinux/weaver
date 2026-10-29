@@ -3,7 +3,6 @@ package routing
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"math"
 	"net/url"
@@ -16,6 +15,17 @@ import (
 // credential availability and Cedar choose a route only inside Rust, before consumption.
 func CompileProvider(task v1.Task, p v1.ProviderPlan, view v1.View) (v1.ProviderPlan, error) {
 	var zero v1.ProviderPlan
+	if task.ProviderProfile == nil {
+		return zero, errors.New("source provider profile required")
+	}
+	profileDigest, err := task.ProviderProfile.Digest()
+	if err != nil || task.ProviderProfile.ID != task.Profile || p.ProfileCommitment != profileDigest {
+		return zero, errors.New("original provider profile commitment")
+	}
+	facts, err := task.ProviderProfile.RequestFacts(p.Body)
+	if err != nil {
+		return zero, err
+	}
 	if len(p.Body) > 1<<20 {
 		return zero, errors.New("provider body bound")
 	}
@@ -23,16 +33,7 @@ func CompileProvider(task v1.Task, p v1.ProviderPlan, view v1.View) (v1.Provider
 	if err != nil {
 		return zero, err
 	}
-	body, err := v1.Decode[map[string]json.RawMessage]([]byte(p.Body))
-	if err != nil {
-		return zero, err
-	}
-	if err := providerBounds(body, len(p.Body)); err != nil {
-		return zero, err
-	}
-	var model string
-	var streaming bool
-	if json.Unmarshal(body["model"], &model) != nil || model != p.Model || json.Unmarshal(body["stream"], &streaming) != nil || !streaming {
+	if facts.Model != p.Model {
 		return zero, errors.New("stream model mismatch")
 	}
 	sum := sha256.Sum256([]byte(p.Body))
@@ -50,40 +51,7 @@ func CompileProvider(task v1.Task, p v1.ProviderPlan, view v1.View) (v1.Provider
 		}
 		seen[route.Target] = true
 	}
-	for _, key := range []string{"tools", "tool_choice", "functions", "function_call"} {
-		if _, ok := body[key]; ok {
-			return zero, errors.New("tool profile unavailable")
-		}
-	}
 	p.Revision = view.Revision
 	p.Fence = view.Fence
 	return p, nil
-}
-
-// Go rejects unsupported proposals early; Rust independently repeats admission.
-func providerBounds(body map[string]json.RawMessage, bytes int) error {
-	modern, hasModern := body["max_completion_tokens"]
-	legacy, hasLegacy := body["max_tokens"]
-	if bytes > 1048576 || hasModern == hasLegacy {
-		return errors.New("one bounded provider token limit required")
-	}
-	limit := modern
-	if hasLegacy {
-		limit = legacy
-	}
-	var tokens uint64
-	if json.Unmarshal(limit, &tokens) != nil || tokens == 0 || tokens > 4096 {
-		return errors.New("provider token limit exceeded")
-	}
-	var messages []json.RawMessage
-	if json.Unmarshal(body["messages"], &messages) != nil || len(messages) == 0 || len(messages) > 64 {
-		return errors.New("bounded provider messages required")
-	}
-	if value, ok := body["n"]; ok {
-		var choices uint64
-		if json.Unmarshal(value, &choices) != nil || choices != 1 {
-			return errors.New("single provider choice required")
-		}
-	}
-	return nil
 }

@@ -15,6 +15,7 @@ fn default_deny_forbid_and_evaluation_error_are_fail_closed() {
         fence: 0,
     };
     let task = Task {
+        provider_profile: None,
         family: "f".into(),
         principal: "alice".into(),
         profile: "p".into(),

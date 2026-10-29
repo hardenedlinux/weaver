@@ -109,3 +109,22 @@ counters. Twelve Rust cases improve against the local Criterion cache and six
 show no significant change. These are empirical host samples, not a matched
 claim about the toolchain fix or production latency. Older compiler baselines
 and regression warnings remain under their own receipts.
+
+* Subsequent cold CI watchdog observation
+
+Linux run 40956764509 at revision 13834198 fails the FuzzNoop control's unchanged
+thirty-second child watchdog, even though its captured output contains a
+three-second fuzz interval and PASS. That marker does not prove natural process
+exit. The run remains failed; it does not invalidate the independently checked
+parent-context patch or prove that patch caused the watchdog expiry.
+
+The [[file:59.17-source-provider-profiles.org][profile increment]] retains the failed Linux stage and an isolated empty-cache
+Darwin control. The latter finishes naturally in 9.66 seconds and does not reproduce
+the Linux failure. Host/platform attribution therefore remains unresolved.
+The unified plan now compiles the native fuzz fixture in an explicit build stage
+before Go tests; each control still invokes the original Go test/fuzz path with
+the same three-second workload, one worker and thirty-second watchdog. A build
+receipt is separate from native execution and cannot qualify the control.
+First-child-output and total elapsed timing are recorded for future failures.
+This preparation and observability change is not a demonstrated fix for the
+historical Linux timeout until independent current CI supplies that evidence.

@@ -16,6 +16,7 @@ fn fixture(destination: String) -> (tempfile::TempDir, Ledger, StreamContract) {
     ledger.publish(None, ALLOW, 1).expect("publish");
     let input = body_digest("original-input");
     let mut task = Task {
+        provider_profile: None,
         family: "f".into(),
         principal: "alice".into(),
         profile: "p".into(),

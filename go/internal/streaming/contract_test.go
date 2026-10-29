@@ -31,6 +31,13 @@ func TestOriginalMessageAndCostRemainBound(t *testing.T) {
 		t.Fatal("forged input")
 	}
 }
+func TestProviderProfileCannotUseRawStreamPath(t *testing.T) {
+	task, c := fixture()
+	task.ProviderProfile = &contract.ProviderProfile{ID: task.Profile, Protocol: contract.ChatTextSSE, MaxOutputTokens: 4096, MaxMessages: 64, MaxBodyBytes: 1 << 20}
+	if _, err := Compile(task, c, "m0", "data", 4, contract.View{}); err == nil {
+		t.Fatal("provider semantic contract bypassed by raw stream emission")
+	}
+}
 func FuzzMessageBounds(f *testing.F) {
 	f.Add("hello", uint64(4))
 	f.Add("", uint64(0))

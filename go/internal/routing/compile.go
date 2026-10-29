@@ -14,6 +14,9 @@ import (
 
 func Compile(task contract.Task, request contract.Request, view contract.View) (contract.Proposal, error) {
 	var zero contract.Proposal
+	if task.ProviderProfile != nil {
+		return zero, errors.New("provider profile cannot use an untyped request path")
+	}
 	if !slices.Contains(task.Nodes, request.Node) || !slices.Contains(task.Models, request.Model) || request.Ceiling == 0 || task.Budget == 0 || task.Budget > math.MaxInt64 {
 		return zero, errors.New("request outside original task")
 	}

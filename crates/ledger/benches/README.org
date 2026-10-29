@@ -4,10 +4,16 @@
 * Workload
 
 Fresh admission; consumption and dispatch burn; idempotent admission; atomic publication commit; exact publication replay; historical outcome lookup.
+Atomic task/profile registration and exact task replay with one or 256 tasks
+sharing the same immutable profile. Nine measured cases belong to this package.
 
 * Measurement boundary
 
 SQLite FULL/WAL operations and current authorization. Fresh database setup and object destruction are outside timing. Serial measurements do not establish concurrent throughput or crash recovery.
+Profile replay includes the retained original-task semantic floor and registry
+join. The one/256 fixtures are populated before timing; they expose history-size
+cost without including setup in the measurement. Index-plan tests verify bounded
+range seeks separately; a query plan is not a latency benchmark.
 
 * Entrypoints
 

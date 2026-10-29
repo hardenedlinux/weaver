@@ -1,0 +1,37 @@
+• Validating lock
+✓ Validating lock in 198µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 224ms
+• Evaluating shell
+✓ Evaluating shell in 571ms (cached)
+✓ Configuring shell in 960ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 152ms (cached)
+✓ Loading tasks in 185ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 205ms
+• Running devenv:files
+✓ Running devenv:files in 165ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 306ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 112ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 24.4µs (no command)
+✓ Running tasks in 795ms
+💡 The dotenv file '.env' was not found.
+=== RUN   TestGoFuzzCoordinatorParentDeadlineAdmission
+--- PASS: TestGoFuzzCoordinatorParentDeadlineAdmission (0.00s)
+=== RUN   TestGoFuzzCoordinatorPreservesNativePropertyFailure
+=== RUN   TestGoFuzzCoordinatorPreservesNativePropertyFailure/FuzzNoop
+    toolchain_test.go:65: native control=FuzzNoop elapsed=4.901359167s first-output=none watchdog=30s
+=== RUN   TestGoFuzzCoordinatorPreservesNativePropertyFailure/FuzzPropertyFailure
+    toolchain_test.go:65: native control=FuzzPropertyFailure elapsed=1.747384583s first-output=none watchdog=30s
+--- PASS: TestGoFuzzCoordinatorPreservesNativePropertyFailure (6.65s)
+    --- PASS: TestGoFuzzCoordinatorPreservesNativePropertyFailure/FuzzNoop (4.90s)
+    --- PASS: TestGoFuzzCoordinatorPreservesNativePropertyFailure/FuzzPropertyFailure (1.75s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/internal/devrunner	8.598s

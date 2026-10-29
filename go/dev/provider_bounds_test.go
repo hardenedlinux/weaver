@@ -27,7 +27,7 @@ func TestProviderCompetingCapsCannotReachDispatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	body := sha256.Sum256([]byte(plan.Body))
-	task := v1.Task{Family: plan.Family, Principal: "alice", Profile: plan.Profile, Nodes: []string{plan.Node},
+	task := v1.Task{ProviderProfile: providerProfile(), Family: plan.Family, Principal: "alice", Profile: plan.Profile, Nodes: []string{plan.Node},
 		Targets: []string{}, Endpoints: map[string]string{}, Models: []string{plan.Model}, Budget: 8,
 		BodyDigests:     map[string]string{plan.Node: hex.EncodeToString(body[:])},
 		StreamContracts: map[string]string{plan.Node: digest}, NodeCostBounds: map[string]uint64{plan.Node: 4}}

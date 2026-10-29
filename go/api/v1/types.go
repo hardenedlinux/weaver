@@ -2,6 +2,7 @@
 package v1
 
 type Task struct {
+	ProviderProfile *ProviderProfile  `json:"provider_profile,omitempty"`
 	Family          string            `json:"family"`
 	Principal       string            `json:"principal"`
 	Profile         string            `json:"profile"`

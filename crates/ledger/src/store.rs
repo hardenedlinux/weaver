@@ -79,6 +79,9 @@ impl Ledger {
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db)?;
+        if let Some(profile) = &task.provider_profile {
+            crate::provider_profiles::register(&tx, profile)?;
+        }
         let old: Option<String> = tx
             .query_row(
                 "SELECT record FROM tasks WHERE family=?1",
@@ -88,10 +91,12 @@ impl Ledger {
             .optional()
             .map_err(db)?;
         match old {
-            Some(value) if value != record => {
-                return Err(Error::Conflict("original task is immutable"));
+            Some(value) => {
+                let original: Task = weaver_contracts::decode(value.as_bytes())?;
+                if original != *task {
+                    return Err(Error::Conflict("original task is immutable"));
+                }
             }
-            Some(_) => (),
             None => {
                 tx.execute(
                     "INSERT INTO tasks(family,record,budget) VALUES(?1,?2,?3)",
