@@ -159,3 +159,12 @@ compiler, timeout, model sample count or required gate is relaxed to fit the
 runner. The rebuilt hosted workflow must independently qualify available disk
 capacity and all original stages; local cleanup controls alone cannot establish
 Linux acceptance.
+
+At implementation commit =472cf7851109a0f495abfe687d6b0d7241f94234=, the
+[[file:../../../dev/proofs/evidence/cold-assurance-20261030/committed-capacity-check/receipt.json][complete committed local check]] passes all forty-six stages with 173 source
+inputs unchanged. This includes the new Go host-preparation controls, all
+existing Rust tests and ASP deny gates, Clippy, Go race/PBT, Quint, Lean and
+actual HTTPS/mTLS provider scenarios. It does not execute privileged cleanup
+on the developer machine. The [[https://github.com/hardenedlinux/weaver/actions/runs/40954543662][new exact-commit Linux run]] was independently
+observed live at hosted capacity preparation after its fixed SDK identity step
+succeeded; its final bootstrap/native/formal/benchmark outcome remains pending.
