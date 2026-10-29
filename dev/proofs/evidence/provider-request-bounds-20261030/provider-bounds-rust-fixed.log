@@ -1,0 +1,35 @@
+• Validating lock
+✓ Validating lock in 663µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.30ms
+• Evaluating shell
+✓ Evaluating shell in 22.4ms (cached)
+✓ Configuring shell in 25.6ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 1.27ms (cached)
+✓ Loading tasks in 2.80ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 21.9ms
+• Running devenv:files
+✓ Running devenv:files in 80.4ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 61.8ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 18.7ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 10.3µs (no command)
+✓ Running tasks in 183ms
+💡 The dotenv file '.env' was not found.
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.06s
+     Running tests/provider_bounds.rs (target/debug/deps/provider_bounds-b148d3a6b2cf112e)
+
+running 2 tests
+test competing_provider_limits_are_rejected_even_when_the_preferred_one_is_bounded ... ok
+test exactly_one_provider_cap_is_bounded ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

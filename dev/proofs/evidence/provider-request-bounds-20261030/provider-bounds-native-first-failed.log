@@ -1,0 +1,45 @@
+• Validating lock
+✓ Validating lock in 2.40ms
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 2.97ms
+• Evaluating shell
+✓ Evaluating shell in 686ms (cached)
+✓ Configuring shell in 695ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 139ms (cached)
+✓ Loading tasks in 141ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 31.3ms
+• Running devenv:files
+✓ Running devenv:files in 46.8ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 74.6ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 34.8ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 12.1µs (no command)
+✓ Running tasks in 188ms
+💡 The dotenv file '.env' was not found.
+go: downloading github.com/apache/arrow-go/v18 v18.4.1
+go: downloading golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0
+go: downloading github.com/google/flatbuffers v25.2.10+incompatible
+go: downloading github.com/klauspost/compress v1.18.0
+go: downloading github.com/pierrec/lz4/v4 v4.1.22
+go: downloading github.com/goccy/go-json v0.10.5
+go: downloading golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da
+go: downloading github.com/zeebo/xxh3 v1.0.2
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.62s
+=== RUN   TestProviderCompetingCapsCannotReachDispatch
+    provider_bounds_test.go:45: Rust did not independently reject ambiguous request before Policy/dispatch: rpc error: code = FailedPrecondition desc = native authority or state rejected
+--- FAIL: TestProviderCompetingCapsCannotReachDispatch (2.66s)
+FAIL
+FAIL	github.com/HardenedLinux/weaver/go/dev	11.262s
+FAIL

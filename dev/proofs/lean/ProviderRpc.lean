@@ -305,6 +305,45 @@ theorem release_binding_and_execution_composition
   ⟨safe_run execution history, invocation_history_run admission history,
     release_run_preserves_original_binding release releases⟩
 
+/- A source commitment identifies bytes; it does not select between conflicting
+   provider fields. The native decoder must refine this typed request premise.
+   Token caps are not money, pricing proofs, usage receipts or refund authority. -/
+structure RequestCaps where
+  completion : Option Nat
+  legacy : Option Nat
+
+def CapsAdmitted (c : RequestCaps) : Prop :=
+  (∃ n, c.completion = some n ∧ c.legacy = none ∧ 0 < n ∧ n ≤ 4096) ∨
+  (∃ n, c.legacy = some n ∧ c.completion = none ∧ 0 < n ∧ n ≤ 4096)
+
+def SelectedCap (c : RequestCaps) (n : Nat) : Prop :=
+  c.completion = some n ∨ c.legacy = some n
+
+theorem admitted_provider_cap_is_bounded (admitted : CapsAdmitted c)
+    (selected : SelectedCap c n) : 0 < n ∧ n ≤ 4096 := by
+  rcases admitted with ⟨cap, hc, hl, low, high⟩ | ⟨cap, hl, hc, low, high⟩ <;>
+    rcases selected with selected | selected <;> simp_all
+
+theorem competing_provider_caps_cannot_be_admitted
+    (modern : c.completion = some a) (legacy : c.legacy = some b) : ¬ CapsAdmitted c := by
+  intro admitted
+  rcases admitted with ⟨cap, _, absent, _, _⟩ | ⟨cap, _, absent, _, _⟩ <;> simp_all
+
+theorem preferred_cap_precedence_counterexample :
+    let c : RequestCaps := ⟨some 32, some 1000000⟩
+    c.completion = some 32 ∧ SelectedCap c 1000000 ∧ ¬ CapsAdmitted c := by
+  simp [SelectedCap, CapsAdmitted]
+
+theorem request_bounds_and_affine_execution_composition
+    (initial : Safe cost budget s) (history : Run cost budget s t)
+    (admitted : CapsAdmitted original) :
+    Safe cost budget t ∧ (∀ n, SelectedCap original n → 0 < n ∧ n ≤ 4096) :=
+  ⟨safe_run initial history, fun _ selected => admitted_provider_cap_is_bounded admitted selected⟩
+
+#print axioms admitted_provider_cap_is_bounded
+#print axioms competing_provider_caps_cannot_be_admitted
+#print axioms preferred_cap_precedence_counterexample
+#print axioms request_bounds_and_affine_execution_composition
 #print axioms release_step_preserves_original_binding
 #print axioms release_run_preserves_original_binding
 #print axioms foreign_plan_cannot_release

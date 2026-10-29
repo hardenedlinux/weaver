@@ -128,6 +128,10 @@ the earlier Go 1.25.0 receipts are not relabeled as this development profile.
 
 * Per-package evidence gate qualification
 
+The [[file:59.16-provider-request-bounds.org][request-bound increment]] tightens provider admission inside the existing
+contracts commitment benchmark path. The original cases and thirty-sample
+measurement settings remain unchanged; its measurements require a new receipt.
+
 The subsequent [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/benchmark-summary.org][per-package measured baseline]] qualifies all eighteen Rust cases
 under the stricter sample gate, with thirty paired samples per case. Coverage is
 four contracts, three Policy, six ledger, one execution and four server cases.

@@ -1,0 +1,104 @@
+#+TITLE: 59.16 Unambiguous Provider Request Admission
+#+LANGUAGE: en
+
+* Problem and native boundary
+
+An exact source commitment identifies request bytes. It does not define how an
+upstream implementation resolves conflicting fields. Previously Rust preferred
+=max_completion_tokens= while ignoring a simultaneous =max_tokens=. Go routing
+also omitted the native request token/message/choice limits. A source-committed
+request containing limits of 32 and 1000000 therefore passed both local request
+checks. The retained failing controls establish admission of ambiguous bytes;
+they do not claim a particular commercial provider's precedence behavior or
+an observed monetary overcharge.
+
+Both Go and Rust now require exactly one of these two cap fields. The value must
+be an integer from 1 through 4096. Null, zero, negative, fractional, string,
+absent and dual-field limits are rejected. Equal dual limits are also rejected;
+there is no transport-specific precedence or normalization. Go rejects requests
+larger than one MiB before hashing/decoding and mirrors the existing Rust bounds
+of one through 64 messages and one completion choice. Request bytes, route order,
+original key, cost bound and Policy generation remain committed as before.
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme / POO semantic source | Compose a supported original request and bind its immutable task/profile/body/route commitment; this increment does not implement the remaining Scheme runtime bridge |
+| Go routing | Reject an unsupported proposal before handoff; never silently rewrite one cap into another or infer authority from a hash |
+| Rust contracts / broker | Independently validate the actual received body before provider admission, reservation, consumption or transport; a client can bypass Go |
+| Cedar | Continue fresh error-free decisions on original facts; a Cedar permit does not make an ambiguous request shape valid |
+| Quint | Exercise admission, immutable caps, restart/nonce behavior and a missing-shape-guard counterexample |
+| Lean | Prove that every selected admitted cap is bounded and compose that premise with existing affine execution safety |
+
+* Native and model witnesses
+
+Rust has a deterministic conflicting-cap regression, invalid scalar controls and
+a sixty-four-case PBT over field presence and cap magnitude. Go fuzzes cap
+presence, uint64 magnitude and choice count under a freshly rebound source
+commitment, so rejection cannot be attributed solely to a stale digest. Its
+deterministic controls also cover invalid scalar values, message shapes and
+request size. The unified Go check includes the new fuzz target using the
+existing three-second, single-worker rule.
+
+The actual mTLS gRPC test deliberately bypasses Go routing. It registers an exact
+source task for an ambiguous body and publishes a typed Policy permitting both
+the bad family and the valid control family. Rust must reject the ambiguous
+request, release no output and invoke none of the fixture providers. The valid
+original request must still execute once with its original hold. This avoids a
+Policy denial accidentally masking the missing shape guard.
+
+Operation Inspect uses an opaque FailedPrecondition for absent/invalid states.
+That error alone is not evidence of absence, non-execution or refundable budget.
+The separate Rust ledger witness directly reads zero hold, no provider record
+and denied consumption after rejection and restart, then admits the original
+valid request. Its bad proposal also differs from the original source binding;
+the source-registered gRPC witness supplies the independent exact-binding case.
+
+Quint models absent fields as zero and invalid present values as negative. Its
+admission predicate requires precisely one bounded present value; later steps
+cannot replace caps after admission. The unsafe preferred-field action admits
+32 alongside 5000 and violates the extended safety invariant. Existing source
+revision, affine invocation and unknown-hold properties remain enabled under
+the same sampled-run limits. The model abstracts JSON parsing, TLS and storage.
+
+Lean's =CapsAdmitted= and =SelectedCap= prove bounded selection and exclusion of
+competing fields, including a concrete preferred-field counterexample. The
+composition theorem retains the existing =Safe= invariant over execution runs.
+Its premises include faithful typed decoding, immutable original-body binding,
+and a provider interpreting the single supported cap faithfully. It does not
+prove external token accounting, pricing, provider honesty, final settlement,
+or refunds. Provider usage remains an observation, never account authority.
+
+* Dependency and performance scope
+
+The contracts crate inherits the already pinned workspace Proptest dependency
+as a development-only edge. Cargo.lock gains that root-package dependency edge;
+no resolved package version, checksum or Git revision changes. ASP deny and all
+existing resource limits remain intact. The contracts commitment benchmarks
+already include request validation through =ProviderPlan::digest=; the complete
+eighteen-case matrix must be measured again under the new source identity.
+
+The core D2 adds bounded admission to the Go control-plane responsibility and
+retains the existing theme, spacing, logos and Rust final owner. Proofs, versions
+and acceptance counts remain outside the architecture diagram.
+
+* Qualification status
+
+Focused controls and final complete receipts are recorded below only after
+their actual process completion. Historical receipts keep their original source
+hashes. This increment does not qualify commercial provider behavior, distributed
+recovery anchors or the remaining Scheme/cloud controller implementation.
+
+The [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/][focused evidence]] retains both pre-fix admission counterexamples, the
+missing development-edge compilation failure, and the initial Quint assertion
+ordering failure. Quint's failed action does not assign the next state, so the
+state assertion must precede =.fail()= rather than read an unset successor.
+Two initial wire witnesses also incorrectly assumed InvalidArgument and NotFound;
+the corrected witness preserves the existing opaque FailedPrecondition contract
+and relies on the independent ledger checks for direct budget/state evidence.
+No production RPC status is changed to make these witnesses pass.
+
+The corrected focused Rust, Go, real mTLS RPC, ledger restart, strict SysML, all
+twenty-six Quint controls and Lean compilation pass. Printed Lean axiom evidence
+contains no =sorryAx=. D2 SVG rendering succeeds, and the PNG preview was inspected
+for spacing and label overlap. These focused results precede the final complete
+source-bound gate; they do not replace it or the measured benchmark matrix.

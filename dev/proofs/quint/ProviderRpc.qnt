@@ -1,18 +1,25 @@
 module ProviderRpc {
   type S={stage:int,held:int,burned:bool,token:bool,calls:int,route:int,revision:int,fence:int,observedRevision:int,observedFence:int,
-    closing:bool,caller:int,credential:bool,allow:bool,next:int,queued:Set[int],delivered:Set[int],allowedRows:Set[int],
+    closing:bool,caller:int,credential:bool,allow:bool,modern:int,legacy:int,next:int,queued:Set[int],delivered:Set[int],allowedRows:Set[int],
     releases:List[{rows:Set[int],permitted:Set[int],guardRevision:int,currentRevision:int}],invocations:List[{cancelled:bool,guardRevision:int,currentRevision:int}]}
   var s:S
   val current=s.revision==s.observedRevision and s.fence==s.observedFence and s.allow
   val authenticated=s.caller==1 and s.credential
+  // Zero denotes an absent field; a negative value denotes an invalid present value.
+  pure def boundedCaps(modern:int,legacy:int):bool=
+    (modern>0 and modern<=4096 and legacy==0) or (legacy>0 and legacy<=4096 and modern==0)
   val safe=s.calls<=1 and s.held<=8 and (s.stage>0 implies s.held==4) and
+    (s.stage>0 implies boundedCaps(s.modern,s.legacy)) and
     s.releases.indices().forall(i=>s.releases.nth(i).rows.subseteq(s.releases.nth(i).permitted) and s.releases.nth(i).guardRevision==s.releases.nth(i).currentRevision) and
     (s.burned implies s.stage>=2) and (s.token implies s.burned) and s.calls==s.invocations.length() and
     s.invocations.indices().forall(i=>not(s.invocations.nth(i).cancelled) and s.invocations.nth(i).guardRevision==s.invocations.nth(i).currentRevision)
   action init=s'={stage:0,held:0,burned:false,token:false,calls:0,route: -1,revision:0,fence:1,observedRevision:0,observedFence:1,
-    closing:false,caller:1,credential:true,allow:true,next:0,queued:Set(),delivered:Set(),allowedRows:Set(0,1,2,3),releases:List(),invocations:[]}
+    closing:false,caller:1,credential:true,allow:true,modern:32,legacy:0,next:0,queued:Set(),delivered:Set(),allowedRows:Set(0,1,2,3),releases:List(),invocations:[]}
+  // Proposal fields are immutable after admission; no reconnect action resets them.
+  action proposeCaps(modern:int,legacy:int):bool=all {s.stage==0,s'=s.with("modern",modern).with("legacy",legacy)}
   // RPC nonce and reconnect identifiers do not select the canonical task/node key.
-  action admit(nonce:int):bool=all {authenticated,not(s.closing),current,s.stage==0,Set(0,1,2).contains(nonce),s'=s.with("stage",1).with("held",4)}
+  action admit(nonce:int):bool=all {authenticated,not(s.closing),current,s.stage==0,boundedCaps(s.modern,s.legacy),Set(0,1,2).contains(nonce),s'=s.with("stage",1).with("held",4)}
+  action unsafePreferredCapAdmission=all {s.stage==0,s.modern>0,s.modern<=4096,s'=s.with("stage",1).with("held",4)}
   action replay=all {authenticated,s.stage>0,s'=s}
   action consume(route:int):bool=all {authenticated,not(s.closing),current,s.stage==1,Set(0,1).contains(route),s'=s.with("stage",2).with("route",route)}
   // A durable burn may finish after cancellation; that does not admit transport.
@@ -39,7 +46,7 @@ module ProviderRpc {
   action unsafeEncodingBypass=all {s.allowedRows.contains(s.next),s'=s.with("releases",s.releases.append({rows:s.next.to(s.next+1),permitted:s.allowedRows,guardRevision:s.observedRevision,currentRevision:s.revision}))}
   action unsafeStaleRelease=s'=s.with("releases",s.releases.append({rows:Set(0),permitted:s.allowedRows,guardRevision:s.observedRevision,currentRevision:s.revision}))
   action unsafeRefund=s'=s.with("held",0)
-  action step={nondet nonce=Set(0,1,2).oneOf() any {admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(2,1),deliver,publish,reauthorize,cancel,crash,badPeer,wrongCredential,complete,restrictRows}}
+  action step={nondet nonce=Set(0,1,2).oneOf() any {proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(2,1),deliver,publish,reauthorize,cancel,crash,badPeer,wrongCredential,complete,restrictRows}}
   action spent=init.then(admit(0)).then(consume(0)).then(burn).then(invoke)
   run defaultRpcCredentialRequiredTest=init.then(wrongCredential).then(admit(0).fail())
   run sameSubjectDifferentKeyRejectedTest=init.then(badPeer).then(admit(1).fail())
@@ -61,4 +68,10 @@ module ProviderRpc {
   run burnAfterCancellationStillCannotInvokeTest=init.then(admit(0)).then(consume(0)).then(cancel).then(burn).then(invoke.fail())
   run earlierAdmittedTransportMayFinishTest=spent.then(cancel).expect(safe and s.calls==1)
   run missingFinalCancellationCheckCounterexampleTest=init.then(admit(0)).then(consume(0)).then(burn).then(cancel).then(unsafeLateInvoke).expect(not(safe))
+  run legacySingleCapAdmittedTest=init.then(proposeCaps(0,4096)).then(admit(0)).expect(safe)
+  run competingCapsRejectedBeforeHoldTest=init.then(proposeCaps(32,5000)).expect(safe and s.held==0).then(admit(0).fail())
+  run absentCapsRejectedTest=init.then(proposeCaps(0,0)).then(admit(0).fail())
+  run invalidPresentCapRejectedTest=init.then(proposeCaps(-1,0)).then(admit(0).fail())
+  run admittedCapsCannotChangeTest=init.then(admit(0)).expect(safe).then(proposeCaps(32,5000).fail())
+  run preferredCapPrecedenceCounterexampleTest=init.then(proposeCaps(32,5000)).then(unsafePreferredCapAdmission).expect(not(safe))
 }

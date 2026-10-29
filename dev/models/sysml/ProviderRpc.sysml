@@ -6,6 +6,9 @@ package ProviderRpc {
     requirement def CommittedProviderRouting {
         doc /* Go proposes an exact original task, body and ordered route commitment. Rust selects one permitted configured route before durable consumption. */
     }
+    requirement def UnambiguousProviderRequestBounds {
+        doc /* Go rejects unsupported request shapes; Rust independently admits exactly one original token cap in the range 1 through 4096 before reservation or dispatch. Source commitments cannot qualify competing caps. Neither cap nor usage observations authorize monetary settlement. */
+    }
     requirement def AffineProviderAttempt {
         doc /* Durable consume and dispatch burn precede the only possible provider request. RPC retry, redirect, fallback, restart and cancellation never reopen a consumed root. */
     }

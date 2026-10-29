@@ -1,0 +1,66 @@
+• Validating lock
+✓ Validating lock in 1.48ms
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 7.53ms
+• Evaluating shell
+✓ Evaluating shell in 50.2ms (cached)
+✓ Configuring shell in 67.1ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 713µs (cached)
+✓ Loading tasks in 1.41ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 16.0ms
+• Running devenv:files
+✓ Running devenv:files in 23.0ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 42.6ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 18.8ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 18.9µs (no command)
+✓ Running tasks in 101ms
+💡 The dotenv file '.env' was not found.
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.154
+   Compiling syn v3.0.9
+   Compiling either v1.19.0
+   Compiling itertools v0.13.0
+   Compiling criterion-plot v0.8.2
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling thiserror v2.0.21
+   Compiling serde_spanned v1.1.2
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling semver v1.0.28
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling cargo_toml v1.0.1
+   Compiling tinytemplate v1.2.1
+   Compiling ciborium v0.2.2
+   Compiling weaver-contracts v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/contracts)
+   Compiling criterion v0.8.2
+   Compiling asp-rust v0.1.2 (https://github.com/tao3k/asp-rust?rev=1ca41124b846dec947f3d05119cafa07eaa57924#1ca41124)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.65s
+     Running tests/provider_bounds.rs (target/debug/deps/provider_bounds-889fd5879047f83d)
+
+running 1 test
+test competing_provider_limits_are_rejected_even_when_the_preferred_one_is_bounded ... FAILED
+
+failures:
+
+---- competing_provider_limits_are_rejected_even_when_the_preferred_one_is_bounded stdout ----
+
+thread 'competing_provider_limits_are_rejected_even_when_the_preferred_one_is_bounded' (23766282) panicked at crates/contracts/tests/provider_bounds.rs:10:5:
+ambiguous provider cap admitted
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    competing_provider_limits_are_rejected_even_when_the_preferred_one_is_bounded
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p weaver-contracts --test provider_bounds`

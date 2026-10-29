@@ -16,12 +16,18 @@ import (
 // credential availability and Cedar choose a route only inside Rust, before consumption.
 func CompileProvider(task v1.Task, p v1.ProviderPlan, view v1.View) (v1.ProviderPlan, error) {
 	var zero v1.ProviderPlan
+	if len(p.Body) > 1<<20 {
+		return zero, errors.New("provider body bound")
+	}
 	digest, err := p.Digest()
 	if err != nil {
 		return zero, err
 	}
 	body, err := v1.Decode[map[string]json.RawMessage]([]byte(p.Body))
 	if err != nil {
+		return zero, err
+	}
+	if err := providerBounds(body, len(p.Body)); err != nil {
 		return zero, err
 	}
 	var model string
@@ -52,4 +58,32 @@ func CompileProvider(task v1.Task, p v1.ProviderPlan, view v1.View) (v1.Provider
 	p.Revision = view.Revision
 	p.Fence = view.Fence
 	return p, nil
+}
+
+// Go rejects unsupported proposals early; Rust independently repeats admission.
+func providerBounds(body map[string]json.RawMessage, bytes int) error {
+	modern, hasModern := body["max_completion_tokens"]
+	legacy, hasLegacy := body["max_tokens"]
+	if bytes > 1048576 || hasModern == hasLegacy {
+		return errors.New("one bounded provider token limit required")
+	}
+	limit := modern
+	if hasLegacy {
+		limit = legacy
+	}
+	var tokens uint64
+	if json.Unmarshal(limit, &tokens) != nil || tokens == 0 || tokens > 4096 {
+		return errors.New("provider token limit exceeded")
+	}
+	var messages []json.RawMessage
+	if json.Unmarshal(body["messages"], &messages) != nil || len(messages) == 0 || len(messages) > 64 {
+		return errors.New("bounded provider messages required")
+	}
+	if value, ok := body["n"]; ok {
+		var choices uint64
+		if json.Unmarshal(value, &choices) != nil || choices != 1 {
+			return errors.New("single provider choice required")
+		}
+	}
+	return nil
 }

@@ -1,0 +1,55 @@
+• Validating lock
+✓ Validating lock in 678µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.64ms
+• Evaluating shell
+✓ Evaluating shell in 21.5ms (cached)
+✓ Configuring shell in 25.8ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 767µs (cached)
+✓ Loading tasks in 1.81ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 16.0ms
+• Running devenv:files
+✓ Running devenv:files in 34.3ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 46.4ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 18.5ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 11.1µs (no command)
+✓ Running tasks in 116ms
+💡 The dotenv file '.env' was not found.
+
+  ProviderRpc
+    ok defaultRpcCredentialRequiredTest passed 1 test(s)
+    ok sameSubjectDifferentKeyRejectedTest passed 1 test(s)
+    ok sourceBoundRouteChosenBeforeConsumptionTest passed 1 test(s)
+    ok sdkRetryCannotConsumeAgainTest passed 1 test(s)
+    ok partialWriteCannotFallbackTest passed 1 test(s)
+    ok restartCannotReissueBurnTest passed 1 test(s)
+    ok staleReleaseRejectedTest passed 1 test(s)
+    ok cancelledRpcCannotReleaseTest passed 1 test(s)
+    ok arrowAndProtobufShareAuthorityTest passed 1 test(s)
+    ok previouslyAdmittedBuffersMayDrainTest passed 1 test(s)
+    ok completeNeverRefundsTest passed 1 test(s)
+    ok nonceResetDuplicatesInvocationCounterexampleTest passed 1 test(s)
+    ok arrowCannotHideDeniedSecondRowTest passed 1 test(s)
+    ok arrowFirstRowOnlyCounterexampleTest passed 1 test(s)
+    ok staleGrantReleaseCounterexampleTest passed 1 test(s)
+    ok unknownRefundCounterexampleTest passed 1 test(s)
+    ok cancellationAfterBurnCannotInvokeTest passed 1 test(s)
+    ok burnAfterCancellationStillCannotInvokeTest passed 1 test(s)
+    ok earlierAdmittedTransportMayFinishTest passed 1 test(s)
+    ok missingFinalCancellationCheckCounterexampleTest passed 1 test(s)
+    ok legacySingleCapAdmittedTest passed 1 test(s)
+    ok competingCapsRejectedBeforeHoldTest passed 1 test(s)
+    ok absentCapsRejectedTest passed 1 test(s)
+    ok invalidPresentCapRejectedTest passed 1 test(s)
+    ok admittedCapsCannotChangeTest passed 1 test(s)
+    ok preferredCapPrecedenceCounterexampleTest passed 1 test(s)
+
+  26 passing (30ms)

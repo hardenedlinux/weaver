@@ -12,6 +12,7 @@ thiserror.workspace = true
 [dev-dependencies]
 asp-rust.workspace = true
 criterion.workspace = true
+proptest.workspace = true
 [[bench]]
 name = "gateway"
 harness = false

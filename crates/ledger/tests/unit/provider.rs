@@ -51,6 +51,42 @@ fn fixture_nodes(path: &std::path::Path, nodes: &[&str]) -> (Ledger, ProviderPla
     (ledger, plan)
 }
 #[test]
+fn rejected_competing_caps_leave_no_claim_or_hold_after_restart() {
+    let temp = tempfile::tempdir().expect("temp");
+    let path = temp.path().join("provider.db");
+    let (mut ledger, original) = fixture(&path);
+    let mut bad = original.clone();
+    let mut body: serde_json::Value = serde_json::from_str(&bad.body).expect("fixture");
+    body["max_tokens"] = serde_json::json!(1000000);
+    bad.body = serde_json::to_string(&body).expect("request");
+    assert!(ledger.enqueue_provider(&bad).is_err());
+    assert_eq!(ledger.held("f").expect("hold"), 0);
+    assert!(
+        ledger
+            .provider_receipt("f", "infer")
+            .expect("receipt")
+            .is_none()
+    );
+    assert!(
+        ledger
+            .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+            .is_err()
+    );
+    drop(ledger);
+    let mut restarted = Ledger::open(&path).expect("restart");
+    assert_eq!(restarted.held("f").expect("hold"), 0);
+    assert!(
+        restarted
+            .provider_receipt("f", "infer")
+            .expect("receipt")
+            .is_none()
+    );
+    restarted
+        .enqueue_provider(&original)
+        .expect("original admission");
+    assert_eq!(restarted.held("f").expect("hold"), 4);
+}
+#[test]
 fn equal_batch_digests_cannot_transfer_release_between_original_nodes() {
     let temp = tempfile::tempdir().expect("temp");
     let path = temp.path().join("provider.db");

@@ -30,6 +30,7 @@ func Plan(goBinary string) []Stage {
 		{"quint-safety", "quint", []string{"run", "dev/proofs/quint/RuntimeAdmission.qnt", "--main", "RuntimeAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "50", "--seed", "293"}},
 		{"lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/RuntimeAdmission.lean"}},
 		{"provider-routing-pbt", goBinary, []string{"test", "./go/internal/routing", "-run", "^$", "-fuzz", "FuzzProviderPlanCannotExpandAuthority", "-fuzztime=3s", "-parallel=1"}},
+		{"provider-request-bounds-pbt", goBinary, []string{"test", "./go/internal/routing", "-run", "^$", "-fuzz", "FuzzProviderRequestBounds", "-fuzztime=3s", "-parallel=1"}},
 		{"provider-quint-tests", "quint", []string{"test", "dev/proofs/quint/ProviderRpc.qnt", "--main", "ProviderRpc", "--seed", "293"}},
 		{"provider-quint-safety", "quint", []string{"run", "dev/proofs/quint/ProviderRpc.qnt", "--main", "ProviderRpc", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"provider-lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/ProviderRpc.lean"}},

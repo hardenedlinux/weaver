@@ -49,10 +49,12 @@ impl ProviderPlan {
         {
             return Err(Error::Invalid("text-only streaming profile required"));
         }
-        let limit = body
-            .get("max_completion_tokens")
-            .or_else(|| body.get("max_tokens"))
-            .and_then(|v| v.as_u64());
+        // A source commitment is not a provider-specific precedence rule.
+        // Never let a bounded preferred field hide a competing unbounded cap.
+        let limit = match (body.get("max_completion_tokens"), body.get("max_tokens")) {
+            (Some(value), None) | (None, Some(value)) => value.as_u64(),
+            _ => None,
+        };
         if limit.is_none_or(|n| n == 0 || n > 4096)
             || body
                 .get("messages")
