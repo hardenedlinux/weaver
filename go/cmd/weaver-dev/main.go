@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 
 	"github.com/HardenedLinux/weaver/go/internal/devrunner"
 )
@@ -43,6 +44,22 @@ func run() (resultErr error) {
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
+	if flag.Arg(0) == "scheme-poo-revision" {
+		revision, err := devrunner.DeclaredPooRevision(filepath.Join(*schemeSource, "core"))
+		if err != nil {
+			return err
+		}
+		if target := os.Getenv("GITHUB_OUTPUT"); target != "" {
+			file, err := os.OpenFile(target, os.O_APPEND|os.O_WRONLY, 0600)
+			if err != nil {
+				return err
+			}
+			_, written := fmt.Fprintln(file, "revision="+revision)
+			return errors.Join(written, file.Close())
+		}
+		fmt.Fprintln(os.Stdout, revision)
+		return nil
+	}
 	if flag.Arg(0) == "check-scheme" {
 		root, err := devrunner.FindRoot(working)
 		if err != nil {

@@ -42,7 +42,9 @@ No fuzz duration, sample count or execution watchdog is increased for CI.
 
 Weaver directly declares only Agentic AI Lab in =gerbil.pkg=. CI checks out that
 source and its Core submodule, plus the existing exact POO revision required by
-Core. The development links expose Core's declared public prelude identity and
+Core. The Go adapter reads that revision from the checked-out Core declaration;
+CI does not duplicate a POO pin from a different local Core checkout.
+The development links expose Core's declared public prelude identity and
 source package. A preexisting developer library is not required.
 The published Scheme SDK setup action is reused at the same immutable revision
 as the authorized bridge dependency. Its release/host admission remains separate

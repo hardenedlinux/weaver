@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -59,11 +60,11 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 		}
 		heads[name] = strings.TrimSpace(string(data))
 	}
-	corePackage, err := os.ReadFile(filepath.Join(core, "gerbil.pkg"))
+	declared, err := DeclaredPooRevision(core)
 	if err != nil {
 		return nil, err
 	}
-	if !strings.Contains(string(corePackage), "github.com/tao3k/gerbil-poo@"+heads["gerbil-poo"]+"\"") {
+	if declared != heads["gerbil-poo"] {
 		return nil, errors.New("Gerbil POO source must match Core's declared exact dependency pin")
 	}
 	directory, err := os.MkdirTemp("", "weaver-scheme-*")
@@ -147,6 +148,20 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 	settings["WEAVER_SCHEME_LINK_RECEIPT"] = filepath.Join(directory, "environment.json")
 	complete = true
 	return settings, nil
+}
+
+// DeclaredPooRevision reads the inherited package declaration, rather than
+// maintaining a second CI version registry beside Agentic AI Lab's gitlink.
+func DeclaredPooRevision(core string) (string, error) {
+	data, err := os.ReadFile(filepath.Join(core, "gerbil.pkg"))
+	if err != nil {
+		return "", err
+	}
+	matches := regexp.MustCompile(`"github\.com/tao3k/gerbil-poo@([a-f0-9]{40})"`).FindAllSubmatch(data, -1)
+	if len(matches) != 1 {
+		return "", errors.New("Core must declare one exact Gerbil POO revision")
+	}
+	return string(matches[0][1]), nil
 }
 
 func schemeSourceHashes(source, poo string) (map[string]string, error) {

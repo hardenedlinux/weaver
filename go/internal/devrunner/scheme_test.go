@@ -4,8 +4,28 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
+
+func TestPooRevisionFollowsInheritedCoreDeclaration(t *testing.T) {
+	directory := t.TempDir()
+	file := filepath.Join(directory, "gerbil.pkg")
+	wanted := strings.Repeat("a", 40)
+	for _, data := range []string{`(depend: ("github.com/tao3k/gerbil-poo@` + wanted + `"))`, `(depend: ())`, `(depend: ("github.com/tao3k/gerbil-poo@` + wanted + `" "github.com/tao3k/gerbil-poo@` + strings.Repeat("b", 40) + `"))`} {
+		if err := os.WriteFile(file, []byte(data), 0600); err != nil {
+			t.Fatal(err)
+		}
+		actual, err := DeclaredPooRevision(directory)
+		if strings.Count(data, "gerbil-poo@") == 1 {
+			if err != nil || actual != wanted {
+				t.Fatal("inherited exact revision lost")
+			}
+		} else if err == nil {
+			t.Fatal("missing or ambiguous inherited revision admitted")
+		}
+	}
+}
 
 func TestLinkedSchemeCurrentnessRejectsSourceChange(t *testing.T) {
 	source := t.TempDir()
