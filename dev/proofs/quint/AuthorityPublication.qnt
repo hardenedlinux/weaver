@@ -3,20 +3,24 @@ module AuthorityPublication {
   import PublicationRecovery as A from "./PublicationRecovery"
   // Go activation composes existing publication and execution models. It does
   // not redeclare their CAS, nonce, budget or Cedar semantics.
-  type Control={compiled:int,desired:int,registered:bool,ack:bool,active:bool}
+  type Control={compiled:int,desired:int,registered:bool,ack:bool,active:bool,submits:int}
   var c:Control
   val original=A::authority.records.get(0)
   val safe=E::safe and A::safe and
+    c.submits<=1 and
     (c.active implies c.compiled>=0 and c.registered and original.outcome==1 and original.payload==c.compiled and c.ack) and
     (A::authority.head>=0 implies E::s.revision==A::authority.head and E::s.fence==A::authority.fence)
-  action init=all {E::init,A::init,c'={compiled:-1,desired:0,registered:false,ack:false,active:false}}
+  action init=all {E::init,A::init,c'={compiled:-1,desired:0,registered:false,ack:false,active:false,submits:0}}
   // Concrete source admission is witnessed by Scheme/FFI/Go tests, not a
   // duplicate Boolean implementation of those validators in this model.
   action compile(accepted:bool):bool=all {accepted,c.compiled<0,c'=c.with("compiled",c.desired),E::observe,A::observe}
   action editSource=all {c'=c.with("desired",1),E::observe,A::observe}
   action register=all {c.compiled>=0,c'=c.with("registered",true),E::observe,A::observe}
-  action commit=all {c.registered,
-    any {A::publish(0,c.compiled,-1,1),A::replay(0,c.compiled,-1,1)},c'=c,E::observe}
+  // A known durable outcome is observed, never submitted again by bootstrap.
+  action commit=all {c.registered,original.outcome==0,
+    A::publish(0,c.compiled,-1,1),c'=c.with("submits",c.submits+1),E::observe}
+  action inspectMissing=all {c.compiled>=0,original.outcome==0,c'=c,E::observe,A::observe}
+  action inspectUnavailable=all {c'=c,E::observe,A::observe}
   action acknowledge=all {original.outcome==1,original.payload==c.compiled,c'=c.with("ack",true),E::observe,A::observe}
   action recover(source:int):bool=all {original.outcome==1,source==c.compiled,A::replay(0,source,-1,1),c'=c.with("ack",true),E::observe}
   action activate=all {original.outcome==1,c.ack,original.payload==c.compiled,c'=c.with("active",true),E::observe,A::observe}
@@ -31,18 +35,25 @@ module AuthorityPublication {
   action invoke=all {c.active,c'=c,E::invoke,A::observe}
   action release=all {c.active,c'=c,E::batch(1,0),A::observe}
   action deliver=all {c'=c,E::deliver,A::observe}
-  action step=any {compile(true),editSource,register,commit,acknowledge,recover(0),recover(1),activate,loseReply,restart,publish,transport,admit,consume,burn,invoke,release,deliver}
+  action step=any {compile(true),editSource,register,commit,inspectMissing,inspectUnavailable,acknowledge,recover(0),recover(1),activate,loseReply,restart,publish,transport,admit,consume,burn,invoke,release,deliver}
   action prepared=init.then(compile(true)).then(register)
   action ready=prepared.then(commit).then(acknowledge).then(activate)
   action spent=ready.then(admit).then(consume).then(burn).then(invoke)
   action unsafeRecoverDesired=all {original.outcome==1,c'=c.with("compiled",c.desired).with("ack",true).with("active",true),E::observe,A::observe}
   action unsafeActivateWithoutOutcome=all {c'=c.with("active",true),E::observe,A::observe}
   action unsafeRetry=all {c'=c,E::unsafeRetryReset,A::observe}
+  action unnecessaryKnownOutcomeReplay=all {original.outcome==1,A::replay(0,c.compiled,-1,1),c'=c.with("submits",c.submits+1),E::observe}
   run authorityUncompiledSourceCannotRegisterTest=init.then(register.fail())
   run authorityRejectedSourceCannotCompileTest=init.then(compile(false).fail())
   run authoritySourceCommitNeverSendsTest=prepared.then(commit).expect(safe and E::s.calls==0 and E::s.held==0)
   run authorityLostReplyCannotActivateTest=prepared.then(commit).then(loseReply).then(activate.fail())
   run authorityLostReplyAndOwnerRestartPreserveOutcomeTest=prepared.then(commit).then(loseReply).then(restart).then(recover(0)).then(activate).expect(safe and original.payload==0 and E::s.calls==0)
+  run authorityKnownOutcomeRecoveryDoesNotSubmitTest=ready.then(restart).then(recover(0)).then(activate).expect(safe and c.submits==1)
+  run authorityMissingInspectionDoesNotAbortLateCommitTest=prepared.then(inspectMissing).then(commit).then(recover(0)).then(activate).expect(safe and c.submits==1)
+  run authorityUnavailableInspectionDoesNotActivateTest=prepared.then(commit).then(loseReply).then(inspectUnavailable).expect(safe).then(activate.fail())
+  // Rust idempotent replay remains safe. This witnesses a violation of the
+  // narrower Go bootstrap contract: recovery of a known decision must be read-only.
+  run authorityKnownOutcomeReplayContractCounterexampleTest=ready.then(unnecessaryKnownOutcomeReplay).expect(not(safe) and A::safe and E::safe)
   run authorityChangedCompiledSourceCannotRecoverTest=prepared.then(commit).then(editSource).then(recover(1).fail())
   run authorityEditingFileCannotRewriteFrozenCommandTest=prepared.then(editSource).then(commit).then(acknowledge).then(activate).expect(safe and original.payload==0 and c.desired==1)
   run authorityHistoricalReceiptCannotOverrideRevocationTest=ready.then(publish).then(restart).then(recover(0)).then(activate).then(admit.fail())

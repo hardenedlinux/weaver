@@ -99,7 +99,7 @@ provider: LLM Provider / SSE\nOne consumed HTTPS invocation {
   height: 110
 }
 source -> control: Governed config
-control -> source_rpc: Publication
+control -> source_rpc: Observe / initial CAS
 source_rpc -> owner: Policy / outcome CAS
 control -> rpc: Typed RPC
 rpc -> owner: Admit

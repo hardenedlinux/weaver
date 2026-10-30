@@ -7,9 +7,32 @@ import (
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var ErrPublicationRejected = errors.New("original publication CAS rejected")
+
+// ObserveOrPublish reads the original durable decision before one initial CAS.
+// NotFound does not abort a possibly late command: the identical ID, payload and
+// parent still go through Rust's final CAS. No failed Publish is retried here.
+func (c *Client) ObserveOrPublish(ctx context.Context, p v1.Publication) (*pb.PublicationReceipt, error) {
+	if p.ExpectedRevision != nil {
+		parent := *p.ExpectedRevision
+		p.ExpectedRevision = &parent
+	}
+	receipt, err := c.InspectPublication(ctx, p)
+	if err == nil {
+		if receipt.Outcome == pb.PublicationOutcome_REJECTED {
+			return receipt, ErrPublicationRejected
+		}
+		return receipt, nil
+	}
+	if status.Code(err) != codes.NotFound {
+		return nil, err
+	}
+	return c.Publish(ctx, p)
+}
 
 func Publication(p v1.Publication) *pb.PublishRequest {
 	return &pb.PublishRequest{OperationId: p.OperationID, ExpectedRevision: p.ExpectedRevision, Fence: p.Fence, Policy: p.Policy, Schema: p.Schema}

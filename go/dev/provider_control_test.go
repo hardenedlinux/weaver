@@ -30,6 +30,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
 )
 
@@ -337,7 +338,8 @@ func TestProviderControlCompleteStreamsShareBudgetAndRejectSDKRetry(t *testing.T
 
 // Reuse the native publication reply-loss relay and its per-call counter.
 func (p *publicationReplyLoss) RegisterTask(ctx context.Context, in *pb.RegisterTaskRequest) (*pb.Empty, error) {
-	return p.source.RPC.RegisterTask(p.source.Context(ctx), in)
+	source := p.sourceClient()
+	return source.RPC.RegisterTask(source.Context(ctx), in)
 }
 func TestProviderControlPublicationReplyLossCannotActivateOrRebase(t *testing.T) {
 	exerciseControlPublicationReplyLoss(t, nil)
@@ -388,9 +390,9 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 	exited := make(chan error, 1)
 	go func() { exited <- server.Serve(listener) }()
 	t.Cleanup(func() { server.Stop(); <-exited })
+	c.env = append(c.env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+listener.Addr().String())
 	child := exec.Command(controlBinary)
 	child.Env = append(os.Environ(), c.env...)
-	child.Env = append(child.Env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+listener.Addr().String())
 	log, err := os.Create(filepath.Join(c.directory, "lost-publication.log"))
 	if err != nil {
 		t.Fatal(err)
@@ -413,7 +415,7 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 		t.Error("failed bootstrap did not exit naturally")
 	}
 	log.Close()
-	if proxy.calls.Load() != 1 {
+	if proxy.calls.Load() != 1 || proxy.inspections.Load() != 1 {
 		t.Fatal("bootstrap automatically retried publication")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
@@ -432,6 +434,7 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 	cancel()
 	f.stop(t)
 	f.start(t)
+	proxy.replaceSource(f.admin)
 	c.start(t)
 	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -440,5 +443,51 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 	}
 	if f.primary.Load() != 1 {
 		t.Fatal("recovery duplicated provider send")
+	}
+	if proxy.calls.Load() != 1 || proxy.inspections.Load() != 2 {
+		t.Fatal("committed recovery submitted another publication")
+	}
+	key := &pb.OperationKey{Family: bundle.Plans[0].Family, Node: bundle.Plans[0].Node}
+	before, err := c.client.RPC.Inspect(c.client.Context(ctx), key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c.stop(t)
+	f.stop(t)
+	f.start(t)
+	proxy.replaceSource(f.admin)
+	c.start(t)
+	cancel()
+	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	if _, err := c.client.Execute(ctx, bundle.Plans[0], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
+		t.Fatal("dual restart reopened the consumed claim")
+	}
+	after, err := c.client.RPC.Inspect(c.client.Context(ctx), key)
+	if err != nil || !proto.Equal(before, after) || f.primary.Load() != 1 || proxy.calls.Load() != 1 || proxy.inspections.Load() != 3 {
+		t.Fatal("observed recovery changed original accounting or submitted publication", err)
+	}
+	c.stop(t)
+	parent := bundle.View().Revision
+	revocation := bundle.Publication
+	revocation.OperationID = "post-recovery-revocation"
+	revocation.ExpectedRevision = &parent
+	revocation.Fence++
+	revocation.Policy = "forbid(principal,action,resource);"
+	if _, err := f.admin.Publish(ctx, revocation); err != nil {
+		t.Fatal(err)
+	}
+	f.stop(t)
+	f.start(t)
+	proxy.replaceSource(f.admin)
+	c.start(t)
+	cancel()
+	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	if _, err := c.client.Execute(ctx, bundle.Plans[1], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
+		t.Fatal("historical receipt overrode later revocation")
+	}
+	if f.primary.Load() != 1 || f.backup.Load() != 0 || proxy.calls.Load() != 1 || proxy.inspections.Load() != 4 {
+		t.Fatal("historical recovery sent or republished")
 	}
 }

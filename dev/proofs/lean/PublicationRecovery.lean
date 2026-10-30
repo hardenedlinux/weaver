@@ -81,6 +81,20 @@ theorem recovery_and_provider_accounting_composition [DecidableEq Key]
   ⟨run_preserves_original_decisions run id decision original,
    (run_preserves_accounting h run).2.1, (run_preserves_accounting h run).2.2⟩
 
+/- A source observation binds the frozen command, not the current policy head.
+   Native refinement must authenticate InspectPublication and validate its full
+   domain-separated digest. Missing/failed reads do not establish abort. -/
+def ExactObservation (s : State Key) (id : Key) (payload parent fence : Nat) (d : Decision) : Prop :=
+  s.records id = some d ∧ d.payload = payload ∧ d.parent = parent ∧ d.requestedFence = fence
+
+theorem exact_observation_and_accounting_survive_recovery [DecidableEq Key]
+    {id : Key} {d : Decision} {payload parent fence : Nat}
+    (safe : Safe held calls s) (run : Run s t)
+    (observed : ExactObservation s id payload parent fence d) :
+    ExactObservation t id payload parent fence d ∧ t.held = held ∧ t.calls = calls := by
+  have preserved := recovery_and_provider_accounting_composition safe run observed.1
+  exact ⟨⟨preserved.1, observed.2⟩, preserved.2⟩
+
 /- Owned-connection refinement: the worker has opened one private connection;
    every command is checked quiescent before/after SQL, storage faults terminate
    the owner, and a successful finish requires an explicitly successful close.
@@ -161,4 +175,5 @@ theorem owned_worker_and_publication_composition [DecidableEq Key]
 #print axioms run_preserves_original_decisions
 #print axioms run_preserves_accounting
 #print axioms recovery_and_provider_accounting_composition
+#print axioms exact_observation_and_accounting_survive_recovery
 end Weaver.PublicationRecovery

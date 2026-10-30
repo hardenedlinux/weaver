@@ -72,7 +72,13 @@ package WeaverExecution {
     action def Enqueue;
     action def Consume;
     action def GuardAndSend;
-    action def RecoverOutcome;
+    action def RecoverOutcome {
+        doc /* Go observes the Rust-owned durable result under the frozen
+           publication identity and digest before submitting an absent decision.
+           A known result is read-only recovery. Unknown or rejected results do
+           not activate ingress. A historical receipt never replaces current
+           Rust Policy, fence, original claim, history or budget checks. */
+    }
 
     part gateway {
         part semanticPublisher : SchemeSemanticPublisher;

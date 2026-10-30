@@ -43,7 +43,7 @@ func Bootstrap(ctx context.Context, source, owner *gatewayclient.Client, bundle 
 			return nil, err
 		}
 	}
-	receipt, err := source.Publish(ctx, frozen.Publication)
+	receipt, err := source.ObserveOrPublish(ctx, frozen.Publication)
 	if err != nil {
 		return nil, err
 	}

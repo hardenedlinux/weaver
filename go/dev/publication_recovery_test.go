@@ -7,6 +7,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"net"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -24,13 +25,33 @@ import (
 // Test-only mTLS relay loses the successful source reply after forwarding one RPC.
 type publicationReplyLoss struct {
 	pb.UnimplementedGatewayServer
-	source *gatewayclient.Client
-	calls  atomic.Int64
+	source      *gatewayclient.Client
+	sourceMu    sync.RWMutex
+	calls       atomic.Int64
+	inspections atomic.Int64
+}
+
+func (s *publicationReplyLoss) sourceClient() *gatewayclient.Client {
+	s.sourceMu.RLock()
+	defer s.sourceMu.RUnlock()
+	return s.source
+}
+func (s *publicationReplyLoss) replaceSource(source *gatewayclient.Client) {
+	s.sourceMu.Lock()
+	defer s.sourceMu.Unlock()
+	s.source = source
+}
+
+func (s *publicationReplyLoss) InspectPublication(ctx context.Context, key *pb.PublicationKey) (*pb.PublicationReceipt, error) {
+	s.inspections.Add(1)
+	source := s.sourceClient()
+	return source.RPC.InspectPublication(source.Context(ctx), key)
 }
 
 func (s *publicationReplyLoss) PublishAuthority(ctx context.Context, p *pb.PublishRequest) (*pb.PublicationReceipt, error) {
 	s.calls.Add(1)
-	if _, err := s.source.RPC.PublishAuthority(s.source.Context(ctx), p); err != nil {
+	source := s.sourceClient()
+	if _, err := source.RPC.PublishAuthority(source.Context(ctx), p); err != nil {
 		return nil, err
 	}
 	return nil, status.Error(codes.Unavailable, "injected reply loss after durable decision")
