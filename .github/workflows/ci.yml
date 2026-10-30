@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: weaver-ci-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   rust:

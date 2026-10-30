@@ -44,6 +44,11 @@ Weaver directly declares only Agentic AI Lab in =gerbil.pkg=. CI checks out that
 source and its Core submodule, plus the existing exact POO revision required by
 Core. The Go adapter reads that revision from the checked-out Core declaration;
 CI does not duplicate a POO pin from a different local Core checkout.
+The CI research snapshot must provide the public APIs the gateway uses. An
+older Agentic AI Lab gitlink inherited a POO revision without =module-action=;
+that cohort cannot qualify this implementation. CI selects the upstream aligned
+Agentic AI Lab snapshot and follows its recorded Core/POO declarations. This
+does not rewrite an upstream dependency pin or add a gateway compatibility path.
 The development links expose Core's declared public prelude identity and
 source package. A preexisting developer library is not required.
 The published Scheme SDK setup action is reused at the same immutable revision
@@ -62,3 +67,5 @@ benchmark table as expiring artifacts; raw run logs are not archived by the proj
 Local passes, workflow syntax admission and remote execution are distinct results.
 A job that cannot install its SDK, finish cleanup, or complete a control fails.
 A success marker inside an unfinished process does not qualify the job.
+Superseded commits cancel their old CI batch so fixes can start immediately;
+canceled jobs are not counted as successful verification.
