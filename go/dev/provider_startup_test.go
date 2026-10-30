@@ -5,7 +5,6 @@ package dev
 import (
 	"context"
 	"crypto/sha256"
-	"fmt"
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,6 +18,12 @@ import (
 // A fresh file is a deployment-image witness, not a claim of flushed OS caches.
 // Both its first launch and exact-image restart keep the original three-second gate.
 func TestProviderFreshImageAndRestartStartup(t *testing.T) {
+	path := copyStartupImage(t)
+	checkStartupImage(t, path)
+}
+
+func copyStartupImage(t *testing.T) string {
+	t.Helper()
 	source, err := os.Open(serverBinary)
 	if err != nil {
 		t.Fatal(err)
@@ -36,7 +41,27 @@ func TestProviderFreshImageAndRestartStartup(t *testing.T) {
 	if copyError != nil || syncError != nil || closeError != nil {
 		t.Fatalf("fresh image: copy=%v sync=%v close=%v", copyError, syncError, closeError)
 	}
-	t.Logf("fresh image sha256=%s", fmt.Sprintf("%x", hash.Sum(nil)))
+	t.Logf("copied image sha256=%x", hash.Sum(nil))
+	return path
+}
+
+func checkStartupImage(t *testing.T, path string) {
+	t.Helper()
+	image, err := os.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hash := sha256.New()
+	_, hashError := io.Copy(hash, image)
+	closeError := image.Close()
+	if hashError != nil || closeError != nil {
+		t.Fatal(hashError, closeError)
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("executed image bytes=%d sha256=%x", info.Size(), hash.Sum(nil))
 	f := fixtureWithBinary(t, completeSSE, false, path)
 	f.stop(t)
 	f.start(t)

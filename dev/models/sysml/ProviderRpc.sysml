@@ -3,6 +3,9 @@ package ProviderRpc {
     requirement def GrpcCallerBinding {
         doc /* Mutual TLS, pinned caller certificate and distinct operation/publication credentials bind all RPC entrypoints. A shared workload name does not grant authority. */
     }
+    requirement def TransportSetupIsolation {
+        doc /* Connection setup retains caller cancellation and deadlines. Transport reconnects do not issue application RPCs, reauthorize release, reset spent roots or refund unknown holds. Initial connection backoff is distinct from SDK operation retry. Native capacity and fresh Cedar guards still decide every effect. */
+    }
     requirement def CommittedProviderRouting {
         doc /* Go proposes an exact original task, body and ordered route commitment. Rust selects one permitted configured route before durable consumption. */
     }

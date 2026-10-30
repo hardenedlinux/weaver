@@ -6,10 +6,12 @@ import (
 	"crypto/tls"
 	"errors"
 	"io"
+	"time"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/backoff"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 )
@@ -26,7 +28,11 @@ func Dial(ctx context.Context, address, token string, security *tls.Config) (*Cl
 	}
 	settings := security.Clone()
 	settings.MinVersion = tls.VersionTLS13
-	conn, err := grpc.DialContext(ctx, address, grpc.WithTransportCredentials(credentials.NewTLS(settings)), grpc.WithBlock(), grpc.WithDisableRetry(), grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(4*1024*1024), grpc.MaxCallSendMsgSize(2*1024*1024)))
+	// Retain exponential growth, jitter and the long-outage cap. Only the
+	// initial transport delay changes; no application RPC is sent or retried.
+	connectionBackoff := backoff.DefaultConfig
+	connectionBackoff.BaseDelay = 100 * time.Millisecond
+	conn, err := grpc.DialContext(ctx, address, grpc.WithTransportCredentials(credentials.NewTLS(settings)), grpc.WithBlock(), grpc.WithConnectParams(grpc.ConnectParams{Backoff: connectionBackoff, MinConnectTimeout: 20 * time.Second}), grpc.WithDisableRetry(), grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(4*1024*1024), grpc.MaxCallSendMsgSize(2*1024*1024)))
 	if err != nil {
 		return nil, err
 	}

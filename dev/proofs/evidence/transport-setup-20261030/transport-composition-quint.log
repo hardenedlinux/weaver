@@ -1,0 +1,67 @@
+• Validating lock
+✓ Validating lock in 746µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.82ms
+• Evaluating shell
+✓ Evaluating shell in 25.9ms (cached)
+✓ Configuring shell in 29.7ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 866µs (cached)
+✓ Loading tasks in 1.75ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 17.6ms
+• Running devenv:files
+✓ Running devenv:files in 24.4ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 89.6ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 64.8ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 6.33µs (no command)
+✓ Running tasks in 197ms
+💡 The dotenv file '.env' was not found.
+
+  GatewayComposition
+    ok P::defaultRpcCredentialRequiredTest passed 1 test(s)
+    ok P::sameSubjectDifferentKeyRejectedTest passed 1 test(s)
+    ok P::sourceBoundRouteChosenBeforeConsumptionTest passed 1 test(s)
+    ok P::sdkRetryCannotConsumeAgainTest passed 1 test(s)
+    ok P::partialWriteCannotFallbackTest passed 1 test(s)
+    ok P::restartCannotReissueBurnTest passed 1 test(s)
+    ok P::staleReleaseRejectedTest passed 1 test(s)
+    ok P::cancelledRpcCannotReleaseTest passed 1 test(s)
+    ok P::arrowAndProtobufShareAuthorityTest passed 1 test(s)
+    ok P::previouslyAdmittedBuffersMayDrainTest passed 1 test(s)
+    ok P::completeNeverRefundsTest passed 1 test(s)
+    ok P::nonceResetDuplicatesInvocationCounterexampleTest passed 1 test(s)
+    ok P::arrowCannotHideDeniedSecondRowTest passed 1 test(s)
+    ok P::arrowFirstRowOnlyCounterexampleTest passed 1 test(s)
+    ok P::staleGrantReleaseCounterexampleTest passed 1 test(s)
+    ok P::unknownRefundCounterexampleTest passed 1 test(s)
+    ok P::cancellationAfterBurnCannotInvokeTest passed 1 test(s)
+    ok P::burnAfterCancellationStillCannotInvokeTest passed 1 test(s)
+    ok P::earlierAdmittedTransportMayFinishTest passed 1 test(s)
+    ok P::missingFinalCancellationCheckCounterexampleTest passed 1 test(s)
+    ok P::legacySingleCapAdmittedTest passed 1 test(s)
+    ok P::competingCapsRejectedBeforeHoldTest passed 1 test(s)
+    ok P::absentCapsRejectedTest passed 1 test(s)
+    ok P::invalidPresentCapRejectedTest passed 1 test(s)
+    ok P::admittedCapsCannotChangeTest passed 1 test(s)
+    ok P::preferredCapPrecedenceCounterexampleTest passed 1 test(s)
+    ok C::capIncludesIncompleteTlsTest passed 1 test(s)
+    ok C::completedTlsStillHoldsCapacityTest passed 1 test(s)
+    ok C::peerLossKeepsCustodyTest passed 1 test(s)
+    ok C::handshakeTimeoutDestroysSocketTest passed 1 test(s)
+    ok C::listenerDropKeepsLiveCustodyTest passed 1 test(s)
+    ok C::shutdownRejectsNewAcceptTest passed 1 test(s)
+    ok C::idleReservationIsReturnedTest passed 1 test(s)
+    ok C::earlyReturnCounterexampleTest passed 1 test(s)
+    ok C::acceptBeforeBudgetCounterexampleTest passed 1 test(s)
+    ok setupDoesNotCreateClaimTest passed 10000 test(s)
+    ok reconnectRetainsSpentRootTest passed 10000 test(s)
+    ok reconnectDoesNotReauthorizeReleaseTest passed 10000 test(s)
+
+  38 passing (18928ms)

@@ -1,0 +1,162 @@
+• Validating lock
+✓ Validating lock in 660µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.60ms
+• Evaluating shell
+✓ Evaluating shell in 23.9ms (cached)
+✓ Configuring shell in 27.6ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 916µs (cached)
+✓ Loading tasks in 1.69ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 15.8ms
+• Running devenv:files
+✓ Running devenv:files in 22.5ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 44.8ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 17.7ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 8.04µs (no command)
+✓ Running tasks in 101ms
+💡 The dotenv file '.env' was not found.
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.47s
+=== RUN   TestDarwinStartupImageComparison
+=== RUN   TestDarwinStartupImageComparison/linker
+    startup_image_experiment_test.go:13: copied image sha256=bd61f224bfa5cc1d7900011275ff3c7d8d344c7756f24ccb0296ec20fe7aefc7
+    startup_image_experiment_test.go:20: verify: 
+    startup_image_experiment_test.go:21: executed image bytes=64193456 sha256=bd61f224bfa5cc1d7900011275ff3c7d8d344c7756f24ccb0296ec20fe7aefc7
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:29.463493Z elapsed=1.010661875s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=1.014843459s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323950, tv_nsec: 176183000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323950, tv_nsec: 177466000 }
+        weaver startup stage=configured elapsed=1.918ms
+        weaver startup stage=listeners-bound elapsed=2.038791ms
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:30.498017Z elapsed=1.009096625s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=1.013323625s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323950, tv_nsec: 176183000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323950, tv_nsec: 177466000 }
+        weaver startup stage=configured elapsed=1.918ms
+        weaver startup stage=listeners-bound elapsed=2.038791ms
+        weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323950, tv_nsec: 504456000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323950, tv_nsec: 505016000 }
+        weaver startup stage=configured elapsed=347µs
+        weaver startup stage=listeners-bound elapsed=404.833µs
+=== RUN   TestDarwinStartupImageComparison/resigned
+    startup_image_experiment_test.go:13: copied image sha256=bd61f224bfa5cc1d7900011275ff3c7d8d344c7756f24ccb0296ec20fe7aefc7
+    startup_image_experiment_test.go:18: sign: /tmp/TestDarwinStartupImageComparisonresigned792938942/001/weaver-server: replacing existing signature
+    startup_image_experiment_test.go:20: verify: 
+    startup_image_experiment_test.go:21: executed image bytes=63838336 sha256=2f4daa87ebce7d8478c7d1269699986c395641a3128f06e8c4766c18eafe9576
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:31.842642Z elapsed=2.605290625s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=2.610065792s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323952, tv_nsec: 978091000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323952, tv_nsec: 979548000 }
+        weaver startup stage=configured elapsed=1.617584ms
+        weaver startup stage=listeners-bound elapsed=1.711375ms
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:34.470097Z elapsed=1.009698542s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=1.013981459s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323952, tv_nsec: 978091000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323952, tv_nsec: 979548000 }
+        weaver startup stage=configured elapsed=1.617584ms
+        weaver startup stage=listeners-bound elapsed=1.711375ms
+        weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323954, tv_nsec: 476864000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323954, tv_nsec: 477291000 }
+        weaver startup stage=configured elapsed=352.083µs
+        weaver startup stage=listeners-bound elapsed=415.666µs
+=== RUN   TestDarwinStartupImageComparison/stripped
+    startup_image_experiment_test.go:13: copied image sha256=bd61f224bfa5cc1d7900011275ff3c7d8d344c7756f24ccb0296ec20fe7aefc7
+    startup_image_experiment_test.go:15: strip: 
+    startup_image_experiment_test.go:18: sign: /tmp/TestDarwinStartupImageComparisonstripped3732519371/001/weaver-server: replacing existing signature
+    startup_image_experiment_test.go:20: verify: 
+    startup_image_experiment_test.go:21: executed image bytes=43255232 sha256=60c50be0d6d176eedaf5b2e9e2afbd35243af088d0989296a2563631af519287
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:36.96269Z elapsed=2.317665084s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=2.322837792s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323958, tv_nsec: 115614000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323958, tv_nsec: 116836000 }
+        weaver startup stage=configured elapsed=2.085875ms
+        weaver startup stage=listeners-bound elapsed=2.2385ms
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:39.304851Z elapsed=1.010410375s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=1.016466125s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323958, tv_nsec: 115614000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323958, tv_nsec: 116836000 }
+        weaver startup stage=configured elapsed=2.085875ms
+        weaver startup stage=listeners-bound elapsed=2.2385ms
+        weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323959, tv_nsec: 312057000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323959, tv_nsec: 312520000 }
+        weaver startup stage=configured elapsed=389.125µs
+        weaver startup stage=listeners-bound elapsed=452.459µs
+=== RUN   TestDarwinStartupImageComparison/stripped#01
+    startup_image_experiment_test.go:13: copied image sha256=bd61f224bfa5cc1d7900011275ff3c7d8d344c7756f24ccb0296ec20fe7aefc7
+    startup_image_experiment_test.go:15: strip: 
+    startup_image_experiment_test.go:18: sign: /tmp/TestDarwinStartupImageComparisonstripped#01295198961/001/weaver-server: replacing existing signature
+    startup_image_experiment_test.go:20: verify: 
+    startup_image_experiment_test.go:21: executed image bytes=43255232 sha256=60c50be0d6d176eedaf5b2e9e2afbd35243af088d0989296a2563631af519287
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:40.680769Z elapsed=2.30444125s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=2.308998458s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323961, tv_nsec: 878036000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323961, tv_nsec: 879244000 }
+        weaver startup stage=configured elapsed=1.564958ms
+        weaver startup stage=listeners-bound elapsed=1.679417ms
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:43.008252Z elapsed=1.012344041s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=1.020853625s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323961, tv_nsec: 878036000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323961, tv_nsec: 879244000 }
+        weaver startup stage=configured elapsed=1.564958ms
+        weaver startup stage=listeners-bound elapsed=1.679417ms
+        weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323963, tv_nsec: 15580000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323963, tv_nsec: 16093000 }
+        weaver startup stage=configured elapsed=370.875µs
+        weaver startup stage=listeners-bound elapsed=434.041µs
+=== RUN   TestDarwinStartupImageComparison/resigned#01
+    startup_image_experiment_test.go:13: copied image sha256=bd61f224bfa5cc1d7900011275ff3c7d8d344c7756f24ccb0296ec20fe7aefc7
+    startup_image_experiment_test.go:18: sign: /tmp/TestDarwinStartupImageComparisonresigned#011627710404/001/weaver-server: replacing existing signature
+    startup_image_experiment_test.go:20: verify: 
+    startup_image_experiment_test.go:21: executed image bytes=63838336 sha256=2f4daa87ebce7d8478c7d1269699986c395641a3128f06e8c4766c18eafe9576
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:44.413861Z elapsed=2.444302958s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=2.448703958s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323965, tv_nsec: 959103000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323965, tv_nsec: 960467000 }
+        weaver startup stage=configured elapsed=3.174333ms
+        weaver startup stage=listeners-bound elapsed=3.357208ms
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:46.880913Z elapsed=1.00980725s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=1.014041875s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323965, tv_nsec: 959103000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323965, tv_nsec: 960467000 }
+        weaver startup stage=configured elapsed=3.174333ms
+        weaver startup stage=listeners-bound elapsed=3.357208ms
+        weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323966, tv_nsec: 887831000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323966, tv_nsec: 888269000 }
+        weaver startup stage=configured elapsed=416.542µs
+        weaver startup stage=listeners-bound elapsed=490.292µs
+=== RUN   TestDarwinStartupImageComparison/linker#01
+    startup_image_experiment_test.go:13: copied image sha256=bd61f224bfa5cc1d7900011275ff3c7d8d344c7756f24ccb0296ec20fe7aefc7
+    startup_image_experiment_test.go:20: verify: 
+    startup_image_experiment_test.go:21: executed image bytes=64193456 sha256=bd61f224bfa5cc1d7900011275ff3c7d8d344c7756f24ccb0296ec20fe7aefc7
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:48.139488Z elapsed=2.641590583s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=2.645925125s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323969, tv_nsec: 470326000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323969, tv_nsec: 471641000 }
+        weaver startup stage=configured elapsed=1.713458ms
+        weaver startup stage=listeners-bound elapsed=1.817166ms
+    startup_image_experiment_test.go:21: native startup operation-channel started=2026-10-30T01:32:50.803268Z elapsed=1.0091755s error=<nil>
+    startup_image_experiment_test.go:21: native startup source-channel elapsed=1.013802917s error=<nil>
+    startup_image_experiment_test.go:21: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323969, tv_nsec: 470326000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323969, tv_nsec: 471641000 }
+        weaver startup stage=configured elapsed=1.713458ms
+        weaver startup stage=listeners-bound elapsed=1.817166ms
+        weaver startup stage=process-main clock=SystemTime { tv_sec: 1793323970, tv_nsec: 809925000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793323970, tv_nsec: 810405000 }
+        weaver startup stage=configured elapsed=379.042µs
+        weaver startup stage=listeners-bound elapsed=444.459µs
+--- PASS: TestDarwinStartupImageComparison (22.62s)
+    --- PASS: TestDarwinStartupImageComparison/linker (2.31s)
+    --- PASS: TestDarwinStartupImageComparison/resigned (3.97s)
+    --- PASS: TestDarwinStartupImageComparison/stripped (4.84s)
+    --- PASS: TestDarwinStartupImageComparison/stripped#01 (3.71s)
+    --- PASS: TestDarwinStartupImageComparison/resigned#01 (3.86s)
+    --- PASS: TestDarwinStartupImageComparison/linker#01 (3.92s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	25.748s

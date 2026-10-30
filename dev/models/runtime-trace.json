@@ -187,6 +187,11 @@
   {"id":"GrpcCallerBinding","witnesses":[
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderRPCIdentityAndCancellation"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_name_is_not_key_authority"}]},
+  {"id":"TransportSetupIsolation","witnesses":[
+    {"file":"go/internal/gatewayclient/connection_test.go","pattern":"func TestConnectionSetupRetainsCallerDeadlineAndCancellation"},
+    {"file":"go/dev/provider_startup_test.go","pattern":"func TestProviderFreshImageAndRestartStartup"},
+    {"file":"dev/proofs/quint/GatewayComposition.qnt","pattern":"run reconnectRetainsSpentRootTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem gateway_run_preserves_original_execution_and_custody"}]},
   {"id":"CommittedProviderRouting","witnesses":[
     {"file":"go/internal/routing/provider_test.go","pattern":"func TestProviderRoutingCannotRewriteOriginalContract"},
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderGRPCStreamingAndArrowOption"}]},

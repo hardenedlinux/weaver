@@ -1,0 +1,2350 @@
+• Validating lock
+✓ Validating lock in 392µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 26.4ms
+• Evaluating shell
+✓ Evaluating shell in 1.15s (cached)
+✓ Configuring shell in 1.24s
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 4.02ms (cached)
+✓ Loading tasks in 88.1ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 91.7ms
+• Running devenv:files
+✓ Running devenv:files in 88.0ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 183ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 43.3ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 12.7µs (no command)
+✓ Running tasks in 407ms
+💡 The dotenv file '.env' was not found.
+An example execution:
+
+[State 0]
+{
+  c:
+    {
+      closing: false,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 1]
+{
+  c:
+    {
+      closing: false,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: true
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: true,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 2]
+{
+  c:
+    {
+      closing: false,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: true
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 3]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 4]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 5]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 5000,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 6]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 5000,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 7]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 5000,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 8]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 9]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 10]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 11]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 1,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 12]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: false,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 13]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 14]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 15]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 16]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 17]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 18]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 19]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 20]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 5000,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 21]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 5000,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 22]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 23]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 24]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 25]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 26]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 27]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 28]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0, 1, 2, 3),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 29]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 30]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 5000,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 31]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 32]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 33]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 34]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 35]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 36]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 37]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 38]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 39]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 40]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 41]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 42]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 43]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 44]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 45]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 46]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 5000,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 47]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 5000,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 48]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 5000,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 49]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 5000,
+      modern: 32,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 50]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 51]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 52]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 53]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 54]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 55]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 56]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 57]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 0,
+      modern: -1,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 58]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 59]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[State 60]
+{
+  c:
+    {
+      closing: true,
+      handshakes: Set(),
+      held: Set(),
+      live: Set(),
+      peerClosed: Set(),
+      reserved: false
+    },
+  s:
+    {
+      allow: true,
+      allowedRows: Set(0),
+      burned: false,
+      caller: 2,
+      calls: 0,
+      closing: true,
+      credential: false,
+      delivered: Set(),
+      fence: 1,
+      held: 0,
+      invocations: [],
+      legacy: 4096,
+      modern: 0,
+      next: 0,
+      observedFence: 1,
+      observedRevision: 0,
+      queued: Set(),
+      releases: [],
+      revision: 0,
+      route: -1,
+      stage: 0,
+      token: false
+    }
+}
+
+[ok] No violation found (3992ms at 251 traces/second).
+Trace length statistics: max=61, min=61, average=61.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0x125 --backend=typescript to reproduce.

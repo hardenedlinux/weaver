@@ -21,6 +21,8 @@ module ProviderRpc {
   action admit(nonce:int):bool=all {authenticated,not(s.closing),current,s.stage==0,boundedCaps(s.modern,s.legacy),Set(0,1,2).contains(nonce),s'=s.with("stage",1).with("held",4)}
   action unsafePreferredCapAdmission=all {s.stage==0,s.modern>0,s.modern<=4096,s'=s.with("stage",1).with("held",4)}
   action replay=all {authenticated,s.stage>0,s'=s}
+  // Transport setup emits no application RPC and cannot select another root.
+  action observe=s'=s
   action consume(route:int):bool=all {authenticated,not(s.closing),current,s.stage==1,Set(0,1).contains(route),s'=s.with("stage",2).with("route",route)}
   // A durable burn may finish after cancellation; that does not admit transport.
   action burn=all {s.stage==2,not(s.burned),current,s'=s.with("burned",true).with("token",true)}

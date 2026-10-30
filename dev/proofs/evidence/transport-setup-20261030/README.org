@@ -1,0 +1,40 @@
+#+TITLE: Transport Setup Evidence
+#+LANGUAGE: en
+
+* Scope
+
+See [[file:../../../../docs/50-59-research-program/59-provider-rpc/59.18-transport-setup.org][chapter 59.18]] for the actual change, workload and proof premises.
+These focused worktree observations do not qualify a complete committed-source
+run, a measured benchmark or independent CI. The old complete startup failure
+remains under the preceding profile evidence; it is not overwritten.
+
+* Image controls
+
+[[file:native-startup-image-comparison.log][The original initial-backoff image study]] retains the six ABC/CBA cohorts,
+strict signature verification, original/re-signed/stripped image sizes and hashes,
+and both launches per image. [[file:native-startup-image-short-initial-backoff.log][The shorter initial-backoff study]] uses the same
+executed image hashes and order, original three-second readiness requirement,
+fifteen-second natural-exit requirement and original RPC behavior. Neither study
+clears OS caches or establishes a randomized policy comparison. No production
+strip/sign transformation or dependency pin change follows from these samples.
+
+* Corrected execution separation
+
+Only initial TCP/TLS connection backoff changes to 100ms. Exponential multiplier,
+jitter, 120s maximum, twenty-second minimum attempt setting, caller deadline,
+TLS checks and WithDisableRetry are preserved. No application RPC retry loop
+is added. The client may issue more early connection attempts; native connection
+custody remains the resource boundary and Rust remains the final effect owner.
+
+[[file:transport-composition-go.log][Race-enabled Go caller deadline/cancellation and SysML checks]] pass.
+[[file:transport-composition-quint.log][All 38 imported and composed Quint controls]] pass, including consumed-root
+and revoked-release cases. [[file:transport-composition-safety.log][The original 1000-trace/60-step sampled gate]] finds
+no violation at seed 293. [[file:transport-composition-lean.log][Lean step/run composition]] compiles with explicit axiom
+output and no sorryAx. These are conditional safety results, not a TLS/gRPC
+implementation proof or wall-clock startup guarantee.
+
+[[file:transport-setup-native-integration.log][The complete TestProvider native integration selection]] passes after the
+change, including fresh-image startup/restart, actual source-role mTLS, Policy,
+partial request/SSE, revocation, saturation, immutable profiles and lost-reply
+recovery. This remains focused integration evidence until a complete source-bound
+receipt is recorded. Core D2 was rendered and its PNG inspected for label spacing.

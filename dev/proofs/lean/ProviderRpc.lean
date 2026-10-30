@@ -169,6 +169,42 @@ theorem provider_and_connection_composition
     Safe cost budget t ∧ ConnectionsSafe limit b :=
   ⟨safe_step source execution, connection_step_preserves_custody custody connection⟩
 
+/- Transport may progress without an application RPC. This projection requires
+   native refinement: dialing never emits an Execute/Publish operation. -/
+structure GatewayState where
+  provider : State
+  connections : Connections
+
+def GatewaySafe (cost budget limit : Nat) (s : GatewayState) : Prop :=
+  Safe cost budget s.provider ∧ ConnectionsSafe limit s.connections
+
+inductive GatewayStep (cost budget limit : Nat) : GatewayState → GatewayState → Prop where
+  | transport (s) (step : ConnectionStep limit s.connections next) :
+      GatewayStep cost budget limit s {s with connections := next}
+  | execution (s) (step : Step cost budget s.provider next) :
+      GatewayStep cost budget limit s {s with provider := next}
+
+theorem gateway_step_preserves_original_execution_and_custody
+    (safe : GatewaySafe cost budget limit s) (step : GatewayStep cost budget limit s t) :
+    GatewaySafe cost budget limit t := by
+  cases step with
+  | transport _ step => exact ⟨safe.1, connection_step_preserves_custody safe.2 step⟩
+  | execution _ step => exact ⟨safe_step safe.1 step, safe.2⟩
+
+inductive GatewayRun (cost budget limit : Nat) : GatewayState → GatewayState → Prop where
+  | refl (s) : GatewayRun cost budget limit s s
+  | next : GatewayRun cost budget limit a b → GatewayStep cost budget limit b c → GatewayRun cost budget limit a c
+
+theorem gateway_run_preserves_original_execution_and_custody
+    (initial : GatewaySafe cost budget limit s) (run : GatewayRun cost budget limit s t) :
+    GatewaySafe cost budget limit t := by
+  induction run with
+  | refl => exact initial
+  | next _ step ih => exact gateway_step_preserves_original_execution_and_custody ih step
+
+#print axioms gateway_step_preserves_original_execution_and_custody
+#print axioms gateway_run_preserves_original_execution_and_custody
+
 inductive IngressRole where | operation | source
   deriving DecidableEq
 

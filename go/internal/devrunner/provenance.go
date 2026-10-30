@@ -35,6 +35,7 @@ func SourceInputs(root string) (map[string]string, error) {
 		"dev/proofs/quint/RuntimeAdmission.qnt", "dev/proofs/quint/StreamingExecution.qnt", "dev/proofs/quint/RuntimeLifecycle.qnt", "dev/proofs/quint/ProviderRpc.qnt", "dev/proofs/quint/DispatchCancellation.qnt", "dev/proofs/quint/NativeAdmission.qnt", "dev/proofs/quint/ConnectionAdmission.qnt", "dev/proofs/quint/SourceIngress.qnt", "dev/proofs/quint/PublicationRecovery.qnt", "dev/proofs/quint/SourceOwner.qnt",
 		"dev/proofs/quint/ReleaseBinding.qnt",
 		"dev/proofs/quint/ProviderProfile.qnt",
+		"dev/proofs/quint/GatewayComposition.qnt",
 		"dev/proofs/cedar/lakefile.toml", "dev/proofs/cedar/lake-manifest.json", "dev/proofs/cedar/lean-toolchain", "dev/proofs/cedar/WeaverPolicyBridge.lean"} {
 		if err := add(filepath.Join(root, path)); err != nil {
 			return nil, err

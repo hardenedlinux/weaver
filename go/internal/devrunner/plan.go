@@ -47,6 +47,8 @@ func Plan(goBinary string) []Stage {
 		{"admission-quint-safety", "quint", []string{"run", "dev/proofs/quint/NativeAdmission.qnt", "--main", "NativeAdmission", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"connection-quint-tests", "quint", []string{"test", "dev/proofs/quint/ConnectionAdmission.qnt", "--main", "ConnectionAdmission", "--seed", "293"}},
 		{"connection-quint-safety", "quint", []string{"run", "dev/proofs/quint/ConnectionAdmission.qnt", "--main", "ConnectionAdmission", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
+		{"gateway-composition-tests", "quint", []string{"test", "dev/proofs/quint/GatewayComposition.qnt", "--main", "GatewayComposition", "--seed", "293"}},
+		{"gateway-composition-safety", "quint", []string{"run", "dev/proofs/quint/GatewayComposition.qnt", "--main", "GatewayComposition", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"source-ingress-quint-tests", "quint", []string{"test", "dev/proofs/quint/SourceIngress.qnt", "--main", "SourceIngress", "--seed", "293"}},
 		{"source-ingress-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceIngress.qnt", "--main", "SourceIngress", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"publication-quint-tests", "quint", []string{"test", "dev/proofs/quint/PublicationRecovery.qnt", "--main", "PublicationRecovery", "--seed", "293"}},
