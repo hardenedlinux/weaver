@@ -39,6 +39,7 @@ func SourceInputs(root string) (map[string]string, error) {
 		"docs/50-59-research-program/59-provider-rpc/59.30-dynamic-gxi-qualification.org",
 		"docs/50-59-research-program/59-provider-rpc/59.32-build-environment-contract.org",
 		"dev/scheme/module-observer.c",
+		"dev/build.ss", "dev/gerbil.pkg",
 		"devenv.nix", "devenv.lock",
 		"devenv.yaml", ".envrc",
 		"dev/proofs/lean/RuntimeAdmission.lean", "dev/proofs/lean/StreamingExecution.lean", "dev/proofs/lean/ProviderRpc.lean", "dev/proofs/lean/PublicationRecovery.lean",

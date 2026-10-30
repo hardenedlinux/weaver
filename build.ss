@@ -15,5 +15,4 @@
   ((.get hardenedlinux/weaver.init.exports std-make-spec)
    (list `(gxc: "scheme/policy/cedar-ffi"
                 "-cc-options" ,(pkg-config-cflags policy-package)
-                "-ld-options" ,(pkg-config-libs policy-package))
-         '(exe: "dev/scheme/module-inventory" bin: "weaver-module-inventory"))))
+                "-ld-options" ,(pkg-config-libs policy-package)))))

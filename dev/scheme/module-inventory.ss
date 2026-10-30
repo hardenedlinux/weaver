@@ -2,7 +2,8 @@
 prelude: :gerbil/core
 ;;; Evaluate exported suite values through the same public expander boundary
 ;;; as gxtest; do not execute test cases or scan the installed SDK tree.
-(import :gerbil/expander :gerbil/tools/gxtest)
+(import :gerbil/expander)
+(export main)
 
 (def (main . files)
   (for-each

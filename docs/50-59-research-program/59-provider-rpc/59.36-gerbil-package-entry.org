@@ -4,9 +4,12 @@
 * One project entry
 The public Scheme project commands are =gerbil build= and =gerbil test=.
 The SDK owns command dispatch, test discovery, test assertions and lifecycle.
-Root =build.ss= declares its build through Yuanxu's existing =defbuild-script=.
-Its =exe:= entry builds the development inventory program; =bin:= selects its
-installed name. No handwritten build command parser or custom phase environment
+Root =build.ss= declares production libraries through Yuanxu's existing
+=defbuild-script=. The development package's =dev/build.ss= declares the
+inventory program with =exe:= and =bin:= under the root init's existing
+=tests.for-files= demand. This respects Yuanxu's library/program issuance
+boundary. The standard declaration builds an artifact; it does not invent
+an alternate test driver. No handwritten build command parser or phase environment
 switch replaces the standard build dispatcher. Program argument handling stays
 inside an executable module's =main= when that program needs arguments.
 
@@ -29,7 +32,7 @@ those exact historical commands; changing the entry does not turn them into
 passes or prove their performance repaired. Optional image experiments remain
 diagnostic evidence and cannot qualify the package tool.
 
-The inventory executable is a declared build product, available for bounded
+The inventory executable is a declared development build product, available for bounded
 diagnosis. It is not an extra project test prerequisite. Package qualification
 must execute the actual =gerbil test= command within fifteen seconds and wait
 for natural process completion. A binary built with =exe:= does not substitute

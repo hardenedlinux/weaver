@@ -51,7 +51,7 @@ func TestSchemeModuleOwnershipAndSpecificContracts(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, required := range []string{"./init.ss", "std-make-spec", "defbuild-script", "scheme/policy/cedar-ffi", "pkg-config-cflags", "pkg-config-libs", "exe:", "bin:"} {
+	for _, required := range []string{"./init.ss", "std-make-spec", "defbuild-script", "scheme/policy/cedar-ffi", "pkg-config-cflags", "pkg-config-libs"} {
 		if !strings.Contains(string(build), required) {
 			t.Fatalf("root build does not use its declared owner: %s", required)
 		}
@@ -62,5 +62,17 @@ func TestSchemeModuleOwnershipAndSpecificContracts(t *testing.T) {
 	}
 	if strings.Contains(string(build), "target/debug") {
 		t.Fatal("Scheme build must obtain FFI paths from pkg-config")
+	}
+	development, err := os.ReadFile(filepath.Join(repository, "dev/build.ss"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, required := range []string{"../init.ss", ".for-files", "defbuild-script", "exe:", "bin:"} {
+		if !strings.Contains(string(development), required) {
+			t.Fatalf("development executable lost its init owner: %s", required)
+		}
+	}
+	if strings.Contains(string(development), "(def (main") {
+		t.Fatal("development build must use generated Gerbil command dispatch")
 	}
 }
