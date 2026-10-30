@@ -96,6 +96,11 @@ Lean adds =command_ack_requires_returned_capacity= and composes it with the
 existing publication/accounting owner invariant. Command replies and successful
 service-drain acknowledgments remain distinct states.
 
+The refined property is per command: another caller can acquire the returned
+permit before an old reply is observed. Decided/returned/replied identity sets
+preserve that lawful schedule. A single global reply Boolean with an idle-lane
+guard would exclude it and is not an adequate native refinement.
+
 * Source-bound verification and retained failures
 
 The [[file:../../../dev/proofs/evidence/source-owner-20261030/verification-current/receipt.json][unified receipt]] passes thirty-five stages with 154 unchanged input hashes.

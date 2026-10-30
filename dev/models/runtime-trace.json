@@ -250,6 +250,7 @@
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run deletedOutcomeCounterexampleTest"},
     {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem recovery_and_provider_accounting_composition"}]},
   {"id":"OwnedSourceConnection","witnesses":[
+    {"file":"dev/proofs/quint/SourceOwner.qnt","pattern":"run newCommandCanPrecedeOldReplyTest"},
     {"file":"crates/server/tests/unit/source_owner.rs","pattern":"async fn completed_source_acknowledgment_returns_command_capacity"},
     {"file":"dev/proofs/quint/SourceOwner.qnt","pattern":"run replyBeforeCapacityCounterexampleTest"},
     {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem command_ack_requires_returned_capacity"},

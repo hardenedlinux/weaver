@@ -1,0 +1,52 @@
+• Validating lock
+✓ Validating lock in 1.84ms
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 2.00ms
+• Evaluating shell
+✓ Evaluating shell in 25.8ms (cached)
+✓ Configuring shell in 56.4ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 795µs (cached)
+✓ Loading tasks in 1.90ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 30.0ms
+• Running devenv:files
+✓ Running devenv:files in 50.3ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 66.4ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 48.1ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 11.9µs (no command)
+✓ Running tasks in 195ms
+💡 The dotenv file '.env' was not found.
+
+  SourceOwner
+    ok P::lostReplyRestartReplayTest passed 1 test(s)
+    ok P::concurrentParentHasOneWinnerTest passed 1 test(s)
+    ok P::lateReceiptIsHistoricalTest passed 1 test(s)
+    ok P::changedParentCannotReuseIdTest passed 1 test(s)
+    ok P::changedSchemaCannotReuseIdTest passed 1 test(s)
+    ok P::rejectedDecisionCannotRebaseTest passed 1 test(s)
+    ok P::absenceDoesNotAbortLateCommitTest passed 1 test(s)
+    ok P::headWithoutOutcomeCounterexampleTest passed 1 test(s)
+    ok P::deletedOutcomeCounterexampleTest passed 1 test(s)
+    ok P::reboundOutcomeCounterexampleTest passed 1 test(s)
+    ok disconnectDoesNotReturnCapacityTest passed 1 test(s)
+    ok droppedReplyCanStillCommitOriginalTest passed 10000 test(s)
+    ok shutdownMustFinishTransactionTest passed 1 test(s)
+    ok acceptedWorkCanCommitWhileClosingTest passed 10000 test(s)
+    ok storageFailurePreventsReuseTest passed 1 test(s)
+    ok closeErrorCannotAcknowledgeSuccessTest passed 1 test(s)
+    ok closedOwnerCannotReopenTest passed 1 test(s)
+    ok earlyDisconnectReturnCounterexampleTest passed 1 test(s)
+    ok cachedSnapshotCounterexampleTest passed 1 test(s)
+    ok swallowedCloseErrorCounterexampleTest passed 1 test(s)
+    ok commandReplyPermitsImmediateReuseTest passed 10000 test(s)
+    ok newCommandCanPrecedeOldReplyTest passed 10000 test(s)
+    ok replyBeforeCapacityCounterexampleTest passed 10000 test(s)
+
+  23 passing (32364ms)

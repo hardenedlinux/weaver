@@ -79,3 +79,36 @@ bytes.Buffer, whose ReaderFrom optimization bypassed the Write timestamp; its
 retained log reports first-output=none. The corrected private buffer records
 actual pipe writes and requires timing whenever output exists. Linux causal
 attribution and current CI qualification remain separate obligations.
+
+* Interrupted committed gate and refinement correction
+
+The original [[file:committed-interrupted/receipt.json][2562c3c full-check receipt]] remains RUNNING as written by the runner.
+After the conversation interruption, both its tool handle and underlying PID
+34171 were absent. The integration log ends at server compilation. No completed
+full-check verdict can be inferred. Forty-nine stages were recorded, including
+a failed Rust test; subsequent passing stages do not qualify the whole run.
+
+The failed native backpressure assertion observed Complete. Source inspection
+shows the peer ignored its five-second control timeout and could then drain
+without an explicit release. This is a fault-injection flaw consistent with
+the observation, not proof of a particular host scheduling cause. The corrected
+peer fails on timeout instead of silently removing backpressure. The one-MiB
+message, blocking socket mode, five-second wait, one-second write deadline and
+all unknown-tail/budget assertions remain unchanged.
+
+The earlier command-reply model also excluded a legal interleaving by requiring
+global idleness at reply observation. Its passing conditional proof does not
+establish refinement for that schedule. The corrected model records decided,
+returned and replied command identities, with replies requiring the original
+command's certificates. A different command may already hold the shared lane.
+The new legal-interleaving witness and per-command Lean invariant close this
+gap without weakening original-command custody. Ghost identities denote affine
+permit instances; the native API gains no new authority or registry.
+
+The corrected [[file:backpressure-strict-focused.log][native partial-write witness]] passes naturally in 4.25 seconds with
+the original workload and limits. [[file:source-command-identity-quint.log][All 23 source-owner controls]] pass, including
+the legitimate overlapping-command schedule and the unsafe early-reply control.
+[[file:source-command-identity-safety.log][The unchanged 1000-trace, sixty-step sampled gate]] finds no violation at seed
+293. [[file:source-command-identity-lean.log][The per-command Lean composition]] compiles with explicit axiom output.
+These focused results do not qualify the interrupted full gate, a new complete
+committed run, benchmark currentness or independent Linux CI.

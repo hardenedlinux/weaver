@@ -1,0 +1,16 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.37s
+goos: linux
+goarch: amd64
+pkg: github.com/HardenedLinux/weaver/go/dev
+cpu: AMD EPYC 7763 64-Core Processor                
+BenchmarkGatewayInspect-2            	    1284	   1847401 ns/op	    6521 B/op	     115 allocs/op
+BenchmarkGatewayInspect-2            	    1294	   1856473 ns/op	    6520 B/op	     115 allocs/op
+BenchmarkGatewayInspect-2            	    1304	   1850974 ns/op	    6520 B/op	     115 allocs/op
+BenchmarkGatewayInspectReconnect-2   	     453	   5260905 ns/op	  179079 B/op	    1270 allocs/op
+BenchmarkGatewayInspectReconnect-2   	     447	   5351263 ns/op	  179044 B/op	    1274 allocs/op
+BenchmarkGatewayInspectReconnect-2   	     446	   5354664 ns/op	  179038 B/op	    1274 allocs/op
+BenchmarkGatewayAuthorityPublish-2   	     364	   6811345 ns/op	    6525 B/op	     114 allocs/op
+BenchmarkGatewayAuthorityPublish-2   	     367	   6523298 ns/op	    6542 B/op	     114 allocs/op
+BenchmarkGatewayAuthorityPublish-2   	     378	   6212879 ns/op	    6541 B/op	     114 allocs/op
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	31.555s

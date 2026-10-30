@@ -69,6 +69,20 @@ profile. A lost response is resolved by exact registration replay; registration
 does not send, create a new claim, reset history or refund held budget.
 Typed equality permits harmless metadata key ordering without discarding fields.
 
+Command replies certify the original command's completed decision and returned
+permit. They do not certify that the shared lane remains idle: a different caller
+may already own it. The owner model therefore records decided, returned and
+replied command identities separately. A legal schedule admits the next command
+before observing the previous reply. The command identities are ghost names for
+affine permit instances, not new runtime authority or a second registry.
+
+The first committed full check was interrupted during integration compilation
+after recording a native backpressure failure. Its unchanged receipt remains
+RUNNING and is retained as incomplete evidence, never a completed passing run.
+The fault peer ignored its five-second control timeout and could begin draining
+without release. The correction makes that timeout fail explicitly; message
+size, socket mode, write deadline and all tail/hold assertions remain unchanged.
+
 Original task artifacts retain the semantic floor if the registry projection is
 lost. A different artifact cannot claim that ID; exact registration can restore
 the same projection. Final dispatch and response release reload and verify its

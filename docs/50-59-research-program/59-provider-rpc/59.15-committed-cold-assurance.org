@@ -175,3 +175,23 @@ executing native/formal verification. This demonstrates progress beyond the
 previous Lean extraction failure. The run is still live at that observation;
 its final verification/benchmark result and raw stage receipts are not admitted
 from this intermediate job status.
+
+* Completed independent Linux baseline
+
+[[https://github.com/hardenedlinux/weaver/actions/runs/40954543662][Run 40954543662]] subsequently completes successfully at exactly
+=472cf7851109a0f495abfe687d6b0d7241f94234=. Its
+[[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40954543662-completed.json][completed job metadata]] and original uploaded artifacts are now retained.
+The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/completed-linux-472cf/verification-3965362697/receipt.json][seven-stage bootstrap]],
+[[file:../../../dev/proofs/evidence/cold-assurance-20261030/completed-linux-472cf/verification-2873743712/receipt.json][forty-six-stage verification]] and
+[[file:../../../dev/proofs/evidence/cold-assurance-20261030/completed-linux-472cf/verification-2864782527/receipt.json][seven-stage benchmark receipt]] all pass and bind the same 173 input hashes
+and implementation revision. Natural native exits, 59 Rust tests, the five ASP
+deny gates, actual HTTPS/mTLS integration and formal compilation remain visible
+in their raw stage logs. The benchmark retains eighteen cases with thirty
+paired samples each and actual Go RPC measurements. This closes the earlier
+capacity/extraction admission boundary for that baseline only.
+
+This result does not qualify later implementations, eliminate source-owner
+scheduling races or establish production performance. The later 13834198 Linux
+run fails independently; its retained failure and subsequent correction are
+described in [[file:59.17-source-provider-profiles.org][the provider-profile increment]]. Historical intermediate live
+observations above remain observations rather than final acceptance receipts.

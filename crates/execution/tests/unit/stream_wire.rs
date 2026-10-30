@@ -204,7 +204,9 @@ fn native_partial_write_freezes_tail_and_never_refunds() {
         socket2::SockRef::from(&socket)
             .set_recv_buffer_size(1024)
             .expect("receive buffer");
-        let _ = release_rx.recv_timeout(Duration::from_secs(5));
+        release_rx
+            .recv_timeout(Duration::from_secs(5))
+            .expect("backpressure peer cannot drain before native write completes");
         let mut bytes = Vec::new();
         socket
             .set_read_timeout(Some(Duration::from_secs(2)))
