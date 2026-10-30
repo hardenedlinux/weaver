@@ -70,23 +70,18 @@ durably binds Cedar/schema bytes, command identity, parent and fence, plus the
 separately immutable task/profile constraints. It does not attest that an asset
 path remained unchanged forever or that arbitrary operator Scheme was sandboxed.
 
-* Distinct verification responsibilities
+* Projection evidence
 
-| Owner | Responsibility | Reuse |
-|-------+----------------+-------|
-| Scheme suites | Concrete source types, deterministic projection, unsupported facets, duplicate identities and value/asset equality | Upstream POO Records, Cedar Policy values and standard gxtest |
-| Go/Rust integration | Actual source compilation, mTLS roles, persisted publication, lost reply, owner restart, partial stream and revoke | Existing relay, source owner and actual Rust broker |
-| AuthorityPublication.qnt | Compose Go activation with publication outcomes and execution schedules; find unsafe recovery and early activation traces | Imports PublicationRecovery and ProviderRpc; does not reimplement either ledger |
-| WeaverPolicyBridge.lean | Relate the authenticated actual effect/state and exact materialized Policy set to error-free Cedar allow | Imports cedar-poo-spec BoundOperation and compound authorization |
-| ProviderRpc.lean | Existing parameterized execution/profile/hold preservation results | Reused without another Go-control state machine |
-
-The duplicate ControlActivation Lean gate model and its standalone CI stage have
-been removed. Quint does not repeat the source decoder, and Lean does not repeat
-the Quint publication state machine. Imported model unit cases run in their owner
-stages; the composite's test selector runs its own integration cases. Bounded
-Quint exploration is not a proof over all schedules. The Lean bridge assumes
-faithful source-to-Policy materialization and authenticated host facts; it does
-not prove the parser, TLS, SQLite or Rust compiler.
+Verification responsibilities are declared once in
+=WeaverProject::AssuranceResponsibilities= in [[file:../../../Project.sysml][Project.sysml]].
+The [[file:59.27-policy-evidence-architecture.org][architecture reuse map]] identifies the existing semantic and schedule owners.
+Projection witnesses remain =t/policy-projection-test.ss=,
+=t/governance-test.ss=, =t/gateway-source-test.ss= and
+=go/dev/provider_control_scheme_integration_test.go=, with named links in the
+SysML trace. Imported model cases run at their owner stages; composition stages
+select their local cases. Semantic bridge premises include faithful
+materialization and authenticated host facts; neither source shape nor bounded
+exploration proves SQL, TLS, compiler or storage correctness.
 
 * Names and build ownership
 

@@ -150,3 +150,54 @@ func TestProviderPublicationLostReplyRestartAndHistoricalDecision(t *testing.T) 
 		t.Fatalf("publication recovery changed original budget or execution: %v", receipt)
 	}
 }
+
+func TestProviderHistoricalPublicationReadCannotAuthorizeAfterRestart(t *testing.T) {
+	f := newFixture(t, completeSSE, false)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	bootstrap := v1.Publication{OperationID: "bootstrap", Fence: 1, Policy: f.policy, Schema: f.schema}
+	original, err := f.admin.InspectPublication(ctx, bootstrap)
+	if err != nil || original.GetRevision() != 0 {
+		t.Fatalf("original publication: %v %v", original, err)
+	}
+	zero := uint64(0)
+	denied := v1.Publication{OperationID: "deny-after-read", ExpectedRevision: &zero, Fence: 2, Policy: "forbid(principal,action,resource);", Schema: f.schema}
+	if _, err := f.admin.Publish(ctx, denied); err != nil {
+		t.Fatal(err)
+	}
+	f.stop(t)
+	f.start(t)
+	historical, err := f.admin.InspectPublication(ctx, bootstrap)
+	if err != nil || !proto.Equal(original, historical) {
+		t.Fatalf("historical receipt changed: %v %v", historical, err)
+	}
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil {
+		t.Fatal("old publication authorized a new invocation after restart")
+	}
+	if f.primary.Load() != 0 || f.backup.Load() != 0 {
+		t.Fatal("stale authority reached a provider")
+	}
+	one := uint64(1)
+	restored := v1.Publication{OperationID: "restore-current", ExpectedRevision: &one, Fence: 3, Policy: f.policy, Schema: f.schema}
+	if _, err := f.admin.Publish(ctx, restored); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil {
+		t.Fatal("later allow made an old publication current")
+	}
+	f.plan.Revision, f.plan.Fence = 2, 3
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err != nil {
+		t.Fatalf("fresh authority could not admit the unconsumed original claim: %v", err)
+	}
+	f.stop(t)
+	f.start(t)
+	if _, err := f.admin.Publish(ctx, restored); err != nil {
+		t.Fatal("exact source outcome recovery failed", err)
+	}
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil {
+		t.Fatal("source recovery reopened consumed original claim")
+	}
+	if receipt := inspect(t, f); receipt.Held != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
+		t.Fatalf("recovery changed execution or unknown hold: %v", receipt)
+	}
+}

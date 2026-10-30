@@ -229,6 +229,162 @@ fn affine_provider_dispatch_and_revoked_batch_never_repeat_or_refund() {
     );
     assert_eq!(ledger.held("f").expect("held"), 4);
 }
+#[test]
+fn historical_publication_replay_cannot_reopen_original_claim_or_dispatch() {
+    for consumed in [false, true] {
+        let temp = tempfile::tempdir().expect("temp");
+        let path = temp.path().join("publication-join.db");
+        let (mut ledger, plan) = fixture(&path);
+        ledger.enqueue_provider(&plan).expect("reserve original");
+        let targets = BTreeSet::from(["primary".into()]);
+        let owner = consumed.then(|| {
+            ledger
+                .consume_provider("f", "infer", &targets)
+                .expect("consume original")
+        });
+        let revoke = weaver_contracts::Publication {
+            operation_id: "lost-revoke-reply".into(),
+            expected_revision: Some(0),
+            fence: 2,
+            policy: "forbid(principal,action,resource);".into(),
+            schema: SCHEMA.into(),
+        };
+        // The durable decision exists although the caller discards its response.
+        let historical = ledger.publish_authority(&revoke).expect("commit revoke");
+        let restore = weaver_contracts::Publication {
+            operation_id: "later-restore".into(),
+            expected_revision: Some(1),
+            fence: 3,
+            policy: POLICY.into(),
+            schema: SCHEMA.into(),
+        };
+        ledger
+            .publish_authority(&restore)
+            .expect("advance current head");
+        assert_eq!(
+            ledger
+                .publish_authority(&revoke)
+                .expect("exact historical retry"),
+            historical
+        );
+        let mut calls = 0;
+        if let Some(permit) = &owner {
+            assert!(ledger.dispatch_provider(permit, || calls += 1).is_err());
+        }
+        assert!(ledger.consume_provider("f", "infer", &targets).is_err());
+        ledger.close().expect("close deciding connection");
+        let mut recovered = Ledger::open(&path).expect("recover durable state");
+        assert_eq!(
+            recovered
+                .publish_authority(&revoke)
+                .expect("recover lost result"),
+            historical
+        );
+        if let Some(permit) = &owner {
+            assert!(recovered.dispatch_provider(permit, || calls += 1).is_err());
+        }
+        let mut rebound = plan.clone();
+        rebound.revision = 2;
+        rebound.fence = 3;
+        let reconciled = recovered
+            .enqueue_provider(&rebound)
+            .expect("same original digest reconciles");
+        assert_eq!(reconciled.digest, plan.digest().expect("original digest"));
+        let refreshed = recovered.consume_provider("f", "infer", &targets);
+        if consumed {
+            assert!(
+                refreshed.is_err(),
+                "fresh authority cannot repeat consumption"
+            );
+        } else {
+            // A still-queued operation can make progress only after fresh
+            // authorization refreshes its observation coordinates under CAS.
+            let fresh_owner = refreshed.expect("freshly authorized original claim");
+            recovered
+                .dispatch_provider(&fresh_owner, || calls += 1)
+                .expect("fresh send");
+            assert!(
+                recovered
+                    .dispatch_provider(&fresh_owner, || calls += 1)
+                    .is_err()
+            );
+        }
+        rebound.node = "new-claim".into();
+        assert!(recovered.enqueue_provider(&rebound).is_err());
+        rebound.node = "infer".into();
+        rebound.profile = "new-profile".into();
+        assert!(recovered.enqueue_provider(&rebound).is_err());
+        let connection = rusqlite::Connection::open(&path).expect("inspect original task");
+        let record: String = connection
+            .query_row("SELECT record FROM tasks WHERE family='f'", [], |row| {
+                row.get(0)
+            })
+            .expect("task");
+        let mut original: Task = serde_json::from_str(&record).expect("decode task");
+        original.budget += 1;
+        assert!(
+            recovered.register_task(&original).is_err(),
+            "restart cannot reset original budget"
+        );
+        assert_eq!(recovered.held("f").expect("original hold"), 4);
+        assert_eq!(
+            recovered
+                .provider_receipt("f", "infer")
+                .expect("history")
+                .expect("original outcome")
+                .state,
+            weaver_contracts::ProviderState::Unknown
+        );
+        assert_eq!(calls, usize::from(!consumed));
+        recovered.close().expect("close recovered connection");
+    }
+}
+
+/// Expected counterexample: FULL WAL durability does not authenticate freshness
+/// of an externally restored, internally consistent database image.
+#[test]
+fn whole_database_rollback_requires_an_independent_recovery_floor() {
+    let temp = tempfile::tempdir().expect("temp");
+    let path = temp.path().join("live.db");
+    let snapshot = temp.path().join("before-consumption.db");
+    let (mut ledger, plan) = fixture(&path);
+    ledger.enqueue_provider(&plan).expect("queue original");
+    ledger
+        .close()
+        .expect("checkpoint and close before snapshot");
+    std::fs::copy(&path, &snapshot).expect("copy closed database");
+    let targets = BTreeSet::from(["primary".into()]);
+    let mut external_calls = 0_u64;
+    for restore in [false, true, true] {
+        if restore {
+            std::fs::copy(&snapshot, &path).expect("restore closed database snapshot");
+        }
+        let mut owner = Ledger::open(&path).expect("new owner session");
+        let permit = owner
+            .consume_provider("f", "infer", &targets)
+            .expect("consume restored queued state");
+        owner
+            .dispatch_provider(&permit, || external_calls += 1)
+            .expect("external effect");
+        assert_eq!(owner.held("f").expect("one restored hold"), 4);
+        owner.close().expect("close before next image replacement");
+    }
+    // This is an unqualified threat boundary, not an accepted production result.
+    // Fresh process/session identity alone cannot detect a whole-store rollback.
+    assert_eq!(external_calls, 3);
+    let inspection = rusqlite::Connection::open(&path).expect("inspect restored budget");
+    let budget: i64 = inspection
+        .query_row("SELECT budget FROM tasks WHERE family='f'", [], |row| {
+            row.get(0)
+        })
+        .expect("original budget");
+    assert!(
+        external_calls * plan.ceiling > u64::try_from(budget).expect("nonnegative account budget"),
+        "possible external exposure exceeds the original account ceiling"
+    );
+    inspection.close().expect("close inspection");
+}
+
 proptest! {
     #![proptest_config(Config::with_cases(64))]
     #[test]

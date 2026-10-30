@@ -18,8 +18,9 @@ The single responsibility registry is
 The AuthorityPublication composition imports existing publication and execution
 owners. New evidence work must extend its missing schedules or reuse an existing
 semantic theorem, rather than create another control-gate model in both languages.
-There is no PolicyEvidenceJoin Lean or Quint module. Concrete implementation
-evidence and structural/model results remain distinct receipts.
+Concrete implementation evidence and structural/model results remain distinct
+receipts. Do not introduce another state machine merely to mirror the same
+invariant in a second verification language.
 
 * Retired research drivers
 

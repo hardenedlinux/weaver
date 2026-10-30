@@ -1,0 +1,123 @@
+# Target relationships only. Delivery status and evidence belong in 59.25 Org.
+vars: {
+  d2-config: {
+    layout-engine: tala
+    theme-id: 3
+    pad: 70
+  }
+}
+classes: {
+  card: {
+    label.near: center-center
+    style.font-size: 20
+    style.border-radius: 12
+    style.stroke-width: 1
+  }
+}
+title: TAO3K / ZERO TRUST SEMANTIC EXECUTION {
+  shape: text
+  near: top-center
+  style.font-size: 30
+  style.bold: true
+}
+ecosystem: TAO3K Semantic Modules\nYuanxu / POO\nTask · Session · Workflow\nGovernor · Governance {
+  class: card
+  left: 0
+  top: 0
+  width: 420
+  height: 160
+  style.fill: "#eef3ef"
+}
+scheme: Scheme Semantic Runtime\nHigher-order Governance / routines\nReceipt-bound successor proposals\nAdmitted functions / POO modules {
+  class: card
+  left: 540
+  top: 0
+  width: 440
+  height: 160
+  style.fill: "#eef3ef"
+}
+go: Go Control Plane\nDiscovery · routing proposals\nCloud lifecycle · protocol adapters\nAuthenticated gRPC {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 1100
+  top: 0
+  width: 440
+  height: 160
+}
+cedar: Cedar / cedar-poo-spec\nC4 profiles · explicit Contracts\nAuthority-bound Admission + Delta\nSchema-bound Rust replay {
+  class: card
+  left: 0
+  top: 520
+  width: 420
+  height: 160
+}
+rust: Rust Deciding Broker\nDurable fact barrier · fresh CAS\nClaim · profile · budget · history\nExact facts at dispatch / release {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 540
+  top: 520
+  width: 440
+  height: 160
+  style.fill: "#e7edf4"
+}
+effects: Governed Agent Effects\nLLM streams · admitted tools\nExact destination and payload\nBounded output release {
+  class: card
+  left: 1100
+  top: 520
+  width: 440
+  height: 160
+}
+derived: AA Context / Gerbil Ascent\nRetained rules / closed scopes\nFrozen typed fact candidates\nMRR: optional qualified backend {
+  class: card
+  left: 0
+  top: 250
+  width: 420
+  height: 160
+  style.fill: "#f4f2ec"
+}
+continuity: Recovery Authority\nMonotonic commit floor\nOriginal assignment continuity\nFail closed on rollback {
+  class: card
+  left: 1100
+  top: 250
+  width: 440
+  height: 160
+  style.fill: "#f4f2ec"
+}
+binding: "Original claim / shared exposure / history survive recovery\nRecord receipt → propose step → fresh admission → guarded effect\nClosed scope / frozen values / admitted freshness at every use\nUnknown usage retains the original reservation" {
+  shape: text
+  left: 350
+  top: 820
+  width: 1000
+  height: 140
+  style.font-size: 22
+  style.font-color: "#5c8b77"
+}
+ecosystem -> scheme: Admit scopes {
+  style.font-size: 16
+}
+derived -> scheme: Derived evidence {
+  style.font-size: 16
+  style.stroke-dash: 5
+}
+scheme -> go: Proposals {
+  style.font-size: 16
+}
+go -> rust: gRPC proposals {
+  style.font-size: 16
+}
+cedar -> rust: Bound evidence {
+  style.font-size: 16
+}
+continuity -> rust: Current floor {
+  style.font-size: 16
+  style.stroke-dash: 5
+}
+rust -> effects: Execute {
+  style.font-size: 16
+}
+rust -> scheme: Bound observations {
+  style.font-size: 16
+  style.stroke-dash: 5
+}

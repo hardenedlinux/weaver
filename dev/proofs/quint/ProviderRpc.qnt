@@ -44,6 +44,10 @@ module ProviderRpc {
   action wrongCredential=s'=s.with("credential",false)
   action complete=all {s.calls==1,current,s.next==4,s'=s.with("stage",3)}
   action unsafeRetryReset=s'=s.with("stage",1).with("burned",false).with("token",false)
+  // Restore a pre-consumption queued image while the publication stays current.
+  // This unsafe action is excluded from the ordinary durable-restart relation.
+  action unsafeRestoreQueuedImage=all {s.stage>=2,s'=s.with("stage",1).with("burned",false).with("token",false)
+    .with("calls",0).with("route",-1).with("next",0).with("queued",Set()).with("delivered",Set()).with("releases",List()).with("invocations",List())}
   action restrictRows=s'=s.with("allowedRows",Set(0))
   action unsafeEncodingBypass=all {s.allowedRows.contains(s.next),s'=s.with("releases",s.releases.append({rows:s.next.to(s.next+1),permitted:s.allowedRows,guardRevision:s.observedRevision,currentRevision:s.revision}))}
   action unsafeStaleRelease=s'=s.with("releases",s.releases.append({rows:Set(0),permitted:s.allowedRows,guardRevision:s.observedRevision,currentRevision:s.revision}))
