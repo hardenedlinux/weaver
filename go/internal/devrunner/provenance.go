@@ -37,7 +37,7 @@ func SourceInputs(root string) (map[string]string, error) {
 		"docs/50-59-research-program/59-provider-rpc/59.23-governance-policy-projection.org",
 		"docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org",
 		"docs/50-59-research-program/59-provider-rpc/59.30-dynamic-gxi-qualification.org",
-		"dev/proofs/evidence/native-image-closure/observer.c",
+		"dev/scheme/module-observer.c",
 		"devenv.nix", "devenv.lock",
 		"devenv.yaml", ".envrc",
 		"dev/proofs/lean/RuntimeAdmission.lean", "dev/proofs/lean/StreamingExecution.lean", "dev/proofs/lean/ProviderRpc.lean", "dev/proofs/lean/PublicationRecovery.lean",

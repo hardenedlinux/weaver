@@ -133,3 +133,26 @@ Private-repository publication and remote CI are separate receipts. The local
 closure above remains established by local executions regardless of the remote
 workflow outcome. Gateway execution code, Policy semantics and dependency pins
 are unchanged by this development packaging repair.
+
+* CI sparse-checkout source ownership correction
+The first private run, =41062328472= at =8296f11=, failed all seven jobs before
+their test suites began. The common source inventory required the observer
+inside =dev/proofs/evidence/=, while the workflow deliberately excludes that
+historical archive from its sparse checkout. The secondary missing-receipt
+message did not indicate a native runtime failure. This failed workflow is
+retained as a separate receipt and does not replace either local result above.
+
+Active observer source now lives in =dev/scheme/module-observer.c=; the sealed
+historical copy remains intact. The copies are byte-identical, with SHA-256
+=c3d9f9b044d2ae47a86631ee0e66a82d3b31f162ef9f5ff96d1d1f7c99320eab=.
+The common inventory and diagnostic compiler reference the active source.
+Neither the ordinary gxi arguments, module packager, runtime code nor pins
+change in this correction. The frozen local performance claim remains bound
+to =14c746e= and its recorded digests, rather than being relabeled as a new run.
+
+The focused Go regression materializes only the live source inventory into a
+temporary tree with the same archive exclusions as CI. Restoring the old
+archive reference reproduces the missing-file failure; the corrected inventory
+passes with exactly equal source hashes. Race-checked runner controls and the
+Darwin C compiler check also pass. CI keeps its archive exclusions; fetching
+all historical logs is not the repair.

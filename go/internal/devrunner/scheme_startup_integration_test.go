@@ -424,7 +424,7 @@ func observeCleanup(t *testing.T, root, compiler string, profile schemeImageProf
 	t.Helper()
 	directory := t.TempDir()
 	observer := filepath.Join(directory, "module-observer.dylib")
-	startupBuild(t, root, Environment(settings), "/usr/bin/cc", "-dynamiclib", "-o", observer, filepath.Join(root, "dev/proofs/evidence/native-image-closure/observer.c"))
+	startupBuild(t, root, Environment(settings), "/usr/bin/cc", "-dynamiclib", "-o", observer, filepath.Join(root, "dev/scheme/module-observer.c"))
 	probeCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	probe := exec.CommandContext(probeCtx, compiler, "-e", `(displayln (path-expand "bin/gxi" (gerbil-home)))`)
