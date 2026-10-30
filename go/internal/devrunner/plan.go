@@ -7,6 +7,13 @@ import (
 
 const proofToolchain = "leanprover/lean4:v4.34.1"
 
+func schemeTool() string {
+	if tool := os.Getenv("WEAVER_SCHEME_TOOL"); tool != "" {
+		return tool
+	}
+	return "gerbil"
+}
+
 func Plan(goBinary string) []Stage {
 	return []Stage{
 		{"rust-environment", "rustc", []string{"-vV"}},
@@ -105,13 +112,11 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"scheme-build-capacity", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "resources"}},
 			{"scheme-declared-poo-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "dependencies"}},
 			{"scheme-core-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "core"}},
-			{"scheme-agentic-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "agentic"}},
 			{"scheme-module-build", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline"}},
 			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^Test(SchemePkgConfig|ImageTool|SourceInputsWithArchived)", "-v"}},
-			{"scheme-dynamic-images", "internal/pinned-sdk-module-images", nil},
-			// Delegate discovery and assertions to the SDK and Scheme-owned suites.
-			// Check the returned result explicitly; success markers alone cannot pass.
-			{"scheme-unit-tests", os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER"), []string{"-e", "(dump-stack-trace? #f)", "-e", "(import (prefix-in :gerbil/tools/gxtest tests.))", "-e", "(unless (zero? (tests.main \"-g\" \"-v\" \"5\" \"t\")) (error \"Scheme test suite failed\"))"}},
+			// Package tools own discovery, execution and result reporting. Historical
+			// direct-gxi image experiments are not a prerequisite for gerbil test.
+			{"scheme-unit-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t"}},
 			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration,schemeintegration", "./dev", "-run", "^TestProviderControl", "-v"}},
 		}, nil
 	case "bench":

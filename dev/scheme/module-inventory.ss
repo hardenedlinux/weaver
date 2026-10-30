@@ -1,4 +1,5 @@
 ;;; Development packaging inventory. The SDK still owns tests and assertions.
+prelude: :gerbil/core
 ;;; Evaluate exported suite values through the same public expander boundary
 ;;; as gxtest; do not execute test cases or scan the installed SDK tree.
 (import :gerbil/expander :gerbil/tools/gxtest)

@@ -1,10 +1,15 @@
 import CommittedSemanticProfile
 namespace Weaver.NativeExitQualification
+inductive Entry where
+  | packageTest
+  | diagnostic
+  deriving DecidableEq
 structure Config where
   expectedChecks : Nat
   budget : Nat
   source : Nat
 structure State where
+  entry : Entry := .packageTest
   source : Nat
   checks : Nat := 0
   duplicateRejected : Bool := false
@@ -66,7 +71,11 @@ theorem initialized_audit (run : Run c (initial c) s) : Audit c s := by
   | refl => simp [Audit,initial]
   | next prior event ih => exact audit_step ih event
 
-def Qualified (c : Config) (s : State) : Prop := Audit c s ∧ s.exited = true ∧ s.elapsed ≤ c.budget
+def Qualified (c : Config) (s : State) : Prop :=
+  Audit c s ∧ s.exited = true ∧ s.elapsed ≤ c.budget ∧ s.entry = .packageTest
+
+theorem package_entry_required (accepted : Qualified c s) : s.entry = .packageTest :=
+  accepted.2.2.2
 
 theorem completion_marker_is_insufficient (noExit : s.exited = false) : ¬ Qualified c s := by
   intro accepted; have exited := accepted.2.1; simp [noExit] at exited
@@ -79,7 +88,7 @@ theorem qualification_preserves_actual_checks (accepted : Qualified c s) :
   accepted.1.2.1 (accepted.1.2.2.1 (qualification_preserves_cleanup accepted).1)
 
 theorem late_natural_exit_still_fails (late : c.budget < s.elapsed) : ¬ Qualified c s := by
-  intro accepted; have bound := accepted.2.2; omega
+  intro accepted; have bound := accepted.2.2.1; omega
 
 theorem wrong_source_is_not_qualified (wrong : s.source ≠ c.source) : ¬ Qualified c s := by
   intro accepted; exact wrong accepted.1.1
@@ -94,6 +103,7 @@ theorem natural_pass_still_needs_gateway_policy (_accepted : Qualified c receipt
   exact ⟨p,wire,policy⟩
 
 #print axioms audit_step
+#print axioms package_entry_required
 #print axioms initialized_audit
 #print axioms completion_marker_is_insufficient
 #print axioms qualification_preserves_cleanup

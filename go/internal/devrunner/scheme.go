@@ -202,6 +202,11 @@ func schemeSourceHashes(source, poo string) (map[string]string, error) {
 				}
 				return nil
 			}
+			// gerbil build regenerates this SDK-owned version output. It is not
+			// a handwritten governance source or a second package manifest.
+			if path == filepath.Join(source, "core", "manifest.ss") {
+				return nil
+			}
 			switch filepath.Ext(path) {
 			case ".ss", ".scm", ".inc", ".pkg", ".h":
 				data, err := os.ReadFile(path)
@@ -230,6 +235,9 @@ func schemeSourceHashes(source, poo string) (map[string]string, error) {
 				if strings.HasPrefix(entry.Name(), ".") {
 					return filepath.SkipDir
 				}
+				return nil
+			}
+			if path == filepath.Join(poo, "manifest.ss") {
 				return nil
 			}
 			switch filepath.Ext(path) {

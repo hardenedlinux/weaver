@@ -235,6 +235,12 @@ func runStage(ctx context.Context, root, directory string, environment []string,
 	cmd.Stderr = log
 	err = cmd.Run()
 	closeErr := log.Close()
+	if stage.Name == "scheme-unit-tests" && err == nil {
+		err = validateSchemeResult(filepath.Join(directory, result.Log))
+		if ctx.Err() != nil {
+			err = errors.Join(err, ctx.Err())
+		}
+	}
 	result.Duration = time.Since(started).String()
 	if cmd.ProcessState != nil {
 		code := cmd.ProcessState.ExitCode()

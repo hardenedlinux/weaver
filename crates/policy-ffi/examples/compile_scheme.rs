@@ -71,6 +71,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if !compiler.is_absolute() || compiler.file_name().is_none() {
         return Err("explicit absolute Gerbil compiler required".into());
     }
+    let package_tool = env::var_os("WEAVER_SCHEME_TOOL").unwrap_or_else(|| "gerbil".into());
     if let Some(owner @ ("dependencies" | "core")) = env::args().nth(1).as_deref() {
         let source = PathBuf::from(env::var(if owner == "core" {
             "WEAVER_SCHEME_CORE_SOURCE"
@@ -78,15 +79,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "WEAVER_SCHEME_POO_SOURCE"
         })?)
         .canonicalize()?;
-        let mut command = gerbil_scheme_aot_build::gerbil_command(&compiler);
+        let mut command = gerbil_scheme_aot_build::gerbil_command(&package_tool);
         // The selected SDK and caller own compiler discovery and COMPILER_PATH.
         if cfg!(target_os = "macos") {
             command.env_remove("MACOSX_DEPLOYMENT_TARGET");
         }
         let status = command
-            .arg("-:max-heap=2G,debug=q")
-            .arg(source.join("build.ss"))
-            .arg("compile")
+            .arg("build")
+            .arg("-g")
             .env("GERBIL_BUILD_CORES", &cores)
             .current_dir(&source)
             .status()?;
@@ -101,7 +101,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     write_policy_pkg_config()?;
     // Deferred POO module actions keep C FFI out of source discovery. The sole
     // root package entry owns both module and foreign-code compilation.
-    let mut command = gerbil_scheme_aot_build::gerbil_command(&compiler);
+    let mut command = gerbil_scheme_aot_build::gerbil_command(&package_tool);
     let metadata = PathBuf::from(env::var("WEAVER_POLICY_PKG_CONFIG")?);
     let mut search = vec![
         metadata
@@ -119,17 +119,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .file_stem()
             .ok_or("pkg-config package identity absent")?,
     );
-    if env::args().nth(1).as_deref() == Some("agentic") {
-        command.arg("-:max-heap=2G,debug=q");
-    }
-    command.current_dir(&root).arg(root.join("build.ss"));
-    if env::args().nth(1).as_deref() == Some("agentic") {
-        command.arg("dependencies");
-    }
-    let status = command
-        .arg("compile")
-        .env("GERBIL_BUILD_CORES", &cores)
-        .status()?;
+    command.current_dir(&root).args(["build", "-g"]);
+    let status = command.env("GERBIL_BUILD_CORES", &cores).status()?;
     if !status.success() {
         return Err(format!("Weaver root Scheme build failed: {status}").into());
     }

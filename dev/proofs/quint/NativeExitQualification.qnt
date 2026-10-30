@@ -1,10 +1,12 @@
 module NativeExitQualification {
-  type State={source:int,checks:int,duplicate:bool,complete:bool,returned:bool,opened:Set[int],closed:Set[int],elapsed:int,exited:bool}
+  // Entry 0 is gerbil test; entry 1 is a diagnostic invocation. Even the same
+  // cases and cleanup through another entry do not qualify the package tool.
+  type State={entry:int,source:int,checks:int,duplicate:bool,complete:bool,returned:bool,opened:Set[int],closed:Set[int],elapsed:int,exited:bool}
   var s:State
-  pure val initial:State={source:1,checks:0,duplicate:false,complete:false,returned:false,opened:Set(),closed:Set(),elapsed:0,exited:false}
+  pure val initial:State={entry:0,source:1,checks:0,duplicate:false,complete:false,returned:false,opened:Set(),closed:Set(),elapsed:0,exited:false}
   action boot:bool=s'=initial
   val audit:bool=s.source==1 and (s.complete implies s.checks==2 and s.duplicate) and (s.returned implies s.complete) and (s.exited implies s.returned and s.opened==s.closed) and s.closed.subseteq(s.opened)
-  val qualified:bool=audit and s.exited and s.elapsed<=15
+  val qualified:bool=audit and s.entry==0 and s.exited and s.elapsed<=15
   action check:bool=all {not(s.complete),not(s.returned),s'=s.with("checks",s.checks+1)}
   action decoder:bool=all {not(s.returned),s'=s.with("duplicate",true)}
   action finishChecks:bool=all {s.checks==2,s.duplicate,not(s.returned),s'=s.with("complete",true)}
@@ -24,6 +26,8 @@ module NativeExitQualification {
   run missingDecoderCheckRejectedTest=boot.then(check).then(check).then(finishChecks.fail())
   run incompleteChecksRejectedTest=boot.then(check).then(decoder).then(finishChecks.fail())
   run lateNaturalZeroExitStillFailsTest=checked.then(returnMain).then(late).then(naturalExit).expect(audit and not(qualified))
+  action diagnosticEntry:bool=s'=s.with("entry",1)
+  run diagnosticEntryCannotQualifyPackageTest=checked.then(returnMain).then(naturalExit).then(diagnosticEntry).expect(audit and not(qualified))
   run repeatedHandleCloseRejectedTest=checked.then(acquire(0)).then(returnMain).then(close(0)).then(close(0).fail())
   action unsafeExit:bool=s'=s.with("exited",true)
   action unsafeWrongSource:bool=s'=s.with("source",2)
