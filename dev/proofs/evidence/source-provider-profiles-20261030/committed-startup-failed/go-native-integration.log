@@ -1,0 +1,77 @@
+   Compiling cedar-policy-core v4.12.0
+   Compiling tokio-rustls v0.26.5
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling rusqlite v0.40.2
+   Compiling hyper-rustls v0.27.9
+   Compiling tonic v0.14.6
+   Compiling reqwest v0.13.5
+   Compiling tonic-prost v0.14.6
+   Compiling cedar-policy-formatter v4.12.0
+   Compiling cedar-policy v4.12.0
+   Compiling weaver-policy v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/policy)
+   Compiling weaver-ledger v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/ledger)
+   Compiling weaver-execution v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/execution)
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.64s
+=== RUN   TestProviderCompetingCapsCannotReachDispatch
+    provider_fixture_test.go:136: gRPC startup: context deadline exceeded: 
+--- FAIL: TestProviderCompetingCapsCannotReachDispatch (3.01s)
+=== RUN   TestProviderSaturatedExecutionPreservesRevocationAndObservation
+--- PASS: TestProviderSaturatedExecutionPreservesRevocationAndObservation (1.83s)
+=== RUN   TestProviderConnectionBoundRetainsExistingAuthorityChannel
+--- PASS: TestProviderConnectionBoundRetainsExistingAuthorityChannel (2.19s)
+=== RUN   TestProviderPreTLSConnectionsAreBoundedAndExpire
+--- PASS: TestProviderPreTLSConnectionsAreBoundedAndExpire (4.08s)
+=== RUN   TestProviderShutdownDestroysStalledTLSBeforeAcknowledgingExit
+--- PASS: TestProviderShutdownDestroysStalledTLSBeforeAcknowledgingExit (1.08s)
+=== RUN   TestProviderGRPCStreamingAndArrowOption
+=== RUN   TestProviderGRPCStreamingAndArrowOption/PROTOBUF
+=== RUN   TestProviderGRPCStreamingAndArrowOption/ARROW_IPC
+--- PASS: TestProviderGRPCStreamingAndArrowOption (2.21s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/PROTOBUF (1.12s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/ARROW_IPC (1.09s)
+=== RUN   TestProviderFailuresNeverRetryOrFallback
+=== RUN   TestProviderFailuresNeverRetryOrFallback/tool-proposal
+=== RUN   TestProviderFailuresNeverRetryOrFallback/redirect
+=== RUN   TestProviderFailuresNeverRetryOrFallback/overload
+=== RUN   TestProviderFailuresNeverRetryOrFallback/partial-sse
+--- PASS: TestProviderFailuresNeverRetryOrFallback (4.43s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/tool-proposal (1.09s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/redirect (1.11s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/overload (1.15s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/partial-sse (1.08s)
+=== RUN   TestProviderPartialRequestAndRestartRetainUnknownClaim
+--- PASS: TestProviderPartialRequestAndRestartRetainUnknownClaim (3.15s)
+=== RUN   TestProviderRevocationDuringSSEStopsNextRelease
+--- PASS: TestProviderRevocationDuringSSEStopsNextRelease (1.14s)
+=== RUN   TestProviderArrowChecksEveryRow
+--- PASS: TestProviderArrowChecksEveryRow (1.11s)
+=== RUN   TestProviderConcurrentRPCDuplicatesInvokeOnce
+--- PASS: TestProviderConcurrentRPCDuplicatesInvokeOnce (1.17s)
+=== RUN   TestProviderRPCIdentityAndCancellation
+--- PASS: TestProviderRPCIdentityAndCancellation (1.14s)
+=== RUN   TestProviderClientCancellationCannotReplay
+--- PASS: TestProviderClientCancellationCannotReplay (1.12s)
+=== RUN   TestProviderAuthenticationPrecedesRPCBodyDecode
+--- PASS: TestProviderAuthenticationPrecedesRPCBodyDecode (1.07s)
+=== RUN   TestProviderSourceProfileAndCedarBindFinalSendAcrossRestart
+--- PASS: TestProviderSourceProfileAndCedarBindFinalSendAcrossRestart (2.18s)
+=== RUN   TestProviderSourceCommittedExtensionsCannotBypassProfile
+--- PASS: TestProviderSourceCommittedExtensionsCannotBypassProfile (1.13s)
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/forwarded-source-token
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/operation-token-with-source-key
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-key-on-operation-ingress
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-token-on-operation-ingress
+--- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod (1.14s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/forwarded-source-token (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/operation-token-with-source-key (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-key-on-operation-ingress (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-token-on-operation-ingress (0.01s)
+=== RUN   TestProviderSourceConnectionBudgetCannotBorrowOperationCapacity
+--- PASS: TestProviderSourceConnectionBudgetCannotBorrowOperationCapacity (2.09s)
+=== RUN   TestProviderPublicationLostReplyRestartAndHistoricalDecision
+--- PASS: TestProviderPublicationLostReplyRestartAndHistoricalDecision (2.18s)
+FAIL
+FAIL	github.com/HardenedLinux/weaver/go/dev	56.934s
+FAIL

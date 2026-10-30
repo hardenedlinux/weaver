@@ -1,0 +1,366 @@
+• Validating lock
+✓ Validating lock in 2.24ms
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 36.0ms
+• Evaluating shell
+✓ Evaluating shell in 1.27s (cached)
+✓ Configuring shell in 1.32s
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 110ms (cached)
+✓ Loading tasks in 119ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 47.9ms
+• Running devenv:files
+✓ Running devenv:files in 65.2ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 161ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 45.4ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 5.50µs (no command)
+✓ Running tasks in 322ms
+💡 The dotenv file '.env' was not found.
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 19.39s
+=== RUN   TestProviderFreshImageAndRestartStartup
+    provider_startup_test.go:39: fresh image sha256=3ed5e8de8e9e572aabf0c0293ea0603772a2ae944e9b9cb3c2cbe3bce328c6f6
+2026/10/30 09:15:51 INFO: [core] original dial target is: "127.0.0.1:54620"
+2026/10/30 09:15:51 INFO: [core] [Channel #1]Channel created
+2026/10/30 09:15:51 INFO: [core] [Channel #1]parsed dial target is: resolver.Target{URL:url.URL{Scheme:"passthrough", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/127.0.0.1:54620", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+2026/10/30 09:15:51 INFO: [core] [Channel #1]Channel authority set to "localhost"
+2026/10/30 09:15:51 INFO: [core] [Channel #1]Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:54620",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:54620",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+2026/10/30 09:15:51 INFO: [core] [Channel #1]Channel switches to new LB policy "pick_first"
+2026/10/30 09:15:51 INFO: [pick-first-leaf-lb] [pick-first-leaf-lb 0xc0002a57a0] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:54620",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:54620",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+2026/10/30 09:15:51 INFO: [core] [Channel #1]Channel Connectivity change to CONNECTING
+2026/10/30 09:15:51 INFO: [core] [Channel #1 SubChannel #2]Subchannel created
+2026/10/30 09:15:51 INFO: [core] [Channel #1 SubChannel #2]Subchannel Connectivity change to CONNECTING
+2026/10/30 09:15:51 INFO: [core] [Channel #1 SubChannel #2]Subchannel picks a new address "127.0.0.1:54620" to connect
+2026/10/30 09:15:51 INFO: [core] [Channel #1]Channel exiting idle mode
+2026/10/30 09:15:51 INFO: [core] Creating new client transport to "{Addr: \"127.0.0.1:54620\", ServerName: \"localhost\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:51 WARNING: [core] [Channel #1 SubChannel #2]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:54620", ServerName: "localhost", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:51 INFO: [core] [Channel #1 SubChannel #2]Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:51 INFO: [core] [Channel #1]Channel Connectivity change to TRANSIENT_FAILURE
+2026/10/30 09:15:52 INFO: [core] [Channel #1 SubChannel #2]Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:52 INFO: [core] [Channel #1 SubChannel #2]Subchannel Connectivity change to CONNECTING
+2026/10/30 09:15:52 INFO: [core] [Channel #1 SubChannel #2]Subchannel picks a new address "127.0.0.1:54620" to connect
+2026/10/30 09:15:52 INFO: [core] Creating new client transport to "{Addr: \"127.0.0.1:54620\", ServerName: \"localhost\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:52 WARNING: [core] [Channel #1 SubChannel #2]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:54620", ServerName: "localhost", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:52 INFO: [core] [Channel #1 SubChannel #2]Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:53 INFO: [core] [Channel #1 SubChannel #2]Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:53 INFO: [core] [Channel #1 SubChannel #2]Subchannel Connectivity change to CONNECTING
+2026/10/30 09:15:53 INFO: [core] [Channel #1 SubChannel #2]Subchannel picks a new address "127.0.0.1:54620" to connect
+2026/10/30 09:15:53 INFO: [core] [Channel #1 SubChannel #2]Subchannel Connectivity change to READY
+2026/10/30 09:15:53 INFO: [pick-first-leaf-lb] [pick-first-leaf-lb 0xc0002a57a0] SubConn 0xc0002b5310 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+2026/10/30 09:15:53 INFO: [core] [Channel #1]Channel Connectivity change to READY
+    provider_startup_test.go:40: native startup operation-channel elapsed=2.322103833s error=<nil>
+2026/10/30 09:15:53 INFO: [core] original dial target is: "127.0.0.1:54621"
+2026/10/30 09:15:53 INFO: [core] [Channel #4]Channel created
+2026/10/30 09:15:53 INFO: [core] [Channel #4]parsed dial target is: resolver.Target{URL:url.URL{Scheme:"passthrough", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/127.0.0.1:54621", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+2026/10/30 09:15:53 INFO: [core] [Channel #4]Channel authority set to "localhost"
+2026/10/30 09:15:53 INFO: [core] [Channel #4]Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:54621",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:54621",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+2026/10/30 09:15:53 INFO: [core] [Channel #4]Channel switches to new LB policy "pick_first"
+2026/10/30 09:15:53 INFO: [pick-first-leaf-lb] [pick-first-leaf-lb 0xc0002a4a20] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:54621",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:54621",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+2026/10/30 09:15:53 INFO: [core] [Channel #4]Channel Connectivity change to CONNECTING
+2026/10/30 09:15:53 INFO: [core] [Channel #4 SubChannel #5]Subchannel created
+2026/10/30 09:15:53 INFO: [core] [Channel #4]Channel exiting idle mode
+2026/10/30 09:15:53 INFO: [core] [Channel #4 SubChannel #5]Subchannel Connectivity change to CONNECTING
+2026/10/30 09:15:53 INFO: [core] [Channel #4 SubChannel #5]Subchannel picks a new address "127.0.0.1:54621" to connect
+2026/10/30 09:15:53 INFO: [core] [Channel #4 SubChannel #5]Subchannel Connectivity change to READY
+2026/10/30 09:15:53 INFO: [pick-first-leaf-lb] [pick-first-leaf-lb 0xc0002a4a20] SubConn 0xc000170b90 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+2026/10/30 09:15:53 INFO: [core] [Channel #4]Channel Connectivity change to READY
+    provider_startup_test.go:40: native startup source-channel elapsed=2.335647083s error=<nil>
+2026/10/30 09:15:53 INFO: [core] [Channel #1]Channel Connectivity change to SHUTDOWN
+2026/10/30 09:15:53 INFO: [core] [Channel #1]Closing the name resolver
+2026/10/30 09:15:53 INFO: [core] [Channel #1]ccBalancerWrapper: closing
+2026/10/30 09:15:53 INFO: [core] [Channel #1 SubChannel #2]Subchannel Connectivity change to SHUTDOWN
+2026/10/30 09:15:53 INFO: [core] [Channel #1 SubChannel #2]Subchannel deleted
+2026/10/30 09:15:53 INFO: [transport] [client-transport 0xc00020c008] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+2026/10/30 09:15:53 INFO: [transport] [client-transport 0xc00020c008] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+2026/10/30 09:15:53 INFO: [core] [Channel #1]Channel deleted
+2026/10/30 09:15:53 INFO: [core] [Channel #4]Channel Connectivity change to SHUTDOWN
+2026/10/30 09:15:53 INFO: [core] [Channel #4]Closing the name resolver
+2026/10/30 09:15:53 INFO: [core] [Channel #4]ccBalancerWrapper: closing
+2026/10/30 09:15:53 INFO: [core] [Channel #4 SubChannel #5]Subchannel Connectivity change to SHUTDOWN
+2026/10/30 09:15:53 INFO: [core] [Channel #4 SubChannel #5]Subchannel deleted
+2026/10/30 09:15:53 INFO: [transport] [client-transport 0xc00016a908] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+2026/10/30 09:15:53 INFO: [transport] [client-transport 0xc00016a908] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+2026/10/30 09:15:53 INFO: [core] [Channel #4]Channel deleted
+2026/10/30 09:15:53 INFO: [core] original dial target is: "127.0.0.1:54620"
+2026/10/30 09:15:53 INFO: [core] [Channel #7]Channel created
+2026/10/30 09:15:53 INFO: [core] [Channel #7]parsed dial target is: resolver.Target{URL:url.URL{Scheme:"passthrough", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/127.0.0.1:54620", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+2026/10/30 09:15:53 INFO: [core] [Channel #7]Channel authority set to "localhost"
+2026/10/30 09:15:53 INFO: [core] [Channel #7]Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:54620",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:54620",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+2026/10/30 09:15:53 INFO: [core] [Channel #7]Channel switches to new LB policy "pick_first"
+2026/10/30 09:15:53 INFO: [pick-first-leaf-lb] [pick-first-leaf-lb 0xc0002c4090] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:54620",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:54620",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+2026/10/30 09:15:53 INFO: [core] [Channel #7]Channel Connectivity change to CONNECTING
+2026/10/30 09:15:53 INFO: [core] [Channel #7 SubChannel #8]Subchannel created
+2026/10/30 09:15:53 INFO: [core] [Channel #7 SubChannel #8]Subchannel Connectivity change to CONNECTING
+2026/10/30 09:15:53 INFO: [core] [Channel #7 SubChannel #8]Subchannel picks a new address "127.0.0.1:54620" to connect
+2026/10/30 09:15:53 INFO: [core] [Channel #7]Channel exiting idle mode
+2026/10/30 09:15:53 INFO: [core] Creating new client transport to "{Addr: \"127.0.0.1:54620\", ServerName: \"localhost\", }": connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:53 WARNING: [core] [Channel #7 SubChannel #8]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:54620", ServerName: "localhost", }. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:53 INFO: [core] [Channel #7 SubChannel #8]Subchannel Connectivity change to TRANSIENT_FAILURE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:53 INFO: [core] [Channel #7]Channel Connectivity change to TRANSIENT_FAILURE
+2026/10/30 09:15:54 INFO: [core] [Channel #7 SubChannel #8]Subchannel Connectivity change to IDLE, last error: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:54620: connect: connection refused"
+2026/10/30 09:15:54 INFO: [core] [Channel #7 SubChannel #8]Subchannel Connectivity change to CONNECTING
+2026/10/30 09:15:54 INFO: [core] [Channel #7 SubChannel #8]Subchannel picks a new address "127.0.0.1:54620" to connect
+2026/10/30 09:15:55 INFO: [core] [Channel #7 SubChannel #8]Subchannel Connectivity change to READY
+2026/10/30 09:15:55 INFO: [pick-first-leaf-lb] [pick-first-leaf-lb 0xc0002c4090] SubConn 0xc00032c0f0 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+2026/10/30 09:15:55 INFO: [core] [Channel #7]Channel Connectivity change to READY
+    provider_startup_test.go:42: native startup operation-channel elapsed=1.026466125s error=<nil>
+2026/10/30 09:15:55 INFO: [core] original dial target is: "127.0.0.1:54621"
+2026/10/30 09:15:55 INFO: [core] [Channel #10]Channel created
+2026/10/30 09:15:55 INFO: [core] [Channel #10]parsed dial target is: resolver.Target{URL:url.URL{Scheme:"passthrough", Opaque:"", User:(*url.Userinfo)(nil), Host:"", Path:"/127.0.0.1:54621", Fragment:"", RawQuery:"", RawPath:"", RawFragment:"", ForceQuery:false, OmitHost:false}}
+2026/10/30 09:15:55 INFO: [core] [Channel #10]Channel authority set to "localhost"
+2026/10/30 09:15:55 INFO: [core] [Channel #10]Resolver state updated: {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:54621",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:54621",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+} (resolver returned new addresses)
+2026/10/30 09:15:55 INFO: [core] [Channel #10]Channel switches to new LB policy "pick_first"
+2026/10/30 09:15:55 INFO: [pick-first-leaf-lb] [pick-first-leaf-lb 0xc00016fb90] Received new config {
+  "shuffleAddressList": false
+}, resolver state {
+  "Addresses": [
+    {
+      "Addr": "127.0.0.1:54621",
+      "ServerName": "",
+      "Attributes": null,
+      "BalancerAttributes": null,
+      "Metadata": null
+    }
+  ],
+  "Endpoints": [
+    {
+      "Addresses": [
+        {
+          "Addr": "127.0.0.1:54621",
+          "ServerName": "",
+          "Attributes": null,
+          "BalancerAttributes": null,
+          "Metadata": null
+        }
+      ],
+      "Attributes": null
+    }
+  ],
+  "ServiceConfig": null,
+  "Attributes": null
+}
+2026/10/30 09:15:55 INFO: [core] [Channel #10]Channel Connectivity change to CONNECTING
+2026/10/30 09:15:55 INFO: [core] [Channel #10 SubChannel #11]Subchannel created
+2026/10/30 09:15:55 INFO: [core] [Channel #10]Channel exiting idle mode
+2026/10/30 09:15:55 INFO: [core] [Channel #10 SubChannel #11]Subchannel Connectivity change to CONNECTING
+2026/10/30 09:15:55 INFO: [core] [Channel #10 SubChannel #11]Subchannel picks a new address "127.0.0.1:54621" to connect
+2026/10/30 09:15:55 INFO: [core] [Channel #10 SubChannel #11]Subchannel Connectivity change to READY
+2026/10/30 09:15:55 INFO: [pick-first-leaf-lb] [pick-first-leaf-lb 0xc00016fb90] SubConn 0xc0004ce870 reported connectivity state READY and the health listener is disabled. Transitioning SubConn to READY.
+2026/10/30 09:15:55 INFO: [core] [Channel #10]Channel Connectivity change to READY
+    provider_startup_test.go:42: native startup source-channel elapsed=1.035344458s error=<nil>
+    provider_startup_test.go:47: startup issued or consumed an operation rpc error: code = FailedPrecondition desc = native authority or state rejected
+2026/10/30 09:15:55 INFO: [core] [Channel #7]Channel Connectivity change to SHUTDOWN
+2026/10/30 09:15:55 INFO: [core] [Channel #7]Closing the name resolver
+2026/10/30 09:15:55 INFO: [core] [Channel #7]ccBalancerWrapper: closing
+2026/10/30 09:15:55 INFO: [core] [Channel #7 SubChannel #8]Subchannel Connectivity change to SHUTDOWN
+2026/10/30 09:15:55 INFO: [core] [Channel #7 SubChannel #8]Subchannel deleted
+2026/10/30 09:15:55 INFO: [transport] [client-transport 0xc00051e008] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+2026/10/30 09:15:55 INFO: [transport] [client-transport 0xc00051e008] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+2026/10/30 09:15:55 INFO: [core] [Channel #7]Channel deleted
+2026/10/30 09:15:55 INFO: [core] [Channel #10]Channel Connectivity change to SHUTDOWN
+2026/10/30 09:15:55 INFO: [core] [Channel #10]Closing the name resolver
+2026/10/30 09:15:55 INFO: [core] [Channel #10]ccBalancerWrapper: closing
+2026/10/30 09:15:55 INFO: [core] [Channel #10 SubChannel #11]Subchannel Connectivity change to SHUTDOWN
+2026/10/30 09:15:55 INFO: [core] [Channel #10 SubChannel #11]Subchannel deleted
+2026/10/30 09:15:55 INFO: [transport] [client-transport 0xc00016ab48] Closing: rpc error: code = Canceled desc = grpc: the client connection is closing
+2026/10/30 09:15:55 INFO: [transport] [client-transport 0xc00016ab48] loopyWriter exiting with error: rpc error: code = Canceled desc = grpc: the client connection is closing
+2026/10/30 09:15:55 INFO: [core] [Channel #10]Channel deleted
+--- FAIL: TestProviderFreshImageAndRestartStartup (3.93s)
+FAIL
+FAIL	github.com/HardenedLinux/weaver/go/dev	24.798s
+FAIL

@@ -3,6 +3,7 @@ mod admission;
 mod config;
 mod connections;
 pub mod encoding;
+pub mod entrypoint;
 mod grpc;
 mod grpc_config;
 mod grpc_output;

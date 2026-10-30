@@ -160,3 +160,52 @@ upstream test-module manifest checksum; it introduces no Python or Bash runner.
 The [[file:59.05-benchmarks.org][per-package benchmark contract]] includes the seven additional profile
 cases. Current receipts distinguish focused verification, full committed checks,
 empirical measurements and remote CI; none implies the others.
+
+* Subsequent complete-check startup failure
+
+The complete check at =2e6b47e302cd096908dc581e18b5d4228991b581= finishes
+naturally with 52 stages and unchanged 196 inputs. All Rust tests (77), five ASP
+deny gates, Clippy, Go/race/PBT, SysML, Quint and Lean stages pass. Its actual
+integration stage fails at the first daemon's unchanged three-second startup
+deadline. Subsequent integration cases pass, including the source profile/Cedar
+and restart witnesses. The [[file:../../../dev/proofs/evidence/source-provider-profiles-20261030/committed-startup-failed/receipt.json][whole run remains failed]].
+
+Connection-level diagnostics observe two refused TCP attempts followed by gRPC
+backoff and eventual operation/source readiness at approximately 2.58 seconds.
+This successful observation does not explain the original deadline failure.
+The runtime now emits three bounded, credential-free startup observations:
+runtime entry clock, completed configuration elapsed time and listener bind
+elapsed time. Tests retain both channel elapsed times and those observations.
+Logs are diagnostics only: readiness still requires actual mTLS gRPC, and the
+three-second gate and transport/RPC retry settings are unchanged.
+
+The new =TestProviderFreshImageAndRestartStartup= streams the exact binary to a
+fresh executable file, records its SHA-256, then exercises first launch and
+same-image restart. It neither flushes OS caches nor claims a physically cold
+host. Its first implementation incorrectly expected NotFound for an absent
+operation; the existing API intentionally returns opaque FailedPrecondition.
+The failed witness is retained and its expectation corrected without changing
+the service. The status is not a no-execution or budget-release certificate.
+Focused paired passes and startup logs do not qualify the original failed full
+check or establish causal attribution to host scheduling or connection backoff.
+
+The instrumented fresh-image pair records approximately 2.72 seconds for both
+initial channels and 1.02 seconds on exact-image restart. In the initial child,
+runtime entry to listener bind takes only 2.23 milliseconds; the restarted
+child records 0.57 milliseconds. These observations locate most of the elapsed
+interval outside configuration/bind, but do not separate loader admission,
+Tokio runtime creation and connection backoff. A process-main clock observation
+before the unchanged Tokio runtime constructor and a parent start timestamp
+provide the next diagnostic boundary. No startup marker substitutes for RPC
+readiness and no successful focused pair reclassifies the failed full run.
+
+The process-main instrumented pair then records initial operation/source
+readiness at 2.749/2.754 seconds and restart at 1.010/1.016 seconds. Parent fixture
+start to process-main is approximately 1.288 seconds initially versus 7.2
+milliseconds on restart; process-main to runtime entry is 1.14/0.48 milliseconds.
+This places the largest measured difference before Tokio creation in that pair.
+The remaining interval includes connection scheduling, source-worker readiness
+and TLS; it is not attributed entirely to backoff. These same-host wall-clock
+observations are not a formal timing proof, and identifying loader, image or
+host effects requires a further controlled comparison. No cache purge, warm-up
+admission, timeout extension or retry-policy change is introduced.

@@ -94,12 +94,25 @@ fn load() -> Result<(GrpcConfig, ListenAddresses)> {
 }
 /// Start the default mTLS RPC service; no command/stdio request protocol exists.
 pub async fn run_from_env() -> Result<()> {
+    let started = std::time::Instant::now();
+    eprintln!(
+        "weaver startup stage=runtime-entered clock={:?}",
+        std::time::SystemTime::now()
+    );
     let shutdown = crate::shutdown::signal()?;
     let (settings, addresses) = crate::runtime::RuntimeOwner::initialize(load).await?;
+    eprintln!(
+        "weaver startup stage=configured elapsed={:?}",
+        started.elapsed()
+    );
     let (operation, source) = tokio::try_join!(
         tokio::net::TcpListener::bind(addresses.operation),
         tokio::net::TcpListener::bind(addresses.source)
     )
     .map_err(|_| Error::Invalid("gRPC listener"))?;
+    eprintln!(
+        "weaver startup stage=listeners-bound elapsed={:?}",
+        started.elapsed()
+    );
     crate::grpc::serve_grpc(GrpcListeners { operation, source }, settings, shutdown).await
 }

@@ -112,3 +112,39 @@ the legitimate overlapping-command schedule and the unsafe early-reply control.
 293. [[file:source-command-identity-lean.log][The per-command Lean composition]] compiles with explicit axiom output.
 These focused results do not qualify the interrupted full gate, a new complete
 committed run, benchmark currentness or independent Linux CI.
+
+* Completed full check with startup failure
+
+[[file:committed-startup-failed/receipt.json][The subsequent complete 2e6b47e check]] records 52 stages and 196 unchanged
+inputs, with only go-native-integration failing. Its first daemon misses the
+unchanged three-second startup gate; later integration cases pass. All 77 Rust
+tests, five ASP gates, Clippy, Go/race/PBT, SysML and formal stages pass. The whole
+receipt remains FAIL and does not admit a measured benchmark or remote push.
+
+[[file:native-startup-grpc-observation.log][Connection diagnostics]] observe refused attempts and eventual readiness near
+2.58 seconds. [[file:fresh-image-status-assertion-failed.log][The first fresh-image witness]] reaches readiness for both
+launches but fails an incorrect NotFound assertion. The actual API preserves
+opaque FailedPrecondition; only that expectation is corrected. Its
+[[file:native-fresh-image-startup-corrected.log][corrected witness]] passes without a service change.
+
+[[file:native-fresh-image-startup-stages.log][Runtime-stage observations]] and
+[[file:native-fresh-image-startup-main.log][process-main observations]] retain image hashes, default gRPC connection
+attempts, unchanged three-second deadlines, first launch and exact-image restart.
+The latter pair shows roughly 1.288 seconds before process-main initially and
+7.2 milliseconds on restart, versus roughly one millisecond creating Tokio.
+Configuration/bind consumes about two milliseconds. These observations narrow
+the investigation; they do not explain the original failed startup causally.
+The fresh file is not a claim that OS caches were flushed. Image size and Mach-O
+load commands are retained for a controlled follow-up. The
+[[file:startup-stages-rust-gate.log][fourteen-test server/ASP gate]] passes for runtime-stage instrumentation.
+The later [[file:startup-main-rust-gate.log][process-main iteration]] fails ASP RUST-MOD-R005 because the binary adapter
+contains a second implementation function. The runtime constructor is moved to
+its owned library entrypoint module; no ASP rule is suppressed. Readiness remains
+actual mTLS RPC, never a parsed startup marker. Current full admission and
+performance remain unqualified.
+
+The [[file:startup-owned-entry-rust-gate.log][corrected owned-entrypoint server gate]] passes all fourteen tests, including
+ASP deny. The Tokio constructor retains its default configuration and returns
+the service result to the thin binary adapter, which owns process exit handling.
+The process-main paired log locates the largest measured initial/restart
+difference before Tokio construction; a loader or host cause is not established.

@@ -1,0 +1,47 @@
+• Validating lock
+✓ Validating lock in 653µs
+• Configuring shell
+• Configuring cachix
+✓ Configuring cachix in 1.77ms
+• Evaluating shell
+✓ Evaluating shell in 33.9ms (cached)
+✓ Configuring shell in 37.7ms
+• Loading tasks
+• Evaluating devenv.config.task.config
+✓ Evaluating devenv.config.task.config in 1.10ms (cached)
+✓ Loading tasks in 1.92ms
+• Running tasks
+• Running devenv:files:cleanup
+✓ Running devenv:files:cleanup in 15.5ms
+• Running devenv:files
+✓ Running devenv:files in 23.2ms
+• Running devenv:git-hooks:install
+✓ Running devenv:git-hooks:install in 43.8ms
+• Running devenv:enterShell
+✓ Running devenv:enterShell in 18.4ms
+• Running devenv:enterTest
+✓ Running devenv:enterTest in 18.7µs (no command)
+✓ Running tasks in 101ms
+💡 The dotenv file '.env' was not found.
+   Compiling weaver-server v0.1.0 (/Users/guangtao/ghq/github.com/tao3k/weaver/crates/server)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.90s
+     Running unittests src/lib.rs (target/debug/deps/weaver_server-b4b261d087cf446e)
+
+running 14 tests
+test connections::tests::pending_listener_reservation_is_released_on_drop ... ok
+test runtime::tests::poisoned_admission_still_closes_and_drains ... ok
+test grpc::ingress_tests::aliased_or_empty_source_identity_is_rejected_before_serving ... ok
+test runtime::tests::detached_native_writer_keeps_slot_until_drain_acknowledges_completion ... ok
+test admission::tests::saturated_detached_execution_preserves_publication_and_observation_custody ... ok
+test connections::tests::tcp_socket_owns_capacity_until_destruction_and_preserves_io_and_peer_identity ... ok
+test source_owner::tests::startup_failure_closes_runtime_and_drains_native_owner ... ok
+test runtime::tests::arbitrary_disconnect_shutdown_and_drain_schedules_keep_native_custody ... ok
+test admission::tests::lane_interleavings_preserve_independent_bounds ... ok
+test source_owner::tests::storage_failure_does_not_acknowledge_a_reusable_result ... ok
+test source_owner::tests::completed_source_acknowledgment_returns_command_capacity ... ok
+test source_owner::tests::reused_source_connection_observes_other_writer_and_preserves_historical_result ... ok
+test source_owner::tests::disconnected_source_caller_keeps_capacity_until_original_sql_work_finishes ... ok
+test enforce_asp_rust_gate ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
