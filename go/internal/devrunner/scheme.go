@@ -99,6 +99,12 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 		return nil, err
 	}
 	settings := map[string]string{"GERBIL_PATH": directory, "GERBIL_LOADPATH": strings.Join([]string{lib, sources, library}, string(os.PathListSeparator)), "WEAVER_CONTROL_SCHEME_COMPILER": compiler, "WEAVER_SCHEME_POO_SOURCE": poo, "WEAVER_SCHEME_CORE_SOURCE": core}
+	settings["WEAVER_POLICY_PKG_CONFIG"] = filepath.Join(lib, "pkgconfig", "weaver-policy-ffi.pc")
+	settings["WEAVER_POLICY_PKG_CONFIG_PACKAGE"] = strings.TrimSuffix(filepath.Base(settings["WEAVER_POLICY_PKG_CONFIG"]), ".pc")
+	settings["PKG_CONFIG_PATH"] = filepath.Dir(settings["WEAVER_POLICY_PKG_CONFIG"])
+	if inherited := os.Getenv("PKG_CONFIG_PATH"); inherited != "" {
+		settings["PKG_CONFIG_PATH"] += string(os.PathListSeparator) + inherited
+	}
 	for path, name := range map[string]string{source: "agentic-ai-lab", core: "gebril-yuanxu", poo: "gerbil-poo"} {
 		cmd := exec.CommandContext(ctx, filepath.Join(filepath.Dir(compiler), "gxpkg"), "link", "-g", "github.com/tao3k/"+name, path)
 		cmd.Env = Environment(settings)

@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-24.04, macos-15]
+        runner: [ubuntu-latest, macos-latest]
     uses: ./.github/workflows/verify-suite.yml
     with:
       suite: check-scheme

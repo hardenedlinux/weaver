@@ -51,9 +51,12 @@ func TestSchemeModuleOwnershipAndSpecificContracts(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, required := range []string{"./init.ss", "std-make-spec", "defbuild-script", "scheme/policy/cedar-ffi"} {
+	for _, required := range []string{"./init.ss", "std-make-spec", "defbuild-script", "scheme/policy/cedar-ffi", "pkg-config-cflags", "pkg-config-libs"} {
 		if !strings.Contains(string(build), required) {
 			t.Fatalf("root build does not use its declared owner: %s", required)
 		}
+	}
+	if strings.Contains(string(build), "target/debug") {
+		t.Fatal("Scheme build must obtain FFI paths from pkg-config")
 	}
 }

@@ -30,6 +30,7 @@ var startupPrepared = flag.String("scheme-prepared-environment", "", "Explicit s
 var startupCommitted = flag.Bool("scheme-require-committed", false, "Require qualification inputs to match HEAD")
 var startupProfile = flag.Bool("scheme-profile-phases", false, "Diagnostic owned-process sampling; never timing qualification")
 var startupProfileDirectory string
+var startupSampler string
 
 func startupDigest(inputs map[string]string) string {
 	keys := make([]string, 0, len(inputs))
@@ -192,7 +193,7 @@ func runStartupTrial(root, compiler, profile string, environment []string) start
 			go func() {
 				defer samplers.Done()
 				path := filepath.Join(startupProfileDirectory, fmt.Sprintf("%s-%s-%d.sample", profile, phase, cmd.Process.Pid))
-				exec.Command("/usr/bin/sample", fmt.Sprint(cmd.Process.Pid), "1", "1", "-mayDie", "-file", path).Run()
+				exec.Command(startupSampler, fmt.Sprint(cmd.Process.Pid), "1", "1", "-mayDie", "-file", path).Run()
 			}()
 		}
 	}
@@ -424,7 +425,7 @@ func observeCleanup(t *testing.T, root, compiler string, profile schemeImageProf
 	t.Helper()
 	directory := t.TempDir()
 	observer := filepath.Join(directory, "module-observer.dylib")
-	startupBuild(t, root, Environment(settings), "/usr/bin/cc", "-dynamiclib", "-o", observer, filepath.Join(root, "dev/scheme/module-observer.c"))
+	startupBuild(t, root, Environment(settings), profile.Compiler, "-dynamiclib", "-o", observer, filepath.Join(root, "dev/scheme/module-observer.c"))
 	probeCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	probe := exec.CommandContext(probeCtx, compiler, "-e", `(displayln (path-expand "bin/gxi" (gerbil-home)))`)
@@ -448,7 +449,20 @@ func observeCleanup(t *testing.T, root, compiler string, profile schemeImageProf
 		t.Fatal(err)
 	}
 	report.ToolArtifacts[header] = headerHash
-	ffi := filepath.Join(root, "target/debug/libweaver_policy_ffi.dylib")
+	packageTool, err := resolveImageTool(root, "pkg-config", Environment(settings))
+	if err != nil {
+		t.Fatal(err)
+	}
+	packageQuery := exec.CommandContext(probeCtx, packageTool, "--variable=library", settings["WEAVER_POLICY_PKG_CONFIG_PACKAGE"])
+	packageQuery.Env = Environment(settings)
+	packageData, err := packageQuery.Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	ffi := strings.TrimSpace(string(packageData))
+	if !filepath.IsAbs(ffi) {
+		t.Fatal("pkg-config FFI artifact is not absolute")
+	}
 	ffiHash, err := imageFileHash(ffi)
 	if err != nil {
 		t.Fatal(err)
@@ -590,6 +604,10 @@ func TestDynamicSchemeColdStartPairs(t *testing.T) {
 	if *startupProfile {
 		if *startupCommitted {
 			t.Fatal("sampled runs cannot qualify timing")
+		}
+		startupSampler, err = resolveImageTool(root, os.Getenv("WEAVER_SCHEME_SAMPLER"), Environment(settings))
+		if err != nil {
+			t.Fatal("explicit diagnostic sampler environment required", err)
 		}
 		if err := os.MkdirAll(startupProfileDirectory, 0700); err != nil {
 			t.Fatal(err)

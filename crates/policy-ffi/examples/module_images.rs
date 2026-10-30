@@ -157,7 +157,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     fs::write(
         out.join("tools.txt"),
         format!(
-            "{}\n{}\n{}\n",
+            "gsc\t{}\nc-compiler\t{}\npackager\t{}\n",
             gsc.display(),
             compiler.program.display(),
             env::current_exe()?.display()

@@ -107,6 +107,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"scheme-core-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "core"}},
 			{"scheme-agentic-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "agentic"}},
 			{"scheme-module-build", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline"}},
+			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^Test(SchemePkgConfig|ImageTool|SourceInputsWithArchived)", "-v"}},
 			{"scheme-dynamic-images", "internal/pinned-sdk-module-images", nil},
 			// Delegate discovery and assertions to the SDK and Scheme-owned suites.
 			// Check the returned result explicitly; success markers alone cannot pass.

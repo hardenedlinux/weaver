@@ -1,0 +1,69 @@
+#+title: 59.32 Scheme Build Environment and Dependency Discovery
+#+language: en
+
+* Ownership
+The selected Gerbil/Gambit SDK owns native compiler selection. Weaver consumes
+the SDK's selected program receipt and resolves it against the build child's
+environment and working directory. A recorded command name is not a repository
+filename. Tool hashing follows the executable selected by that environment,
+including symbolic links; it neither executes discovery commands nor evaluates
+shell command text. Parent-process PATH is not a substitute for the child's PATH.
+
+The SDK receipt distinguishes the Gambit compiler, C compiler and packager.
+The diagnostic observer uses the recorded C compiler; no system compiler path
+is embedded in the test runner. Tests inject environment selections and derive
+their fixture paths from temporary directories. They cover unset CC with an
+SDK-discovered command, explicit relative and absolute selections, symbolic
+links, and rejection of empty or non-executable selections. Optional process
+sampling requires an explicit =WEAVER_SCHEME_SAMPLER= environment selection.
+
+* Cargo-owned FFI package metadata
+The Scheme root build obtains flags through the existing public
+=:std/make= functions =pkg-config-cflags= and =pkg-config-libs=. It does not
+construct a =target/debug= library path or duplicate a native link command.
+
+The existing Rust compiler helper publishes transient =pkg-config= metadata
+into the isolated path selected by =WEAVER_POLICY_PKG_CONFIG=. Package identity
+and version come from Cargo's package environment. The default loadable library
+directory follows the helper's actual Cargo profile output, including a custom
+=CARGO_TARGET_DIR= or profile. Public headers belong to the FFI crate. Explicit
+=WEAVER_POLICY_LIBRARY= and =WEAVER_POLICY_INCLUDE_DIR= selections must name
+existing absolute artifacts/directories; they do not become executable command
+strings. Metadata preserves spaces in configured paths and rejects invalid
+line/interpolation framing. Preparation owns and removes these generated files.
+Discovery uses =PKG_CONFIG_PATH= plus =WEAVER_POLICY_PKG_CONFIG_PACKAGE=, derived
+from the generated package filename. A path containing spaces is not passed as
+a package expression. The original direct-file probe failed this case; the
+environment-based discovery test now checks it with the real pkg-config tool.
+
+The Scheme dependency build retains the selected SDK and caller compiler
+environment, including an explicitly supplied =COMPILER_PATH=. Weaver does not
+substitute a fixed system directory. The dependency pins, original runtime
+fifteen-second gate and declared compiler heap envelope remain unchanged.
+
+* Hosted CI policy
+Independent suites use =ubuntu-latest= by default; Scheme integration covers
+=ubuntu-latest= and =macos-latest=. These are GitHub's supported moving stable
+runner labels, rather than a promise of a particular OS vendor release.
+[[https://docs.github.com/en/actions/reference/runners/github-hosted-runners][GitHub-hosted runner documentation]] defines the labels; each workflow records
+its actual image. Rust, Go, proof and SDK dependency revisions remain pinned.
+The workflow continues to exclude historical evidence archives from checkout.
+
+* Failure evidence and validation
+Private run =41064020420= passed six suites. Its macOS ordinary gxi test and
+full control/stream integration passed, but the overall Scheme suite correctly
+failed because post-build tool fingerprinting tried to open a bare compiler
+name as a file. Image preparation had not activated its overlay. A passing
+subsequent test did not convert that failed preparation into acceptance.
+
+The environment-selection regression and real pkg-config producer test belong
+to the Go verification entry. The latter queries the generated package with the
+actual pkg-config implementation, checks the Cargo workspace version and uses
+environment-provided paths containing spaces. Local qualification must also
+rebuild the Scheme source closure and exercise the final configured ordinary
+gxi path with natural cleanup. CI is a separate receipt and does not replace
+the twelve-CPU local acceptance described in 59.30 and 59.31.
+
+The current changes are delivered on a separate pull-request branch. They do
+not change Gateway execution semantics, introduce a governance DSL, alter pins,
+or relax the runtime deadline.

@@ -27,6 +27,7 @@ type schemeImageProfile struct {
 	Inputs    map[string]string `json:"inputs"`
 	Artifacts map[string]string `json:"artifacts"`
 	Tools     map[string]string `json:"tools"`
+	Compiler  string            `json:"compiler"`
 	Bindings  map[string]string `json:"bindings"`
 	Overlay   string            `json:"overlay"`
 }
@@ -53,6 +54,37 @@ func environmentMap(environment []string) map[string]string {
 		}
 	}
 	return result
+}
+
+// SDK compiler discovery may return a bare command name. Resolve it using the
+// build child's PATH and cwd, not the verifier parent's PATH or repository file.
+// Inspection never invokes the tool or interprets command text.
+func resolveImageTool(root, tool string, environment []string) (string, error) {
+	if tool == "" {
+		return "", errors.New("empty recorded image tool")
+	}
+	candidates := []string{tool}
+	if !filepath.IsAbs(tool) && !strings.ContainsRune(tool, os.PathSeparator) {
+		candidates = nil
+		for _, directory := range filepath.SplitList(environmentMap(environment)["PATH"]) {
+			candidates = append(candidates, filepath.Join(directory, tool))
+		}
+	}
+	for _, candidate := range candidates {
+		if !filepath.IsAbs(candidate) {
+			candidate = filepath.Join(root, candidate)
+		}
+		info, err := os.Stat(candidate)
+		if err != nil || !info.Mode().IsRegular() || info.Mode().Perm()&0111 == 0 {
+			continue
+		}
+		resolved, err := filepath.EvalSymlinks(candidate)
+		if err != nil {
+			return "", err
+		}
+		return resolved, nil
+	}
+	return "", fmt.Errorf("recorded image tool %q is not executable in the build environment", tool)
 }
 
 func validModuleIdentity(identity string) bool {
@@ -229,12 +261,31 @@ func prepareSchemeImages(ctx context.Context, root string, environment []string,
 	if err != nil {
 		return nil, profile, err
 	}
+	roles := map[string]bool{}
 	for _, tool := range strings.Split(strings.TrimSpace(string(toolData)), "\n") {
-		hash, err := imageFileHash(tool)
+		role, program, ok := strings.Cut(tool, "\t")
+		if !ok || roles[role] || (role != "gsc" && role != "c-compiler" && role != "packager") {
+			return nil, profile, errors.New("invalid SDK tool receipt")
+		}
+		roles[role] = true
+		resolved, err := resolveImageTool(root, program, compilerEnv)
 		if err != nil {
 			return nil, profile, err
 		}
-		profile.Tools[tool] = hash
+		hash, err := imageFileHash(resolved)
+		if err != nil {
+			return nil, profile, err
+		}
+		profile.Tools[resolved] = hash
+		if role == "c-compiler" {
+			if profile.Compiler != "" {
+				return nil, profile, errors.New("ambiguous SDK C compiler")
+			}
+			profile.Compiler = resolved
+		}
+	}
+	if profile.Compiler == "" || len(roles) != 3 {
+		return nil, profile, errors.New("SDK C compiler receipt absent")
 	}
 	data, err = os.ReadFile(filepath.Join(output, "bundles.tsv"))
 	if err != nil {

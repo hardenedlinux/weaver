@@ -5,6 +5,7 @@
 (begin-syntax
   (register-module-build-source! (path-directory (this-source-file)) 'hardenedlinux/weaver))
 (import (only-in :clan/poo/object .get)
+        (only-in :std/make pkg-config-cflags pkg-config-libs)
         (prefix-in (only-in :std/build-script defbuild-script) gerbil-build.)
         (only-in :agentic-ai-lab/build-spec agentic-ai-lab-build-spec)
         (only-in :yuanxu/module-system/building/source-closure package-library-spec)
@@ -13,11 +14,11 @@
         (only-in "./init.ss" hardenedlinux/weaver.init.exports))
 
 (def root (path-directory (this-source-file)))
-(def rust-policy-library (path-expand "target/debug" root))
+(def policy-package (getenv "WEAVER_POLICY_PKG_CONFIG_PACKAGE" "weaver-policy-ffi"))
 (def policy-ffi-spec
   `(gxc: "scheme/policy/cedar-ffi"
-         "-cc-options" ,(string-append "-I" (path-expand "crates/policy-ffi/include" root))
-         "-ld-options" ,(string-append "-L" rust-policy-library " -lweaver_policy_ffi -Wl,-rpath," rust-policy-library)))
+         "-cc-options" ,(pkg-config-cflags policy-package)
+         "-ld-options" ,(pkg-config-libs policy-package)))
 (def library-spec (list policy-ffi-spec))
 (def modules-spec (.get hardenedlinux/weaver.init.exports std-make-spec))
 (def package-main
