@@ -1,0 +1,135 @@
+#+title: 59.31 Dynamic gxi: Frozen-Source Local Results
+#+language: en
+
+* Qualified source and scope
+The implementation and experiment contract are in
+[[file:59.30-dynamic-gxi-qualification.org][59.30 Ordinary Dynamic gxi]]. The local qualification tested commit
+=14c746e108a1c26e272f373aea29805de7bad193= on the twelve-logical-CPU Darwin host.
+Both independent, newly prepared source runs passed committed-source and
+dependency-currentness checks. No dependency pin or installed runtime changed.
+This document records derived results; it is not an execution input to its own
+qualification and does not change the tested implementation.
+
+| Binding | SHA-256 / revision |
+|---------+--------------------|
+| Qualification source-input digest | d41708a98846c1bf0cbedbd59b02aed04c3a9f5394bffbdb74543ccb318bd88f |
+| Cold-matrix dependency digest | a862e398c7dcb0266f17efcdae7a9594f67973f8d75f19b26807746f748bf3e5 |
+| Agentic AI Lab source | 921e75f830a60c2ec42c384139846b05ba5d3317 |
+| Inherited Core / Yuanxu source | 79a5526a2ecd06408201be87b4a028b167c8d8a0 |
+| Inherited Gerbil POO source | 98fcce3abec760373cc7486a8b51d6bb97424658 |
+
+The compiler, actual interpreter, Gambit C header, FFI library, packaging tools,
+original generated bodies, original objects, linked images and control objects
+were hashed and checked before final evidence publication. The matrix verified
+1,572 distinct control image UUIDs and inodes. Build concurrency followed the
+machine's available CPUs; no reduced =GERBIL_BUILD_CORES=, =GOMAXPROCS= or
+=CARGO_BUILD_JOBS= override was supplied.
+
+* Same-object cold-image matrix
+The two layouts use identical C objects and differ in image partitioning.
+Four generations alternate ABBA and BAAB; every trial starts a new ordinary
+installed =gxi= process. Each runtime deadline remains fifteen seconds.
+
+| Generation | Coalesced first image use | Coalesced repeat / new process | Separate-layout trials |
+|------------+---------------------------+--------------------------------+------------------------|
+| 0 | 5.781092 s | 1.554378 s | 2 deadline failures |
+| 1 | 6.483191 s | 1.576011 s | 2 deadline failures |
+| 2 | 5.680993 s | 3.104674 s | 2 deadline failures |
+| 3 | 5.723976 s | 1.566111 s | 2 deadline failures |
+
+All eight coalesced trials completed the nineteen original cases, checked the
+standard runner's return value, returned to the caller, exited naturally with
+status zero, and left no owned process group. No semantic warning was accepted.
+Their complete test output matched the original installed-layout control:
+=cccd626ac86312776e83fcf28bb2707ea1d0e015ccbfae810fd0fbc12239d97b=.
+
+All eight separate-layout counterfactual trials remained failures. The
+watchdog cancelled them at the unchanged deadline; cancellation is not a
+successful exit or cleanup witness. The matrix PASS applies to the repaired
+layout and preserves these failures explicitly. It does not assert that the
+unrepaired layout met the deadline.
+
+The ordinary original installed-layout observation completed in 10.558789 s:
+the checked runner returned at 8.786118 s, leaving approximately 1.773 s of exit
+cleanup/drain. For coalesced first use, execution between =HARNESS= and
+=HARNESS-OK= took approximately 0.074--0.190 s, and cleanup/drain after caller
+return took approximately 0.061--0.077 s. Discovery/loading remains the larger
+first-use component. The slower repeat in generation 2 is retained; this is not
+a best-sample report.
+
+Selected image first use is distinct from an OS-wide cold boot. Installed
+runtime and foreign leaves, source pages and host services remain shared.
+Neither this matrix nor load-average snapshots prove that unrelated host
+activity has disappeared. The reproducible repair is fewer mappings with the
+same logical entries; no universal latency or exact source-only speed ratio is
+claimed.
+
+* Complete natural module cleanup
+The source-selected profile contains 386 coalesced logical entries in seven
+physical images. The separate diagnostic preserves the ordinary launcher's
+home/directory settings and uses the matching interpreter binary with the
+bounded observer; timing acceptance uses the unchanged ordinary launcher.
+
+| Diagnostic layout | Opens | Closes | Outstanding | Errors / overflow | Peak images | Aliased logical opens |
+|-------------------+-------+--------+-------------+-------------------+-------------+-----------------------|
+| Original separate images | 463 | 463 | 0 | 0 / 0 | 513 | 0 |
+| Coalesced images | 463 | 463 | 0 | 0 / 0 | 134 | 386 |
+
+Every observed acquisition invokes the real loader API and is balanced by a
+real =dlclose=. All 386 selected aliases were exercised. Native event traces
+reported zero overflow and were hashed before temporary-file cleanup:
+
+| Trace | SHA-256 |
+|-------+---------|
+| Original layout | 5978a8993ce3dc3a4f620fa209b60bc00ce49dbd4f08ea14fc8cfd247efe0ef9 |
+| Coalesced layout | 7845675b7013ae7d1a0db191355cce45466d68c4ab7f4bf001583a269d5034e5 |
+
+* Independent full integration gate
+A second new preparation prefix rebuilt the source closure and passed all
+fifteen =check-scheme= result stages on the same committed implementation.
+
+| Relevant stage | Local result | Duration |
+|----------------+--------------+----------|
+| Declared POO source library | PASS | 83.950 s |
+| Core / Yuanxu source library | PASS | 100.812 s |
+| Reachable Agentic AI Lab library | PASS | 64.632 s |
+| Weaver module build | PASS | 14.380 s |
+| Dynamic image preparation | PASS | 55.370 s |
+| Ordinary dynamic gxi standard tests | PASS, natural exit 0 | 7.710868 s |
+| Scheme / Rust / Go control integration | PASS, exit 0 | 131.902 s |
+| Committed source before and after | PASS | Separate checks |
+| Linked dependencies before and after | PASS | Separate checks |
+
+Image/source compilation belongs to preparation; it does not widen the runtime
+test deadline. The integration stage runs with Go's race detector and builds
+the real Rust server, including the existing optional Arrow feature. Its seven
+top-level control tests cover inert Cedar FFI validation, Scheme Governor
+selection, governance assets, JSON/YAML, revocation, restart, shared stream
+budget, SDK retry, partial writes and publication response loss. No synthetic
+CI success substitutes for these local executions.
+
+Focused Rust FFI tests, the existing ASP Rust deny gate, example Clippy with
+=-D warnings=, and Go race-checked evidence/registry negative controls also
+passed. The failed broad foreign-module build, warning-producing prototype,
+source-changing exploratory matrix and initial diagnostic environment error
+remain rejected observations described in 59.30.
+
+* Evidence retention and publication
+The fixed ignored cache slots are:
+
+- =.cache/verification/latest-scheme-startup.json=: committed-source local
+  matrix, complete trial outcomes, image identities and cleanup counters.
+- =.cache/verification/latest-scheme-startup-failures.json=: bounded earlier
+  diagnostic failures, including the explicit source-stability failure.
+- =.cache/verification/latest-check-scheme.json=: independent full-chain result.
+
+Owned preparation prefixes, raw build logs, traces, image generations and test
+products are temporary and cleaned after verification. The source and curated
+Org results are committed; raw logs are not added to Git. Source hashes bind
+the witnessed artifacts during the run, not a permanent installed image that
+survives cleanup. Reproduction creates and checks a new generation.
+
+Private-repository publication and remote CI are separate receipts. The local
+closure above remains established by local executions regardless of the remote
+workflow outcome. Gateway execution code, Policy semantics and dependency pins
+are unchanged by this development packaging repair.
