@@ -38,3 +38,22 @@ change, including fresh-image startup/restart, actual source-role mTLS, Policy,
 partial request/SSE, revocation, saturation, immutable profiles and lost-reply
 recovery. This remains focused integration evidence until a complete source-bound
 receipt is recorded. Core D2 was rendered and its PNG inspected for label spacing.
+
+* Complete committed receipts
+
+[[file:committed-check/receipt.json][The complete check]] now passes all 54 stages at revision 8374926.
+[[file:committed-bench/receipt.json][The complete measurement]] passes all eight stages and retains every case.
+[[file:transport-paired-source-identity.json][The paired source comparison]] confirms the identical implementation revision
+and all 201 input hashes. All 25 Rust cases have thirty fresh paired samples;
+all three actual RPC benchmark families have three repetitions. The historical
+failed/interrupted full checks remain separate and do not become passes.
+
+The [[file:committed-bench/rust-benchmarks.log][raw Criterion comparisons]] report 24 regressions and one improvement.
+[[file:transport-bench-host-before.log][Before]]/[[file:transport-bench-host-after.log][after]] load observations are retained without causal attribution. Performance
+admission is not established. The [[file:committed-bench/grpc-benchmark.log][RPC build log]] explicitly reports a debug
+Rust daemon; optimized Rust microbenchmarks and debug RPC service measurements
+must not be conflated. Profile-specific native artifact selection and release
+functional qualification remain further implementation work.
+
+[[file:transport-setup-private-push.log][The private repository push]] succeeded. CI run 40988862524 is scoped to the
+same exact implementation; its observed live state is not a remote pass.

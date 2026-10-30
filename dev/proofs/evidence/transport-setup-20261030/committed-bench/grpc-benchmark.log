@@ -1,0 +1,79 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.27s
+goos: darwin
+goarch: arm64
+pkg: github.com/HardenedLinux/weaver/go/dev
+cpu: Apple M2 Pro
+BenchmarkGatewayInspect-12             	     444	  12004649 ns/op	    6628 B/op	     115 allocs/op
+--- BENCH: BenchmarkGatewayInspect-12
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T02:04:03.579873Z elapsed=2.579543666s error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=2.584211125s error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325845, tv_nsec: 227138000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325845, tv_nsec: 228868000 }
+        weaver startup stage=configured elapsed=12.634834ms
+        weaver startup stage=listeners-bound elapsed=14.422125ms
+BenchmarkGatewayInspect-12             	     174	  16288285 ns/op	    6655 B/op	     115 allocs/op
+--- BENCH: BenchmarkGatewayInspect-12
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T02:04:11.639522Z elapsed=118.259708ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=128.966083ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325851, tv_nsec: 654916000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325851, tv_nsec: 655660000 }
+        weaver startup stage=configured elapsed=842.084µs
+        weaver startup stage=listeners-bound elapsed=961µs
+BenchmarkGatewayInspect-12             	     242	  11044876 ns/op	    6634 B/op	     115 allocs/op
+--- BENCH: BenchmarkGatewayInspect-12
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T02:04:14.695278Z elapsed=143.400459ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=155.199167ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325854, tv_nsec: 713488000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325854, tv_nsec: 713970000 }
+        weaver startup stage=configured elapsed=2.564667ms
+        weaver startup stage=listeners-bound elapsed=2.784417ms
+BenchmarkGatewayInspectReconnect-12    	     100	  28411330 ns/op	  181679 B/op	    1260 allocs/op
+--- BENCH: BenchmarkGatewayInspectReconnect-12
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T02:04:17.688996Z elapsed=123.834958ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=147.96525ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325857, tv_nsec: 703659000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325857, tv_nsec: 704152000 }
+        weaver startup stage=configured elapsed=11.508542ms
+        weaver startup stage=listeners-bound elapsed=11.855917ms
+BenchmarkGatewayInspectReconnect-12    	     100	  30615074 ns/op	  181179 B/op	    1278 allocs/op
+--- BENCH: BenchmarkGatewayInspectReconnect-12
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T02:04:20.803345Z elapsed=121.589875ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=128.45675ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325860, tv_nsec: 833122000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325860, tv_nsec: 834105000 }
+        weaver startup stage=configured elapsed=6.951333ms
+        weaver startup stage=listeners-bound elapsed=7.060167ms
+BenchmarkGatewayInspectReconnect-12    	     270	   9694312 ns/op	  181292 B/op	    1278 allocs/op
+--- BENCH: BenchmarkGatewayInspectReconnect-12
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T02:04:24.152158Z elapsed=122.667125ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=126.959167ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325864, tv_nsec: 168153000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325864, tv_nsec: 168766000 }
+        weaver startup stage=configured elapsed=15.09025ms
+        weaver startup stage=listeners-bound elapsed=15.345375ms
+BenchmarkGatewayAuthorityPublish-12    	     222	  10685554 ns/op	    6752 B/op	     114 allocs/op
+--- BENCH: BenchmarkGatewayAuthorityPublish-12
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T02:04:27.003559Z elapsed=124.269667ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=129.162959ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325867, tv_nsec: 27137000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325867, tv_nsec: 28123000 }
+        weaver startup stage=configured elapsed=15.445958ms
+        weaver startup stage=listeners-bound elapsed=15.693875ms
+BenchmarkGatewayAuthorityPublish-12    	     240	   9360243 ns/op	    6631 B/op	     114 allocs/op
+--- BENCH: BenchmarkGatewayAuthorityPublish-12
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T02:04:29.550804Z elapsed=116.296583ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=121.062333ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325869, tv_nsec: 564534000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325869, tv_nsec: 565998000 }
+        weaver startup stage=configured elapsed=10.140292ms
+        weaver startup stage=listeners-bound elapsed=10.505042ms
+BenchmarkGatewayAuthorityPublish-12    	     334	   8518897 ns/op	    6674 B/op	     114 allocs/op
+--- BENCH: BenchmarkGatewayAuthorityPublish-12
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T02:04:31.997289Z elapsed=111.778333ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=115.147875ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325872, tv_nsec: 10591000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325872, tv_nsec: 15165000 }
+        weaver startup stage=configured elapsed=1.769916ms
+        weaver startup stage=listeners-bound elapsed=2.161625ms
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	33.785s

@@ -1,0 +1,1698 @@
+An example execution:
+
+[State 0]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(),
+      closed: true,
+      current: true,
+      digest: Map(0 -> -1, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 0, 1 -> 0),
+      mode: Map(0 -> false, 1 -> false),
+      profile: Map(0 -> -1, 1 -> -1),
+      provider: true,
+      registered: Set(),
+      registrations: [],
+      registry: Map(-1 -> -1, 0 -> -1, 1 -> -1),
+      schema: Map(0 -> false, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 1]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(),
+      closed: true,
+      current: true,
+      digest: Map(0 -> -1, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 0, 1 -> 0),
+      mode: Map(0 -> false, 1 -> false),
+      profile: Map(0 -> -1, 1 -> -1),
+      provider: true,
+      registered: Set(),
+      registrations: [],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> -1),
+      schema: Map(0 -> false, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 2]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(),
+      closed: true,
+      current: true,
+      digest: Map(0 -> 0, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 0, 1 -> 0),
+      mode: Map(0 -> false, 1 -> false),
+      profile: Map(0 -> 1, 1 -> -1),
+      provider: true,
+      registered: Set(0),
+      registrations: [{ original: 0, proposal: 0, registry: 0 }],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> 0),
+      schema: Map(0 -> false, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 3]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(),
+      closed: true,
+      current: true,
+      digest: Map(0 -> 0, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 0, 1 -> 0),
+      mode: Map(0 -> false, 1 -> false),
+      profile: Map(0 -> 1, 1 -> -1),
+      provider: true,
+      registered: Set(0),
+      registrations: [{ original: 0, proposal: 0, registry: 0 }],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> 0),
+      schema: Map(0 -> false, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 4]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: true,
+      current: true,
+      digest: Map(0 -> 0, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> -1),
+      provider: true,
+      registered: Set(0),
+      registrations: [{ original: 0, proposal: 0, registry: 0 }],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 5]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: true,
+      current: true,
+      digest: Map(0 -> 0, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> -1),
+      provider: true,
+      registered: Set(0),
+      registrations: [{ original: 0, proposal: 0, registry: 0 }],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 6]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: true,
+      current: false,
+      digest: Map(0 -> 0, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> -1),
+      provider: true,
+      registered: Set(0),
+      registrations: [{ original: 0, proposal: 0, registry: 0 }],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 7]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: true,
+      current: false,
+      digest: Map(0 -> 0, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> -1),
+      provider: true,
+      registered: Set(0),
+      registrations: [{ original: 0, proposal: 0, registry: 0 }],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 8]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: true,
+      current: false,
+      digest: Map(0 -> 0, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> -1),
+      provider: true,
+      registered: Set(0),
+      registrations: [{ original: 0, proposal: 0, registry: 0 }],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 9]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: true,
+      current: false,
+      digest: Map(0 -> 0, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> -1),
+      provider: true,
+      registered: Set(0),
+      registrations: [{ original: 0, proposal: 0, registry: 0 }],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 10]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: true,
+      current: false,
+      digest: Map(0 -> 0, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> -1),
+      provider: true,
+      registered: Set(0),
+      registrations: [{ original: 0, proposal: 0, registry: 0 }],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 11]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: true,
+      current: false,
+      digest: Map(0 -> 0, 1 -> -1),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> -1),
+      provider: true,
+      registered: Set(0),
+      registrations: [{ original: 0, proposal: 0, registry: 0 }],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 12]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: true,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 13]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: true,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 14]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 15]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 16]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 17]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 18]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 19]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 20]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 21]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 22]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 23]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 24]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 25]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 26]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 27]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 28]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 29]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 30]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 31]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: true,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 32]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 33]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 34]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 35]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 36]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 37]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 38]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> -1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 39]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> -1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 40]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> -1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 41]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> -1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 42]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> -1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 43]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 44]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 45]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 46]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 47]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 48]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 49]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 50]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 51]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 52]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 53]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 54]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 55]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> -1),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 56]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 0, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 57]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 58]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 59]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[State 60]
+{
+  s:
+    {
+      burned: Set(),
+      calls: Map(0 -> 0, 1 -> 0),
+      claimed: Set(0),
+      closed: false,
+      current: false,
+      digest: Map(0 -> 0, 1 -> 0),
+      effects: [],
+      held: Map(0 -> 4, 1 -> 0),
+      mode: Map(0 -> true, 1 -> false),
+      profile: Map(0 -> 1, 1 -> 1),
+      provider: false,
+      registered: Set(0, 1),
+      registrations:
+        [
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 },
+          { original: 0, proposal: 0, registry: 0 }
+        ],
+      registry: Map(-1 -> -1, 0 -> 1, 1 -> 0),
+      schema: Map(0 -> true, 1 -> false),
+      ticketDigest: Map(0 -> -1, 1 -> -1),
+      tickets: Set()
+    }
+}
+
+[ok] No violation found (8161ms at 123 traces/second).
+Trace length statistics: max=61, min=61, average=61.00
+You may increase --max-samples and --max-steps.
+Use --verbosity to produce more (or less) output.
+Use --seed=0x125 --backend=typescript to reproduce.

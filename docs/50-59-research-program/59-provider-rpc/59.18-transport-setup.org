@@ -81,3 +81,35 @@ or acceptance data. Raw study and verification logs are retained under
 [[file:../../../dev/proofs/evidence/transport-setup-20261030/README.org][the transport evidence record]]. Full current committed-source verification,
 the complete twenty-five-case benchmark matrix and independent CI remain
 separate acceptance requirements.
+
+* Complete committed local qualification
+
+At =8374926ead52c379dc378bb114bbb2a5e97b2c90= the
+[[file:../../../dev/proofs/evidence/transport-setup-20261030/committed-check/receipt.json][full 54-stage check]] passes naturally, including the original three-second
+startup gate, 77 Rust tests, five ASP deny gates, strict Clippy, all Go/race/PBT,
+SysML, imported Cedar bridge, Quint/Lean and actual mTLS/provider scenarios.
+The [[file:../../../dev/proofs/evidence/transport-setup-20261030/committed-bench/receipt.json][eight-stage measured run]] also passes. It retains all 25 Rust cases with
+thirty fresh paired samples and three repetitions of each of the three Go RPC
+benchmarks. The [[file:../../../dev/proofs/evidence/transport-setup-20261030/transport-paired-source-identity.json][identity comparison]] confirms the same commit and all 201 input
+hashes in verification and measurement. Earlier failed/interrupted receipts are
+not reclassified by these results.
+
+Performance admission remains unestablished. The raw Criterion log retains 24
+regressions and one improvement against the local cached baseline. Observed load
+averages are 12.37/18.32/21.87 before execution and 21.97/27.15/25.06 afterward;
+these endpoint observations do not establish the cause of individual regressions
+or interference throughout every sample. No warning is removed or run retried
+to obtain a preferred comparison.
+
+Rust Criterion cases use the optimized benchmark profile. The current Go RPC
+fixture builds a =target/debug= Rust daemon, as its raw Cargo log records. Go
+client allocation counts and debug-daemon timings do not establish optimized
+service performance. The next measurement implementation must explicitly select
+and identify the produced native artifact, preserve debug functional checks and
+add release functional checks before qualifying release RPC measurements. It
+must not relabel these historical debug receipts or change the original sample,
+workload, startup or cleanup limits.
+
+The implementation was pushed to the verified private =hardenedlinux/weaver=
+repository. [[https://github.com/hardenedlinux/weaver/actions/runs/40988862524][Independent Linux CI for this exact implementation]] is separate evidence;
+its observed in-progress status does not imply acceptance.

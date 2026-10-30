@@ -1,0 +1,33 @@
+#+TITLE: Native Rust Benchmark Baseline
+#+LANGUAGE: en
+
+* Scope
+Local empirical baseline, not a throughput guarantee. Values are nanoseconds per measured iteration. CPU, compiler and client environment are in the adjacent stage logs. Go RPC client allocations are not Rust allocations.
+
+| Package | Benchmark | Samples | Mean ns | Lower confidence bound ns | Upper confidence bound ns |
+|---------+-----------+---------+---------+---------------------------+---------------------------|
+| weaver-contracts | contracts_profile_commitment | 30 | 1703.595 | 1335.078 | 2099.838 |
+| weaver-contracts | contracts_profile_request_validation/128 | 30 | 5356.910 | 4196.682 | 6653.077 |
+| weaver-contracts | contracts_profile_request_validation/16384 | 30 | 12187.819 | 9496.468 | 15083.217 |
+| weaver-contracts | contracts_profile_request_validation/524288 | 30 | 94273.600 | 86251.560 | 104664.299 |
+| weaver-contracts | contracts_provider_commitment/128 | 30 | 6386.858 | 5204.263 | 7702.853 |
+| weaver-contracts | contracts_provider_commitment/16384 | 30 | 78555.574 | 64664.607 | 94756.733 |
+| weaver-contracts | contracts_provider_commitment/524288 | 30 | 1971336.874 | 1848873.760 | 2095855.386 |
+| weaver-contracts | contracts_publication_commitment | 30 | 119495.915 | 96008.573 | 146090.365 |
+| weaver-execution | execution_https_guarded_sse_three_events | 30 | 9683799.544 | 7998938.247 | 11546598.007 |
+| weaver-ledger | ledger_consume_and_dispatch_burn | 30 | 922487.050 | 850498.434 | 996200.230 |
+| weaver-ledger | ledger_fresh_admission | 30 | 811173.683 | 648517.726 | 1021787.431 |
+| weaver-ledger | ledger_idempotent_admission | 30 | 665116.569 | 531877.601 | 810102.825 |
+| weaver-ledger | ledger_profile_task_registration | 30 | 1554025.011 | 1098234.819 | 2092126.691 |
+| weaver-ledger | ledger_profile_task_replay/1 | 30 | 116363.225 | 86127.086 | 155140.417 |
+| weaver-ledger | ledger_profile_task_replay/256 | 30 | 126387.308 | 99657.070 | 153850.638 |
+| weaver-ledger | ledger_publication_atomic_commit | 30 | 710030.327 | 591938.994 | 874335.516 |
+| weaver-ledger | ledger_publication_exact_replay | 30 | 76985.831 | 49366.234 | 108431.639 |
+| weaver-ledger | ledger_publication_historical_lookup | 30 | 13640.832 | 7590.026 | 20702.638 |
+| weaver-policy | policy_compilation_cache_churn | 30 | 287978.639 | 235804.690 | 342854.193 |
+| weaver-policy | policy_typed_schema_validation | 30 | 844234.939 | 694379.617 | 999758.692 |
+| weaver-policy | policy_warm_compilation_current_decision | 30 | 183444.014 | 151055.732 | 217166.523 |
+| weaver-server | server_response_encoding/arrow_batch/1 | 30 | 5580.228 | 5216.182 | 5985.124 |
+| weaver-server | server_response_encoding/arrow_batch/32 | 30 | 25356.628 | 20773.008 | 30644.878 |
+| weaver-server | server_response_encoding/protobuf_frames/1 | 30 | 358.283 | 312.067 | 406.533 |
+| weaver-server | server_response_encoding/protobuf_frames/32 | 30 | 19479.489 | 15882.775 | 23133.451 |

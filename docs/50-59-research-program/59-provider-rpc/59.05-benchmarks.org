@@ -187,3 +187,10 @@ and six cases without significant change; seven new cases have no comparison.
 All raw warnings and outliers remain preserved. Increased observed host load
 does not explain away the regressions, and successful artifact collection does
 not establish production performance acceptance.
+
+The [[file:59.18-transport-setup.org][transport setup increment]] retains a complete committed 54-stage check and
+25-case benchmark pair with identical 201 inputs. Its 24 cached regressions and
+one improvement remain raw evidence. Rust microbenchmarks are optimized, whereas
+the current Go RPC fixture builds a debug Rust daemon. Explicit native artifact
+profile selection and release functional qualification are the next measurement
+work; these debug measurements must not be described as release service results.

@@ -1,0 +1,249 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.58s
+=== RUN   TestProviderCompetingCapsCannotReachDispatch
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:55:52.271677Z elapsed=2.704777542s error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=2.70920425s error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325354, tv_nsec: 362616000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325354, tv_nsec: 364000000 }
+        weaver startup stage=configured elapsed=1.85575ms
+        weaver startup stage=listeners-bound elapsed=1.965167ms
+--- PASS: TestProviderCompetingCapsCannotReachDispatch (2.77s)
+=== RUN   TestProviderSaturatedExecutionPreservesRevocationAndObservation
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:55:55.041051Z elapsed=109.544083ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=113.892375ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325355, tv_nsec: 48955000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325355, tv_nsec: 49973000 }
+        weaver startup stage=configured elapsed=1.174083ms
+        weaver startup stage=listeners-bound elapsed=1.249833ms
+--- PASS: TestProviderSaturatedExecutionPreservesRevocationAndObservation (1.02s)
+=== RUN   TestProviderConnectionBoundRetainsExistingAuthorityChannel
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:55:56.060106Z elapsed=110.048167ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=114.494167ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325356, tv_nsec: 68137000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325356, tv_nsec: 68602000 }
+        weaver startup stage=configured elapsed=491.5µs
+        weaver startup stage=listeners-bound elapsed=560.125µs
+--- PASS: TestProviderConnectionBoundRetainsExistingAuthorityChannel (1.24s)
+=== RUN   TestProviderPreTLSConnectionsAreBoundedAndExpire
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:55:57.295021Z elapsed=115.426125ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=119.784292ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325357, tv_nsec: 308366000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325357, tv_nsec: 308772000 }
+        weaver startup stage=configured elapsed=3.14725ms
+        weaver startup stage=listeners-bound elapsed=3.252459ms
+--- PASS: TestProviderPreTLSConnectionsAreBoundedAndExpire (3.15s)
+=== RUN   TestProviderShutdownDestroysStalledTLSBeforeAcknowledgingExit
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:00.441467Z elapsed=111.097708ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=116.781541ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325360, tv_nsec: 448660000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325360, tv_nsec: 449242000 }
+        weaver startup stage=configured elapsed=415µs
+        weaver startup stage=listeners-bound elapsed=480.959µs
+--- PASS: TestProviderShutdownDestroysStalledTLSBeforeAcknowledgingExit (0.14s)
+=== RUN   TestProviderGRPCStreamingAndArrowOption
+=== RUN   TestProviderGRPCStreamingAndArrowOption/PROTOBUF
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:00.581771Z elapsed=110.100958ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=114.284625ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325360, tv_nsec: 589219000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325360, tv_nsec: 589746000 }
+        weaver startup stage=configured elapsed=473.5µs
+        weaver startup stage=listeners-bound elapsed=549µs
+=== RUN   TestProviderGRPCStreamingAndArrowOption/ARROW_IPC
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:00.749393Z elapsed=123.917875ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=132.190958ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325360, tv_nsec: 760757000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325360, tv_nsec: 761264000 }
+        weaver startup stage=configured elapsed=1.740041ms
+        weaver startup stage=listeners-bound elapsed=1.833458ms
+--- PASS: TestProviderGRPCStreamingAndArrowOption (0.37s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/PROTOBUF (0.17s)
+    --- PASS: TestProviderGRPCStreamingAndArrowOption/ARROW_IPC (0.20s)
+=== RUN   TestProviderFailuresNeverRetryOrFallback
+=== RUN   TestProviderFailuresNeverRetryOrFallback/partial-sse
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:00.947776Z elapsed=110.414417ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=115.507ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325360, tv_nsec: 955677000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325360, tv_nsec: 956250000 }
+        weaver startup stage=configured elapsed=441.958µs
+        weaver startup stage=listeners-bound elapsed=510.667µs
+=== RUN   TestProviderFailuresNeverRetryOrFallback/tool-proposal
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:01.102818Z elapsed=110.364292ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=114.9025ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325361, tv_nsec: 110537000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325361, tv_nsec: 111026000 }
+        weaver startup stage=configured elapsed=436.291µs
+        weaver startup stage=listeners-bound elapsed=517.083µs
+=== RUN   TestProviderFailuresNeverRetryOrFallback/redirect
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:01.255453Z elapsed=110.313667ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=114.719375ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325361, tv_nsec: 262952000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325361, tv_nsec: 263470000 }
+        weaver startup stage=configured elapsed=444.625µs
+        weaver startup stage=listeners-bound elapsed=509.708µs
+=== RUN   TestProviderFailuresNeverRetryOrFallback/overload
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:01.405754Z elapsed=110.684458ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=114.856541ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325361, tv_nsec: 412928000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325361, tv_nsec: 413456000 }
+        weaver startup stage=configured elapsed=411.792µs
+        weaver startup stage=listeners-bound elapsed=481µs
+--- PASS: TestProviderFailuresNeverRetryOrFallback (0.61s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/partial-sse (0.16s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/tool-proposal (0.15s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/redirect (0.15s)
+    --- PASS: TestProviderFailuresNeverRetryOrFallback/overload (0.15s)
+=== RUN   TestProviderPartialRequestAndRestartRetainUnknownClaim
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:01.772385Z elapsed=110.665709ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=115.10775ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325361, tv_nsec: 779118000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325361, tv_nsec: 779693000 }
+        weaver startup stage=configured elapsed=413.417µs
+        weaver startup stage=listeners-bound elapsed=491.917µs
+    provider_grpc_test.go:124: native startup operation-channel started=2026-10-30T01:56:02.46806Z elapsed=109.543458ms error=<nil>
+    provider_grpc_test.go:124: native startup source-channel elapsed=113.874583ms error=<nil>
+    provider_grpc_test.go:124: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325361, tv_nsec: 779118000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325361, tv_nsec: 779693000 }
+        weaver startup stage=configured elapsed=413.417µs
+        weaver startup stage=listeners-bound elapsed=491.917µs
+        weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325362, tv_nsec: 475117000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325362, tv_nsec: 475657000 }
+        weaver startup stage=configured elapsed=431.083µs
+        weaver startup stage=listeners-bound elapsed=521.25µs
+--- PASS: TestProviderPartialRequestAndRestartRetainUnknownClaim (1.07s)
+=== RUN   TestProviderRevocationDuringSSEStopsNextRelease
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:02.628677Z elapsed=110.541791ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=115.158791ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325362, tv_nsec: 635988000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325362, tv_nsec: 636519000 }
+        weaver startup stage=configured elapsed=456.417µs
+        weaver startup stage=listeners-bound elapsed=526.5µs
+--- PASS: TestProviderRevocationDuringSSEStopsNextRelease (0.16s)
+=== RUN   TestProviderArrowChecksEveryRow
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:02.788893Z elapsed=110.923125ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=116.071834ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325362, tv_nsec: 796766000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325362, tv_nsec: 797280000 }
+        weaver startup stage=configured elapsed=448.416µs
+        weaver startup stage=listeners-bound elapsed=526.083µs
+--- PASS: TestProviderArrowChecksEveryRow (0.16s)
+=== RUN   TestProviderConcurrentRPCDuplicatesInvokeOnce
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:02.947268Z elapsed=109.935542ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=114.514125ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325362, tv_nsec: 954169000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325362, tv_nsec: 954746000 }
+        weaver startup stage=configured elapsed=434.084µs
+        weaver startup stage=listeners-bound elapsed=504.25µs
+--- PASS: TestProviderConcurrentRPCDuplicatesInvokeOnce (0.17s)
+=== RUN   TestProviderRPCIdentityAndCancellation
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:03.121861Z elapsed=111.106417ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=115.432875ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325363, tv_nsec: 129700000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325363, tv_nsec: 130148000 }
+        weaver startup stage=configured elapsed=1.728375ms
+        weaver startup stage=listeners-bound elapsed=1.813708ms
+--- PASS: TestProviderRPCIdentityAndCancellation (0.14s)
+=== RUN   TestProviderClientCancellationCannotReplay
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:03.266174Z elapsed=109.472083ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=113.7105ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325363, tv_nsec: 272769000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325363, tv_nsec: 273308000 }
+        weaver startup stage=configured elapsed=407.042µs
+        weaver startup stage=listeners-bound elapsed=467.167µs
+--- PASS: TestProviderClientCancellationCannotReplay (0.15s)
+=== RUN   TestProviderAuthenticationPrecedesRPCBodyDecode
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:03.417447Z elapsed=109.916958ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=114.431625ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325363, tv_nsec: 424539000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325363, tv_nsec: 425016000 }
+        weaver startup stage=configured elapsed=417.75µs
+        weaver startup stage=listeners-bound elapsed=482.334µs
+--- PASS: TestProviderAuthenticationPrecedesRPCBodyDecode (0.13s)
+=== RUN   TestProviderSourceProfileAndCedarBindFinalSendAcrossRestart
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:03.552347Z elapsed=110.576167ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=114.879333ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325363, tv_nsec: 560342000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325363, tv_nsec: 560870000 }
+        weaver startup stage=configured elapsed=417.166µs
+        weaver startup stage=listeners-bound elapsed=481µs
+    provider_profiles_test.go:105: native startup operation-channel started=2026-10-30T01:56:03.721639Z elapsed=109.67125ms error=<nil>
+    provider_profiles_test.go:105: native startup source-channel elapsed=113.729208ms error=<nil>
+    provider_profiles_test.go:105: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325363, tv_nsec: 560342000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325363, tv_nsec: 560870000 }
+        weaver startup stage=configured elapsed=417.166µs
+        weaver startup stage=listeners-bound elapsed=481µs
+        weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325363, tv_nsec: 728108000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325363, tv_nsec: 728573000 }
+        weaver startup stage=configured elapsed=403.541µs
+        weaver startup stage=listeners-bound elapsed=483.541µs
+--- PASS: TestProviderSourceProfileAndCedarBindFinalSendAcrossRestart (0.29s)
+=== RUN   TestProviderSourceCommittedExtensionsCannotBypassProfile
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:03.846618Z elapsed=110.0725ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=114.784125ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325363, tv_nsec: 853307000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325363, tv_nsec: 853837000 }
+        weaver startup stage=configured elapsed=432.709µs
+        weaver startup stage=listeners-bound elapsed=502.25µs
+--- PASS: TestProviderSourceCommittedExtensionsCannotBypassProfile (0.19s)
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:04.032509Z elapsed=110.474583ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=115.9435ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325364, tv_nsec: 40513000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325364, tv_nsec: 41078000 }
+        weaver startup stage=configured elapsed=419.042µs
+        weaver startup stage=listeners-bound elapsed=502.083µs
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/forwarded-source-token
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/operation-token-with-source-key
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-key-on-operation-ingress
+=== RUN   TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-token-on-operation-ingress
+--- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod (0.37s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/forwarded-source-token (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/operation-token-with-source-key (0.01s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-key-on-operation-ingress (0.06s)
+    --- PASS: TestProviderSourceIngressBindsCertificateCredentialAndMethod/source-token-on-operation-ingress (0.07s)
+=== RUN   TestProviderSourceConnectionBudgetCannotBorrowOperationCapacity
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:04.40676Z elapsed=110.094292ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=114.491917ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325364, tv_nsec: 414212000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325364, tv_nsec: 414783000 }
+        weaver startup stage=configured elapsed=423.625µs
+        weaver startup stage=listeners-bound elapsed=494.709µs
+--- PASS: TestProviderSourceConnectionBudgetCannotBorrowOperationCapacity (1.18s)
+=== RUN   TestProviderFreshImageAndRestartStartup
+    provider_startup_test.go:21: copied image sha256=bd61f224bfa5cc1d7900011275ff3c7d8d344c7756f24ccb0296ec20fe7aefc7
+    provider_startup_test.go:22: executed image bytes=64193456 sha256=bd61f224bfa5cc1d7900011275ff3c7d8d344c7756f24ccb0296ec20fe7aefc7
+    provider_startup_test.go:22: native startup operation-channel started=2026-10-30T01:56:05.804406Z elapsed=1.001161917s error=<nil>
+    provider_startup_test.go:22: native startup source-channel elapsed=1.006214792s error=<nil>
+    provider_startup_test.go:22: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325366, tv_nsec: 527166000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325366, tv_nsec: 528487000 }
+        weaver startup stage=configured elapsed=1.738375ms
+        weaver startup stage=listeners-bound elapsed=1.852875ms
+    provider_startup_test.go:22: native startup operation-channel started=2026-10-30T01:56:06.830153Z elapsed=110.154333ms error=<nil>
+    provider_startup_test.go:22: native startup source-channel elapsed=114.488791ms error=<nil>
+    provider_startup_test.go:22: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325366, tv_nsec: 527166000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325366, tv_nsec: 528487000 }
+        weaver startup stage=configured elapsed=1.738375ms
+        weaver startup stage=listeners-bound elapsed=1.852875ms
+        weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325366, tv_nsec: 837654000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325366, tv_nsec: 838146000 }
+        weaver startup stage=configured elapsed=442.333µs
+        weaver startup stage=listeners-bound elapsed=516.208µs
+--- PASS: TestProviderFreshImageAndRestartStartup (1.37s)
+=== RUN   TestProviderPublicationLostReplyRestartAndHistoricalDecision
+    provider_fixture_test.go:136: native startup operation-channel started=2026-10-30T01:56:06.956296Z elapsed=109.956166ms error=<nil>
+    provider_fixture_test.go:136: native startup source-channel elapsed=115.336583ms error=<nil>
+    provider_fixture_test.go:136: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325366, tv_nsec: 963120000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325366, tv_nsec: 963728000 }
+        weaver startup stage=configured elapsed=416.125µs
+        weaver startup stage=listeners-bound elapsed=475.167µs
+    publication_recovery_test.go:100: native startup operation-channel started=2026-10-30T01:56:07.129377Z elapsed=109.923208ms error=<nil>
+    publication_recovery_test.go:100: native startup source-channel elapsed=114.470625ms error=<nil>
+    publication_recovery_test.go:100: native startup stage observations: weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325366, tv_nsec: 963120000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325366, tv_nsec: 963728000 }
+        weaver startup stage=configured elapsed=416.125µs
+        weaver startup stage=listeners-bound elapsed=475.167µs
+        weaver startup stage=process-main clock=SystemTime { tv_sec: 1793325367, tv_nsec: 136292000 }
+        weaver startup stage=runtime-entered clock=SystemTime { tv_sec: 1793325367, tv_nsec: 136835000 }
+        weaver startup stage=configured elapsed=439.667µs
+        weaver startup stage=listeners-bound elapsed=506.584µs
+--- PASS: TestProviderPublicationLostReplyRestartAndHistoricalDecision (0.30s)
+PASS
+ok  	github.com/HardenedLinux/weaver/go/dev	18.074s
