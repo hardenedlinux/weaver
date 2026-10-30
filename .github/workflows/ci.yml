@@ -1,0 +1,57 @@
+name: Weaver CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weaver-ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  rust:
+    name: Rust contracts, PBT and ASP
+    uses: ./.github/workflows/verify-suite.yml
+    with:
+      suite: check-rust
+      label: Rust contracts, PBT and ASP
+  go:
+    name: Go control, routing and gRPC streaming
+    uses: ./.github/workflows/verify-suite.yml
+    with:
+      suite: check-go
+      label: Go control, routing and gRPC streaming
+  scheme:
+    name: Scheme Governance and Cedar FFI (${{ matrix.runner }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, macos-15]
+    uses: ./.github/workflows/verify-suite.yml
+    with:
+      suite: check-scheme
+      label: Scheme Governance and Cedar FFI
+      runner: ${{ matrix.runner }}
+  architecture:
+    name: Project SysML and architecture allocation
+    uses: ./.github/workflows/verify-suite.yml
+    with:
+      suite: check-architecture
+      label: Project SysML and architecture allocation
+  policy:
+    name: Cedar, Quint and Lean
+    uses: ./.github/workflows/verify-suite.yml
+    with:
+      suite: check-policy
+      label: Cedar, Quint and Lean
+  benchmarks:
+    name: Crate benchmarks and gRPC measurements
+    uses: ./.github/workflows/verify-suite.yml
+    with:
+      suite: bench
+      label: Crate benchmarks and gRPC measurements

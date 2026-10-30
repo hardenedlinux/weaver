@@ -23,7 +23,8 @@ vectors. Policy, schema, profile and case assets share this production owner.
 Scheme suites live in =t/*-test.ss=; Go/Rust integration and PBT consume these
 same assets. Quint and Lean remain under =dev/proofs/= with
 explicit refinement premises and the existing cedar-poo-spec dependency.
-Runtime logs, receipts and temporary builds remain Git-ignored in =.cache/=.
+Runtime logs and isolated builds are temporary and cleaned. Compact latest
+results overwrite fixed Git-ignored =.cache/verification/= slots.
 
 The =prod/= and =dev/= directories express asset and tooling ownership. They
 do not classify feature maturity or replace explicit deployment admission.

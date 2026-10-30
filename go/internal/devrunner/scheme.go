@@ -20,16 +20,21 @@ import (
 // global Gerbil packages, or existing dependency pins. No package is uninstalled.
 func PrepareScheme(ctx context.Context, root, source, poo, library string, output io.Writer) (map[string]string, error) {
 	compiler := os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER")
-	if !filepath.IsAbs(compiler) || source == "" || poo == "" || library == "" {
+	if !filepath.IsAbs(compiler) || source == "" || poo == "" {
 		return nil, errors.New("explicit Scheme compiler, source checkout and dependency library required")
 	}
 	source, err := filepath.Abs(source)
 	if err != nil {
 		return nil, err
 	}
-	library, err = filepath.Abs(library)
-	if err != nil {
-		return nil, err
+	if library != "" {
+		library, err = filepath.Abs(library)
+		if err != nil {
+			return nil, err
+		}
+		if info, err := os.Stat(library); err != nil || !info.IsDir() {
+			return nil, errors.New("invalid additional Scheme dependency library")
+		}
 	}
 	core := filepath.Join(source, "core")
 	poo, err = filepath.Abs(poo)
@@ -61,15 +66,21 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 	if !strings.Contains(string(corePackage), "github.com/tao3k/gerbil-poo@"+heads["gerbil-poo"]+"\"") {
 		return nil, errors.New("Gerbil POO source must match Core's declared exact dependency pin")
 	}
-	if info, err := os.Stat(library); err != nil || !info.IsDir() {
-		return nil, errors.New("existing qualified native dependency library required")
-	}
-	if err := os.MkdirAll(filepath.Join(root, ".cache"), 0700); err != nil {
-		return nil, err
-	}
-	directory, err := os.MkdirTemp(filepath.Join(root, ".cache"), "scheme-linked-*")
+	directory, err := os.MkdirTemp("", "weaver-scheme-*")
 	if err != nil {
 		return nil, err
+	}
+	complete := false
+	defer func() {
+		if !complete {
+			os.RemoveAll(directory)
+		}
+	}()
+	if library == "" {
+		library = filepath.Join(directory, "dependencies")
+		if err := os.MkdirAll(library, 0700); err != nil {
+			return nil, err
+		}
 	}
 	lib := filepath.Join(directory, "lib")
 	if err = os.MkdirAll(lib, 0700); err != nil {
@@ -92,6 +103,14 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 		if err = os.Symlink(path, filepath.Join(sources, name)); err != nil {
 			return nil, err
 		}
+	}
+	// Core declares this public prelude identity in prelude.ss; it is part of
+	// Agentic AI Lab's inherited source closure, not a second Weaver dependency.
+	if err := os.MkdirAll(filepath.Join(sources, "tao3k"), 0700); err != nil {
+		return nil, err
+	}
+	if err := os.Symlink(core, filepath.Join(sources, "tao3k", "yuanxu")); err != nil {
+		return nil, err
 	}
 	if err = os.MkdirAll(filepath.Join(sources, "clan"), 0700); err != nil {
 		return nil, err
@@ -126,6 +145,7 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 	}
 	fmt.Fprintln(output, "Scheme development links:", filepath.Join(directory, "environment.json"))
 	settings["WEAVER_SCHEME_LINK_RECEIPT"] = filepath.Join(directory, "environment.json")
+	complete = true
 	return settings, nil
 }
 

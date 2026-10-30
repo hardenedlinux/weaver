@@ -71,10 +71,6 @@ in
   # services.postgres.enable = true;
 
   # https://devenv.sh/scripts/
-  scripts.hello.exec = ''
-    echo hello from $GREET
-  '';
-
   # https://devenv.sh/basics/
   enterShell = "";
 

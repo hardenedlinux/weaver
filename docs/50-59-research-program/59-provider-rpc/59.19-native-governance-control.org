@@ -6,8 +6,9 @@
 The current source package is =tao3k/agentic-ai-lab=, as declared by its Git
 remote and =gerbil.pkg=. Its Core package is =tao3k/gebril-yuanxu=, with Scheme
 namespace =yuanxu=. A local checkout directory named =poo-flow= does not change
-either package identity. Weaver's root =gerbil.pkg= declares these existing
-packages; qualification uses isolated development links and never uninstalls or
+either package identity. Weaver's root =gerbil.pkg= declares only Agentic AI Lab;
+Yuanxu follows its inherited dependency closure. Qualification uses isolated
+development links and never uninstalls or
 rewrites a global package environment.
 
 | Owner | Concrete responsibility | Does not establish |
@@ -70,7 +71,7 @@ compiler declaration. There is no parallel module list or loader.
 The gateway invokes the public =yuanxu-load-modules= callable value with =apply=.
 Its configuration adapter does not bind a compiler-private optimized keyword
 entry. A fresh native run exposed an undefined private entry and segmentation
-fault after a compiled gateway import; that failure is retained and is not a
+fault after a compiled gateway import; that observed failure is not a
 Policy rejection witness. Public-call dispatch removes that private-entry
 dependency. Runtime qualification still requires natural completion within the
 unchanged source deadline; an independent later startup timeout remains a failed
@@ -305,11 +306,12 @@ and Governance fixture lives in =t/fixtures/governed-control.ss=; Go supplies
 only inert test data. It is not a replacement Scheme unit-test framework.
 The Go development runner schedules both native suites and integration tests.
 
-Logs, receipts, linked build environments and transient verification outputs
-belong in Git-ignored =.cache/=. Failures remain available there. They are not
-copied into =dev/proofs/evidence/= or committed with source. Git retains Scheme
+Per-run logs and linked build environments use system temporary storage and
+are removed after execution. A single latest structured result per mode records
+source hashes, exits, output digests and a bounded failure tail under ignored
+=.cache/verification/=. Raw logs are not archived. Git retains Scheme
 tests, Quint/Lean models, SysML and maintained English Org/D2 specifications;
-CI uploads runtime evidence as expiring artifacts from =.cache/verification-*=.
+CI uploads only compact latest results and the latest benchmark summary.
 
 The Go-owned =check= gate includes strict SysML trace checks, Rust tests and all
 ASP deny gates, race tests, bounded source configuration PBT, Quint/Lean, and real
@@ -321,7 +323,7 @@ before and after execution; dependency-library qualification remains explicit.
 
 #+begin_src text
 go run ./go/cmd/weaver-dev check
-go run ./go/cmd/weaver-dev -scheme-source /absolute/agentic-ai-lab -scheme-poo /absolute/pinned-gerbil-poo -scheme-library /absolute/qualified/lib check-scheme
+go run ./go/cmd/weaver-dev -scheme-source /absolute/agentic-ai-lab -scheme-poo /absolute/pinned-gerbil-poo check-scheme
 go build ./go/cmd/weaver-control
 #+end_src
 
@@ -356,10 +358,13 @@ not covered that additional import closure. The failed native run is retained.
 The correction selects the already-declared revision in an isolated checkout,
 builds it through its official package entry with its original two-GiB compiler
 heap bound and one build worker, links its source after the fresh compiled
-library and before the older dependency library, and checks that its Git
+library, and checks that its Git
 HEAD matches the literal Core dependency declaration. No Core or Weaver existing
 pin is changed. The native receipt includes Agentic AI Lab, Core and Gerbil POO
-source hashes before/after execution. This qualifies the exercised native source
+source hashes before/after execution. The public =tao3k/yuanxu/prelude= source
+identity is linked from Core's declared prelude file; an old compiled external
+library is not required. An additional qualified library is optional.
+This qualifies the exercised source
 closure, not every precompiled external library, the complete upstream package
 suite, Scheme SMP, Linux packaging, or upstream remote CI.
 Source-only loading also exposed cold startup/negative-control timeouts. The

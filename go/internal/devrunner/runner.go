@@ -30,18 +30,23 @@ type Result struct {
 	ResolvedBinary string   `json:"resolvedBinary,omitempty"`
 	Args           []string `json:"args"`
 	Log            string   `json:"log"`
+	OutputSHA256   string   `json:"outputSha256,omitempty"`
+	FailureTail    string   `json:"failureTail,omitempty"`
+	Details        string   `json:"details,omitempty"`
 	ExitCode       *int     `json:"exitCode,omitempty"`
 	Error          string   `json:"error,omitempty"`
 	Duration       string   `json:"duration"`
 }
 type Receipt struct {
-	Revision string            `json:"revision,omitempty"`
-	Status   string            `json:"status"`
-	Root     string            `json:"root"`
-	Started  string            `json:"started"`
-	Stages   []Result          `json:"stages"`
-	Mode     string            `json:"mode"`
-	Inputs   map[string]string `json:"inputs"`
+	Revision           string            `json:"revision,omitempty"`
+	Status             string            `json:"status"`
+	Root               string            `json:"root"`
+	Started            string            `json:"started"`
+	Stages             []Result          `json:"stages"`
+	Mode               string            `json:"mode"`
+	Inputs             map[string]string `json:"inputs"`
+	LinkedSourceHeads  map[string]string `json:"linkedSourceHeads,omitempty"`
+	LinkedSourceSHA256 string            `json:"linkedSourceSha256,omitempty"`
 }
 
 func FindRoot(start string) (string, error) {
@@ -65,9 +70,9 @@ func regular(path string) bool {
 	return err == nil && info.Mode().IsRegular()
 }
 
-// Run retains independent logs and an atomically replaced receipt after every stage.
+// Run uses temporary stage logs and replaces one compact result per mode.
 // Only fixed argument vectors are executed; no shell or command-string interpretation exists.
-func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
+func Run(ctx context.Context, config Config, output io.Writer) (report string, runErr error) {
 	root, err := FindRoot(config.Root)
 	if err != nil {
 		return "", err
@@ -77,20 +82,25 @@ func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
 		goBinary = filepath.Join(runtime.GOROOT(), "bin/go")
 	}
 	data := filepath.Join(root, ".cache")
-	for _, name := range []string{"", "go-build-cache", "go-mod-cache", "go-tmp"} {
+	for _, name := range []string{"", "go-build-cache", "go-mod-cache"} {
 		if err := os.MkdirAll(filepath.Join(data, name), 0700); err != nil {
 			return "", err
 		}
 	}
-	directory, err := os.MkdirTemp(data, "verification-")
+	directory, err := os.MkdirTemp("", "weaver-verification-")
 	if err != nil {
 		return "", err
 	}
+	defer func() {
+		path, err := publishLatestResult(root, directory, config.Mode, runErr)
+		report = path
+		runErr = errors.Join(runErr, err)
+	}()
 	settings := map[string]string{
 		"GOCACHE": filepath.Join(data, "go-build-cache"), "GOMODCACHE": filepath.Join(data, "go-mod-cache"),
-		"GOTMPDIR": filepath.Join(data, "go-tmp"), "GOTOOLCHAIN": "local",
+		"GOTMPDIR": directory, "GOTOOLCHAIN": "local",
 	}
-	if config.Mode == "bootstrap" {
+	if config.Mode == "bootstrap" || config.Mode == "bootstrap-build" {
 		// Prefetch the existing module requirements, without expanding workspace sums.
 		// Verification itself continues to use the repository's Go workspace.
 		settings["GOWORK"] = "off"
@@ -118,7 +128,7 @@ func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
 			if err := writeReceipt(directory, receipt); err != nil {
 				return directory, err
 			}
-			fmt.Fprintf(output, "FAIL %s\nEvidence: %s\n", admission.Name, directory)
+			fmt.Fprintf(output, "FAIL %s\n", admission.Name)
 			return directory, errors.New("source does not match a committed revision")
 		}
 		fmt.Fprintf(output, "PASS %s\n", admission.Name)
@@ -195,9 +205,9 @@ func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
 	if err := writeReceipt(directory, receipt); err != nil {
 		return directory, err
 	}
-	fmt.Fprintf(output, "Evidence: %s\n", directory)
+	fmt.Fprintf(output, "Result: %s\n", latestResultPath(root, mode))
 	if failed {
-		return directory, errors.New("verification did not pass; retained stage logs and receipt.json")
+		return directory, errors.New("verification did not pass; see the latest structured result")
 	}
 	return directory, nil
 }

@@ -10,6 +10,8 @@ package WeaverProject {
     part def Absent;
     part def RuntimeDependency;
     part def ProhibitedExtension;
+    part def VerificationSuite;
+    part def VerificationMode;
     part def GoPackage;
     part def RustPackage {
         part 'Cargo.toml' : File;
@@ -28,6 +30,15 @@ package WeaverProject {
 
     package SourcePolicy {
         part '.py' : ProhibitedExtension;
+    }
+
+    package Verification {
+        part rust : VerificationSuite { part 'check-rust' : VerificationMode; }
+        part go : VerificationSuite { part 'check-go' : VerificationMode; }
+        part scheme : VerificationSuite { part 'check-scheme' : VerificationMode; }
+        part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
+        part policy : VerificationSuite { part 'check-policy' : VerificationMode; }
+        part benchmarks : VerificationSuite { part bench : VerificationMode; }
     }
 
     package Architecture {
@@ -55,12 +66,16 @@ package WeaverProject {
         part '.gitignore' : File;
         part 'Cargo.toml' : File;
         part 'Cargo.lock' : File;
+        part 'rust-toolchain.toml' : File;
         part 'go.work' : File;
         part 'go/go.mod' : File;
         part 'go/go.sum' : File;
         part 'gerbil.pkg' : File;
         part 'build.ss' : File;
         part 'init.ss' : File;
+        part '.github/workflows/ci.yml' : File;
+        part '.github/workflows/verify-suite.yml' : File;
+        part '.github/actions/prepare-toolchain/action.yml' : File;
         part 'scheme/policy/cedar-ffi.ss' : File;
 
         part 'crates/contracts' : RustPackage;
@@ -142,6 +157,7 @@ package WeaverProject {
         part 'packages/control' : Absent;
         part 'dev/models' : Absent;
         part 'dev/toolchains/go' : Absent;
+        part '.github/workflows/assurance.yml' : Absent;
     }
 
     allocation governanceCode allocate Architecture::semantics to Layout::'scheme/governance';

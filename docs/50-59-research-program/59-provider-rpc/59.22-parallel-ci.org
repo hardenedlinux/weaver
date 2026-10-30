@@ -1,0 +1,62 @@
+#+TITLE: 59.22 Parallel Multi-Language CI
+#+LANGUAGE: en
+
+* Allocation and startup
+
+=.github/workflows/ci.yml= starts six independent suites through the reusable
+=verify-suite.yml= workflow. Scheme runs on Ubuntu and Darwin. Job names describe
+the responsible language or contract rather than a generic execution category.
+The suite/mode allocation is declared in root =Project.sysml= and checked by the
+Go OpenSysML SDK gate against the actual workflow.
+
+CI installs host libraries through Ubuntu apt or Darwin Homebrew. Official Go
+setup selects the validated standard Go release, rustup consumes the root
+=rust-toolchain.toml=, and the Policy suite installs Quint through npm and Lean
+through the OS-provided elan manager. Source/dependency versions remain pinned.
+CI does not start Nix, evaluate devenv or require a Nix cache. Local devenv remains
+an optional developer environment, separate from CI startup.
+
+The shared action invokes the Go CI-host adapter. It installs only fixed package
+arguments on disposable GitHub-hosted machines. Test scheduling, source checks,
+dependency fetching and process execution stay in the Go workspace. No project
+Python or Bash test orchestration is introduced.
+
+* Independent suites
+
+| Suite | Go mode | Explicit checks |
+|-------+---------+-----------------|
+| Rust contracts, PBT and ASP | check-rust | Formatting, default/all-target compilation, all-feature workspace tests, property tests, every ASP deny gate and strict Clippy |
+| Go control, routing and gRPC streaming | check-go | Race tests, strict decoding/configuration, bounded routing/request/stream PBT, real HTTPS provider and mTLS gRPC tests, revocation, replay, restart and partial output |
+| Scheme Governance and Cedar FFI | check-scheme | Pinned inherited POO package build, selected Scheme modules, native Scheme standard test suites, real Cedar C ABI and Go/Rust streaming/recovery integration |
+| Project SysML and architecture allocation | check-architecture | Joint root/domain SDK model, allocations, package inventories, runtime dependency layers, Policy assets, source-language policy, requirement witnesses and workflow validation |
+| Cedar, Quint and Lean | check-policy | Cedar proof bridge, Quint type checks, directed tests, unsafe counterexamples and bounded schedule exploration; Lean composition under explicit premises |
+| Crate benchmarks and gRPC measurements | bench | Every package-owned Rust case with fixed sample settings, fresh result coverage, and three real Go gRPC benchmark families |
+
+Each language suite includes project/workflow admission. The disjoint Rust, Go,
+Policy and Architecture stages preserve the unified local =check= inventory;
+a Go regression test rejects a dropped or unintentionally duplicated check.
+The local unified command remains available for complete serial reproduction.
+No fuzz duration, sample count or execution watchdog is increased for CI.
+
+* Scheme dependency closure
+
+Weaver directly declares only Agentic AI Lab in =gerbil.pkg=. CI checks out that
+source and its Core submodule, plus the existing exact POO revision required by
+Core. The development links expose Core's declared public prelude identity and
+source package. A preexisting developer library is not required.
+The published Scheme SDK setup action is reused at the same immutable revision
+as the authorized bridge dependency. Its release/host admission remains separate
+from application and formal proof results.
+
+* Results and cleanup
+
+Each job produces source-bound compact latest results. Per-run stdout/stderr,
+module links and compiler output use system temporary directories and are removed
+on completion, including failures. Structured results retain exit status, source
+identity, output hashes and at most 4096 bytes of a failed stage's diagnostics.
+They overwrite fixed slots. CI uploads these compact files and the latest
+benchmark table as expiring artifacts; raw run logs are not archived by the project.
+
+Local passes, workflow syntax admission and remote execution are distinct results.
+A job that cannot install its SDK, finish cleanup, or complete a control fails.
+A success marker inside an unfinished process does not qualify the job.

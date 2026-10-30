@@ -21,8 +21,9 @@ source-bound receipts provide implementation evidence for those premises.
 
 The earlier Python check, prepare and generated bundle-helper scripts are no
 longer maintained verification entrypoints. No current Go or CI stage invoked
-them. Their source copies and hashes were archived under ignored =.cache/=
-before removal. The root Project model prohibits reintroducing tracked Python
+them. Their earlier source remains recoverable from Git history and the ignored
+hashed source-recovery archive. This archive is separate from temporary run logs.
+The root Project model prohibits reintroducing tracked Python
 source as an implicit parallel verification framework.
 
 Historical chapters may retain old commands, declaration counts and receipts
@@ -35,8 +36,12 @@ receipt; no old script result is promoted into that inventory.
 
 * Output ownership
 
-Current logs, failed runs, command receipts, temporary module links and measured
-results are retained under Git-ignored =.cache/=. Source, native test suites,
+Per-run logs, temporary module links and isolated compiler outputs use system
+temporary directories and are deleted after execution. One latest structured
+result per mode is atomically replaced under ignored =.cache/verification/=.
+It records source identity, exits, output hashes, bounded environment/measurement
+metadata and at most 4096 bytes of each failed stage's output. The latest benchmark
+table is overwritten rather than creating run archives. Source, Scheme test suites,
 formal models and maintained English Org/D2 documents are versioned.
 Historical evidence is not silently reclassified as a current successful run.
 

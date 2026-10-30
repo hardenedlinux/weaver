@@ -1,0 +1,18 @@
+name: Prepare host toolchains
+description: Use OS packages and official Go/Rust tools without Nix startup
+runs:
+  using: composite
+  steps:
+    - name: Select standard Go
+      uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+      with:
+        go-version: '1.26.1'
+        cache: false
+    - name: Select Node for Quint
+      if: env.WEAVER_VERIFY_SUITE == 'check-policy'
+      uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      with:
+        node-version: '24'
+    - name: Install Ubuntu or Darwin packages
+      shell: sh
+      run: go run ./go/cmd/weaver-dev prepare-ci-tools

@@ -208,6 +208,6 @@ func collectBenchmarks(root, directory, started string) error {
 		}
 	}
 	slices.Sort(rows)
-	report := "#+TITLE: Native Rust Benchmark Baseline\n#+LANGUAGE: en\n\n* Scope\nLocal empirical baseline, not a throughput guarantee. Values are nanoseconds per measured iteration. CPU, compiler and client environment are in the adjacent stage logs. Go RPC client allocations are not Rust allocations.\n\n| Package | Benchmark | Samples | Mean ns | Lower confidence bound ns | Upper confidence bound ns |\n|---------+-----------+---------+---------+---------------------------+---------------------------|\n" + strings.Join(rows, "\n") + "\n"
+	report := "#+TITLE: Native Rust Benchmark Baseline\n#+LANGUAGE: en\n\n* Scope\nLocal empirical baseline, not a throughput guarantee. Values are nanoseconds per measured iteration. Compiler and client metadata are in the latest structured result. Go RPC client allocations are not Rust allocations. Raw stage logs are temporary and cleaned after execution.\n\n| Package | Benchmark | Samples | Mean ns | Lower confidence bound ns | Upper confidence bound ns |\n|---------+-----------+---------+---------+---------------------------+---------------------------|\n" + strings.Join(rows, "\n") + "\n"
 	return os.WriteFile(filepath.Join(directory, "benchmark-summary.org"), []byte(report), 0600)
 }

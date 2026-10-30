@@ -13,8 +13,8 @@ func Plan(goBinary string) []Stage {
 		{"go-environment", goBinary, []string{"version"}},
 		{"quint-environment", "quint", []string{"--version"}},
 		{"proof-environment", "elan", []string{"run", proofToolchain, "lean", "--version"}},
-		{"project-architecture", goBinary, []string{"test", "-count=1", "./go/dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership)", "-v"}},
-		{"workflow-contract", "actionlint", []string{".github/workflows/assurance.yml"}},
+		{"project-architecture", goBinary, []string{"test", "-count=1", "./go/dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership|CIWorkflows)", "-v"}},
+		{"workflow-contract", "actionlint", nil},
 		{"rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
 		{"rust-default-profile", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
 		{"rust-tests", "cargo", []string{"test", "--workspace", "--all-features", "--locked", "--offline"}},
@@ -60,7 +60,7 @@ func Plan(goBinary string) []Stage {
 		{"publication-lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/PublicationRecovery.lean"}},
 		{"source-owner-quint-tests", "quint", []string{"test", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--seed", "293"}},
 		{"source-owner-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
-		{"go-native-integration", goBinary, []string{"test", "-count=1", "-race", "-tags=integration", "./go/dev", "-run", "TestProvider", "-v"}},
+		{"go-provider-grpc-integration", goBinary, []string{"test", "-count=1", "-race", "-tags=integration", "./go/dev", "-run", "TestProvider", "-v"}},
 		{"control-bundle-pbt", goBinary, []string{"test", "./go/internal/config", "-run", "^$", "-fuzz", "FuzzSourceBundleCannotExpandOriginalSelection", "-fuzztime=3s", "-parallel=1"}},
 		{"control-activation-quint-tests", "quint", []string{"test", "dev/proofs/quint/ControlActivation.qnt", "--main", "ControlActivation", "--seed", "293"}},
 		{"control-activation-quint-safety", "quint", []string{"run", "dev/proofs/quint/ControlActivation.qnt", "--main", "ControlActivation", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
@@ -78,20 +78,41 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "check":
 		return Plan(goBinary), nil
+	case "bootstrap-build", "bootstrap-proofs":
+		stages, err := Stages("bootstrap", goBinary)
+		if err != nil {
+			return nil, err
+		}
+		if mode == "bootstrap-build" {
+			return stages[:2], nil
+		}
+		return stages[2:], nil
+	case "check-rust", "check-go", "check-policy", "check-architecture":
+		var selected []Stage
+		for _, stage := range Plan(goBinary) {
+			common := stage.Name == "project-architecture" || stage.Name == "workflow-contract"
+			language := mode == "check-rust" && (stage.Binary == "cargo" || stage.Binary == "rustc") ||
+				mode == "check-go" && stage.Binary == goBinary ||
+				mode == "check-policy" && (stage.Binary == "quint" || stage.Binary == "elan")
+			if common || language {
+				selected = append(selected, stage)
+			}
+		}
+		return selected, nil
 	case "check-scheme":
 		return []Stage{
-			{"project-architecture", goBinary, []string{"test", "-count=1", "./go/dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership)", "-v"}},
+			{"project-architecture", goBinary, []string{"test", "-count=1", "./go/dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership|CIWorkflows)", "-v"}},
 			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},
 			{"scheme-declared-poo-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "dependencies"}},
-			{"scheme-native-ffi", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline"}},
+			{"scheme-module-build", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline"}},
 			// Delegate discovery and assertions to the SDK and Scheme-owned suites.
 			// Check the returned result explicitly; success markers alone cannot pass.
 			{"scheme-unit-tests", os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER"), []string{"-e", "(dump-stack-trace? #f)", "-e", "(import (prefix-in :gerbil/tools/gxtest tests.))", "-e", "(unless (zero? (tests.main \"-g\" \"-v\" \"5\" \"t\")) (error \"Scheme test suite failed\"))"}},
-			{"scheme-native-control-integration", goBinary, []string{"test", "-count=1", "-race", "-tags=integration,schemeintegration", "./go/dev", "-run", "^TestProviderControl", "-v"}},
+			{"scheme-grpc-stream-integration", goBinary, []string{"test", "-count=1", "-race", "-tags=integration,schemeintegration", "./go/dev", "-run", "^TestProviderControl", "-v"}},
 		}, nil
 	case "bench":
 		return []Stage{
-			{"project-architecture", goBinary, []string{"test", "-count=1", "./go/dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership)", "-v"}},
+			{"project-architecture", goBinary, []string{"test", "-count=1", "./go/dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership|CIWorkflows)", "-v"}},
 			{"rust-environment", "rustc", []string{"-vV"}},
 			{"go-environment", goBinary, []string{"version"}},
 			{"benchmark-package-contract", goBinary, []string{"test", "-count=1", "./go/dev", "./go/internal/devrunner", "-run", "^Test(CargoWorkspaceAndDevelopmentGates|Benchmark.*)$"}},

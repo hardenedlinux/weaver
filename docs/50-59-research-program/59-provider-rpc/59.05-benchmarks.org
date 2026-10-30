@@ -48,7 +48,7 @@ them with a single aggregate number.
 | source server through Go | Warm mTLS PublishAuthority with strict typed Cedar validation and a fresh revision CAS per iteration | Actual source ingress and durable Policy publication; no provider invocation allowed |
 
 =go run ./go/cmd/weaver-dev bench= runs optimized Rust benchmarks and the actual
-RPC benchmark. It records Rust/Go environment output, raw logs, a source-bound
+RPC benchmark. It records bounded Rust/Go environment metadata and a source-bound
 receipt, Criterion structured data and an English Org summary. Only result files
 created during the current run can qualify its twenty-six explicitly mapped cases.
 Every case is required: a partial package, stale estimate or unmapped case fails

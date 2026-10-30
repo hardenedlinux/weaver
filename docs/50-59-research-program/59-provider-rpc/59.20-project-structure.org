@@ -24,7 +24,7 @@ model. Parsing the root without its domain definitions is a negative control.
 | File under =prod/= | Policy, schema, profile and associated case assets consumed across verification languages |
 | File under =t/= | Native Scheme standard test suites and integration fixtures |
 | Directory under =dev/= | Formal models, proof dependencies and development tooling |
-| IgnoredDirectory | =.cache/= verification outputs, =target/= Cargo outputs, =.data/= research checkouts and =.devenv/= SDK state; none may be Git-tracked |
+| IgnoredDirectory | =.cache/= bounded latest results and reusable tool caches, =target/= Cargo outputs, =.data/= research checkouts and =.devenv/= local SDK state; none may be Git-tracked |
 | Absent | Retired ambiguous package roots and misplaced Policy/benchmark directories |
 
 * Executable admission
@@ -55,5 +55,6 @@ effect-admission premises. Native Scheme/Rust/Go tests check the implementation
 against those contracts. A structural SysML verdict never authorizes a send or
 proves the correctness of a provider, compiler or storage system.
 
-Maintained source and specifications are versioned. Runtime logs, measurements,
-receipts and temporary build products remain under ignored output directories.
+Maintained source and specifications are versioned. Runtime logs and isolated
+build products are temporary and cleaned. Compact latest summaries overwrite
+fixed ignored slots; no per-run log archive is maintained.
