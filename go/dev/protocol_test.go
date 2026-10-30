@@ -17,7 +17,7 @@ func TestGeneratedRPCMatchesSharedSchema(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	path := filepath.Join(t.TempDir(), "schema.pb")
-	cmd := exec.CommandContext(ctx, "protoc", "--descriptor_set_out="+path, "-I", "api", "api/gateway/v1/gateway.proto")
+	cmd := exec.CommandContext(ctx, "protoc", "--descriptor_set_out="+path, "-I", "proto", "proto/gateway/v1/gateway.proto")
 	cmd.Dir = root(t)
 	if data, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("schema compilation: %v: %s", err, data)

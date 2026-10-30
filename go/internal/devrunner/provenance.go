@@ -54,7 +54,7 @@ func SourceInputs(root string) (map[string]string, error) {
 			return nil, err
 		}
 	}
-	for _, directory := range []string{"crates", "go", "api", "scheme", "t", "prod", "dev/sysml", ".github"} {
+	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", ".github"} {
 		err := filepath.WalkDir(filepath.Join(root, directory), func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err

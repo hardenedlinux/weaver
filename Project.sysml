@@ -59,7 +59,7 @@ package WeaverProject {
         part dev : Directory;
         part t : Directory;
         part docs : Directory;
-        part api : Directory;
+        part proto : Directory;
         part examples : Directory;
         part '.github' : Directory;
 
@@ -74,6 +74,7 @@ package WeaverProject {
         part 'gerbil.pkg' : File;
         part 'build.ss' : File;
         part 'init.ss' : File;
+        part 'proto/gateway/v1/gateway.proto' : File;
         part '.github/workflows/ci.yml' : File;
         part '.github/workflows/verify-suite.yml' : File;
         part '.github/actions/prepare-toolchain/action.yml' : File;
@@ -150,6 +151,7 @@ package WeaverProject {
         part '.devenv' : IgnoredDirectory;
 
         part 'dev/benchmarks' : Absent;
+        part api : Absent;
         part 'dev/policies' : Absent;
         part 'dev/fixtures/policies' : Absent;
         part 'scheme/modules' : Absent;

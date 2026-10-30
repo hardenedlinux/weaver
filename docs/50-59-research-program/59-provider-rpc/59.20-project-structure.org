@@ -20,6 +20,7 @@ model. Parsing the root without its domain definitions is a negative control.
 | RustPackage | Every Cargo workspace member under =crates/=, including the server, with package-owned =benches/gateway.rs= and benchmark documentation |
 | RuntimeDependency | Actual internal runtime Cargo edges, independently of development dependencies and benchmark support reuse |
 | GoPackage | The top-level =go/= module and its actual =go list= package inventory |
+| Directory =proto/= | Shared versioned Protobuf sources; Rust build and Go code generation use the same include root |
 | SchemeModule | Direct =scheme/governance=, =scheme/policy= and =scheme/gateway= owners, with root =gerbil.pkg=, =init.ss= and =build.ss= |
 | File under =prod/= | Policy, schema, profile and associated case assets consumed across verification languages |
 | File under =t/= | Native Scheme standard test suites and integration fixtures |

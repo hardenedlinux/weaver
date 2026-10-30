@@ -11,7 +11,7 @@ Maintained native and formal checks follow [[file:59.21-verification-ownership.o
 [[file:59.24-telemetry-service.org][Default telemetry service]] defines the target observation boundary and OpenShell comparison.
 
 Go and Rust communicate through the shared typed gRPC service in
-[[file:../../../api/gateway/v1/gateway.proto][gateway.proto]]. The Rust server executable starts this service by default.
+[[file:../../../proto/gateway/v1/gateway.proto][gateway.proto]]. The Rust server executable starts this service by default.
 The previous operation CLI, proposal CLI, HTTP ingress and command-based replay
 are retired under [[file:../../../dev/proofs/evidence/provider-routing-20261030/retired-interfaces/][historical interface evidence]]. They are not alternate production
 paths. A Go test may start a Rust daemon, but all task registration, publication,
@@ -31,7 +31,7 @@ It does not introduce another permission or transport owner.
 | Native source authoring | =scheme/=: existing Agentic AI Lab Governance/Governor POO values, inert Rust Policy C FFI and exact task/plan artifact |
 | Go control service | =go/cmd/weaver-control=: acknowledged source activation, frozen routing and authenticated streaming proxy |
 | Go RPC client | =go/internal/gatewayclient=: explicit mTLS, no application retry, sequence and receipt checks |
-| Shared wire contract | =api/gateway/v1/gateway.proto=: typed proposals, roles, observations and encoding choice |
+| Shared wire contract | =proto/gateway/v1/gateway.proto=: typed proposals, roles, observations and encoding choice |
 | Rust contracts | =crates/contracts=: immutable provider commitments and closed native event/outcome types |
 | Rust Policy | =crates/policy=: original-fact binding and fresh error-free Cedar decisions |
 | Rust ledger | =crates/ledger=: shared holds, canonical consumption and affine dispatch/release records |

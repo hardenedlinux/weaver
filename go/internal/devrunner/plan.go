@@ -124,7 +124,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		return []Stage{
 			{"go-protobuf-generator", goBinary, []string{"build", "-o", ".cache/protoc-gen-go", "google.golang.org/protobuf/cmd/protoc-gen-go"}},
 			{"go-grpc-generator", goBinary, []string{"build", "-o", ".cache/protoc-gen-go-grpc", "google.golang.org/grpc/cmd/protoc-gen-go-grpc"}},
-			{"protobuf-generation", "protoc", []string{"--plugin=protoc-gen-go=.cache/protoc-gen-go", "--plugin=protoc-gen-go-grpc=.cache/protoc-gen-go-grpc", "--go_out=go/api", "--go_opt=module=github.com/HardenedLinux/weaver/go/api", "--go-grpc_out=go/api", "--go-grpc_opt=module=github.com/HardenedLinux/weaver/go/api", "-I", "api", "api/gateway/v1/gateway.proto"}},
+			{"protobuf-generation", "protoc", []string{"--plugin=protoc-gen-go=.cache/protoc-gen-go", "--plugin=protoc-gen-go-grpc=.cache/protoc-gen-go-grpc", "--go_out=go/api", "--go_opt=module=github.com/HardenedLinux/weaver/go/api", "--go-grpc_out=go/api", "--go-grpc_opt=module=github.com/HardenedLinux/weaver/go/api", "-I", "proto", "proto/gateway/v1/gateway.proto"}},
 		}, nil
 	default:
 		return nil, fmt.Errorf("unknown development mode: %s", mode)
