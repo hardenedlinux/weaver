@@ -28,7 +28,7 @@ func SourceInputs(root string) (map[string]string, error) {
 		result[filepath.ToSlash(relative)] = hex.EncodeToString(sum[:])
 		return nil
 	}
-	for _, path := range []string{"Project.sysml", "README.org", ".gitignore", "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "go.work", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
+	for _, path := range []string{"Project.sysml", "README.org", ".gitignore", "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
 		"docs/50-59-research-program/59-provider-rpc/59.03-provider-rpc-core.d2",
 		"docs/50-59-research-program/59-provider-rpc/59.19-governance-control.org",
 		"docs/50-59-research-program/59-provider-rpc/59.20-project-structure.org",
@@ -46,11 +46,6 @@ func SourceInputs(root string) (map[string]string, error) {
 		"dev/proofs/quint/AuthorityPublication.qnt",
 		"dev/proofs/cedar/lakefile.toml", "dev/proofs/cedar/lake-manifest.json", "dev/proofs/cedar/lean-toolchain", "dev/proofs/cedar/WeaverPolicyBridge.lean"} {
 		if err := add(filepath.Join(root, path)); err != nil {
-			return nil, err
-		}
-	}
-	if _, err := os.Stat(filepath.Join(root, "go.work.sum")); err == nil {
-		if err := add(filepath.Join(root, "go.work.sum")); err != nil {
 			return nil, err
 		}
 	}

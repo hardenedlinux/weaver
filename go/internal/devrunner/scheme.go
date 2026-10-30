@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -24,7 +25,13 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 	if !filepath.IsAbs(compiler) || source == "" || poo == "" {
 		return nil, errors.New("explicit Scheme compiler, source checkout and dependency library required")
 	}
-	source, err := filepath.Abs(source)
+	if !filepath.IsAbs(source) {
+		source = filepath.Join(root, source)
+	}
+	if !filepath.IsAbs(poo) {
+		poo = filepath.Join(root, poo)
+	}
+	source, err := filepath.EvalSymlinks(source)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +45,7 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 		}
 	}
 	core := filepath.Join(source, "core")
-	poo, err = filepath.Abs(poo)
+	poo, err = filepath.EvalSymlinks(poo)
 	if err != nil {
 		return nil, err
 	}
@@ -165,6 +172,17 @@ func DeclaredPooRevision(core string) (string, error) {
 }
 
 func schemeSourceHashes(source, poo string) (map[string]string, error) {
+	var err error
+	source, err = filepath.EvalSymlinks(source)
+	if err != nil {
+		return nil, err
+	}
+	if poo != "" {
+		poo, err = filepath.EvalSymlinks(poo)
+		if err != nil {
+			return nil, err
+		}
+	}
 	hashes := map[string]string{}
 	for _, directory := range []string{"modules", "core"} {
 		err := filepath.WalkDir(filepath.Join(source, directory), func(path string, entry fs.DirEntry, err error) error {
@@ -246,7 +264,24 @@ func schemeSourceCurrentness(directory, name string) Result {
 		var current map[string]string
 		current, err = schemeSourceHashes(receipt.SourceRoot, receipt.PooSource)
 		if err == nil && !maps.Equal(current, receipt.SourceHashes) {
-			err = errors.New("linked native Scheme sources changed")
+			changed := []string{}
+			for path, hash := range receipt.SourceHashes {
+				if current[path] != hash {
+					changed = append(changed, path)
+				}
+			}
+			for path := range current {
+				if _, exists := receipt.SourceHashes[path]; !exists {
+					changed = append(changed, path)
+				}
+			}
+			slices.Sort(changed)
+			count := len(changed)
+			changed = changed[:min(count, 8)]
+			for index, path := range changed {
+				changed[index] = path[:min(len(path), 160)]
+			}
+			err = fmt.Errorf("linked Scheme sources changed (%d): %s", count, strings.Join(changed, ", "))
 		}
 	}
 	if err == nil {

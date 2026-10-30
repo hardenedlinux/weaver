@@ -61,7 +61,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	controlBinary = filepath.Join(directory, "weaver-control")
-	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), "build", "-race", "-o", controlBinary, "./go/cmd/weaver-control")
+	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "build", "-race", "-o", controlBinary, "./cmd/weaver-control")
 	controlBuild.Dir, controlBuild.Stdout, controlBuild.Stderr = repo, os.Stderr, os.Stderr
 	if err := controlBuild.Run(); err != nil {
 		os.RemoveAll(directory)

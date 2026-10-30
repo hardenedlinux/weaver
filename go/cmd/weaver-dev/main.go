@@ -42,10 +42,18 @@ func run() (resultErr error) {
 	if err != nil {
 		return err
 	}
+	working, err = devrunner.FindRoot(working)
+	if err != nil {
+		return err
+	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 	if flag.Arg(0) == "scheme-poo-revision" {
-		revision, err := devrunner.DeclaredPooRevision(filepath.Join(*schemeSource, "core"))
+		source := *schemeSource
+		if !filepath.IsAbs(source) {
+			source = filepath.Join(working, source)
+		}
+		revision, err := devrunner.DeclaredPooRevision(filepath.Join(source, "core"))
 		if err != nil {
 			return err
 		}

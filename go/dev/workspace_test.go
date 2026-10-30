@@ -213,7 +213,7 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 }
 func TestSysMLSDKIsAbsentFromProductionBuild(t *testing.T) {
 	goBinary := filepath.Join(runtime.GOROOT(), "bin/go")
-	deps := tool(t, goBinary, "list", "-deps", "./go/cmd/...")
+	deps := tool(t, goBinary, "-C", "go", "list", "-deps", "./cmd/...")
 	if strings.Contains(string(deps), "github.com/Open-MBEE/OpenSysML") {
 		t.Fatal("development SDK leaked into production command graph")
 	}

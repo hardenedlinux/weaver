@@ -3,8 +3,8 @@
 
 * Maintained execution
 
-The Go workspace owns the executable verification plan through
-=go run ./go/cmd/weaver-dev=. =check= runs the declared Rust/Go native, PBT,
+The Go module owns the executable verification plan through
+=go -C go run ./cmd/weaver-dev=. =check= runs the declared Rust/Go native, PBT,
 Cedar, Quint and Lean gates. =check-scheme= adds isolated native dependency
 builds, standard Scheme suites and real cross-language publication/execution
 tests. =bench= measures each crate's package-owned target and Go gRPC cases.
@@ -13,12 +13,13 @@ contracts through the Go OpenSysML SDK.
 
 Scheme assertions belong to =t/*-test.ss= and run through the standard SDK
 =gxtest= API. Their returned verdict and natural child exit are checked.
-Quint owns schedule exploration and deliberate unsafe counterexamples. The
-AuthorityPublication model imports the existing publication and execution owners;
-it does not redeclare their ledgers. Lean reuses cedar-poo-spec semantic results
-and existing parameterized execution proofs. The duplicate control-gate Lean
-file and CI stage are removed. Runtime tests establish concrete source validation,
-SQL, transport and natural cleanup; these are not inferred from Boolean models.
+The single responsibility registry is
+=WeaverProject::AssuranceResponsibilities= in [[file:../../../Project.sysml][Project.sysml]].
+The AuthorityPublication composition imports existing publication and execution
+owners. New evidence work must extend its missing schedules or reuse an existing
+semantic theorem, rather than create another control-gate model in both languages.
+There is no PolicyEvidenceJoin Lean or Quint module. Concrete implementation
+evidence and structural/model results remain distinct receipts.
 
 * Retired research drivers
 

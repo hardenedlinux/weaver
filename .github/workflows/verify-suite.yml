@@ -37,10 +37,10 @@ jobs:
       - name: Prepare deterministic toolchain
         uses: ./.github/actions/prepare-toolchain
       - name: Fetch locked Rust and Go dependencies
-        run: go run ./go/cmd/weaver-dev -clean-source bootstrap-build
+        run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-build
       - name: Prepare Cedar and Lean proof dependencies
         if: inputs.suite == 'check-policy'
-        run: go run ./go/cmd/weaver-dev -clean-source bootstrap-proofs
+        run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-proofs
       - name: Prepare published Scheme SDK
         if: inputs.suite == 'check-scheme'
         uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@80e68254092589bbb778c9761a058da16fb6f72e
@@ -58,7 +58,7 @@ jobs:
       - name: Read the inherited POO revision
         id: poo-dependency
         if: inputs.suite == 'check-scheme'
-        run: go run ./go/cmd/weaver-dev -scheme-source .data/agentic-ai-lab scheme-poo-revision
+        run: go -C go run ./cmd/weaver-dev -scheme-source .data/agentic-ai-lab scheme-poo-revision
       - name: Check out the inherited POO dependency
         if: inputs.suite == 'check-scheme'
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -69,12 +69,12 @@ jobs:
           path: .data/gerbil-poo
       - name: Verify declared suite
         if: inputs.suite != 'check-scheme'
-        run: go run ./go/cmd/weaver-dev -clean-source "$WEAVER_VERIFY_SUITE"
+        run: go -C go run ./cmd/weaver-dev -clean-source "$WEAVER_VERIFY_SUITE"
       - name: Verify Scheme modules, Cedar FFI and streaming recovery
         if: inputs.suite == 'check-scheme'
         env:
           WEAVER_CONTROL_SCHEME_COMPILER: ${{ env.GERBIL_PREFIX }}/bin/gxi
-        run: go run ./go/cmd/weaver-dev -clean-source -scheme-source .data/agentic-ai-lab -scheme-poo .data/gerbil-poo check-scheme
+        run: go -C go run ./cmd/weaver-dev -clean-source -scheme-source .data/agentic-ai-lab -scheme-poo .data/gerbil-poo check-scheme
       - name: Publish latest structured result
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

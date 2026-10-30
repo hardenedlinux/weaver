@@ -68,7 +68,8 @@ package WeaverProject {
         part 'Cargo.toml' : File;
         part 'Cargo.lock' : File;
         part 'rust-toolchain.toml' : File;
-        part 'go.work' : File;
+        part 'go.work' : Absent;
+        part 'go.work.sum' : Absent;
         part 'go/go.mod' : File;
         part 'go/go.sum' : File;
         part 'gerbil.pkg' : File;

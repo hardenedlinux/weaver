@@ -205,7 +205,7 @@ func TestProjectArchitecture(t *testing.T) {
 		t.Fatal(err)
 	}
 	goOwners := projectLayout(parts, "GoPackage")
-	for _, directory := range strings.Split(strings.TrimSpace(string(tool(t, filepath.Join(runtime.GOROOT(), "bin/go"), "list", "-f", "{{.Dir}}", "./go/..."))), "\n") {
+	for _, directory := range strings.Split(strings.TrimSpace(string(tool(t, filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "list", "-f", "{{.Dir}}", "./..."))), "\n") {
 		relative, err := filepath.Rel(repository, directory)
 		if err != nil {
 			t.Fatal(err)

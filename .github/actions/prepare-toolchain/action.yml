@@ -15,4 +15,4 @@ runs:
         node-version: '24'
     - name: Install Ubuntu or Darwin packages
       shell: sh
-      run: go run ./go/cmd/weaver-dev prepare-ci-tools
+      run: go -C go run ./cmd/weaver-dev prepare-ci-tools

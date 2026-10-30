@@ -38,7 +38,7 @@ checked through the in-process OpenSysML SDK.
 | =dev/= | SysML models, Quint models, Lean proofs and development specifications |
 | =docs/= | English Org documentation and D2 diagrams |
 
-The root =Cargo.toml= and =go.work= manage their language workspaces.
+The root =Cargo.toml= manages Rust crates; =go/go.mod= owns the single Go module.
 =gerbil.pkg=, =build.ss= and =init.ss= define the Scheme package.
 
 * Development
@@ -48,9 +48,9 @@ Use the toolchains and prerequisites described in the
 and in CI:
 
 #+begin_src text
-go run ./go/cmd/weaver-dev bootstrap
-go run ./go/cmd/weaver-dev check
-go run ./go/cmd/weaver-dev bench
+go -C go run ./cmd/weaver-dev bootstrap
+go -C go run ./cmd/weaver-dev check
+go -C go run ./cmd/weaver-dev bench
 #+end_src
 
 Individual suites are =check-rust=, =check-go=, =check-policy=,

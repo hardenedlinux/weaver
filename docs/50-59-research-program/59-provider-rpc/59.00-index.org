@@ -65,10 +65,10 @@ It does not introduce another permission or transport owner.
 * Development commands
 
 #+begin_example
- go run ./go/cmd/weaver-dev bootstrap
- go run ./go/cmd/weaver-dev generate-rpc
- go run ./go/cmd/weaver-dev check
- go run ./go/cmd/weaver-dev bench
+ go -C go run ./cmd/weaver-dev bootstrap
+ go -C go run ./cmd/weaver-dev generate-rpc
+ go -C go run ./cmd/weaver-dev check
+ go -C go run ./cmd/weaver-dev bench
 #+end_example
 
 These commands execute fixed tool argument vectors directly. Python and shell

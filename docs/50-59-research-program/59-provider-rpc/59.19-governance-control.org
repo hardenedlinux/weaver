@@ -454,9 +454,9 @@ and runs =integration,schemeintegration= tests. Linked source hashes are checked
 before and after execution; dependency-library qualification remains explicit.
 
 #+begin_src text
-go run ./go/cmd/weaver-dev check
-go run ./go/cmd/weaver-dev -scheme-source /absolute/agentic-ai-lab -scheme-poo /absolute/pinned-gerbil-poo check-scheme
-go build ./go/cmd/weaver-control
+go -C go run ./cmd/weaver-dev check
+go -C go run ./cmd/weaver-dev -scheme-source /absolute/agentic-ai-lab -scheme-poo /absolute/pinned-gerbil-poo check-scheme
+go -C go build ./cmd/weaver-control
 #+end_src
 
 Select =WEAVER_CONTROL_SCHEME_COMPILER= as an absolute =gxi= path before the native

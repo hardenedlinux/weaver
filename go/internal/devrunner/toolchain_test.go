@@ -39,8 +39,8 @@ func TestGoFuzzCoordinatorPreservesPropertyFailure(t *testing.T) {
 		t.Run(target, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 			defer cancel()
-			cmd := exec.CommandContext(ctx, filepath.Join(runtime.GOROOT(), "bin/go"), "test",
-				"./go/internal/devrunner/testdata/fuzzcontrol", "-v", "-run", "^$", "-fuzz", "^"+target+"$", "-fuzztime=3s", "-parallel=1")
+			cmd := exec.CommandContext(ctx, filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "test",
+				"./internal/devrunner/testdata/fuzzcontrol", "-v", "-run", "^$", "-fuzz", "^"+target+"$", "-fuzztime=3s", "-parallel=1")
 			cmd.Dir = root
 			captured := &fuzzControlOutput{started: time.Now()}
 			cmd.Stdout, cmd.Stderr = captured, captured

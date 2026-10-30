@@ -9,6 +9,11 @@ where their packages belong and which runtime Rust dependency edges are allowed.
 Go's existing OpenSysML SDK parses and queries the model under strict conformance.
 No parallel JSON/YAML project registry is maintained.
 
+Go has one module, owned by =go/go.mod=. Commands from the repository root use
+=go -C go=; there is no root =go.work= or =go.work.sum=. The development runner
+locates the project through =Cargo.toml= and =go/go.mod= and schedules Go stages
+inside that module while Rust, Scheme and Protobuf stages retain project scope.
+
 The SDK's =ParseFiles= API links =Project.sysml= with =dev/sysml/*.sysml= as one
 semantic model. Root components reference the domain's actual part definitions;
 native SysML allocations bind those components to code owners. The requirement

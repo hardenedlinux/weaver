@@ -50,8 +50,8 @@ randomized causal estimate or universal startup guarantee. The first old-policy
 cohort is faster than its new-policy counterpart. The historical full-check
 failure remains failed; loader/host attribution is not claimed resolved.
 
-Reproduce the optional Darwin image study through the existing Go workspace:
-=go test -count=1 -race -tags=integration ./go/dev -run '^TestDarwinStartupImageComparison$' -v=.
+Reproduce the optional Darwin image study through the Go module:
+=go -C go test -count=1 -race -tags=integration ./dev -run '^TestDarwinStartupImageComparison$' -v=.
 It is excluded from the normal TestProvider assurance selection. The ordinary
 fresh-file/restart witness remains in that selection. The study's external
 strip/sign tools use fixed argv through the existing Go helper with its original

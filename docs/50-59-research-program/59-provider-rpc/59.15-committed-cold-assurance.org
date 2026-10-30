@@ -57,8 +57,10 @@ failure for an already installed compiler. The runner rejected that receipt
 through source currentness. The checksum expansion and failure are retained,
 and only that automatic checksum edit was restored.
 
-Bootstrap now prefetches the existing module with =GOWORK=off= for that mode only.
-Normal verification still uses =go.work=. The official =elan run --install=
+At that checkpoint bootstrap prefetched the module with =GOWORK=off= for that
+mode only. The current single-module layout removes =go.work= and runs Go
+commands with =go -C go= in both preparation and verification.
+The official =elan run --install=
 entrypoint installs only when necessary and works with the existing compiler.
 No module manifest, dependency version or lock was updated to make preparation
 pass. The successful local bootstrap is a warm-cache command check; cold-cache

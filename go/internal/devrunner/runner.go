@@ -55,7 +55,7 @@ func FindRoot(start string) (string, error) {
 		return "", err
 	}
 	for {
-		if regular(filepath.Join(path, "Cargo.toml")) && regular(filepath.Join(path, "go.work")) {
+		if regular(filepath.Join(path, "Cargo.toml")) && regular(filepath.Join(path, "go", "go.mod")) {
 			return path, nil
 		}
 		parent := filepath.Dir(path)
@@ -99,11 +99,6 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	settings := map[string]string{
 		"GOCACHE": filepath.Join(data, "go-build-cache"), "GOMODCACHE": filepath.Join(data, "go-mod-cache"),
 		"GOTMPDIR": directory, "GOTOOLCHAIN": "local",
-	}
-	if config.Mode == "bootstrap" || config.Mode == "bootstrap-build" {
-		// Prefetch the existing module requirements, without expanding workspace sums.
-		// Verification itself continues to use the repository's Go workspace.
-		settings["GOWORK"] = "off"
 	}
 	environment := Environment(settings)
 	mode := config.Mode
