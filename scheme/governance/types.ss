@@ -2,18 +2,30 @@
 (import (only-in :clan/poo/object .cc)
         (only-in :clan/poo/mop Function Bool)
         (only-in :clan/poo/type Record List String Symbol Pair Or Enum)
+        (only-in :yuanxu/object-types/contracts YuanxuContract.)
         (only-in :agentic-ai-lab/modules/governance/types AgenticAILabGovernanceProfile)
         (only-in :agentic-ai-lab/modules/loop-engine/control/governor +loop-governor-type-contract+))
-(export GovernanceScopeContract GovernanceContext GovernorState ActionKey
+(export GovernanceScopeContract GovernanceContext GovernanceAssessmentContext GovernorState ActionKey
         AgenticAILabGovernanceProfile +loop-governor-type-contract+)
 (def GovernanceContext
   (.cc (Record request: (list (Enum publish)))
        identity: 'weaver/governance/context sealed: #t))
+(def GovernanceSource
+  (.cc String sexp: 'GovernanceSource
+       '.element? (lambda (value)
+                    (and (string? value)
+                         (< 0 (u8vector-length (string->utf8 value)) 8388609)))))
+;;; The gateway supplies the exact typed source projection, never a caller scope.
+(def GovernanceAssessmentContext
+  (.cc (Record request: (list (Enum publish)) source: (list GovernanceSource)
+               profile_identity: (list String) profile_revision: (list String)
+               profile_owner: (list String) model_identity: (list String))
+       identity: 'weaver/governance/assessment-context sealed: #t))
 (def ActionKey (Or Symbol String (Enum #f)))
 (def GovernorState (List (Pair Symbol ActionKey)))
 (def GovernanceScopeContract
-  (.cc (Record
-         assess: (list (Function (list Bool) (list AgenticAILabGovernanceProfile GovernanceContext)))
+  (.cc YuanxuContract. value-contract: (Record
+         assess: (list (Function (list Bool) (list AgenticAILabGovernanceProfile GovernanceAssessmentContext)))
          open: (list (Function (list (List String))
                               (list +loop-governor-type-contract+ (List GovernorState)))))
        identity: 'weaver/governance/scope))

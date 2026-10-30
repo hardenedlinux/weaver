@@ -82,6 +82,9 @@ func nativeSource(t testing.TB, f *fixture, b config.Bundle, mode string) string
 		value["publication"].(map[string]any)["policy"] = "forbid(principal,action,resource);"
 	case "task-type":
 		value["tasks"].([]any)[0].(map[string]any)["budget"] = "8"
+	case "duplicate-plan":
+		plans := value["plans"].([]any)
+		plans[1] = plans[0]
 	}
 	// Only inert fixture data crosses this printer. Native constructors and
 	// governance setup belong to the Scheme-owned integration fixture.
@@ -117,7 +120,7 @@ func TestProviderControlNativeGovernorRevocationAndRestart(t *testing.T) {
 func TestProviderControlNativeGovernorRejectsUnselectedPlans(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	b := controlBundle(t, f)
-	for _, mode := range []string{"deny", "collision", "clip", "invalid", "policy", "threat", "obligation", "task-type"} {
+	for _, mode := range []string{"deny", "collision", "clip", "invalid", "policy", "threat", "obligation", "task-type", "duplicate-plan", "assessment-context", "assessment-revision", "assessment-model", "assessment-threats"} {
 		t.Run(mode, func(t *testing.T) {
 			source := nativeSource(t, f, b, mode)
 			artifact := filepath.Join(t.TempDir(), "rejected.json")
@@ -133,7 +136,7 @@ func TestProviderControlNativeGovernorRejectsUnselectedPlans(t *testing.T) {
 			if mode == "policy" {
 				expected = "Rust rejected inert source Policy/schema"
 			}
-			if mode == "threat" {
+			if mode == "threat" || strings.HasPrefix(mode, "assessment-") {
 				expected = "native Governance assessment does not admit an inert source handoff"
 			}
 			if mode == "obligation" {

@@ -25,7 +25,8 @@ the broader engine-neutral semantic framework. They belong in the same product,
 but they are not two interchangeable authorization engines. The Governance
 authorization Provider boundary delegates actual Cedar behavior to Rust; threat
 assessment and =handoff-ready?= remain semantic facts. The Scheme bridge checks
-the returned assessment type, original Profile identity, ready flag and inert
+the returned assessment type, original Profile identity/revision/owner, exact
+source context, native threat-model identity and complete assessed threats, ready flag and inert
 =runtime-executed?= flag. That flag is a declared contract, not a sandbox proof
 that arbitrary operator Scheme code has no effects.
 
@@ -42,6 +43,31 @@ or =source-assets= facets require an explicit compiler/enforcement contract and
 are rejected here. A generic ready assessment cannot silently erase an
 untranslated review or domain obligation. This is a bounded implemented Profile,
 not a claim that every upstream Governance specialization compiles to Cedar.
+
+* Upstream reuse and remaining enforcement contracts
+
+The source audit uses the Agentic AI Lab/Core/POO closure selected by CI, including
+the actual implementation behind each public interface. Similar terminology does
+not make a pure Scheme transition a durable Rust execution decision.
+
+| Upstream owner | Reuse and implemented mapping | Remaining premise or extension |
+|----------------+------------------------------+--------------------------------|
+| =modules/governance/{types,objects,funs}= | Reuse native Profile, threat model, assessment dispatch and blocking-threat predicate; bind assessment to the complete source projection | Threat evidence is operator supplied; arbitrary Profile methods are trusted code |
+| =modules/loop-engine/control/governor= | Reuse final open-pattern selection and preserve the same task/plan node set | Source snapshots do not prove live distributed ownership or reserve money |
+| =core/object-types/contracts= | Reuse =YuanxuContract.= with native Record/Function =value-contract= for source publication and dependency scopes | Contract evidence does not replace Rust task registration, current Policy or final consumption |
+| =modules/governance/policy/authorized-effect-token= | Retain semantic-root/effect-binding and one-shot meaning as the design reference; current Rust execution uses its own durable original-operation ledger | Validation reads the caller's spent/revocation context. The implementation's issuer/signature fields are data, not proof of authenticated issuance; this pure token is not accepted as a broker permit |
+| =modules/governance/policy/strict-mediation= | Reuse the distinction between committed and indeterminate outcomes in model correspondence | The function validates against the supplied context before extending returned state. A host must bind that context to authoritative spent/revocation state under its final CAS; immutable Scheme return values do not provide persistence or concurrent consumption exclusion |
+| =modules/governance/evidence/batched-merkle= | Preserve existing evidence semantics as a future evidence-format integration boundary | A Merkle proof alone does not prove durable storage, an anti-rollback anchor or permission to release a budget hold; no runtime integration is claimed here |
+| =cedar-poo-spec= | Existing Lean bridge imports bound-operation matching and compound error-free authorization properties | Real Rust effects and host state must refine the imported projection. This is separate from proving Rust, SQLite, gRPC or a provider |
+
+The next expansion of nonempty Governance =policies= or =source-assets= must use
+their existing upstream owners and declare, for every supported facet, its typed
+source contract, exact Cedar/task projection, final Rust enforcement point and
+Quint/Lean refinement witness. Unsupported facets continue to reject. Acceptance
+requires a native source test and a real provider integration counterexample
+showing that removing or substituting the projected obligation cannot send.
+Adding opaque metadata, translating arbitrary Scheme into Cedar, or treating a
+ready assessment as an effect token would not meet that contract.
 
 * Root package and Scheme modules
 
@@ -78,6 +104,15 @@ unchanged source deadline; an independent later startup timeout remains a failed
 observation rather than being attributed to host noise without evidence.
 
 Public scope interfaces use native =Record= and =Function= descriptors.
+The current Yuanxu publication protocol requires an evidence-bearing
+=YuanxuContract.= scope descriptor. Each module supplies its concrete
+Record/Function shape through that descriptor's =value-contract=. Native POO
+owns value normalization; Yuanxu owns contextual classification, obligations and
+admission evidence. A bare Record Type is insufficient for this publication
+protocol. This directly follows the selected upstream contract, without changing
+its dependency pins or maintaining a second compatibility path. The interfaces
+explicitly import Yuanxu's publication =.def=; its existing declaration owner
+generates =core.link= from =core.exports= and declared dependency aliases.
 =GovernanceContext=, action-key/state facts, provider profile, ordered route,
 original task, plan, publication and final artifact each have specific contracts.
 The wire-facing records are sealed. No Weaver Scheme interface uses =Any=.
@@ -121,6 +156,114 @@ source-authenticated node cost bounds and shared family budget govern execution.
 The native =max-attempts= metadata is not silently promoted to a configurable
 Rust retry policy: the implemented broker retains one affine attempt per
 original operation and cannot reopen it after an uncertain result.
+
+* Source-bound Governance assessment
+
+The gateway first requires identical duplicate-free sets of Governor-selected
+nodes, original task nodes and plan nodes. Length and membership alone allowed
+two copies of one plan to stand in for two distinct selected nodes. That source
+handoff is now rejected before artifact emission, in addition to Go's independent
+inventory validation.
+
+The gateway then preflights Cedar and serializes its validated =GatewayArtifact=.
+The sealed =GovernanceAssessmentContext= contains this exact source string,
+=publish= request, Profile identity/revision/owner and threat-model identity.
+The caller's small =GovernanceContext= supplies only the typed publish request;
+it cannot select a different task scope or supply the assessment snapshot.
+The source includes original family/principal, budget, provider profile and
+commitment, task body/stream commitments, selected nodes, ordered routes,
+ceilings, and the complete Cedar Policy/schema/publication command.
+
+Weaver passes this context to the existing Agentic AI Lab evaluation protocol.
+The returned context must have the same concrete type and identical field values.
+The assessment must also name the original model and reproduce its complete
+threat list. Weaver reuses the upstream =governance-threat-blocking?= predicate:
+an exposed or realized high/critical threat cannot disappear behind a specialized
+Profile's ready flag. Accepted or mitigated threats retain upstream semantics.
+Nonempty untranslated ontology, Policy and source-asset obligations still fail
+closed; this change does not invent a translator for them.
+
+The typed source projection must remain unchanged after assessment. The context's
+=source= slot uses a distinct lexical =source-text= binding; native POO slot names
+are semantic bindings, so =source: source= would create a self-reference rather
+than capture the intended outer string. Source authoring admission rejects that
+error before execution. The Profile owner field is semantic metadata and does
+not replace authenticated source-role identity.
+
+The SDK JSON writer explicitly sorts object keys recursively; ordered routes,
+arrays, strings and exact integer tokens retain their significance. Ordinary
+hash-table iteration produced different key order on two otherwise identical
+projections and incorrectly rejected valid sources. The stable encoder is shared
+by assessment and artifact emission; native tests check repeated projection,
+Policy replacement and route-order changes. A false Policy preflight or false
+Governance result explicitly rejects the handoff even though false is a valid
+Boolean under its Function contract.
+
+The JSON string is a local exact comparison, bounded to eight MiB, not a cross-language
+canonical hash, a signed attestation, or the Rust publication digest. Native
+assessment methods remain trusted operator code. These checks do not sandbox
+arbitrary Scheme or prove that a threat's evidence is true. JSON/YAML remain
+explicit authenticated operator artifacts; their governance metadata is not
+proof that Scheme ran. Go never promotes metadata into runtime permission.
+Rust independently persists original task/profile constraints and publication
+outcomes, and repeats current Cedar, claim, budget and fence checks at dispatch
+and message release. A source assessment cannot refund an unknown hold or issue
+a second provider attempt after reconnect/restart.
+
+A Profile edit, a changed threat-model object or a new assessment is not itself
+a live Rust revocation event. The current Go service activates a frozen source
+configuration. A change intended to constrain already admitted execution must
+be projected by the authenticated source owner into an authoritative Policy/fence
+publication and obtain its exact committed outcome. An unacknowledged publication
+cannot be advertised as effective. Already admitted buffers retain the documented
+drain boundary; subsequent dispatch/message release checks use Rust authority.
+Automatic Profile watching, generalized obligation translation and direct
+Governance-to-Cedar hot reload are not implemented or inferred from this source
+binding. This keeps source compilation evidence separate from live enforcement.
+
+| Evidence | Checked boundary |
+|----------+------------------|
+| =t/governance-test.ss= | Native default assessment accepts its exact context; missing source context and a specialized ready assessment hiding an original blocking threat reject |
+| =t/gateway-source-test.ss= | Stable SDK source projection; Policy and route-order changes stay distinct; false Policy/Governance results cannot compile a handoff |
+| Scheme/Go/Rust integration | Stale source context, previous Profile revision, substituted model, mismatched threats and duplicate plans reject naturally before artifact/publication; provider invocation counts remain zero |
+| =ControlActivation.qnt= | Source/Profile/model mismatches cannot register; the unsafe ready-only shortcut reaches an explicit counterexample; bounded safety composes with existing retry, revocation and unknown-budget transitions |
+| =ControlActivation.lean= | Active gates require source-bound assessment; source/Profile/threat equality lemmas and arbitrary-key execution composition under explicit implementation refinement premises |
+
+The Lean =source_assessment_execution_composition= theorem connects the host's
+matching source witness to the existing arbitrary-key execution safety theorem.
+The host refinement premise must establish the checked equality from the actual
+native assessment; setting a Boolean is insufficient implementation evidence.
+
+Quint explores bounded interleavings and executable counterexamples. Lean proves
+the abstract transition composition for arbitrary logical keys. Neither proves
+serializer injectivity, source authenticity, host isolation, filesystem durability
+or provider delivery semantics. Native tests and real gRPC/provider execution are
+separate evidence for those implementation boundaries.
+
+** Failure evidence and qualification scope
+
+The prior committed CI run
+[[https://github.com/hardenedlinux/weaver/actions/runs/41020724534][41020724534]]
+passed Rust, Go, architecture, formal checks and benchmarks, but failed both
+Scheme jobs during module-publication admission. Source inspection and isolated
+reproduction identified the bare Record/evidence-contract mismatch described
+above. Subsequent diagnostic failures exposed a reversed func-to-objects role
+import, POO lexical slot self-reference and unstable ordinary JSON key ordering.
+The stable source projection is therefore an implementation requirement, not an
+assumption that default serialization is deterministic.
+
+Test-only contexts also need distinct lexical binding names when constructing a
+replacement =context= slot. A CyclicSlot exception is an unrelated failure and
+does not qualify the intended stale-assessment rejection. Integration controls
+require the expected rejection message, natural child completion within the
+unchanged fifteen-second source deadline, absent source artifact and zero
+provider invocations. Failed runs and unfinished processes never count as passes.
+
+Raw process output and generated module environments stay temporary. The latest
+source-bound structured result records qualified stages and bounded diagnostics;
+these observations belong in Org and expiring results, not in the core D2 map.
+
+* Cedar preflight and execution boundary
 
 =scheme/policy/cedar-ffi.ss= is compiled with Gerbil/Gambit and invokes
 =weaver_policy_validate_v1= through C FFI. UTF-8 bytevectors are owned and rooted

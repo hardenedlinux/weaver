@@ -277,12 +277,20 @@
     {"file":"dev/proofs/quint/ReleaseBinding.qnt","pattern":"run crossPlanCounterexampleTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem release_binding_and_execution_composition"}]},
   {"id":"SpecificSourceContracts","witnesses":[
+    {"file":"scheme/governance/types.ss","pattern":"YuanxuContract. value-contract:"},
     {"file":"scheme/gateway/contracts.ss","pattern":"def GatewayArtifact"},
     {"file":"t/gateway-contracts-test.ss","pattern":"def gateway-contracts-test"},
     {"file":"dev/proofs/quint/ControlActivation.qnt","pattern":"run malformedContractCannotRegisterTest"},
     {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"contractValid : Bool"}]},
   {"id":"NativeGovernorHandoff","witnesses":[
     {"file":"scheme/governance/func.ss","pattern":"assq 'open-patterns"},
+    {"file":"scheme/governance/types.ss","pattern":"def GovernanceAssessmentContext"},
+    {"file":"scheme/gateway/func.ss","pattern":"same-node-set?"},
+    {"file":"t/gateway-source-test.ss","pattern":"a false Governance assessment cannot emit a source handoff"},
+    {"file":"t/governance-test.ss","pattern":"a typed ready assessment cannot omit an original blocking threat"},
+    {"file":"dev/proofs/quint/ControlActivation.qnt","pattern":"run readyWithoutBindingCounterexampleTest"},
+    {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"theorem active_requires_bound_assessment"},
+    {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"theorem source_assessment_execution_composition"},
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlNativeGovernorRejectsUnselectedPlans"},
     {"file":"go/internal/config/bundle_test.go","pattern":"func TestBundleRejectsSelectionAndCommitmentSubstitution"}]},
   {"id":"PolicyCAbiIsInert","witnesses":[

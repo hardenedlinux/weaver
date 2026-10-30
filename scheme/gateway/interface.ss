@@ -1,3 +1,4 @@
+(import (only-in :yuanxu/module-system/source/declaration .def))
 (.def Gateway
   identity: 'gateway
   core:

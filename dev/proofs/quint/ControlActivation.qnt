@@ -1,21 +1,24 @@
 module ControlActivation {
   import ProviderRpc as P from "./ProviderRpc"
-  type Gate={typed:bool,semantic:bool,open:bool,ffi:bool,registered:bool,committed:bool,ack:bool,active:bool}
+  type Gate={typed:bool,semantic:bool,bound:bool,open:bool,ffi:bool,registered:bool,committed:bool,ack:bool,active:bool}
   var g:Gate
   // Refinement premise: actual Record/Function and Go/Rust decoders establish
   // this fact. The Boolean model does not prove those implementations correct.
   action decode(valid:bool):bool=all {not(g.registered),g'=g.with("typed",valid),P::observe}
-  val safe=P::safe and (g.active implies g.typed and g.semantic and g.open and g.ffi and g.registered and g.committed and g.ack)
-  action init=all {P::init,g'={typed:false,semantic:false,open:false,ffi:false,registered:false,committed:false,ack:false,active:false}}
-  action assess(ready:bool):bool=all {not(g.registered),g'=g.with("semantic",ready),P::observe}
+  val safe=P::safe and (g.active implies g.typed and g.semantic and g.bound and g.open and g.ffi and g.registered and g.committed and g.ack)
+  action init=all {P::init,g'={typed:false,semantic:false,bound:false,open:false,ffi:false,registered:false,committed:false,ack:false,active:false}}
+  // These equalities refine concrete source bytes, Profile revision/owner,
+  // model identity and complete assessed-threat projection, not a signature.
+  action assessBound(ready:bool,sourceMatches:bool,profileMatches:bool,modelMatches:bool):bool=all {not(g.registered),g'=g.with("semantic",ready).with("bound",sourceMatches and profileMatches and modelMatches),P::observe}
+  action assess(ready:bool):bool=assessBound(ready,true,true,true)
   // Only native open-patterns, after denylist/conflict/clipping, qualify here.
   // Actionable candidates and a passing C ABI preflight are not send permits.
   action nativeProjection(admitted:bool):bool=all {not(g.registered),g'=g.with("open",admitted),P::observe}
   action preflight=all {not(g.registered),g'=g.with("ffi",true),P::observe}
-  action register=all {g.typed,g.semantic,g.open,g'=g.with("registered",true),P::observe}
+  action register=all {g.typed,g.semantic,g.bound,g.open,g'=g.with("registered",true),P::observe}
   action commit=all {g.registered,g.ffi,not(g.committed),g'=g.with("committed",true),P::observe}
   action ack=all {g.committed,g'=g.with("ack",true),P::observe}
-  action activate=all {g.typed,g.ack,g.semantic,g.open,g.ffi,g.registered,g'=g.with("active",true),P::observe}
+  action activate=all {g.typed,g.ack,g.semantic,g.bound,g.open,g.ffi,g.registered,g'=g.with("active",true),P::observe}
   action stop=all {g'=g.with("active",false),P::observe}
   action transport=all {g'=g,P::observe}
   action admit=all {g.active,g'=g,P::admit(0)}
@@ -26,12 +29,17 @@ module ControlActivation {
   action publish=all {g'=g,P::publish}
   action crash=all {g'=g.with("active",false),P::crash}
   action deliver=all {g'=g,P::deliver}
-  action step=any {decode(true),decode(false),assess(true),assess(false),nativeProjection(true),nativeProjection(false),preflight,register,commit,ack,activate,stop,transport,admit,consume,burn,invoke,release,publish,crash,deliver}
+  action step=any {decode(true),decode(false),assess(true),assess(false),assessBound(true,false,true,true),assessBound(true,true,false,true),assessBound(true,true,true,false),nativeProjection(true),nativeProjection(false),preflight,register,commit,ack,activate,stop,transport,admit,consume,burn,invoke,release,publish,crash,deliver}
   action compiled=init.then(decode(true)).then(assess(true)).then(nativeProjection(true)).then(preflight)
   action ready=compiled.then(register).then(commit).then(ack).then(activate)
   action spent=ready.then(admit).then(consume).then(burn).then(invoke)
   action unsafeActivateFromPreflight=all {g.ffi,g'=g.with("active",true),P::observe}
   action unsafeRetry=all {g'=g,P::unsafeRetryReset}
+  action unsafeActivateFromReady=all {g.typed,g.semantic,g.open,g.ffi,g'=g.with("active",true).with("registered",true).with("committed",true).with("ack",true),P::observe}
+  run staleSourceAssessmentCannotRegisterTest=init.then(decode(true)).then(assessBound(true,false,true,true)).then(nativeProjection(true)).then(preflight).then(register.fail())
+  run previousProfileRevisionCannotRegisterTest=init.then(decode(true)).then(assessBound(true,true,false,true)).then(nativeProjection(true)).then(preflight).then(register.fail())
+  run substitutedThreatModelCannotRegisterTest=init.then(decode(true)).then(assessBound(true,true,true,false)).then(nativeProjection(true)).then(preflight).then(register.fail())
+  run readyWithoutBindingCounterexampleTest=init.then(decode(true)).then(assessBound(true,false,true,true)).then(nativeProjection(true)).then(preflight).then(unsafeActivateFromReady).expect(not(safe))
   run nativeDenylistCannotBecomeRegistrationTest=init.then(decode(true)).then(assess(true)).then(nativeProjection(false)).then(preflight).then(register.fail())
   run unresolvedGovernanceCannotRegisterTest=init.then(decode(true)).then(assess(false)).then(nativeProjection(true)).then(preflight).then(register.fail())
   run ffiPreflightCannotSendTest=compiled.expect(safe and P::s.calls==0 and P::s.held==0).then(admit.fail())

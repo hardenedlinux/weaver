@@ -10,6 +10,7 @@ namespace Weaver.ControlActivation
 structure Gate where
   contractValid : Bool := false
   semanticReady : Bool := false
+  sourceBound : Bool := false
   nativeOpen : Bool := false
   ffiValidated : Bool := false
   registered : Bool := false
@@ -18,18 +19,18 @@ structure Gate where
   active : Bool := false
 
 def Ready (g : Gate) : Prop := g.contractValid = true ∧ g.semanticReady = true ∧ g.nativeOpen = true ∧ g.ffiValidated = true ∧
-  g.registered = true ∧ g.committed = true ∧ g.acknowledged = true
+  g.registered = true ∧ g.committed = true ∧ g.acknowledged = true ∧ g.sourceBound = true
 def GateSafe (g : Gate) : Prop := g.active = true → Ready g
 
 inductive GateStep : Gate → Gate → Prop where
   | decode (g) (unregistered : g.registered = false) (valid : Bool) :
       GateStep g {g with contractValid := valid}
-  | assess (g) (unregistered : g.registered = false) (ready : Bool) :
-      GateStep g {g with semanticReady := ready}
+  | assess (g) (unregistered : g.registered = false) (ready bound : Bool) :
+      GateStep g {g with semanticReady := ready, sourceBound := bound}
   | select (g) (unregistered : g.registered = false) (admitted : Bool) :
       GateStep g {g with nativeOpen := admitted}
   | preflight (g) : GateStep g {g with ffiValidated := true}
-  | register (g) (typed : g.contractValid = true) (semantic : g.semanticReady = true) (admitted : g.nativeOpen = true) :
+  | register (g) (typed : g.contractValid = true) (semantic : g.semanticReady = true) (bound : g.sourceBound = true) (admitted : g.nativeOpen = true) :
       GateStep g {g with registered := true}
   | commit (g) (registered : g.registered = true) (typed : g.ffiValidated = true) : GateStep g {g with committed := true}
   | ack (g) (committed : g.committed = true) : GateStep g {g with acknowledged := true}
@@ -42,6 +43,33 @@ theorem gate_step_safe (initial : GateSafe g) (step : GateStep g h) : GateSafe h
 
 theorem active_requires_specific_contracts (safe : GateSafe g) (active : g.active = true) :
     g.contractValid = true := (safe active).1
+
+theorem active_requires_bound_assessment (safe : GateSafe g) (active : g.active = true) :
+    g.sourceBound = true := by
+  have ready := safe active
+  simp_all [Ready]
+
+/- The implementation serializes the exact typed GatewayArtifact. Equality here
+   is of that source projection plus Profile identity/revision/owner and the
+   native threat model. This is a refinement premise, not proof of serialization
+   injectivity or of arbitrary operator Scheme purity. -/
+structure AssessmentInput where
+  source : String
+  profileIdentity : String
+  profileRevision : String
+  profileOwner : String
+  modelIdentity : String
+  threats : List String
+
+theorem assessment_cannot_replace_source (expected observed : AssessmentInput)
+    (bound : observed = expected) : observed.source = expected.source := by rw [bound]
+
+theorem assessment_cannot_replace_profile (expected observed : AssessmentInput)
+    (bound : observed = expected) : observed.profileRevision = expected.profileRevision ∧
+      observed.profileOwner = expected.profileOwner := by simp [bound]
+
+theorem assessment_cannot_omit_threats (expected observed : AssessmentInput)
+    (bound : observed = expected) : observed.threats = expected.threats := by rw [bound]
 
 structure Execution (Key : Type) where
   calls : Key → Nat
@@ -113,6 +141,19 @@ theorem composition_run_safe [DecidableEq Key] {a b : Gate × Execution Key} (in
   | refl => exact initial
   | next history step ih => exact composition_step_safe ih step
 
+/- Host refinement supplies a matching source witness for sourceBound. The run
+   theorem then composes that witness with at-most-once original-key execution,
+   shared capacity and checked releases; equality is not assumed to authenticate
+   an operator or make an old Rust authority revision current. -/
+theorem source_assessment_execution_composition [DecidableEq Key]
+    {a b : Gate × Execution Key} (expected observed : AssessmentInput)
+    (initial : Safe budget a) (run : Run budget a b)
+    (refines : b.1.sourceBound = true → observed = expected)
+    (active : b.1.active = true) :
+    observed = expected ∧ ExecutionSafe budget b.2 := by
+  have safe := composition_run_safe initial run
+  exact ⟨refines (active_requires_bound_assessment safe.1 active), safe.2⟩
+
 theorem recovery_keeps_unknown_budget (g : Gate) (s : Execution Key) :
     (({g with active := false},s) : Gate × Execution Key).2.held = s.held := rfl
 
@@ -124,6 +165,11 @@ theorem fresh_nonce_cannot_select_new_claim (canonical : Nonce → Key)
     (bound : canonical old = canonical fresh) : ledger (canonical old) = ledger (canonical fresh) := by rw [bound]
 
 #print axioms composition_run_safe
+#print axioms source_assessment_execution_composition
+#print axioms active_requires_bound_assessment
+#print axioms assessment_cannot_replace_source
+#print axioms assessment_cannot_replace_profile
+#print axioms assessment_cannot_omit_threats
 #print axioms recovery_keeps_unknown_budget
 #print axioms old_receipt_is_not_current
 #print axioms fresh_nonce_cannot_select_new_claim

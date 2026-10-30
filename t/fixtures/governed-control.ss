@@ -3,7 +3,7 @@
         :agentic-ai-lab/modules/loop-engine/control/strategy
         :agentic-ai-lab/modules/loop-engine/control/descriptor
         :agentic-ai-lab/modules/governance/interface
-        (only-in :clan/poo/object .o)
+        (only-in :clan/poo/object .o .ref)
         ../../scheme/gateway/func)
 (export emit-control-fixture)
 
@@ -30,6 +30,21 @@
   (def profile
     (.o (:: @ AgenticAILabGovernanceProfile.)
         identity: "weaver/source" revision: "1" owner: "source-owner"
-        threat-model: source-threat-model policies: source-policies))
+        threat-model: source-threat-model policies: source-policies
+        .assess-governance:
+        (lambda (assessment-context)
+          (let ((assessment (agentic-ai-lab-governance-assessment profile assessment-context)))
+            (cond
+              ((equal? mode "assessment-context")
+               (.o (:: @ assessment) context: (.o (:: @ assessment-context) source: "stale-source")))
+              ((equal? mode "assessment-revision")
+               (.o (:: @ assessment) context: (.o (:: @ assessment-context) profile_revision: "0")))
+              ((equal? mode "assessment-model")
+               (.o (:: @ assessment) model-identity: "weaver/other-model"))
+              ((equal? mode "assessment-threats")
+               (.o (:: @ assessment) assessed-threats:
+                   (list (agentic-ai-lab-governance-threat "weaver/other-threat" 'low 'latent
+                           (list (agentic-ai-lab-governance-precondition "weaver/input" #f #f))))))
+              (else assessment))))))
   (emit-governed-gateway init (make-loop-governor 'weaver strategy overrides)
                         profile (.o request: 'publish) states tasks plans publication))

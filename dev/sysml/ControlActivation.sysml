@@ -1,10 +1,10 @@
 package ControlActivation {
     private import ScalarValues::*;
     requirement def SpecificSourceContracts {
-        doc /* Each Scheme scope uses concrete Record and Function contracts. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
+        doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete native Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
     requirement def NativeGovernorHandoff {
-        doc /* Scheme first requires a typed inert Governance assessment with handoff-ready true and no unresolved blocking threat. It then uses native governor POO objects and projects open-patterns after denylist, conflict and max-actionable clipping. Candidate actionable-patterns are not a qualified handoff or a monetary reservation. */
+        doc /* Scheme projects native governor open-patterns after denylist, conflict and max-actionable clipping. Selected nodes, original task nodes and plan nodes must form the same duplicate-free set. A typed inert Governance assessment must match the exact task/plan/publication source serialized with recursively sorted object keys while preserving array order and exact integers, Profile identity/revision/owner, threat-model identity and complete assessed threats. Native blocking threats cannot be erased by a ready flag. False Policy preflight or Governance results reject. Assessment is a trusted compilation fact, never a portable execution permit. Candidate actionable-patterns are not a qualified handoff or a monetary reservation. */
     }
     requirement def PolicyCAbiIsInert {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
