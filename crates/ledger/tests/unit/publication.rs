@@ -2,8 +2,8 @@ use crate::{Ledger, store::integer};
 use std::sync::{Arc, Barrier};
 use weaver_contracts::PublicationOutcome::{Committed, Rejected};
 use weaver_contracts::{Publication, PublicationKey};
-const POLICY: &str = include_str!("../../../../dev/policies/provider/provider.cedar");
-const SCHEMA: &str = include_str!("../../../../dev/policies/provider/schema.json");
+const POLICY: &str = include_str!("../../../../prod/policies/provider/provider.cedar");
+const SCHEMA: &str = include_str!("../../../../prod/policies/provider/schema.json");
 fn change(id: &str, expected: Option<u64>) -> Publication {
     Publication {
         operation_id: id.into(),

@@ -20,8 +20,8 @@ inside the deciding admission, consumption, dispatch and release transactions.
 
 | Owner | Responsibility |
 |-------+----------------|
-| Scheme / POO Governance | Define task meaning, approved profiles and Policy artifacts; the current native service accepts source artifacts through its authenticated source RPC. An executable Scheme-to-native publishing bridge remains pending. |
-| Go control plane | Decode bounded JSON/YAML profile data, compute canonical commitments and compile source-bound routing proposals. Configuration never evaluates Scheme or grants an execution capability. A Kubernetes reconciliation controller remains pending. |
+| Scheme / Agentic AI Lab | Reuse native Governance assessment and Governor open-pattern projection, preflight typed Policy through Rust C FFI, and emit the original task/profile/Policy artifact. See 59.19 for the executable source bridge. |
+| Go control plane | Decode bounded JSON/YAML source artifacts or compile trusted native Scheme before activation; register original tasks, publish exact authority, and proxy source-bound operations through mTLS gRPC. Configuration grants no execution capability. A Kubernetes reconciliation controller remains pending. |
 | Rust contracts | Validate the immutable profile, exact request semantics, original task binding and versioned plan commitment. Facts are data rather than send handles. |
 | Rust source owner / ledger | Atomically register profile and task, retain original semantic floors and spent claims, and recheck current registry data at deciding execution boundaries. |
 | Cedar | Evaluate the authenticated original facts and current Policy for admission, invocation and each release. Profile support does not substitute for permission. |

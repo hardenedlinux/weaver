@@ -2,11 +2,11 @@ use weaver_contracts::{MessageRule, StreamContract, StreamMessage, Task, body_di
 use weaver_policy::{StreamCheck, authorize_stream};
 const POLICY: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/../../dev/policies/streaming/stream.cedar"
+    "/../../prod/policies/streaming/stream.cedar"
 ));
 const SCHEMA: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/../../dev/policies/streaming/schema.json"
+    "/../../prod/policies/streaming/schema.json"
 ));
 
 #[test]

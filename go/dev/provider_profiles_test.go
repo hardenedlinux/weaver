@@ -40,7 +40,7 @@ func profileTask(t testing.TB, plan v1.ProviderPlan, profile v1.ProviderProfile)
 
 func TestProviderSourceProfileAndCedarBindFinalSendAcrossRestart(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
-	raw, err := os.ReadFile(filepath.Join(root(t), "dev/policies/provider/profile.yaml"))
+	raw, err := os.ReadFile(filepath.Join(root(t), "prod/policies/provider/profile.yaml"))
 	if err != nil {
 		t.Fatal(err)
 	}

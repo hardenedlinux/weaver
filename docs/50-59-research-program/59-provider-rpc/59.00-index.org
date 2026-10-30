@@ -21,6 +21,8 @@ It does not introduce another permission or transport owner.
 | Component | Placement and responsibility |
 |-----------+------------------------------|
 | Go routing | =go/internal/routing=: source-bound request and ordered route proposal |
+| Native source authoring | =scheme/=: existing Agentic AI Lab Governance/Governor POO values, inert Rust Policy C FFI and exact task/plan artifact |
+| Go control service | =go/cmd/weaver-control=: acknowledged source activation, frozen routing and authenticated streaming proxy |
 | Go RPC client | =go/internal/gatewayclient=: explicit mTLS, no application retry, sequence and receipt checks |
 | Shared wire contract | =api/gateway/v1/gateway.proto=: typed proposals, roles, observations and encoding choice |
 | Rust contracts | =crates/contracts=: immutable provider commitments and closed native event/outcome types |
@@ -31,6 +33,8 @@ It does not introduce another permission or transport owner.
 | Development assurance | =dev=: SysML, Cedar fixtures, Quint, Lean, benchmark fixtures and retained evidence |
 
 * Reading order
+
+- [[file:59.19-native-governance-control.org][Native Governor/Governance, Scheme C FFI and complete Go control service]]
 
 - [[file:59.01-rpc-security.org][gRPC security and ownership]]
 - [[file:59.02-provider-stream-protocol.org][Provider routing, streaming and recovery protocol]]

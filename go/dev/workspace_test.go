@@ -79,7 +79,8 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 	layers := map[string]string{
 		"weaver-contracts": "", "weaver-policy": "weaver-contracts",
 		"weaver-ledger": "weaver-contracts,weaver-policy", "weaver-execution": "weaver-contracts,weaver-ledger",
-		"weaver-server": "weaver-contracts,weaver-ledger,weaver-execution",
+		"weaver-server":     "weaver-contracts,weaver-ledger,weaver-execution",
+		"weaver-policy-ffi": "weaver-policy",
 	}
 	if len(metadata.Members) != len(layers) {
 		t.Fatal("unmapped native workspace members")

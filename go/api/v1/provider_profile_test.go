@@ -8,7 +8,7 @@ import (
 
 func sourceProfile(t testing.TB) ProviderProfile {
 	t.Helper()
-	data, err := os.ReadFile("../../../dev/policies/provider/profile.json")
+	data, err := os.ReadFile("../../../prod/policies/provider/profile.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -20,7 +20,7 @@ func sourceProfile(t testing.TB) ProviderProfile {
 }
 
 func TestProviderProfileSharedClosedRequestCorpus(t *testing.T) {
-	data, err := os.ReadFile("../../../dev/policies/provider/request-cases.json")
+	data, err := os.ReadFile("../../../prod/policies/provider/request-cases.json")
 	if err != nil {
 		t.Fatal(err)
 	}

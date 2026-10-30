@@ -1,6 +1,9 @@
 package devrunner
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 const proofToolchain = "leanprover/lean4:v4.34.1"
 
@@ -15,7 +18,7 @@ func Plan(goBinary string) []Stage {
 		{"rust-default-profile", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
 		{"rust-tests", "cargo", []string{"test", "--workspace", "--all-features", "--locked", "--offline"}},
 		{"rust-clippy", "cargo", []string{"clippy", "--workspace", "--all-features", "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
-		{"go-fuzz-control-build", goBinary, []string{"test", "-c", "./go/internal/devrunner/testdata/fuzzcontrol", "-o", ".data/fuzz-control.test"}},
+		{"go-fuzz-control-build", goBinary, []string{"test", "-c", "./go/internal/devrunner/testdata/fuzzcontrol", "-o", ".cache/fuzz-control.test"}},
 		{"go-tests", goBinary, []string{"test", "-count=1", "-race", "./go/..."}},
 		{"go-routing-pbt", goBinary, []string{"test", "./go/internal/routing", "-run", "^$", "-fuzz", "FuzzCeilingNeverExpands", "-fuzztime=3s", "-parallel=1"}},
 		{"go-decoder-pbt", goBinary, []string{"test", "./go/api/v1", "-run", "^$", "-fuzz", "FuzzDecoderNeverPanics", "-fuzztime=3s", "-parallel=1"}},
@@ -57,6 +60,10 @@ func Plan(goBinary string) []Stage {
 		{"source-owner-quint-tests", "quint", []string{"test", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--seed", "293"}},
 		{"source-owner-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"go-native-integration", goBinary, []string{"test", "-count=1", "-race", "-tags=integration", "./go/dev", "-run", "TestProvider", "-v"}},
+		{"control-bundle-pbt", goBinary, []string{"test", "./go/internal/config", "-run", "^$", "-fuzz", "FuzzSourceBundleCannotExpandOriginalSelection", "-fuzztime=3s", "-parallel=1"}},
+		{"control-activation-quint-tests", "quint", []string{"test", "dev/proofs/quint/ControlActivation.qnt", "--main", "ControlActivation", "--seed", "293"}},
+		{"control-activation-quint-safety", "quint", []string{"run", "dev/proofs/quint/ControlActivation.qnt", "--main", "ControlActivation", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
+		{"control-activation-lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/ControlActivation.lean"}},
 	}
 }
 func Stages(mode, goBinary string) ([]Stage, error) {
@@ -70,6 +77,16 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "check":
 		return Plan(goBinary), nil
+	case "check-scheme":
+		return []Stage{
+			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},
+			{"scheme-declared-poo-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "dependencies"}},
+			{"scheme-native-ffi", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline"}},
+			// Delegate discovery and assertions to the SDK and Scheme-owned suites.
+			// Check the returned result explicitly; success markers alone cannot pass.
+			{"scheme-unit-tests", os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER"), []string{"-e", "(dump-stack-trace? #f)", "-e", "(import (prefix-in :gerbil/tools/gxtest tests.))", "-e", "(unless (zero? (tests.main \"-g\" \"-v\" \"5\" \"t\")) (error \"Scheme test suite failed\"))"}},
+			{"scheme-native-control-integration", goBinary, []string{"test", "-count=1", "-race", "-tags=integration,schemeintegration", "./go/dev", "-run", "^TestProviderControl", "-v"}},
+		}, nil
 	case "bench":
 		return []Stage{
 			{"rust-environment", "rustc", []string{"-vV"}},
@@ -80,9 +97,9 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "generate-rpc":
 		return []Stage{
-			{"go-protobuf-generator", goBinary, []string{"build", "-o", ".data/protoc-gen-go", "google.golang.org/protobuf/cmd/protoc-gen-go"}},
-			{"go-grpc-generator", goBinary, []string{"build", "-o", ".data/protoc-gen-go-grpc", "google.golang.org/grpc/cmd/protoc-gen-go-grpc"}},
-			{"protobuf-generation", "protoc", []string{"--plugin=protoc-gen-go=.data/protoc-gen-go", "--plugin=protoc-gen-go-grpc=.data/protoc-gen-go-grpc", "--go_out=go/api", "--go_opt=module=github.com/HardenedLinux/weaver/go/api", "--go-grpc_out=go/api", "--go-grpc_opt=module=github.com/HardenedLinux/weaver/go/api", "-I", "api", "api/gateway/v1/gateway.proto"}},
+			{"go-protobuf-generator", goBinary, []string{"build", "-o", ".cache/protoc-gen-go", "google.golang.org/protobuf/cmd/protoc-gen-go"}},
+			{"go-grpc-generator", goBinary, []string{"build", "-o", ".cache/protoc-gen-go-grpc", "google.golang.org/grpc/cmd/protoc-gen-go-grpc"}},
+			{"protobuf-generation", "protoc", []string{"--plugin=protoc-gen-go=.cache/protoc-gen-go", "--plugin=protoc-gen-go-grpc=.cache/protoc-gen-go-grpc", "--go_out=go/api", "--go_opt=module=github.com/HardenedLinux/weaver/go/api", "--go-grpc_out=go/api", "--go-grpc_opt=module=github.com/HardenedLinux/weaver/go/api", "-I", "api", "api/gateway/v1/gateway.proto"}},
 		}, nil
 	default:
 		return nil, fmt.Errorf("unknown development mode: %s", mode)

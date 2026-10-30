@@ -1,6 +1,6 @@
 use criterion::{BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
 use std::{hint::black_box, time::Duration};
-#[path = "../../../dev/benchmarks/contracts.rs"]
+#[path = "support/fixtures.rs"]
 mod fixtures;
 fn commitments(c: &mut Criterion) {
     let mut group = c.benchmark_group("contracts/provider_commitment");
@@ -21,9 +21,9 @@ fn commitments(c: &mut Criterion) {
         policy: format!(
             "//{}\n{}",
             "x".repeat(16384),
-            include_str!("../../../dev/policies/provider/provider.cedar")
+            include_str!("../../../prod/policies/provider/provider.cedar")
         ),
-        schema: include_str!("../../../dev/policies/provider/schema.json").into(),
+        schema: include_str!("../../../prod/policies/provider/schema.json").into(),
     };
     c.bench_function("contracts/publication_commitment", |b| {
         b.iter(|| black_box(publication.digest().expect("publication commitment")))
@@ -31,7 +31,7 @@ fn commitments(c: &mut Criterion) {
 }
 fn profile_contracts(c: &mut Criterion) {
     let profile: weaver_contracts::ProviderProfile = weaver_contracts::decode(include_bytes!(
-        "../../../dev/policies/provider/profile.json"
+        "../../../prod/policies/provider/profile.json"
     ))
     .expect("profile");
     c.bench_function("contracts/profile_commitment", |b| {

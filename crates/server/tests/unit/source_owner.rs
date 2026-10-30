@@ -4,11 +4,11 @@ use std::{sync::Arc, time::Duration};
 use tokio::sync::{Semaphore, oneshot};
 use weaver_contracts::{Publication, PublicationKey, PublicationOutcome};
 use weaver_ledger::Ledger;
-#[path = "../../../../dev/benchmarks/contracts.rs"]
+#[path = "../../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
 
-const POLICY: &str = include_str!("../../../../dev/policies/provider/provider.cedar");
-const SCHEMA: &str = include_str!("../../../../dev/policies/provider/schema.json");
+const POLICY: &str = include_str!("../../../../prod/policies/provider/provider.cedar");
+const SCHEMA: &str = include_str!("../../../../prod/policies/provider/schema.json");
 fn change(id: &str, parent: Option<u64>) -> Publication {
     Publication {
         operation_id: id.into(),

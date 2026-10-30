@@ -9,7 +9,7 @@ import (
 
 func profileSource(t testing.TB, extension string) []byte {
 	t.Helper()
-	data, err := os.ReadFile("../../../dev/policies/provider/profile." + extension)
+	data, err := os.ReadFile("../../../prod/policies/provider/profile." + extension)
 	if err != nil {
 		t.Fatal(err)
 	}

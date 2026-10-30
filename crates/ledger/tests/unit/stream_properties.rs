@@ -12,7 +12,7 @@ fn fixture(path: &std::path::Path) -> (Ledger, StreamContract) {
             None,
             include_str!(concat!(
                 env!("CARGO_MANIFEST_DIR"),
-                "/../../dev/policies/streaming/stream.cedar"
+                "/../../prod/policies/streaming/stream.cedar"
             )),
             1,
         )
@@ -97,7 +97,7 @@ proptest! {
                     if completed>0 {*cursors.get_mut(&which).expect("cursor")+=completed;}
                 }},
                 5=>{pending=None;owner=None;drop(ledger);ledger=Ledger::open(&path).expect("restart");},
-                6=>{revision=ledger.publish(Some(revision),include_str!(concat!(env!("CARGO_MANIFEST_DIR"),"/../../dev/policies/streaming/stream.cedar")),fence+1).expect("publish");fence+=1;},
+                6=>{revision=ledger.publish(Some(revision),include_str!(concat!(env!("CARGO_MANIFEST_DIR"),"/../../prod/policies/streaming/stream.cedar")),fence+1).expect("publish");fence+=1;},
                 7=>{if let Some(ref o)=owner {let _=ledger.resume_message(o,&key,revision,fence);}},
                 _=>{let mut forged=message(&c,id,revision,fence);forged.payload="replaced".into();if registered.contains(&id){prop_assert!(ledger.enqueue_message(&forged).is_err());}},
             }
@@ -139,7 +139,7 @@ fn unknown_range_after_restart_blocks_new_nonce_and_authority() {
             Some(0),
             include_str!(concat!(
                 env!("CARGO_MANIFEST_DIR"),
-                "/../../dev/policies/streaming/stream.cedar"
+                "/../../prod/policies/streaming/stream.cedar"
             )),
             2,
         )

@@ -76,7 +76,7 @@ func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
 	if goBinary == "" {
 		goBinary = filepath.Join(runtime.GOROOT(), "bin/go")
 	}
-	data := filepath.Join(root, ".data")
+	data := filepath.Join(root, ".cache")
 	for _, name := range []string{"", "go-build-cache", "go-mod-cache", "go-tmp"} {
 		if err := os.MkdirAll(filepath.Join(data, name), 0700); err != nil {
 			return "", err
@@ -124,6 +124,18 @@ func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
 		fmt.Fprintf(output, "PASS %s\n", admission.Name)
 	}
 	failed := false
+	if mode == "check-scheme" {
+		result := schemeSourceCurrentness(directory, "linked-source-before")
+		receipt.Stages = append(receipt.Stages, result)
+		fmt.Fprintf(output, "%s %s\n", result.Status, result.Name)
+		if result.Status != "PASS" {
+			receipt.Status = "FAIL"
+			if err := writeReceipt(directory, receipt); err != nil {
+				return directory, err
+			}
+			return directory, errors.New("linked Scheme source admission failed")
+		}
+	}
 	for _, stage := range stages {
 		if ctx.Err() != nil {
 			receipt.Status = "CANCELLED"
@@ -147,6 +159,14 @@ func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
 			failed = true
 		}
 		fmt.Fprintf(output, "%s %s\n", current.Status, current.Name)
+	}
+	if mode == "check-scheme" {
+		result := schemeSourceCurrentness(directory, "linked-source-after")
+		receipt.Stages = append(receipt.Stages, result)
+		fmt.Fprintf(output, "%s %s\n", result.Status, result.Name)
+		if result.Status != "PASS" {
+			failed = true
+		}
 	}
 	if mode == "bench" && !failed {
 		if err := collectBenchmarks(root, directory, receipt.Started); err != nil {
@@ -182,6 +202,11 @@ func Run(ctx context.Context, config Config, output io.Writer) (string, error) {
 	return directory, nil
 }
 func runStage(ctx context.Context, root, directory string, environment []string, stage Stage) Result {
+	if stage.Name == "scheme-unit-tests" {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
+		defer cancel()
+	}
 	result := Result{Name: stage.Name, Status: "FAIL", Binary: stage.Binary, Args: stage.Args, Log: stage.Name + ".log"}
 	started := time.Now()
 	log, err := os.OpenFile(filepath.Join(directory, result.Log), os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)

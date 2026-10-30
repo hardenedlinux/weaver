@@ -6,6 +6,13 @@
 Every Rust workspace member has =benches/gateway.rs=, a harness-free =gateway=
 benchmark declaration and a workspace-inherited Criterion development dependency.
 The package gate rejects missing targets and production Criterion/ASP dependencies.
+Benchmark setup code also has package ownership: task/plan fixtures live in
+=crates/contracts/benches/support/=, Policy fixtures in
+=crates/policy/benches/support/=, and durable-store setup in
+=crates/ledger/benches/support/=. Other benchmarks reuse these owners directly.
+There is no Rust benchmark implementation under =dev/=. Shared Policy assets
+are read from =prod/policies/=; measurements and receipts are stored under
+Git-ignored =.cache/=.
 No runtime transport or writable handle is exported to make a benchmark possible;
 server encoding is a pure bounded data API, and actual provider I/O still uses
 the guarded executor.
@@ -14,17 +21,19 @@ the guarded executor.
 |-------------------+-------------------------+----------------------|
 | weaver-contracts | 8 | crates/contracts/benches/gateway.rs |
 | weaver-policy | 3 | crates/policy/benches/gateway.rs |
+| weaver-policy-ffi | 1 | crates/policy-ffi/benches/gateway.rs |
 | weaver-ledger | 9 | crates/ledger/benches/gateway.rs |
 | weaver-execution | 1 | crates/execution/benches/gateway.rs |
 | weaver-server | 4 | crates/server/benches/gateway.rs |
 
-The optimized all-features matrix contains 25 Rust cases. Three additional Go
+The current optimized all-features matrix contains 26 Rust cases. Three additional Go
 benchmarks exercise the actual Rust service through mTLS gRPC, each repeated
 three times. These complement the package-local costs rather than replacing
 them with a single aggregate number.
 
 | Package | Benchmarks | Measured boundary |
 |---------+------------+-------------------|
+| policy-ffi | Typed source preflight through the ABI's safe byte-oriented implementation | Cedar/schema validation only; excludes Scheme conversion, dynamic loading, gRPC, storage and actual sends |
 | contracts | Provider commitments at 128 B, 16 KiB and 512 KiB source payloads | Validation, canonical request hashing and plan commitment; byte throughput reported |
 | contracts | Publication commitment with a 16 KiB Policy comment plus typed fixture | Exact Policy/schema hashing and stable parent/fence/ID binding |
 | contracts | Immutable provider profile commitment; closed request validation at 128 B, 16 KiB and 512 KiB | Full semantic descriptor hashing and duplicate-aware request schema, message and sampling validation |
@@ -41,7 +50,7 @@ them with a single aggregate number.
 =go run ./go/cmd/weaver-dev bench= runs optimized Rust benchmarks and the actual
 RPC benchmark. It records Rust/Go environment output, raw logs, a source-bound
 receipt, Criterion structured data and an English Org summary. Only result files
-created during the current run can qualify its twenty-five explicitly mapped cases.
+created during the current run can qualify its twenty-six explicitly mapped cases.
 Every case is required: a partial package, stale estimate or unmapped case fails
 artifact collection. Adding or renaming a case requires updating the Go collector
 and this workload contract together. Before measurement, the Go entrypoint runs
@@ -63,7 +72,7 @@ thirty paired iteration/time measurements. Every iteration count must be a
 positive integer; every elapsed time must be positive and finite. Mean estimates
 and confidence bounds must be positive, finite and ordered. A successful Cargo
 exit, an estimate without samples, or a stale sample file cannot qualify a
-package. Collector controls omit each of the twenty-five cases individually and
+package. Collector controls omit each of the twenty-six cases individually and
 inject missing, stale, shortened, mismatched and invalid measurements; no
 successful summary may be published for these controls. These are artifact
 integrity checks under the trusted runner/toolchain premise, not proof that

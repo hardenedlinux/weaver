@@ -1,10 +1,10 @@
 use criterion::{BatchSize, BenchmarkId, Criterion, criterion_group, criterion_main};
 use std::{collections::BTreeSet, hint::black_box, time::Duration};
-#[path = "../../../dev/benchmarks/contracts.rs"]
+#[path = "../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
-#[path = "../../../dev/benchmarks/policy.rs"]
+#[path = "../../policy/benches/support/fixtures.rs"]
 mod policy_fixture;
-#[path = "../../../dev/benchmarks/store.rs"]
+#[path = "support/fixtures.rs"]
 mod stores;
 fn durable_operations(c: &mut Criterion) {
     c.bench_function("ledger/fresh_admission", |b| {

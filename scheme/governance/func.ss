@@ -1,0 +1,25 @@
+;;; Reuse Agentic AI Lab's actual native Profile and governor implementations.
+(import (only-in :agentic-ai-lab/modules/loop-engine/control/governor loop-governor->contract)
+        (only-in :agentic-ai-lab/modules/governance/funs agentic-ai-lab-governance-evaluate)
+        (only-in :agentic-ai-lab/modules/governance/types agentic-ai-lab-governance-profile?
+                 agentic-ai-lab-governance-assessment?)
+        (only-in :clan/poo/object .ref .all-slots))
+(export assess-governance! governor-open-nodes)
+
+(def (assess-governance! profile context)
+  (unless (and (agentic-ai-lab-governance-profile? profile)
+               (null? (.all-slots (.ref profile 'ontology)))
+               (null? (.all-slots (.ref profile 'policies)))
+               (null? (.ref profile 'source-assets)))
+    (error "unsupported or invalid Governance source Profile obligations"))
+  (let ((assessment (agentic-ai-lab-governance-evaluate profile context)))
+    (unless (and (agentic-ai-lab-governance-assessment? assessment)
+                 (equal? (.ref assessment 'profile-identity) (.ref profile 'identity))
+                 (.ref assessment 'handoff-ready?)
+                 (not (.ref assessment 'runtime-executed?)))
+      (error "native Governance assessment does not admit an inert source handoff")))
+  #t)
+
+(def (governor-open-nodes governor states)
+  (let ((contract (loop-governor->contract governor states)))
+    (map symbol->string (cdr (assq 'open-patterns contract)))))

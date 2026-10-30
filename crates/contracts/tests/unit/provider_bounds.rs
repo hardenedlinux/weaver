@@ -1,4 +1,4 @@
-#[path = "../../../../dev/benchmarks/contracts.rs"]
+#[path = "../../benches/support/fixtures.rs"]
 mod fixtures;
 
 use proptest::{arbitrary::any, prop_assert_eq, proptest, test_runner::Config};

@@ -14,7 +14,7 @@ struct Case {
 }
 fn profile() -> ProviderProfile {
     decode(include_bytes!(
-        "../../../../dev/policies/provider/profile.json"
+        "../../../../prod/policies/provider/profile.json"
     ))
     .expect("profile")
 }
@@ -24,7 +24,7 @@ fn body() -> serde_json::Value {
 #[test]
 fn shared_closed_request_corpus_has_the_declared_semantics() {
     let cases: Vec<Case> = decode(include_bytes!(
-        "../../../../dev/policies/provider/request-cases.json"
+        "../../../../prod/policies/provider/request-cases.json"
     ))
     .expect("cases");
     for case in cases {

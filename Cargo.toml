@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/contracts", "crates/policy", "crates/ledger", "crates/execution", "crates/server"]
+members = ["crates/contracts", "crates/policy", "crates/policy-ffi", "crates/ledger", "crates/execution", "crates/server"]
 
 [workspace.package]
 version = "0.1.0"
@@ -37,6 +37,7 @@ arrow-array = "58.4.0"
 arrow-schema = "58.4.0"
 arrow-ipc = "58.4.0"
 criterion = { version = "0.8.2", default-features = false, features = ["cargo_bench_support"] }
+gerbil-scheme-aot-build = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "80e68254092589bbb778c9761a058da16fb6f72e" }
 
 asp-rust = { git = "https://github.com/tao3k/asp-rust", rev = "1ca41124b846dec947f3d05119cafa07eaa57924", default-features = false }
 

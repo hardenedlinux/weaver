@@ -25,6 +25,7 @@ var rustBenchmarkCases = []string{
 	"policy_typed_schema_validation",
 	"policy_warm_compilation_current_decision",
 	"policy_compilation_cache_churn",
+	"policy-ffi_typed_preflight",
 	"ledger_fresh_admission",
 	"ledger_consume_and_dispatch_burn",
 	"ledger_idempotent_admission",
@@ -43,7 +44,7 @@ var rustBenchmarkCases = []string{
 
 // Criterion sanitizes the package/group separator to an underscore on disk.
 func benchmarkPackage(name string) (string, error) {
-	for _, member := range []string{"contracts", "policy", "ledger", "execution", "server"} {
+	for _, member := range []string{"contracts", "policy", "policy-ffi", "ledger", "execution", "server"} {
 		if strings.HasPrefix(name, member+"_") {
 			return "weaver-" + member, nil
 		}

@@ -1,0 +1,29 @@
+#+TITLE: Production Policy Contracts
+#+LANGUAGE: en
+
+* Contract owner
+
+=provider/schema.json= and =streaming/schema.json= define the Cedar action,
+entity and context contracts used by the Rust authority. They are production
+assets. Scheme preflight, Go integration tests and Rust tests consume these
+same files rather than maintaining development copies of the schema.
+
+=provider/profile.json= and =provider/profile.yaml= encode the same reference
+provider profile contract. A source owner must explicitly select and publish a
+profile with the original task; these files do not automatically grant authority.
+Production policies remain explicit source-owned publication inputs and must
+validate against their selected schema. Rust rechecks current Cedar decisions
+at final execution and release.
+
+* Verification boundary
+
+=provider/provider.cedar= and =streaming/stream.cedar= contain the reference
+policies. =provider/request-cases.json= contains their associated validation
+vectors. Policy, schema, profile and case assets share this production owner.
+Scheme suites live in =t/*-test.ss=; Go/Rust integration and PBT consume these
+same assets. Quint and Lean remain under =dev/proofs/= with
+explicit refinement premises and the existing cedar-poo-spec dependency.
+Runtime logs, receipts and temporary builds remain Git-ignored in =.cache/=.
+
+The =prod/= and =dev/= directories express asset and tooling ownership. They
+do not classify feature maturity or replace explicit deployment admission.

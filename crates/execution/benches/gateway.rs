@@ -13,11 +13,11 @@ use std::{
 };
 use weaver_contracts::{ProviderEvent, ProviderRoute, Result};
 use weaver_execution::{ProviderExecution, ProviderOutput, ProviderTransport, execute_provider};
-#[path = "../../../dev/benchmarks/contracts.rs"]
+#[path = "../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
-#[path = "../../../dev/benchmarks/policy.rs"]
+#[path = "../../policy/benches/support/fixtures.rs"]
 mod policy_fixture;
-#[path = "../../../dev/benchmarks/store.rs"]
+#[path = "../../ledger/benches/support/fixtures.rs"]
 mod stores;
 struct Sink {
     events: usize,

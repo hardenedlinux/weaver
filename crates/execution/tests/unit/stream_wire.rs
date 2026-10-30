@@ -7,7 +7,7 @@ use weaver_ledger::Ledger;
 
 const ALLOW: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/../../dev/policies/streaming/stream.cedar"
+    "/../../prod/policies/streaming/stream.cedar"
 ));
 
 fn fixture(destination: String) -> (tempfile::TempDir, Ledger, StreamContract) {

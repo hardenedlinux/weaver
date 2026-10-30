@@ -276,6 +276,27 @@
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn release_capabilities_bind_plan_encoding_and_restart_session"},
     {"file":"dev/proofs/quint/ReleaseBinding.qnt","pattern":"run crossPlanCounterexampleTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem release_binding_and_execution_composition"}]},
+  {"id":"SpecificSourceContracts","witnesses":[
+    {"file":"scheme/gateway/contracts.ss","pattern":"def GatewayArtifact"},
+    {"file":"t/gateway-contracts-test.ss","pattern":"def gateway-contracts-test"},
+    {"file":"dev/proofs/quint/ControlActivation.qnt","pattern":"run malformedContractCannotRegisterTest"},
+    {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"contractValid : Bool"}]},
+  {"id":"NativeGovernorHandoff","witnesses":[
+    {"file":"scheme/governance/func.ss","pattern":"assq 'open-patterns"},
+    {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlNativeGovernorRejectsUnselectedPlans"},
+    {"file":"go/internal/config/bundle_test.go","pattern":"func TestBundleRejectsSelectionAndCommitmentSubstitution"}]},
+  {"id":"PolicyCAbiIsInert","witnesses":[
+    {"file":"crates/policy-ffi/src/abi.rs","pattern":"pub unsafe extern \"C\" fn weaver_policy_validate_v1"},
+    {"file":"scheme/policy/cedar-ffi.ss","pattern":"def-C-lambda policy-validate/raw"},
+    {"file":"dev/proofs/quint/ControlActivation.qnt","pattern":"run ffiPreflightCannotSendTest"}]},
+  {"id":"ControlActivationAcknowledgment","witnesses":[
+    {"file":"go/dev/provider_control_test.go","pattern":"func TestProviderControlPublicationReplyLossCannotActivateOrRebase"},
+    {"file":"dev/proofs/quint/ControlActivation.qnt","pattern":"run unknownCommitCannotActivateTest"},
+    {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"theorem composition_run_safe"}]},
+  {"id":"ControlStreamRecoveryBinding","witnesses":[
+    {"file":"go/dev/provider_control_test.go","pattern":"func TestProviderControlCompleteStreamsShareBudgetAndRejectSDKRetry"},
+    {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlNativeGovernorRevocationAndRestart"},
+    {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"theorem recovery_keeps_unknown_budget"}]},
   {"id":"NativeBenchmarkCoverage","witnesses":[
     {"file":"go/internal/devrunner/benchmark_test.go","pattern":"func TestBenchmarkEvidenceRequiresEveryCase"},
     {"file":"go/dev/workspace_test.go","pattern":"func TestCargoWorkspaceAndDevelopmentGates"},

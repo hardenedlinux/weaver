@@ -1,4 +1,4 @@
-#+TITLE: Cedar Policy Development Contracts
+#+TITLE: Cedar Policy Verification Contract
 #+LANGUAGE: en
 
 * Semantic owner
@@ -7,10 +7,14 @@ CompoundAuthorization's all-allow, error-free contract. It does not authenticate
 request-supplied facts or prove that a native socket used them. Weaver's source
 task commitment, deciding ledger and final broker discharge those host duties.
 
-The streaming fixture is an explicit test policy, not a permissive production
-default. Its schema describes the exact native projection. Strict Cedar schema
+The streaming policy is explicitly selected by source publication. Its schema
+describes the exact native projection. Strict Cedar schema
 validation, positive/negative native decisions, and actual final-wire tests run
 against it. An invoke-only policy does not authorize stream actions.
+
+Policy, schema, reference provider profile and associated request cases live
+together under the top-level =prod/policies/= directory. Every verification
+language consumes this shared owner; no development schema copy is maintained.
 
 * Separate verification roles
 - Quint explores schedules, crash/reply loss, owner handoff, partial writes and

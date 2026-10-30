@@ -4,11 +4,11 @@ use weaver_contracts::{ProviderPlan, ProviderRoute, Task, body_digest};
 use weaver_ledger::{Ledger, ProviderDispatch, ProviderRelease};
 const POLICY: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/../../dev/policies/provider/provider.cedar"
+    "/../../prod/policies/provider/provider.cedar"
 ));
 const SCHEMA: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/../../dev/policies/provider/schema.json"
+    "/../../prod/policies/provider/schema.json"
 ));
 fn fixture(path: &std::path::Path) -> (Ledger, ProviderPlan) {
     fixture_nodes(path, &["infer"])
@@ -25,7 +25,7 @@ fn fixture_nodes(path: &std::path::Path, nodes: &[&str]) -> (Ledger, ProviderPla
     let profile: weaver_contracts::ProviderProfile =
         weaver_contracts::decode(include_bytes!(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../dev/policies/provider/profile.json"
+            "/../../prod/policies/provider/profile.json"
         )))
         .expect("source profile");
     let plan=ProviderPlan{family:"f".into(),node:"infer".into(),profile:"p".into(),profile_commitment:profile.digest().expect("commitment"),model:"model-a".into(),body:r#"{"model":"model-a","stream":true,"messages":[{"role":"user","content":"hello"}],"max_completion_tokens":32}"#.into(),routes:vec![ProviderRoute{target:"primary".into(),endpoint:"https://provider.invalid/v1/chat/completions".into()}],ceiling:4,revision:0,fence:1};

@@ -38,6 +38,7 @@ const ownerToken = "test-agent-operation-token"
 const adminToken = "test-source-publisher-token"
 
 var serverBinary string
+var controlBinary string
 
 func TestMain(m *testing.M) {
 	_, source, _, ok := runtime.Caller(0)
@@ -54,7 +55,22 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	serverBinary = filepath.Join(repo, "target/debug/weaver-server")
-	os.Exit(m.Run())
+	directory, err := os.MkdirTemp("", "weaver-control-build-*")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	controlBinary = filepath.Join(directory, "weaver-control")
+	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), "build", "-race", "-o", controlBinary, "./go/cmd/weaver-control")
+	controlBuild.Dir, controlBuild.Stdout, controlBuild.Stderr = repo, os.Stderr, os.Stderr
+	if err := controlBuild.Run(); err != nil {
+		os.RemoveAll(directory)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	result := m.Run()
+	os.RemoveAll(directory)
+	os.Exit(result)
 }
 
 type testPKI struct {
@@ -215,12 +231,12 @@ func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binar
 	f.env = append(f.env, "WEAVER_SOURCE_LISTEN="+f.sourceAddress, "WEAVER_GRPC_SOURCE_PEER_SHA256="+hex.EncodeToString(sourceHash[:]))
 	f.start(t)
 	t.Cleanup(func() { f.stop(t) })
-	policy, err := os.ReadFile(filepath.Join(root(t), "dev/policies/provider/provider.cedar"))
+	policy, err := os.ReadFile(filepath.Join(root(t), "prod/policies/provider/provider.cedar"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	f.policy = string(policy)
-	schema, err := os.ReadFile(filepath.Join(root(t), "dev/policies/provider/schema.json"))
+	schema, err := os.ReadFile(filepath.Join(root(t), "prod/policies/provider/schema.json"))
 	if err != nil {
 		t.Fatal(err)
 	}

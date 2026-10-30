@@ -1,8 +1,8 @@
 use criterion::{Criterion, criterion_group, criterion_main};
 use std::{hint::black_box, time::Duration};
-#[path = "../../../dev/benchmarks/contracts.rs"]
+#[path = "../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
-#[path = "../../../dev/benchmarks/policy.rs"]
+#[path = "support/fixtures.rs"]
 mod policy_fixture;
 fn current_policy(c: &mut Criterion) {
     let (task, plan) = fixtures::task_plan(128, "https://provider.invalid/v1/chat/completions");

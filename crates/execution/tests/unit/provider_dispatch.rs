@@ -13,9 +13,9 @@ use std::{
 };
 use weaver_contracts::{ProviderEvent, ProviderRoute, Result};
 use weaver_ledger::Ledger;
-#[path = "../../../../dev/benchmarks/contracts.rs"]
+#[path = "../../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
-const SCHEMA: &str = include_str!("../../../../dev/policies/provider/schema.json");
+const SCHEMA: &str = include_str!("../../../../prod/policies/provider/schema.json");
 
 struct Endpoint {
     address: String,

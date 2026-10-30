@@ -1,0 +1,32 @@
+[package]
+name = "weaver-policy-ffi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[dependencies]
+weaver-policy.workspace = true
+
+[dev-dependencies]
+asp-rust.workspace = true
+criterion.workspace = true
+gerbil-scheme-aot-build.workspace = true
+
+[[bench]]
+name = "gateway"
+harness = false
+
+# Only this ABI leaf admits its reviewed pointer conversion module.
+# Every existing workspace package retains unsafe_code = forbid.
+[lints.rust]
+unsafe_code = "deny"
+unsafe_op_in_unsafe_fn = "deny"
+
+[lints.clippy]
+unwrap_used = "deny"
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"

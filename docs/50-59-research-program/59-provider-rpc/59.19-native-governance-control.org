@@ -1,0 +1,362 @@
+#+TITLE: 59.19 Native Governance, Control Publication and Final Execution
+#+LANGUAGE: en
+
+* Implemented language and ownership boundary
+
+The current source package is =tao3k/agentic-ai-lab=, as declared by its Git
+remote and =gerbil.pkg=. Its Core package is =tao3k/gebril-yuanxu=, with Scheme
+namespace =yuanxu=. A local checkout directory named =poo-flow= does not change
+either package identity. Weaver's root =gerbil.pkg= declares these existing
+packages; qualification uses isolated development links and never uninstalls or
+rewrites a global package environment.
+
+| Owner | Concrete responsibility | Does not establish |
+|-------+-------------------------+--------------------|
+| Agentic AI Lab Governance | Native POO Profile, threat model and typed semantic assessment through =modules/governance/interface= | Runtime execution permission or durable state |
+| Agentic AI Lab Governor | Existing descriptors and strategy/governor objects; denylist, snapshot conflict and =max-actionable= clipping | Monetary reservation, current distributed ownership or actual sends |
+| Weaver Scheme | Require an inert ready Governance assessment; project native =open-patterns= into an exact original family and task/plan inventory | A new governance language, nonce issuer or transport capability |
+| Rust Policy C ABI | Synchronous bounded typed Cedar Policy/schema preflight using =weaver-policy= | An allow decision, publication acknowledgment or execution grant |
+| Go control | Strict JSON/YAML artifact decoding, original-task registration, exact publication, frozen source routing and authenticated operation ingress | Current Policy authority, budget settlement or provider retries |
+| Rust deciding owner | Durable task/profile registration, publication/outcome CAS, current Cedar checks, shared holds, original consumption and affine final execution | External provider exactly-once delivery or snapshot rollback protection |
+
+=Governor= is a domain component for choosing a loop handoff. =Governance= is
+the broader engine-neutral semantic framework. They belong in the same product,
+but they are not two interchangeable authorization engines. The Governance
+authorization Provider boundary delegates actual Cedar behavior to Rust; threat
+assessment and =handoff-ready?= remain semantic facts. The Scheme bridge checks
+the returned assessment type, original Profile identity, ready flag and inert
+=runtime-executed?= flag. That flag is a declared contract, not a sandbox proof
+that arbitrary operator Scheme code has no effects.
+
+The source =modules/governor/interface= primarily composes module flags. Actual
+constructors, projection and validation close through
+=modules/loop-engine/control/governor=. Weaver imports this existing facade and
+the public Governance interface rather than reproducing their algorithms.
+Upstream maintenance should make this public distinction explicit; moving or
+renaming upstream code is not required to create another Weaver implementation.
+
+The initial source bridge accepts the native Profile's threat assessment and
+explicit typed task/Cedar artifacts. Additional nonempty =ontology=, =policies=
+or =source-assets= facets require an explicit compiler/enforcement contract and
+are rejected here. A generic ready assessment cannot silently erase an
+untranslated review or domain obligation. This is a bounded implemented Profile,
+not a claim that every upstream Governance specialization compiles to Cedar.
+
+* Root package and Scheme modules
+
+There is one root =gerbil.pkg=, one root =init.ss= and one root =build.ss=.
+=scheme/= is a collection of domain modules, not another package root or a
+technical layer. Root =init.ss= selects =governance=, =policy= and =gateway=
+through Yuanxu's =:load-modules= declaration. Every direct child has the ordinary
+=types.ss=, =objects.ss=, =func.ss=, =config.ss= and =interface.ss= roles.
+
+| Module | Responsibility | Dependency |
+|--------+----------------+------------|
+| =scheme/governance= | Existing Agentic AI Lab Profile assessment and governor open-node selection | Existing public type/function owners; no new governance DSL |
+| =scheme/policy= | Typed Cedar preflight through the explicit =cedar-ffi= C ABI module | Rust =weaver-policy-ffi= and POO =module-action= |
+| =scheme/gateway= | Compose admitted scopes and produce typed task/plan/publication artifacts | Yuanxu-declared =Governance= and =Policy= dependencies |
+
+Yuanxu owns discovery, selection, role dependency admission, namespace linking
+and source-generation currentness. =gateway= obtains the actual admitted module
+view through =yuanxu-load-modules= and checks =admit-current= around compilation
+and artifact emission. Those source checks do not substitute for the final Rust
+authority/fence CAS. POO's existing =module-action= loads the compiled Cedar C ABI
+owner on demand and resolves its binding on every call; source discovery does
+not interpret a foreign-code initializer or retain an earlier function approval.
+The root =build.ss= uses the selected init's =std-make-spec= and the existing
+Yuanxu/SDK =defbuild-script=, including the explicit =scheme/policy/cedar-ffi=
+compiler declaration. There is no parallel module list or loader.
+
+Public scope interfaces use native =Record= and =Function= descriptors.
+=GovernanceContext=, action-key/state facts, provider profile, ordered route,
+original task, plan, publication and final artifact each have specific contracts.
+The wire-facing records are sealed. No Weaver Scheme interface uses =Any=.
+Primitive refinements define bounded identifiers, commitments, credits and source
+text; authoritative Go/Rust validation remains independent. The POO record JSON
+projection preserves exact unsigned integer tokens above 2^53 rather than using
+the generic integer serializer's lossless string representation, which this wire
+schema does not accept.
+
+Credits and counters are limited to the deciding store's nonnegative signed
+64-bit range; credits must additionally be positive. A numeric string, Boolean,
+fraction, negative amount or overflowing integer is not a substitute. Governance
+requests use the =publish= symbol, not a caller-selected string action. Native
+contract tests exercise these distinctions, sealed-record rejection of undeclared
+fields, and exact numeric JSON projection above 2^53. This is an input contract;
+passing it cannot create an execution permit.
+
+The current Yuanxu source publisher discovers =func.ss=, rather than =funs.ss=.
+Weaver follows that declared role. Agentic AI Lab's existing =governance/funs=
+remains its own public function owner and is imported without renaming upstream.
+Go's gRPC interceptor signatures and temporary JSON/YAML syntax trees retain
+the library-required dynamic boundary types; domain artifacts and service
+operations use concrete Go structures. That boundary does not weaken Scheme,
+Go or Rust validation.
+
+* Scheme and Rust bridge
+
+=scheme/gateway/func.ss= accepts existing governor and Governance Profile POO
+objects, a semantic context, source state snapshots, and the existing typed
+task/plan/publication data. It calls native Governance evaluation and native
+=loop-governor->contract=. Only =open-patterns= can enter the source handoff.
+=strategy.actionable-patterns= describes candidates before denylist, state
+conflict and clipping. Substituting that list admitted all four initial native
+negative controls; their failed results are retained. The corrected bridge
+rejects the same cases naturally before emitting an artifact.
+
+The bounded initial profile supports one original family with one through 64
+selected nodes per handoff. Native =max-actionable= counts chosen actions; it
+does not count LLM tokens, money, in-flight streams or retries. Rust's separate
+source-authenticated node cost bounds and shared family budget govern execution.
+The native =max-attempts= metadata is not silently promoted to a configurable
+Rust retry policy: the implemented broker retains one affine attempt per
+original operation and cannot reopen it after an uncertain result.
+
+=scheme/policy/cedar-ffi.ss= is compiled with Gerbil/Gambit and invokes
+=weaver_policy_validate_v1= through C FFI. UTF-8 bytevectors are owned and rooted
+by the synchronous Scheme call. The ABI accepts two immutable borrowed regions,
+each at most 65536 bytes, keeps no pointer, allocates no returned buffer and
+performs no callback, ledger write or network call. Status zero certifies only
+typed Policy/schema validity. A valid =forbid= policy passes preflight and still
+denies every actual provider operation. Negative status, compilation failure,
+missing artifact or compiler timeout cannot activate ingress.
+
+The =crates/policy-ffi= leaf contains the reviewed raw-region conversion. Every
+existing Rust package retains the workspace unsafe-code prohibition. The ABI
+leaf denies unsafe code by default and scopes the exception to its ABI module;
+its ASP Rust deny gate remains enabled. Caller address validity and lifetime
+are explicit C ABI premises; null/length checks and Rust unwind containment
+cannot validate an arbitrary pointer or contain a segmentation fault. Scheme
+heap objects and Rust references never cross Go gRPC.
+
+The user-authorized native bridge PR is
+[[https://github.com/tao3k/gerbil-scheme-rust/pull/18][gerbil-scheme-rust PR 18]], selected at
+=80e68254092589bbb778c9761a058da16fb6f72e=. Weaver reuses its
+=gerbil-scheme-aot-build::gerbil_command= SDK and native compiler environment
+boundary as a development dependency. The Policy ABI is application glue, not
+a replacement generic Scheme runtime. This implementation does not instantiate
+the PR's Rust-hosted =GerbilRuntime=, isolated VM pool or Python frontend.
+Scheme already owns the compilation process's VM; initializing a second runtime
+inside its Policy callback would not be a valid ownership model. No upstream
+performance result is evidence of Weaver throughput.
+
+The upstream fixed-owner experiment processes five million messages in one
+Scheme VM, using four green workers and three transfer frames, with no
+per-message Rust entry. The newly matched integrated artifacts report
+500000.02 completed messages/s and 0.350 ms p99; their peak debt of 1142 fails
+the unchanged 128-message guard. This is a rate-limited actor experiment, not
+Gateway capacity or full performance admission. Its workload, retained negative
+cohorts and artifact identities are documented in the upstream
+[[https://github.com/tao3k/gerbil-scheme-rust/blob/80e68254092589bbb778c9761a058da16fb6f72e/specs/scheduling/checkpoints/owner-scope-0402ms-20261030/README.md][fixed-owner checkpoint]].
+
+[[https://github.com/tao3k/gerbil-scheme-rust/pull/19][PR 19]] addresses declared header inputs in
+cached linked-program builds. Weaver currently recompiles its small foreign
+module on each native qualification and includes the C header in its source
+receipt. It does not reuse a stale module cache or claim the upstream linked
+program archive path has been qualified here. Existing dependency pins remain
+unchanged; the newly introduced build-support dependency has an exact revision.
+
+* Configuration and publication protocol
+
+Policies, Cedar schemas, provider profiles and associated request cases share
+the top-level =prod/policies/= owner. Scheme preflight, native integration and
+PBT consume these same assets. Verification tools and models stay under
+=dev/proofs/= and =dev/models/=; Scheme test suites stay under =t/=.
+This organization expresses ownership, not feature maturity. Deployment still
+requires explicit source publication and current Rust authorization.
+
+JSON and YAML are strict inert source artifact formats, not alternate governance
+languages. They carry =governance={schema,family,open_nodes}=, =tasks=, =plans=
+and the original =publication=. Unknown or duplicate fields, YAML aliases,
+anchors, custom tags, multiple documents, noncanonical numbers and oversized
+documents are rejected. Go requires the governor node set, original task nodes
+and plan inventory to agree exactly, then recompiles every original body,
+profile, cost and ordered route commitment before any source writes.
+The artifact's governor projection is trusted source-owner input; JSON/YAML
+alone do not prove that a Scheme VM produced it. Untrusted agent requests
+cannot submit source artifacts or select a Scheme program.
+
+For a Scheme source file, Go runs the explicitly selected native compiler before
+publication, under the existing fifteen-second startup deadline. This is trusted
+source compilation, not Rust/Go request IPC. Natural successful compiler exit
+and a complete bounded artifact are both required. The Go source bridge and
+Rust service exchange all operational data over default mutual-TLS gRPC.
+Optional Arrow IPC changes response encoding, not authority or owner selection.
+
+The compiler disables continuation stack pretty-printing for this bounded source
+entry. Earlier rejected configurations raised the expected semantic exception
+but exceeded the unchanged deadline while rendering the Yuanxu graph; those
+failed observations remain separate evidence. Exceptions, nonzero natural exit,
+source validation, artifact cleanup and the fifteen-second limit remain intact.
+This diagnostic setting is not evidence that unrestricted full-trace rendering
+or a general Gerbil runtime shutdown problem has been fixed.
+
+Go preflights frontend credentials, reserves the listener, validates source,
+connects separate operation/source identities, registers the immutable original
+task, and publishes the original ID/content/parent/fence exactly once. Registration
+and authority publication are separate durable operations. A registration left
+behind after failure is inert and idempotent; there is no fictional multi-store
+transaction or automatic rollback of the original task.
+Registration itself performs no execution call; it is not a global activation
+transaction for every other native client. An independently authorized native
+caller still follows its currently committed Policy. This control-service model
+assumes private operation credentials and its configured original-key allowlist;
+it does not prove isolation from a compromised credential holder. Before a new
+publication commits, the prior Policy remains authoritative. If an application
+requires an all-client task/Policy activation barrier, that must be a native
+source-ledger transaction rather than an implied Go startup property.
+
+Ingress begins serving only after an exact committed publication acknowledgment.
+Commit followed by a lost reply causes startup failure with no provider call and
+no serving operation listener. Recovery reuses the original artifact and operation
+ID. It does not infer abort from absence, invent a new ID or rebase an old parent.
+A historical committed receipt can start a stale configured frontend, but cannot
+overwrite a newer native Policy or authorize a send: Rust rechecks current
+authority at its deciding execution boundaries.
+
+* Routing, stream release and recovery
+
+The frontend accepts only configured family/node operations. It compiles each
+request against the frozen original task and its source view; the incoming
+revision/fence does not choose authority. It forwards one native provider RPC,
+streams bounded Protobuf/Arrow frames without a second application queue, and
+forwards the canonical receipt trailer. It neither retries nor selects a new
+provider after RPC failure, partial output or an uncertain result. Source
+registration/publication/observation methods are unimplemented on this frontend.
+
+The frontend uses TLS 1.3, an exact client certificate digest and one bearer
+credential, sixteen global RPC slots, eight streams per connection, thirty-two
+socket slots retained through actual Close, and a fixed handshake deadline.
+Shared Kubernetes names do not substitute for the pinned key. These are logical
+execution and admission boundaries in an AI Agent Gateway, not hardware or
+physical isolation. The current deployment profile has one pinned caller;
+multi-tenant delegation and distributed identity issuance remain separate work.
+
+Rust admits and reserves, consumes the original root, burns dispatch before the
+sole HTTPS invocation, and rechecks current Cedar/fence for each response queue
+release. Revocation forbids new release admissions; already admitted bytes in
+Rust, Go, gRPC, TLS or kernel buffers may still drain. A Go socket write or client
+receipt is not an additional atomic Cedar/storage transaction. Provider usage
+and completion observations cannot refund an unknown reservation.
+
+Go restart reloads the same source artifact. Rust restart recovers the original
+task, publication outcomes, spent root and shared hold. Neither creates a new
+logical family, stream, nonce or budget domain. Concurrent original nodes draw
+from the same native family budget; retries do not create another reservation.
+
+* Source reuse and extension audit
+
+| Source mechanism | Reuse | Remaining execution obligation |
+|------------------+-------+--------------------------------|
+| =Governance/interface= | Typed Profile/threat assessment and pure dispatch | Assessment is not a signature, current history read or send permit |
+| =governor= facade | Native constructors, validation, =open-patterns= projection | Source snapshots do not acquire live custody; Rust rechecks actual state |
+| Yuanxu | Public prelude, POO roles, module and typed contract support | Yuanxu alone does not supply domain Governance or an execution ledger |
+| Governance =strict-mediation= | Semantic vocabulary and pure transition contracts | Do not treat =durability: strict= data as committed IO or trust caller-supplied spent-state |
+| =cedar-poo-spec= | Existing Cedar proof bridge and formal semantic dependency | Compilation, native ABI, durable CAS and effect release still need native evidence |
+
+In the inspected =strict-mediation= source, token validation reads the supplied
+validation context while consumed nonces also exist in state. An indeterminate
+observation retains the execution root. A stale empty spent-context therefore
+must not be admitted as authoritative runtime state. Weaver does not transplant
+this pure helper as its deciding ledger: the Rust transaction owns spent-state
+and the canonical original operation. This is an upstream contract-hardening
+finding, not a claim that all upstream Governance code is production-qualified.
+
+* Executable assurance and deployment
+
+=ControlActivation.qnt= composes source activation with the actual =ProviderRpc=
+transition model. It covers native semantic rejection, inert FFI validation,
+commit/reply loss, historical acknowledgment, publication after activation,
+partial release, process restart and unsafe reset/early-activation counterexamples.
+Its =typed= flag represents concrete source-contract admission, independently
+of the =ffi= flag. Malformed source cannot register merely because Governance
+and Cedar preflight succeed. The former is an explicit refinement premise,
+checked by native contract tests; the abstract Boolean model does not prove
+the decoder implementation. Its =ffi= flag denotes Rust validation: Scheme performs it through
+the local C ABI before artifact emission; JSON/YAML source artifacts receive the
+mandatory native typed check during publication. Registration may remain after
+a failed publication, but cannot activate this Go service.
+=ControlActivation.lean= proves gate and arbitrary-key execution preservation,
+shared reservation bounds, retained unknown holds and canonical nonce aliasing
+under explicit native refinement premises. Neither proof establishes C memory
+safety, storage anti-rollback, TLS, provider exactly-once effects or liveness.
+The existing =WeaverPolicyBridge= remains the cedar-poo-spec semantic boundary.
+
+Scheme unit assertions belong to =t/gateway-contracts-test.ss=,
+=t/governance-test.ss= and =t/policy-test.ss=, using native =:std/test=
+=test-suite=, =test-case= and checks. They exercise concrete Record contracts,
+exact numeric projection, Governor selection and the real inert Cedar C ABI.
+The existing SDK =gxtest= API discovers these suites. Its returned result is
+checked explicitly; an error result or failure to exit naturally within fifteen
+seconds fails the stage.
+
+=go/dev/provider_control_scheme_integration_test.go= owns cross-language process,
+mTLS gRPC, publication, revocation and restart observations. Its native Governor
+and Governance fixture lives in =t/fixtures/governed-control.ss=; Go supplies
+only inert test data. It is not a replacement Scheme unit-test framework.
+The Go development runner schedules both native suites and integration tests.
+
+Logs, receipts, linked build environments and transient verification outputs
+belong in Git-ignored =.cache/=. Failures remain available there. They are not
+copied into =dev/proofs/evidence/= or committed with source. Git retains Scheme
+tests, Quint/Lean models, SysML and maintained English Org/D2 specifications;
+CI uploads runtime evidence as expiring artifacts from =.cache/verification-*=.
+
+The Go-owned =check= gate includes strict SysML trace checks, Rust tests and all
+ASP deny gates, race tests, bounded source configuration PBT, Quint/Lean, and real
+Go/Rust/HTTPS integration. The separately required native =check-scheme= gate
+has no missing-tool skip. It links Agentic AI Lab and Core into a fresh isolated
+environment, links Gerbil POO at Core's existing exact declared pin, compiles the actual Gambit C FFI using upstream build support,
+and runs =integration,schemeintegration= tests. Linked source hashes are checked
+before and after execution; dependency-library qualification remains explicit.
+
+#+begin_src text
+go run ./go/cmd/weaver-dev check
+go run ./go/cmd/weaver-dev -scheme-source /absolute/agentic-ai-lab -scheme-poo /absolute/pinned-gerbil-poo -scheme-library /absolute/qualified/lib check-scheme
+go build ./go/cmd/weaver-control
+#+end_src
+
+Select =WEAVER_CONTROL_SCHEME_COMPILER= as an absolute =gxi= path before the native
+gate. The actual =weaver-control= executable uses =WEAVER_CONTROL_CONFIG= and
+=WEAVER_CONTROL_LISTEN=; it has no operation CLI or stdin protocol.
+
+| Environment group | Required settings |
+|-------------------+-------------------|
+| Frontend TLS | =WEAVER_CONTROL_SERVER_CERT=, =WEAVER_CONTROL_SERVER_KEY=, =WEAVER_CONTROL_CLIENT_CA= |
+| Frontend caller | =WEAVER_CONTROL_PEER_SHA256=, =WEAVER_CONTROL_TOKEN_SHA256= |
+| Native TLS | =WEAVER_CONTROL_NATIVE_CA=, =WEAVER_CONTROL_NATIVE_SERVER_NAME= |
+| Native operation role | =WEAVER_CONTROL_NATIVE_OPERATION_CERT=, =WEAVER_CONTROL_NATIVE_OPERATION_KEY=, =WEAVER_CONTROL_NATIVE_OPERATION_TOKEN=, =WEAVER_CONTROL_NATIVE_OPERATION_ADDRESS= |
+| Native source role | =WEAVER_CONTROL_NATIVE_SOURCE_CERT=, =WEAVER_CONTROL_NATIVE_SOURCE_KEY=, =WEAVER_CONTROL_NATIVE_SOURCE_TOKEN=, =WEAVER_CONTROL_NATIVE_SOURCE_ADDRESS= |
+
+Certificates and keys are file paths; tokens are secrets and are never printed
+by the settings loader. =GERBIL_PATH= and =GERBIL_LOADPATH= select the admitted
+native source/dependency environment for Scheme configuration. Go uses a fixed
+fifteen-second startup/drain bound; emergency cleanup is reported as failure.
+The native tests use loopback HTTPS provider implementations and actual network
+gRPC, not external paid provider accounts or an in-memory substitute ledger.
+
+* Native dependency currentness finding
+
+The inspected Core source selects Gerbil POO revision
+=dbbc436520d6fe4834d46cc046472783bcb1fa6c=. Its read projection imports
+=slot-read-observers-compatible?=. The preexisting dependency checkout/library
+was older and did not export this function; loading the Governance Profile path
+therefore failed before source publication. A governor-only positive probe had
+not covered that additional import closure. The failed native run is retained.
+
+The correction selects the already-declared revision in an isolated checkout,
+builds it through its official package entry with its original two-GiB compiler
+heap bound and one build worker, links its source after the fresh compiled
+library and before the older dependency library, and checks that its Git
+HEAD matches the literal Core dependency declaration. No Core or Weaver existing
+pin is changed. The native receipt includes Agentic AI Lab, Core and Gerbil POO
+source hashes before/after execution. This qualifies the exercised native source
+closure, not every precompiled external library, the complete upstream package
+suite, Scheme SMP, Linux packaging, or upstream remote CI.
+Source-only loading also exposed cold startup/negative-control timeouts. The
+qualification therefore builds the declared dependency rather than interpreting
+its entire source graph on each launch. The tested entry remains ordinary dynamic
+=gxi= loading the actual configuration; it is not an AOT-only test executable.
+Every configuration startup and natural negative rejection retains the original
+fifteen-second limit. Restart RPCs require a fresh bounded RPC context and actual
+Rust rejection, so a client deadline cannot masquerade as revocation enforcement.

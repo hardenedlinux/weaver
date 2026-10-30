@@ -1,9 +1,10 @@
 //! Deterministic benchmark source fixture; no external provider or credential.
 use weaver_contracts::{ProviderPlan, ProviderRoute, Task, body_digest};
 pub fn task_plan(bytes: usize, endpoint: &str) -> (Task, ProviderPlan) {
-    let profile: weaver_contracts::ProviderProfile =
-        weaver_contracts::decode(include_bytes!("../policies/provider/profile.json"))
-            .expect("source profile");
+    let profile: weaver_contracts::ProviderProfile = weaver_contracts::decode(include_bytes!(
+        "../../../../prod/policies/provider/profile.json"
+    ))
+    .expect("source profile");
     let body = format!(
         r#"{{"model":"model-a","stream":true,"messages":[{{"role":"user","content":"{}"}}],"max_completion_tokens":32}}"#,
         "x".repeat(bytes)

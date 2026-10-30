@@ -1,4 +1,4 @@
-#[path = "../../../../dev/benchmarks/contracts.rs"]
+#[path = "../../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
 
 use rusqlite::Connection;
@@ -15,8 +15,8 @@ fn source(path: &std::path::Path) -> (Ledger, Task, ProviderPlan) {
     ledger
         .publish_typed(
             None,
-            include_str!("../../../../dev/policies/provider/provider.cedar"),
-            include_str!("../../../../dev/policies/provider/schema.json"),
+            include_str!("../../../../prod/policies/provider/provider.cedar"),
+            include_str!("../../../../prod/policies/provider/schema.json"),
             1,
         )
         .expect("source policy");
