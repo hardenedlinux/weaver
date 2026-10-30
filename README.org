@@ -1,218 +1,76 @@
-#+title: Weaver
-#+subtitle: Unified Gateway Architecture
-#+language: en
-#+options: toc:2
+#+TITLE: Weaver
+#+SUBTITLE: A Policy-Governed AI Agent Gateway
+#+LANGUAGE: en
+#+OPTIONS: toc:2
 
-* Purpose
+Weaver connects agents, tools and LLM providers through a shared governance and
+execution boundary. Cedar Policy constrains routing, dispatch and stream release;
+original task claims, shared budgets and history remain bound across retries,
+revocation and recovery.
 
-Weaver is a proposed unified gateway for governed service, agent, tool, and
-model interactions. Zero Trust is a required starting design constraint:
-no implicit authority follows from network location, process ownership,
-language, or authenticated transport. Its architecture combines Scheme-driven
-semantic composition with the networking, cloud-native, and systems capabilities of
-the Go and Rust ecosystems. Language placement follows responsibility,
-integration value, operational cost, and measured behavior.
+* Architecture
 
-[[file:Project.sysml][Project.sysml]] is the root Deterministic Engineering contract for repository
-organization. The OpenSysML SDK gate checks package ownership, runtime Rust
-dependency layers, Scheme roles, production Policy assets and ignored outputs
-against this model. See [[file:docs/50-59-research-program/59-provider-rpc/59.20-project-structure.org][the project structure contract]] for the executable scope.
+| Component | Responsibility |
+|-----------+----------------|
+| Scheme | Reuse Agentic AI Lab Governor and Governance; compose typed modules and project policies/source-assets into Cedar |
+| Go | Load Scheme/JSON/YAML configuration, coordinate authenticated authority publication, and provide routing and protocol integration |
+| Rust | Own authoritative state, evaluate current Cedar Policy, reserve and consume budgets, and control final provider dispatch and stream release |
 
-This repository contains a modular Rust/Go runtime alongside its architecture
-and formal models. The current [[file:docs/50-59-research-program/59-provider-rpc/59.00-index.org][gRPC provider implementation checkpoint]] defines
-the executable scope, native validation and remaining production gates. Earlier
-architecture chapters remain proposals unless mapped to current native evidence.
+Go and Rust communicate through mutually authenticated gRPC. Protobuf is the
+default stream encoding; Arrow IPC is optional. Scheme uses Gambit C FFI for
+inert Cedar validation. Configuration validation does not grant execution rights.
 
-The core design uses Cedar for explicit permission meaning, Scheme/POO for
-Governance and composition, Go for cloud/protocol integration, and Rust for
-the reference stateful coordinator and final broker. Quint and Lean examine
-whether those boundaries preserve the declared Zero Trust contract. Read
-[[file:docs/architecture/09-code-as-policy.org][the selection rationale]] and [[file:docs/architecture/diagrams/13-policy-to-execution.svg][the core policy-to-execution view]].
+[[file:docs/50-59-research-program/59-provider-rpc/59.03-provider-rpc-core.svg]]
 
-* Architecture documents
+* Workspace
 
-| Document | Scope |
-|----------+-------|
-| [[file:docs/architecture/00-system-design.org][System design and language boundaries]] | Goals, authority ownership, topology alternatives, deployment, and decisions |
-| [[file:docs/architecture/01-reference-comparison.org][Reference comparison and evidence]] | Exact source identities; agentgateway, POO Flow, and cedar-poo-spec comparison |
-| [[file:docs/architecture/02-interfaces-and-policy.org][Unified interfaces and Policy model]] | Publication, operation context, protocol semantics, policy composition, and effect admission |
-| [[file:docs/architecture/03-performance-and-validation.org][Performance and validation]] | Critical paths, resource budgets, matched experiments, formal obligations, and acceptance gates |
-| [[file:docs/architecture/04-zero-trust-and-review.org][Zero Trust baseline and architecture review]] | Mediation coverage, compromise boundaries, stateful admission, credential safety, and review findings |
-| [[file:docs/architecture/05-authorization-execution-protocol.org][Authorization-to-execution coordination]] | POO reuse, history/budget holds, grant consumption, durable send intent, final claims, failures and recovery |
-| [[file:docs/architecture/06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]] | Upstream source findings and concrete Go positioning alongside Scheme semantics and Rust runtime coordination |
-| [[file:docs/architecture/07-source-admission-ledger-fencing.org][Source admission, durable ledger, and fencing contracts]] | Exact POO reuse/extension map, runtime admission, atomic ledger operations, consume timeouts, restarts and stale workers |
-| [[file:docs/architecture/08-diagram-catalog.org][D2 diagram catalog and maintenance]] | Twenty canonical D2 views for architecture, policy, execution, failure races and independent outcome records, with SVG previews |
-| [[file:docs/architecture/09-code-as-policy.org][Code as Policy and Cedar integration]] | Existing Cedar foundation, admitted artifact closure, error-free execution profile, language ownership and enforcement matrix |
-| [[file:docs/architecture/10-zero-trust-assurance.org][Mandatory Zero Trust assurance: Quint and Lean]] | Critical cedar-poo-spec dependency, exact compatibility closure, model/proof/runtime correspondence and FM1-FM12 obligations |
-| [[file:docs/architecture/11-source-to-execution-assurance-review.org][Source-to-execution assurance review]] | Exact proof reuse limits, FM premises/counterexamples/evidence, event correspondence and verified compatibility scope |
-| [[file:docs/architecture/12-fm1-baseline-and-native-qualification.org][FM1 baseline selection and native qualification]] | Greenfield consistency, isolated complete dependency/native checks, recommended target, direct migration and FM impact |
+[[file:Project.sysml][Project.sysml]] defines repository ownership and dependency boundaries,
+checked through the in-process OpenSysML SDK.
 
-| [[file:docs/architecture/13-go-adapter-broker-boundary.org][Go adapter to Rust broker boundary]] | SDK hidden effects, immutable handoff, actual application submission, streaming/route guards and Quint/Lean correspondence |
+| Path | Contents |
+|------+----------|
+| =crates/= | Rust workspace libraries, server and per-crate benchmarks |
+| =go/= | Go control plane, gRPC clients and development tooling |
+| =scheme/= | Governance, Policy and Gateway modules |
+| =t/= | Scheme-owned tests and fixtures |
+| =prod/= | Production Policy schemas and assets |
+| =dev/= | SysML models, Quint models, Lean proofs and development specifications |
+| =docs/= | English Org documentation and D2 diagrams |
 
-| [[file:docs/architecture/14-stream-message-authorization.org][Streaming message authorization]] | Full-message S1-S6 reuse, parent escrow, queue/offer authority, partial writes, revocation and recovery with formal counterexamples |
+The root =Cargo.toml= and =go.work= manage their language workspaces.
+=gerbil.pkg=, =build.ss= and =init.ss= define the Scheme package.
 
-| [[file:docs/architecture/15-authoritative-spent-state.org][Authoritative spent state and P13 alignment]] | Pure/local/durable guard limits, state-context correspondence, nonce versus logical identity, uncertainty and restart controls |
-| [[file:docs/architecture/16-differentiation-and-reuse.org][Framework differentiation and gateway reuse]] | Learn network/cloud mechanisms while preserving POO Governance, Code as Policy and governed execution/recovery contracts |
-| [[file:docs/architecture/17-shared-identity-budget-proof.org][Cross-message identity and shared budget proof]] | Executable alias/product model, imported Lean safety, shared weighted accounting, global history and bypass counterexamples |
-| [[file:docs/architecture/18-finite-domains-and-migration.org][Finite messages and domain migration]] | Arbitrary finite Lean accounting, stable budget/history identity, domain migration, process restart and stale-worker counterexamples |
-| [[file:docs/architecture/19-anchor-recovery-and-egress-contract.org][Anti-rollback, durable recovery and final egress]] | Independent anchor identity, canonical lost-reply resolution, complete materialization, actual-writer cut and retained-buffer/receiver boundaries |
+* Development
 
-Read the system design and Zero Trust baseline first. The comparison distinguishes
-inspected source behavior from requirements and hypotheses. The interface document is a
-conceptual contract, not an implemented SDK or wire schema. The validation
-document defines acceptance requirements; full runtime gates remain pending.
-Focused formal results are recorded in the linked specification evidence.
+Use the toolchains and prerequisites described in the
+[[file:docs/50-59-research-program/59-provider-rpc/59.22-parallel-ci.org][verification guide]]. The Go development entrypoint runs the same suites locally
+and in CI:
 
-The security review records fourteen design gaps and their required treatment.
-Document revisions clarify those obligations; actual containment, stateful
-commit, dispatch fencing, and protocol behavior remain unqualified.
+#+begin_src text
+go run ./go/cmd/weaver-dev bootstrap
+go run ./go/cmd/weaver-dev check
+go run ./go/cmd/weaver-dev bench
+#+end_src
 
-The coordination proposal chooses one durable state domain and an ordered
-consume-then-commit protocol, with conservative no-redispatch recovery for
-unknown non-idempotent sends. The ignored =.data/agentgateway= checkout is a
-fixed source reference, not a runtime dependency.
+Individual suites are =check-rust=, =check-go=, =check-policy=,
+=check-architecture= and =check-scheme=. Scheme qualification requires an explicit
+Gerbil compiler and the pinned Agentic AI Lab dependency checkout; see the
+[[file:docs/50-59-research-program/59-provider-rpc/59.19-governance-control.org][Scheme integration guide]]. Builds use the machine's available CPU capacity.
+Generated output stays in ignored caches or temporary directories.
 
-The source-admission refinement keeps undecided preflight inert and specifies
-separate runtime admission, authoritative ledger command resolution, and three
-distinct fencing boundaries. Process restart and timeout cannot reopen a claim
-or recreate permission from serialized receipts. The cross-review additionally
-separates submission, emitter closure, external outcome, settlement and response
-release. Code as Policy is a mandatory Zero Trust requirement; existing Cedar
-source is reused without claiming the remaining runtime bridge is implemented.
+SysML checks ownership and requirement traceability. Quint explores concurrent
+and failure schedules. Lean proves the declared semantic and transition
+properties, reusing cedar-poo-spec. Rust, Go and Scheme tests validate their
+implementation boundaries, including real multi-process gRPC and HTTPS streams.
 
-Quint and Lean are required architecture components, with cedar-poo-spec as a
-critical semantic dependency. The first [[file:dev/specs/quint/LogicalMessageAuthority.qnt][executable Quint model]] and
-[[file:dev/specs/lean/LogicalMessageAuthority.lean][checked Lean proof]] now cover a focused logical-message/issuance/evidence
-machine. [[file:dev/specs/README.org][Formal artifacts, theorem correspondence and validation receipts]] distinguish
-this checked abstract safety from pending source refinement, full FM coverage
-and runtime qualification. Different inspected Lean/Cedar declarations still
-require one selected owner-integration baseline.
-This is internal consistency and native qualification, not backward compatibility.
+* Documentation
 
-* Workspace layout
+- [[file:docs/50-59-research-program/59-provider-rpc/59.00-index.org][Implementation guide and current scope]]
+- [[file:docs/50-59-research-program/59-provider-rpc/59.23-governance-policy-projection.org][Governance Policy projection and authoritative publication]]
+- [[file:docs/50-59-research-program/59-provider-rpc/59.20-project-structure.org][Project structure and module ownership]]
+- [[file:docs/50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][Verification responsibilities]]
+- [[file:docs/architecture/00-system-design.org][Architecture and design rationale]]
+- [[file:dev/specs/README.org][Formal specification guide]]
 
-- =crates/= contains the Rust contracts, Policy, ledger, execution and server crates.
-- =go/= contains the Go control plane: =api/=, =internal/= and =cmd/=.
-- Root =Cargo.toml= and =go.work= coordinate their respective workspaces.
-- =dev/= contains models, policies, proofs and validation evidence.
-
-The current development entrypoint is =go run ./go/cmd/weaver-dev check=.
-Go model tests use the public in-process OpenSysML SDK. Native Rust tests own
-execution assertions, with Go integration through the actual mTLS gRPC service.
-The Rust server starts gRPC by default. Protobuf is the default response format;
-Arrow IPC is an implemented optional encoding through the same guarded stream.
-Command/stdio and HTTP request bridges are retired. Each Rust package has an
-executable benchmark, run through =go run ./go/cmd/weaver-dev bench=.
-
-See [[file:docs/50-59-research-program/59-provider-rpc/59.00-index.org][workspace ownership and execution boundaries]].
-Execution, source publication and canonical observation now use independent
-bounded native lanes. See [[file:docs/50-59-research-program/59-provider-rpc/59.07-reserved-authority-admission.org][reserved authority admission]] for the saturation
-counterexample, actual RPC regression and formal refinement premises.
-The RPC acceptor also enforces [[file:docs/50-59-research-program/59-provider-rpc/59.08-connection-custody.org][pre-TLS connection custody]] and a handshake deadline;
-connection capacity remains owned until actual socket destruction.
-[[file:docs/50-59-research-program/59-provider-rpc/59.09-source-ingress.org][Source publication now has a separate gRPC ingress]], distinct pinned certificate
-and credential, and independent connection capacity. Both ingress lifetimes
-belong to one closing and draining runtime owner.
-[[file:docs/50-59-research-program/59-provider-rpc/59.10-publication-recovery.org][Publication decisions are durable and recoverable]] under their original ID,
-exact Policy/schema commitment and parent CAS. Historical decisions never create
-execution authority or release unknown budget.
-Source RPCs now use one [[file:docs/50-59-research-program/59-provider-rpc/59.11-owned-source-worker.org][tracked blocking SQL owner]] with a bounded command lane,
-quiescent transaction boundaries and observed explicit close; connection reuse
-does not cache authority or final-send decisions.
-Response release now [[file:docs/50-59-research-program/59-provider-rpc/59.13-original-release-capability.org][binds each private capability to the original plan, prepared encoding and ledger session]], independently of equal batch payload digests.
-The development Go package [[file:docs/50-59-research-program/59-provider-rpc/59.14-go-fuzz-coordinator.org][backports the upstream fuzz parent-deadline repair]] with native positive and property-failure controls, without changing dependency locks or fuzz windows.
-The [[file:docs/50-59-research-program/59-provider-rpc/59.15-committed-cold-assurance.org][committed-source assurance workflow]] prepares locked dependencies with =bootstrap= and runs the same native/formal and per-package benchmark gates in CI. Use the declared Nix environment; CI additionally requires =-clean-source=.
-The provider owner also [[file:docs/50-59-research-program/59-provider-rpc/59.12-final-invocation-cancellation.org][rechecks its original cancellation context inside the final
-deciding callback]] immediately before entering HTTPS transport. A pre-lock read
-alone cannot admit a request after that context has stopped.
-
-* Historical design scope
-
-- Architecture and design documentation only, written in English Org.
-- D2 diagram sources, a shared presentation theme, local brand assets and generated SVG/overview PNG previews accompany the Org documents.
-- No gateway implementation, generated schemas, dependencies, benchmarks, or deployment changes.
-- Scoped owner builds, native checks and retained failures are documented; no complete Weaver or deployed acceptance is claimed.
-- Existing environment configuration is outside this documentation change.
-
-
-The [[file:docs/architecture/17-shared-identity-budget-proof.org][cross-message extension]] adds actual Quint/Lean artifacts for canonical
-alias resolution, two logical messages, one weighted budget and shared history.
-[[file:dev/specs/README.org][The formal guide]] keeps source premises, proof correspondence, bounded
-simulation and remaining runtime qualification separate.
-
-
-The [[file:docs/architecture/18-finite-domains-and-migration.org][finite-domain extension]] generalizes the checked ledger to arbitrary finite
-message sets and independent overlapping budget/history accounts. Domain and
-process lifecycle changes preserve canonical obligations; old tickets and
-claimed executors cannot be silently refreshed. [[file:dev/specs/README.org][Proofs, model commands and
-scope limits]] remain explicit alongside runtime qualification requirements.
-
-
-[[file:docs/architecture/19-anchor-recovery-and-egress-contract.org][The anchor/recovery/egress contract]] adds checked conditional journal and
-range proofs, rollback/lost-reply/buffer counterexamples, and an explicit physical
-acceptance register. Old accepted buffers may drain after a logical cut;
-receiver business fencing does not retract disclosure. Physical qualification
-remains separate from those formal results.
-
-
-The [[file:docs/architecture/20-composed-journal-transport-lifecycle.org][composed lifecycle]] connects the empty finite ledger, exact migration seal,
-immutable journal decision, complete recovery and actual transport-owner
-admission in one reachable Lean product. Quint covers phase races and lost
-replies across owner restart. Durable range records retain uncertainty and
-prevent replay; actual storage/driver qualification remains pending.
-
-
-The [[file:docs/architecture/21-finite-stream-manifest-proof.org][finite stream manifest extension]] now supports arbitrary finite range counts
-under the original complete-message claim. Checked Lean composition covers
-immutable partitions, affine partial-offer frontiers, unique stream tails and
-shared escrow coverage. Quint retains prefix-rewind, restart replay, overlap
-and budget/history bypass controls. Physical ownership qualification remains
-separate; no gateway implementation or dependency pin changes.
-
-
-The [[file:docs/architecture/22-driver-completion-recovery.org][driver completion and recovery extension]] separates possible-offer frontier,
-original-driver relinquishment and final usage. Checked Quint/Lean artifacts
-retain canonical completion across lost replies and forbid tail adoption after
-driver restart. Physical writer isolation and durable transaction qualification
-remain explicit acceptance obligations.
-
-
-The [[file:docs/architecture/23-writer-isolation-settlement-closure.org][writer isolation and settlement extension]] separates immutable evidence,
-canonical terminal decisions, local publication and financial materialization.
-Checked Quint/Lean artifacts retain original ownership across cross-store reply
-loss and join final usage to published terminal coverage and original shared
-reservations. Physical writer/storage/provider qualification remains pending.
-
-
-[[file:docs/architecture/24-settlement-anchor-recovery.org][The account application and anchor recovery extension]] joins original
-settlement intents, protected gate consumption, atomic application receipts and
-independent confirmations. Checked models reject mixed restored images and retain
-unknown reservations; rollback of the protected gate itself remains an explicit
-failed premise requiring physical qualification.
-
-
-[[file:docs/architecture/25-gate-consumption-persistence.org][The gate consumption persistence refinement]] permits local journal loss while
-preserving independent seal/issuance/burn tombstones. Unknown burns block full
-recovery and retain original reservations; authentic late original receipts close
-the chain without replay. [[file:dev/specs/evidence/gate-consumption-persistence-2026-10-19.org][The formal receipt]] keeps native qualification distinct.
-
-
-[[file:docs/architecture/26-anchor-commit-broker-fencing.org][The anchor commit and broker handover refinement]] separates durable committed
-history from actual writer authority. Election leaves an explicit old-broker
-window until physical isolation; qualified prefix/fence activation preserves the
-same original operation and unknown reservation. [[file:dev/specs/evidence/anchor-broker-commit-2026-10-19.org][The executable receipt]] keeps
-store-owner and native premises explicit.
-
-
-[[file:docs/architecture/27-anchor-configuration-prefix-inheritance.org][The configuration and prefix-inheritance refinement]] extends the root model to
-serialized old/joint/new membership. Joint transitions require both quorums and
-complete deciding-image inheritance; configuration publication does not isolate
-old broker handles or create fresh application authority. [[file:dev/specs/evidence/anchor-reconfiguration-2026-10-19.org][The receipt]] separates
-conditional formal results from native consensus and writer qualification.
-
-
-[[file:docs/architecture/28-quorum-durable-promises-prefix-recovery.org][The quorum durable-promise refinement]] separates restored replicas from protected
-non-equivocating witnesses and exclusive signer qualification. Its conservative
-sticky-prefix profile closes the shared-witness rollback gap while retaining the
-original execution and budget model. [[file:dev/specs/evidence/quorum-durable-promises-2026-10-19.org][The receipt]] records executable counterexamples,
-conditional Lean composition and the remaining native trust boundary.
+Weaver is under active development. The implementation guide distinguishes
+implemented behavior from design requirements and remaining qualification work.
