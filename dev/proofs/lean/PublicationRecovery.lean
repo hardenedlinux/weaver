@@ -94,6 +94,16 @@ theorem exact_observation_and_accounting_survive_recovery [DecidableEq Key]
     ExactObservation t id payload parent fence d ∧ t.held = held ∧ t.calls = calls := by
   have preserved := recovery_and_provider_accounting_composition safe run observed.1
   exact ⟨⟨preserved.1, observed.2⟩, preserved.2⟩
+/-- A recoverable committed decision stays historical after head advancement.
+It cannot certify the current head or release an existing unknown reservation. -/
+theorem recovered_decision_cannot_replace_advanced_head [DecidableEq Key]
+    {id : Key} {decision : Decision}
+    (h : Safe held calls s) (run : Run s t) (original : s.records id = some decision)
+    (historical : decision.resultHead ≤ s.head) (advanced : s.head < t.head) :
+    t.records id = some decision ∧ decision.resultHead ≠ t.head ∧
+      t.held = held ∧ t.calls = calls := by
+  have preserved := recovery_and_provider_accounting_composition h run original
+  exact ⟨preserved.1, by omega, preserved.2⟩
 
 /- Owned-connection refinement: the worker has opened one private connection;
    every command is checked quiescent before/after SQL, storage faults terminate
@@ -176,4 +186,5 @@ theorem owned_worker_and_publication_composition [DecidableEq Key]
 #print axioms run_preserves_accounting
 #print axioms recovery_and_provider_accounting_composition
 #print axioms exact_observation_and_accounting_survive_recovery
+#print axioms recovered_decision_cannot_replace_advanced_head
 end Weaver.PublicationRecovery

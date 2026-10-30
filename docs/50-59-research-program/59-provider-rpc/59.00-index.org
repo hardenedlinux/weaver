@@ -9,6 +9,36 @@ Maintained native and formal checks follow [[file:59.21-verification-ownership.o
 [[file:59.22-parallel-ci.org][Parallel language and contract suites]] run independently on OS-installed CI tools.
 [[file:59.23-governance-policy-projection.org][Governance Policy/source-asset projection]] defines the source-to-authority contract.
 [[file:59.24-telemetry-service.org][Default telemetry service]] defines the target observation boundary and OpenShell comparison.
+[[file:59.25-openshell-and-tao3k-ecosystem.org][OpenShell and the TAO3K ecosystem]] defines Scheme's programmable role,
+Cedar proof reuse and the complete routine-to-effect delivery sequence.
+The [[file:59.26-semantic-execution-ecosystem.svg][semantic execution diagram]] shows the target ecosystem relationships.
+[[file:59.27-policy-evidence-architecture.org][Policy evidence architecture]] fixes the publication, actual-schema and MRR
+boundaries before implementation; verification ownership is declared once in Project SysML.
+[[file:59.28-ascent-mrr-and-fact-review.org][The next cross-review]] selects inherited AA/Ascent first, keeps MRR optional,
+and reviews hard-fact barriers and receipt-driven Session progression. Its single
+R2-01--R2-13 ledger separates source inspection, conditional proof reuse, executed
+baseline checks and missing bridge acceptance; all thirteen integrated obligations
+remain open. Barrier confirmation, projection readiness and accounting application
+have distinct target contracts.
+All thirteen obligations now have bounded executable witnesses in the existing
+Quint owner; concrete integrated acceptance remains 0/13. The existing Cedar Lean
+bridge checks successor and fact-context evidence eligibility. Scheme also owns
+higher-order Governance assessment, evidence and strategy composition through
+AA generic methods and Workflow/Funflow, beyond Policy/configuration generation.
+[[file:59.29-strands-box-cross-review.org][Strands Box source review]] adds schema-bound request, durable-history,
+temporal-accounting and embedding lessons without adopting a second Policy engine.
+Its per-round comparison metric records benefits, disadvantages, mitigations and
+evidence progress against both Box and OpenShell; design coverage is separate
+from concrete integrated acceptance.
+[[file:59.30-governance-adapter-acceptance.org][Governance adapter acceptance]] maps all thirteen obligations to concrete
+fault-injection receipts, closes the target borrow/owned-data and VM callback
+contracts, and defines JSON plus high-order Scheme profiles through inherited
+JsonSchema/AA capabilities. The [[file:59.30-governance-adapter-acceptance.svg][adapter diagram]] keeps schemas and authority
+boundaries distinct. These acceptance scenarios are specified, not executed.
+[[file:59.40-core-gateway-library.org][The core Gateway Lean library]] fixes the upstream Authorization Delta/admission
+boundary and keeps scenario-specific Rust execution in Weaver.
+[[file:59.41-authority-read-final-cas.org][Authority reads and final CAS]] maps actual SQLite/gRPC recovery to reused
+Lean/Quint laws and records the independent recovery-floor implementation gap.
 
 Go and Rust communicate through the shared typed gRPC service in
 [[file:../../../proto/gateway/v1/gateway.proto][gateway.proto]]. The Rust server executable starts this service by default.
@@ -28,7 +58,7 @@ It does not introduce another permission or transport owner.
 | Component | Placement and responsibility |
 |-----------+------------------------------|
 | Go routing | =go/internal/routing=: source-bound request and ordered route proposal |
-| Native source authoring | =scheme/=: existing Agentic AI Lab Governance/Governor POO values, inert Rust Policy C FFI and exact task/plan artifact |
+| Scheme semantics | =scheme/=: reusable functions and Agentic AI Lab Governance/Governor POO values; current delivery freezes a task/plan artifact through inert Rust Policy C FFI |
 | Go control service | =go/cmd/weaver-control=: acknowledged source activation, frozen routing and authenticated streaming proxy |
 | Go RPC client | =go/internal/gatewayclient=: explicit mTLS, no application retry, sequence and receipt checks |
 | Shared wire contract | =proto/gateway/v1/gateway.proto=: typed proposals, roles, observations and encoding choice |
@@ -41,7 +71,7 @@ It does not introduce another permission or transport owner.
 
 * Reading order
 
-- [[file:59.19-governance-control.org][Native Governor/Governance, Scheme C FFI and complete Go control service]]
+- [[file:59.19-governance-control.org][Governor/Governance, Scheme C FFI and Go control service]]
 
 - [[file:59.01-rpc-security.org][gRPC security and ownership]]
 - [[file:59.02-provider-stream-protocol.org][Provider routing, streaming and recovery protocol]]
@@ -77,6 +107,7 @@ packages inherit dependencies from the Cargo workspace; Criterion and ASP Rust
 remain development-only. Every current Rust package declares a =gateway=
 benchmark target.
 
-Use the declared Nix development environment for these commands. In CI, the
-=ci= profile retains the same language SDKs and validation tools, and each mode
-uses =-clean-source= to admit only committed input bytes.
+Use the installed language SDKs and declared dependencies. The local Nix
+environment is optional; CI installs host dependencies through apt/Homebrew as
+described in [[file:59.22-parallel-ci.org][the CI contract]]. Each CI mode uses =-clean-source= to admit
+only committed input bytes.

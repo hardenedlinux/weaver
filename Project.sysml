@@ -13,6 +13,7 @@ package WeaverProject {
     part def VerificationSuite;
     part def VerificationMode;
     part def GoPackage;
+    part def VerificationResponsibility;
     part def RustPackage {
         part 'Cargo.toml' : File;
         part src : Directory;
@@ -41,7 +42,103 @@ package WeaverProject {
         part benchmarks : VerificationSuite { part bench : VerificationMode; }
     }
 
+    package AssuranceResponsibilities {
+        doc /* Sole responsibility registry. Documents and diagrams reference
+           these owners; they do not create parallel verification designs. */
+        part specification : VerificationResponsibility {
+            doc /* SysML owns component allocation, typed boundaries and named
+               requirements. SDK structural analysis is not behavioral proof. */
+        }
+        part schedules : VerificationResponsibility {
+            doc /* Quint owns concurrent/fault schedules and unsafe counterexamples.
+               Extend existing publication/execution models rather than duplicate
+               their ledgers. It does not reimplement Cedar evaluation or prove
+               arbitrary Scheme/Rust programs. */
+        }
+        part semantics : VerificationResponsibility {
+            doc /* Lean reuses cedar-poo-spec and Cedar semantic/refinement
+               theorems with explicit authenticity/materialization premises.
+               No second control/activation/CAS state machine is introduced.
+               Solver reports and finite replay records are not kernel proofs. */
+        }
+        part implementation : VerificationResponsibility {
+            doc /* Scheme suites and Rust/Go PBT/integration tests establish
+               concrete composition, FFI, parsing, SQL and transport behavior.
+               They do not turn finite cases into universal theorems. */
+        }
+    }
+
+    package DesignProcess {
+        private import ScalarValues::*;
+        doc /* Project engineering process, not a Gateway runtime state machine.
+           A changed design invalidates downstream review decisions. Discussion
+           confirms the advantage and scope; production work starts only after
+           the complete reviewed design is explicitly confirmed. */
+        enum def DesignStage {
+            enum advantageDiscussion;
+            enum sysmlArchitecture;
+            enum crossReview;
+            enum overallConfirmation;
+            enum implementation;
+        }
+        enum def ReviewDisposition {
+            enum proposed;
+            enum confirmed;
+            enum reworkRequired;
+        }
+        item def DesignReviewRecord {
+            attribute designIdentity : String;
+            attribute scopeIdentity : String;
+            attribute evidenceIdentity : String;
+            attribute comparisonMetricIdentity : String;
+            attribute decisionMaker : String;
+            attribute stage : DesignStage;
+            attribute disposition : ReviewDisposition;
+            doc /* Every round report binds its scoped Weaver/Box/OpenShell
+               comparison and evidence-progress metric. Targets, inspected
+               reference source and executed acceptance remain distinguishable.
+               This review metric is not a financial settlement signal. */
+        }
+        port def ReviewPort { out item decision : DesignReviewRecord; }
+        part def ReviewStage {
+            port incoming : ~ReviewPort;
+            port confirmed : ReviewPort;
+            port rework : ReviewPort;
+            doc /* Confirmation applies to one exact design and scope. Rework
+               cannot also confirm that design. Merely running a checker or
+               finding a proof file is not a confirmation decision. */
+        }
+        part cycle {
+            part discussion : ReviewStage;
+            part architecture : ReviewStage;
+            part review : ReviewStage;
+            part confirmation : ReviewStage;
+            part implementation : ReviewStage;
+            connect discussion.confirmed to architecture.incoming;
+            connect architecture.confirmed to review.incoming;
+            connect review.confirmed to confirmation.incoming;
+            connect confirmation.confirmed to implementation.incoming;
+            connect architecture.rework to discussion.incoming;
+            connect review.rework to discussion.incoming;
+            connect confirmation.rework to discussion.incoming;
+            connect implementation.rework to discussion.incoming;
+        }
+    }
+
     package Architecture {
+        doc /* Zero Trust is the mandatory core model, not an optional plugin.
+           Every extension preserves authenticated original identity, explicit
+           authority, current actual-effect authorization and failure-closed
+           claim/budget/history recovery. Higher-order Governance composes within
+           this model; assessment, cached proof and telemetry are not send permits.
+           Deployment containment and source freshness contracts have explicit
+           scopes and cannot stand in for this end-to-end execution boundary. */
+        doc /* cedar-poo-spec is the core reusable semantic library, jointly
+           maintained upstream. Its existing Policy/Delta/Admission/Rust replay
+           capabilities are reused. The upstream Gateway Lean library composes
+           admission with execution Delta; Weaver owns scenario-specific Rust
+           execution, durable CAS and qualified storage/transport adapters. */
+        part cedarLibrary : WeaverExecution::CedarGatewayLibrary;
         part semantics : WeaverExecution::SchemeSemanticPublisher;
         part control : WeaverExecution::GoControlAdapter;
         part policy : WeaverExecution::RustPolicy;
@@ -81,6 +178,15 @@ package WeaverProject {
         part '.github/actions/prepare-toolchain/action.yml' : File;
         part 'scheme/policy/cedar-ffi.ss' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.25-openshell-and-tao3k-ecosystem.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.26-semantic-execution-ecosystem.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.27-policy-evidence-architecture.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.28-ascent-mrr-and-fact-review.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.29-strands-box-cross-review.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.30-governance-adapter-acceptance.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.30-governance-adapter-acceptance.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.40-core-gateway-library.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.41-authority-read-final-cas.org' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {
@@ -144,6 +250,7 @@ package WeaverProject {
         part 'dev/sysml/StreamingExecution.sysml' : File;
         part 'dev/sysml/ProviderRpc.sysml' : File;
         part 'dev/sysml/ControlActivation.sysml' : File;
+        part 'dev/sysml/PolicyEvidenceDesign.sysml' : File;
         part 'dev/sysml/runtime-trace.json' : File;
 
         part '.cache' : IgnoredDirectory;

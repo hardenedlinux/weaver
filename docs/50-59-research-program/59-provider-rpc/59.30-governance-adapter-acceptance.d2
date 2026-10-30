@@ -1,0 +1,86 @@
+# Core target design only. Current delivery and acceptance evidence are in Org.
+vars: {
+  d2-config: {layout-engine: tala; theme-id: 3; pad: 70}
+}
+classes: {
+  card: {
+    label.near: center-center
+    style.font-size: 20
+    style.border-radius: 12
+    style.stroke-width: 1
+  }
+}
+title: ZERO TRUST / DUAL PROFILES AND OWNED EXECUTION {
+  shape: text
+  near: top-center
+  style.font-size: 30
+  style.bold: true
+}
+profiles: JSON Data + Scheme Programs\nExplicit configuration schema\nAdmitted Profile / module selection\nOne typed semantic output {
+  class: card
+  left: 0
+  top: 0
+  width: 440
+  height: 180
+  style.fill: "#eef3ef"
+}
+semantics: Scheme Governance / AA\nHigher-order assessments / routines\nSession / Workflow / Governor\nAscent evidence / named source cuts {
+  class: card
+  left: 540
+  top: 0
+  width: 460
+  height: 180
+  style.fill: "#eef3ef"
+}
+go: Go Control Plane\nAuthenticated gRPC\nSource lifecycle / original IDs\nReconcile ambiguous outcomes {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 1100
+  top: 0
+  width: 440
+  height: 180
+}
+capture: Scheme / Rust Capture\nSynchronous borrowed input\nCanonical Rust-owned output\nNo foreign pointer after return {
+  class: card
+  left: 0
+  top: 430
+  width: 440
+  height: 180
+  style.fill: "#f4f2ec"
+}
+authority: Rust Deciding Authority\nSource cut / pending / fence\nCedar / shared claim and budget\nFreshness at every deciding use {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 540
+  top: 430
+  width: 460
+  height: 180
+  style.fill: "#e7edf4"
+}
+effect: Final Executor\nExact endpoint / payload / mode\nGuarded dispatch and release\nUnknown exposure stays held {
+  class: card
+  left: 1100
+  top: 430
+  width: 440
+  height: 180
+}
+profiles -> semantics: Compose {style.font-size: 16}
+semantics -> capture: Typed capture {style.font-size: 16}
+capture -> authority: Artifact {style.font-size: 16}
+go -> authority: gRPC proposals {style.font-size: 16}
+authority -> effect: Execute {style.font-size: 16}
+authority -> semantics: Typed observations {
+  style.font-size: 16
+  style.stroke-dash: 5
+}
+binding: "JSON Schema / POO contracts / Cedar schema have distinct jobs\nPreflight is inert; owned data survives producer VM restart\nOld callbacks never inherit new publication or execution rights" {
+  shape: text
+  left: 330
+  top: 760
+  width: 1000
+  height: 110
+  style.font-size: 22
+  style.font-color: "#5c8b77"
+}

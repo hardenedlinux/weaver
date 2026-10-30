@@ -1,0 +1,637 @@
+#+TITLE: 59.28 Ascent Reuse, Optional MRR and Hard-Fact Cross-Review
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Decision for the next baseline
+
+Prefer Agentic AI Lab's inherited Gerbil Ascent capability for bounded rule
+derivation, clue/context queries and source invalidation. Keep MRR optional,
+disabled as a Gateway authority dependency until a workload demonstrates a
+semantic capability gap or a measured advantage over that existing path.
+Neither engine supplies authorization, balances or a final send capability.
+
+Rules are one capability inside ordinary programmable Scheme/POO composition,
+not the definition of Scheme's entire role. Existing relational declarations
+may help derive candidates, but a relation named allowed or eligible is not a
+Cedar Allow. Reuse public AA capabilities rather than copying their internal
+rule files or introducing another governance language.
+
+This architecture cross-review follows
+=WeaverProject::DesignProcess=. Responsibilities remain in the root SysML registry;
+[[file:../../../dev/sysml/PolicyEvidenceDesign.sysml][the evidence data contracts]] and [[file:../../../dev/sysml/WeaverExecution.sysml][existing component allocations]] are authoritative.
+There are no parallel Lean/Quint state machines, production interfaces or dependency
+pin changes. [[file:59.27-policy-evidence-architecture.org][The preceding architecture contract]] still governs Policy evidence and the
+final effect join. This review does not constitute overall implementation approval.
+
+* Source-grounded reuse inventory
+
+The inspected Agentic AI Lab cohort is
+=921e75f830a60c2ec42c384139846b05ba5d3317=. Its root =gerbil.pkg= already declares
+=github.com/tao3k/gerbil-ascent@32af80e960b5191bc9cdefa60e0a599ff8bb5189=.
+That exact Ascent revision was fetched into =.data/ascent-source-review= for
+inspection without changing Weaver's dependency declarations. References to older
+POO Flow package names in that upstream snapshot are historical API spellings,
+not a reason to rename the current Agentic AI Lab owner.
+
+| Inspected source | Existing mechanism | Reuse limit |
+|------------------+--------------------+-------------|
+| Ascent =program/session.ss= | Retained accepted source snapshots, append/replace, batch replacement, timeout/failure recovery | Committed here is an engine/session boundary, not a durable Gateway transaction; nested host values have a separate immutability premise |
+| Ascent =program/update-selection.ss= | Dependency-directed recomputation and guarded completed-result reuse | Opaque callbacks/providers can require full recomputation; do not promise incremental cost for every rule program |
+| AA =modules/ai-agentic-context/clue-query.ss= and its included rule module | Existing checked declarations for support, counterevidence, conditional clues, conflicts and unknowns | Reuse this rule surface; no second Weaver rule DSL |
+| AA =modules/ai-agentic-context/clue-exchange.ss= | Trusted verifier/context callbacks, content-bound clues, source/prefix/rule checks, restored-clue revalidation | Results explicitly set executionAuthorized/actionSelected false; callback truth and currentness remain Host obligations |
+| AA =modules/ai-agentic-context/query-provider.ss= | Serialized owner, source version/retraction journal, final-use currentness and source-change propagation | Its runtime-owner label does not prove a deployed MRR backend or a Rust authority transaction |
+| AA =modules/temporal-causality/runtime/change-feed.ss= | Owner-local prepare/publish/deliver barrier with explicit pending work | It is not a durable cross-process barrier; process restart must join Rust authority |
+| AA =modules/ai-agentic-context/session-host.ss= | Existing Session claim/recovery, worker observation capabilities, applicability checks and one-pointer terminal publication | Joined worker bytes are not automatically true; local completion does not prove external execution or account settlement |
+
+Inspected test definitions include =t/clue-exchange-test.ss=,
+=t/ascent-evidence-store-test.ss=, =t/ai-agentic-context-session-host-test.ss= and
+=t/context-query-provider-test.ss=. They cover useful negative cases such as
+withdrawn receipts, changed source generations, unknown bounded evidence and
+pending attempts surviving invalidation. Source inspection is not a fresh test
+run or qualification of installed compiler/bridge products.
+
+* When MRR is worth adding
+
+Ascent already covers retained rule evaluation and provenance. Those names alone
+do not justify adding a second backend. MRR's strongest candidate benefit is its
+typed semantic-query/catalog/snapshot boundary, multi-source relation and lineage
+model, and admission of results from physical data engines. Its own result contract
+does not establish factual truth or completeness beyond the named scope.
+
+| Workload need | Baseline choice | MRR admission condition |
+|---------------+-----------------+-------------------------|
+| Bounded capability/routine candidate derivation | Inherited AA/Ascent | No additional dependency merely to evaluate the same rules |
+| Context source changes and dependent invalidation | Existing AA context/query/change-feed capabilities | Demonstrate a missing cross-source/catalog property or better qualified reuse |
+| Typed cross-source graph queries and physical result admission | Evaluate optional MRR/mrr-data adapter | Exact catalog/query/snapshot binding, complete relevant scope and backend conformance evidence |
+| High-volume repeated derivation | Measure existing Ascent first | Matched workload shows benefit including setup, memory, invalidation and recovery cost |
+| Budget/history authorization and consumption | Existing Rust deciding authority | Neither Ascent nor MRR replaces it |
+
+The comparison corpus must include full recomputation, unchanged reads, sparse
+updates, rule changes, deletion/negation, incomplete input and restart. Measure
+time to first usable result, p95 update latency, memory/GC, affected-source fanout
+and evidence-generation cost on the same host and resource limits. A source-level
+dependency or upstream VM benchmark is not an end-to-end benefit measurement.
+No such performance comparison was run in this architecture review.
+
+The default architecture therefore exposes one derived-evidence adapter with a
+selected backend. An MRR branch does not create another evaluator running on the
+same request in parallel, another Context truth owner, or a mandatory dependency.
+Switching backend requires evidence for its semantic/coverage contract; equal
+rows do not make Ascent and MRR receipts interchangeable.
+
+* Hard facts: authority protocol, not a rule-engine callback
+
+Soft candidates may rank already eligible routes or routine branches. Hard facts
+such as consent, source validity or allowed data purpose affect permission and
+must cross an authenticated publication boundary. Agent hypotheses, displayed
+clues and rule-produced eligibility labels cannot register themselves as hard facts.
+
+The hard-fact source contract specifies its domain, source authority, update
+ordering, projection/rule closure, coverage and freshness boundary. Deleting a
+row is not inherently restrictive: deleting a deny or counterevidence can broaden
+eligibility. An admitted fact-feed capability permits only its declared relations
+and changes. A rule/projection change or undeclared scope requires new review.
+The fixed-fact Policy-delta profile cannot certify these transitions.
+
+The target SourceCommand has exactly one variant: Policy publication, hard-fact
+intent, or fact-projection candidate. All use the existing Rust source lane and
+deciding authority. No MRR coordinator or second durable Session ledger is added.
+
+| Event | Required authoritative action | Safety under uncertainty |
+|-------+-------------------------------+--------------------------|
+| Accept hard-fact change | Persist original intent and affected-domain pending barrier; assign a Gateway floor | Source-local prepare/change-feed return is not this receipt |
+| Derive replacement | Use a frozen admitted source cut, rule/backend closure and declared query scope | Partial fixed point, timeout or missing support remains unknown; retain the barrier |
+| Join projection | Match original barrier receipt/pending prefix, source custody, actual predecessor, projection floor and complete artifact image at CAS | Old validation or a copied new fence cannot publish |
+| Commit projection | Atomically bind recoverable projection, original outcome and resolution of this intent | Clear only the resolved intent; other pending intents keep the domain blocked |
+| Lose reply/restart | Query the same original intent/operation against authority | No absent reply, local checkpoint or empty query proves cancellation or unlock |
+| Reauthorize continuation | Reuse the existing canonical-family continuation protocol under a fresh current inspection | Preserve original intent, root/domains and winner; do not mutate/rebase its old attempt |
+
+The Gateway floor is a monotone authority coordinate, not an Ascent/MRR source
+generation. Returning to identical rows after an A-B-A update cannot reopen an
+old floor. Concurrent same-domain changes retain their own durable identities
+and admitted source ordering. Serialization or explicit coalescing must account
+for every original intent; settling one cannot discard another. This initial
+design conservatively blocks the affected domain while any required hard-fact
+intent is unresolved. Fine-grained partial activation is not claimed.
+
+The projection snapshot and evidence references must be durable/recoverable before
+their committed outcome is acknowledged. Cache loss rebuilds from that committed
+source cut; it cannot reinstall a stale snapshot as current. A failed subscriber
+or incomplete Ascent rebuild cannot remove a Rust pending barrier. Final
+admission/dispatch/release checks consult the deciding pending/floor state, not
+only a formerly successful preflight or source subscription callback.
+
+The effective withdrawal point is the Gateway's durable barrier, not an external
+event timestamp. Across a disconnected source, immediate global withdrawal is
+not established by this snapshot architecture. A hard-fact profile must define
+its admitted freshness/validity contract and fail closed outside it. Profiles
+requiring stronger immediate synchronization remain unsupported until their
+source-authority ordering is qualified. Do not hide that limitation with a TTL
+or a claim that local currentness is global currentness.
+
+** Durable barrier, decision and recovery cut
+
+Barrier admission has one atomic durable unit: the original intent and command
+digest, assigned monotone floor, pending-set membership and immutable outcome.
+Only that committed unit can produce the authoritative barrier receipt. An AA
+change-feed prepare, an Ascent checkpoint or a Go acknowledgment cannot substitute
+for it. Before that receipt, an affected caller must stop new local proposals and
+reconcile the same operation; it cannot claim the Gateway has already withdrawn
+other workers' authority. The guaranteed effective point remains Rust admission.
+
+=PublishedObservation.decisionKind= distinguishes barrier admission, projection
+installation and Policy publication. A committed barrier means blocked, not ready.
+A projection commit resolves exactly its named original intents and binds the
+remaining pending prefix in =FactBarrierResolution=. The transaction installs the
+recoverable image and resolution together. A known rejection is an attempt result,
+not cancellation of its intent. Timeout, failed derivation, abandoned owner and
+source disconnect never clear pending work. The initial profile has no automatic
+abort/unlock: continuation must install a qualified replacement; any coalescing
+must account for every original intent under admitted source ordering.
+
+On lost commit response, retry/query by the same identity and digest. A historical
+success cannot activate the image against a newer floor or remaining pending work.
+Recovery must load a mutually consistent authority cut containing intent, floor,
+outcome and projection references. Missing/corrupt authority state refuses fresh
+use; rebuilding an Ascent cache cannot repair it by choosing an empty pending set.
+Protection against a whole-authority rollback still depends on the existing
+independent recovery-floor contract and its deployment premises. SQLite atomicity
+or a local checkpoint alone does not prove that anti-rollback property.
+
+** Unknown exposure is independent of fact readiness
+
+Reserve the original shared exposure before an effect can emit bytes. Persist
+consumption before handing execution to the final executor. A missing or failed
+outcome record cannot reset the original claim or reduce that reservation. Neither
+barrier admission, projection resolution, Policy replacement nor Session terminal
+state is an accounting application. AA/Ascent resource limits bound computation;
+they are not financial account reservations.
+
+Current =crates/ledger/src/provider.rs= atomically increments =tasks.held= during
+enqueue, persists unknown consumption and the affine dispatch marker, and leaves
+the hold unchanged in =complete_provider=. This is concrete conservative retention,
+not a complete final-usage settlement implementation. A denied later dispatch does
+not by itself prove that an earlier attempt never executed.
+
+The target =AccountingEvidence= reuses the existing account/result owner. It binds
+the original reservation, root/claim/budget domain, dispatch observation and unique
+account application. Release only the exposure justified by an authoritative
+no-execution result or qualified final usage, through an atomic application-ID and
+balance update. Incomplete usage keeps the unresolved exposure held. Account
+recovery must preserve that application and its reservation-consumption record;
+an ambiguous write is reconciled under the same ID rather than applied twice.
+Invocation or response-release completion alone supplies neither receipt. The
+initial safe behavior may retain a hold indefinitely; recovery liveness and
+settlement integration remain open obligations, not permission to expire it.
+
+Internal charge ceilings require an admitted usage/cost mapping and billing scope
+before they can mean external monetary limits. No commercial provider charging
+guarantee follows merely from the ledger's bounded integer allowance.
+
+* Artifact bindings that survive rule and cache changes
+
+The fact-projection closure covers the backend/engine, rule module, query and
+coverage semantics, source-cut identity, limits and projection adapter. Bind it
+to ArtifactImage, the original assurance profile and the exact source intent.
+Ascent's generic session copies row spines but can share nested host values:
+the adapter must freeze or validate owned immutable values before hashing. A
+retained object reference or mutable nested value is not an immutable artifact.
+
+For a negative conclusion, require a completed admitted query over the exact
+declared closed scope and current source/rule cut. A bounded nonmembership witness
+does not prove absence of spending, a revoked consent, or a fact outside that
+query. Ascent's unknown/conflict outputs remain evidence categories, never permits.
+Both a rule replacement with identical output and a source replacement with an
+old retained handle require currentness checks; reuse computation only within
+its qualified dependency closure, never reuse an allow decision.
+
+* Session progression: record, propose, admit, execute
+
+Record an authentic late execution receipt under its original logical effect
+even when current facts no longer permit progress. Recording history must not
+restore its old authorization. Let the existing AA Session owner derive a
+successor proposal; do not call its native-worker completion API with an
+unverified gRPC payload or equate local terminal publication with a Rust effect.
+
+SessionProgressionProposal binds the original routine graph, predecessor effect
+and required observation domain, successor step, transition slot, current routine
+frontier and fact floor. Rust validates that graph edge and dependencies at the
+existing successor admission/claim boundary. Observation validity alone is not
+progression authorization. A withdrawal between Scheme validation and admission
+blocks the proposal, and another withdrawal before dispatch blocks execution.
+
+Deduplicate by the original root/transition slot and permitted successor claim,
+not a new receipt, attempt, worker or Session label. Concurrent owners may compute
+the same proposal, but the existing original-node claim/outcome mechanism admits
+one logical opportunity. Reconcile lost admission replies before retrying that
+same command. A restored Scheme checkpoint rebuilds from authoritative claims
+and receipts; it cannot skip a dependency, create a fresh family or clear an
+unknown predecessor obligation. Local Session revision is not the Rust frontier.
+
+The target successor admission transaction must bind the transition-slot winner,
+original successor claim, required reservation and immutable operation outcome
+together with the frontier comparison. A local advance followed by a separate
+claim call leaves a crash/race gap. Reuse the existing original-node deciding
+transaction; the additional graph/frontier binding is still unimplemented.
+Lost-response reconciliation may recover a historical winner but cannot rewind
+the current frontier or create a second successor reservation.
+
+Invocation completion, response release and accounting application stay distinct.
+Only the original step/profile's required observation domain can justify a
+successor. A partial stream can be historically true and still block progression;
+a completed provider call never proves a budget refund or successful client
+delivery. Conflicting terminal receipts go to authoritative reconciliation, not
+to a rule that chooses the most permissive result.
+
+AA's Session =view= explicitly marks source authentication, action authorization,
+provider disclosure/result admission and durability false at its local host
+boundary. Preserve that honesty in the Gateway adapter. Record a verified receipt
+first, propose the original graph edge second, then join its current required
+fact domains, pending prefix, frontier and receipt domain at Rust admission. That
+admission is not final dispatch authorization: the final guard runs again before
+new bytes. An accounting-dependent successor requires the account application
+receipt, not an invocation-complete label. No new Session ledger is introduced.
+
+* Uncovered obligations and existing owners
+
+The following are design obligations, not claims that the existing models already
+check this integration. Responsibilities remain in Project SysML. Refine the
+named existing verification owner during review; production implementation follows
+overall design confirmation. Do not duplicate it as another Lean/Quint control model.
+
+All thirteen remain open for concrete integrated hard-fact/Session acceptance.
+=S= means inspected source/test definition; =Q= means the earlier continuation
+suite; =L= means an inspected historical conditional Lean result; =R= means Rust
+baseline tests from the preceding review, not rerun in this round. New =QC= and
+=LC= evidence below denotes the extended existing Quint owner and the freshly
+kernel-checked Cedar semantic bridge. Neither label implies a production bridge.
+
+| ID | Counterexample to exclude | Available evidence | Missing acceptance witness |
+|----+---------------------------+--------------------+----------------------------|
+| R2-01 | Local prepare succeeds, then process dies before Rust barrier; old permit dispatches | S: AA change-feed owner-local prepare/publish; R: Policy publication atomic outcome rollback | Kill before/after durable hard-fact transaction; no barrier acknowledgment before intent/floor/pending/outcome durability; show exact withdrawal effective point |
+| R2-02 | First of two pending changes or a late acknowledgment clears both | Q: original pending intent retained and one winner; R: concurrent Policy publication serialization | Two same-domain intents with lost replies, rejection and linked coalescing; remaining pending prefix must still block final use |
+| R2-03 | A-B-A rows or reset generation revives old evidence | S: Ascent invalidation; L: stale_approval_cut_is_rejected; R: restored registry mismatch blocks dispatch/release | Monotone projection floor and pending prefix across actual restart/rollback admission; identical rows must not revive the old permit |
+| R2-04 | Equal output under changed rule/backend/projection reuses proof | S: Ascent update selection; L: WeaverPolicyBridge actual-value binding | Mutate each fact-projection closure coordinate, keep rows equal, reject at publication and actual final join; schema-bound request construction still missing |
+| R2-05 | Old worker completes using a new floor or stale barrier receipt | Q: stale approval fence controls; L: stale_approval_fence_is_rejected; R: owner/session-bound provider release | Instantiate actual fact-intent custody; race old receipt/owner restoration against barrier resolution and final use |
+| R2-06 | Incomplete/out-of-scope/failed rebuild becomes a negative hard fact | S: AA bounded clue and Ascent failure semantics; MRR result coverage contract | Adapter rejects incomplete/unknown and freezes query scope; show pending retention after timeout or failed rebuild, not only a typed completeness label |
+| R2-07 | Authentic old completion after withdrawal advances Session | S: AA Session applicability checks; Q: lateAcknowledgementIsOnlyHistoryTest | Record the receipt while blocking the successor at current pending/floor join; exercise withdrawal between Scheme proposal and Rust admission |
+| R2-08 | Duplicate receipts/two owners advance or invoke successor twice | S: AA owner CAS; Q: one original claim; R: concurrent same-operation publication outcome | Root/graph/transition-slot dedup survives actual Session restart and changed transport nonce; one successor admission and one logical effect |
+| R2-09 | Invocation completion substitutes for release or settlement | R: provider completion retains hold; L: LlmResultProjection unknown_exposure_retained | Per-step receipt-domain check; accounting application tied to reservation; delayed usage and conflicting terminal receipts cannot unlock unknown exposure |
+| R2-10 | Fact/entity change is justified by pointwise Policy no-gain | S/L: cedar-poo-spec BoundOperation and same-environment bridge premises | Reject fact-changing delta under fixed-fact profile; separately authorize changed facts and validate actual schema/entities/context at final guard |
+| R2-11 | Nested row mutates after snapshot hash | S: Ascent copies row spines, nested host values may remain shared | Detached/frozen adapter mutation-negative tests, including retained reference mutation during projection and restart materialization |
+| R2-12 | Restart restores stale Session/projection/pending winner and releases unknown hold | Q: unknownCostSurvivesProtocolSwitchTest; L: original_domains_stay_bound and unknown_usage_retains_hold; R: consumption/restart hold retention | Actual bridge recovery from mismatched authority/cache/account cuts; refuse missing authority, preserve original pending/claim and unique application IDs |
+| R2-13 | Disconnect proves no withdrawal or silently extends validity | S: declared freshness boundary; no executed cross-system source qualification | Admitted validity test at final use during partition; reject outside it without clearing pending/hold; stronger remote synchronization explicitly unsupported |
+
+** New composition witnesses against the same obligations
+
+The existing =LlmPolicyContinuation.qnt= owner now includes a bounded composition
+slice, rather than a new ledger/model. It represents one original family, one
+predecessor receipt, one successor slot, two hard-fact intents and shared allowance
+12 with reservations of 6. A separate =compositionStep= interleaves its actions
+with existing publication, reply loss and owner recovery. The original =step=
+remains available. This is sampled schedule checking, not exhaustive verification
+for arbitrary families, streams, rules, clocks or storage implementations.
+
+| Obligation | New QC witnesses | Residual premise |
+|------------+------------------+------------------|
+| R2-01 | barrierRequiresDurabilityTest; localPrepareIsNotDurableWithdrawalTest | Atomic durable admission is assumed; local prepare alone deliberately does not revoke another worker |
+| R2-02 | twoPendingOnlyResolveOriginalTest; changedPendingPrefixRejectsProjectionTest; clearAllOnFirstProjectionCounterexampleTest | Concrete pending-prefix CAS and immutable outcome storage |
+| R2-03 | identicalProjectionCannotResetFloorTest; lateBarrierObservationCannotActivateTest | Persistent monotone floor, including independent rollback protection |
+| R2-05 | barrierRestartPreservesPendingAndHoldTest; currentOwnerCanResolveOriginalBarrierTest; copiedNewOwnerFenceCounterexampleTest | Authenticated incarnation and actual custody fence, not a copied integer |
+| R2-07 | receiptRecordingDoesNotAdmitOrRefundTest; withdrawalAfterAdmissionBlocksFinalSendTest; policyWithdrawalAfterAdmissionBlocksFinalSendTest | Authentic immutable receipts, current source view and actual final executor guard |
+| R2-08 | admissionReplyLossDoesNotReserveTwiceTest; lostAdmissionReplyRecreatesClaimCounterexampleTest | Real atomic frontier/claim/reservation/outcome transaction and replay lookup |
+| R2-09 | relabelledAccountingReceiptCannotAdvanceTest; incompleteReceiptCannotAdvanceTest; receiptRefundCounterexampleTest | Domain/root/completeness read from authoritative receipt; final accounting application remains unimplemented |
+| R2-12 | restartCannotReviveOldAdmissionTest; unknownSuccessorCannotSendTwiceTest; pendingResetOnRecoveryCounterexampleTest | Restart preserves the authority state; missing/corrupt/rolled-back stores are not repaired by this abstract action |
+
+The model initially retained receipt IDs without their authenticated bodies. A
+caller-supplied domain check did not exclude re-labelling a different-domain
+receipt. Receipts now bind identity, original root, actual domain and completion;
+same-identity body replacement rejects. Dedicated root/domain/incomplete controls
+and two unsafe promotion witnesses exercise this gap. This is a model/contract
+correction, not evidence that a production exploit was reproduced or fixed.
+
+The existing =WeaverPolicyBridge.lean= imports the pinned cedar-poo-spec
+=BoundOperation= and now projects the SysML successor context into that same
+semantic binding. Nine added lemmas cover changed state/floor/fence, pending facts,
+wrong observation domain, incomplete receipts, unknown usage, missing account
+application and their composition with error-free Cedar authorization.
+=bound_successor_requires_current_semantics= composes the existing Policy-root
+materialization theorem: exact actual state, no pending facts, required receipt
+domain/completeness and an error-free Allow are all required. It is not a proof
+that Rust reads authentic state or performs an atomic transaction. The Host must
+bind receipt origin, original claim/domains, usage scope and account application
+to real authenticated values; a boolean or a hash is not that proof.
+
+Quint owns fault ordering; Lean owns semantic/evidence eligibility. No Lean copy
+of the lifecycle/CAS transitions is introduced. The first composition slice did
+not cover R2-04, R2-06, R2-10, R2-11 and R2-13. The next slice below adds their
+bounded witnesses; real adapter acceptance remains missing for all thirteen.
+
+** Projection, completeness, ownership and freshness slice
+
+The authoritative target types are =FactProjectionClosure=, =FrozenFactImage=,
+=FactFreshnessWitness= and =FactUseContext= in SysML. Both projection installation
+and actual effect use carry that context. The same current checks apply at
+successor admission and dispatch/release. No extra truth service, rule language
+or account owner is introduced.
+
+| Obligation | Executed Quint witnesses | Fresh Lean evidence | Concrete acceptance still required |
+|------------+--------------------------+---------------------+------------------------------------|
+| R2-04 | Twelve deterministic changed-coordinate rejection tests; newClosureRequiresFreshDerivationTest; equalRowsOldClosureCounterexampleTest | changed_projection_closure_rejects_evidence; fact_context_and_cedar_bind_actual_execution | Canonical module/rule/query/schema/source/scope/limits/adapter/captured-environment binding through real AA/Ascent and Rust materialization |
+| R2-06 | incompleteNegativeCannotClearBarrierTest; declaredCompleteButPartialScopeCannotPublishTest; timeoutWithFullScopeCannotPublishTest; hiddenCounterevidenceCannotBecomeNegativeTest | incomplete_facts_cannot_establish_negative; partial_scope_cannot_establish_negative; timed_out_derivation_is_not_complete_evidence | Authenticate the actual completed query and admitted closed scope; a producer-supplied complete flag alone is insufficient |
+| R2-10 | sameWorldDeltaCannotResolveFactIntentTest; pointwiseDeltaRejectsChangedFactWorldTest; pointwiseCrossWorldPromotionCounterexampleTest | pointwise_no_gain_does_not_compare_fact_worlds; existing exact-operation Cedar composition | Actual fixed-environment operational-delta correspondence and distinct authority for fact updates; no cross-world no-expansion claim |
+| R2-11 | nakedMutableRowsCannotPublishTest; detachedCandidateSurvivesCallerMutationTest; detachedInstalledImageSurvivesCallerMutationTest; mutableAliasReadCounterexampleTest | mutable_alias_cannot_reinterpret_frozen_evidence; unowned_values_cannot_establish_fact_image | Real nested Record/vector/byte-buffer and FFI lifetime/mutation tests at capture, hashing, CAS, recovery and final use |
+| R2-13 | disconnectedOrderedSourceBlocksAdmissionTest; boundedPromisePermitsOfflineUseBeforeExpiryTest; expiryAtExactBoundaryBlocksFinalUseTest; restartCannotReuseOldClockPromiseTest; lateSourceCallbackCannotRenewOldSessionTest | disconnected_ordered_session_is_not_fresh; expired_source_promise_is_not_fresh; old_clock_epoch_is_not_fresh; freshness_for_other_scope_cannot_enable_projection | Qualified source ordering/promise, source request identity, trusted clock and restart epoch, plus real partition/late-callback tests |
+
+*** Exact closure, not equality of output rows
+
+The twelve coordinates are backend, engine, rule, query, schema, source cut,
+source authority, scope, limits, adapter, captured callback environment and
+freshness contract. Each mutation has its own deterministic rejection test.
+Those tests renew the freshness witness for the changed contract before trying
+the old derivation, so an unrelated expired witness cannot hide a missing closure
+comparison. A rule change can legitimately produce the same rows but needs its
+own bound derivation and admitted authority. Source-cut changes likewise retain
+the original pending intent, claim and budget/history domains.
+
+A valid projection must also match the immutable original intent's proposed cut.
+=validNewCutCannotResolveOtherOriginalIntentTest= rejects a fully derived and
+fresh new image against an unrelated pending intent; the matching positive trace
+=originalIntentCanInstallItsProposedCutTest= installs and uses the intended cut.
+The Lean =unrelated_source_cut_cannot_resolve_intent= lemma makes this binding an
+explicit semantic premise. This slice does not implement coalescing or prove
+recovery liveness when overlapping intents require a separately authorized
+supersession; it preserves them rather than silently resolving the wrong one.
+
+Source inspection grounds the reuse boundary: Ascent
+=program/update-selection.ss= qualifies registered stable procedures, immutable
+scalars and supported providers for completed-result reuse. It does not certify
+arbitrary higher-order Scheme callbacks or serialize their captured environment.
+Opaque callbacks require full recomputation; hard-fact use additionally needs an
+admitted evaluation/source contract. AA's =clue-exchange.ss= binds owner/source/
+prefix/rule context and checks it again after query completion. Reuse those
+mechanisms rather than trust a Gateway-created eligible label.
+
+*** Closed-scope completeness and pointwise analysis
+
+The bounded fixture has required scope ={1,2}=. A completed query over ={1}= cannot
+prove absence of counterevidence at 2, even when its returned rows are empty and
+its producer calls it complete. The admitted source/query contract must establish
+which universe is closed, how it maps to the original semantic domain and whether
+the engine completed that scope. Timeout, failed rebuild, missing source or
+unsupported coverage is unknown. The fixture's counterevidence marker tests this
+binding; it is not a replacement Cedar evaluator or proof of general Ascent truth.
+
+A Policy implication theorem compares two Policies in the same fact/entity
+environment. Even the same predicate can deny in one world and allow in another.
+The new Lean countermodel states precisely that pointwise reflexivity does not
+imply a cross-world comparison. Its use does not alter cedar-poo-spec semantics.
+Fixed-fact delta evidence cannot resolve a fact intent or activate a projection;
+the existing source-authority protocol still owns that change.
+
+*** Owned values and callback dependencies
+
+Ascent =program/session.ss= copies outer lists and row pairs but explicitly shares
+nested host values. The model therefore distinguishes the captured immutable
+value from a later mutable host value. Detached publication/use continues to read
+the captured value after caller mutation; re-reading the alias violates the
+binding. Admission rejects an unowned candidate even before a mutation is seen.
+
+Re-freezing an alias after mutation is also unsafe if it retains the old source
+cut. The model now stores immutable source-image bindings: one cut cannot name
+different committed rows or values, including when revisited after another cut.
+Derivation must match that committed image before hashing; a trusted reload may
+restore the named immutable input, while a genuine input change needs its own
+admitted cut. =mutatedInputCannotRehashUnderOldSourceCutTest= and
+=rehashedAliasUnderOldCutCounterexampleTest= pin this distinction. It is grounded
+in AA =query-provider.ss= rebuilding the canonical source and comparing its
+semantic digest. New Lean lemmas reject materialized values/row digests that do
+not match the committed source image.
+
+This is a conditional ownership model, not a proof that a real deep copy, hash
+encoder or FFI buffer is safe. Initially admit known immutable canonical value
+forms; reject unsupported nested objects. Do not solve this by hashing an object
+reference or claiming all Scheme procedures are pure. Higher-order Governance
+remains available through existing AA generic methods, with explicit module,
+captured parameter and source-dependency contracts as described in
+[[file:59.25-openshell-and-tao3k-ecosystem.org::*Higher-order Governance is a first-class capability][the Scheme composition architecture]].
+
+*** Freshness profiles and their effective boundaries
+
+Freshness mode is fixed by original admitted source/Profile authority, not chosen
+by the agent at use. Both modes bind source authority, exact cut, scope and
+contract, plus current executor fence and clock epoch:
+
+| Admitted mode | Required source promise | Disconnect/restart boundary |
+|---------------+-------------------------+-----------------------------|
+| Ordered source session | Qualified source ordering makes permission-affecting changes effective through the durable Gateway barrier, with current authenticated session/request identity | A detected disconnect blocks new uses until current authoritative revalidation; a connected socket alone proves no such ordering |
+| Bounded source promise | Authenticated source commits that this cut/scope remains usable strictly before the named deadline, or orders its invalidation through the Gateway barrier | Existing promise can permit disconnected use before expiry; exact expiry rejects. Restart requires a current clock/owner epoch and renewed authority; cached local TTL is insufficient |
+
+The second profile is unsupported for a source that may independently revoke
+immediately without honoring that promise/order. Neither mode proves immediate
+remote withdrawal during an undetected partition. Fail closed when the admitted
+contract cannot establish validity; do not label last-known data globally fresh.
+The monotone clock/floor and epoch are Host/deployment premises; restoring all
+clock and authority state from one old snapshot is outside this model's guarantee.
+
+Freshness is rechecked after admission at final use. Expiry does not have to bump
+a Policy revision to block a later send. A reconnect, successful derivation or
+late callback cannot renew authority by itself; request/session, cut/scope,
+clock epoch and fence must still match. Missing/unverified renewal does not extend
+the deadline. The original holds and pending intents remain intact throughout.
+
+This review found a missing scope join in the first draft: a freshness witness
+for one scope could outlive a changed derivation scope. The grant now carries and
+compares scope, including the Lean projection-context join. The regression
+=renewedEvidenceCannotReuseOtherScopePromiseTest= checks this independently of
+derivation completeness. Process recovery was also separated from source
+revalidation: the existing current-owner recovery trace now explicitly renews
+its source witness before projection installation.
+
+Useful existing semantic results include =LlmPolicyContinuation.stale_approval_cut_is_rejected=,
+=stale_approval_fence_is_rejected=, =original_domains_stay_bound= and
+=unknown_usage_retains_hold=. Their abstract Host/registration/storage premises
+still need the actual fact/Session adapter. Existing source tests and proof files
+are reusable evidence boundaries, not permission to claim a new integration passes.
+
+* Review outcome
+
+The initial backend decision is inherited AA/Ascent first, optional MRR only after
+the feature/cost gate. Hard-fact changes use the Rust authority protocol regardless
+of the derivation backend. Session progression is an existing semantic-owner
+operation followed by fresh successor admission, not a rule-derived send.
+
+This review refines target contracts and adds bounded composition/semantic checks
+inside existing verification owners while identifying the missing real bridges. It
+does not enable hard-fact authority, introduce a new dependency, run an MRR/Ascent
+performance study or qualify their compiler/runtime products. Implementation
+remains outside this architecture-only increment.
+
+* Adapter acceptance refinement
+
+[[file:59.30-governance-adapter-acceptance.org][The adapter review]] now maps every R2 obligation to its real fault point,
+transport/store observations and positive/negative acceptance controls. It adds
+dual JSON/Scheme configuration admission, synchronous borrow versus owned output,
+and old-VM/capture/call rejection to the existing Quint/Lean owners. The current
+adapter receipt supersedes the preceding model counts below; all thirteen real
+acceptance scenarios remain planned, with 0/13 concrete acceptance.
+
+* Previous fact-context verification receipt
+
+The existing suite passes 128 named tests with seed 293: the previous 79 plus
+49 additions, comprising 40 positive/rejection controls and nine deliberately
+unsafe witnesses. The twelve closure-coordinate cases are deterministic,
+including fresh source revalidation to isolate the closure comparison. The
+=projectionStep= campaign interleaves the previous =compositionStep= with source
+changes, derivation, alias mutation, disconnect, renewal and time advancement:
+1,000 sampled traces, at most 60 steps, no invariant violation found. Input seed
+is 293; the simulator reports =0xd5af4= as its trace reproduction seed. The wider
+action set changes sampling coverage; it does not preserve every earlier sampled
+schedule or establish exhaustive checking.
+
+The pinned Cedar bridge successfully kernel-checks 28 named theorems, with fifteen
+additions this round. Their printed axiom inventories contain only the existing
+standard Lean/Cedar foundations (=propext=, =Classical.choice=, =Quot.sound=), with
+no custom axiom or =sorryAx=. The historical lifecycle Lean modules remain reuse
+anchors, not freshly rebuilt products. Six linked Go SDK/Project tests pass and
+retain 38 named requirement traces. The core D2 renders and was visually checked.
+
+#+begin_src text
+quint typecheck dev/proofs/quint/LlmPolicyContinuation.qnt
+quint test dev/proofs/quint/LlmPolicyContinuation.qnt --seed=293 --verbosity=1
+quint run dev/proofs/quint/LlmPolicyContinuation.qnt --init=init --step=projectionStep --invariant=safety --max-samples=1000 --max-steps=60 --seed=293 --verbosity=1
+elan run leanprover/lean4:v4.34.1 lake -d dev/proofs/cedar build WeaverPolicyBridge
+go -C go test ./dev -run '^Test(SysMLSDK|ProjectArchitecture)' -count=1 -v
+#+end_src
+
+| Checked source | SHA-256 |
+|----------------+---------|
+| =dev/proofs/quint/LlmPolicyContinuation.qnt= | =fe63894a4857599839fc85a6b4cbc8648417ec9cdf831a1dbed653afb24232d5= |
+| =dev/proofs/cedar/WeaverPolicyBridge.lean= | =2502461d280f511ab6519011d7d1fc8ae3594d635e7127797ee43ae7bf60b9df= |
+
+The first Lean draft failed on synthesis of =Decidable s.Ready= and a reserved
+identifier =partial=. It was not accepted as proof evidence. The correction
+provides a constructive decision instance for the explicit finite conjunction and
+renames the binder to =scopeGap=. Subsequent successful builds print clean axiom
+inventories; no predicate, resource limit or counterexample was weakened to pass.
+The scope omission and its semantic correction are recorded above separately
+from these elaboration errors. No raw build logs or temporary previews are added
+to version control.
+
+The current [[file:59.29-strands-box-cross-review.org::*Per-round comparison metric and evidence compression][comparison metric]] is 13/13 obligations with bounded executable witnesses,
+0/13 with concrete integrated acceptance, nine new unsafe controls and fifteen
+new semantic lemmas. AA/Ascent and the Box/OpenShell references were inspected at
+their existing research revisions; no fresh upstream runtime tests, real nested
+FFI mutation test, source partition deployment or remote CI ran. No production
+code, lockfile or dependency pin changed. Canonical capture, actual completeness
+and source promise/clock qualification remain Host obligations to implement and
+test after the architecture is confirmed.
+
+* Previous composition verification receipt
+
+At this design snapshot, the existing continuation suite passes 79 tests with
+seed 293: 42 previous tests plus 37 additions, comprising 28 positive/rejection
+controls and nine deliberately unsafe counterexample witnesses. Its
+=compositionStep= also passes 1,000 sampled traces of up to 60 steps under the
+same =safety= invariant, with no violation found. These are fixed bounds, not
+exhaustive model checking or a proof of progress. The simulator reported
+=0xea920= as its trace reproduction seed; the campaign input seed was 293.
+
+The pinned Cedar bridge builds successfully: 13 named theorems, nine added in
+this round. The build prints their axioms; the combined Cedar theorem uses the
+upstream standard =propext=, =Classical.choice= and =Quot.sound= foundation.
+No =sorry=, custom axiom or new dependency was introduced. Historical
+=dev/proofs/lean= lifecycle theorems remain reuse anchors and were not freshly
+rebuilt; the fresh kernel receipt is specifically for the imported Cedar bridge.
+
+The linked SysML/Project check passes six tests with the existing 38 requirement
+traces, including semantic-rejection controls. D2 renders and was visually checked.
+Rust baseline results below belong to the previous review. No real new durable
+hard-fact/Session/accounting integration or remote CI was executed in this round.
+
+#+begin_src text
+quint typecheck dev/proofs/quint/LlmPolicyContinuation.qnt
+quint test dev/proofs/quint/LlmPolicyContinuation.qnt --seed=293 --verbosity=1
+quint run dev/proofs/quint/LlmPolicyContinuation.qnt --init=init --step=compositionStep --invariant=safety --max-samples=1000 --max-steps=60 --seed=293 --verbosity=1
+elan run leanprover/lean4:v4.34.1 lake -d dev/proofs/cedar build WeaverPolicyBridge
+go -C go test ./dev -run '^Test(SysMLSDK|ProjectArchitecture)' -count=1 -v
+#+end_src
+
+| Checked source | SHA-256 |
+|----------------+---------|
+| =dev/proofs/quint/LlmPolicyContinuation.qnt= | =645676eb53d2615b5380ebc230cc155a7afddc408a1bad5c8369dd4fa05ed0aa= |
+| =dev/proofs/cedar/WeaverPolicyBridge.lean= | =06906d708523a719007b8890a5c195cd5d4e05dda019e0d62a1046e31132c401= |
+
+** Failed-check evidence and correction
+
+The first 70-case draft returned 52 passing and 18 failing tests. Those failures
+reported =QNT502: Variable s not set= when an assertion/another action followed
+=.fail()=. That test combinator is a terminal rejection check and did not provide
+the state that the following expression attempted to read. The corrected tests
+assert the pre-rejection invariant before the terminal =.fail()=; successful
+transitions and restart preservation have their own state assertions and the
+sampling campaign checks the invariant after actual transitions. The original
+guards and resource bounds were not relaxed. This was a harness-expression error,
+not a Gateway durability failure. The earlier draft's missing receipt-body binding
+was a distinct semantic omission, now covered by typed receipts and negative
+controls as described above. Failure details remain here as compact reproducible
+evidence; temporary raw logs are not committed.
+
+The failing expression and its correction are retained explicitly:
+
+#+begin_src text
+// Failing harness expression: reads s after the terminal rejection check.
+factPending.then(admitNext(7,1,10,1,0,0,true,true).fail()).expect(safety)
+// Correct rejection check; transition-state preservation is checked separately.
+factPending.expect(safety).then(admitNext(7,1,10,1,0,0,true,true).fail())
+#+end_src
+
+That round's [[file:59.29-strands-box-cross-review.org::*Per-round comparison metric and evidence compression][comparison metric]] reported 8/13 obligations with new bounded composition
+witnesses, 0/13 with concrete integrated acceptance, nine unsafe controls and
+nine new kernel-checked semantic lemmas. It does not collapse these different
+evidence levels into one completion percentage.
+
+* Previous baseline checks and source anchors
+
+The preceding cross-review ran the following existing checks without changing their
+assertions, limits, production code or dependency pins:
+
+| Check | Result | Evidence boundary |
+|-------+--------+-------------------|
+| =LlmPolicyContinuation.qnt=, seed 293 | 42 cases passed | Existing continuation schedules/unsafe controls; no hard-fact/Session adapter instantiated |
+| Go SysMLSDK and ProjectArchitecture test prefixes | 6 tests passed; 38 requirements mapped | Strict linked structure, negative semantic controls and existing named trace inventory; no behavioral proof |
+| =cargo test -p weaver-ledger --test unit_test provider --locked --offline= | 15 tests passed, including existing PBT | Profile binding, affine dispatch/release, competing holds and restart retention |
+| =cargo test -p weaver-ledger --lib publication::tests --locked --offline= | 6 tests passed | Existing publication identity, concurrency and transaction rollback controls |
+| =cargo test -p weaver-ledger --test unit_test recovery --locked --offline= | 6 tests passed | Original identity, enqueue reply loss, consumption crash and stale final permit controls |
+| Core D2 render and visual inspection | Passed | Readable core relationships; target connections, not deployed runtime evidence |
+
+The exact Go invocation was:
+
+#+begin_src text
+go -C go test ./dev -run '^Test(SysMLSDK|ProjectArchitecture)' -count=1 -v
+#+end_src
+
+Rust invocations used the host C/C++ compiler and existing lockfile offline.
+Raw compiler progress and temporary image previews are not committed evidence
+artifacts. Named assertions are in =crates/ledger/tests/unit/provider.rs=,
+=provider_profiles.rs=, =publication.rs= and =recovery.rs=; PBT execution remains
+sampled evidence rather than a universal proof. A zero-test library provider
+filter is not counted in these results.
+
+No new standalone Lean/Quint model was written in that review. The historical
+Lean results were inspected for reuse, not recompiled in that review. AA/Ascent
+and Box mechanisms were source-reviewed,
+not freshly runtime-qualified. No new multi-storage crash injection, commercial
+provider test, remote CI or end-to-end fact/Session bridge test ran. Consequently
+these checks do not discharge any complete R2 obligation or qualify upstream
+performance/runtime products. The next acceptance work must instantiate the
+missing adapter premises in existing owners rather than add another model.
+
+- [[https://github.com/tao3k/agentic-ai-lab/blob/921e75f830a60c2ec42c384139846b05ba5d3317/gerbil.pkg][Inherited Ascent dependency]]
+- [[https://github.com/tao3k/gerbil-ascent/blob/32af80e960b5191bc9cdefa60e0a599ff8bb5189/program/session.ss][Retained source/session and failure boundary]]
+- [[https://github.com/tao3k/agentic-ai-lab/blob/921e75f830a60c2ec42c384139846b05ba5d3317/modules/ai-agentic-context/clue-exchange.ss][Clue verifier/current-context boundary]]
+- [[https://github.com/tao3k/agentic-ai-lab/blob/921e75f830a60c2ec42c384139846b05ba5d3317/modules/temporal-causality/runtime/change-feed.ss][Owner-local propagation barrier]]
+- [[https://github.com/tao3k/agentic-ai-lab/blob/921e75f830a60c2ec42c384139846b05ba5d3317/modules/ai-agentic-context/session-host.ss][Session claim/worker/result owner]]
+
+The [[file:59.29-strands-box-cross-review.org][Strands Box review]] adds independently sourced lessons for actual request
+schema checks, temporal outcome counts, durable history and embedding lifecycle.

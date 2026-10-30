@@ -1,0 +1,154 @@
+#+TITLE: Authority Publication Reads, Final CAS and Recovery
+#+LANGUAGE: en
+
+* Decision and ownership
+
+Responsibilities remain in =Project.sysml= and =WeaverExecution=. Scheme/AA owns
+admitted higher-order Governance semantics. Go freezes source commands and
+recovers their exact original outcomes over authenticated gRPC. Rust owns the
+actual deciding state, current Cedar evaluation, claim/hold transitions and
+final transport boundary. Existing Lean proves conditional semantic refinement;
+existing Quint explores ordering and faults. No additional state-machine owner
+or policy language is introduced.
+
+Historical publication receipts prove a past decision, never the active head.
+A current read is a witness to recheck, not an execution permit. Final use must
+join authority identity/revision, original profile payload/source, canonical
+claim, shared budget/history coordinates and executor fence under one deciding
+serialization boundary. A lost response does not abort a commit or release a hold.
+
+* Source-grounded current implementation
+
+| Existing source | Actual behavior | Limit |
+|-----------------+-----------------+-------|
+| [[file:../../../crates/contracts/src/publication.rs][Publication and PublicationReceipt]] | Domain-separated commitment binds original operation ID, parent revision, fence and Policy/schema bytes; receipt is explicitly historical | No complete Governance original/selected-profile authority payload in this wire type |
+| [[file:../../../crates/ledger/src/publication.rs][Ledger publication]] | BEGIN IMMEDIATE atomically changes authority/schema and writes immutable committed/rejected outcome; exact retries do not rebase | Single SQLite durability domain; no independent anti-rollback floor |
+| [[file:../../../crates/ledger/src/store.rs][Original task ledger]] | Same-family task replacement rejects; reservation and claim persist with enqueue; unknown consumption is durable | New-family authentication and external domain assignment remain Host contracts |
+| [[file:../../../crates/ledger/src/provider.rs][Provider execution]] | Rechecks current authority at admission/consumption, before burn and again under the final send transaction; every release rechecks current state | A prior observation or historical receipt cannot stand in for these guards |
+| [[file:../../../crates/ledger/src/provider_profiles.rs][Provider profile registry]] | Binds actual provider profile content/digest and original task scope | ProviderProfile is distinct from the full higher-order Governance profile introduced in the upstream Lean library |
+| [[file:../../../go/dev/publication_recovery_test.go][Real gRPC recovery tests]] | mTLS relay loses a reply after durable commit; actual Rust process restarts preserve historical outcomes and held capacity | Loopback HTTPS provider is controlled; this is not production provider billing evidence |
+
+Queued-only recovery can refresh observation revision/fence under the existing
+enqueue transaction after fresh authorization. =ProviderPlan.digest= excludes
+those observations and retains the actual body/routes/profile commitment.
+Refresh preserves the original operation, claim and hold. An already consumed
+operation does not become queued again. This safety-preserving progress path is
+different from replacing the original semantic contract.
+
+The final dispatch has two transactions: persist the dispatch burn, then recheck
+current authority under the lock held through the bounded send callback. A
+commit between these transactions can invalidate sending; the original burn
+and unknown hold remain. A callback already admitted under the lock may finish
+before a waiting publication commits. This is the linearization rule, not
+instantaneous cancellation of bytes already admitted to transport.
+
+Opening a new Ledger creates a local handle session; it does not elect a new
+cluster owner or globally fence a live peer. A real handoff must durably advance
+the authority fence before activating the new owner. The old-worker tests here
+include that explicit fence change; process startup alone is not a custody proof.
+
+* Reused formal owners and checkable obligations
+
+| Owner | Extension | Premise that remains external |
+|-------+-----------+-------------------------------|
+| =AuthorityPublication.qnt= importing PublicationRecovery/ProviderRpc | Read witnesses include actual revision/fence, original assignment, claim stage, hold and release frontier; consume/release compares them again | The assignment scalar denotes the complete authenticated profile/claim/domain tuple; native code must establish its meaning |
+| Same Quint owner | Restart discards local witnesses; fresh read is required after lost-reply recovery; stale release/history and whole-store rollback have explicit unsafe witnesses | Ordinary restart preserves durable store state; rollback is excluded from safe steps and tested as an unsupported threat |
+| =PublicationRecovery.lean= | =recovered_decision_cannot_replace_advanced_head= preserves the exact old decision and accounting while proving its result head is no longer current | Atomic non-rollback persistence of the existing Step/Run interpretation |
+| =WeaverPolicyBridge.lean= | PublicationContext extends the existing SuccessorContext; BoundOperation equality preserves all coordinates, and any authority/profile/source/session or original-assignment mismatch rejects reuse | Rust supplies the actual current context inside final CAS; labels do not authenticate facts |
+
+No proof imports a new dependency revision. The upstream Gateway publication
+library is a semantic reference; Weaver's unchanged pin does not yet provide
+its full runtime integration. No new copy of its object Contract or of the
+existing publication/execution state machine is created here.
+
+The whole-store rollback Quint witness retains an external-call trace observer
+while restoring local source/execution state. The observer is not an implemented
+counter service. It demonstrates that a self-consistent local snapshot can pass
+local checks while forgetting an already performed effect.
+The publication itself remains unchanged in this witness. A recovery floor that
+only covers publication revision therefore cannot catch it. The independent
+commit floor must cover execution consumption, account applications and history
+prefixes as well. Unknown cross-store floor/data commit outcomes retain the
+original claim and hold until exact reconciliation; a new nonce or owner session
+cannot repair this by allocating fresh capacity.
+
+Revision normalization remains explicit: the Lean recovery proof uses head zero
+for absence and one for the first committed entry; Quint/native wire revisions
+use minus one/absence and zero for the first entry. The Host refinement maps
+committed ordinal to Lean head by adding one and retains the native integer
+bounds. Comparing these representations without that mapping is not proved.
+
+* Native acceptance and counterexamples
+
+| Scenario | Concrete exercise | Required interpretation |
+|----------+-------------------+-------------------------|
+| AC-01 lost commit response | Existing mTLS relay forwards once then returns Unavailable; exact inspection/retry after actual process restart | Same immutable outcome; no SDK automatic retry, no new root or budget |
+| AC-02 stale read across deny/restore and restart | New real gRPC/HTTPS test reads bootstrap, commits deny, restarts, observes old receipt, restores a later allow | Old coordinates never invoke a provider; current coordinates can admit an unconsumed original once |
+| AC-03 consumed claim after authority recovery | Same real test restarts again after successful stream; exact publication replay and invocation retry | One provider call and original hold remain; recovery cannot reopen consumption |
+| AC-04 queued and consumed native histories | New SQLite test executes both histories, advances two publications, recovers old outcome and tries old handles/new labels/budget replacement | Stale handles do not send; queued refresh requires fresh authorization; consumed history and original hold persist |
+| AC-05 profile binding, partial write and revocation | Reuse existing SourceProfileAndCedar, RevocationDuringSSE and PartialRequestAndRestart tests | Current provider-profile content and Cedar guard constrain actual HTTP/stream behavior; no retry/fallback or automatic refund |
+| AC-06 whole-store snapshot rollback | New temporary-database counterexample copies a closed pre-consumption image, then performs three callbacks across two restores and fresh owner sessions | Expected unsafe witness: three sends each with ceiling four, one visible hold of four and original budget eight; possible exposure twelve exceeds eight. This is not production acceptance or observed billing |
+| AC-07 full Governance original-profile authority | Reuse the upstream publication-indexed laws and target ProfileAuthorityCommitment | Still missing native full-payload/factory/source admission and original-registry join; not accepted by provider-profile tests |
+| AC-08 independent recovery floor and cross-store recovery | Restore consistent/inconsistent snapshots, lose floor confirmation, resume old worker and replay late outcome | Target must reject stale/unknown recovery before new authority or send and retain unknown holds; no implementation receipt yet |
+
+R2-01--R2-13 keep their existing denominator. Current provider/SQLite scenarios
+are concrete component evidence, not completion of the full Governance adapter
+suite. In particular AC-06 and AC-08 prohibit claiming snapshot-rollback safety
+from FULL WAL, a new process session, a matching digest or a historical receipt.
+
+* Validation and failures
+
+Use the existing Go verification entry for integration suites and existing
+=check-policy= stages for AuthorityPublication/PublicationRecovery/WeaverPolicyBridge.
+New tests match the existing =TestProvider= and =authority[A-Z]= selections.
+The bounded Quint run retains 1,000 samples, 60 steps and seed 293. Timeouts,
+CPU capacity and dependency pins are unchanged. CI is nonblocking and is a
+separate receipt from local execution; raw output stays in temporary storage.
+
+Development failures are preserved as source-level controls and compact notes.
+The first negative-step Quint tests tried reading state after =fail()=, which
+does not assign primed variables; safe-state assertions now precede the failure
+check and the full invariant is unchanged. The first queued-recovery assertion
+incorrectly demanded permanent refusal after fresh reauthorization; source
+inspection showed the existing safe observation-refresh transaction, now tested
+alongside refusal for spent claims. Local Darwin linking initially selected a
+compiler without the platform iconv search path; selecting the OS tool environment
+resolved that build failure without source or pin changes. Loopback test binding
+requires the permitted local-network execution context.
+
+* Comparison metric
+
+This round adds ten authority-read Quint traces to the source-recovery baseline,
+four current-context Lean laws and one historical-head composition law. Native
+counts and outcomes are recorded after execution, separately from model checks.
+No measured latency/throughput or relative-security score is inferred.
+
+The delivery checkout is =/private/tmp/weaver-authority-cas-20261031=, based on
+the concurrent remote commit =49b8a4775a14c7df4e9af0930edc47e9b5b1db70=.
+Its observe-first recovery changes and proofs are preserved. Johnny Decimal
+entries 59.34--59.36 belong to the concurrent control/package work; this review
+uses 59.40/59.41. The original working checkout is preserved rather than reset.
+The delivery commit also retains the later package-entry update
+=e0b844eeb14b97625f5c3d8a9dcf8c39506873b3=; its changes do not alter the
+audited authority/ledger implementation. Focused Project/SysML checks are rerun
+after integration; the earlier full Scheme discovery failure is not erased.
+
+Before this merge, local checks passed all 38 ledger tests, five real Go race
+integration tests, the two Lean owners, 22 authority traces and 163 continuation
+traces. The updated rollback test additionally passed three callbacks across two
+restores, with possible exposure twelve against budget eight. After the merge,
+ledger 38/38, the five Go race tests, both Lean owners and strict Project SysML
+passed again; authority tests include the concurrent read-only recovery cases.
+Final merged authority validation passed 27 traces and 1,000 bounded safety runs
+at 60 steps/seed 293; ProviderRpc passed 26 tests. Both Core D2 rendering and
+the linked Project/SysML tests passed. The snapshot rollback test is an expected
+unsafe result within that test count, not a qualified security property.
+Full Governance adapter acceptance remains 0/13; no production floor or full
+Governance publication payload implementation was added. Native private-PR CI
+continues asynchronously and is not substituted for these focused receipts.
+
+| Project | Useful advantage/reference | Gap and resolution |
+|---------+----------------------------+--------------------|
+| Weaver | Reuses higher-order AA semantics and Cedar/LeanPoo proof composition with actual deciding-store recovery checks | Full Governance payload join and independent recovery-floor enforcement remain missing; AC-07/08 are explicit delivery gates |
+| Box | Request validation and result recording remain useful source-review references | No Box tests or rollback qualification run here; apply its lessons without substituting past results for current authority |
+| OpenShell | Containment and operational telemetry remain useful architectural references | No OpenShell tests run here; containment alone does not establish semantic-authority or accounting recovery |
