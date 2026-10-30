@@ -10,10 +10,11 @@ installed name. No handwritten build command parser or custom phase environment
 switch replaces the standard build dispatcher. Program argument handling stays
 inside an executable module's =main= when that program needs arguments.
 
-The existing consumer-to-Agentic AI Lab library projection is reused in
-=dev/scheme/build-spec.ss=. It obtains targets and FFI options from their
-upstream owners and invokes generated standard build actions. The Rust SDK
-helper prepares Cargo-owned pkg-config metadata and invokes =gerbil build -g=;
+Root build specification evaluation is declarative: it does not compile
+dependencies as a side effect of =spec= or =clean=. Gerbil's package manager
+prepares the unchanged full Agentic AI Lab dependency declarations and package
+manifests. Yuanxu's existing =std-make-spec= still selects Weaver's modules.
+The Rust SDK helper prepares Cargo-owned pkg-config metadata and invokes =gerbil build -g=;
 Go orchestrates this preparation and runs =gerbil test -g -v 5 t=.
 The =-g= option selects the explicit isolated =GERBIL_PATH= rather than creating
 a different local package environment. All build concurrency follows available

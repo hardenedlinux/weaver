@@ -51,10 +51,14 @@ func TestSchemeModuleOwnershipAndSpecificContracts(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, required := range []string{"./init.ss", "std-make-spec", "defbuild-script", "scheme/policy/cedar-ffi", "pkg-config-cflags", "pkg-config-libs"} {
+	for _, required := range []string{"./init.ss", "std-make-spec", "defbuild-script", "scheme/policy/cedar-ffi", "pkg-config-cflags", "pkg-config-libs", "exe:", "bin:"} {
 		if !strings.Contains(string(build), required) {
 			t.Fatalf("root build does not use its declared owner: %s", required)
 		}
+	}
+	info, err := os.Stat(filepath.Join(repository, "build.ss"))
+	if err != nil || info.Mode()&0111 == 0 || !strings.HasPrefix(string(build), "#!/usr/bin/env gxi\n") || strings.Contains(string(build), "(def (main") {
+		t.Fatal("root must use Gerbil's generated standard build entry")
 	}
 	if strings.Contains(string(build), "target/debug") {
 		t.Fatal("Scheme build must obtain FFI paths from pkg-config")

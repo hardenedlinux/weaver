@@ -14,7 +14,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -99,6 +101,7 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 		return nil, err
 	}
 	settings := map[string]string{"GERBIL_PATH": directory, "GERBIL_LOADPATH": strings.Join([]string{lib, sources, library}, string(os.PathListSeparator)), "WEAVER_CONTROL_SCHEME_COMPILER": compiler, "WEAVER_SCHEME_POO_SOURCE": poo, "WEAVER_SCHEME_CORE_SOURCE": core}
+	settings["GERBIL_BUILD_CORES"] = strconv.Itoa(runtime.NumCPU())
 	settings["WEAVER_POLICY_PKG_CONFIG"] = filepath.Join(lib, "pkgconfig", "weaver-policy-ffi.pc")
 	settings["WEAVER_POLICY_PKG_CONFIG_PACKAGE"] = strings.TrimSuffix(filepath.Base(settings["WEAVER_POLICY_PKG_CONFIG"]), ".pc")
 	settings["PKG_CONFIG_PATH"] = filepath.Dir(settings["WEAVER_POLICY_PKG_CONFIG"])
@@ -106,7 +109,14 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 		settings["PKG_CONFIG_PATH"] += string(os.PathListSeparator) + inherited
 	}
 	for path, name := range map[string]string{source: "agentic-ai-lab", core: "gebril-yuanxu", poo: "gerbil-poo"} {
-		cmd := exec.CommandContext(ctx, filepath.Join(filepath.Dir(compiler), "gxpkg"), "link", "-g", "github.com/tao3k/"+name, path)
+		packageID := "github.com/tao3k/" + name
+		switch name {
+		case "gebril-yuanxu":
+			settings["WEAVER_SCHEME_CORE_PACKAGE"] = packageID
+		case "gerbil-poo":
+			settings["WEAVER_SCHEME_POO_PACKAGE"] = packageID
+		}
+		cmd := exec.CommandContext(ctx, filepath.Join(filepath.Dir(compiler), "gxpkg"), "link", "-g", packageID, path)
 		cmd.Env = Environment(settings)
 		cmd.Stdout, cmd.Stderr = output, output
 		if err = cmd.Run(); err != nil {
@@ -138,6 +148,22 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 	}
 	if err = os.Symlink(root, filepath.Join(sources, "hardenedlinux", "weaver")); err != nil {
 		return nil, err
+	}
+	// Links do not install the manifests required by the public package build.
+	// Gerbil resolves the unchanged dependency declarations in this prefix.
+	tool, err := resolveImageTool(root, schemeTool(), Environment(settings))
+	if err != nil {
+		return nil, err
+	}
+	settings["WEAVER_SCHEME_TOOL"] = tool
+	for _, args := range [][]string{{"deps", "--install"}, {"build", "-g", "github.com/tao3k/agentic-ai-lab"}} {
+		cmd := exec.CommandContext(ctx, tool, args...)
+		cmd.Dir = source
+		cmd.Env = Environment(settings)
+		cmd.Stdout, cmd.Stderr = output, output
+		if err = cmd.Run(); err != nil {
+			return nil, fmt.Errorf("Gerbil package preparation %v: %w", args, err)
+		}
 	}
 	hashes, err := schemeSourceHashes(source, poo)
 	if err != nil {

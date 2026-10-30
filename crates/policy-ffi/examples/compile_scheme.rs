@@ -87,6 +87,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let status = command
             .arg("build")
             .arg("-g")
+            .arg(env::var(if owner == "core" {
+                "WEAVER_SCHEME_CORE_PACKAGE"
+            } else {
+                "WEAVER_SCHEME_POO_PACKAGE"
+            })?)
             .env("GERBIL_BUILD_CORES", &cores)
             .current_dir(&source)
             .status()?;
