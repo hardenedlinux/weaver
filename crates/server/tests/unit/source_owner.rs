@@ -104,7 +104,7 @@ async fn completed_source_acknowledgment_returns_command_capacity() {
 }
 
 #[tokio::test]
-async fn startup_failure_closes_runtime_and_drains_native_owner() {
+async fn startup_failure_closes_runtime_and_drains_source_owner() {
     let directory = tempfile::tempdir().expect("directory");
     let runtime = RuntimeOwner::new();
     assert!(

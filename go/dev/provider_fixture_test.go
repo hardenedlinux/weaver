@@ -280,7 +280,7 @@ func (f *fixture) start(t testing.TB) {
 	defer cancel()
 	security := &tls.Config{RootCAs: f.pki.root, Certificates: []tls.Certificate{f.pki.client}, ServerName: "localhost", MinVersion: tls.VersionTLS13}
 	f.client, err = gatewayclient.Dial(ctx, f.address, ownerToken, security)
-	t.Logf("native startup operation-channel started=%s elapsed=%s error=%v", started.UTC().Format(time.RFC3339Nano), time.Since(started), err)
+	t.Logf("Rust owner startup operation-channel started=%s elapsed=%s error=%v", started.UTC().Format(time.RFC3339Nano), time.Since(started), err)
 	if err != nil {
 		f.child.Process.Signal(syscall.SIGTERM)
 		<-f.exited
@@ -290,13 +290,13 @@ func (f *fixture) start(t testing.TB) {
 	sourceSecurity := security.Clone()
 	sourceSecurity.Certificates = []tls.Certificate{f.pki.source}
 	f.admin, err = gatewayclient.Dial(ctx, f.sourceAddress, adminToken, sourceSecurity)
-	t.Logf("native startup source-channel elapsed=%s error=%v", time.Since(started), err)
+	t.Logf("Rust owner startup source-channel elapsed=%s error=%v", time.Since(started), err)
 	if err != nil {
 		f.stop(t)
 		t.Fatalf("source gRPC startup: %v", err)
 	}
 	if stages, err := os.ReadFile(filepath.Join(f.directory, "server.log")); err == nil {
-		t.Logf("native startup stage observations: %s", stages)
+		t.Logf("Rust owner startup stage observations: %s", stages)
 	}
 }
 func (f *fixture) stop(t testing.TB) {

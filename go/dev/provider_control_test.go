@@ -89,7 +89,7 @@ func newControlProcess(t testing.TB, f *fixture, path string) *controlProcess {
 	l.Close()
 	leaf, token := sha256.Sum256(f.pki.client.Certificate[0]), sha256.Sum256([]byte(ownerToken))
 	settings := map[string]string{"CONFIG": path, "SERVER_CERT": filepath.Join(d, "server"), "SERVER_KEY": filepath.Join(d, "server-key"), "CLIENT_CA": filepath.Join(d, "ca"), "PEER_SHA256": hex.EncodeToString(leaf[:]), "TOKEN_SHA256": hex.EncodeToString(token[:]), "LISTEN": address,
-		"NATIVE_CA": filepath.Join(d, "ca"), "NATIVE_OPERATION_CERT": filepath.Join(d, "operation"), "NATIVE_OPERATION_KEY": filepath.Join(d, "operation-key"), "NATIVE_SOURCE_CERT": filepath.Join(d, "source"), "NATIVE_SOURCE_KEY": filepath.Join(d, "source-key"), "NATIVE_OPERATION_TOKEN": ownerToken, "NATIVE_SOURCE_TOKEN": adminToken, "NATIVE_OPERATION_ADDRESS": f.address, "NATIVE_SOURCE_ADDRESS": f.sourceAddress, "NATIVE_SERVER_NAME": "localhost"}
+		"AUTHORITY_CA": filepath.Join(d, "ca"), "AUTHORITY_OPERATION_CERT": filepath.Join(d, "operation"), "AUTHORITY_OPERATION_KEY": filepath.Join(d, "operation-key"), "AUTHORITY_SOURCE_CERT": filepath.Join(d, "source"), "AUTHORITY_SOURCE_KEY": filepath.Join(d, "source-key"), "AUTHORITY_OPERATION_TOKEN": ownerToken, "AUTHORITY_SOURCE_TOKEN": adminToken, "AUTHORITY_OPERATION_ADDRESS": f.address, "AUTHORITY_SOURCE_ADDRESS": f.sourceAddress, "AUTHORITY_SERVER_NAME": "localhost"}
 	c := &controlProcess{fixture: f, address: address, directory: d}
 	for name, value := range settings {
 		c.env = append(c.env, "WEAVER_CONTROL_"+name+"="+value)
@@ -193,6 +193,15 @@ func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixtu
 	}
 	c := newControlProcess(t, f, path)
 	c.start(t)
+	parent := uint64(1)
+	revocation := v1.Publication{OperationID: "control-revoke", ExpectedRevision: &parent, Fence: 3, Policy: `forbid(principal,action,resource);`, Schema: f.schema}
+	if source != nil {
+		revoked := bundle
+		revoked.Publication = revocation
+		// Compile prospective revocation before starting the bounded stream RPC.
+		// No source publication or provider send occurs during compilation.
+		revocation = compileControlSource(t, source(t, f, revoked)).Publication
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	if f.primary.Load() != 0 || f.backup.Load() != 0 {
@@ -242,8 +251,7 @@ func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixtu
 		}
 		if !prefix && event.GetText() == "prefix" {
 			prefix = true
-			parent := uint64(1)
-			_, e := f.admin.Publish(ctx, v1.Publication{OperationID: "control-revoke", ExpectedRevision: &parent, Fence: 3, Policy: `forbid(principal,action,resource);`, Schema: f.schema})
+			_, e := f.admin.Publish(ctx, revocation)
 			unblock()
 			return e
 		}
@@ -274,7 +282,7 @@ func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixtu
 	if err != nil || observed.GetHeld() != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
 		t.Fatalf("restart duplicated/refunded original: %v %v", observed, err)
 	}
-	t.Log("native governor handoff -> source publication -> mTLS control -> Rust partial send -> revoke -> dual restart: original hold retained")
+	t.Log("Governor source handoff -> source publication -> mTLS control -> Rust partial send -> revoke -> dual restart: original hold retained")
 }
 
 func TestProviderControlJSONYAMLRevocationAndRestart(t *testing.T) {
@@ -332,9 +340,40 @@ func (p *publicationReplyLoss) RegisterTask(ctx context.Context, in *pb.Register
 	return p.source.RPC.RegisterTask(p.source.Context(ctx), in)
 }
 func TestProviderControlPublicationReplyLossCannotActivateOrRebase(t *testing.T) {
+	exerciseControlPublicationReplyLoss(t, nil)
+}
+
+func compileControlSource(t testing.TB, path string) config.Bundle {
+	t.Helper()
+	artifact := filepath.Join(t.TempDir(), "source.json")
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER"), "-e", "(dump-stack-trace? #f)", path)
+	cmd.Env = append(os.Environ(), "WEAVER_CONTROL_ARTIFACT="+artifact)
+	out, err := cmd.CombinedOutput()
+	if err != nil || ctx.Err() != nil {
+		t.Fatalf("source compilation: %v %v %s", err, ctx.Err(), out)
+	}
+	data, err := os.ReadFile(artifact)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bundle, err := config.DecodeBundle(data, config.ProfileJSON)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return bundle
+}
+
+func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string) {
+	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
-	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	path := writeControlBundle(t, f, bundle, "json")
+	if source != nil {
+		path = source(t, f, bundle)
+	}
+	c := newControlProcess(t, f, path)
 	certificate, err := tls.X509KeyPair(f.pki.serverPEM, f.pki.serverKey)
 	if err != nil {
 		t.Fatal(err)
@@ -351,7 +390,7 @@ func TestProviderControlPublicationReplyLossCannotActivateOrRebase(t *testing.T)
 	t.Cleanup(func() { server.Stop(); <-exited })
 	child := exec.Command(controlBinary)
 	child.Env = append(os.Environ(), c.env...)
-	child.Env = append(child.Env, "WEAVER_CONTROL_NATIVE_SOURCE_ADDRESS="+listener.Addr().String())
+	child.Env = append(child.Env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+listener.Addr().String())
 	log, err := os.Create(filepath.Join(c.directory, "lost-publication.log"))
 	if err != nil {
 		t.Fatal(err)
@@ -390,7 +429,12 @@ func TestProviderControlPublicationReplyLossCannotActivateOrRebase(t *testing.T)
 	}
 	// Exact recovery observes the original committed outcome without publishing
 	// another generation. Registration replay retains the original source task.
+	cancel()
+	f.stop(t)
+	f.start(t)
 	c.start(t)
+	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
 	if _, err = c.client.Execute(ctx, bundle.Plans[0], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err != nil {
 		t.Fatal("exact outcome recovery", err)
 	}

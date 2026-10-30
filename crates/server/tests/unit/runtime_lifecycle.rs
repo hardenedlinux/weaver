@@ -4,7 +4,7 @@ use tokio::sync::{Semaphore, oneshot};
 use weaver_contracts::Error;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn detached_native_writer_keeps_slot_until_drain_acknowledges_completion() {
+async fn detached_executor_writer_keeps_slot_until_drain_acknowledges_completion() {
     let owner = RuntimeOwner::new();
     let slots = Arc::new(Semaphore::new(1));
     let slot = Arc::new(slots.clone().try_acquire_owned().expect("slot"));
@@ -67,7 +67,7 @@ async fn poisoned_admission_still_closes_and_drains() {
 proptest::proptest! {
     #![proptest_config(proptest::test_runner::Config::with_cases(32))]
     #[test]
-    fn arbitrary_disconnect_shutdown_and_drain_schedules_keep_native_custody(
+    fn arbitrary_disconnect_shutdown_and_drain_schedules_keep_executor_custody(
         events in proptest::collection::vec(0u8..5, 1..32)
     ) {
         use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};

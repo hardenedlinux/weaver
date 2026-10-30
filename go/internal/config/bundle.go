@@ -67,7 +67,7 @@ func (b Bundle) Validate() error {
 		return errors.New("source inventory bound")
 	}
 	if b.Governance.Schema != "agentic-ai-lab.loop-governor.v1" || b.Governance.Family != b.Tasks[0].Family || len(b.Governance.OpenNodes) != len(b.Plans) || len(b.Tasks[0].Nodes) != len(b.Plans) {
-		return errors.New("native governor handoff binding")
+		return errors.New("Governor source handoff binding")
 	}
 	selected := map[string]bool{}
 	for _, node := range b.Governance.OpenNodes {

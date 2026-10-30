@@ -23,8 +23,6 @@ jobs:
     timeout-minutes: 45
     env:
       GOTOOLCHAIN: local
-      CARGO_BUILD_JOBS: "2"
-      GOMAXPROCS: "2"
       WEAVER_VERIFY_SUITE: ${{ inputs.suite }}
     steps:
       - name: Check out committed source

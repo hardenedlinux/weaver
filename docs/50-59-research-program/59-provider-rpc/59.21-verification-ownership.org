@@ -13,9 +13,12 @@ contracts through the Go OpenSysML SDK.
 
 Scheme assertions belong to =t/*-test.ss= and run through the standard SDK
 =gxtest= API. Their returned verdict and natural child exit are checked.
-Quint owns schedule exploration and deliberate unsafe counterexamples. Lean
-owns parametric/composition proofs under explicit premises. Runtime tests and
-source-bound receipts provide implementation evidence for those premises.
+Quint owns schedule exploration and deliberate unsafe counterexamples. The
+AuthorityPublication model imports the existing publication and execution owners;
+it does not redeclare their ledgers. Lean reuses cedar-poo-spec semantic results
+and existing parameterized execution proofs. The duplicate control-gate Lean
+file and CI stage are removed. Runtime tests establish concrete source validation,
+SQL, transport and natural cleanup; these are not inferred from Boolean models.
 
 * Retired research drivers
 

@@ -20,7 +20,7 @@ title: WEAVER / DEFAULT gRPC GATEWAY {
   style.font-size: 28
   style.bold: true
 }
-source: Scheme / Yuanxu modules\nSource-bound Governance assessment\nTyped Policy → Rust Cedar FFI {
+source: Scheme / Yuanxu modules\nGovernance Policy / source assets\nBound source → Cedar FFI {
   class: card
   left: 0
   top: 0
@@ -34,7 +34,7 @@ source_rpc: Source mTLS gRPC\nAtomic task / profile registration\nBounded publis
   width: 380
   height: 110
 }
-assurance: Project SysML · Cedar · Quint · Lean\nArchitecture and safety assurance {
+telemetry: Telemetry Service\nDefault local Go / Rust events\nPolicy-controlled export {
   class: card
   left: 960
   top: 0
@@ -42,6 +42,15 @@ assurance: Project SysML · Cedar · Quint · Lean\nArchitecture and safety assu
   height: 110
   style.fill: "#edf4f0"
   style.stroke: "#5c8b77"
+}
+assurance: Project SysML · Cedar · Quint · Lean {
+  shape: text
+  left: 0
+  top: 660
+  width: 1340
+  height: 60
+  style.font-size: 22
+  style.font-color: "#5c8b77"
 }
 control: Go Control Plane\nSource-bound LLM routing\nDeadline-bound transport setup {
   class: card
@@ -95,5 +104,8 @@ source_rpc -> owner: Policy / outcome CAS
 control -> rpc: Typed RPC
 rpc -> owner: Admit
 owner -> provider: Cedar + cancellation
+owner -> telemetry: Bounded events {
+  style.stroke-dash: 4
+}
 provider -> release: SSE
 release -> consumer: Stream

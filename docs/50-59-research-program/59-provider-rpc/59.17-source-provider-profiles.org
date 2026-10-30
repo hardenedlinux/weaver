@@ -20,7 +20,7 @@ inside the deciding admission, consumption, dispatch and release transactions.
 
 | Owner | Responsibility |
 |-------+----------------|
-| Scheme / Agentic AI Lab | Reuse native Governance assessment and Governor open-pattern projection, preflight typed Policy through Rust C FFI, and emit the original task/profile/Policy artifact. See 59.19 for the executable source bridge. |
+| Scheme / Agentic AI Lab | Reuse Scheme Governance assessment and Governor open-pattern projection, preflight typed Policy through Rust C FFI, and emit the original task/profile/Policy artifact. See 59.19 for the executable source bridge. |
 | Go control plane | Decode bounded JSON/YAML source artifacts or compile trusted native Scheme before activation; register original tasks, publish exact authority, and proxy source-bound operations through mTLS gRPC. Configuration grants no execution capability. A Kubernetes reconciliation controller remains pending. |
 | Rust contracts | Validate the immutable profile, exact request semantics, original task binding and versioned plan commitment. Facts are data rather than send handles. |
 | Rust source owner / ledger | Atomically register profile and task, retain original semantic floors and spent claims, and recheck current registry data at deciding execution boundaries. |
@@ -119,7 +119,7 @@ arbitrary whole-database rollback is not covered by these local recovery tests.
 | Recovery retains original meaning | Rust missing registry, metadata order, unknown-null field and missing inner ID tests; Quint restored-registry schedules | =missing_registry_cannot_erase_original_floor=, =exact_profile_registration_is_idempotent= |
 | Unsupported semantics never authorize a send | Shared corpus, Go/Rust PBT, actual RPC extension controls, Quint missing-schema and raw-path counterexamples | =unknown_extension_cannot_authorize_profile_effect=, =untyped_fallback_cannot_authorize_profile_effect= |
 | Cached permits do not bypass final registry | Rust cached dispatch/release mismatch tests and Quint cached-ticket counterexample | =profile_registry_mismatch_cannot_send=, =profile_identity_and_digest_are_jointly_guarded= |
-| Recovery cannot reissue attempts or refund unknown holds | Native restart/replay tests and Quint recovered-ticket counterexample | =source_profile_and_native_execution_run=, =profile_recovery_retains_original_hold= |
+| Recovery cannot reissue attempts or refund unknown holds | Native restart/replay tests and Quint recovered-ticket counterexample | =source_profile_and_rust_execution_run=, =profile_recovery_retains_original_hold= |
 
 =dev/proofs/quint/ProviderProfile.qnt= explores two operation cells, two profile
 IDs and two abstract digest values. Its twenty directed controls include unsafe

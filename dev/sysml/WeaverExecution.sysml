@@ -65,6 +65,9 @@ package WeaverExecution {
         doc /* Exact committed target and body, no inherited proxy, redirect or automatic retry. */
         port wire : ~WirePort;
     }
+    part def TelemetryService {
+        doc /* Default service in the target architecture; implementation and exporter delivery remain pending. Local bounded signals observe source/authority/effects. Export needs explicit configuration and Policy. Telemetry cannot acknowledge an authority commit, authorize a send or release unknown budget. */
+    }
     action def Propose;
     action def Enqueue;
     action def Consume;
@@ -78,6 +81,7 @@ package WeaverExecution {
         part ledger : RustLedger;
         part broker : RustFinalBroker;
         part executor : HttpsExecutor;
+        part telemetry : TelemetryService;
         connect controlAdapter.proposals to ledger.proposals;
         connect ledger.observations to controlAdapter.observations;
         connect ledger.consumed to broker.consumed;

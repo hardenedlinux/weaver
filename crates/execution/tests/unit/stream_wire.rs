@@ -192,7 +192,7 @@ fn revoke_after_range_consumption_proves_zero_call_and_recovers_original_message
 }
 
 #[test]
-fn native_partial_write_freezes_tail_and_never_refunds() {
+fn rust_partial_write_freezes_tail_and_never_refunds() {
     let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
     let destination = format!("tcp://{}", listener.local_addr().expect("address"));
     socket2::SockRef::from(&listener)

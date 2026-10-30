@@ -47,8 +47,8 @@ func Plan(goBinary string) []Stage {
 		{"dispatch-cancellation-safety", "quint", []string{"run", "dev/proofs/quint/DispatchCancellation.qnt", "--main", "DispatchCancellation", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"release-binding-tests", "quint", []string{"test", "dev/proofs/quint/ReleaseBinding.qnt", "--main", "ReleaseBinding", "--seed", "293"}},
 		{"release-binding-safety", "quint", []string{"run", "dev/proofs/quint/ReleaseBinding.qnt", "--main", "ReleaseBinding", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
-		{"admission-quint-tests", "quint", []string{"test", "dev/proofs/quint/NativeAdmission.qnt", "--main", "NativeAdmission", "--seed", "293"}},
-		{"admission-quint-safety", "quint", []string{"run", "dev/proofs/quint/NativeAdmission.qnt", "--main", "NativeAdmission", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
+		{"admission-quint-tests", "quint", []string{"test", "dev/proofs/quint/AuthorityAdmission.qnt", "--main", "AuthorityAdmission", "--seed", "293"}},
+		{"admission-quint-safety", "quint", []string{"run", "dev/proofs/quint/AuthorityAdmission.qnt", "--main", "AuthorityAdmission", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"connection-quint-tests", "quint", []string{"test", "dev/proofs/quint/ConnectionAdmission.qnt", "--main", "ConnectionAdmission", "--seed", "293"}},
 		{"connection-quint-safety", "quint", []string{"run", "dev/proofs/quint/ConnectionAdmission.qnt", "--main", "ConnectionAdmission", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"gateway-composition-tests", "quint", []string{"test", "dev/proofs/quint/GatewayComposition.qnt", "--main", "GatewayComposition", "--seed", "293"}},
@@ -62,9 +62,8 @@ func Plan(goBinary string) []Stage {
 		{"source-owner-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"go-provider-grpc-integration", goBinary, []string{"test", "-count=1", "-race", "-tags=integration", "./go/dev", "-run", "TestProvider", "-v"}},
 		{"control-bundle-pbt", goBinary, []string{"test", "./go/internal/config", "-run", "^$", "-fuzz", "FuzzSourceBundleCannotExpandOriginalSelection", "-fuzztime=3s", "-parallel=1"}},
-		{"control-activation-quint-tests", "quint", []string{"test", "dev/proofs/quint/ControlActivation.qnt", "--main", "ControlActivation", "--seed", "293"}},
-		{"control-activation-quint-safety", "quint", []string{"run", "dev/proofs/quint/ControlActivation.qnt", "--main", "ControlActivation", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
-		{"control-activation-lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/ControlActivation.lean"}},
+		{"authority-publication-quint-tests", "quint", []string{"test", "dev/proofs/quint/AuthorityPublication.qnt", "--main", "AuthorityPublication", "--seed", "293", "--match", "^authority[A-Z]"}},
+		{"authority-publication-quint-safety", "quint", []string{"run", "dev/proofs/quint/AuthorityPublication.qnt", "--main", "AuthorityPublication", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 	}
 }
 func Stages(mode, goBinary string) ([]Stage, error) {
@@ -103,7 +102,9 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		return []Stage{
 			{"project-architecture", goBinary, []string{"test", "-count=1", "./go/dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership|CIWorkflows)", "-v"}},
 			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},
+			{"scheme-build-capacity", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "resources"}},
 			{"scheme-declared-poo-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "dependencies"}},
+			{"scheme-core-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "core"}},
 			{"scheme-module-build", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline"}},
 			// Delegate discovery and assertions to the SDK and Scheme-owned suites.
 			// Check the returned result explicitly; success markers alone cannot pass.
@@ -116,7 +117,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"rust-environment", "rustc", []string{"-vV"}},
 			{"go-environment", goBinary, []string{"version"}},
 			{"benchmark-package-contract", goBinary, []string{"test", "-count=1", "./go/dev", "./go/internal/devrunner", "-run", "^Test(CargoWorkspaceAndDevelopmentGates|Benchmark.*)$"}},
-			{"rust-benchmarks", "cargo", []string{"bench", "--workspace", "--all-features", "--bench", "gateway", "--locked", "--offline", "-j", "2", "--", "--noplot"}},
+			{"rust-benchmarks", "cargo", []string{"bench", "--workspace", "--all-features", "--bench", "gateway", "--locked", "--offline", "--", "--noplot"}},
 			{"grpc-benchmark", goBinary, []string{"test", "-tags=integration", "./go/dev", "-run", "^$", "-bench", "^BenchmarkGateway(Inspect|InspectReconnect|AuthorityPublish)$", "-benchtime=2s", "-count=3", "-benchmem"}},
 		}, nil
 	case "generate-rpc":

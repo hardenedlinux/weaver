@@ -125,7 +125,7 @@
     "witnesses": [
       {
         "file": "crates/execution/tests/unit/stream_wire.rs",
-        "pattern": "fn native_partial_write_freezes_tail_and_never_refunds"
+        "pattern": "fn rust_partial_write_freezes_tail_and_never_refunds"
       },
       {
         "file": "dev/proofs/lean/StreamingExecution.lean",
@@ -164,11 +164,11 @@
     "witnesses": [
       {
         "file": "crates/server/tests/unit/runtime_lifecycle.rs",
-        "pattern": "async fn detached_native_writer_keeps_slot_until_drain_acknowledges_completion"
+        "pattern": "async fn detached_executor_writer_keeps_slot_until_drain_acknowledges_completion"
       },
       {
         "file": "crates/server/tests/unit/runtime_lifecycle.rs",
-        "pattern": "fn arbitrary_disconnect_shutdown_and_drain_schedules_keep_native_custody"
+        "pattern": "fn arbitrary_disconnect_shutdown_and_drain_schedules_keep_executor_custody"
       },
       {
         "file": "go/dev/provider_grpc_test.go",
@@ -234,7 +234,7 @@
   {"id":"ReservedAuthorityAdmission","witnesses":[
     {"file":"crates/server/tests/unit/admission.rs","pattern":"async fn saturated_detached_execution_preserves_publication_and_observation_custody"},
     {"file":"go/dev/provider_capacity_test.go","pattern":"func TestProviderSaturatedExecutionPreservesRevocationAndObservation"},
-    {"file":"dev/proofs/quint/NativeAdmission.qnt","pattern":"run sharedLaneStarvationCounterexampleTest"},
+    {"file":"dev/proofs/quint/AuthorityAdmission.qnt","pattern":"run sharedLaneStarvationCounterexampleTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem execution_and_admission_composition"}]},
   {"id":"ConnectionCustodyBound","witnesses":[
     {"file":"crates/server/tests/unit/connections.rs","pattern":"async fn tcp_socket_owns_capacity_until_destruction_and_preserves_io_and_peer_identity"},
@@ -280,32 +280,38 @@
     {"file":"scheme/governance/types.ss","pattern":"YuanxuContract. value-contract:"},
     {"file":"scheme/gateway/contracts.ss","pattern":"def GatewayArtifact"},
     {"file":"t/gateway-contracts-test.ss","pattern":"def gateway-contracts-test"},
-    {"file":"dev/proofs/quint/ControlActivation.qnt","pattern":"run malformedContractCannotRegisterTest"},
-    {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"contractValid : Bool"}]},
-  {"id":"NativeGovernorHandoff","witnesses":[
+    {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityUncompiledSourceCannotRegisterTest"},
+    {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"}]},
+  {"id":"GovernancePolicyProjection","witnesses":[
+    {"file":"scheme/policy/func.ss","pattern":"project-policy profile"},
+    {"file":"scheme/policy/assets.ss","pattern":"read-policy-assets profile"},
+    {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"},
+    {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
+  {"id":"GovernorSourceHandoff","witnesses":[
     {"file":"scheme/governance/func.ss","pattern":"assq 'open-patterns"},
     {"file":"scheme/governance/types.ss","pattern":"def GovernanceAssessmentContext"},
     {"file":"scheme/gateway/func.ss","pattern":"same-node-set?"},
     {"file":"t/gateway-source-test.ss","pattern":"a false Governance assessment cannot emit a source handoff"},
     {"file":"t/governance-test.ss","pattern":"a typed ready assessment cannot omit an original blocking threat"},
-    {"file":"dev/proofs/quint/ControlActivation.qnt","pattern":"run readyWithoutBindingCounterexampleTest"},
-    {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"theorem active_requires_bound_assessment"},
-    {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"theorem source_assessment_execution_composition"},
-    {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlNativeGovernorRejectsUnselectedPlans"},
+    {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityChangedCompiledSourceCannotRecoverTest"},
+    {"file":"scheme/policy/func.ss","pattern":"project-policy profile"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"},
+    {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlSchemeGovernorRejectsUnselectedPlans"},
     {"file":"go/internal/config/bundle_test.go","pattern":"func TestBundleRejectsSelectionAndCommitmentSubstitution"}]},
   {"id":"PolicyCAbiIsInert","witnesses":[
     {"file":"crates/policy-ffi/src/abi.rs","pattern":"pub unsafe extern \"C\" fn weaver_policy_validate_v1"},
     {"file":"scheme/policy/cedar-ffi.ss","pattern":"def-C-lambda policy-validate/raw"},
-    {"file":"dev/proofs/quint/ControlActivation.qnt","pattern":"run ffiPreflightCannotSendTest"}]},
+    {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authoritySourceCommitNeverSendsTest"}]},
   {"id":"ControlActivationAcknowledgment","witnesses":[
     {"file":"go/dev/provider_control_test.go","pattern":"func TestProviderControlPublicationReplyLossCannotActivateOrRebase"},
-    {"file":"dev/proofs/quint/ControlActivation.qnt","pattern":"run unknownCommitCannotActivateTest"},
-    {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"theorem composition_run_safe"}]},
+    {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityLostReplyCannotActivateTest"},
+    {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"}]},
   {"id":"ControlStreamRecoveryBinding","witnesses":[
     {"file":"go/dev/provider_control_test.go","pattern":"func TestProviderControlCompleteStreamsShareBudgetAndRejectSDKRetry"},
-    {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlNativeGovernorRevocationAndRestart"},
-    {"file":"dev/proofs/lean/ControlActivation.lean","pattern":"theorem recovery_keeps_unknown_budget"}]},
-  {"id":"NativeBenchmarkCoverage","witnesses":[
+    {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlSchemeGovernorRevocationAndRestart"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem profile_recovery_retains_original_hold"}]},
+  {"id":"WorkspaceBenchmarkCoverage","witnesses":[
     {"file":"go/internal/devrunner/benchmark_test.go","pattern":"func TestBenchmarkEvidenceRequiresEveryCase"},
     {"file":"go/dev/workspace_test.go","pattern":"func TestCargoWorkspaceAndDevelopmentGates"},
     {"file":"crates/execution/benches/gateway.rs","pattern":"fn guarded_provider"},

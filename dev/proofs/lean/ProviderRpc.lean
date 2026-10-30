@@ -514,7 +514,7 @@ inductive ProfileExecutionStep (cost budget : Nat) : ProfileExecution Digest →
       (checked : ProfileEffectAuthorized event) :
       ProfileExecutionStep cost budget s ⟨target,s.effects ++ [event]⟩
 
-theorem source_profile_and_native_execution_step
+theorem source_profile_and_rust_execution_step
     (safe : ProfileExecutionSafe cost budget s) (step : ProfileExecutionStep cost budget s t) :
     ProfileExecutionSafe cost budget t := by
   rcases safe with ⟨execution, effects, count⟩
@@ -538,18 +538,18 @@ inductive ProfileExecutionRun (cost budget : Nat) : ProfileExecution Digest → 
   | refl (s) : ProfileExecutionRun cost budget s s
   | next : ProfileExecutionRun cost budget a b → ProfileExecutionStep cost budget b c → ProfileExecutionRun cost budget a c
 
-theorem source_profile_and_native_execution_run
+theorem source_profile_and_rust_execution_run
     (initial : ProfileExecutionSafe cost budget s) (run : ProfileExecutionRun cost budget s t) :
     ProfileExecutionSafe cost budget t := by
   induction run with
   | refl => exact initial
-  | next history step ih => exact source_profile_and_native_execution_step ih step
+  | next history step ih => exact source_profile_and_rust_execution_step ih step
 
 theorem profile_recovery_retains_original_hold
     (initial : ProfileExecutionSafe cost budget s) (run : ProfileExecutionRun cost budget s t)
     (consumed : t.native.stage ≥ 1) :
     t.native.held = cost ∧ t.native.calls ≤ 1 ∧ (∀ e ∈ t.effects, ProfileEffectAuthorized e) := by
-  have safe := source_profile_and_native_execution_run initial run
+  have safe := source_profile_and_rust_execution_run initial run
   exact ⟨safe.1.2.2.2.1 consumed,safe.1.2.1,safe.2.1⟩
 
 theorem unknown_extension_cannot_authorize_profile_effect
@@ -565,8 +565,8 @@ theorem untyped_fallback_cannot_authorize_profile_effect
 #print axioms original_task_registration_cannot_rebind
 #print axioms missing_registry_cannot_erase_original_floor
 #print axioms exact_profile_registration_is_idempotent
-#print axioms source_profile_and_native_execution_step
-#print axioms source_profile_and_native_execution_run
+#print axioms source_profile_and_rust_execution_step
+#print axioms source_profile_and_rust_execution_run
 #print axioms profile_recovery_retains_original_hold
 #print axioms profile_registry_mismatch_cannot_send
 #print axioms unknown_extension_cannot_authorize_profile_effect

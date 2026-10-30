@@ -123,44 +123,44 @@ func RunFromEnv(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	nativeRoots, err := roots("WEAVER_CONTROL_NATIVE_CA")
+	authorityRoots, err := roots("WEAVER_CONTROL_AUTHORITY_CA")
 	if err != nil {
 		return err
 	}
-	opKey, err := pair("WEAVER_CONTROL_NATIVE_OPERATION")
+	opKey, err := pair("WEAVER_CONTROL_AUTHORITY_OPERATION")
 	if err != nil {
 		return err
 	}
-	sourceKey, err := pair("WEAVER_CONTROL_NATIVE_SOURCE")
+	sourceKey, err := pair("WEAVER_CONTROL_AUTHORITY_SOURCE")
 	if err != nil {
 		return err
 	}
-	opToken, err := required("WEAVER_CONTROL_NATIVE_OPERATION_TOKEN")
+	opToken, err := required("WEAVER_CONTROL_AUTHORITY_OPERATION_TOKEN")
 	if err != nil {
 		return err
 	}
-	sourceToken, err := required("WEAVER_CONTROL_NATIVE_SOURCE_TOKEN")
+	sourceToken, err := required("WEAVER_CONTROL_AUTHORITY_SOURCE_TOKEN")
 	if err != nil {
 		return err
 	}
-	opAddress, err := required("WEAVER_CONTROL_NATIVE_OPERATION_ADDRESS")
+	opAddress, err := required("WEAVER_CONTROL_AUTHORITY_OPERATION_ADDRESS")
 	if err != nil {
 		return err
 	}
-	sourceAddress, err := required("WEAVER_CONTROL_NATIVE_SOURCE_ADDRESS")
+	sourceAddress, err := required("WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS")
 	if err != nil {
 		return err
 	}
-	name, err := required("WEAVER_CONTROL_NATIVE_SERVER_NAME")
+	name, err := required("WEAVER_CONTROL_AUTHORITY_SERVER_NAME")
 	if err != nil {
 		return err
 	}
-	operation, err := gatewayclient.Dial(startup, opAddress, opToken, &tls.Config{RootCAs: nativeRoots, Certificates: []tls.Certificate{opKey}, ServerName: name})
+	operation, err := gatewayclient.Dial(startup, opAddress, opToken, &tls.Config{RootCAs: authorityRoots, Certificates: []tls.Certificate{opKey}, ServerName: name})
 	if err != nil {
 		return err
 	}
 	defer operation.Connection.Close()
-	source, err := gatewayclient.Dial(startup, sourceAddress, sourceToken, &tls.Config{RootCAs: nativeRoots, Certificates: []tls.Certificate{sourceKey}, ServerName: name})
+	source, err := gatewayclient.Dial(startup, sourceAddress, sourceToken, &tls.Config{RootCAs: authorityRoots, Certificates: []tls.Certificate{sourceKey}, ServerName: name})
 	if err != nil {
 		return err
 	}

@@ -19,7 +19,7 @@
     overrides))
 
 (def governance-test
-  (test-suite "Native Governor handoff"
+  (test-suite "Governor source handoff"
     (test-case "original open patterns are selected"
       (check-equal? (governor-open-nodes
                      (governor '((aggregate-budget . ((max-actionable . 2))))) '())
@@ -37,7 +37,7 @@
       (check-equal? (length (governor-open-nodes
                              (governor '((aggregate-budget . ((max-actionable . 1))))) '())) 1))
     (test-case "a ready assessment is bound to its exact source context"
-      (def context (.o request: 'publish source: "{\"original\":true}"
+      (def context (.o request: 'publish source: "{\"original\":true}" policy_inputs: "[]"
                       profile_identity: "weaver/test" profile_revision: "1" profile_owner: "operator"
                       model_identity: "agentic-ai-lab/governance/threat-model/empty"))
       (def profile
@@ -46,7 +46,7 @@
       (check (assess-governance! profile context) => #t)
       (check-exception (assess-governance! profile (.o request: 'publish)) Error?))
     (test-case "a typed ready assessment cannot omit an original blocking threat"
-      (def context (.o request: 'publish source: "{\"original\":true}"
+      (def context (.o request: 'publish source: "{\"original\":true}" policy_inputs: "[]"
                       profile_identity: "weaver/test" profile_revision: "1" profile_owner: "operator"
                       model_identity: "weaver/blocking"))
       (def model

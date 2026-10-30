@@ -8,7 +8,7 @@
 (export GovernanceScopeContract GovernanceContext GovernanceAssessmentContext GovernorState ActionKey
         AgenticAILabGovernanceProfile +loop-governor-type-contract+)
 (def GovernanceContext
-  (.cc (Record request: (list (Enum publish)))
+  (.cc (Record request: (list (Enum publish)) source_root: (list String optional: #t))
        identity: 'weaver/governance/context sealed: #t))
 (def GovernanceSource
   (.cc String sexp: 'GovernanceSource
@@ -18,6 +18,7 @@
 ;;; The gateway supplies the exact typed source projection, never a caller scope.
 (def GovernanceAssessmentContext
   (.cc (Record request: (list (Enum publish)) source: (list GovernanceSource)
+               policy_inputs: (list GovernanceSource)
                profile_identity: (list String) profile_revision: (list String)
                profile_owner: (list String) model_identity: (list String))
        identity: 'weaver/governance/assessment-context sealed: #t))

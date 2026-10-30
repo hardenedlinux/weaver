@@ -7,7 +7,7 @@ Go's gRPC client now starts connection backoff at 100 milliseconds instead of
 one second. It copies the pinned SDK's existing exponential multiplier (1.6),
 jitter (0.2) and long-outage maximum (120 seconds). The existing twenty-second
 minimum connection-attempt setting is preserved; caller cancellation and deadlines
-still bound Dial. The native startup gate remains three seconds shared by both
+still bound Dial. The Rust owner startup gate remains three seconds shared by both
 role channels. TLS verification, credentials, message bounds and WithDisableRetry
 are unchanged. Execute and publication recovery gain no application retry loop.
 
@@ -61,7 +61,7 @@ thirty-second watchdog; they are not a new request protocol or shell runner.
 
 | Artifact | Property and limit |
 |----------+--------------------|
-| Go client and native startup tests | A stalled TLS peer cannot replace the caller's deadline; cancelled setup returns no client. Both role channels must become ready through actual mTLS RPC. |
+| Go client and Rust owner startup tests | A stalled TLS peer cannot replace the caller's deadline; cancelled setup returns no client. Both role channels must become ready through actual mTLS RPC. |
 | SysML TransportSetupIsolation | Distinguishes transport setup from application operation retry and retains native custody and authorization boundaries. |
 | Quint GatewayComposition | Interleaves provider execution with connection admission; transport steps leave original provider state unchanged. Setup cannot create a claim, reconnect cannot reissue a spent root, and reconnect cannot reauthorize a revoked release. |
 | Lean GatewayStep / GatewayRun | Conditional unbounded product invariant combines original execution/hold safety with live socket custody while permitting pure transport progress without a provider step. |

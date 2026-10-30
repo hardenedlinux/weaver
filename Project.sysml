@@ -48,6 +48,7 @@ package WeaverProject {
         part ledger : WeaverExecution::RustLedger;
         part broker : WeaverExecution::RustFinalBroker;
         part executor : WeaverExecution::HttpsExecutor;
+        part telemetry : WeaverExecution::TelemetryService;
     }
 
     package Layout {
@@ -77,6 +78,7 @@ package WeaverProject {
         part '.github/workflows/verify-suite.yml' : File;
         part '.github/actions/prepare-toolchain/action.yml' : File;
         part 'scheme/policy/cedar-ffi.ss' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {
@@ -168,4 +170,5 @@ package WeaverProject {
     allocation ledgerCode allocate Architecture::ledger to Layout::'crates/ledger';
     allocation brokerCode allocate Architecture::broker to Layout::'crates/execution';
     allocation transportCode allocate Architecture::executor to Layout::'crates/execution';
+    allocation telemetryDesign allocate Architecture::telemetry to Layout::'docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org';
 }

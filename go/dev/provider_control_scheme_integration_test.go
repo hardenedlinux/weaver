@@ -60,10 +60,14 @@ func schemeDatum(t testing.TB, value any) string {
 		return ""
 	}
 }
-func nativeSource(t testing.TB, f *fixture, b config.Bundle, mode string) string {
+func schemeSource(t testing.TB, f *fixture, b config.Bundle, mode string) string {
 	t.Helper()
 	if os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER") == "" || os.Getenv("GERBIL_PATH") == "" || os.Getenv("GERBIL_LOADPATH") == "" {
-		t.Fatal("native Scheme qualification requires explicit compiler and isolated linked source/dependency paths")
+		t.Fatal("Scheme source qualification requires explicit compiler and isolated linked source/dependency paths")
+	}
+	directory, err := os.MkdirTemp(f.directory, "scheme-source-")
+	if err != nil {
+		t.Fatal(err)
 	}
 	data, err := json.Marshal(b)
 	if err != nil {
@@ -86,23 +90,30 @@ func nativeSource(t testing.TB, f *fixture, b config.Bundle, mode string) string
 		plans := value["plans"].([]any)
 		plans[1] = plans[0]
 	}
+	asset := value["publication"].(map[string]any)["policy"].(string)
+	if mode == "asset-mismatch" {
+		asset = "forbid(principal,action,resource);"
+	}
+	if err := os.WriteFile(filepath.Join(directory, "policy.cedar"), []byte(asset), 0600); err != nil {
+		t.Fatal(err)
+	}
 	// Only inert fixture data crosses this printer. Native constructors and
 	// governance setup belong to the Scheme-owned integration fixture.
 	source := fmt.Sprintf(`(import (only-in :clan/poo/object object<-alist) %q)
-(emit-control-fixture %q %q %s %s %s)
+(emit-control-fixture %q %q %s %s %s %q)
 `, filepath.Join(root(t), "t/fixtures/governed-control"), filepath.Join(root(t), "init.ss"), mode,
-		schemeDatum(t, value["tasks"]), schemeDatum(t, value["plans"]), schemeDatum(t, value["publication"]))
-	path := filepath.Join(f.directory, "governed-"+mode+".ss")
+		schemeDatum(t, value["tasks"]), schemeDatum(t, value["plans"]), schemeDatum(t, value["publication"]), directory)
+	path := filepath.Join(directory, "governed-"+mode+".ss")
 	if err = os.WriteFile(path, []byte(source), 0600); err != nil {
 		t.Fatal(err)
 	}
 	return path
 }
 
-func TestProviderControlNativeFfiValidationCannotAuthorize(t *testing.T) {
+func TestProviderControlCedarFFIValidationCannotAuthorize(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	b := controlBundle(t, f)
-	c := newControlProcess(t, f, nativeSource(t, f, b, "denyall"))
+	c := newControlProcess(t, f, schemeSource(t, f, b, "denyall"))
 	c.start(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -113,16 +124,21 @@ func TestProviderControlNativeFfiValidationCannotAuthorize(t *testing.T) {
 		t.Fatal("Cedar-denied request reached provider")
 	}
 }
-func TestProviderControlNativeGovernorRevocationAndRestart(t *testing.T) {
-	exerciseControl(t, "ss", func(t *testing.T, f *fixture, b config.Bundle) string { return nativeSource(t, f, b, "valid") })
+func TestProviderControlSchemeGovernorRevocationAndRestart(t *testing.T) {
+	exerciseControl(t, "ss", func(t *testing.T, f *fixture, b config.Bundle) string { return schemeSource(t, f, b, "valid") })
+}
+func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart(t *testing.T) {
+	exerciseControlPublicationReplyLoss(t, func(t *testing.T, f *fixture, b config.Bundle) string {
+		return schemeSource(t, f, b, "valid")
+	})
 }
 
-func TestProviderControlNativeGovernorRejectsUnselectedPlans(t *testing.T) {
+func TestProviderControlSchemeGovernorRejectsUnselectedPlans(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	b := controlBundle(t, f)
-	for _, mode := range []string{"deny", "collision", "clip", "invalid", "policy", "threat", "obligation", "task-type", "duplicate-plan", "assessment-context", "assessment-revision", "assessment-model", "assessment-threats"} {
+	for _, mode := range []string{"deny", "collision", "clip", "invalid", "policy", "threat", "obligation", "task-type", "duplicate-plan", "assessment-context", "assessment-revision", "assessment-model", "assessment-threats", "asset-mismatch", "asset-traversal", "asset-language", "policy-substitution", "policy-identity"} {
 		t.Run(mode, func(t *testing.T) {
-			source := nativeSource(t, f, b, mode)
+			source := schemeSource(t, f, b, mode)
 			artifact := filepath.Join(t.TempDir(), "rejected.json")
 			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 			defer cancel()
@@ -132,15 +148,24 @@ func TestProviderControlNativeGovernorRejectsUnselectedPlans(t *testing.T) {
 			if err == nil || ctx.Err() != nil {
 				t.Fatalf("negative control must reject naturally, not time out: %v %v %s", err, ctx.Err(), out)
 			}
-			expected := "provider plans must exactly match the native governor handoff"
+			expected := "provider plans must exactly match the Governor source handoff"
 			if mode == "policy" {
 				expected = "Rust rejected inert source Policy/schema"
 			}
 			if mode == "threat" || strings.HasPrefix(mode, "assessment-") {
-				expected = "native Governance assessment does not admit an inert source handoff"
+				expected = "Scheme Governance assessment does not admit an inert source handoff"
 			}
 			if mode == "obligation" {
-				expected = "unsupported or invalid Governance source Profile obligations"
+				expected = "unsupported Governance policy value"
+			}
+			if mode == "asset-mismatch" || mode == "policy-substitution" || mode == "policy-identity" {
+				expected = "Governance policies and assets must match exactly"
+			}
+			if mode == "asset-traversal" {
+				expected = "Governance asset path must stay inside its root"
+			}
+			if mode == "asset-language" {
+				expected = "unsupported Governance asset language"
 			}
 			if mode == "task-type" {
 				// Container validation reports the enclosing task-list descriptor;

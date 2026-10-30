@@ -16,7 +16,7 @@ module SourceOwner {
   action callerLost = all {owner'=owner.with("receiver",false),inert}
   action decide(id:int,payload:int,parent:int,fence:int):bool = all {owner.busy,owner.live,owner.transaction,not(owner.failed),
     any {P::publish(id,payload,parent,fence),P::replay(id,payload,parent,fence)},
-    owner'=owner.with("transaction",false).with("decided",owner.decided.union(Set(owner.command))).with("reads",owner.reads.append({observed:P::s.head,actual:P::s.head}))}
+    owner'=owner.with("transaction",false).with("decided",owner.decided.union(Set(owner.command))).with("reads",owner.reads.append({observed:P::authority.head,actual:P::authority.head}))}
   action finish = all {owner.busy,not(owner.transaction),owner'=owner.with("busy",false).with("slot",false).with("returned",owner.returned.union(Set(owner.command))),inert}
   action commandReply(id:int):bool = all {owner.decided.contains(id),owner.returned.contains(id),owner'=owner.with("replies",owner.replies.union(Set(id))),inert}
   action close = all {owner'=owner.with("closing",true),inert}
@@ -28,7 +28,7 @@ module SourceOwner {
     owner'=owner.with("live",false).with("closed",true).with("closeOk",false).with("failed",true),inert}
   action acknowledge = all {owner.closed,owner.closeOk,not(owner.failed),not(owner.busy),not(owner.transaction),owner'=owner.with("ack",true),inert}
   action unsafeReturnOnDisconnect = all {owner.busy,owner'=owner.with("slot",false),inert}
-  action unsafeReuseSnapshot = all {owner'=owner.with("reads",owner.reads.append({observed:P::s.head-1,actual:P::s.head})),inert}
+  action unsafeReuseSnapshot = all {owner'=owner.with("reads",owner.reads.append({observed:P::authority.head-1,actual:P::authority.head})),inert}
   action unsafeSuccessAfterCloseError = all {owner.failed,owner'=owner.with("ack",true),inert}
   action unsafeReplyBeforeCapacity = all {owner.decided.contains(owner.command),owner.busy,owner'=owner.with("replies",owner.replies.union(Set(owner.command))),inert}
   action step = {nondet id=P::ids.oneOf() nondet payload=Set(0,1).oneOf() nondet parent=Set(-1,0,1,2).oneOf() nondet fence=Set(1,2,3).oneOf()
@@ -36,7 +36,7 @@ module SourceOwner {
     any {start,admit,begin,callerLost,decide(id,payload,parent,fence),finish,commandReply(replyId),close,storageFailure,failedWorkDestroyed,closeDatabase,closeError,acknowledge}}
   action active = init.then(start).then(admit).then(begin)
   run disconnectDoesNotReturnCapacityTest = active.then(callerLost).then(admit.fail())
-  run droppedReplyCanStillCommitOriginalTest = active.then(callerLost).then(decide(0,0,-1,1)).then(finish).expect(safe and P::s.head==0)
+  run droppedReplyCanStillCommitOriginalTest = active.then(callerLost).then(decide(0,0,-1,1)).then(finish).expect(safe and P::authority.head==0)
   run shutdownMustFinishTransactionTest = active.then(close).then(closeDatabase.fail())
   run acceptedWorkCanCommitWhileClosingTest = active.then(close).then(decide(0,0,-1,1)).then(finish).then(closeDatabase).then(acknowledge).expect(safe)
   run storageFailurePreventsReuseTest = active.then(storageFailure).then(failedWorkDestroyed).then(admit.fail())

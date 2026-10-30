@@ -1,0 +1,105 @@
+#+TITLE: 59.23 Governance Policy Projection and Authority Publication
+#+LANGUAGE: en
+
+* Implemented source contract
+
+Weaver reuses Agentic AI Lab's Governance Profile, GovernanceSource descriptor
+and Cedar Provider Policy constructor. No new governance expression language is
+introduced. The supported projection accepts these explicit forms:
+
+| Profile facet | Supported representation | Result |
+|---------------+--------------------------+--------|
+| policies | POO object whose values are upstream Cedar Policy objects | Sort by their unique policy identities and concatenate their standard Cedar source with newline separators |
+| source-assets | Upstream GovernanceSource values with language cedar | Read bounded regular files under the explicit source_root directory |
+| Both | Exactly the same identity set and exact source bytes | Preserve the file paths, sources and SHA-256 content identities in the assessment input |
+| Neither | Existing explicit publication Policy | Preserve the existing JSON/YAML and empty-facet Scheme profile |
+
+The projected Policy must equal the prospective publication's Policy exactly.
+There is no implicit merge with an independent baseline, no dropped extra clause,
+no whitespace normalization and no assumption that combining permit clauses
+attenuates authority. Ordinary Cedar policy-set and forbid semantics apply.
+The existing schema field remains authoritative and is validated with the exact
+projected Policy by the Rust Cedar FFI and again during Rust publication.
+
+An operator may construct the prospective command from the same Policy object's
+source. The equality check binds those values without requiring duplicated text
+in configuration maintenance. Unsupported ontology, non-Cedar policy values and
+other asset languages reject; ADR, GQL and review obligations are not translated
+by inference.
+
+* Asset admission and snapshot
+
+The source_root must be an explicit absolute directory. Assets use confined
+relative paths with ordinary filename components; traversal, absolute paths,
+symlink children and non-regular files reject. There are at most 64 documents in
+each input inventory, at most 64 KiB per source and at most 64 KiB in the assembled
+Policy. File contents must decode as UTF-8. Files are read only during trusted
+source compilation, never from an agent-selected request path.
+
+The Policy scope produces a concrete PolicyProjection Record. The gateway
+serializes that projection with the SDK's recursively sorted JSON encoder into
+the assessment context alongside the exact task/plan/publication snapshot. It
+reprojects the inputs after assessment and requires equality. Snapshot evidence
+contains the root, identities, paths, sources and content hashes. Hashes identify
+bytes; they are not issuer signatures or proof of storage durability.
+
+The emitted artifact contains the frozen Cedar source. A later file edit does
+not mutate that artifact or the Rust authority. Filesystem reads are not claimed
+to be an atomic multi-file transaction. Exact expected sources and the frozen
+command prevent a file race from silently changing an approved publication.
+
+* Authority and effect boundary
+
+Go registers the immutable original task and publishes the exact command over
+the authenticated source gRPC lane. Rust owns the persistent operation-ID/digest
+decision and parent/fence CAS. A committed reply lost in transport remains an
+unknown caller result; Go cannot activate, rebase the parent or synthesize another
+command. Exact recovery observes the original result after either process restarts.
+A changed input under the original operation ID cannot replace its outcome.
+
+For revocation the Scheme compiler produces a prospective forbid publication
+from the same supported facets. Compilation performs no publication or external
+send. The source owner submits it with the expected parent and new fence. Rust
+rechecks current authority at dispatch and message release. Already admitted
+buffers retain the documented drain boundary; partial output and unknown delivery
+retain their original hold. Historical source acknowledgment cannot restore an
+old Rust authority or create a second invocation.
+
+The source manifest is compilation evidence. The current publication protocol
+durably binds Cedar/schema bytes, command identity, parent and fence, plus the
+separately immutable task/profile constraints. It does not attest that an asset
+path remained unchanged forever or that arbitrary operator Scheme was sandboxed.
+
+* Distinct verification responsibilities
+
+| Owner | Responsibility | Reuse |
+|-------+----------------+-------|
+| Scheme suites | Concrete source types, deterministic projection, unsupported facets, duplicate identities and value/asset equality | Upstream POO Records, Cedar Policy values and standard gxtest |
+| Go/Rust integration | Actual source compilation, mTLS roles, persisted publication, lost reply, owner restart, partial stream and revoke | Existing relay, source owner and actual Rust broker |
+| AuthorityPublication.qnt | Compose Go activation with publication outcomes and execution schedules; find unsafe recovery and early activation traces | Imports PublicationRecovery and ProviderRpc; does not reimplement either ledger |
+| WeaverPolicyBridge.lean | Relate the authenticated actual effect/state and exact materialized Policy set to error-free Cedar allow | Imports cedar-poo-spec BoundOperation and compound authorization |
+| ProviderRpc.lean | Existing parameterized execution/profile/hold preservation results | Reused without another Go-control state machine |
+
+The duplicate ControlActivation Lean gate model and its standalone CI stage have
+been removed. Quint does not repeat the source decoder, and Lean does not repeat
+the Quint publication state machine. Imported model unit cases run in their owner
+stages; the composite's test selector runs its own integration cases. Bounded
+Quint exploration is not a proof over all schedules. The Lean bridge assumes
+faithful source-to-Policy materialization and authenticated host facts; it does
+not prove the parser, TLS, SQLite or Rust compiler.
+
+* Names and build ownership
+
+SchemeSource and SchemeGovernance identify configuration and semantic compilation.
+CedarFFI identifies the borrowed-buffer Rust boundary. AUTHORITY_* identifies the
+Rust source/operation service settings consumed by Go. Executor and SourceOwner
+identify transport and persistence custody. Upstream identifiers retain their
+declared API spelling; Weaver does not create a generic Native namespace.
+
+Gerbil builds derive concurrency from the process's available logical CPUs.
+Cargo and Go use their host-aware defaults; CI does not hardcode one or two build
+workers. Fixed fuzz sampling and the fifteen-second source completion threshold
+are independent acceptance workloads. Scheme package dependencies are built
+through their own declared entries before the application. Ordinary dynamic gxi
+configuration still runs as ordinary source; dependency libraries are not a
+replacement AOT configuration executable.

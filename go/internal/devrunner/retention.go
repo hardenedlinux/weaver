@@ -1,6 +1,8 @@
 package devrunner
 
 import (
+	"bufio"
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -40,7 +42,7 @@ func summarizeOutput(directory string, result *Result) error {
 		return err
 	}
 	result.OutputSHA256 = hex.EncodeToString(digest.Sum(nil))
-	environment := result.Name == "rust-environment" || result.Name == "go-environment" || result.Name == "quint-environment" || result.Name == "proof-environment" || result.Name == "grpc-benchmark"
+	environment := result.Name == "rust-environment" || result.Name == "go-environment" || result.Name == "quint-environment" || result.Name == "proof-environment" || result.Name == "scheme-build-capacity" || result.Name == "grpc-benchmark"
 	if result.Status != "PASS" || environment {
 		start := max(int64(0), size-failureTailBytes)
 		if _, err := file.Seek(start, io.SeekStart); err != nil {
@@ -52,12 +54,50 @@ func summarizeOutput(directory string, result *Result) error {
 		}
 		if result.Status != "PASS" {
 			result.FailureTail = string(tail)
+			if _, err := file.Seek(0, io.SeekStart); err != nil {
+				return err
+			}
+			// Preserve the first causal diagnostic as well as the final status.
+			// A passing test suffix must not erase an earlier failing case.
+			head, err := firstFailureExcerpt(file)
+			if err != nil {
+				return err
+			}
+			if len(head) > 0 && !bytes.Contains(tail, head) {
+				separator := []byte("\n[... final output ...]\n")
+				remaining := int(failureTailBytes) - len(head) - len(separator)
+				if len(tail) > remaining {
+					tail = tail[len(tail)-remaining:]
+				}
+				result.FailureTail = string(head) + string(separator) + string(tail)
+			}
 		} else {
 			result.Details = string(tail)
 		}
 	}
 	result.Log = ""
 	return nil
+}
+
+func firstFailureExcerpt(input io.Reader) ([]byte, error) {
+	reader := bufio.NewReaderSize(input, 4096)
+	var excerpt []byte
+	for {
+		fragment, err := reader.ReadSlice('\n')
+		if len(excerpt) > 0 || bytes.Contains(fragment, []byte("--- FAIL:")) || bytes.Contains(fragment, []byte("*** ERROR")) || bytes.Contains(fragment, []byte("error:")) || bytes.Contains(fragment, []byte("control readiness:")) || bytes.Contains(fragment, []byte("negative control")) {
+			n := min(len(fragment), 2048-len(excerpt))
+			excerpt = append(excerpt, fragment[:n]...)
+			if len(excerpt) == 2048 {
+				return excerpt, nil
+			}
+		}
+		if errors.Is(err, io.EOF) {
+			return excerpt, nil
+		}
+		if err != nil && !errors.Is(err, bufio.ErrBufferFull) {
+			return nil, err
+		}
+	}
 }
 
 func publishLatestResult(root, directory, mode string, runErr error) (path string, err error) {

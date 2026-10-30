@@ -10,9 +10,7 @@
 
 (def (assess-governance! profile context blocking-threat?)
   (unless (and (agentic-ai-lab-governance-profile? profile)
-               (null? (.all-slots (.ref profile 'ontology)))
-               (null? (.all-slots (.ref profile 'policies)))
-               (null? (.ref profile 'source-assets)))
+               (null? (.all-slots (.ref profile 'ontology))))
     (error "unsupported or invalid Governance source Profile obligations"))
   (unless (and (element? GovernanceAssessmentContext context)
                (equal? (.ref context 'profile_identity) (.ref profile 'identity))
@@ -30,10 +28,10 @@
                  (element? GovernanceAssessmentContext (.ref assessment 'context))
                  (andmap (lambda (field)
                            (equal? (.ref (.ref assessment 'context) field) (.ref context field)))
-                         '(request source profile_identity profile_revision profile_owner model_identity))
+                         '(request source policy_inputs profile_identity profile_revision profile_owner model_identity))
                  (.ref assessment 'handoff-ready?)
                  (not (.ref assessment 'runtime-executed?)))
-      (error "native Governance assessment does not admit an inert source handoff")))
+      (error "Scheme Governance assessment does not admit an inert source handoff")))
   #t)
 
 (def (governor-open-nodes governor states)

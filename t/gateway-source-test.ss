@@ -3,6 +3,7 @@
         (only-in :std/error Error? Error-message)
         (only-in :clan/poo/object .o .get)
         (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
+        (only-in ../scheme/policy/func project-policy)
         ../scheme/gateway/func)
 (export gateway-source-test)
 
@@ -47,7 +48,8 @@
         (refusal-message
           (lambda ()
             (compile-gateway (.o open: (lambda (_governor _states) '("infer")))
-                             (.o validate: (lambda (_policy _schema) #f))
+                             (.o validate: (lambda (_policy _schema) #f)
+                                 project: (lambda (p text root) (project-policy p text '() root)))
                              #f profile (.o request: 'publish) '() (list task) (list plan) source-publication)))
         "Policy preflight declined the source handoff"))
     (test-case "a false Governance assessment cannot emit a source handoff"
@@ -56,6 +58,7 @@
           (lambda ()
             (compile-gateway (.o open: (lambda (_governor _states) '("infer"))
                                 assess: (lambda (_profile _context) #f))
-                             (.o validate: (lambda (_policy _schema) #t))
+                             (.o validate: (lambda (_policy _schema) #t)
+                                 project: (lambda (p text root) (project-policy p text '() root)))
                              #f profile (.o request: 'publish) '() (list task) (list plan) source-publication)))
         "Governance declined the source handoff"))))

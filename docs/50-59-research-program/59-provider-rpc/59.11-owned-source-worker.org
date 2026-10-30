@@ -74,7 +74,7 @@ SourceOwner contributes ten controls and runs the ten imported publication contr
 Its explicit unsafe transitions return command capacity on caller disconnect,
 reuse a cached head, or acknowledge after close failure; each violates its
 invariant. Lean adds four checked declarations to the five publication-preservation
-declarations. The model starts with an admitted owned connection; native startup
+declarations. The model starts with an admitted owned connection; Rust owner startup
 tests provide the separately checked allocation boundary.
 
 The native cancellation regression holds a real deciding write lock in another

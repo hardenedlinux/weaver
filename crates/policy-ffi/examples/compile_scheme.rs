@@ -1,14 +1,24 @@
 //! Development-only compiler entry using the upstream SDK selection boundary.
 //! Go owns orchestration. This executable never participates in request IPC.
-use std::{env, path::PathBuf};
+use std::{env, path::PathBuf, thread};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let cores = thread::available_parallelism()?.get().to_string();
+    eprintln!("Scheme build available-process-cpus={cores}");
+    if env::args().nth(1).as_deref() == Some("resources") {
+        return Ok(());
+    }
     let compiler = PathBuf::from(env::var("WEAVER_CONTROL_SCHEME_COMPILER")?);
     if !compiler.is_absolute() || compiler.file_name().is_none() {
         return Err("explicit absolute Gerbil compiler required".into());
     }
-    if env::args().nth(1).as_deref() == Some("dependencies") {
-        let source = PathBuf::from(env::var("WEAVER_SCHEME_POO_SOURCE")?).canonicalize()?;
+    if let Some(owner @ ("dependencies" | "core")) = env::args().nth(1).as_deref() {
+        let source = PathBuf::from(env::var(if owner == "core" {
+            "WEAVER_SCHEME_CORE_SOURCE"
+        } else {
+            "WEAVER_SCHEME_POO_SOURCE"
+        })?)
+        .canonicalize()?;
         let mut command = gerbil_scheme_aot_build::gerbil_command(&compiler);
         // Preserve the pinned package's declared Darwin build environment.
         if cfg!(target_os = "macos") {
@@ -20,11 +30,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .arg("-:max-heap=2G,debug=q")
             .arg(source.join("build.ss"))
             .arg("compile")
-            .env("GERBIL_BUILD_CORES", "1")
+            .env("GERBIL_BUILD_CORES", &cores)
             .current_dir(&source)
             .status()?;
         if !status.success() {
-            return Err(format!("declared Gerbil POO package build failed: {status}").into());
+            return Err(format!("declared Scheme {owner} package build failed: {status}").into());
         }
         return Ok(());
     }
@@ -37,7 +47,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .current_dir(&root)
         .arg(root.join("build.ss"))
         .arg("compile")
-        .env("GERBIL_BUILD_CORES", "1")
+        .env("GERBIL_BUILD_CORES", &cores)
         .status()?;
     if !status.success() {
         return Err(format!("Weaver root Scheme build failed: {status}").into());

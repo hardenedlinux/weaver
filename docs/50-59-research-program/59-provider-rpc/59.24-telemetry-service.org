@@ -1,0 +1,84 @@
+#+TITLE: 59.24 Default Telemetry Service and Architecture Differentiation
+#+LANGUAGE: en
+
+* Top-level service decision
+
+Telemetry is a default service in the target Gateway architecture. The current
+implementation checkpoint has not delivered its event bus, Collector or exporter;
+this chapter and the Project SysML service part define that delivery contract.
+No new external listener or data export is enabled by this design document.
+
+The service observes Scheme source compilation, Go publication/routing and Rust
+authority/dispatch/release events. Default collection is local and bounded.
+An external Collector is an explicitly configured destination with authenticated
+transport, permitted signal categories and an export Policy. Anonymous product
+analytics is outside the default service.
+
+| Signal | Default content | Failure behavior |
+|--------+-----------------+------------------|
+| Metrics | Bounded-cardinality latency, queue capacity, denied operations and dropped-event counts | Loss is measurable and cannot grant execution |
+| Diagnostic traces | Opaque correlations and component/stage status | Bounded sampling; untrusted remote propagation is sanitized |
+| Security events | Command/content identity, revision/fence and normalized decision/result categories | Link to authoritative records; never substitute for them |
+
+Prompts, response bodies, credentials, raw Policy text, raw tool arguments and
+asset paths are excluded from default attributes at event creation. Collector-side
+redaction supplements this producer rule. Tenant-scoped identifiers require
+explicit access and retention rules. External trace headers and baggage are
+untrusted input; they cannot select a canonical claim or authorization context.
+
+* Authority, audit and availability
+
+The deciding ledger remains authoritative for consumption, settlement and unknown
+holds. Telemetry acknowledgment cannot acknowledge a publication, prove no
+execution or release budget. Durable audit obligations, where required by Policy,
+must use an authoritative commit/evidence protocol and cannot be implemented as
+a best-effort trace exporter.
+
+Producer submission must be bounded and nonblocking on the effect path. Collector
+failure cannot change a deny to allow or reconstruct a lost send capability.
+Overflow must increment a loss counter and retain service health visibility.
+Exporter retries must carry event identity and never call the execution broker.
+An export destination or credential change requires the same explicit publication
+and currentness discipline as other governed capabilities.
+
+Delivery gates include payload-field exclusion, hostile trace context, collector
+stall, queue exhaustion, export reply loss, shutdown and restart. Tests must show
+unchanged claim/held-budget/dispatch state for telemetry-only transitions. No
+telemetry security proof is claimed before those implementation witnesses exist.
+
+* OpenShell reference and Weaver leverage
+
+The research checkout is =.data/openshell=, with origin
+[[https://github.com/NVIDIA/OpenShell][NVIDIA/OpenShell]]. The inspected snapshot is
+=3a5dfcd2f1afd9c7376b07b11036265bbb68453c=.
+
+OpenShell separates operational observability from anonymous product telemetry.
+Its observability includes OTLP gRPC, metrics and OCSF security events. Its security
+architecture includes sandbox/supervisor enforcement, endpoint-bound credentials,
+dynamic network policy and an SMT Policy prover. Weaver should learn these
+mechanisms without claiming that OpenShell lacks formal checks or semantic API
+controls.
+
+Weaver's target advantage is a reusable task-to-effect contract: Scheme Profile
+and Governor composition; Cedar-constrained routine/routing selection; Rust-owned
+consumption, shared holds and per-message release; and evidence that relates
+source, authority and fault behavior. Model count, language count and log volume
+are not measures of security advantage. Each supported protocol/provider must
+retain original claim, budget/history and semantic commitments through retry,
+fallback and reconnection. Features remain proposals until mapped to actual tests
+and model/proof witnesses.
+
+Priority is the implemented Cedar Policy/source-asset publication chain, then
+governed routing/routine extensions and the bounded telemetry delivery gates.
+Go owns cloud-native configuration and protocol integration; Rust owns final
+effect capability and backpressure; Scheme owns semantic composition. A sandbox
+runtime may be a deployment backend without replacing these logical boundaries.
+
+* Primary references
+
+- [[https://github.com/NVIDIA/OpenShell/blob/main/docs/about/architecture.mdx][OpenShell architecture]]
+- [[https://github.com/NVIDIA/OpenShell/blob/main/docs/how-it-works/policies/prover.mdx][OpenShell Policy prover]]
+- [[https://github.com/NVIDIA/OpenShell/blob/main/docs/observability/overview.mdx][OpenShell operational signals]]
+- [[https://github.com/NVIDIA/OpenShell/blob/main/docs/observability/telemetry.mdx][OpenShell product telemetry]]
+- [[https://opentelemetry.io/docs/security/handling-sensitive-data/][OpenTelemetry sensitive data handling]]
+- [[https://opentelemetry.io/docs/concepts/context-propagation/#security-best-practices][OpenTelemetry propagation security]]

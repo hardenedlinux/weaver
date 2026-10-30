@@ -33,7 +33,7 @@ package ProviderRpc {
     requirement def ProviderUnknownRetention {
         doc /* Partial request or SSE delivery, lost response and interrupted completion retain the original reservation and canonical identity. Provider usage is observational, not settlement authority. */
     }
-    requirement def NativeBenchmarkCoverage {
+    requirement def WorkspaceBenchmarkCoverage {
         doc /* Each Rust workspace member declares an executable benchmark target. Dependency versions are inherited from the workspace, and benchmarks remain distinct from safety and deployment qualification. */
     }
     requirement def ReservedAuthorityAdmission {

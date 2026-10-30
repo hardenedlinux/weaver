@@ -36,7 +36,7 @@ delegated to an agent credential or to a routing hint.
 | Artifact | Checkable obligation | Boundary |
 |----------+----------------------+----------|
 | SysML ReservedAuthorityAdmission | Independent bounded native lanes; role before selection; tracked permit custody | Structure and witness mapping, not scheduler verification |
-| Quint NativeAdmission | Per-lane bounds, publication enabled despite saturated execution, closed admission, caller loss without capacity return | Three worker identities and finite execution capacity abstraction; sampled schedules |
+| Quint AuthorityAdmission | Per-lane bounds, publication enabled despite saturated execution, closed admission, caller loss without capacity return | Three worker identities and finite execution capacity abstraction; sampled schedules |
 | Lean ProviderRpc | lane_step_preserves_bounds, execution_saturation_preserves_publication_admission, execution_and_admission_composition | Arbitrary natural execution bound, faithful authenticated lane assignment and RAII refinement premises |
 | Rust unit/PBT and Go mTLS integration | Independent limits under arbitrary lane schedules, detached native custody, actual saturated publication and subsequent tail denial | Local deciding-store profile, real loopback TLS/RPC and compatible provider fixture |
 
@@ -79,7 +79,7 @@ The restored implementation passes the
 inputs and no failed stage. Rust reports forty-one passing tests, including all
 five ASP deny gates, the detached-custody regression and sixty-four generated
 lane schedules. Go race checks include the actual saturation test, which passes
-in the retained full integration run. NativeAdmission has nine executable controls;
+in the retained full integration run. AuthorityAdmission has nine executable controls;
 its sampled safety check retains 1000 traces and sixty-step bounds. ProviderRpc
 now prints twelve checked Lean declarations, including the three new admission
 properties, with no sorryAx. The strict in-process SysML SDK and trace gate also

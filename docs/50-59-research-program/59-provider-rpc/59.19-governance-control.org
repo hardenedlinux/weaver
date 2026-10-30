@@ -1,4 +1,4 @@
-#+TITLE: 59.19 Native Governance, Control Publication and Final Execution
+#+TITLE: 59.19 Governance Policy, Authority Publication and Final Execution
 #+LANGUAGE: en
 
 * Implemented language and ownership boundary
@@ -37,12 +37,10 @@ the public Governance interface rather than reproducing their algorithms.
 Upstream maintenance should make this public distinction explicit; moving or
 renaming upstream code is not required to create another Weaver implementation.
 
-The initial source bridge accepts the native Profile's threat assessment and
-explicit typed task/Cedar artifacts. Additional nonempty =ontology=, =policies=
-or =source-assets= facets require an explicit compiler/enforcement contract and
-are rejected here. A generic ready assessment cannot silently erase an
-untranslated review or domain obligation. This is a bounded implemented Profile,
-not a claim that every upstream Governance specialization compiles to Cedar.
+The source bridge accepts Profile threat assessment and typed task/Cedar
+artifacts. Supported Cedar Policy values and cedar-language source-assets follow
+[[file:59.23-governance-policy-projection.org][the exact projection contract]]. Unsupported ontology and other domain
+obligations reject. A ready assessment cannot erase an untranslated obligation.
 
 * Upstream reuse and remaining enforcement contracts
 
@@ -60,7 +58,7 @@ not make a pure Scheme transition a durable Rust execution decision.
 | =modules/governance/evidence/batched-merkle= | Preserve existing evidence semantics as a future evidence-format integration boundary | A Merkle proof alone does not prove durable storage, an anti-rollback anchor or permission to release a budget hold; no runtime integration is claimed here |
 | =cedar-poo-spec= | Existing Lean bridge imports bound-operation matching and compound error-free authorization properties | Real Rust effects and host state must refine the imported projection. This is separate from proving Rust, SQLite, gRPC or a provider |
 
-The next expansion of nonempty Governance =policies= or =source-assets= must use
+Expansion beyond the supported Cedar facets must use
 their existing upstream owners and declare, for every supported facet, its typed
 source contract, exact Cedar/task projection, final Rust enforcement point and
 Quint/Lean refinement witness. Unsupported facets continue to reject. Acceptance
@@ -180,8 +178,9 @@ The assessment must also name the original model and reproduce its complete
 threat list. Weaver reuses the upstream =governance-threat-blocking?= predicate:
 an exposed or realized high/critical threat cannot disappear behind a specialized
 Profile's ready flag. Accepted or mitigated threats retain upstream semantics.
-Nonempty untranslated ontology, Policy and source-asset obligations still fail
-closed; this change does not invent a translator for them.
+Unsupported ontology, non-Cedar Policy values and other source languages fail
+closed. Supported Cedar facets are projected, bound into the assessment and
+rechecked before emission as specified in chapter 59.23.
 
 The typed source projection must remain unchanged after assessment. The context's
 =source= slot uses a distinct lexical =source-text= binding; native POO slot names
@@ -226,16 +225,16 @@ binding. This keeps source compilation evidence separate from live enforcement.
 | =t/governance-test.ss= | Native default assessment accepts its exact context; missing source context and a specialized ready assessment hiding an original blocking threat reject |
 | =t/gateway-source-test.ss= | Stable SDK source projection; Policy and route-order changes stay distinct; false Policy/Governance results cannot compile a handoff |
 | Scheme/Go/Rust integration | Stale source context, previous Profile revision, substituted model, mismatched threats and duplicate plans reject naturally before artifact/publication; provider invocation counts remain zero |
-| =ControlActivation.qnt= | Source/Profile/model mismatches cannot register; the unsafe ready-only shortcut reaches an explicit counterexample; bounded safety composes with existing retry, revocation and unknown-budget transitions |
-| =ControlActivation.lean= | Active gates require source-bound assessment; source/Profile/threat equality lemmas and arbitrary-key execution composition under explicit implementation refinement premises |
+| =AuthorityPublication.qnt= | Compose existing publication/outcome and execution models; check frozen command recovery, acknowledgment, revocation and restart schedules |
+| =WeaverPolicyBridge.lean= | Reuse cedar-poo-spec to relate actual effect/state and exact materialized policies to error-free Cedar allow |
+| =ProviderRpc.lean= | Reuse existing execution/profile/hold preservation under its explicit premises |
 
-The Lean =source_assessment_execution_composition= theorem connects the host's
-matching source witness to the existing arbitrary-key execution safety theorem.
-The host refinement premise must establish the checked equality from the actual
-native assessment; setting a Boolean is insufficient implementation evidence.
+Source admission is established by Scheme and Rust tests. Lean does not encode
+those validators as another Boolean state machine. The duplicate control-gate
+Lean model and its CI stage have been removed.
 
 Quint explores bounded interleavings and executable counterexamples. Lean proves
-the abstract transition composition for arbitrary logical keys. Neither proves
+semantic refinement and reuses parameterized execution properties. Neither proves
 serializer injectivity, source authenticity, host isolation, filesystem durability
 or provider delivery semantics. Native tests and real gRPC/provider execution are
 separate evidence for those implementation boundaries.
@@ -417,23 +416,13 @@ finding, not a claim that all upstream Governance code is production-qualified.
 
 * Executable assurance and deployment
 
-=ControlActivation.qnt= composes source activation with the actual =ProviderRpc=
-transition model. It covers native semantic rejection, inert FFI validation,
-commit/reply loss, historical acknowledgment, publication after activation,
-partial release, process restart and unsafe reset/early-activation counterexamples.
-Its =typed= flag represents concrete source-contract admission, independently
-of the =ffi= flag. Malformed source cannot register merely because Governance
-and Cedar preflight succeed. The former is an explicit refinement premise,
-checked by native contract tests; the abstract Boolean model does not prove
-the decoder implementation. Its =ffi= flag denotes Rust validation: Scheme performs it through
-the local C ABI before artifact emission; JSON/YAML source artifacts receive the
-mandatory native typed check during publication. Registration may remain after
-a failed publication, but cannot activate this Go service.
-=ControlActivation.lean= proves gate and arbitrary-key execution preservation,
-shared reservation bounds, retained unknown holds and canonical nonce aliasing
-under explicit native refinement premises. Neither proof establishes C memory
-safety, storage anti-rollback, TLS, provider exactly-once effects or liveness.
-The existing =WeaverPolicyBridge= remains the cedar-poo-spec semantic boundary.
+=AuthorityPublication.qnt= composes =PublicationRecovery= and =ProviderRpc=.
+It owns only the Go activation/frozen-command relationship between their states.
+Publication CAS and execution consumption are imported from their existing
+owners. Concrete source rejection belongs to Scheme/FFI tests. The existing
+=WeaverPolicyBridge= owns the cedar-poo-spec semantic refinement; =ProviderRpc.lean=
+owns execution/profile/unknown-hold composition. There is no parallel Lean
+control state machine. See [[file:59.23-governance-policy-projection.org][the verification responsibility matrix]].
 
 Scheme unit assertions belong to =t/gateway-contracts-test.ss=,
 =t/governance-test.ss= and =t/policy-test.ss=, using native =:std/test=
@@ -478,9 +467,9 @@ gate. The actual =weaver-control= executable uses =WEAVER_CONTROL_CONFIG= and
 |-------------------+-------------------|
 | Frontend TLS | =WEAVER_CONTROL_SERVER_CERT=, =WEAVER_CONTROL_SERVER_KEY=, =WEAVER_CONTROL_CLIENT_CA= |
 | Frontend caller | =WEAVER_CONTROL_PEER_SHA256=, =WEAVER_CONTROL_TOKEN_SHA256= |
-| Native TLS | =WEAVER_CONTROL_NATIVE_CA=, =WEAVER_CONTROL_NATIVE_SERVER_NAME= |
-| Native operation role | =WEAVER_CONTROL_NATIVE_OPERATION_CERT=, =WEAVER_CONTROL_NATIVE_OPERATION_KEY=, =WEAVER_CONTROL_NATIVE_OPERATION_TOKEN=, =WEAVER_CONTROL_NATIVE_OPERATION_ADDRESS= |
-| Native source role | =WEAVER_CONTROL_NATIVE_SOURCE_CERT=, =WEAVER_CONTROL_NATIVE_SOURCE_KEY=, =WEAVER_CONTROL_NATIVE_SOURCE_TOKEN=, =WEAVER_CONTROL_NATIVE_SOURCE_ADDRESS= |
+| Native TLS | =WEAVER_CONTROL_AUTHORITY_CA=, =WEAVER_CONTROL_AUTHORITY_SERVER_NAME= |
+| Native operation role | =WEAVER_CONTROL_AUTHORITY_OPERATION_CERT=, =WEAVER_CONTROL_AUTHORITY_OPERATION_KEY=, =WEAVER_CONTROL_AUTHORITY_OPERATION_TOKEN=, =WEAVER_CONTROL_AUTHORITY_OPERATION_ADDRESS= |
+| Native source role | =WEAVER_CONTROL_AUTHORITY_SOURCE_CERT=, =WEAVER_CONTROL_AUTHORITY_SOURCE_KEY=, =WEAVER_CONTROL_AUTHORITY_SOURCE_TOKEN=, =WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS= |
 
 Certificates and keys are file paths; tokens are secrets and are never printed
 by the settings loader. =GERBIL_PATH= and =GERBIL_LOADPATH= select the admitted
@@ -489,9 +478,9 @@ fifteen-second startup/drain bound; emergency cleanup is reported as failure.
 The native tests use loopback HTTPS provider implementations and actual network
 gRPC, not external paid provider accounts or an in-memory substitute ledger.
 
-* Native dependency currentness finding
+* Scheme dependency currentness finding
 
-The inspected Core source selects Gerbil POO revision
+An earlier inspected Core source selected Gerbil POO revision
 =dbbc436520d6fe4834d46cc046472783bcb1fa6c=. Its read projection imports
 =slot-read-observers-compatible?=. The preexisting dependency checkout/library
 was older and did not export this function; loading the Governance Profile path
@@ -500,7 +489,7 @@ not covered that additional import closure. The failed native run is retained.
 
 The correction selects the already-declared revision in an isolated checkout,
 builds it through its official package entry with its original two-GiB compiler
-heap bound and one build worker, links its source after the fresh compiled
+heap bound. Builds now use the current process's available CPUs and link source after the compiled
 library, and checks that its Git
 HEAD matches the literal Core dependency declaration. No Core or Weaver existing
 pin is changed. The native receipt includes Agentic AI Lab, Core and Gerbil POO

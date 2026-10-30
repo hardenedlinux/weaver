@@ -20,7 +20,7 @@ The executable negative controls exercise unsafe reset, first-row-only checks,
 stale release and refund. Sampling is bounded evidence, not exhaustive native
 state-space coverage.
 
-=NativeAdmission.qnt= adds independent native-lane enabledness and a shared-lane
+=AuthorityAdmission.qnt= adds independent native-lane enabledness and a shared-lane
 starvation counterexample. =ConnectionAdmission.qnt= adds socket custody before
 TLS, listener reservations, handshake expiry, peer loss and IO destruction. Its
 unsafe controls return a permit while a live socket remains, or accept beyond
@@ -76,7 +76,7 @@ and complete external history publication remain separate refinement obligations
 | Revocation blocks a fresh release | Source publication after first SSE event blocks the delayed tail | Quint staleReleaseRejectedTest and staleGrantReleaseCounterexampleTest; Lean stale_authority_cannot_pass |
 | Every Arrow row remains mediated | A two-row batch is entirely denied when its second row is forbidden | Quint first-row-only counterexample; Lean every_arrow_row_requires_authority |
 | Unknown execution retains its hold | Native ledger PBT and HTTPS/gRPC recovery tests | Quint unknownRefundCounterexampleTest; Lean consumed_unknown_retains_original_hold |
-| Saturated execution preserves source admission | Sixteen slow streams plus successful source CAS and tail denial; shared-lane native mutation fails | NativeAdmission sharedLaneStarvationCounterexampleTest; Lean execution_and_admission_composition |
+| Saturated execution preserves source admission | Sixteen slow streams plus successful source CAS and tail denial; shared-lane native mutation fails | AuthorityAdmission sharedLaneStarvationCounterexampleTest; Lean execution_and_admission_composition |
 | Pre-TLS sockets own global capacity | Actual TLS/pre-TLS saturation, expiry, replacement and natural shutdown; over-budget mutation fails | ConnectionAdmission early-return/over-accept controls; Lean provider_and_connection_composition |
 | New source sessions retain independent capacity and authority | Combined operation saturation; distinct certificate/token/method controls; omitted-source-pin native mutation fails | SourceIngress shared-budget/forwarded-credential controls; Lean ingress_step_preserves_independent_custody and publication_requires_source_ingress_and_leaf |
 | Ambiguous publication preserves its original decision | SQLite outcome-insert fault, concurrent same/different IDs, mTLS reply-loss relay and restart | PublicationRecovery head-only/deletion/rebind controls; Lean recovery_and_provider_accounting_composition |
@@ -84,7 +84,7 @@ and complete external history publication remain separate refinement obligations
 | Preflight cannot authorize a cancelled final request | Real SQLite lock holder, zero TLS contacts, successful TLS control, removed-final-check native mutation | DispatchCancellation context/lock controls; ProviderRpc invocation-history and stale-consumed-view lemmas |
 | Equal response batches cannot transfer release authority | Cross-node and changed-encoding regressions, original-token positive control and session/row-count PBT | ReleaseBinding cross-plan/encoding counterexamples; ProviderRpc release_binding_and_execution_composition |
 | Bounded decoding survives segmentation | Rust PBT varies network fragments and Unicode text; truncated and oversized controls fail | SysML byte/event ceilings; native parser refinement remains separate |
-| Per-package performance is executable | Cargo metadata requires a Criterion development edge and gateway benchmark for every member | SysML NativeBenchmarkCoverage; empirical rather than safety evidence |
+| Per-package performance is executable | Cargo metadata requires a Criterion development edge and gateway benchmark for every member | SysML WorkspaceBenchmarkCoverage; empirical rather than safety evidence |
 | Fuzz duration expiry cannot launder a real failing property | Standard locked Go, native no-op and intentional deadline-text property failure with unchanged watchdogs | Known upstream coordinator race remains a possible failed run; existing Quint/Lean domain proofs do not prove the Go fuzz engine |
 
 * Native and source evidence

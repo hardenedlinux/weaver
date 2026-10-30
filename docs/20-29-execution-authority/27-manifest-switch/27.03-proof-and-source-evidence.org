@@ -64,7 +64,7 @@ it filters one immutable ID. Crash clears observations without rolling back the
 protected logical state or the durable root. Object/manifest staging uses fresh
 allocation identities. Each arbitrary finite prefix remains reconstructible by
 =safe_step= and =recovery_copy_retained= from an explicitly supplied safe initial
-representation. This is not an unconditional theorem that every native startup
+representation. This is not an unconditional theorem that every Rust owner startup
 image is trustworthy.
 
 =logical_projection= maps each step to an actual checkpoint run; storage-only

@@ -22,11 +22,11 @@ package StreamingExecution {
     item def MessageProposal;
     item def PayloadCommitment;
     item def RangePermit;
-    item def NativeRangeBytes;
+    item def ExecutorRangeBytes;
     item def TransportObservation;
     port def MessagePort { out item proposal : MessageProposal; }
     port def PermitPort { out item permit : RangePermit; }
-    port def BytesPort { out item bytes : NativeRangeBytes; }
+    port def BytesPort { out item bytes : ExecutorRangeBytes; }
     port def ObservationPort { out item observation : TransportObservation; }
     part def GoMessageAdapter { port proposals : MessagePort; }
     part def RustServerRuntime {

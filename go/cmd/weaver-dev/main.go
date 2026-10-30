@@ -23,7 +23,7 @@ func main() {
 func run() (resultErr error) {
 	goBinary := flag.String("go-bin", "", "Go executable; defaults to the compiling toolchain")
 	clean := flag.Bool("clean-source", false, "Require every verification input to match the same committed revision")
-	schemeSource := flag.String("scheme-source", "", "Agentic AI Lab source checkout for native Scheme qualification")
+	schemeSource := flag.String("scheme-source", "", "Agentic AI Lab source checkout for Scheme source qualification")
 	schemeLibrary := flag.String("scheme-library", "", "Optional additional qualified Scheme dependency library")
 	schemePoo := flag.String("scheme-poo", "", "Gerbil POO checkout at Core's existing declared dependency pin")
 	flag.Parse()

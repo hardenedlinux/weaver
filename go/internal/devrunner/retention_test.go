@@ -65,3 +65,18 @@ func TestLatestResultKeepsFailureMeaningAndCleansTemporaryLogs(t *testing.T) {
 		t.Fatal("old per-run artifacts accumulated")
 	}
 }
+
+func TestFailureSummaryRetainsFirstCauseBeforePassingSuffix(t *testing.T) {
+	directory := t.TempDir()
+	output := strings.Repeat("compile progress\n", 1000) + "control readiness: original source deadline exceeded\n" + strings.Repeat("unrelated passing case\n", 3000) + "FAIL original exit\n"
+	if err := os.WriteFile(filepath.Join(directory, "suite.log"), []byte(output), 0600); err != nil {
+		t.Fatal(err)
+	}
+	result := Result{Status: "FAIL", Log: "suite.log"}
+	if err := summarizeOutput(directory, &result); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(result.FailureTail, "original source deadline exceeded") || !strings.Contains(result.FailureTail, "FAIL original exit") || len(result.FailureTail) > int(failureTailBytes) {
+		t.Fatal("first failure was lost or diagnostic storage grew")
+	}
+}

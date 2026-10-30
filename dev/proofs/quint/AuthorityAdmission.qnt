@@ -1,4 +1,4 @@
-module NativeAdmission {
+module AuthorityAdmission {
   // Finite lane abstraction: native completion returns capacity; caller loss does not.
   type Lanes = {execution:Set[int], publication:Set[int], observation:Set[int], closing:bool, shared:bool}
   var lanes:Lanes

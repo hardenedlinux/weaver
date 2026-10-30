@@ -15,6 +15,10 @@ setup selects the validated standard Go release, rustup consumes the root
 through the OS-provided elan manager. Source/dependency versions remain pinned.
 CI does not start Nix, evaluate devenv or require a Nix cache. Local devenv remains
 an optional developer environment, separate from CI startup.
+Build concurrency follows each process's available CPU capacity. There are no
+fixed one/two-core Cargo, Go or Gerbil CI overrides. Scheme results include the
+selected available-process CPU count. Fuzz sample workloads and source deadlines
+remain fixed acceptance conditions.
 
 The shared action invokes the Go CI-host adapter. It installs only fixed package
 arguments on disposable GitHub-hosted machines. Test scheduling, source checks,
@@ -49,7 +53,10 @@ older Agentic AI Lab gitlink inherited a POO revision without =module-action=;
 that cohort cannot qualify this implementation. CI selects the upstream aligned
 Agentic AI Lab snapshot and follows its recorded Core/POO declarations. This
 does not rewrite an upstream dependency pin or add a gateway compatibility path.
-The development links expose Core's declared public prelude identity and
+The dependency stage builds Core through its own package entry before building
+Weaver. Ordinary dynamic gxi configurations consume the compiled dependency
+libraries; an AOT configuration executable does not replace the dynamic source
+test. The development links expose Core's declared public prelude identity and
 source package. A preexisting developer library is not required.
 The published Scheme SDK setup action is reused at the same immutable revision
 as the authorized bridge dependency. Its release/host admission remains separate

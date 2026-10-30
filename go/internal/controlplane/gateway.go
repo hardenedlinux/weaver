@@ -28,7 +28,7 @@ type Gateway struct {
 // Task registration is persistent and idempotent, not an atomic multi-task transaction.
 func Bootstrap(ctx context.Context, source, owner *gatewayclient.Client, bundle config.Bundle) (*Gateway, error) {
 	if source == nil || owner == nil {
-		return nil, errors.New("both native roles required")
+		return nil, errors.New("source and operation authority roles required")
 	}
 	data, err := json.Marshal(bundle)
 	if err != nil {

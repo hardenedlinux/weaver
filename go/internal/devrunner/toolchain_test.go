@@ -12,12 +12,12 @@ import (
 )
 
 // One comparable writer is shared by both child pipes; os/exec serializes writes.
-type nativeControlOutput struct {
+type fuzzControlOutput struct {
 	buffer         bytes.Buffer
 	started, first time.Time
 }
 
-func (output *nativeControlOutput) Write(data []byte) (int, error) {
+func (output *fuzzControlOutput) Write(data []byte) (int, error) {
 	if output.first.IsZero() && len(data) > 0 {
 		output.first = time.Now()
 	}
@@ -26,7 +26,7 @@ func (output *nativeControlOutput) Write(data []byte) (int, error) {
 
 // The selected upstream coordinator must recognize duration expiry and reject
 // a real property, including one whose diagnostic mentions the same deadline.
-func TestGoFuzzCoordinatorPreservesNativePropertyFailure(t *testing.T) {
+func TestGoFuzzCoordinatorPreservesPropertyFailure(t *testing.T) {
 	working, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -42,7 +42,7 @@ func TestGoFuzzCoordinatorPreservesNativePropertyFailure(t *testing.T) {
 			cmd := exec.CommandContext(ctx, filepath.Join(runtime.GOROOT(), "bin/go"), "test",
 				"./go/internal/devrunner/testdata/fuzzcontrol", "-v", "-run", "^$", "-fuzz", "^"+target+"$", "-fuzztime=3s", "-parallel=1")
 			cmd.Dir = root
-			captured := &nativeControlOutput{started: time.Now()}
+			captured := &fuzzControlOutput{started: time.Now()}
 			cmd.Stdout, cmd.Stderr = captured, captured
 			err := cmd.Run()
 			elapsed := time.Since(captured.started)
@@ -50,13 +50,13 @@ func TestGoFuzzCoordinatorPreservesNativePropertyFailure(t *testing.T) {
 			if !captured.first.IsZero() {
 				first = captured.first.Sub(captured.started).String()
 			}
-			t.Logf("native control=%s elapsed=%s first-output=%s watchdog=30s", target, elapsed, first)
+			t.Logf("fuzz control=%s elapsed=%s first-output=%s watchdog=30s", target, elapsed, first)
 			output := captured.buffer.Bytes()
 			if len(output) > 0 && captured.first.IsZero() {
-				t.Fatal("native output timing was not observed")
+				t.Fatal("fuzz output timing was not observed")
 			}
 			if ctx.Err() != nil {
-				t.Fatalf("native fuzz control did not finish within its watchdog: %s", output)
+				t.Fatalf("fuzz control did not finish within its watchdog: %s", output)
 			}
 			if target == "FuzzNoop" {
 				if err != nil {
@@ -65,7 +65,7 @@ func TestGoFuzzCoordinatorPreservesNativePropertyFailure(t *testing.T) {
 				return
 			}
 			if err == nil || !bytes.Contains(output, []byte("WeaverNegativeControl: actual property failure: context deadline exceeded")) {
-				t.Fatalf("native property failure suppressed or not executed: %v: %s", err, output)
+				t.Fatalf("fuzz property failure suppressed or not executed: %v: %s", err, output)
 			}
 		})
 	}
