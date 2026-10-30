@@ -1,0 +1,164 @@
+#+title: 59.30 Ordinary Dynamic gxi: Local Cold-Process Qualification
+#+language: en
+
+* Contract and scope
+This work qualifies the ordinary installed =gxi= entry on the local twelve-CPU
+Darwin host. Every runtime trial retains the original fifteen-second deadline,
+all nineteen Scheme-owned test cases, the SDK =gxtest= result check, caller
+return, natural process exit, and an empty owned process group. A watchdog kill
+is a failed trial and cannot establish successful cleanup. No successful path
+calls =exit=, skips =dlclose=, or disables library validation or dyld notifications.
+
+Dependency pins and the installed Gerbil runtime remain unchanged. Rust's
+existing pinned SDK supplies dynamic module compilation and linker-export
+validation. Go owns preparation, paired trials and typed evidence; Scheme's
+standard suites own semantic assertions. This is development load-path
+packaging, not a replacement Governor, a new VM, Gateway runtime code, or an
+authorization mechanism. Remote CI cannot establish this local timing claim.
+
+* Phase boundaries and reproduced failures
+The first =-e= observation marks interpreter availability. A second follows
+the standard test-runner import. Discovery/loading ends at =HARNESS=; execution
+ends at =HARNESS-OK=; a final observation proves that the checked runner returned.
+The remaining interval measures natural VM cleanup plus parent pipe/group
+drain. Observation delivery has scheduling latency; these are observable phase
+boundaries, not exact profiler timestamps inside Scheme.
+
+The earlier failures remain failures even where a success marker was printed:
+
+| Observation | Runtime | Discovery start | Execution start | Cases | Outcome |
+|-------------+---------+-----------------+-----------------+-------+---------|
+| Original local timeout A | 0.110 s | 0.782 s | 11.531 s | 0 | Deadline at 15.010 s |
+| Original local timeout B | 0.350 s | 2.202 s | Not reached | 0 | Deadline at 15 s |
+| Original local timeout C | 0.113 s | 0.753 s | 12.284 s | 0 | Deadline at 15 s |
+| Original natural completion | Observed | Observed | Observed | 19 | Runner returned at 8.593 s; exit at 12.879 s |
+
+An empty interpreter and a test-runner-only import exited naturally in earlier
+controls. They do not qualify the complete workload. Precompiling the reachable
+Agentic AI Lab library closure reduced CPU work modestly, but quiet baselines
+also passed; that improvement alone did not explain or close the timeout.
+
+* Source-grounded mechanism
+Native owned-process sampling found separate loader and cleanup costs:
+
+| Window | Main-thread samples | Relevant stack |
+|--------+---------------------+----------------|
+| Discovery/loading | 776 | 485 under =___dynamic_load= / =dlopen=; 466 under =notifyDebuggerLoad=; 274 under synchronous notification wait |
+| Exit cleanup | 794 | 794 under =___cleanup_dyn_module= / =dlclose=; 755 under =notifyDebuggerUnload=; 392 under synchronous notification wait |
+
+The sampled wait reaches =RemoteNotificationResponder::blockOnSynchronousEvent=
+and Mach message calls. Image atlas updates and protected allocator work also
+appear. These observations identify synchronous image-management work in this
+process, not the identity of a faulty external service. Host snapshots showed
+substantial competing CPU and memory demand; a load average alone cannot assign
+causality. The design reduces mappings instead of changing host services.
+
+* Repair and ownership
+The root package continues to use Yuanxu's selected module scopes. Its actual
+native Make targets seed the Agentic AI Lab dependency closure through the
+existing upstream build-spec and Core package-library projection, retaining
+upstream production admission and FFI options. Metadata-only =init= selection
+is insufficient because runtime roles are intentionally deferred. Unreachable
+upstream ABI targets are not added merely to manufacture a dependency closure.
+
+The development inventory evaluates the same exported suite values through
+the public expander interface used by =gxtest=. It records Gerbil's actual
+module registry after discovery; it does not scan the SDK tree or execute test
+cases. The subsequent runtime still performs ordinary discovery and executes
+the complete standard suites. A newly encountered module falls back to its
+original loader path; the inventory is a packaging selection, never authority.
+
+Generated Scheme bodies with foreign-code declarations or Gambit =macro-=
+prelude requirements retain their original compiler/link owner. Matching these
+tokens conservatively can exclude an otherwise eligible module. This only
+reduces the performance optimization. The first broad prototype failed to
+compile the Cedar FFI header; another produced undefined Gambit macro warnings.
+Both are rejected candidates, even though the latter completed all nineteen
+cases. Warnings and output differences are now acceptance failures.
+
+The pinned =build_native_module_bundles= API compiles eligible parts, partitions
+colliding linker names and checks the exact linker export set. Each logical
+module keeps its own filename, linker entry, initialization and reference
+accounting. An isolated prepend-only load-path overlay aliases those names to
+fewer physical images. The original SDK/package bodies remain available for
+excluded leaves. No global package installation or SDK image is modified.
+
+Go hashes original bodies and objects, resulting images, actual interpreter,
+control objects and source inputs before/after qualification. Registry aliases
+cannot escape the isolated overlay or duplicate a logical identity. The
+isolated preparation prefix, images, raw logs and native traces are temporary;
+only bounded structured summaries remain in ignored cache slots.
+
+* Paired experiment and evidence
+The Go integration test links separate-module and coalesced layouts from the
+same C objects. Four generations use fresh image paths, inodes and linker UUIDs.
+The order alternates ABBA and BAAB. Each child is a fresh ordinary =gxi= process;
+each generation contains first use and repeat use of both layouts. All children
+use the same fifteen-second limit. Compiler optimization, test bodies, security
+checks and cleanup behavior are held fixed within each pair.
+
+This is not an OS-wide cold-cache reset: the installed interpreter, excluded
+foreign leaves, source pages, dyld services and host caches remain shared. Fresh
+image first use is reported separately from repeat use. Wall-clock variation
+includes scheduling and validation service latency; deterministic mapping
+reduction and same-object CPU contrasts must not become a universal speed ratio.
+
+A separate diagnostic invokes the matching actual interpreter binary with the
+existing bounded observer. Every intercepted =dlopen= and =dlclose= calls the
+real API. It requires positive open counts, equal closes, zero outstanding
+references, zero errors and no event/handle overflow. Instrumented runs and
+sampled runs are distinct from ordinary-launcher timing acceptance.
+
+The exploratory same-object matrix reproduced eight separate-layout deadline
+failures while all eight coalesced children completed: fresh-image first use
+was 6.127--6.804 s and repeat use was 1.893--2.082 s. That development run was
+not accepted as source-qualified: project inputs changed during the run, and
+its first direct-binary observer invocation omitted the launcher's runtime
+home options. The failure result is retained, not relabeled PASS. Restoring the
+same =GERBIL_HOME= and =GAMBOPT= directory options as the wrapper repaired the
+separate diagnostic: both layouts opened and naturally closed 453 module
+references; peak images fell from 503 to 126, with zero outstanding references,
+errors or overflow. These measurements identify the mechanism but do not
+replace the subsequent frozen-source full rebuild and qualification receipt.
+
+The latest structured result is =.cache/verification/latest-scheme-startup.json=.
+It binds source/dependency digests, compiler bytes, images, control objects,
+phase observations, all failed trials and native cleanup counters. Full
+=check-scheme= writes its separate fixed latest result. English findings retain
+the failed hypotheses here rather than committing raw logs.
+The bounded diagnostic failure extract is
+=.cache/verification/latest-scheme-startup-failures.json=; its source-stability
+failure remains explicit. The final report must distinguish this diagnostic
+record from a committed, stable-source timing PASS.
+
+* Reproduction
+Use the existing host/compiler environment and unchanged source pins. Let the
+runner use the machine's available twelve CPUs; do not set a smaller parallel
+budget. Build time is separate from each child's fixed runtime deadline.
+
+#+begin_src text
+go -C go test -count=1 -timeout=30m -tags=schemeintegration \
+  ./internal/devrunner -run '^TestDynamicSchemeColdStartPairs$' -v -args \
+  -scheme-source /absolute/pinned/agentic-ai-lab \
+  -scheme-poo /absolute/inherited/pinned/gerbil-poo \
+  -scheme-require-committed
+
+go -C go run ./cmd/weaver-dev -clean-source \
+  -scheme-source /absolute/pinned/agentic-ai-lab \
+  -scheme-poo /absolute/inherited/pinned/gerbil-poo check-scheme
+#+end_src
+
+Set =WEAVER_CONTROL_SCHEME_COMPILER= to the ordinary absolute =gxi= entry.
+The thirty-minute Go envelope permits source compilation and the complete
+matrix; it does not replace or widen any fifteen-second child limit. Optional
+=-scheme-profile-phases= produces diagnostic sampling, never a timing PASS.
+An explicit =-scheme-prepared-environment= supports isolated diagnosis; the caller
+owns that prefix and must remove it. Default preparation always cleans its
+owned prefix and checks the pinned dependency sources.
+
+* Remaining evidence boundary
+The repair is not qualified by an AOT executable, a success marker, a remote
+workflow, or a quiet-host-only pass. Local source-qualified cold-image pairs,
+natural cleanup accounting and the full Scheme/Rust/Go integration path are
+separate required receipts. Arbitrary workloads and universal host availability
+are outside this bounded claim.

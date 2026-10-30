@@ -105,7 +105,9 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"scheme-build-capacity", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "resources"}},
 			{"scheme-declared-poo-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "dependencies"}},
 			{"scheme-core-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "core"}},
+			{"scheme-agentic-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "agentic"}},
 			{"scheme-module-build", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline"}},
+			{"scheme-dynamic-images", "internal/pinned-sdk-module-images", nil},
 			// Delegate discovery and assertions to the SDK and Scheme-owned suites.
 			// Check the returned result explicitly; success markers alone cannot pass.
 			{"scheme-unit-tests", os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER"), []string{"-e", "(dump-stack-trace? #f)", "-e", "(import (prefix-in :gerbil/tools/gxtest tests.))", "-e", "(unless (zero? (tests.main \"-g\" \"-v\" \"5\" \"t\")) (error \"Scheme test suite failed\"))"}},

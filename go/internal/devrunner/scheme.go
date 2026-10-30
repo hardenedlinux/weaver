@@ -107,6 +107,7 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 			return nil, err
 		}
 	}
+	settings["WEAVER_SCHEME_AGENTIC_SOURCE"] = source
 	for name, path := range map[string]string{"agentic-ai-lab": source, "yuanxu": core} {
 		if err = os.Symlink(path, filepath.Join(sources, name)); err != nil {
 			return nil, err

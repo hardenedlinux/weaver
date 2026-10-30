@@ -147,7 +147,12 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 			failed = true
 			break
 		}
-		result := runStage(ctx, root, directory, environment, stage)
+		var result Result
+		if stage.Name == "scheme-dynamic-images" {
+			result, environment = runSchemeImageStage(ctx, root, directory, environment, stage)
+		} else {
+			result = runStage(ctx, root, directory, environment, stage)
+		}
 		receipt.Stages = append(receipt.Stages, result)
 		if result.Status != "PASS" {
 			failed = true

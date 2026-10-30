@@ -43,9 +43,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .canonicalize()?;
     // Deferred POO module actions keep C FFI out of source discovery. The sole
     // root package entry owns both module and foreign-code compilation.
-    let status = gerbil_scheme_aot_build::gerbil_command(&compiler)
-        .current_dir(&root)
-        .arg(root.join("build.ss"))
+    let mut command = gerbil_scheme_aot_build::gerbil_command(&compiler);
+    if env::args().nth(1).as_deref() == Some("agentic") {
+        command.arg("-:max-heap=2G,debug=q");
+    }
+    command.current_dir(&root).arg(root.join("build.ss"));
+    if env::args().nth(1).as_deref() == Some("agentic") {
+        command.arg("dependencies");
+    }
+    let status = command
         .arg("compile")
         .env("GERBIL_BUILD_CORES", &cores)
         .status()?;
