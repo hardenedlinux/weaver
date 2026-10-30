@@ -2,6 +2,12 @@
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Current acceptance result
 Status: =ORDINARY_DYNAMIC_SELECTED_IMAGE_GATE_CLOSED=. The predetermined candidate series passed 8 of eight native observations under the unchanged fifteen-second whole-process gate. Required acceptance is eight of eight; any failed sample keeps the series open.
 
@@ -60,7 +66,7 @@ The [[file:../../../dev/proofs/evidence/native-image-closure/artifact-check.json
 The [[file:../../../dev/proofs/evidence/native-image-closure/inputs-before.json][complete before inventory]] and [[file:../../../dev/proofs/evidence/native-image-closure/inputs-after.json][after verification]] cover the actual selected and excluded Scheme bodies/interfaces, owned artifacts and tool ABI. OS and foreign system dylibs remain trusted prerequisites. The build is serialized with one trusted writer; it is not an anti-tampering or distributed durability proof.
 
 * Reproduction
-Use the [[file:../../../dev/proofs/evidence/native-image-closure/reproduce.py][fresh-generation recipe]] rather than executing a sealed directory in place:
+Use the fresh-generation recipe (retired Python driver) rather than executing a sealed directory in place:
 
 #+begin_src sh
 python3 dev/proofs/evidence/native-image-closure/reproduce.py --generation independent-check

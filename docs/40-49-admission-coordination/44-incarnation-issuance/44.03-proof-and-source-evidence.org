@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Scope and source comparison
 
 [[file:44.01-incarnation-issuance.org][44.01]] defines the native protocol. The actual [[file:../../../dev/proofs/lean/LlmIncarnationIssuance.lean][Lean]] and
@@ -133,7 +139,7 @@ remain separate from accepted current receipts.
 
 * Reproduction and evidence boundary
 
-Run [[file:../../../dev/proofs/check_llm_incarnation_issuance.py][the checker]]. It freshly compiles the new Lean leaf and verifies thirty
+Run the checker (retired Python driver). It freshly compiles the new Lean leaf and verifies thirty
 unchanged ancestor source/compiled-object receipts; it does not relabel those
 thirty earlier compilations as fresh. It checks twenty-three printed declarations
 without sorryAx. Quint's official test/run pipeline typechecks before execution:

@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and scope
 
-Run [[file:../../../dev/proofs/check_llm_policy_continuation.py][the isolated runner]]. [[file:../../../dev/proofs/lean/LlmPolicyContinuation.lean][Lean]] projects every source-changing transition into
+Run the isolated runner (retired Python driver). [[file:../../../dev/proofs/lean/LlmPolicyContinuation.lean][Lean]] projects every source-changing transition into
 the actual category-16 model. [[file:../../../dev/proofs/quint/LlmPolicyContinuation.qnt][Quint]] exercises one original family, competing
 external publications, linked candidates, current approval cuts, stable winners
 and protocol aliases. It abstracts source bootstrap behind an admitted fixture.

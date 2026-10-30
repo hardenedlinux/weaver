@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and bounded evidence
 
-Run [[file:../../../dev/proofs/check_llm_wal_activation.py][the isolated checker]] for [[file:../../../dev/proofs/lean/LlmWalActivation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmWalActivation.qnt][Quint]]. Retain
+Run the isolated checker (retired Python driver) for [[file:../../../dev/proofs/lean/LlmWalActivation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmWalActivation.qnt][Quint]]. Retain
 [[file:../../../dev/proofs/evidence/llm-wal-activation/commands.json][command results]], [[file:../../../dev/proofs/evidence/llm-wal-activation/receipt.json][the receipt]] and [[file:../../../dev/proofs/evidence/llm-wal-activation/SHA256SUMS][the byte manifest]]. Preliminary diagnostics remain separate.
 
 The workload compiles 22 Lean modules and prints 17 new declarations without
@@ -122,7 +128,7 @@ arbitrary-many-provider or native consensus/storage product is claimed.
 | Unknown commit reply is not another release | unconfirmedTailRefundWalCounterexampleTest | No confirmed outcome or accepted candidate, yet the local frame is promoted to a financial result |
 
 Unsafe constructors are excluded from =step=. Their tests expect the named invariant
-to fail. [[file:../../../dev/proofs/evidence/llm-wal-activation/check-counterexample-observations.py][The independent ITF decoder]] checks actual original queue/spent/exposure history,
+to fail. The independent ITF decoder (retired Python driver) checks actual original queue/spent/exposure history,
 complete candidate/confirmation bodies, financial records, epochs and local images.
 Passing negative controls mean the intended violation was reproduced.
 

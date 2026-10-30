@@ -2,6 +2,12 @@
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Source and artifact ownership
 The isolation directory captures Core source/data roles and gerbil.pkg metadata,
 excluding prior build products. POO sources come from exactly the dependency
@@ -77,7 +83,7 @@ Its retained failed system-link invocation does not become a pass. The successfu
 [[file:../../../dev/proofs/evidence/native-gerbil-exit/link-public-load.json][explicit final link]] uses those freshly generated object paths and an explicit
 platform SDK plus system library at the end of the argument vector. This local
 build recipe is recorded separately from dependency pins. The
-[[file:../../../dev/proofs/evidence/native-gerbil-exit/relink-entry.py][link replay helper]] preserves that exact argument vector; use a new receipt
+link replay helper (retired Python driver) preserves that exact argument vector; use a new receipt
 directory when reproducing. Installed compiler/stdlib binaries remain trusted.
 
 The cleanup canary has two translation units: a minimal Scheme load marker and

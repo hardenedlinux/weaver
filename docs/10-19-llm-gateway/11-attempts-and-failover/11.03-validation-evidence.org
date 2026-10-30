@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Scope and reproducibility
 
 This category extends the routing baseline with one task and arbitrarily many
@@ -10,7 +16,7 @@ and a fixed root allowance. Its finite fixtures do not establish unbounded model
 checking. The immutable profile and =Owner= predicates model trusted contract
 inputs, not a native Cedar evaluator or durable SDK implementation.
 
-Run [[file:../../../dev/proofs/check_llm_attempt_ledger.py][check_llm_attempt_ledger.py]]. Machine-readable results are in
+Run check_llm_attempt_ledger.py (retired Python driver). Machine-readable results are in
 [[file:../../../dev/proofs/evidence/llm-attempt-ledger/commands.json][commands.json]]. Lean is compiled in a fresh isolated output directory; no
 dependency pins or Gateway code are modified. Historical manifests are checked
 without modifying their sealed artifacts.

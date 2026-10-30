@@ -2,6 +2,12 @@
 #+language: en
 #+startup: overview
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Current evidence and scope
 This category expands configured subject/producer authority, exact Task assignment,
 current credential generations and actual enrollment Plan publication. It retains
@@ -9,9 +15,9 @@ the existing enrollment-key, first-beneficiary and original-budget constraints.
 
 - [[file:../../../dev/proofs/lean/LlmSubjectAuthority.lean][Lean source]]
 - [[file:../../../dev/proofs/quint/LlmSubjectAuthority.qnt][Quint source]]
-- [[file:../../../dev/proofs/check_llm_subject_authority.py][Primary bounded checker]]
-- [[file:../../../dev/proofs/prepare_subject_authority.py][Source-preserving bundle preparation]]
-- [[file:../../../dev/proofs/check_subject_api.py][Official pipeline watchdog]]
+- Primary bounded checker (retired Python driver)
+- Source-preserving bundle preparation (retired Python driver)
+- Official pipeline watchdog (retired Python driver)
 - [[file:../../../dev/proofs/run_subject_authority.cjs][Official type/effect and fresh-evaluator route]]
 - [[file:../../../dev/proofs/evidence/llm-subject-authority/receipt.json][Current classification receipt]]
 - [[file:../../../dev/proofs/evidence/llm-subject-authority/commands.json][Current phase receipts]]

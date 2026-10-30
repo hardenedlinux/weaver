@@ -1,0 +1,24 @@
+#+TITLE: Go OpenSysML Architecture Development
+#+LANGUAGE: en
+
+* Linked model
+
+The root =Project.sysml= and every =dev/sysml/*.sysml= document are parsed as one
+model through the Go OpenSysML SDK's =ParseFiles= API with strict conformance.
+Root components reference actual domain part definitions. SysML allocations bind
+those components to the modeled Scheme, Go and Rust code owners.
+
+=runtime-trace.json= binds each domain requirement to named implementation,
+native-test, Quint or Lean witnesses. The gate queries the linked SDK model for
+the requirement inventory and rejects missing or duplicate bindings. The same
+SDK model drives repository layout and runtime Rust dependency checks.
+
+* Entrypoints
+
+The Go workspace owns SDK integration and orchestration. =check=, =check-scheme=
+and =bench= run project admission first. Scheme assertions stay in =t/*-test.ss=,
+Rust benchmarks stay in their crates and shared Policy assets stay in =prod/=.
+No Python checker or separate SysML command interpreter is required.
+
+Structural and trace admission complements the executable tests and proofs;
+its verdict is not a send permit or a proof of behavioral refinement.

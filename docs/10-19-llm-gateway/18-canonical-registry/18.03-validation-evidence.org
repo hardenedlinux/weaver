@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and source boundary
 
-Run [[file:../../../dev/proofs/check_llm_canonical_registry.py][the isolated runner]]. [[file:../../../dev/proofs/lean/LlmCanonicalRegistry.lean][Lean]] wraps actual category-17 transitions and
+Run the isolated runner (retired Python driver). [[file:../../../dev/proofs/lean/LlmCanonicalRegistry.lean][Lean]] wraps actual category-17 transitions and
 adds authoritative registration, unique namespaced aliases and current resolution
 gates. [[file:../../../dev/proofs/quint/LlmCanonicalRegistry.qnt][Quint]] models one admitted original origin, MCP/A2A/Client ACP aliases,
 independent visibility, registry/source changes and current original consumption.

@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and bounded evidence
 
-Run [[file:../../../dev/proofs/check_llm_checkpoint_truncation.py][the isolated checker]] for [[file:../../../dev/proofs/lean/LlmCheckpointTruncation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmCheckpointTruncation.qnt][Quint]]. Retain
+Run the isolated checker (retired Python driver) for [[file:../../../dev/proofs/lean/LlmCheckpointTruncation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmCheckpointTruncation.qnt][Quint]]. Retain
 [[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/commands.json][command results]], [[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/receipt.json][the receipt]] and [[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/SHA256SUMS][the byte manifest]]. Preliminary failures remain separate.
 
 The workload compiles 23 Lean modules and prints 16 new declarations without
@@ -117,7 +123,7 @@ silently deleting that suffix in the selected truncation operation.
 | Current owner-bound publication observation | staleOwnerReceiptCheckpointCounterexampleTest | Financial WAL activation succeeds for the current owner but checkpoint observation still carries the old owner |
 
 Unsafe constructors are excluded from =step=. Their controls deliberately expect
-the named invariant to fail. The [[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/check-counterexample-observations.py][independent ITF decoder]] checks original actual
+the named invariant to fail. The independent ITF decoder (retired Python driver) checks original actual
 queue/spent/exposure history, checkpoint image fields, physical suffix, publication
 parents/floors, owner stamps and qualified financial state. It also verifies that
 checkpoint actions leave the actual provider execution state unchanged after the

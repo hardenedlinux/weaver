@@ -1,0 +1,59 @@
+#+TITLE: 59.20 Deterministic Engineering Project Structure
+#+LANGUAGE: en
+
+* Root authority
+
+The top-level [[file:../../../Project.sysml][Project.sysml]] owns repository organization. Cargo, Go and Gerbil
+manifests remain their language toolchain inputs; the project model declares
+where their packages belong and which runtime Rust dependency edges are allowed.
+Go's existing OpenSysML SDK parses and queries the model under strict conformance.
+No parallel JSON/YAML project registry is maintained.
+
+The SDK's =ParseFiles= API links =Project.sysml= with =dev/sysml/*.sysml= as one
+semantic model. Root components reference the domain's actual part definitions;
+native SysML allocations bind those components to code owners. The requirement
+inventory and =dev/sysml/runtime-trace.json= are checked against that same linked
+model. Parsing the root without its domain definitions is a negative control.
+
+| Model owner | Checked allocation |
+|-------------+--------------------|
+| RustPackage | Every Cargo workspace member under =crates/=, including the server, with package-owned =benches/gateway.rs= and benchmark documentation |
+| RuntimeDependency | Actual internal runtime Cargo edges, independently of development dependencies and benchmark support reuse |
+| GoPackage | The top-level =go/= module and its actual =go list= package inventory |
+| SchemeModule | Direct =scheme/governance=, =scheme/policy= and =scheme/gateway= owners, with root =gerbil.pkg=, =init.ss= and =build.ss= |
+| File under =prod/= | Policy, schema, profile and associated case assets consumed across verification languages |
+| File under =t/= | Native Scheme standard test suites and integration fixtures |
+| Directory under =dev/= | Formal models, proof dependencies and development tooling |
+| IgnoredDirectory | =.cache/= verification outputs, =target/= Cargo outputs, =.data/= research checkouts and =.devenv/= SDK state; none may be Git-tracked |
+| Absent | Retired ambiguous package roots and misplaced Policy/benchmark directories |
+
+* Executable admission
+
+=TestProjectArchitecture= checks modeled files and directory kinds, rejects
+unmodeled Rust/Scheme owners, compares Go package inventory, checks all production
+assets and verifies output-directory Git exclusion. The existing workspace gate
+reads its runtime dependency expectations from this model rather than a second
+hardcoded map. The existing Scheme layout gate also reads its module inventory
+from the model. Required crate and Scheme files come from typed model templates.
+
+=check=, =check-scheme= and =bench= execute the project gate before their respective
+verification stages. =Project.sysml= participates in source hashes and committed
+source admission. Renaming a package, moving a schema or adding a runtime edge
+requires a corresponding model change and the relevant native checks.
+
+Negative controls reject an unmodeled Rust owner, a nonlocal path and an existing
+retired path. Missing files, wrong kinds, unexpected packages and unknown layout
+types fail admission. These checks observe actual filesystem and toolchain
+metadata; they do not generate a passing verdict from documentation text.
+
+* Proof responsibilities
+
+Project SysML specifies structural ownership and dependency allocation. Cedar
+defines authorization meaning. Quint explores execution schedules and deliberate
+unsafe transitions. Lean proves composition under stated decoder, durability and
+effect-admission premises. Native Scheme/Rust/Go tests check the implementation
+against those contracts. A structural SysML verdict never authorizes a send or
+proves the correctness of a provider, compiler or storage system.
+
+Maintained source and specifications are versioned. Runtime logs, measurements,
+receipts and temporary build products remain under ignored output directories.

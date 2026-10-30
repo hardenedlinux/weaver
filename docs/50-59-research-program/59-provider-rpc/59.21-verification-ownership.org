@@ -1,0 +1,49 @@
+#+TITLE: 59.21 Verification Ownership and Driver Retirement
+#+LANGUAGE: en
+
+* Maintained execution
+
+The Go workspace owns the executable verification plan through
+=go run ./go/cmd/weaver-dev=. =check= runs the declared Rust/Go native, PBT,
+Cedar, Quint and Lean gates. =check-scheme= adds isolated native dependency
+builds, standard Scheme suites and real cross-language publication/execution
+tests. =bench= measures each crate's package-owned target and Go gRPC cases.
+All three modes admit the root Project model and linked development SysML
+contracts through the Go OpenSysML SDK.
+
+Scheme assertions belong to =t/*-test.ss= and run through the standard SDK
+=gxtest= API. Their returned verdict and natural child exit are checked.
+Quint owns schedule exploration and deliberate unsafe counterexamples. Lean
+owns parametric/composition proofs under explicit premises. Runtime tests and
+source-bound receipts provide implementation evidence for those premises.
+
+* Retired research drivers
+
+The earlier Python check, prepare and generated bundle-helper scripts are no
+longer maintained verification entrypoints. No current Go or CI stage invoked
+them. Their source copies and hashes were archived under ignored =.cache/=
+before removal. The root Project model prohibits reintroducing tracked Python
+source as an implicit parallel verification framework.
+
+Historical chapters may retain old commands, declaration counts and receipts
+as descriptions of those experiments. They are historical observations, not
+current reproducible entrypoints or evidence that every old research model is
+covered by the current Go plan. Removing a driver does not mark its former
+model or artifact generator as validated. Current coverage is the explicit
+Go stage inventory, linked SysML requirement trace and source-bound execution
+receipt; no old script result is promoted into that inventory.
+
+* Output ownership
+
+Current logs, failed runs, command receipts, temporary module links and measured
+results are retained under Git-ignored =.cache/=. Source, native test suites,
+formal models and maintained English Org/D2 documents are versioned.
+Historical evidence is not silently reclassified as a current successful run.
+
+* Standard Go
+
+The locked upstream Go package is used without a project compiler patch. Native
+fuzz positive/negative controls retain their original three-second workload,
+one worker and thirty-second watchdog. Every failed coordinator exit remains a
+failure. The known upstream parent-deadline race is documented in
+[[file:59.14-go-fuzz-coordinator.org][the fuzz integrity chapter]]; it is not hidden by output filtering or retries.

@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * One final admission decision after complete projection
 
 Area =20-29 Execution authority=; category =21 Join enqueue=.
@@ -17,5 +23,5 @@ observation. Final admission compares current authority and immutable scope agai
 | 21.03 | [[file:21.03-proof-and-source-evidence.org][Actual source composition, broker projection and counterexamples]] |
 
 Models: [[file:../../../dev/proofs/lean/LlmJoinEnqueue.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmJoinEnqueue.qnt][Quint]].
-Run [[file:../../../dev/proofs/check_llm_join_enqueue.py][the isolated runner]]. This audit compares POO Flow and cedar-poo-spec.
+Run the isolated runner (retired Python driver). This audit compares POO Flow and cedar-poo-spec.
 No Gateway implementation, dependency pin or previous sealed artifact is changed.

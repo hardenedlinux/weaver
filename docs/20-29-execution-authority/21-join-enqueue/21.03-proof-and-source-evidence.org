@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and evidence scope
 
-Run [[file:../../../dev/proofs/check_llm_join_enqueue.py][the isolated runner]] against [[file:../../../dev/proofs/lean/LlmJoinEnqueue.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmJoinEnqueue.qnt][Quint]]. Results are in
+Run the isolated runner (retired Python driver) against [[file:../../../dev/proofs/lean/LlmJoinEnqueue.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmJoinEnqueue.qnt][Quint]]. Results are in
 [[file:../../../dev/proofs/evidence/llm-join-enqueue/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-join-enqueue/receipt.json][receipt.json]] and [[file:../../../dev/proofs/evidence/llm-join-enqueue/SHA256SUMS][the sealed byte manifest]]. Failed preliminary diagnostics are retained.
 
 The workload compiles 18 Lean modules and prints 19 new declarations without

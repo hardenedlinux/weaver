@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and bounded claims
 
-Run [[file:../../../dev/proofs/check_llm_result_projection.py][the isolated runner]] for [[file:../../../dev/proofs/lean/LlmResultProjection.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmResultProjection.qnt][Quint]]. Read [[file:../../../dev/proofs/evidence/llm-result-projection/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-result-projection/receipt.json][receipt.json]],
+Run the isolated runner (retired Python driver) for [[file:../../../dev/proofs/lean/LlmResultProjection.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmResultProjection.qnt][Quint]]. Read [[file:../../../dev/proofs/evidence/llm-result-projection/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-result-projection/receipt.json][receipt.json]],
 and [[file:../../../dev/proofs/evidence/llm-result-projection/SHA256SUMS][the sealed byte manifest]]. Preliminary diagnostics remain separate from acceptance.
 
 The workload compiles 17 Lean modules and prints 22 new declarations without

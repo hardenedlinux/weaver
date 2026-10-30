@@ -13,6 +13,7 @@ func Plan(goBinary string) []Stage {
 		{"go-environment", goBinary, []string{"version"}},
 		{"quint-environment", "quint", []string{"--version"}},
 		{"proof-environment", "elan", []string{"run", proofToolchain, "lean", "--version"}},
+		{"project-architecture", goBinary, []string{"test", "-count=1", "./go/dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership)", "-v"}},
 		{"workflow-contract", "actionlint", []string{".github/workflows/assurance.yml"}},
 		{"rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
 		{"rust-default-profile", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
@@ -79,6 +80,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		return Plan(goBinary), nil
 	case "check-scheme":
 		return []Stage{
+			{"project-architecture", goBinary, []string{"test", "-count=1", "./go/dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership)", "-v"}},
 			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},
 			{"scheme-declared-poo-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "dependencies"}},
 			{"scheme-native-ffi", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline"}},
@@ -89,6 +91,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "bench":
 		return []Stage{
+			{"project-architecture", goBinary, []string{"test", "-count=1", "./go/dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership)", "-v"}},
 			{"rust-environment", "rustc", []string{"-vV"}},
 			{"go-environment", goBinary, []string{"version"}},
 			{"benchmark-package-contract", goBinary, []string{"test", "-count=1", "./go/dev", "./go/internal/devrunner", "-run", "^Test(CargoWorkspaceAndDevelopmentGates|Benchmark.*)$"}},

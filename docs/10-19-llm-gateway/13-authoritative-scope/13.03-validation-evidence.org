@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Scope and reproduction
 
-Run [[file:../../../dev/proofs/check_llm_authoritative_scope.py][the bounded check runner]]. The new [[file:../../../dev/proofs/lean/LlmAuthoritativeScope.lean][Lean module]] imports the actual prior
+Run the bounded check runner (retired Python driver). The new [[file:../../../dev/proofs/lean/LlmAuthoritativeScope.lean][Lean module]] imports the actual prior
 semantic/child/root models. The [[file:../../../dev/proofs/quint/LlmAuthoritativeScope.qnt][Quint model]] starts from an admitted-root fixture
 and checks canonical scope derivation, final use, recovery and settlement races.
 The Lean run additionally projects source root setup into GatewayHeadCAS.Run.

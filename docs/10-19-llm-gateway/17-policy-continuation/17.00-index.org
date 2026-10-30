@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Preserve the original intent through safe continuation
 
 Area =10-19 LLM Gateway=; category =17 Policy continuation=.
@@ -18,5 +24,5 @@ are aliases of canonical authority, not new authorization roots.
 | 17.04 | [[file:17.04-protocol-admission-and-identity.org][MCP, A2A, ACP, UI, ASP and other interface boundaries]] |
 
 Formal sources: [[file:../../../dev/proofs/lean/LlmPolicyContinuation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmPolicyContinuation.qnt][Quint]].
-Reproduce with [[file:../../../dev/proofs/check_llm_policy_continuation.py][the isolated runner]]. No Gateway implementation, upstream source or
+Reproduce with the isolated runner (retired Python driver). No Gateway implementation, upstream source or
 dependency pin is changed. Earlier sealed artifacts remain unchanged.

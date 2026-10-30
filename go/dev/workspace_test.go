@@ -76,12 +76,7 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 	if err := devrunner.ValidateBenchmarkPackages(members); err != nil {
 		t.Fatal(err)
 	}
-	layers := map[string]string{
-		"weaver-contracts": "", "weaver-policy": "weaver-contracts",
-		"weaver-ledger": "weaver-contracts,weaver-policy", "weaver-execution": "weaver-contracts,weaver-ledger",
-		"weaver-server":     "weaver-contracts,weaver-ledger,weaver-execution",
-		"weaver-policy-ffi": "weaver-policy",
-	}
+	layers := projectRustLayers(t)
 	if len(metadata.Members) != len(layers) {
 		t.Fatal("unmapped native workspace members")
 	}
@@ -89,7 +84,11 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 	aspPin := regexp.MustCompile(`[?&]rev=[a-f0-9]{40}(?:$|&)`)
 	for _, id := range metadata.Members {
 		p := packages[id]
-		expected, known := layers[p.Name]
+		packagePath, err := filepath.Rel(root(t), filepath.Dir(p.ManifestPath))
+		if err != nil {
+			t.Fatal(err)
+		}
+		expected, known := layers[filepath.ToSlash(packagePath)]
 		if !known {
 			t.Fatalf("unmapped crate: %s", p.Name)
 		}

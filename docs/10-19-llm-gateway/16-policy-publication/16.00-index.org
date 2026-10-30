@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Pending, published and acknowledged
 
 Area =10-19 LLM Gateway=; category =16 Policy publication=.
@@ -18,5 +24,5 @@ current consumption authority.
 | 16.03 | [[file:16.03-validation-evidence.org][Source comparison, proof correspondence and evidence]] |
 
 Formal sources: [[file:../../../dev/proofs/lean/LlmPolicyPublication.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmPolicyPublication.qnt][Quint]].
-Run [[file:../../../dev/proofs/check_llm_policy_publication.py][the isolated check runner]]. This work preserves prior sealed artifacts and
+Run the isolated check runner (retired Python driver). This work preserves prior sealed artifacts and
 changes no Gateway runtime, upstream source or dependency pin.

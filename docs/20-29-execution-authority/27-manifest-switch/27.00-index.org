@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * A durable replacement precedes deletion
 
 Area =20-29 Execution authority=; category =27 Manifest switch=.
@@ -16,5 +22,5 @@ persistence, current-root switch, result readback and incremental deletion.
 | 27.03 | [[file:27.03-proof-and-source-evidence.org][Proof correspondence, source review and acceptance boundary]] |
 
 Four artifacts: [[file:../../../dev/proofs/lean/LlmManifestSwitch.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmManifestSwitch.qnt][Quint]] / this Org category / core D2.
-Reproduce with [[file:../../../dev/proofs/check_llm_manifest_switch.py][the isolated runner]]. This is design and executable formal evidence;
+Reproduce with the isolated runner (retired Python driver). This is design and executable formal evidence;
 no Gateway implementation, dependency pin or historical sealed artifact changes.

@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Persistent original-task semantics
 
 Area =10-19 LLM Gateway=; category =14 Registry publication=.
@@ -18,5 +24,5 @@ logical execution-authority boundary.
 | 14.03 | [[file:14.03-validation-evidence.org][Source comparison, proof obligations and executable counterexamples]] |
 
 Formal sources: [[file:../../../dev/proofs/lean/LlmRegistryPublication.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmRegistryPublication.qnt][Quint]].
-Run [[file:../../../dev/proofs/check_llm_registry_publication.py][the isolated local check runner]]. Earlier sealed sources and receipts remain
+Run the isolated local check runner (retired Python driver). Earlier sealed sources and receipts remain
 unchanged. No Gateway runtime, upstream source or dependency pin is changed.

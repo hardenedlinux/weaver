@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Governed LLM interoperability
 
 Area =10-19 LLM Gateway=; category =12 Semantic contracts=.
@@ -18,5 +24,5 @@ LLM behavior across providers or that a model obeys every instruction.
 | 12.03 | [[file:12.03-validation-evidence.org][Quint, Lean, source comparison and remaining qualification]] |
 
 Formal sources: [[file:../../../dev/proofs/lean/LlmSemanticContract.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmSemanticContract.qnt][Quint]].
-Run [[file:../../../dev/proofs/check_llm_semantic_contract.py][the local check runner]]. Earlier sealed artifacts remain unchanged.
+Run the local check runner (retired Python driver). Earlier sealed artifacts remain unchanged.
 No Gateway runtime or dependency pin is changed.

@@ -4,6 +4,12 @@
 #+property: STATUS logical-gateway-model-checked-software-refinement-pending
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Current scope and source identity
 
 [[file:36.00-index.org][36.00 Index]], [[file:36.01-authoritative-head-root-cas.org][36.01 Org design]], [[file:36.02-gateway-head-cas.d2][36.02 Core D2]] / [[file:36.02-gateway-head-cas.svg][SVG]],
@@ -118,7 +124,7 @@ it cannot provide current send authority without a new joined observation.
 
 * Four artifacts and documentation checks
 
-[[file:../../../dev/proofs/evidence/gateway-head-cas/four-artifact-check.json][Ten correspondence rows]] and [[file:../../../dev/proofs/evidence/gateway-head-cas/check-four-artifacts.py][their checker]] resolve concrete predicates/tests,
+[[file:../../../dev/proofs/evidence/gateway-head-cas/four-artifact-check.json][Ten correspondence rows]] and their checker (retired Python driver) resolve concrete predicates/tests,
 Lean declarations and core D2 nodes named by Org. This verifies references,
 not semantic equivalence or native extraction. The diagram uses bundled official
 Go/Kubernetes/Rust icons, the shared four-column theme and logical Gateway

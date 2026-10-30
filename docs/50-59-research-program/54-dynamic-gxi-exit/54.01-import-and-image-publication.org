@@ -2,6 +2,12 @@
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Retained dynamic failure
 The unmodified fixture processed by ordinary gxi with the previous isolated
 native library again missed the fifteen-second whole-process deadline. It
@@ -50,9 +56,9 @@ interfaces and phase bodies resolve coherently. No installed source is edited,
 no runtime cleanup hook changes, and no dependency pin changes.
 
 * Ownership and qualification boundary
-The [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/build-source.py][Core/POO builder]] starts with a new native output directory and an empty
+The Core/POO builder (retired Python driver) starts with a new native output directory and an empty
 prelude-aware compile set. Source snapshots retain the prior exact Core working
-bytes and POO dependency commit. The [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/build-narrow-stdlib.py][stdlib builder]] owns only its isolated
+bytes and POO dependency commit. The stdlib builder (retired Python driver) owns only its isolated
 JSON/parser output. Installed Gerbil/Gambit and all other stdlib artifacts remain
 explicit trusted reuse; this is not a full toolchain rebuild.
 
@@ -80,7 +86,7 @@ image with distinct entries. Hard-linked module filenames preserve the ordinary
 loader's expected entry name and filesystem lookup. They do not merge registry
 identities or execute all Scheme initializers at image mapping time.
 
-[[file:../../../dev/proofs/evidence/dynamic-gxi-exit/build-dynamic-images.py][The isolated image builder]] regenerates C and native objects from the exact
+The isolated image builder (retired Python driver) regenerates C and native objects from the exact
 observed lowered Scheme sources. It excludes foreign/C forms and rejects any
 linked image with C initialization or termination sections. Modules outside that
 admission keep their existing dynamic objects. The original interpreter binary,

@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Evidence scope and source correction
 
 The design is recorded in [[file:42.01-custody-publication.org][42.01]]. Actual [[file:../../../dev/proofs/lean/LlmCustodyPublication.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmCustodyPublication.qnt][Quint]] artifacts extend category 41.
@@ -91,7 +97,7 @@ is claimed. All deliberate mutations are excluded from the guarded random step.
 
 * Acceptance and limitations
 
-Run [[file:../../../dev/proofs/check_llm_custody_publication.py][the checker]]; inspect [[file:../../../dev/proofs/evidence/llm-custody-publication/commands.json][command receipts]] and [[file:../../../dev/proofs/evidence/llm-custody-publication/receipt.json][final acceptance receipt]].
+Run the checker (retired Python driver); inspect [[file:../../../dev/proofs/evidence/llm-custody-publication/commands.json][command receipts]] and [[file:../../../dev/proofs/evidence/llm-custody-publication/receipt.json][final acceptance receipt]].
 It compiles the local Lean import closure, prints fifteen new declarations,
 typechecks Quint, runs twenty-five new controls and seven exported mutations,
 samples nine recovery initializers and regresses the twenty-three preceding

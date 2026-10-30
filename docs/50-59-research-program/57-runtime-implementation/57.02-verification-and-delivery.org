@@ -2,6 +2,12 @@
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Cedar POO specification drives native contracts
 The [[https://docs.cedarpolicy.com/auth/authorization.html][official Cedar semantics]] define default deny and forbid precedence.
 The [[https://www.omg.org/spec/SysML/2.0][SysML v2 specification]] is the modeling reference; a local strict-tool
@@ -62,7 +68,7 @@ refinement premises.
 Run [[file:../../../scripts/check-runtime.sh][the runtime check entrypoint]] with prepared Rust, Go, Quint, SysML and Lean
 tools. Real loopback TLS tests require permission to listen on localhost;
 a sandbox refusal is retained as an environmental failure and never counted as
-transport qualification. The [[file:../../../scripts/check-runtime-trace.py][traceability/dependency check]] inspects module
+transport qualification. The traceability/dependency check (retired Python driver) inspects module
 dependencies and requirement references.
 
 Native receipts, source hashes and initial failures live under [[file:../../../dev/proofs/evidence/runtime-implementation-20261029][the evidence directory]].

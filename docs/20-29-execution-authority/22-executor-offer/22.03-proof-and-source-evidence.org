@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and bounded result
 
-Run [[file:../../../dev/proofs/check_llm_executor_offer.py][the isolated runner]] for [[file:../../../dev/proofs/lean/LlmExecutorOffer.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmExecutorOffer.qnt][Quint]]. Results are retained in
+Run the isolated runner (retired Python driver) for [[file:../../../dev/proofs/lean/LlmExecutorOffer.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmExecutorOffer.qnt][Quint]]. Results are retained in
 [[file:../../../dev/proofs/evidence/llm-executor-offer/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-executor-offer/receipt.json][receipt.json]] and [[file:../../../dev/proofs/evidence/llm-executor-offer/SHA256SUMS][the sealed byte manifest]]. Preliminary diagnostics remain separate.
 
 The workload compiles 19 Lean modules, prints 20 new declarations without =sorryAx=,

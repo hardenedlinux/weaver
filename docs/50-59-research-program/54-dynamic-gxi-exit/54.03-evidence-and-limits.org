@@ -2,6 +2,12 @@
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Current accepted checkpoint
 The final candidate uses the complete configured Gambit C compile options.
 Ordinary installed gxi interprets the exact original source and exits naturally
@@ -141,7 +147,7 @@ No failure or earlier pass was overwritten.
 
 The [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/official-compiler-options.json][configured compiler defaults]] are extracted from the installed gambuild-C
 owner, including FLAGS_OPT, FLAGS_OBJ, FLAGS_DYN and DEFS_DYN. The
-[[file:../../../dev/proofs/evidence/dynamic-gxi-exit/build-official-images.py][separate corrected builder]] recompiles every admitted generated C body into
+separate corrected builder (retired Python driver) recompiles every admitted generated C body into
 new objects/images and rebuilds the canary with those complete options. The
 [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/official-dynamic-images.json][corrected image manifest]] and the official-abi receipt namespace define the
 final candidate. Its original-script and cleanup gates must pass independently;

@@ -1,6 +1,23 @@
 #+TITLE: 59.14 Go Fuzz Deadline Integrity and Toolchain Admission
 #+LANGUAGE: en
 
+* Current standard toolchain decision
+
+The project now selects the unchanged locked upstream =pkgs.go= package,
+without a local Go override or patch. Gateway production behavior does not
+require a custom fuzz engine. The native no-op and real-failure controls remain
+mandatory with the original three-second workload, one worker and thirty-second
+watchdog. Coordinator errors remain failures; no text-based suppression or retry
+is introduced. The compiler-source substring assertion that required this exact
+backport has been retired.
+
+The locked standard Go 1.26.1 lacks the upstream race fix described below. A
+passing paired control does not prove that the race is absent. A recurrence
+must retain its failed receipt; moving to a fixed upstream release is a separate
+toolchain-version decision. Existing dependency and language-version pins are
+unchanged. The following package-build receipts describe the historical
+backport experiment, not the currently selected toolchain.
+
 * Failure mechanism and source repair
 
 The [[file:../../../dev/proofs/evidence/release-binding-20261030/verification-current/receipt.json][preceding final unified run]] retained one failed provider-routing fuzz stage:
@@ -23,7 +40,7 @@ The old failed coordinator execution was not instrumented; the local source,
 ordering probe and upstream diagnosis identify the mechanism without claiming
 a replay of that exact scheduling trace.
 
-* Project-owned development package
+* Historical project-owned development package
 
 =dev/toolchains/go/default.nix= extends the Go package already selected by the
 existing locked package set with =fuzz-parent-deadline.patch=.

@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Publish the determining minimum before confirming admission
 
 Area =20-29 Execution authority=; category =29 Admission floor=.
@@ -17,6 +23,6 @@ qualification. A local generation counter cannot authenticate its own recovery.
 | 29.03 | [[file:29.03-proof-and-source-evidence.org][Proof mapping, source audit, counterexamples and acceptance evidence]] |
 
 Four artifacts: [[file:../../../dev/proofs/lean/LlmAdmissionFloor.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmAdmissionFloor.qnt][Quint]] / English Org / core D2.
-Run [[file:../../../dev/proofs/check_llm_admission_floor.py][the isolated checker]]. This work changes design, formal sources and local
+Run the isolated checker (retired Python driver). This work changes design, formal sources and local
 evidence only; Gateway implementation, dependency pins and historical sealed
 artifacts remain unchanged.

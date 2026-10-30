@@ -2,6 +2,12 @@
 #+language: en
 #+startup: overview
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Current scope
 This is product architecture and a focused refinement proof, not a Gateway implementation.
 It connects configurable routine requirements to concrete LLM route selection. It does not
@@ -9,9 +15,9 @@ replace the original routing, multi-attempt, identity, broker or account designs
 
 - [[file:../../../dev/proofs/lean/RoutineRoutingConfig.lean][Lean refinement and routing composition]]
 - [[file:../../../dev/proofs/quint/RoutineRoutingConfig.qnt][Quint configuration/routing controls]]
-- [[file:../../../dev/proofs/check_routine_config.py][Primary bounded checker]]
-- [[file:../../../dev/proofs/prepare_routine_config.py][Source-preserving ancestor preparation]]
-- [[file:../../../dev/proofs/check_routine_config_api.py][Official pipeline watchdog]]
+- Primary bounded checker (retired Python driver)
+- Source-preserving ancestor preparation (retired Python driver)
+- Official pipeline watchdog (retired Python driver)
 - [[file:../../../dev/proofs/run_routine_config.cjs][Official type/effect analysis and fresh evaluators]]
 - [[file:../../../dev/proofs/evidence/routine-routing-config/receipt.json][Current classification receipt]]
 - [[file:../../../dev/proofs/evidence/routine-routing-config/commands.json][Executed proof/check phases]]

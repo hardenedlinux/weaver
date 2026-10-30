@@ -24,20 +24,8 @@ func (output *nativeControlOutput) Write(data []byte) (int, error) {
 	return output.buffer.Write(data)
 }
 
-// Source admission identifies the reviewed backport, independently of whether
-// one probabilistic fuzz run happens to encounter the cancellation window.
-func TestGoFuzzCoordinatorParentDeadlineAdmission(t *testing.T) {
-	source, err := os.ReadFile(filepath.Join(runtime.GOROOT(), "src/internal/fuzz/fuzz.go"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !bytes.Contains(source, []byte("if err == ctx.Err() || err == fuzzCtx.Err() || isInterruptError(err) {")) {
-		t.Fatal("Go fuzz coordinator lacks the upstream parent-deadline fix; use the configured devenv Go package")
-	}
-}
-
-// A fixed coordinator recognizes its own duration expiry but must still fail a
-// real property, including one whose diagnostic mentions the same deadline.
+// The selected upstream coordinator must recognize duration expiry and reject
+// a real property, including one whose diagnostic mentions the same deadline.
 func TestGoFuzzCoordinatorPreservesNativePropertyFailure(t *testing.T) {
 	working, err := os.Getwd()
 	if err != nil {

@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * One original source operation across protocol lifecycles
 
 Area =10-19 LLM Gateway=; category =18 Canonical registry=.
@@ -17,5 +23,5 @@ A2A task recreation and Client ACP session resume do not create intent families.
 | 18.03 | [[file:18.03-validation-evidence.org][Source comparison, proof correspondence and counterexamples]] |
 
 Formal sources: [[file:../../../dev/proofs/lean/LlmCanonicalRegistry.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmCanonicalRegistry.qnt][Quint]].
-Run [[file:../../../dev/proofs/check_llm_canonical_registry.py][the isolated runner]]. No Gateway implementation, upstream source or dependency
+Run the isolated runner (retired Python driver). No Gateway implementation, upstream source or dependency
 pin is changed. Earlier sealed artifacts remain unchanged.

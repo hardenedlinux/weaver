@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * One account commit, one original reservation, one recoverable result
 
 Area =20-29 Execution authority=; category =24 Account commit=.
@@ -16,5 +22,5 @@ reservation hold consumption, durable commit prefix and closed recovery gate.
 | 24.03 | [[file:24.03-proof-and-source-evidence.org][Composition, source audit, counterexamples and acceptance evidence]] |
 
 Models: [[file:../../../dev/proofs/lean/LlmAccountCommit.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmAccountCommit.qnt][Quint]].
-Run [[file:../../../dev/proofs/check_llm_account_commit.py][the isolated runner]]. English only; no Gateway implementation, dependency pin,
+Run the isolated runner (retired Python driver). English only; no Gateway implementation, dependency pin,
 upstream source or historical sealed artifact is changed.

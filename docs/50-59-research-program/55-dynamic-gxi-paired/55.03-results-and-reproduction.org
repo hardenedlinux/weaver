@@ -2,6 +2,12 @@
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Current result
 The required new-UUID candidate first starts took 15.954 and 18.189 seconds: both failed. Cold deadline acceptance remains open; warm passes do not override this result.
 The fixed matrix completed 32 samples: 14 passed the unchanged fifteen-second gate; 18 failed. Every sample retains its own natural-exit result and native API trace. A later pass never replaces a failed first use.

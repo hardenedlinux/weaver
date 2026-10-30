@@ -67,6 +67,15 @@ The root =build.ss= uses the selected init's =std-make-spec= and the existing
 Yuanxu/SDK =defbuild-script=, including the explicit =scheme/policy/cedar-ffi=
 compiler declaration. There is no parallel module list or loader.
 
+The gateway invokes the public =yuanxu-load-modules= callable value with =apply=.
+Its configuration adapter does not bind a compiler-private optimized keyword
+entry. A fresh native run exposed an undefined private entry and segmentation
+fault after a compiled gateway import; that failure is retained and is not a
+Policy rejection witness. Public-call dispatch removes that private-entry
+dependency. Runtime qualification still requires natural completion within the
+unchanged source deadline; an independent later startup timeout remains a failed
+observation rather than being attributed to host noise without evidence.
+
 Public scope interfaces use native =Record= and =Function= descriptors.
 =GovernanceContext=, action-key/state facts, provider profile, ordered route,
 original task, plan, publication and final artifact each have specific contracts.
@@ -161,7 +170,7 @@ unchanged; the newly introduced build-support dependency has an exact revision.
 Policies, Cedar schemas, provider profiles and associated request cases share
 the top-level =prod/policies/= owner. Scheme preflight, native integration and
 PBT consume these same assets. Verification tools and models stay under
-=dev/proofs/= and =dev/models/=; Scheme test suites stay under =t/=.
+=dev/proofs/= and =dev/sysml/=; Scheme test suites stay under =t/=.
 This organization expresses ownership, not feature maturity. Deployment still
 requires explicit source publication and current Rust authorization.
 

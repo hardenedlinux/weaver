@@ -16,7 +16,10 @@ func TestSchemeModuleOwnershipAndSpecificContracts(t *testing.T) {
 			t.Fatalf("missing root Scheme package entry %s: %v", name, err)
 		}
 	}
-	expected := map[string]bool{"governance": true, "policy": true, "gateway": true}
+	expected := map[string]bool{}
+	for path := range projectLayout(projectParts(t), "SchemeModule") {
+		expected[filepath.Base(path)] = true
+	}
 	entries, err := os.ReadDir(filepath.Join(repository, "scheme"))
 	if err != nil {
 		t.Fatal(err)

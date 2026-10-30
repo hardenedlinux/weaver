@@ -2,6 +2,12 @@
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Scope and identity
 Audit date: 2026-10-20. Workspace: Weaver, branch =main=, tracked HEAD
 =4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. The maintained design/proof corpus
@@ -37,12 +43,12 @@ storage fault harness, deployment or performance benchmark was rerun here.
 Existing control counts and theorems are not relabeled as fresh native coverage.
 
 * Reproduction artifacts
-- [[file:../../../dev/specs/evidence/research-program-audit-20261020/collect-audit.py][Byte/source/receipt collector]].
+- Byte/source/receipt collector (retired Python driver).
 - [[file:../../../dev/specs/evidence/research-program-audit-20261020/historical-manifests.json][Historical manifest identities]].
 - [[file:../../../dev/specs/evidence/research-program-audit-20261020/source-currentness.json][Source comparison]].
 - [[file:../../../dev/specs/evidence/research-program-audit-20261020/selected-receipts.json][Historical receipt classification]].
 - [[file:../../../dev/specs/evidence/research-program-audit-20261020/workspace-snapshot.json][Workspace snapshot]].
-- [[file:../../../dev/specs/evidence/research-program-audit-20261020/clean-proof-audit.py][Fresh proof build harness]].
+- Fresh proof build harness (retired Python driver).
 - [[file:../../../dev/specs/evidence/research-program-audit-20261020/clean-proof-receipt.json][Fresh source/import/compiled-artifact receipt]].
 
 The temporary compiled directory is a local receipt location, not a portable

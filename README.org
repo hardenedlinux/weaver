@@ -13,6 +13,11 @@ semantic composition with the networking, cloud-native, and systems capabilities
 the Go and Rust ecosystems. Language placement follows responsibility,
 integration value, operational cost, and measured behavior.
 
+[[file:Project.sysml][Project.sysml]] is the root Deterministic Engineering contract for repository
+organization. The OpenSysML SDK gate checks package ownership, runtime Rust
+dependency layers, Scheme roles, production Policy assets and ignored outputs
+against this model. See [[file:docs/50-59-research-program/59-provider-rpc/59.20-project-structure.org][the project structure contract]] for the executable scope.
+
 This repository contains a modular Rust/Go runtime alongside its architecture
 and formal models. The current [[file:docs/50-59-research-program/59-provider-rpc/59.00-index.org][gRPC provider implementation checkpoint]] defines
 the executable scope, native validation and remaining production gates. Earlier

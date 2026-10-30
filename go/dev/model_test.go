@@ -25,43 +25,31 @@ func TestSysMLSDKAndRequirementTrace(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
-	paths, err := filepath.Glob(filepath.Join(root(t), "dev/models/sysml/*.sysml"))
-	if err != nil || len(paths) == 0 {
-		t.Fatal("models missing", err)
-	}
+	model := projectModel(t, ctx, client)
 	declared := map[string]bool{}
-	for _, path := range paths {
-		model, err := client.ParseFile(ctx, path, opensysml.WithStrictConformance())
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !model.OK() {
-			t.Fatalf("model failed strict SDK analysis: %s: %v", path, model.Errors())
-		}
-		diagnostics, err := client.Diagnostics(ctx, model)
-		if err != nil {
-			t.Fatal(err)
-		}
-		for _, d := range diagnostics {
-			if d.Severity == opensysml.SeverityError {
-				t.Fatal(d.String())
-			}
-		}
-		requirements, err := client.Query(ctx, model, opensysml.Query{
-			Select: []string{"name"}, Where: opensysml.Equals("@type", "RequirementDefinition"),
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-		for _, requirement := range requirements {
-			name := requirement.Properties["name"]
-			if name == "" || declared[name] {
-				t.Fatalf("anonymous or ambiguous requirement: %s", requirement.ID)
-			}
-			declared[name] = true
+	diagnostics, err := client.Diagnostics(ctx, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, d := range diagnostics {
+		if d.Severity == opensysml.SeverityError {
+			t.Fatal(d.String())
 		}
 	}
-	traces := readJSON[[]requirementTrace](t, filepath.Join(root(t), "dev/models/runtime-trace.json"))
+	requirements, err := client.Query(ctx, model, opensysml.Query{
+		Select: []string{"name"}, Where: opensysml.Equals("@type", "RequirementDefinition"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, requirement := range requirements {
+		name := requirement.Properties["name"]
+		if name == "" || declared[name] {
+			t.Fatalf("anonymous or ambiguous requirement: %s", requirement.ID)
+		}
+		declared[name] = true
+	}
+	traces := readJSON[[]requirementTrace](t, filepath.Join(root(t), "dev/sysml/runtime-trace.json"))
 	if len(declared) != len(traces) {
 		t.Fatalf("SDK requirement inventory %v differs from trace count %d", declared, len(traces))
 	}

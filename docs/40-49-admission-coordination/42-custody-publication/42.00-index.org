@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * One authority for custody fencing and admission outcomes
 
 Area =40-49 Admission coordination=; category =42 Custody publication=.
@@ -15,5 +21,5 @@ This review extends [[file:../41-source-custody/41.00-index.org][41 Source custo
 | 42.03 | [[file:42.03-proof-and-source-evidence.org][Source comparison, executable counterexamples and composition evidence]] |
 
 Four artifacts: [[file:../../../dev/proofs/lean/LlmCustodyPublication.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmCustodyPublication.qnt][Quint]] / English Org / core D2.
-Run [[file:../../../dev/proofs/check_llm_custody_publication.py][the isolated checker]]. No Gateway implementation, dependency pin or upstream
+Run the isolated checker (retired Python driver). No Gateway implementation, dependency pin or upstream
 source is changed.

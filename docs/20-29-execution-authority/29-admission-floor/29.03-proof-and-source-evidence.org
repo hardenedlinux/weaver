@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and bounded evidence
 
-[[file:../../../dev/proofs/check_llm_admission_floor.py][Runner]], [[file:../../../dev/proofs/lean/LlmAdmissionFloor.lean][Lean]], [[file:../../../dev/proofs/quint/LlmAdmissionFloor.qnt][Quint]], [[file:../../../dev/proofs/evidence/llm-admission-floor/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-admission-floor/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-admission-floor/SHA256SUMS][byte manifest]] distinguish checked formal
+Runner (retired Python driver), [[file:../../../dev/proofs/lean/LlmAdmissionFloor.lean][Lean]], [[file:../../../dev/proofs/quint/LlmAdmissionFloor.qnt][Quint]], [[file:../../../dev/proofs/evidence/llm-admission-floor/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-admission-floor/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-admission-floor/SHA256SUMS][byte manifest]] distinguish checked formal
 contracts from native implementation acceptance. The workload compiles 26 Lean
 modules and prints 14 new declarations without =sorryAx=. Quint checks 33 new
 controls (25 guarded and eight mutation counterexamples) plus 38 directly imported

@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and evidence scope
 
-[[file:../../../dev/proofs/check_llm_manifest_switch.py][Runner]], [[file:../../../dev/proofs/evidence/llm-manifest-switch/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-manifest-switch/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-manifest-switch/SHA256SUMS][byte manifest]] record local results.
+Runner (retired Python driver), [[file:../../../dev/proofs/evidence/llm-manifest-switch/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-manifest-switch/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-manifest-switch/SHA256SUMS][byte manifest]] record local results.
 [[file:../../../dev/proofs/lean/LlmManifestSwitch.lean][Lean]] imports the actual checkpoint model and its complete preceding chain.
 [[file:../../../dev/proofs/quint/LlmManifestSwitch.qnt][Quint]] imports the actual checkpoint actions, preserving their account/source state.
 The runner compiles 24 Lean modules and prints 12 new declarations without

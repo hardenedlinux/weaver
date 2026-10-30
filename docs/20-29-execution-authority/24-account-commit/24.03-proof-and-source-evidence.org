@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and bounded result
 
-Run [[file:../../../dev/proofs/check_llm_account_commit.py][the isolated checker]] for [[file:../../../dev/proofs/lean/LlmAccountCommit.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmAccountCommit.qnt][Quint]]. Retain
+Run the isolated checker (retired Python driver) for [[file:../../../dev/proofs/lean/LlmAccountCommit.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmAccountCommit.qnt][Quint]]. Retain
 [[file:../../../dev/proofs/evidence/llm-account-commit/commands.json][command results]], [[file:../../../dev/proofs/evidence/llm-account-commit/receipt.json][the receipt]] and [[file:../../../dev/proofs/evidence/llm-account-commit/SHA256SUMS][the byte manifest]]. Preliminary diagnostics are preserved separately.
 
 The workload compiles 21 Lean modules and prints 23 new declarations without
@@ -112,7 +118,7 @@ already exposed credits for the test; that monitor is not a production authority
 
 Unsafe constructors are excluded from =step=. Passing negative controls mean the
 named broken protocol reproduced the intended invariant violation. The
-[[file:../../../dev/proofs/evidence/llm-account-commit/check-counterexample-observations.py][independent ITF decoder]] verifies payloads, original source/executor history and
+independent ITF decoder (retired Python driver) verifies payloads, original source/executor history and
 financial before/after evidence rather than relying on control names alone.
 
 Guarded controls also reject old complete images, ID-new/balance-old images,

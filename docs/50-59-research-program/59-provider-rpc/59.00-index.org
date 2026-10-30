@@ -3,6 +3,10 @@
 
 * Current implementation
 
+The root [[file:../../../Project.sysml][Project.sysml]] controls package and asset ownership through
+[[file:59.20-project-structure.org][the executable project architecture gate]].
+Maintained native and formal checks follow [[file:59.21-verification-ownership.org][the verification ownership contract]].
+
 Go and Rust communicate through the shared typed gRPC service in
 [[file:../../../api/gateway/v1/gateway.proto][gateway.proto]]. The Rust server executable starts this service by default.
 The previous operation CLI, proposal CLI, HTTP ingress and command-based replay

@@ -4,6 +4,12 @@
 #+property: STATUS conditional-model-checked-native-refinement-open
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Scope and identity
 
 [[file:37.00-index.org][Index]], [[file:37.01-consumption-to-final-queue.org][design]], [[file:37.02-broker-consumption-queue.d2][D2]] / [[file:37.02-broker-consumption-queue.svg][SVG]],

@@ -4,11 +4,17 @@
 #+property: STATUS conditional-composition-checked-native-owner-refinement-pending
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Scope and identity
 
 [[file:34.00-index.org][34.00 Index]], [[file:34.01-intent-decision-context-fence.org][34.01 Design]] and [[file:34.02-floor-decision.d2][34.02 Core D2]] / [[file:34.02-floor-decision.svg][SVG]] use Johnny Decimal.
 The diagram contains only core design. The executable additions are
-[[file:../../../dev/proofs/quint/FloorIntentDecision.qnt][Quint]], [[file:../../../dev/proofs/lean/FloorIntentDecision.lean][Lean]] and [[file:../../../dev/proofs/check_floor_intent_decision.py][the check runner]]. No gateway implementation,
+[[file:../../../dev/proofs/quint/FloorIntentDecision.qnt][Quint]], [[file:../../../dev/proofs/lean/FloorIntentDecision.lean][Lean]] and the check runner (retired Python driver). No gateway implementation,
 dependency pin, upstream source, commit or push was changed.
 
 Workspace: /Users/guangtao/ghq/github.com/tao3k/weaver; branch =main=;

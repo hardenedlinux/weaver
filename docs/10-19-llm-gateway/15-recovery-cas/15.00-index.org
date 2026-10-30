@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Current authority at consumption
 
 Area =10-19 LLM Gateway=; category =15 Recovery CAS=.
@@ -18,5 +24,5 @@ no execution-ledger write occurs.
 | 15.03 | [[file:15.03-validation-evidence.org][Source comparison, proof correspondence and evidence]] |
 
 Formal sources: [[file:../../../dev/proofs/lean/LlmRecoveryCAS.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmRecoveryCAS.qnt][Quint]].
-Reproduce with [[file:../../../dev/proofs/check_llm_recovery_cas.py][the isolated check runner]]. This work changes design, formal models and
+Reproduce with the isolated check runner (retired Python driver). This work changes design, formal models and
 local evidence only. No Gateway implementation or dependency pin is changed.

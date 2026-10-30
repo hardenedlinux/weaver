@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Dequeue is data; each original offer needs current authority
 
 Area =20-29 Execution authority=; category =22 Executor offer=.
@@ -16,5 +22,5 @@ recovery qualification and separately checked burn/offer transitions.
 | 22.03 | [[file:22.03-proof-and-source-evidence.org][Actual range/broker composition, source audit and counterexamples]] |
 
 Models: [[file:../../../dev/proofs/lean/LlmExecutorOffer.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmExecutorOffer.qnt][Quint]].
-Run [[file:../../../dev/proofs/check_llm_executor_offer.py][the isolated runner]]. Documents and diagrams are English only.
+Run the isolated runner (retired Python driver). Documents and diagrams are English only.
 No Gateway implementation, dependency pin or earlier sealed artifact is changed.

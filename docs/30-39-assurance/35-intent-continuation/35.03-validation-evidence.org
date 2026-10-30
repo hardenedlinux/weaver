@@ -4,11 +4,17 @@
 #+property: STATUS conditional-safety-and-recovery-progress-checked-native-qualification-pending
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Identity and four-artifact scope
 
 [[file:35.00-index.org][35.00 Index]], [[file:35.01-safe-continuation-recovery-progress.org][35.01 Org design]], [[file:35.02-intent-continuation.d2][35.02 Core D2]] / [[file:35.02-intent-continuation.svg][SVG]],
 [[file:../../../dev/proofs/quint/FencedIntentContinuation.qnt][Quint]] and [[file:../../../dev/proofs/lean/FencedIntentContinuation.lean][Lean]] are reviewed together. [[file:../../../dev/proofs/evidence/fenced-intent-continuation/four-artifact-check.json][Ten correspondence rows]] name actual
-predicates, declarations/tests and diagram nodes; [[file:../../../dev/proofs/evidence/fenced-intent-continuation/check-four-artifacts.py][the correspondence checker]] verifies
+predicates, declarations/tests and diagram nodes; the correspondence checker (retired Python driver) verifies
 these references. Reference consistency is not semantic equivalence or native
 extraction. The core diagram contains no versions, acceptance counts or evidence IDs.
 

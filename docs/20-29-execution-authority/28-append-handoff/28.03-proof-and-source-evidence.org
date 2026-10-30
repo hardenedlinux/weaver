@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and bounded receipts
 
-[[file:../../../dev/proofs/check_llm_append_handoff.py][Runner]], [[file:../../../dev/proofs/lean/LlmAppendHandoff.lean][Lean]], [[file:../../../dev/proofs/quint/LlmAppendHandoff.qnt][Quint]], [[file:../../../dev/proofs/evidence/llm-append-handoff/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-append-handoff/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-append-handoff/SHA256SUMS][byte manifest]] keep executable evidence separate
+Runner (retired Python driver), [[file:../../../dev/proofs/lean/LlmAppendHandoff.lean][Lean]], [[file:../../../dev/proofs/quint/LlmAppendHandoff.qnt][Quint]], [[file:../../../dev/proofs/evidence/llm-append-handoff/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-append-handoff/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-append-handoff/SHA256SUMS][byte manifest]] keep executable evidence separate
 from native acceptance. The runner compiles 25 Lean modules and prints 13 new
 declarations without =sorryAx=. Quint checks 38 new controls (30 guarded and eight
 mutation counterexamples) plus 39 directly imported checkpoint controls: 77 total.

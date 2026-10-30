@@ -2,6 +2,12 @@
 #+language: en
 #+startup: overview
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Evidence scope
 This leaf expands category 46's independent enrollment-principal premise. It does
 not prove initial identity provisioning, native signatures, storage or final sends.
@@ -12,9 +18,9 @@ own evidence directory. Historical receipts remain unchanged.
 
 - [[file:../../../dev/proofs/lean/LlmEnrollmentCredential.lean][Lean source]]
 - [[file:../../../dev/proofs/quint/LlmEnrollmentCredential.qnt][Quint source]]
-- [[file:../../../dev/proofs/check_llm_enrollment_credential.py][Primary bounded check]]
-- [[file:../../../dev/proofs/prepare_enrollment_credential.py][Source-preserving bundle preparation]]
-- [[file:../../../dev/proofs/check_enrollment_api.py][Official pipeline phase watchdog]]
+- Primary bounded check (retired Python driver)
+- Source-preserving bundle preparation (retired Python driver)
+- Official pipeline phase watchdog (retired Python driver)
 - [[file:../../../dev/proofs/run_enrollment_credential.cjs][Official typed pipeline and fresh evaluators]]
 - [[file:../../../dev/proofs/evidence/llm-enrollment-credential/receipt.json][Current classification receipt]]
 - [[file:../../../dev/proofs/evidence/llm-enrollment-credential/api-invocation.json][Executed source and tool identities]]

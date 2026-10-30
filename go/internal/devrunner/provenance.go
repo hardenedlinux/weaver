@@ -28,8 +28,12 @@ func SourceInputs(root string) (map[string]string, error) {
 		result[filepath.ToSlash(relative)] = hex.EncodeToString(sum[:])
 		return nil
 	}
-	for _, path := range []string{"Cargo.toml", "Cargo.lock", "go.work", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
-		"devenv.nix", "devenv.lock", "dev/toolchains/go/default.nix", "dev/toolchains/go/fuzz-parent-deadline.patch",
+	for _, path := range []string{"Project.sysml", "README.org", ".gitignore", "Cargo.toml", "Cargo.lock", "go.work", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
+		"docs/50-59-research-program/59-provider-rpc/59.03-provider-rpc-core.d2",
+		"docs/50-59-research-program/59-provider-rpc/59.19-native-governance-control.org",
+		"docs/50-59-research-program/59-provider-rpc/59.20-project-structure.org",
+		"docs/50-59-research-program/59-provider-rpc/59.21-verification-ownership.org",
+		"devenv.nix", "devenv.lock",
 		"devenv.yaml", ".envrc", ".github/workflows/assurance.yml",
 		"dev/proofs/lean/RuntimeAdmission.lean", "dev/proofs/lean/StreamingExecution.lean", "dev/proofs/lean/ProviderRpc.lean", "dev/proofs/lean/PublicationRecovery.lean",
 		"dev/proofs/quint/RuntimeAdmission.qnt", "dev/proofs/quint/StreamingExecution.qnt", "dev/proofs/quint/RuntimeLifecycle.qnt", "dev/proofs/quint/ProviderRpc.qnt", "dev/proofs/quint/DispatchCancellation.qnt", "dev/proofs/quint/NativeAdmission.qnt", "dev/proofs/quint/ConnectionAdmission.qnt", "dev/proofs/quint/SourceIngress.qnt", "dev/proofs/quint/PublicationRecovery.qnt", "dev/proofs/quint/SourceOwner.qnt",
@@ -47,7 +51,7 @@ func SourceInputs(root string) (map[string]string, error) {
 			return nil, err
 		}
 	}
-	for _, directory := range []string{"crates", "go", "api", "scheme", "t", "prod", "dev/models"} {
+	for _, directory := range []string{"crates", "go", "api", "scheme", "t", "prod", "dev/sysml"} {
 		err := filepath.WalkDir(filepath.Join(root, directory), func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err

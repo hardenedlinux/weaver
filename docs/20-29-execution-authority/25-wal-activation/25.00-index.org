@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Durable candidate, protected decision and current balance visibility
 
 Area =20-29 Execution authority=; category =25 WAL activation=.
@@ -16,5 +22,5 @@ protected commit confirmation and complete projection activation stages.
 | 25.03 | [[file:25.03-proof-and-source-evidence.org][Composition proofs, source audit and executable counterexamples]] |
 
 Models: [[file:../../../dev/proofs/lean/LlmWalActivation.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmWalActivation.qnt][Quint]].
-Run [[file:../../../dev/proofs/check_llm_wal_activation.py][the isolated runner]]. English only; no Gateway code, dependency pin,
+Run the isolated runner (retired Python driver). English only; no Gateway code, dependency pin,
 upstream source or earlier sealed artifact is changed.

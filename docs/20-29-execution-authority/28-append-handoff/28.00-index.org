@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Carry the current append generation across a checkpoint cut
 
 Area =20-29 Execution authority=; category =28 Append handoff=.
@@ -16,5 +22,5 @@ model separates the sealed cut from the live append generation and protects both
 | 28.03 | [[file:28.03-proof-and-source-evidence.org][Four-artifact mapping, source audit, counterexamples and evidence]] |
 
 Four artifacts: [[file:../../../dev/proofs/lean/LlmAppendHandoff.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmAppendHandoff.qnt][Quint]] / English Org / core D2.
-Run [[file:../../../dev/proofs/check_llm_append_handoff.py][the isolated checker]]. No Gateway implementation, dependency pin, upstream
+Run the isolated checker (retired Python driver). No Gateway implementation, dependency pin, upstream
 source or historical sealed evidence is changed.

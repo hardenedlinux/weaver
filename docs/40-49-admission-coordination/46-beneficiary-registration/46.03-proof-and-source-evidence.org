@@ -2,6 +2,12 @@
 #+language: en
 #+startup: overview
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Scope and current evidence
 This category expands the predecessor's producer-assigned-key premise into an
 independent enrollment root, first-binding receipt and authoritative invitation
@@ -10,10 +16,10 @@ publication images before downstream consumption or activation.
 
 - [[file:../../../dev/proofs/lean/LlmBeneficiaryRegistration.lean][Lean source]]
 - [[file:../../../dev/proofs/quint/LlmBeneficiaryRegistration.qnt][Quint source]]
-- [[file:../../../dev/proofs/check_llm_beneficiary_registration.py][Primary bounded checker]]
-- [[file:../../../dev/proofs/check_beneficiary_api.py][Official pipeline phase watchdog]]
+- Primary bounded checker (retired Python driver)
+- Official pipeline phase watchdog (retired Python driver)
 - [[file:../../../dev/proofs/run_beneficiary_registration.cjs][Official load, parse, type/effect analysis and fresh evaluators]]
-- [[file:../../../dev/proofs/prepare_beneficiary_registration.py][Source-preserving ancestor bundle preparation]]
+- Source-preserving ancestor bundle preparation (retired Python driver)
 - [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/receipt.json][Final classification receipt]]
 - [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/commands.json][Current Lean and Quint phase receipts]]
 - [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/api-commands.json][Current official Quint phase results]]

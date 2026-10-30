@@ -31,7 +31,8 @@
 
 ;;; Native source-generation guards qualify compilation, not final execution.
 (def (emit-governed-gateway init governor profile context states tasks plans publication)
-  (let* ((view (yuanxu-load-modules init))
+  ;; Use the public callable value rather than a compiler-private keyword entry.
+  (let* ((view (apply yuanxu-load-modules (list init)))
          (gateway (.get view modules Weaver gateway))
          (admit-current (.get view admit-current)))
     (admit-current)

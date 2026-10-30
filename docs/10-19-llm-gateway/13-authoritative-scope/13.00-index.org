@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Original task authority through LLM semantics
 
 Area =10-19 LLM Gateway=; category =13 Authoritative scope=.
@@ -19,5 +25,5 @@ owner/storage contracts; it is not an implementation of those contracts.
 | 13.03 | [[file:13.03-validation-evidence.org][Source comparison, proofs, counterexamples and runtime qualification]] |
 
 Formal sources: [[file:../../../dev/proofs/lean/LlmAuthoritativeScope.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmAuthoritativeScope.qnt][Quint]].
-Run [[file:../../../dev/proofs/check_llm_authoritative_scope.py][the isolated local check runner]]. Earlier sealed categories remain historical.
+Run the isolated local check runner (retired Python driver). Earlier sealed categories remain historical.
 No Gateway runtime, upstream source or dependency pin is changed.

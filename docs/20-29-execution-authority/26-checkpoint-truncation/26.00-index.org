@@ -2,6 +2,12 @@
 #+language: en
 #+options: toc:2
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Published complete state precedes physical prefix deletion
 
 Area =20-29 Execution authority=; category =26 Checkpoint truncation=.
@@ -16,5 +22,5 @@ monotonic recovery floor, local prefix deletion and checkpoint-plus-suffix recov
 | 26.03 | [[file:26.03-proof-and-source-evidence.org][Actual composition, source audit, counterexamples and evidence]] |
 
 Models: [[file:../../../dev/proofs/lean/LlmCheckpointTruncation.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmCheckpointTruncation.qnt][Quint]].
-Run [[file:../../../dev/proofs/check_llm_checkpoint_truncation.py][the isolated runner]]. English only; no Gateway implementation, dependency
+Run the isolated runner (retired Python driver). English only; no Gateway implementation, dependency
 pin, upstream source or historical sealed artifact is changed.

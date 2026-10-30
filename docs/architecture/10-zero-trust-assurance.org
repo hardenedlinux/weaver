@@ -4,6 +4,12 @@
 #+property: STATUS mandatory-framework-design-models-and-proofs-not-implemented
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Required architecture, not an optional assurance experiment
 
 Every Weaver profile claiming the Zero Trust contract requires both a Quint

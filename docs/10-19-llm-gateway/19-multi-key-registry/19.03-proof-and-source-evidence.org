@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Checked scope and reproduction
 
-Run [[file:../../../dev/proofs/check_llm_multi_key_registry.py][the isolated runner]]. It compiles the existing Lean dependency chain into a
+Run the isolated runner (retired Python driver). It compiles the existing Lean dependency chain into a
 fresh temporary directory and checks [[file:../../../dev/proofs/lean/LlmMultiKeyRegistry.lean][the new Lean module]], [[file:../../../dev/proofs/quint/LlmMultiKeyRegistry.qnt][Quint]], focused ITF controls,
 bounded simulations and the category-18 regression. Results are recorded in
 [[file:../../../dev/proofs/evidence/llm-multi-key-registry/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-multi-key-registry/receipt.json][receipt.json]] and [[file:../../../dev/proofs/evidence/llm-multi-key-registry/SHA256SUMS][the byte manifest]]. Failed preliminary proof diagnostics are

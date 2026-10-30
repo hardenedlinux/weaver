@@ -48,7 +48,7 @@ in
 
   languages.go = {
     enable = true;
-    package = import ./dev/toolchains/go { go = pkgs.go; };
+    package = pkgs.go;
   };
 
   profiles.ci.module = {

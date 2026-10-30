@@ -2,9 +2,15 @@
 #+language: en
 #+options: toc:3
 
+#+begin_quote
+Historical Python verification entrypoints are retired. Commands and receipts
+referenced below describe earlier experiments. Current native verification uses
+the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership and coverage]].
+#+end_quote
+
 * Reproduction and bounded evidence
 
-Run [[file:../../../dev/proofs/check_llm_execution_reconciliation.py][the isolated checker]] for [[file:../../../dev/proofs/lean/LlmExecutionReconciliation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmExecutionReconciliation.qnt][Quint]].
+Run the isolated checker (retired Python driver) for [[file:../../../dev/proofs/lean/LlmExecutionReconciliation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmExecutionReconciliation.qnt][Quint]].
 Retain [[file:../../../dev/proofs/evidence/llm-execution-reconciliation/commands.json][command results]], [[file:../../../dev/proofs/evidence/llm-execution-reconciliation/receipt.json][the receipt]] and [[file:../../../dev/proofs/evidence/llm-execution-reconciliation/SHA256SUMS][the byte manifest]].
 
 The runner compiles 20 Lean modules and prints 17 new declarations with no
@@ -104,7 +110,7 @@ records. Neither model proves that an arbitrary physical snapshot is authentic.
 
 These unsafe constructors are excluded from =step=. Tests deliberately expect the
 named invariant to fail; their passing status means the defect was reproduced.
-[[file:../../../dev/proofs/evidence/llm-execution-reconciliation/check-counterexample-observations.py][The independent decoder]] checks ITF payloads and the actual original queue/consume
+The independent decoder (retired Python driver) checks ITF payloads and the actual original queue/consume
 history, rather than relying on test names or log success alone.
 
 Additional guarded controls restore concrete participant views behind durable
