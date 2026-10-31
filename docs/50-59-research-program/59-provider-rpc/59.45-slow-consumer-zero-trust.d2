@@ -1,0 +1,95 @@
+# Core relationships only. Research alignment and evidence remain in Org.
+vars: { d2-config: { layout-engine: tala; theme-id: 3; pad: 70 } }
+classes: {
+  card: {
+    label.near: center-center
+    style.font-size: 21
+    style.border-radius: 12
+    style.stroke-width: 1
+  }
+}
+title: ZERO TRUST / ONE FINAL EXECUTION OWNER {
+  shape: text
+  near: top-center
+  style.font-size: 32
+  style.bold: true
+}
+spec: Cedar SPEC contract\nOriginal published profile\nCedar admission and Policy Delta\nConsumption and final-use obligations {
+  class: card
+  left: 0
+  top: 0
+  width: 490
+  height: 240
+  style.fill: "#e7edf4"
+}
+scheme: Scheme Session / Workflow\nHigher-order Governor\nSemantic continuation proposals\nOriginal claim and result evidence {
+  class: card
+  left: 700
+  top: 0
+  width: 490
+  height: 240
+  style.fill: "#eef3ef"
+}
+go: Go cloud / protocol ingress\nTyped gRPC control\nOptional Arrow data\nReconnect preserves original identity {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 1400
+  top: 0
+  width: 490
+  height: 240
+  style.fill: "#eef3ef"
+}
+view: Weaver complete deciding view\nAuthentic Policy / profile / source\nCurrent owner and commit floor\nOriginal claim / budget / history {
+  class: card
+  left: 0
+  top: 480
+  width: 490
+  height: 240
+  style.fill: "#e7edf4"
+}
+rust: Rust broker / final release\nReserve capacity outside SQL lock\nFresh join after every wait\nEvery row and original range guarded {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 700
+  top: 480
+  width: 490
+  height: 240
+  style.fill: "#e7edf4"
+}
+queue: Bounded output / transport\nOne-use runtime capability\nOnly admitted buffers may drain\nDelivery remains an observation {
+  class: card
+  left: 1400
+  top: 480
+  width: 490
+  height: 240
+  style.fill: "#f4f2ec"
+}
+unknown: Unknown or interrupted outcome\nKeep original claim and hold\nPersist pending range and frontier\nReconcile without replay or refund {
+  class: card
+  left: 700
+  top: 960
+  width: 490
+  height: 220
+  style.fill: "#f4f2ec"
+}
+spec -> view: Application enrichment { style.font-size: 18 }
+scheme -> go: Canonical proposal { style.font-size: 18 }
+go -> rust: Authenticated gRPC { style.font-size: 18 }
+view -> rust: Current authoritative join { style.font-size: 18 }
+rust -> queue: Guarded queue insertion { style.font-size: 18 }
+queue -> go: Protobuf / Arrow observation { style.font-size: 18 }
+rust -> unknown: Cancel / crash / lost commit {
+  style.font-size: 18
+  style.stroke-dash: 5
+}
+footer: "Capacity is not authority · Proof data is not a send handle\nReconnect is not a new claim · Unknown exposure is not a refund" {
+  shape: text
+  left: 340
+  top: 1320
+  width: 1280
+  height: 100
+  style.font-size: 24
+  style.font-color: "#5c8b77"
+}

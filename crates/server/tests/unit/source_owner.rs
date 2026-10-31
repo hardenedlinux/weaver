@@ -1,11 +1,10 @@
 use super::{SourceOwner, answer};
 use crate::runtime::RuntimeOwner;
+use crate::test_fixtures as fixtures;
 use std::{sync::Arc, time::Duration};
 use tokio::sync::{Semaphore, oneshot};
 use weaver_contracts::{Publication, PublicationKey, PublicationOutcome};
 use weaver_ledger::Ledger;
-#[path = "../../../contracts/benches/support/fixtures.rs"]
-mod fixtures;
 
 const POLICY: &str = include_str!("../../../../prod/policies/provider/provider.cedar");
 const SCHEMA: &str = include_str!("../../../../prod/policies/provider/schema.json");

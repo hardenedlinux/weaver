@@ -73,6 +73,8 @@ module ProviderRpc {
   // Reconnection sets up a channel only; it cannot un-cancel the original RPC,
   // clear its pending interval or transfer its affine release continuation.
   action reconnect=s'=s
+  action capacityWait=all {s.frames==2,not(s.slot),s'=s}
+  action observeEOF=s'=s
   action badPeer=s'=s.with("caller",2)
   action wrongCredential=s'=s.with("credential",false)
   action complete=all {s.calls==1,current,s.next==4,not(s.pending),s'=s.with("stage",3)}
@@ -88,7 +90,7 @@ module ProviderRpc {
   action unsafeCreditAsAuthority=s'=appendFrame(s,s.next,1,s.encoding).with("next",s.next+1)
   action unsafeReplayPrepared=s'=appendFrame(s,s.preparedFirst,s.preparedRows,s.preparedEncoding)
   action unsafeRefund=s'=s.with("held",0)
-  action step={nondet nonce=Set(0,1,2).oneOf() any {proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),selectEncoding(0),selectEncoding(1),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(2,1),reserveSlot,dropSlot,prepareBatch(1,0),prepareBatch(2,1),emitPrepared(0),emitPrepared(1),commitRelease,deliver,discardQueued,publish,advanceDomainCut,reauthorize,cancel,crash,reconnect,badPeer,wrongCredential,complete,restrictRows}}
+  action step={nondet nonce=Set(0,1,2).oneOf() any {proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),selectEncoding(0),selectEncoding(1),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(1,1),batch(2,1),reserveSlot,dropSlot,prepareBatch(1,0),prepareBatch(2,1),emitPrepared(0),emitPrepared(1),commitRelease,deliver,discardQueued,publish,advanceDomainCut,reauthorize,cancel,crash,reconnect,capacityWait,observeEOF,badPeer,wrongCredential,complete,restrictRows}}
   action spent=init.then(admit(0)).then(consume(0)).then(burn).then(invoke)
   run defaultRpcCredentialRequiredTest=init.then(wrongCredential).then(admit(0).fail())
   run sameSubjectDifferentKeyRejectedTest=init.then(badPeer).then(admit(1).fail())
@@ -134,4 +136,11 @@ module ProviderRpc {
   run creditAsAuthorizationCounterexampleTest=spent.then(reserveSlot).then(advanceDomainCut).then(unsafeCreditAsAuthority).expect(not(safe))
   run replayAfterEnqueueCounterexampleTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1)).then(emitPrepared(1)).then(crash).then(unsafeReplayPrepared).expect(not(safe))
   run negotiatedEncodingCannotChangeTest=spent.expect(safe).then(selectEncoding(1).fail())
+  action saturatedArrow=arrowSpent.then(batch(1,1)).then(batch(1,1)).then(capacityWait)
+  run fullQueuePolicyChangeDuringWaitTest=saturatedArrow.then(publish).then(deliver).then(reserveSlot).expect(safe).then(prepareBatch(2,1).fail())
+  run fullQueueHistoryChangeDuringWaitTest=saturatedArrow.then(advanceDomainCut).then(deliver).then(reserveSlot).expect(safe).then(prepareBatch(2,1).fail())
+  run fullQueueCancelDuringWaitCannotReconnectTest=saturatedArrow.then(cancel).then(reconnect).then(observeEOF).expect(safe and s.held==4).then(reserveSlot.fail())
+  run fullQueuePositiveControlCompletesTest=saturatedArrow.then(deliver).then(reserveSlot).then(prepareBatch(2,1)).then(emitPrepared(1)).then(commitRelease).then(complete).expect(safe and s.stage==3 and s.held==4)
+  run doneAndEOFCannotResolveUnknownCommitTest=saturatedArrow.then(deliver).then(reserveSlot).then(prepareBatch(2,1)).then(emitPrepared(1)).then(crash).then(deliver).then(observeEOF)
+    .expect(safe and s.pending and s.delivered==Set(0,1,2,3) and s.held==4).then(complete.fail())
 }
