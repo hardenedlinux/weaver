@@ -177,6 +177,7 @@ not establish the cause of the startup delay or erase that failed trial.
 
 | Check | Result / scope |
 |-------+----------------|
+| Standard check-go at =09c8d3f0407892f5bb81e75f092cb00063657492= | 20/20 stages passed with committed-source checks before/after; includes the full provider suite, repaired registration-window probe, rejected-birth and no-downgrade controls |
 | Full Rust workspace after task-origin repair | 102 passed, one deliberately ignored service helper; includes ASP deny, native properties, actual TCP/TLS and all ledger tests |
 | Focused real Go/Rust source recovery | Passed with race detection: staging/final reply loss, control restart, two pending proposals, blocked old caller and partial output |
 | Normal Go packages | go test -race ./... passed before documentation synchronization; final standard gate recorded on delivery |
