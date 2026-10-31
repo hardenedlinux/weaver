@@ -29,6 +29,15 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Reusable Turso writers are bounded exclusive execution resources,
+           never cached authority or send capabilities. FULL is configured and
+           verified on private connection creation. Only successful COMMIT plus
+           confirmed autocommit permits return to the idle set; error, Unknown,
+           failed cleanup or unwinding discards the connection. Active plus idle
+           writers cannot exceed the explicit Host capacity. Close stops new
+           leases, refuses outstanding work and discards idle sessions; reopening
+           cannot inherit a prior lease. Existing home-sequence, original keys,
+           unknown obligations and final Rust admission remain unchanged. */
         doc /* Turso concurrent admission is an explicit storage execution mode.
            The existing canonical home-sequence is the common write-conflict
            witness for content, authority changes and outbox acknowledgment.

@@ -1,0 +1,75 @@
+vars: { d2-config: { layout-engine: tala; theme-id: 3; pad: 80 } }
+classes: { card: { label.near: center-center; style.font-size: 24; style.border-radius: 12; style.stroke-width: 1 } }
+title: PRIVATE WRITER REUSE / FRESH AUTHORIZATION {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+semantic: Original canonical home\nClaim / reservation / unknown exposure\nScheme semantics and Go ingress {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+storage: Bounded private writer owner\nFULL verified on creation\nIdle plus active execution capacity {
+  class: card
+  left: 810
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+retained: Exclusive writer lease\nFresh MVCC transaction and snapshot\nRecheck original home and authority {
+  class: card
+  left: 1620
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+pending: Error / Unknown / worker failure\nDiscard session before releasing slot\nOriginal unknown obligation stays held {
+  class: card
+  left: 0
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+projection: Successful COMMIT and autocommit\nReturn healthy private connection\nNo captured Policy or send permission {
+  class: card
+  left: 810
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+execution: Rust final transport owner\nLive one-use ticket / current Policy\nStorage readiness grants no send right {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+semantic -> storage: Canonical scope { style.font-size: 20 }
+storage -> retained: Exclusive checkout { style.font-size: 20 }
+projection -> storage: Bounded healthy return { style.font-size: 20 }
+retained -> pending: Failure discards session { style.font-size: 20 }
+retained -> projection: Commit and autocommit { style.font-size: 20 }
+retained -> execution: Separate final admission { style.font-size: 20 }
+footer: "Private SQL connection reuse carries no authorization · Every attempt starts a fresh transaction\nA free writer slot cannot refund an unknown reservation or mint a send ticket" {
+  shape: text
+  left: 140
+  top: 1080
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}
