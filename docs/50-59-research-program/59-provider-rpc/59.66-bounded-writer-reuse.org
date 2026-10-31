@@ -31,14 +31,15 @@ connection. The transaction interface exposes no raw connection or PRAGMA setter
 
 A writer lease has exclusive ownership. It starts non-reusable and becomes
 eligible only after successful COMMIT and confirmed autocommit. Any error,
-Unknown outcome, failed cleanup or panic discards it after rollback/drop; only
+driver Unknown outcome, failed cleanup or panic discards it after rollback/drop; only
 then is capacity released. Historical result replay still supplies no new send
 ticket. Reuse retains physical configuration, not snapshots, authorizations,
 original reservations or a completed transaction.
 
 Close first prevents new leases. Outstanding leases make close fail rather than
 acknowledge shutdown or clear their owner. Returned leases cannot enter a closed
-idle set. Reopen requires the old owner to be completely closed; normal Backend
+idle set. Closing is terminal for that object; recovery constructs a fresh provider
+over the original database, as refined in [[file:59.67-writer-owner-lifecycle.org][the writer lifecycle review]]. Normal Backend
 shutdown continues to drain first. Pool readiness is not an execution fence or
 an independent anti-rollback root.
 
@@ -79,7 +80,7 @@ The resource bound follows from the owner's mutex and exclusive lease: checkout
 from idle preserves idle+active; allocation occurs only when idle is empty and
 active is below capacity; healthy return preserves the total; discard decreases
 it after physical cleanup. Close disables checkout and refuses live leases;
-reopen requires complete closure. The existing bootstrap and historical reader
+recovery uses a new provider after complete closure. The existing bootstrap and historical reader
 are two additional connections in the Host budget. This is a Rust resource
 refinement argument, not a new Lean accounting or authority theorem.
 
@@ -93,7 +94,7 @@ reuse, refusal/partial-write rollback, Unknown COMMIT, unwinding, close with a
 live lease and reopen. Existing same-home conflicts, revocation during validation,
 original operation/outbox crash recovery and typed original unknown-exposure
 controls run through the reusable factory. WAL, fresh MVCC and reusable MVCC
-standard suite configurations each pass 54 tests; Clippy and the unchanged ASP
+standard suite configurations at that revision each passed 54 tests; Clippy and the unchanged ASP
 deny gate pass. Initial layout/cycle failures were repaired by an interface-only
 mod.rs and acyclic configuration/provider/resource leaves, not exceptions.
 

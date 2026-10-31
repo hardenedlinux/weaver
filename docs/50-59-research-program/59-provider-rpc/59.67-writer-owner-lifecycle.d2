@@ -1,0 +1,75 @@
+vars: { d2-config: { layout-engine: tala; theme-id: 3; pad: 80 } }
+classes: { card: { label.near: center-center; style.font-size: 24; style.border-radius: 12; style.stroke-width: 1 } }
+title: TERMINAL RESOURCE OWNER / ORIGINAL OBLIGATION {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+original: Scheme semantics / Go ingress\nOriginal claim and authority vector\nReservation / history / unknown exposure {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+active: Exclusive writer lease\nFresh transaction / current authority\nCancellation does not imply rollback {
+  class: card
+  left: 810
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+unknown: Commit outcome reconciliation\nDriver Unknown discards session\nKnown commit / lost reply stays recorded {
+  class: card
+  left: 1620
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+stopped: Closing is terminal\nDeny checkout / refuse live-lease close\nDiscard late returns / no resurrection {
+  class: card
+  left: 0
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+recovery: Fresh provider / original database\nRecover original operation and authority\nKeep unknown obligation held {
+  class: card
+  left: 810
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+executor: Rust final transport owner\nCurrent Policy / history / owner fence\nOne-use admission at actual release {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+original -> active: Same canonical binding { style.font-size: 20 }
+active -> unknown: Native transaction result { style.font-size: 20 }
+active -> stopped: Begin close / drain accepted work { style.font-size: 20 }
+stopped -> recovery: Complete resource closure { style.font-size: 20 }
+unknown -> recovery: Exact durable reconciliation { style.font-size: 20 }
+recovery -> executor: Separate current-use admission { style.font-size: 20 }
+footer: "Resource closure is not authority revocation · A free slot is not refunded budget\nHistorical replay never recreates a live send capability" {
+  shape: text
+  left: 140
+  top: 1080
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}

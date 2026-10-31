@@ -297,6 +297,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.66-bounded-writer-reuse.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.66-bounded-writer-reuse.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.66-bounded-writer-reuse.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.67-writer-owner-lifecycle.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.67-writer-owner-lifecycle.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.67-writer-owner-lifecycle.svg' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.svg' : File;

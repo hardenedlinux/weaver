@@ -51,14 +51,29 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Native multithreaded acceptance uses at least four Tokio workers;
+           explicit blocking-thread budgets also have a four-thread minimum. CPU-derived performance drivers
+           scale to the available Host CPUs with a four-worker minimum and report
+           actual CPU/worker counts separately. Logical one-slot refusal controls
+           are resource-bound tests, never a reduction of runtime thread count.
+           Earlier two-thread receipts remain historical, not current acceptance. */
+        doc /* A SQL writer owner becomes terminal when close starts. Recovery
+           constructs a fresh provider around the original durable store; the
+           stopped object cannot reopen or accept a late lease. Open/close hold
+           one lifecycle lock across pool, reader and bootstrap resource changes.
+           Cancellation is not rollback, close is not domain revocation, and a
+           free slot is not discharged exposure. Driver Unknown discards a writer;
+           lost delivery after known commit may leave a healthy physical session
+           but still requires exact original operation/authority recovery. No
+           resource transition grants semantic authority or permits refund. */
         doc /* Reusable Turso writers are bounded exclusive execution resources,
            never cached authority or send capabilities. FULL is configured and
            verified on private connection creation. Only successful COMMIT plus
-           confirmed autocommit permits return to the idle set; error, Unknown,
+           confirmed autocommit permits return to the idle set; driver error/Unknown,
            failed cleanup or unwinding discards the connection. Active plus idle
            writers cannot exceed the explicit Host capacity. Close stops new
-           leases, refuses outstanding work and discards idle sessions; reopening
-           cannot inherit a prior lease. Existing home-sequence, original keys,
+           leases, refuses outstanding work and discards idle sessions; recovery
+           uses a new provider and cannot inherit a prior lease. Existing home-sequence, original keys,
            unknown obligations and final Rust admission remain unchanged. */
         doc /* Turso concurrent admission is an explicit storage execution mode.
            The existing canonical home-sequence is the common write-conflict

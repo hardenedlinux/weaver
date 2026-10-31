@@ -6,6 +6,8 @@
 The root [[file:../../../Project.sysml][Project.sysml]] controls package and asset ownership through
 [[file:59.20-project-structure.org][the executable project architecture gate]].
 Maintained native and formal checks follow [[file:59.21-verification-ownership.org][the verification ownership contract]].
+[[file:59.67-writer-owner-lifecycle.org][Writer owner lifecycle]] closes cancellation, terminal ownership, retirement
+and exact original-operation recovery under a four-worker test minimum.
 [[file:59.66-bounded-writer-reuse.org][Bounded writer reuse]] reviews private connection ownership,
 hot-domain lifecycle costs and MRR-owned real-validation benchmarks.
 [[file:59.65-turso-concurrent-admission.org][Turso concurrent admission]] records the SysML-led
