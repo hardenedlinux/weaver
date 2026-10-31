@@ -1,0 +1,104 @@
+vars: { d2-config: { layout-engine: tala; theme-id: 3; pad: 70 } }
+classes: { card: { label.near: center-center; style.font-size: 22; style.border-radius: 12; style.stroke-width: 1 } }
+title: SOURCE IDENTITY / CURRENT PUBLICATION AUTHORITY {
+  shape: text
+  near: top-center
+  style.font-size: 34
+  style.bold: true
+}
+source: Source workload and role\nCloud / Kubernetes authentication\nBootstrap and control admission {
+  class: card
+  icon: ../../architecture/diagrams/assets/kubernetes.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+binding: Registrar authority binding\nSubject / incarnation / key\nScope / audience / epoch / serial {
+  class: card
+  left: 750
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+journal: Current authority journal\nAssignment / issuance / revocation\nDurable outcomes and epoch floor {
+  class: card
+  left: 1500
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+evidence: Original publication contract\nRequired parent and Delta artifact\nCanonical claim / budget / history {
+  class: card
+  left: 0
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+use: Bound operation at actual use\nKey possession / exact transcript\nCurrent binding and non-revocation {
+  class: card
+  left: 750
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+cas: Rust authoritative publication CAS\nJoin identity / registry / source cut\nPreserve original consumption and holds {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1500
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+pending: Pending original commands\nLost reply retains exact identity\nSibling intents resolve independently {
+  class: card
+  left: 0
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+recovery: Exact recovery and handoff\nRead historical outcomes\nFresh qualification before continuation {
+  class: card
+  left: 750
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+execution: Rust final execution owner\nFresh admission after every wait\nRetain unknown exposure and original scope {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1500
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+source -> binding: Request enrollment { style.font-size: 18 }
+journal -> binding: Issued current binding { style.font-size: 18 }
+binding -> use: Exact identity contract { style.font-size: 18 }
+evidence -> use: Bound operation { style.font-size: 18 }
+use -> cas: Current qualified use { style.font-size: 18 }
+journal -> cas: Final authority join { style.font-size: 18 }
+pending -> recovery: Reconcile exact outcomes { style.font-size: 18 }
+recovery -> use: Recheck before continuation { style.font-size: 18 }
+cas -> execution: Current publication { style.font-size: 18 }
+footer: "One identity meaning · Qualified references cross the boundary\nRole authentication and historical replies never replace current execution authority" {
+  shape: text
+  left: 200
+  top: 1390
+  width: 1650
+  height: 100
+  style.font-size: 26
+  style.font-color: "#5c8b77"
+}

@@ -10,6 +10,17 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Source-role authentication is bootstrap input. A current registrar
+           binding independently fixes subject, incarnation, public key, scope,
+           audience, epoch and credential identity. Possession covers the exact
+           operation transcript; register and publish have separate purposes.
+           Revocation and final use serialize at the authority journal. A delayed
+           issuer outcome remains historical and cannot activate an old epoch. */
+        doc /* Startup source-certificate pin rotation can reject an old key while
+           retaining original pending commands. It does not establish durable
+           incarnation assignment, online revocation or anti-rollback: restoring
+           the old startup pin currently accepts the old key. Keep this concrete
+           coverage counterexample until the production authority adapter exists. */
         doc /* Delta registration linearizes at the existing independent commit
            authority, not at a local projection write or an RPC reply. Its exact
            original command/artifact registration is immutable and survives owner

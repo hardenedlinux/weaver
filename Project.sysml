@@ -53,12 +53,15 @@ package WeaverProject {
             doc /* Quint owns concurrent/fault schedules and unsafe counterexamples.
                Extend existing publication/execution models rather than duplicate
                their ledgers. It does not reimplement Cedar evaluation or prove
-               arbitrary Scheme/Rust programs. */
+               arbitrary Scheme/Rust programs. Credential semantics enter as
+               qualified opaque references; only read/use ordering is modeled. */
         }
         part semantics : VerificationResponsibility {
             doc /* Lean reuses cedar-poo-spec and Cedar semantic/refinement
                theorems with explicit authenticity/materialization premises.
                No second control/activation/CAS state machine is introduced.
+               Credential subject/key/scope/audience meanings have one SPEC
+               definition; downstream Lean only applies its composition laws.
                Solver reports and finite replay records are not kernel proofs. */
         }
         part implementation : VerificationResponsibility {
@@ -217,6 +220,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.53-artifact-registry-recovery.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.53-artifact-registry-recovery.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.53-artifact-registry-recovery.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.54-source-incarnation-authority.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.54-source-incarnation-authority.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.54-source-incarnation-authority.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

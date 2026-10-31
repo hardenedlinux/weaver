@@ -4,9 +4,13 @@ package dev
 
 import (
 	"context"
+	"crypto/sha256"
 	"crypto/tls"
+	"crypto/x509"
+	"encoding/hex"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -21,6 +25,109 @@ import (
 func pendingChange(f *fixture, id string) v1.Publication {
 	parent := uint64(0)
 	return v1.Publication{OperationID: id, ExpectedRevision: &parent, Fence: 2, Policy: f.policy, Schema: f.schema}
+}
+
+// Startup certificate pin rotation exercises the existing boundary; it is not
+// durable registrar epoch issuance or online credential revocation.
+func restartWithSourceCertificate(t *testing.T, f *fixture, next tls.Certificate) {
+	t.Helper()
+	f.stop(t)
+	f.pki.source = next
+	digest := sha256.Sum256(next.Certificate[0])
+	const key = "WEAVER_GRPC_SOURCE_PEER_SHA256"
+	found := false
+	for i, value := range f.env {
+		name, _, _ := strings.Cut(value, "=")
+		if name == key {
+			f.env[i] = key + "=" + hex.EncodeToString(digest[:])
+			found = true
+		}
+	}
+	if !found {
+		t.Fatal("source certificate admission setting missing")
+	}
+	f.start(t)
+}
+
+func TestProviderSourceCertificateRotationRecoversLostReplyAndPending(t *testing.T) {
+	f := newFixture(t, completeSSE, false)
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	oldCertificate := f.pki.source
+	oldToken := f.admin.Token
+	oldTLS := &tls.Config{RootCAs: f.pki.root, Certificates: []tls.Certificate{oldCertificate}, ServerName: "localhost", MinVersion: tls.VersionTLS13}
+	next := secondaryClient(t, f.pki)
+	oldLeaf, err := x509.ParseCertificate(oldCertificate.Certificate[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	newLeaf, err := x509.ParseCertificate(next.Certificate[0])
+	if err != nil || oldLeaf.Subject.String() != newLeaf.Subject.String() {
+		t.Fatal("rotation must preserve the shared subject while changing its key", err)
+	}
+	a, b := pendingChange(f, "rotated-source-a"), pendingChange(f, "rotated-source-b")
+	relay := &publicationReplyLoss{source: f.admin, loseStage: true}
+	if _, err := relay.StageAuthority(ctx, gatewayclient.Publication(a)); status.Code(err) != codes.Unavailable {
+		t.Fatal("durable staging reply was not lost", err)
+	}
+	if err := f.admin.StagePublication(ctx, b); err != nil {
+		t.Fatal(err)
+	}
+	restartWithSourceCertificate(t, f, next)
+	oldWorker, err := gatewayclient.Dial(ctx, f.sourceAddress, oldToken, oldTLS)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { oldWorker.Connection.Close() })
+	if err := oldWorker.StagePublication(ctx, a); status.Code(err) != codes.Unauthenticated {
+		t.Fatal("old source key remained valid after rotation", err)
+	}
+	if _, err := oldWorker.RPC.PublishAuthority(oldWorker.Context(ctx), gatewayclient.Publication(a)); status.Code(err) != codes.Unauthenticated {
+		t.Fatal("old key reached the final publication endpoint", err)
+	}
+	if _, err := f.admin.InspectPublication(ctx, a); status.Code(err) != codes.NotFound {
+		t.Fatal("rotation fabricated a final outcome", err)
+	}
+	if _, err := f.admin.Publish(ctx, a); err != nil {
+		t.Fatal("new source key could not continue the exact original command", err)
+	}
+	f.plan.Revision, f.plan.Fence = 1, 2
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil || f.primary.Load() != 0 {
+		t.Fatal("credential rotation discarded sibling pending")
+	}
+	if _, err := f.admin.Publish(ctx, b); err != gatewayclient.ErrPublicationRejected {
+		t.Fatal("old-parent sibling lost its original rejection", err)
+	}
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err != nil {
+		t.Fatal("resolved authority failed positive control", err)
+	}
+	f.stop(t)
+	f.start(t)
+	if _, _, err := execute(t, f, pb.Encoding_ARROW_IPC, 2); err == nil || f.primary.Load() != 1 || inspect(t, f).Held != 4 {
+		t.Fatal("source rotation and restart reopened original consumption or hold")
+	}
+}
+
+// Expected gap: a startup pin is not an independently persistent epoch floor.
+func TestProviderSourceCertificateConfigRollbackReacceptsOldKeyCounterexample(t *testing.T) {
+	f := newFixture(t, completeSSE, false)
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	old := f.pki.source
+	restartWithSourceCertificate(t, f, secondaryClient(t, f.pki))
+	if _, err := f.admin.Publish(ctx, pendingChange(f, "current-source-key")); err != nil {
+		t.Fatal(err)
+	}
+	restartWithSourceCertificate(t, f, old)
+	parent := uint64(1)
+	proposal := pendingChange(f, "rolled-back-source-key")
+	proposal.ExpectedRevision, proposal.Fence = &parent, 3
+	if _, err := f.admin.Publish(ctx, proposal); err != nil {
+		t.Fatal("startup-pin rollback boundary changed; audit durable revocation", err)
+	}
+	if f.primary.Load() != 0 {
+		t.Fatal("publication phase sent provider traffic")
+	}
 }
 
 // Durable staging is the existing source-admission subset. It is not an

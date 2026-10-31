@@ -312,6 +312,11 @@
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityUncompiledSourceCannotRegisterTest"},
     {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"}]},
   {"id":"GovernancePolicyProjection","witnesses":[
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem registrar_binding_reaches_final_cas"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run revocationBetweenValidationAndFinalCASTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run delayedIssuanceDecisionCannotReactivateOldEpochTest"},
+    {"file":"go/dev/provider_policy_pending_test.go","pattern":"func TestProviderSourceCertificateRotationRecoversLostReplyAndPending"},
+    {"file":"go/dev/provider_policy_pending_test.go","pattern":"func TestProviderSourceCertificateConfigRollbackReacceptsOldKeyCounterexample"},
     {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem review_recovery_keeps_original_constraints"},
     {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem durable_review_binding_survives_final_cas"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run registrationLostReplyCannotPublishUnrecoveredProjectionTest"},
