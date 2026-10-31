@@ -8,6 +8,21 @@ implementation checkpoint has not delivered its event bus, Collector or exporter
 this chapter and the Project SysML service part define that delivery contract.
 No new external listener or data export is enabled by this design document.
 
+Current Go producers emit local structured startup/source-process phases through
+standard =slog=. Fields contain fixed phase names, elapsed time, child PID,
+outcome/cancellation categories, byte count and host-wall timestamps. They exclude
+source paths, source/Policy bodies and credentials. These ordinary stderr
+diagnostics do not deliver the target event bus, nonblocking exporter, loss
+accounting or durable security audit. A PID is not an authenticated incarnation.
+The native integration fixture also emits fixed labels and SDK CPU/real/host-wall
+clocks. Trusted operator code can forge that text; it never selects a claim,
+authorizes publication or proves process quiescence.
+
+Child reaping, artifact decoding, authority reconciliation and issuing Serve are
+separate observations. Tests still require authenticated readiness and natural
+exit. Clock-domain and failed sampling evidence is retained in
+[[file:59.39-ffi-local-results.org][the installed-prefix qualification chapter]].
+
 The service observes Scheme source compilation, Go publication/routing and Rust
 authority/dispatch/release events. Default collection is local and bounded.
 An external Collector is an explicitly configured destination with authenticated

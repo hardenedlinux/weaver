@@ -8,7 +8,20 @@
         :hardenedlinux/weaver/scheme/gateway/func)
 (export emit-control-fixture)
 
+;;; Local phase evidence only. Labels and SDK clocks contain no source data;
+;;; their presence cannot admit an artifact or certify natural process exit.
+(def (trace-phase label)
+  (let ((port (current-error-port)) (observed (time->seconds (current-time))))
+    (display "weaver scheme phase=" port) (display label port)
+    (display " real=" port) (display (real-time) port)
+    (display " cpu=" port) (display (cpu-time) port)
+    (display " wall-us=" port) (display (inexact->exact (floor (* observed 1000000))) port)
+    (newline port) (force-output port)))
+
+(trace-phase "fixture-module-ready")
+
 (def (emit-control-fixture init mode tasks plans publication asset-root)
+  (trace-phase "fixture-enter")
   (def strategy
     (make-loop-strategy-plan 'weaver-routing
       (list (make-loop-pattern-descriptor 'infer "Original inference" '((level . l2)))
@@ -63,5 +76,8 @@
                    (list (agentic-ai-lab-governance-threat "weaver/other-threat" 'low 'latent
                            (list (agentic-ai-lab-governance-precondition "weaver/input" #f #f))))))
               (else assessment))))))
-  (emit-governed-gateway init (make-loop-governor 'weaver strategy overrides)
-                        profile (.o request: 'publish source_root: asset-root) states tasks plans publication))
+  (trace-phase "compile-begin")
+  (let ((result (emit-governed-gateway init (make-loop-governor 'weaver strategy overrides)
+                                     profile (.o request: 'publish source_root: asset-root) states tasks plans publication)))
+    (trace-phase "artifact-written")
+    result))

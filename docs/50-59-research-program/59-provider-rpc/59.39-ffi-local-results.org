@@ -1,6 +1,75 @@
 #+title: 59.39 FFI-only Scheme Qualification: Local Evidence
 #+language: en
 
+* Ordinary source startup observations
+
+The production Go path records source child start/reap, artifact decode and
+control configuration/authority/Serve phases without source paths or payloads.
+The existing Scheme fixture library records module readiness, entry, compile-begin
+and artifact-written. SDK CPU/real clocks and host-wall microseconds remain
+distinct: subtracting a Go elapsed clock from the SDK real clock is invalid.
+Host-wall calibration assumes no intervening clock adjustment. Only actual Wait
+proves that child was reaped; phase text cannot certify descendants, durable
+publication, natural exit or readiness.
+
+The first observation passed but its report extractor missed Go's default slog
+format. Native module-ready/artifact-written clocks were 5.644/7.927 seconds.
+After correcting extraction, another observation passed with native clocks
+4.526/6.194 seconds and Go process elapsed 8.207 seconds. Those different origins
+cannot establish a two-second exit interval. They remain incomplete observations,
+not performance acceptance or causes of the earlier failures.
+
+A calibrated unprofiled observation passed. Relative to child launch, module
+readiness took 3.044448 seconds, generation after compile-begin took 1.532838
+seconds and artifact-write to child reaping took 1.952435 seconds. Go's monotonic
+process elapsed was 6.529992 seconds. Configuration-ready to authority-reconciled
+took 0.023985 seconds; issuing Serve followed. The test still required actual
+mTLS readiness and denied the provider request despite inert FFI success. These
+are installed-prefix measurements, not cold qualification or runtime throughput.
+
+The first sampling attempt could not list processes: sandbox pgrep returned
+status three with =sysmond service not found=. That is unavailable inventory,
+not proof that a child was absent. The existing test handle later confirmed a
+terminal pass (native process elapsed 6.025101 seconds); no sample was captured
+for it. Inventory was verified separately before the corrected attempt.
+
+The corrected sample identified the exact fixture child and requested six seconds
+at five-millisecond intervals. It reproduced failed startup: module readiness
+occurred 10.533130 seconds after launch, compile-begin followed, no artifact-written
+record appeared and the existing watchdog canceled the process. Go observed failed
+reaping after 14.453231 seconds; the whole test failed in 16.75 seconds. The outer
+test readiness deadline starts before the child Go startup context, so these
+elapsed clocks need not reach fifteen simultaneously.
+
+Of 1059 main-thread samples, 977 were beneath =___dynamic_load -> dlopen= and 909
+beneath =notifyDebuggerLoad=; a branch of 548 reached
+=RemoteNotificationResponder::blockOnSynchronousEvent=. This identifies sampled
+loader/notification work before fixture readiness, rather than a run that finished
+work and hung only in cleanup. Sampling can perturb that wait. It does not identify
+the responder, explain every historical failure or explain the unprofiled
+post-artifact interval. The sample SHA-256 was
+=8fd414419b2dcd8882c37f7e3dd1ed62f36de558f86353745a5531adeefd3862=;
+raw output is temporary rather than tracked. Earlier samples below remain
+separately scoped. No timeout, pin, library validation, dyld notification or
+cleanup path is changed or disabled.
+
+The ordinary Go race suite and focused SysML/ownership checks passed. Standard
+Gerbil testing passed all five modules/23 cases, including both 128-trial native
+properties. The actual JSON/YAML partial-send, revocation and dual-restart test
+passed in 7.86 seconds (JSON 5.07, YAML 2.79); its command also rebuilt Rust
+dependencies for 46.40 seconds, outside those scenario timings. Its successes do
+not reclassify the failed sampled Scheme startup. Per-start report extraction
+prints only that process's appended phase records rather than repeating previous
+restart records. Temporary logs/native samples are removed after curation; core
+execution diagrams retain their existing semantic boundaries without diagnostic
+timestamps or sample counts.
+
+After preserving the concurrent MRR ownership change, committed source =2bf31f5=
+passed the standard clean-source architecture gate. The actual JSON/YAML restart
+test passed again in 9.03 seconds (JSON 6.42, YAML 2.61), with each startup's
+records reported once. This post-merge check qualifies that implementation and
+reporting change; it does not override the retained failed native sample.
+
 * Fixed inputs and result boundary
 The fresh-prefix complete =check-scheme= run on
 =6c91131f8709e1538c6034d8426b8a0ed8439369= reported =FAIL=: thirteen of fourteen

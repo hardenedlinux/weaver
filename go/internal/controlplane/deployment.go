@@ -11,6 +11,7 @@ import (
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"google.golang.org/grpc"
 	"io"
+	"log/slog"
 	"net"
 	"os"
 	"path/filepath"
@@ -77,6 +78,11 @@ func digest(name string) ([32]byte, error) {
 }
 
 func RunFromEnv(ctx context.Context) error {
+	started := time.Now()
+	trace := func(phase string) {
+		slog.InfoContext(ctx, "Control startup", "phase", phase, "elapsed", time.Since(started))
+	}
+	trace("begin")
 	startup, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
 	serverKey, err := pair("WEAVER_CONTROL_SERVER")
@@ -123,6 +129,7 @@ func RunFromEnv(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	trace("configuration-ready")
 	authorityRoots, err := roots("WEAVER_CONTROL_AUTHORITY_CA")
 	if err != nil {
 		return err
@@ -160,20 +167,24 @@ func RunFromEnv(ctx context.Context) error {
 		return err
 	}
 	defer operation.Connection.Close()
+	trace("operation-channel-connected")
 	source, err := gatewayclient.Dial(startup, sourceAddress, sourceToken, &tls.Config{RootCAs: authorityRoots, Certificates: []tls.Certificate{sourceKey}, ServerName: name})
 	if err != nil {
 		return err
 	}
 	defer source.Connection.Close()
+	trace("source-channel-connected")
 	gateway, err := Bootstrap(startup, source, operation, bundle)
 	if err != nil {
 		return err
 	}
+	trace("authority-reconciled")
 	server, err := NewServer(gateway, &tls.Config{Certificates: []tls.Certificate{serverKey}, ClientCAs: clientRoots, ClientAuth: tls.RequireAndVerifyClientCert}, leaf, token)
 	if err != nil {
 		return err
 	}
 	serving := make(chan error, 1)
+	trace("serve-starting")
 	go func() { serving <- server.Serve(bounded) }()
 	select {
 	case err := <-serving:

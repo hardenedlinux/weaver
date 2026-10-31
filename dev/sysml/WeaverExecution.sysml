@@ -298,6 +298,11 @@ package WeaverExecution {
            hide the present bounded-call contention cost. */
     }
     part def TelemetryService {
+        doc /* Current Go source/startup producers emit fixed-label local slog
+           metadata; native integration fixtures supply clocked phase records.
+           These ordinary stderr diagnostics are not the target bounded event
+           bus, loss counters, exporter, durable audit or readiness authority.
+           Their presence cannot prove completion or discharge unknown holds. */
         doc /* Default service in the target architecture; implementation and exporter delivery remain pending. Local bounded signals observe source/authority/effects. Export needs explicit configuration and Policy. Telemetry cannot acknowledge an authority commit, authorize a send or release unknown budget. */
         doc /* Observe already extracted metadata with bounded nonblocking
            submission. Do not re-read a mutable request, retry an effect or mutate
