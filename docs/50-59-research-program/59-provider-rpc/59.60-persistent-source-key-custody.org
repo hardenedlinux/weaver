@@ -228,3 +228,8 @@ The added finite-run uniqueness theorem preserves =List.Nodup= from that explici
 initial-prefix premise through the same existing Step relation. This connects the
 native fresh-key guard to the stronger sampled =sourceDecisionSafe= condition;
 it does not certify bootstrap provenance or independent storage retention.
+
+The stronger standard clean-source Policy gate passed all 44 stages at
+=431d385=, including both source-key recovery schedules and the new Lean
+uniqueness theorem. Runtime and integration-test source is unchanged from
+=0f5e9a5=; that earlier Rust/Go receipt remains labeled with its actual commit.
