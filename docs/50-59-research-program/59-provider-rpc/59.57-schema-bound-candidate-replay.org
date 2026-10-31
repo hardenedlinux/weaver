@@ -195,3 +195,26 @@ a favorable result.
 The full project goal remains open: actual semantic approval, authenticated
 reviewed RPC, complete source/Profile/fact/history materialization, independent
 anti-rollback authority and production-path performance still need native evidence.
+
+* Merged source acceptance
+
+The source cut =37bc412ae71d83a80017d26cbde9ed04c10daa72= retains concurrent
+=d1fc00a= production-asset-boundary and source-recovery work. This document uses
+59.57, preserving that work's separate 59.56 identity and all its model witnesses.
+Rust production code and its 121-test/ASP receipt are unchanged by the merge.
+
+At this merged source, standard clean-source =check-go= passed twenty of twenty
+stages, including the new SysML runtime asset boundary and complete real provider
+suite. This verifies that runtime code does not import the development proof
+bridge/runner: it consumes the actual packaged SPEC Rust library and owned
+production manifest bytes. Existing original claims, denied routes, budget holds,
+reply loss/restart and named JSON/YAML execution remain under the same checks.
+
+The merged recovery owner passed 101 named Quint witnesses; the dependent
+AuthorityPublication selection also passed. Local-review and source-recovery
+schedules each passed 1,000 sampled runs of up to 60 steps with seed 293. These
+receipts neither prove all schedules nor convert expected unsafe counterexamples
+into native enforcement. The original pinned Lean bridge and dependency pins
+are retained; no new complete candidate SPEC or cold Scheme build is claimed.
+Rendered Org/D2, structural SysML traces, local native tests, model/proof and
+scoped optimized measurements remain distinct evidence layers. CI is not awaited.
