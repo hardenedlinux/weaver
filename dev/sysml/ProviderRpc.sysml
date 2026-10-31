@@ -63,6 +63,11 @@ package ProviderRpc {
            admission. Keep bounded native capacity until the actual worker ends.
            Two private frames do not bound HTTP/2, network or Go application
            buffers; those domains require their own limits and verification. */
+        doc /* The local release transaction holds the deciding SQLite write
+           order through the callback. Original burn and unknown range must
+           already be committed; the later release-completion marker is not
+           the prerequisite. This does not serialize independent fact stores
+           or establish a rollback-resistant global floor. */
     }
     requirement def ConnectionCustodyBound {
         doc /* Every accepted TCP connection owns capacity before TLS and retains it through actual socket destruction. TLS completion and peer loss cannot return capacity early. Stalled handshakes have a fixed deadline; shutdown drops listener reservations and drains owned resources. */

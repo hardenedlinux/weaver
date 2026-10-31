@@ -205,6 +205,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.49-policy-proposal-barrier.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.49-policy-proposal-barrier.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.49-policy-proposal-barrier.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.50-parent-contract-and-replay.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.50-parent-contract-and-replay.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.50-parent-contract-and-replay.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

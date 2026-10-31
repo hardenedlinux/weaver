@@ -163,4 +163,10 @@ module ProviderRpc {
     not(allocationAdmitted(charged(0,6,8),3,8)))
   // The weaker wire-only premise permits a request larger than its allocation limit.
   run wireOnlyAllocationCounterexampleTest=init.expect(1<=4 and not(allocationAdmitted(0,9,8)))
+  // allowedRows is the actual authoritative composition, including retained
+  // parent obligations. A child's own Allow is not a replacement predicate.
+  run retainedParentBlocksLaterRowTest=spent.then(batch(1,0)).then(deliver).then(reserveSlot).then(restrictRows)
+    .expect(safe).then(prepareBatch(1,0).fail())
+  run childOnlyPredicateDropsParentCounterexampleTest=spent.then(batch(1,0)).then(deliver).then(reserveSlot).then(restrictRows)
+    .then(unsafeCreditAsAuthority).expect(not(safe))
 }

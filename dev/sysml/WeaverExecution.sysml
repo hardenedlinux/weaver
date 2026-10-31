@@ -128,6 +128,12 @@ package WeaverExecution {
            adaptation, strengthening and ongoing effect checks. ProfileObject
            interprets them through actual LeanPoo inheritance/Contract/Session.
            The complete ZeroTrust import closure must exclude Gateway. */
+        doc /* A root-indexed profile proof preserves the root, not every extra
+           ancestor requirement under raw POO overrides. Gateway composition
+           must retain the independently required parent Session and selected
+           Session, then conjoin both actual projections. The trusted publisher
+           must bind the required parent's full source/Contract, not its name
+           or a Session selected by the child request. */
         doc /* Gateway.ZeroTrust consumes the generic functions with its own
            publication-indexed admission and operation/authority ledger. Ongoing
            use keeps the original committed prefix and re-assesses current

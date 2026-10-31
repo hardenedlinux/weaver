@@ -13,6 +13,7 @@ structure RuntimeView extends PolicyBridge.PublicationContext where
   commitFloor : Nat
   budgetVersion : Nat
   historyPrefix : List Nat
+  pendingPublications : List (String × String)
   deriving DecidableEq
 
 open CedarPooSpec
@@ -86,4 +87,34 @@ theorem continuing_uses_current_state_and_original_consumption
   exact ⟨accepted.2.2.1, accepted.2.2.2.1.2, retained.2.2.1, retained.2.2.2⟩
 
 #print axioms continuing_uses_current_state_and_original_consumption
+
+theorem retained_parent_and_selected_object_reach_gateway
+    {parentObject selectedObject : ZeroTrust.ProfileObject.Object (Gateway.ZeroTrust.framework proposal).required}
+    (requiredParent : ZeroTrust.ProfileObject.Session (Gateway.ZeroTrust.framework proposal).required parentObject)
+    (selected : ZeroTrust.ProfileObject.Session (Gateway.ZeroTrust.framework proposal).required selectedObject)
+    (composition : ZeroTrust.ProfileObject.Composed requiredParent selected)
+    (read : Gateway.ZeroTrust.fromFrameworkObject proposal requiredParent selected = some composition)
+    (accepted : composition.requirement requested actual) :
+    parentObject.read .profile = some composition.parentProfile ∧
+    selectedObject.read .profile = some composition.selectedProfile ∧
+    composition.parentProfile.requirement requested actual ∧
+    (Gateway.ZeroTrust.framework proposal).required requested actual ∧ original.Refines prepared.profile :=
+  Gateway.ZeroTrust.framework_object_preserves_gateway_contract proposal requiredParent selected composition read accepted
+
+#print axioms retained_parent_and_selected_object_reach_gateway
+
+theorem changed_pending_set_invalidates_initial_view (actual : RuntimeView)
+    (changed : actual.pendingPublications ≠ proposal.before.pendingPublications) :
+    ¬ ∃ use : Gateway.ZeroTrust.FinalUse proposal, use.actual = actual := by
+  apply Gateway.ZeroTrust.changed_complete_view_cannot_finalize proposal
+  exact fun same => changed (congrArg RuntimeView.pendingPublications same)
+
+theorem pending_policy_blocks_ongoing_use
+    (projectsBarrier : ∀ view, view.pendingPublications ≠ [] → ¬ host.currentAtUse view)
+    (pending : actual.pendingPublications ≠ []) :
+    ¬ (Gateway.ZeroTrust.continuing proposal assessment).required requested actual :=
+  fun accepted => projectsBarrier actual pending accepted.2.2.1
+
+#print axioms changed_pending_set_invalidates_initial_view
+#print axioms pending_policy_blocks_ongoing_use
 end Weaver.ZeroTrustEnrichment

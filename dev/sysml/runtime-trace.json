@@ -243,6 +243,10 @@
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderPartialRequestAndRestartRetainUnknownClaim"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run unknownRefundCounterexampleTest"}]},
   {"id":"ReservedAuthorityAdmission","witnesses":[
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem pending_policy_blocks_ongoing_use"},
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn final_release_keeps_current_guard_and_unknown_commit_in_one_transaction"},
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem retained_parent_and_selected_object_reach_gateway"},
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run childOnlyPredicateDropsParentCounterexampleTest"},
     {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem gateway_specialization_retains_generic_framework"},
     {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem continuing_uses_current_state_and_original_consumption"},
     {"file":"go/dev/provider_backpressure_test.go","pattern":"func TestProviderSlowConsumerRevocationRestartAndRestoredPolicyCannotReopen"},
@@ -305,6 +309,7 @@
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityUncompiledSourceCannotRegisterTest"},
     {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"}]},
   {"id":"GovernancePolicyProjection","witnesses":[
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn typed_publication_does_not_yet_require_delta_evidence"},
     {"file":"scheme/policy/func.ss","pattern":"project-policy profile"},
     {"file":"scheme/policy/assets.ss","pattern":"read-policy-assets profile"},
     {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"},
