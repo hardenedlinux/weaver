@@ -81,6 +81,28 @@ node lists and identifier maps. This tests Scheme Record/table projection;
 the separate Rust proptest on actual SDK roots covers native ABI conversion.
 Neither property establishes final-send authorization or durable recovery.
 
+Native Rust qualification additionally composes =root_source=,
+=materialize_bound_source= and an independently captured =SourceExpectation=.
+Generated coherent replacements cover principal, budget, family, publication
+identity, Policy/schema, body and recalculated commitments, route, plan order,
+expected revision and fence. Local contract validity is a precondition, not the
+expected rejection: the result must specifically be =SourceError::Binding=.
+Each refusal is followed by legitimate conversion on the same VM. Malformed
+native negative integers, unsigned values above the contract limit and magnitudes
+wider than the carrier are separately refused. This supplies concrete refinement
+evidence for =BoundaryContext.Ready='s original-content and =exactIntegers=
+premises in Lean and =boundaryValid= in Quint's =LlmPolicyContinuation= model;
+it does not turn transport fidelity into source authentication or a send permit.
+
+The combined real-SDK test completed naturally in 6.61 seconds after a separate
+56.13-second rebuild, including both 128-case Rust properties, malformed-value
+controls, actual AA capture and owned-data use after VM cleanup. This focused
+receipt does not resolve the separate cold executable connection failure.
+The same test target passed strict clippy with warnings denied; the linked
+Project/OpenSysML architecture tests passed separately in 4.196 seconds. The
+Lean and Quint edits here only attach refinement witnesses to existing
+properties; they introduce no new theorem, transition or broader proof claim.
+
 The typed-projection test addition passed the standard =gerbil build= and
 =gerbil test -g -v 5 t= entries: all five modules and the full harness completed
 naturally, including 128 accepted property cases. Two preceding test-authoring

@@ -28,6 +28,10 @@ module LlmPolicyContinuation {
   // fidelity, including UTF-8/NUL and optional-field presence, is a refinement
   // premise exercised by the real-VM framework property, not derived here.
   // Aggregate construction refusal supplies no BoundaryCheck or execution/refund.
+  // Concrete refinement witness: scheme_vm.rs checks coherent replacements
+  // through materialize_bound_source against a pre-call SourceExpectation.
+  // A Binding refusal and same-VM original recovery are both required; local
+  // shape validity alone cannot establish the input/output equality below.
   type BoundaryEvidence={kind:int,root:int,claim:int,profile:int,configurationSchema:int,normalizer:int,programModule:int,environment:int,
     vm:int,call:int,epoch:int,cut:int,input:int,output:int,schemaChecked:bool,governanceChecked:bool,
     readable:bool,stable:bool,owned:bool,retainedPointer:bool,reentrant:bool,

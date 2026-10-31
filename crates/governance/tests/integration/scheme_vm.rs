@@ -106,10 +106,10 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
         .expect("false");
     assert!(materialize_source(boolean).is_err());
     let data = fixture::source();
-    for fault in 0..5 {
+    for fault in 0..8 {
         assert!(
             materialize_source(rooted_source::publication(&runtime, &data, fault)).is_err(),
-            "false/nil/float, string field keys and unknown fields must refuse"
+            "malformed scalar types, out-of-range integers, keys and unknown fields must refuse"
         );
     }
 
@@ -120,6 +120,31 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
         let root = rooted_source::source(&runtime, &changed);
         assert!(materialize_bound_source(root, SourceExpectation::capture(&original)).is_err());
     }
+    // A coherent replacement can satisfy every local contract and still be
+    // unauthorized. Exercise conversion and the independently retained original
+    // together; refusals must leave this same VM usable for the legitimate root.
+    runner
+        .run(&(0usize..11, 1u64..1024), |(field, amount)| {
+            let changed = replacement::coherent(data.clone(), field, amount);
+            prop_assert!(changed != data);
+            let candidate = OwnedSource::from_source(changed).expect("coherent replacement");
+            let result = materialize_bound_source(
+                root_source(&runtime, &candidate).expect("replacement root"),
+                SourceExpectation::capture(&original),
+            );
+            prop_assert!(matches!(
+                result,
+                Err(weaver_governance::SourceError::Binding)
+            ));
+            let legitimate = materialize_bound_source(
+                root_source(&runtime, &original).expect("legitimate root after refusal"),
+                SourceExpectation::capture(&original),
+            )
+            .expect("refusal must not poison a valid subsequent conversion");
+            prop_assert!(legitimate.source().data() == &data);
+            Ok(())
+        })
+        .expect("native original-binding and refusal-recovery property");
     let expected = SourceExpectation::capture(&original);
     let input = rooted_source::source(&runtime, &data);
 

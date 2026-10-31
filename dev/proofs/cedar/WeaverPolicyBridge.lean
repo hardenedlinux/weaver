@@ -443,7 +443,12 @@ structure CaptureDependency where
    Fidelity of SDK constructors, UTF-8/NUL, exact integer magnitude and field/map
    key kinds remains a concrete refinement premise, checked by real-VM PBT.
    These semantic laws do not verify the SDK allocator or raw C representation.
-   Aggregate construction refusal cannot establish a Ready boundary. -/
+   Aggregate construction refusal cannot establish a Ready boundary.
+   Concrete witness: governance/tests/integration/scheme_vm.rs composes rooted
+   conversion with an independently captured SourceExpectation. Coherent changes
+   must produce Binding, not merely a parse error; each refusal is followed by
+   successful original conversion on the same VM. Malformed integer witnesses
+   distinguish negative, over-contract and over-carrier magnitudes. -/
 structure BoundaryContext where
   entry : ConfigurationEntry
   configurationSchema : Nat

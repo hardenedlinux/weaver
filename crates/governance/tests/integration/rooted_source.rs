@@ -31,6 +31,23 @@ pub fn corrupt<'r>(vm: &'r GerbilRuntime, root: &Object<'r>, fault: u8) -> Objec
                     .expect("false"),
                 1 => vm.nil_object().expect("nil"),
                 2 => vm.scalar_object(SchemeScalar::Flonum(1.0)).expect("float"),
+                5 => vm
+                    .big_integer(
+                        &gerbil_scheme::BinaryInteger::new(true, vec![1]).expect("negative"),
+                    )
+                    .expect("negative integer"),
+                6 => vm
+                    .big_integer(
+                        &gerbil_scheme::BinaryInteger::new(false, vec![255; 8])
+                            .expect("unsigned maximum"),
+                    )
+                    .expect("integer exceeds signed contract"),
+                7 => vm
+                    .big_integer(
+                        &gerbil_scheme::BinaryInteger::new(false, vec![1; 9])
+                            .expect("wide magnitude"),
+                    )
+                    .expect("integer exceeds carrier width"),
                 _ => value,
             };
         }
