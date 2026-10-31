@@ -12,6 +12,9 @@ mod rpc_security;
 mod runtime;
 mod shutdown;
 mod source_owner;
+#[cfg(test)]
+#[path = "../../contracts/benches/support/fixtures.rs"]
+mod test_fixtures;
 pub use config::ServerConfig;
 pub use grpc::serve_grpc;
 pub use grpc_config::run_from_env;

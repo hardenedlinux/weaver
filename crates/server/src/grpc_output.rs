@@ -23,9 +23,18 @@ impl ProviderOutput for Output {
         self.runtime.block_on(async {
             tokio::select! {
                 biased;
-                _=self.cancelled.cancelled()=>Err(Error::Conflict("RPC cancelled")),
+                _=self.cancelled.cancelled()=>{
+                    #[cfg(all(test, unix))]
+                    backpressure_tests::cancelled();
+                    Err(Error::Conflict("RPC cancelled"))
+                },
                 _=self.shutdown.cancelled()=>Err(Error::Conflict("server closing")),
-                slot=tokio::time::timeout(std::time::Duration::from_secs(1),self.sender.clone().reserve_owned())=>
+                slot=tokio::time::timeout(std::time::Duration::from_secs(1),{
+                    #[cfg(all(test, unix))]
+                    { backpressure_tests::observe(self.sender.clone().reserve_owned()) }
+                    #[cfg(not(all(test, unix)))]
+                    { self.sender.clone().reserve_owned() }
+                })=>
                     slot.map_err(|_|Error::Conflict("RPC flow control deadline"))?.map_err(|_|Error::Conflict("RPC receiver closed")),
             }
         })
@@ -51,6 +60,12 @@ impl ProviderOutput for Output {
             },
         })?;
         slot.send(Ok(frame));
+        #[cfg(all(test, unix))]
+        backpressure_tests::enqueued(events);
         Ok(())
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "../tests/unit/output_backpressure.rs"]
+mod backpressure_tests;

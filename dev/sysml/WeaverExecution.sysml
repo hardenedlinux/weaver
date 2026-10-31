@@ -122,6 +122,25 @@ package WeaverExecution {
         port semanticEffectObservations : PolicyEvidenceDesign::EffectObservationPort;
     }
     part def CedarGatewayLibrary {
+        doc /* Research alignment is upstream RFC 0010: NIST SP 800-207/207A
+           supply architecture requirements; UCON supplies continuity/mutable
+           attribute foundations; Cedar supplies executable authorization and
+           verified laws. The selected per-effect fragment is not the whole
+           UCON temporal model or NIST certification. Host currentness,
+           durability and complete mediation remain refinement premises.
+           FinalUse is duplicable proof data, not an affine runtime IO handle. */
+        doc /* Reusable Zero Trust semantics belong to cedar-poo-spec's
+           CedarPooSpec.ZeroTrust API: Host, propose and publication-indexed
+           FinalUse compose the existing LeanPoo Contract, Cedar admission,
+           original-operation/authority consumption and exact Delta laws. Weaver
+           enriches that Host with its complete runtime image and native final
+           mediation; it does not establish a competing Zero Trust core. */
+        doc /* Candidate consumer ZeroTrustEnrichment extends the existing
+           PublicationContext with semantic context, commit floor, budget version
+           and history prefix. It is checked against the upstream candidate in
+           isolation. The normal fixed-pin bridge remains unchanged and does not
+           yet expose the new API. Library laws do not by themselves authenticate
+           or prove this application's native current-view mapping. */
         doc /* Core library dependency, not another daemon or authority store.
            Existing upstream owners supply PolicyModules, execution Delta,
            BoundOperation/PolicySnapshot, pure operation/authority checks and

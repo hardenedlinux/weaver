@@ -228,6 +228,7 @@
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run sdkRetryCannotConsumeAgainTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem consumed_unknown_retains_original_hold"}]},
   {"id":"EncodingAuthorityEquivalence","witnesses":[
+    {"file":"go/dev/provider_backpressure_test.go","pattern":"func TestProviderSlowConsumerPolicyChangeDuringCapacityWait"},
     {"file":"go/internal/gatewayclient/arrow_test.go","pattern":"func TestArrowWireBoundDoesNotBoundDecodedText"},
     {"file":"go/internal/gatewayclient/arrow_test.go","pattern":"func TestArrowInvalidLaterRowReturnsNoPartialBatch"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run preparedEncodingCannotSwitchTest"},
@@ -235,11 +236,17 @@
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderArrowChecksEveryRow"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem arrow_cannot_weaken_row_authority"}]},
   {"id":"ProviderUnknownRetention","witnesses":[
+    {"file":"go/dev/provider_backpressure_test.go","pattern":"func TestProviderSlowConsumerEnqueueBeforeCommitCrashCannotReplayPendingRange"},
+    {"file":"go/dev/provider_backpressure_test.go","pattern":"func TestProviderSlowConsumerCancellationAndReconnectRetainHistory"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run enqueueThenLostCommitRetainsUnknownTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem transport_history_preserves_original_hold"},
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderPartialRequestAndRestartRetainUnknownClaim"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run unknownRefundCounterexampleTest"}]},
   {"id":"ReservedAuthorityAdmission","witnesses":[
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem capacity_cannot_rebase_changed_floor"},
+    {"file":"crates/server/tests/unit/output_backpressure.rs","pattern":"async fn waiting_capacity_does_not_hold_sql_or_authorize_after_publication"},
+    {"file":"crates/server/tests/unit/output_backpressure.rs","pattern":"async fn pending_range_history_created_during_capacity_wait_cannot_be_replayed"},
+    {"file":"go/dev/provider_backpressure_test.go","pattern":"func TestProviderSlowConsumerPositiveControlCompletesAfterCapacityReturns"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run returnedCapacityDoesNotAuthorizeStaleReleaseTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem execution_and_backpressure_composition"},
     {"file":"crates/server/tests/unit/admission.rs","pattern":"async fn saturated_detached_execution_preserves_publication_and_observation_custody"},

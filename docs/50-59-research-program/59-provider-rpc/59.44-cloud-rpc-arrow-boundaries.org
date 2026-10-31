@@ -205,11 +205,13 @@ all target obligations are implemented.
 | Strict linked Project/SysML trace checks and negative controls | Passed |
 | Org parse and core D2 render/visual review | Passed; the SVG is embedded above with a relative Org image link |
 
-A controlled slow-reader test that places a real publication/domain change
-inside the one-second private-queue reservation wait remains a native validation
-obligation. The existing execution-capacity saturation test verifies source-lane
-availability, not that particular output-queue schedule. Whole-pipeline buffer,
-decoded-allocation and native trace-correspondence evidence also remain open.
+[[file:59.45-slow-consumer-zero-trust.org][The next review]] adds real slow-client
+Policy publication, cancellation/reconnect and enqueue-before-commit crash cases
+inside an observed private-queue capacity wait, retaining the one-second deadline.
+Rust component tests also cover provider range history changed during the wait.
+A general external history-domain publication is not implemented by these tests.
+Whole-pipeline buffer, decoded-allocation, concrete floor/account/history mapping
+and native trace-correspondence evidence remain open.
 
 * Comparison metric and remaining work
 

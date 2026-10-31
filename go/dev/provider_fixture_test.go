@@ -141,6 +141,7 @@ type fixture struct {
 	pki                               *testPKI
 	env                               []string
 	child                             *exec.Cmd
+	arguments                         []string
 	exited                            chan error
 	client, admin                     *gatewayclient.Client
 	plan                              v1.ProviderPlan
@@ -155,8 +156,11 @@ func providerProfile() *v1.ProviderProfile {
 	return &v1.ProviderProfile{ID: "p", Protocol: v1.ChatTextSSE, MaxOutputTokens: 4096, MaxMessages: 64, MaxBodyBytes: 1 << 20}
 }
 func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binary string) *fixture {
+	return fixtureWithInvocation(t, handler, large, binary, nil, nil)
+}
+func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string) *fixture {
 	t.Helper()
-	f := &fixture{directory: t.TempDir(), pki: pki(t), binary: binary}
+	f := &fixture{directory: t.TempDir(), pki: pki(t), binary: binary, arguments: append([]string(nil), arguments...)}
 	certificate, err := tls.X509KeyPair(f.pki.serverPEM, f.pki.serverKey)
 	if err != nil {
 		t.Fatal(err)
@@ -229,6 +233,7 @@ func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binar
 	f.env = []string{"WEAVER_DB=" + filepath.Join(f.directory, "owner.db"), "WEAVER_PRINCIPAL=alice", "WEAVER_LISTEN=" + f.address, "WEAVER_TOKEN_SHA256=" + hex.EncodeToString(ownerHash[:]), "WEAVER_ADMIN_TOKEN_SHA256=" + hex.EncodeToString(adminHash[:]), "WEAVER_GRPC_PEER_SHA256=" + hex.EncodeToString(peerHash[:]), "WEAVER_GRPC_CERT=" + filepath.Join(f.directory, "server.pem"), "WEAVER_GRPC_KEY=" + filepath.Join(f.directory, "server-key.pem"), "WEAVER_GRPC_CLIENT_CA=" + filepath.Join(f.directory, "ca.pem"), "WEAVER_PROVIDER_CA=" + filepath.Join(f.directory, "ca.pem"), `WEAVER_PROVIDER_CREDENTIAL_ENVS={"primary":"WEAVER_TEST_KEY","backup":"WEAVER_TEST_KEY","denied":"WEAVER_TEST_KEY"}`, "WEAVER_TEST_KEY=test-provider-key"}
 	sourceHash := sha256.Sum256(f.pki.source.Certificate[0])
 	f.env = append(f.env, "WEAVER_SOURCE_LISTEN="+f.sourceAddress, "WEAVER_GRPC_SOURCE_PEER_SHA256="+hex.EncodeToString(sourceHash[:]))
+	f.env = append(f.env, extraEnvironment...)
 	f.start(t)
 	t.Cleanup(func() { f.stop(t) })
 	policy, err := os.ReadFile(filepath.Join(root(t), "prod/policies/provider/provider.cedar"))
@@ -265,7 +270,7 @@ func (f *fixture) start(t testing.TB) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.child = exec.Command(f.binary)
+	f.child = exec.Command(f.binary, f.arguments...)
 	f.child.Env = append(os.Environ(), f.env...)
 	f.child.Stdout = log
 	f.child.Stderr = log
