@@ -20,6 +20,12 @@ package ControlActivation {
            rejection. Native host authentication, actual Delta qualification,
            independent registry prefix recovery and RPC integration remain open.
            No source credential or opaque artifact is promoted to semantic proof. */
+        doc /* Final source-use admission joins the authority-owned epoch,
+           revocation and issuance prefix, artifact registry and publication
+           parent/fence. Restored configuration or cached observations cannot
+           lower this floor. A registry append between read and CAS requires a
+           fresh join. Unavailable authority retains pending and unknown holds;
+           an absent response never establishes abort or permits cached fallback. */
         doc /* Source-role authentication is bootstrap input. A current registrar
            binding independently fixes subject, incarnation, public key, scope,
            audience, epoch and credential identity. Possession covers the exact

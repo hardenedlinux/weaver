@@ -1,6 +1,21 @@
 #+TITLE: Production Policy Contracts
 #+LANGUAGE: en
 
+* Runtime ownership
+
+The [[file:../../Project.sysml][Project ProductionAssetBoundary]] governs this
+directory. Runtime-consumed Cedar policies, schemas and manifests are production
+assets. Production code/build/startup inputs cannot import, embed or load tracked
+=dev/= files, nor resolve a =prod/= alias back into development. A generated
+candidate is validated and promoted into a declared production asset before
+deployment; copying a proof output does not grant publication authority.
+
+Development proof sources, solver/replay diagnostics and test runners remain
+development inputs. Tests may inspect these production assets; the production
+dependency direction cannot reverse. Mutable epoch/revocation/consumption data
+belongs to the configured durable authority store, not a versioned asset file.
+See [[file:../../docs/50-59-research-program/59-provider-rpc/59.56-runtime-assets-and-authority-floor.org][the runtime boundary and authority-floor contract]].
+
 * Contract owner
 
 =provider/schema.json= and =streaming/schema.json= define the Cedar action,

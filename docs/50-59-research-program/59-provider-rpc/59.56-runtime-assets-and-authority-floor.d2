@@ -1,0 +1,101 @@
+vars: { d2-config: { layout-engine: tala; theme-id: 3; pad: 70 } }
+classes: { card: { label.near: center-center; style.font-size: 22; style.border-radius: 12; style.stroke-width: 1 } }
+title: RUNTIME OWNERSHIP / CURRENT AUTHORITY {
+  shape: text
+  near: top-center
+  style.font-size: 34
+  style.bold: true
+}
+development: Development evidence and generators\nProof sources / candidate outputs\nVerification-only dependencies {
+  class: card
+  left: 0
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+promotion: Production artifact ownership\nReviewed Cedar / schema / manifest\nFrozen bytes under prod {
+  class: card
+  left: 750
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+runtime: Runtime source and inputs\nDeclared dependency graph\nOwned deployment artifacts {
+  class: card
+  left: 1500
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+journal: Independent durable authority\nEpoch / revocation / issuance\nArtifact and publication outcomes {
+  class: card
+  left: 0
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+read: Qualified source observation\nBound original operation and cut\nCurrent authoritative prefix {
+  class: card
+  left: 750
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+cas: Final publication CAS\nAtomic source / registry / parent join\nConsumption and unknown holds retained {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1500
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+pending: Uncertain result or unavailable authority\nRetain original pending intent\nReconcile exact durable outcome {
+  class: card
+  left: 0
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+recovery: Restored configuration or cached image\nRejoin the live authority floor\nFresh observation before continuation {
+  class: card
+  left: 750
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+execution: Rust final execution owner\nFresh admission after every wait\nOriginal claim / budget / history {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1500
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+development -> promotion: Validate and promote { style.font-size: 18 }
+promotion -> runtime: Owned runtime bytes { style.font-size: 18 }
+runtime -> cas: Typed candidate input { style.font-size: 18 }
+journal -> read: Authoritative read { style.font-size: 18 }
+read -> cas: Final deciding join { style.font-size: 18 }
+pending -> recovery: Preserve and reconcile { style.font-size: 18 }
+recovery -> read: Refresh from authority { style.font-size: 18 }
+cas -> execution: Current publication { style.font-size: 18 }
+footer: "Production consumes owned artifacts · Persistent authority survives configuration rollback\nDevelopment paths and cached observations cannot confer publication or send rights" {
+  shape: text
+  left: 180
+  top: 1390
+  width: 1690
+  height: 100
+  style.font-size: 26
+  style.font-color: "#5c8b77"
+}

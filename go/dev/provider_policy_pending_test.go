@@ -27,6 +27,59 @@ func pendingChange(f *fixture, id string) v1.Publication {
 	return v1.Publication{OperationID: id, ExpectedRevision: &parent, Fence: 2, Policy: f.policy, Schema: f.schema}
 }
 
+// This proves the existing consumption boundary under credential configuration
+// rollback. It does not qualify persistent source-epoch or revocation storage.
+func TestProviderSourceRollbackLostReplyRetainsUnknownConsumption(t *testing.T) {
+	for _, phase := range []string{"stage", "commit"} {
+		t.Run(phase, func(t *testing.T) {
+			f := newFixture(t, partialRequestDisconnect, true)
+			ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+			defer cancel()
+			if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil {
+				t.Fatal("partial request was treated as complete")
+			}
+			before := inspect(t, f)
+			if before.State != "unknown" || before.Held != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
+				t.Fatal("original unknown consumption missing", before)
+			}
+			oldCertificate := f.pki.source
+			original := pendingChange(f, "rollback-unknown-consumption")
+			relay := &publicationReplyLoss{source: f.admin, loseStage: phase == "stage"}
+			if phase == "stage" {
+				if _, err := relay.StageAuthority(ctx, gatewayclient.Publication(original)); status.Code(err) != codes.Unavailable {
+					t.Fatal("durable stage reply was not lost", err)
+				}
+			} else {
+				if err := f.admin.StagePublication(ctx, original); err != nil {
+					t.Fatal(err)
+				}
+				if _, err := relay.PublishAuthority(ctx, gatewayclient.Publication(original)); status.Code(err) != codes.Unavailable {
+					t.Fatal("durable commit reply was not lost", err)
+				}
+			}
+			restartWithSourceCertificate(t, f, secondaryClient(t, f.pki))
+			_, err := f.admin.InspectPublication(ctx, original)
+			if phase == "stage" && status.Code(err) != codes.NotFound || phase == "commit" && err != nil {
+				t.Fatal("credential rotation changed the original outcome", err)
+			}
+			// Restore the retired startup identity, retaining the actual source DB.
+			restartWithSourceCertificate(t, f, oldCertificate)
+			outcome, err := f.admin.ObserveOrPublish(ctx, original)
+			if err != nil || outcome.GetOutcome() != pb.PublicationOutcome_COMMITTED || outcome.GetRevision() != 1 {
+				t.Fatal("exact original outcome could not reconcile", outcome, err)
+			}
+			f.plan.Revision, f.plan.Fence = 1, 2
+			if _, _, err := execute(t, f, pb.Encoding_ARROW_IPC, 2); err == nil {
+				t.Fatal("credential configuration rollback reopened the original claim")
+			}
+			after := inspect(t, f)
+			if after.State != "unknown" || after.Held != before.Held || after.Reserved != before.Reserved || f.primary.Load() != 1 || f.backup.Load() != 0 {
+				t.Fatal("lost reply or restored credential reset unknown exposure", after)
+			}
+		})
+	}
+}
+
 // Startup certificate pin rotation exercises the existing boundary; it is not
 // durable registrar epoch issuance or online credential revocation.
 func restartWithSourceCertificate(t *testing.T, f *fixture, next tls.Certificate) {

@@ -8,6 +8,8 @@ module PublicationRecovery {
   // scope, audience or signature semantics are evaluated in this schedule owner.
   type SourceDecision={slot:int,credential:int}
   type SourceUse={credential:int,epoch:int,owner:int,command:int,purpose:int,artifact:int}
+  type SourceCut={epoch:int,owner:int,revoked:Set[int],decisions:List[SourceDecision],registry:List[ReviewEntry],head:int,fence:int}
+  type SourceObservation={use:SourceUse,cut:SourceCut,session:int}
   type Part={id:int,payload:int,key:int}
   type Cut={publication:List[Part],consumption:List[Part],account:List[Part],history:List[Part]}
   type Intent={id:int,payload:int,key:int,kind:int,scope:int,epoch:int,before:Cut}
@@ -19,7 +21,7 @@ module PublicationRecovery {
     owner:int,liveOwners:Set[int],egressOwners:Set[int],handoff:bool,calls:int,external:int,
     registry:List[ReviewEntry],registrarOwner:int,registrarTerm:int,
     sourceDecisions:List[SourceDecision],sourceRevoked:Set[int]}
-  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int]}
+  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int}
   var authority:Ledger
   val ids=Set(0,1,2)
   val empty={payload:0,parent:-1,requestedFence:1,outcome:0,resultHead:-1,resultFence:1,review:Set(),validatedFence:1,validatedCut:emptyCut,validatedEpoch:0}
@@ -31,7 +33,8 @@ module PublicationRecovery {
     (authority.head>=0 implies authority.policy==authority.commits.nth(authority.head).decision.payload and authority.schema==authority.policy) and floorSafe(authority.floor)
   pure val emptyCut={publication:List(),consumption:List(),account:List(),history:List()}
   pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),owner:1,liveOwners:Set(1),egressOwners:Set(1),handoff:false,calls:0,external:0,registry:List(),registrarOwner:1,registrarTerm:0,sourceDecisions:List({slot:0,credential:100}),sourceRevoked:Set()}
-  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set()}
+  pure val sourceCut0={epoch:0,owner:1,revoked:Set(),decisions:List({slot:0,credential:100}),registry:List(),head:-1,fence:1}
+  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0}
   def canStage(q:Proposal):bool={val d=authority.records.get(q.id)
     authority.pending.forall(p=>p.id!=q.id or p==q) and
       (d.outcome==0 or (d.payload==q.payload and d.parent==q.parent and d.requestedFence==q.fence))}
@@ -92,6 +95,22 @@ module PublicationRecovery {
     use.command==r.command.id,use.purpose==0,use.artifact==r.artifact,registerReviewBy(use.owner,use.epoch,r)}
   action publishUsingSource(use:SourceUse,q:Proposal,r:Review):bool=all {authority.sourceUses.contains(use),sourceUseCurrent(use),
     use.command==q.id,use.purpose==1,use.artifact==r.artifact,publishReviewedBy(use.owner,use.epoch,q,r)}
+  // Read/restore/final-join timing only. Binding and signature meaning remain SPEC-owned.
+  def sourceAuthorityCut:SourceCut={epoch:authority.floor.registrarTerm,owner:authority.floor.registrarOwner,
+    revoked:authority.floor.sourceRevoked,decisions:authority.floor.sourceDecisions,registry:authority.floor.registry,head:authority.head,fence:authority.fence}
+  action readSourceObservation(use:SourceUse):bool=all {authority.sourceReachable,sourceUseCurrent(use),
+    authority'=authority.with("sourceUses",authority.sourceUses.union(Set(use)))
+      .with("sourceObservations",authority.sourceObservations.union(Set({use:use,cut:sourceAuthorityCut,session:authority.sourceSession}))).with("sourceImage",sourceAuthorityCut)}
+  // Fresh channel-context reference from the adapter, not an identity issuer.
+  action reconnectSourceObserver=authority'=authority.with("sourceSession",authority.sourceSession+1)
+  action restoreSourceObservation(observed:SourceObservation):bool=authority'=authority.with("sourceImage",observed.cut)
+  action sourceAvailability(available:bool):bool=authority'=authority.with("sourceReachable",available)
+  def joinedSourceObservation(observed:SourceObservation):bool=authority.sourceReachable and authority.sourceObservations.contains(observed) and
+    observed.session==authority.sourceSession and observed.cut==sourceAuthorityCut and authority.sourceImage==sourceAuthorityCut
+  action registerAtSourceObservation(observed:SourceObservation,r:Review):bool=all {
+    joinedSourceObservation(observed),registerUsingSource(observed.use,r)}
+  action publishAtSourceObservation(observed:SourceObservation,q:Proposal,r:Review):bool=all {
+    joinedSourceObservation(observed),publishUsingSource(observed.use,q,r)}
   action registerReviewBy(actor:int,term:int,r:Review):bool={
     val existing=anchoredReviews(r.command.id)
     if(existing!=Set()) all {existing==Set(r),authority'=authority}
@@ -426,4 +445,48 @@ module PublicationRecovery {
     registerUsingSource(sourceRegister0,review0),publishUsingSource(sourcePublish0,staged0,review0),
     revokeSource(100),revokeSource(101),rotateRegistrar,restoreReviewImage(List()),
     recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restart,observe}
+  pure val observation0={use:sourceRegister0,cut:sourceCut0,session:0}
+  run configurationImageCannotLowerAuthorityEpochTest=init.then(stage(staged0)).then(readSourceObservation(sourceRegister0)).then(rotateRegistrar)
+    .then(restoreSourceObservation(observation0)).then(restart).expect(sourceDecisionSafe and authority.floor.registrarTerm==1)
+    .then(registerAtSourceObservation(observation0,review0).fail())
+  run configurationImageCannotErasePersistentRevocationTest=init.then(stage(staged0)).then(readSourceObservation(sourceRegister0)).then(revokeSource(100))
+    .then(restoreSourceObservation(observation0)).expect(sourceDecisionSafe and authority.floor.sourceRevoked.contains(100))
+    .then(registerAtSourceObservation(observation0,review0).fail())
+  run unknownAuthorityReadRetainsPendingTest=init.then(stage(staged0)).then(readSourceObservation(sourceRegister0)).then(sourceAvailability(false))
+    .expect(sourceDecisionSafe and authority.pending.contains(staged0) and authority.held==4).then(registerAtSourceObservation(observation0,review0).fail())
+  run lostRegistrationReplyRequiresFreshPublicationObservationTest=init.then(stage(staged0)).then(readSourceObservation(sourceRegister0))
+    .then(registerAtSourceObservation(observation0,review0)).then(restart).then(recoverReviewsBy(1,0))
+    .expect(sourceDecisionSafe and authority.pending.contains(staged0)).then(publishAtSourceObservation(observation0.with("use",sourcePublish0),staged0,review0).fail())
+  run lateReadAfterHandoffDoesNotRefreshEpochTest=init.then(stage(staged0)).then(readSourceObservation(sourceRegister0)).then(rotateRegistrar)
+    .then(restoreSourceObservation(observation0)).then(recordSourceDecision(0,100)).expect(sourceDecisionSafe)
+    .then(registerAtSourceObservation(observation0,review0).fail())
+  action registeredObserved=init.then(stage(staged0)).then(registerReview(review0)).then(readSourceObservation(sourcePublish0))
+  pure val registeredCut0=sourceCut0.with("registry",List({review:review0,owner:1,term:0,index:0}))
+  pure val publishObservation0={use:sourcePublish0,cut:registeredCut0,session:0}
+  run revocationCommitLostReplyCannotUseCachedPublicationReadTest=registeredObserved.then(revokeSource(100)).then(restart)
+    .then(restoreSourceObservation(publishObservation0)).expect(sourceDecisionSafe and authority.pending.contains(staged0))
+    .then(publishAtSourceObservation(publishObservation0,staged0,review0).fail())
+  run registryAppendBetweenReadAndCASRequiresRejoinTest=registeredObserved.then(stage(sibling)).then(registerReviewBy(1,0,siblingReview))
+    .then(recoverReviewsBy(1,0)).expect(sourceDecisionSafe).then(publishAtSourceObservation(publishObservation0,staged0,review0).fail())
+  run freshObservationStillPermitsOriginalCASTest=registeredObserved.then(publishAtSourceObservation(publishObservation0,staged0,review0))
+    .expect(sourceDecisionSafe and authority.commits.length()==1 and authority.held==4 and authority.calls==1)
+  run successfulCASReplyLossCannotRepublishFromPriorReadTest=registeredObserved.then(publishAtSourceObservation(publishObservation0,staged0,review0))
+    .then(restart).then(restoreSourceObservation(publishObservation0)).then(replay(0,0,-1,1))
+    .expect(sourceDecisionSafe and authority.commits.length()==1).then(publishAtSourceObservation(publishObservation0,staged0,review0).fail())
+  run cachedRevocationViewOnlyCounterexampleTest=registeredObserved.then(revokeSource(100)).then(restoreSourceObservation(publishObservation0))
+    .then(publishReviewedBy(1,0,staged0,review0)).expect(sourceDecisionSafe and not(joinedSourceObservation(publishObservation0)) and authority.commits.length()==1)
+  run sameEpochReconnectNeedsFreshObservationTest=init.then(stage(staged0)).then(readSourceObservation(sourceRegister0)).then(reconnectSourceObserver)
+    .then(restoreSourceObservation(observation0)).expect(sourceDecisionSafe and authority.floor.registrarTerm==0)
+    .then(registerAtSourceObservation(observation0,review0).fail())
+  run freshReadAfterSameEpochReconnectCanProgressTest=init.then(stage(staged0)).then(readSourceObservation(sourceRegister0)).then(reconnectSourceObserver)
+    .then(readSourceObservation(sourceRegister0)).then(registerAtSourceObservation(observation0.with("session",1),review0))
+    .expect(sourceDecisionSafe and authority.floor.registry.length()==1 and authority.held==4)
+  action sourceRecoverySchedule=any {stage(staged0),stage(sibling),
+    recordSourceDecision(authority.floor.registrarTerm,100+authority.floor.registrarTerm),revokeSource(100),revokeSource(101),rotateRegistrar,
+    recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restoreReviewImage(List()),restart,reconnectSourceObserver,observe,
+    readSourceObservation(currentRegisterReference),readSourceObservation(currentRegisterReference.with("purpose",1)),
+    restoreSourceObservation(observation0),restoreSourceObservation(publishObservation0),sourceAvailability(false),sourceAvailability(true),
+    registerAtSourceObservation(observation0,review0),publishAtSourceObservation(publishObservation0,staged0,review0),
+    registerAtSourceObservation({use:currentRegisterReference,cut:sourceAuthorityCut,session:authority.sourceSession},review0),
+    publishAtSourceObservation({use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession},staged0,review0)}
 }

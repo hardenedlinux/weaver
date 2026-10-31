@@ -14,6 +14,13 @@ package WeaverProject {
     part def VerificationMode;
     part def GoPackage;
     part def VerificationResponsibility;
+    part def RuntimeGoEntry;
+    part def DevelopmentGoEntry;
+    part def RuntimeSourceRoot;
+    part def RuntimeInput;
+    part def ForbiddenRuntimeRoot;
+    part def ForbiddenRuntimeReference;
+    part def RuntimeAssetRoot;
     part def RustPackage {
         part 'Cargo.toml' : File;
         part src : Directory;
@@ -31,6 +38,40 @@ package WeaverProject {
 
     package SourcePolicy {
         part '.py' : ProhibitedExtension;
+    }
+
+    requirement def ProductionAssetBoundary {
+        doc /* Production imports, compilation, startup and packaging must not
+           depend on dev files or development-only packages. Runtime-consumed
+           Cedar Policy/schema/manifests belong under prod and are explicitly
+           registered in Layout. Validation sources and raw proof outputs remain
+           development assets. Promotion validates and owns deployable bytes;
+           runtime loading may not follow a link back into dev. A prod path alone
+           establishes neither current authority nor permission to publish. */
+    }
+    requirement productionAssets : ProductionAssetBoundary;
+
+    package RuntimeBoundary {
+        part dev : ForbiddenRuntimeRoot;
+        part 'go/dev' : ForbiddenRuntimeRoot;
+        part 'go/internal/devrunner' : ForbiddenRuntimeRoot;
+        part prod : RuntimeAssetRoot;
+        part 'go/cmd/weaver-control' : RuntimeGoEntry;
+        part 'go/cmd/weaver-dev' : DevelopmentGoEntry;
+        part 'scheme' : RuntimeSourceRoot;
+        part 'proto' : RuntimeSourceRoot;
+        part 'Cargo.toml' : RuntimeInput;
+        part 'build.ss' : RuntimeInput;
+        part 'init.ss' : RuntimeInput;
+        part 'gerbil.pkg' : RuntimeInput;
+        part 'github.com/HardenedLinux/weaver/go/dev' : ForbiddenRuntimeReference;
+        part 'github.com/HardenedLinux/weaver/go/internal/devrunner' : ForbiddenRuntimeReference;
+        part ':hardenedlinux/weaver/dev' : ForbiddenRuntimeReference;
+        part 'weaver-dev' : ForbiddenRuntimeReference;
+        doc /* Rust src/build inputs derive from Layout.RustPackage. Go inputs
+           derive from the declared runtime entry dependency closure, including
+           imports and embed directives. Development tools are outside that
+           closure; a production import of one is rejected, never exempted. */
     }
 
     package Verification {
@@ -226,6 +267,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.56-runtime-assets-and-authority-floor.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.56-runtime-assets-and-authority-floor.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.56-runtime-assets-and-authority-floor.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {
