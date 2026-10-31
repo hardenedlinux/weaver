@@ -63,7 +63,7 @@ admission -> transaction: Accepted bounded work { style.font-size: 20 }
 transaction <-> validator: Borrowed request / answer { style.font-size: 20 }
 transaction -> commit: Original durable decision { style.font-size: 20 }
 commit -> execution: Receipt plus separate current-use gate { style.font-size: 20 }
-footer: "Cancellation is not rollback · Historical recovery creates no send capability\nA returned connection or completed queue wait cannot release unknown budget" {
+footer: "Cancellation is not rollback · Historical recovery creates no send capability\nBenchmark results and returned resources cannot release unknown budget" {
   shape: text
   left: 140
   top: 1080
