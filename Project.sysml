@@ -304,6 +304,7 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.69-hot-path-cost-boundaries.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.69-hot-path-cost-boundaries.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.69-hot-path-cost-boundaries.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.70-borrowed-validation-dispatch.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.svg' : File;

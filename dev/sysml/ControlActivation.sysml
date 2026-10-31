@@ -65,6 +65,20 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Borrowed validation retains pinned Tokio request/answer channels
+           and the existing async admission task. Custom Condvar and ready-permit
+           dispatch candidates were tested and rejected without attributable
+           benefit on the contended Host. Keep callback on the polling caller;
+           never offload borrowed state or extend its lifetime unsafely. Drop
+           before answer refuses; queued true survives caller drop; accepted
+           work owns its original lease through native completion. There is no
+           spin loop, cached authority or early unknown-budget release. Future
+           ready-permit review must preserve registered semaphore fairness and
+           distinguish admission from durable authority CAS ordering. Retain
+           frozen baseline/candidate binaries, all ABBA and native-control
+           samples at actual CPUs with minimum four, Host-load observations and
+           borrowed-guard/cancellation/panic/recovery evidence. Neither fewer
+           source-level hops nor local correctness establishes throughput gain. */
         doc /* Hot-path attribution uses test-only clocks at the existing public
            provider seam and borrowed validator. Separate original-home lock
            wait, API duration, provider pre-body/body/post-body, physical gets/

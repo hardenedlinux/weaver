@@ -107,6 +107,9 @@ to move arbitrary borrowed Governance closures onto workers.
 
 * Acceptance and remaining work
 
+[[file:59.70-borrowed-validation-dispatch.org][The subsequent dispatch review]] retains the Tokio borrowed-validator contract,
+rejects an unqualified custom rendezvous and separately reviews ready permits.
+
 A new ordinary test executes a real hot-home workload and verifies nested
 request clocks, exact provider phase sums, once-only body/bridge invocation and
 original-operation recovery. Standard WAL/fresh configurations pass 64 tests

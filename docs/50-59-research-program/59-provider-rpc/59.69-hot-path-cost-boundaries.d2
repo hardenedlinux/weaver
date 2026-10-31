@@ -60,7 +60,7 @@ execution: Rust final transport owner\nCurrent Policy / history / owner fence\nO
 }
 original -> admission: Preserve original identity { style.font-size: 20 }
 admission -> transaction: Accepted bounded work { style.font-size: 20 }
-transaction <-> validator: Validation request / answer { style.font-size: 20 }
+transaction <-> validator: Borrowed request / answer { style.font-size: 20 }
 transaction -> commit: Original durable decision { style.font-size: 20 }
 commit -> execution: Receipt plus separate current-use gate { style.font-size: 20 }
 footer: "Cancellation is not rollback · Historical recovery creates no send capability\nA returned connection or completed queue wait cannot release unknown budget" {
