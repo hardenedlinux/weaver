@@ -545,3 +545,82 @@ with all Scheme qualification environment variables removed. Both Criterion
 entries executed successfully in test mode; this is executable benchmark coverage,
 not measured release-profile latency or throughput evidence. Go's actual selected
 compiler home discovery and explicit-invalid-home refusal passed independently.
+
+* Independent original content at the production-host boundary
+
+Internal validation and original identity binding are distinct obligations.
+=OwnedSource= checks that a candidate's own family, selected nodes, plan/body
+commitments and profile agree. A candidate can change those values together and
+remain valid. Conversion success therefore cannot establish equality with the
+host's independently retained original. The production host must not publish
+merely because a returned object is typed, owned and internally consistent.
+
+=SourceExpectation::capture= deep-copies an already admitted =OwnedSource= before
+entering the approved producer. =bind= consumes that local expectation and compares
+complete concrete =SourceData= values. Tasks, principal, family, budget, profile,
+body/route commitments, plan ordering, selected nodes, Policy/schema and original
+publication parameters must all agree. No JSON serialization, hash normalization,
+float conversion or candidate-provided expectation participates. This current
+source producer preserves those artifact fields; a producer that intentionally
+changes them requires a separately approved original intent, not silent rebasing.
+
+=materialize_bound_source= combines SDK ownership conversion with this comparison
+and returns =BoundSource=. Plain =materialize_source= remains an explicit low-level
+conversion operation, not a production publication-admission API. Binding refusal
+drops the candidate and its consumed SDK roots; it creates no publication, send,
+nonce burn, budget release or durable outcome. =BoundSource= is still inert data.
+Consuming a Rust expectation is not a durable consume protocol or anti-replay gate.
+Current source identity, pending intent, history, Policy, fence and final ledger
+CAS remain independent obligations at publication/execution.
+
+The original snapshot must come from the admitted source/registry contract rather
+than an agent request or the returned candidate. Rebuilding the expectation from
+a replacement is an intentionally passing unsafe negative control: content equality
+cannot authenticate its own reference. Producer/VM/callback provenance and the AA
+Profile, threat model and environment bindings remain separately required. The
+artifact snapshot does not claim to encode every Governance input or an external
+history image. This is a prerequisite for replacing the Go legacy source adapter;
+that production host and RPC migration remain open.
+
+The existing Quint boundary owner now rejects coordinated input/output replacement
+even when ownership, native types and internal consistency are true. Its unsafe
+witness records the same replacement without original comparison and violates
+safety. Lean's existing Cedar-linked =BoundaryContext= proves rejection relative
+to the retained original and preserves its committed output when ready. These
+laws keep original authenticity as a host premise; they do not manufacture a
+source registry, live permission or new authorization engine.
+
+Framework PBT uses 128 cases with seed 293 and shrinking. Eleven replacement
+classes deliberately retain valid task/plan commitments, so ordinary candidate
+validation succeeds before original binding refuses. Positive controls bind the
+unchanged original. Separate controls exercise independent ownership and rebuilding
+the expectation from the candidate. Native SDK qualification repeats all eleven
+coherent replacement classes through actual rooted objects, then binds the actual
+AA/Governor/Cedar result to a snapshot captured before invocation and reads it
+after VM cleanup. The added package benchmark includes capture, candidate cloning
+and validation, and full comparison; VM startup, publication and sends are excluded.
+
+A retained failed PBT iteration minimized to =field = 6, amount = 1=: its test
+fixture replaced every letter x, including the provider's max-token field name,
+so the proposed negative control was malformed. The fixture now changes only
+message content and refreshes original task/plan commitments. The framework seed
+is retained as a regression artifact; the corrected candidate is required to pass
+ordinary validation before binding rejection. A draft Lean conjunction projection
+also failed and was corrected to extract the output equality explicitly. Raw
+iteration logs remain temporary; these failures are not passing evidence.
+
+Strict Clippy also rejected importing the same fixture as two unit-test modules.
+The existing library test harness now owns that fixture once and both suites
+borrow that owner; no lint suppression or duplicate fixture copy was added.
+
+Focused qualification: all six Rust source tests passed, including ASP deny and
+both 128-trial properties. The actual SDK/AA composition test passed with all
+eleven coherent replacement controls and original-bound data surviving natural
+VM cleanup in 4.77 seconds. Strict all-target/all-feature Clippy passed after
+sharing the fixture owner. Both package Criterion entries passed test mode,
+including capture-and-bind; no performance baseline is claimed. Quint passed
+176 witnesses and the separate 1000-by-60 boundary sample; the fixed-SPEC Lean
+bridge rebuilt and both new laws report only =propext=. Go benchmark inventory,
+SysML SDK structure and requirement traces passed. The D2 was rendered and
+inspected. These scoped results do not close production source-registry/VM-host
+migration, external history freshness or final publication/execution admission.

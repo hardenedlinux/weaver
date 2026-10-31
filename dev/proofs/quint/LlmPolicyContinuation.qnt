@@ -522,6 +522,10 @@ module LlmPolicyContinuation {
     .then(unsafeBoundaryRecord(boundary0.with("nativeTyped",false))).expect(not(safety))
   run newSourceCutCannotUseOldCaptureTest=factPending.then(changeFactContract(closure0.with("cut",1),Set(),true))
     .then(projectFromBoundary(boundary0).fail())
+  run coherentReplacementCannotRedefineOriginalInputTest=init
+    .then(recordBoundary(boundary0.with("input",1).with("output",1)).fail())
+  run unsafeSelfConsistentReplacementWitness=init
+    .then(unsafeBoundaryRecord(boundary0.with("input",1).with("output",1))).expect(not(safety))
   run callerOutputCannotReplaceCommittedValueTest=init.then(recordBoundary(boundary0.with("output",1)).fail())
   run unreadableBorrowIsOutsideAcceptedContractTest=init.then(recordBoundary(boundary0.with("readable",false)).fail())
   run concurrentBorrowMutationIsOutsideAcceptedContractTest=init.then(recordBoundary(boundary0.with("stable",false)).fail())

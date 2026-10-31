@@ -17,7 +17,14 @@ package ControlActivation {
            inventory from an absent process. No source/credential payload or path
            belongs in producer-created phase attributes. */
     }
-requirement def GovernorSourceHandoff {
+    requirement def GovernorSourceHandoff {
+        doc /* The Rust host snapshots the independently admitted original
+           artifact before producer invocation. Candidate consistency alone
+           cannot authorize changed family, body/profile commitments or budget.
+           Complete native record equality yields BoundSource data only. The
+           host must not derive its expectation from the returned candidate.
+           Callback provenance and current source/history/Policy/fence/CAS
+           remain separate. Local binding burns no durable authority. */
         doc /* Go preparation discovers the selected SDK home from explicit
            environment or the selected compiler, refusing an invalid explicit
            home. Embedded module lookup cannot infer it from the Rust executable.

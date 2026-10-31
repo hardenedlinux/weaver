@@ -1,7 +1,11 @@
-use weaver_governance::materialize_source;
+use weaver_governance::{
+    OwnedSource, SourceExpectation, materialize_bound_source, materialize_source,
+};
 #[path = "../../benches/support/fixture.rs"]
 mod fixture;
 mod program;
+#[path = "../support/replacement.rs"]
+mod replacement;
 mod rooted_source;
 
 #[test]
@@ -60,7 +64,16 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
         );
     }
 
+    let original = OwnedSource::from_source(data.clone()).expect("original input");
+    for field in 0..11 {
+        let changed = replacement::coherent(data.clone(), field, 1);
+        assert!(OwnedSource::from_source(changed.clone()).is_ok());
+        let root = rooted_source::source(&runtime, &changed);
+        assert!(materialize_bound_source(root, SourceExpectation::capture(&original)).is_err());
+    }
+    let expected = SourceExpectation::capture(&original);
     let input = rooted_source::source(&runtime, &data);
+
     let result = capture
         .call(&input)
         .into_result()
@@ -76,7 +89,8 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
                 .expect("diagnostic copy")
         );
     }
-    let owned = materialize_source(result).expect("owned materialization");
+    let bound = materialize_bound_source(result, expected).expect("original-bound materialization");
+    let owned = bound.source();
     drop(input);
     assert_eq!(owned.task().family, "f");
     assert_eq!(owned.plans().len(), 2);

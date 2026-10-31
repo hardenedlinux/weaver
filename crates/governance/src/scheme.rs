@@ -7,6 +7,15 @@ use gerbil_scheme::{
 };
 use serde::de::{self, Deserialize, DeserializeSeed, MapAccess, SeqAccess, Visitor};
 use std::collections::BTreeSet;
+
+/// Materialize and bind to the original retained before the approved call.
+/// Content equality does not authenticate that call or its source registry.
+pub fn materialize_bound_source(
+    source: RootedSchemeObject<'_>,
+    expected: crate::SourceExpectation,
+) -> Result<crate::BoundSource, SourceError> {
+    expected.bind(materialize_source(source)?)
+}
 impl de::Error for SourceError {
     fn custom<T: std::fmt::Display>(_: T) -> Self {
         Self::Contract

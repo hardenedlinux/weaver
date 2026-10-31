@@ -382,6 +382,10 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
   {"id":"GovernorSourceHandoff","witnesses":[
+    {"file":"crates/governance/src/binding.rs","pattern":"pub struct SourceExpectation"},
+    {"file":"crates/governance/tests/unit/binding.rs","pattern":"coherent_replacements_cannot_change_original_content"},
+    {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"unsafeSelfConsistentReplacementWitness"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"coherent_replacement_cannot_redefine_original"},
     {"file":"go/internal/devrunner/scheme_tools.go","pattern":"func schemeHome"},
     {"file":"go/internal/devrunner/scheme_tools_test.go","pattern":"func TestSchemeQualificationStaysWithPreparedSchemeOwner"},
     {"file":"t/gateway-source-test.ss","pattern":"SDK field symbols and identifier strings cannot be interchanged"},

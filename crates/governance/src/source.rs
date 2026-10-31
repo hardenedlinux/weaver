@@ -19,7 +19,7 @@ pub enum SourceError {
     Scheme,
 }
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// Original governor family and selected node identities.
 pub struct SourceSelection {
@@ -27,7 +27,7 @@ pub struct SourceSelection {
     pub family: String,
     pub open_nodes: Vec<String>,
 }
-#[derive(Clone, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// Concrete source records; data ownership grants no execution authority.
 pub struct SourceData {
@@ -44,6 +44,9 @@ pub struct OwnedSource {
 }
 
 impl OwnedSource {
+    pub(crate) fn contents(&self) -> &SourceData {
+        &self.data
+    }
     /// Validate concrete source records without decoding an interop blob.
     pub fn from_source(data: SourceData) -> Result<Self, SourceError> {
         validate(&data)?;
