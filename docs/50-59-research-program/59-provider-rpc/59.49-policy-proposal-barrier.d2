@@ -1,0 +1,33 @@
+vars: {d2-config: {layout-engine: tala; theme-id: 3; pad: 70}}
+classes: {card: {label.near: center-center; style.font-size: 21; style.border-radius: 12}}
+title: POLICY PROPOSALS / ONE DECIDING AUTHORITY {shape: text; near: top-center; style.font-size: 30; style.bold: true}
+scheme: Scheme Governance / AA\nOriginal semantic source\nExact Cedar projection\nInert compilation {
+  class: card; left: 0; top: 0; width: 430; height: 200; style.fill: "#eef3ef"
+}
+go: Go control plane\nFreeze original command\nStage before final CAS\nReconcile the original outcome {
+  class: card; left: 600; top: 0; width: 440; height: 200
+  icon: ../../architecture/diagrams/assets/go.svg; icon.near: top-left
+}
+pending: Rust source owner\nDurable pending proposals\nExact command binding\nNo external effects {
+  class: card; left: 1200; top: 0; width: 440; height: 200; style.fill: "#e7edf4"
+  icon: ../../architecture/diagrams/assets/rust.svg; icon.near: top-left
+}
+outcome: Atomic decision\nOriginal parent / fence CAS\nImmutable committed or rejected\nResolve only this proposal {
+  class: card; left: 1200; top: 420; width: 440; height: 200; style.fill: "#e7edf4"
+}
+guard: Rust final effect guard\nNo unresolved proposal\nCurrent Cedar / original binding\nDispatch and every stream range {
+  class: card; left: 600; top: 420; width: 440; height: 200; style.fill: "#e7edf4"
+}
+unknown: Unknown or interrupted\nOriginal command survives\nClaim and hold retained\nNo implicit retry or refund {
+  class: card; left: 0; top: 420; width: 430; height: 200; style.fill: "#f4f2ec"
+}
+scheme -> go: Typed source {style.font-size: 18}
+go -> pending: Source gRPC {style.font-size: 18}
+pending -> outcome: Final publication {style.font-size: 18}
+outcome -> guard: Deciding store {style.font-size: 18}
+guard -> unknown: Unknown IO {style.font-size: 18}
+pending -> guard: Pending blocks use {style.font-size: 18; style.stroke-dash: 5}
+unknown -> go: Exact recovery {style.font-size: 18; style.stroke-dash: 5}
+footer: "A stage key is not a grant · A historical decision is not current authority" {
+  shape: text; left: 200; top: 820; width: 1300; height: 60; style.font-size: 24; style.font-color: "#5c8b77"
+}

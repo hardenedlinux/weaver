@@ -21,7 +21,7 @@ pin changes implement this design round.
 | Inherited Yuanxu =core/modules/json-schema= | Public JsonSchema read/normalize/compile/contract/validate; contract creation refuses unsupported/diagnostic constraints | No qualified Weaver dual-profile adapter currently binds this product into every publication entrypoint |
 | =scheme/policy/cedar-ffi.ss= and =crates/policy-ffi/src/abi.rs= | Synchronous Policy/schema validation over borrowed UTF-8 bytes; no retained pointer, callback, returned allocation, ledger mutation or execution authority | Embedded VM callbacks, canonical fact capture and async ownership transfer are target contracts, not this ABI's behavior |
 | =go/internal/config/bundle.go= and =go/api/v1/decode.go= | JSON/YAML data decode, duplicate/unknown-key rejection and typed bundle/Governor binding | Existing Go decoding does not prove AA JsonSchema or high-order Profile conformance |
-| =crates/server/src/source_owner.rs= | One bounded serialized source command owner; lost result requires original-identity reconciliation | Current commands are register/publish/inspect, not implemented hard-fact/capture/progression RPCs |
+| =crates/server/src/source_owner.rs= | One bounded serialized register/stage/publish/inspect owner; Policy proposals persist before final CAS and block effects | Administrative Policy staging is implemented; hard-fact/capture/progression RPCs remain target obligations |
 
 AA remains at =921e75f830a60c2ec42c384139846b05ba5d3317=, inherited Yuanxu Core at
 =79a5526a2ecd06408201be87b4a028b167c8d8a0= and Ascent at
@@ -141,6 +141,11 @@ volatile loss and qualified durable recovery; do not treat an ownership flag as
 proof that missing bytes can be reconstructed.
 
 * Concrete acceptance map for the original thirteen obligations
+
+[[file:59.49-policy-proposal-barrier.org][The Policy proposal implementation]] supplies real staging/recovery, sibling
+isolation and partial-output witnesses. It does not supply the named source-cut,
+VM capture, fact projection or independent anti-rollback premises. These partial
+witnesses do not promote any complete AT-R2 scenario to production acceptance.
 
 The identifiers below are scenario names for existing R2 obligations, not new
 requirements or implemented test names. All thirteen concrete scenarios remain

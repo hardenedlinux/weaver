@@ -329,6 +329,7 @@ fn guard(
     sequence: u64,
     format: &str,
 ) -> Result<()> {
+    crate::publication_barrier::require_resolved(tx)?;
     let (revision, fence, source): (u64, u64, String) = tx
         .query_row(
             "SELECT revision,fence,policy FROM authority WHERE singleton=1",
@@ -364,6 +365,7 @@ fn guard_live(
     sequence: u64,
     format: &str,
 ) -> Result<()> {
+    crate::publication_barrier::require_resolved(tx)?;
     let (revision, fence, source): (u64, u64, String) = tx
         .query_row(
             "SELECT revision,fence,policy FROM authority WHERE singleton=1",

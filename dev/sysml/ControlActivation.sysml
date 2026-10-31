@@ -14,6 +14,15 @@ package ControlActivation {
     }
     requirement def ControlActivationAcknowledgment {
         doc /* Go exposes operation ingress only after original-task registration and an exact committed publication acknowledgment. Unknown outcomes cannot activate or trigger automatic rebase. Exact recovery may observe a historical decision without making it current authority. */
+        doc /* Before a new final publication, Go stages its exact original ID,
+           parent, fence and Policy/schema body at the Rust source owner. A stage
+           key proves durable pending or an already recorded exact decision,
+           never current authority. All effect guards reject any unresolved
+           Policy proposal under the same SQLite transaction. Final publication
+           records committed/rejected outcome and removes only that proposal
+           atomically. Lost replies and restart preserve pending and unknown
+           holds. This administrative Policy proposal protocol is not the
+           external hard-fact capture/projection or independent floor protocol. */
     }
     requirement def ControlStreamRecoveryBinding {
         doc /* Go compiles proposals against the frozen original task and forwards one Rust execution stream over mutual TLS gRPC. Source methods are absent from operation ingress. Shared budgets, original claims and unknown holds survive partial output, revocation, SDK retries and both process restarts. Previously authorized queue entries may drain after revocation. */
@@ -27,6 +36,7 @@ package ControlActivation {
         attribute active : Boolean;
     }
     part def RustAuthority {
+        attribute unresolvedPolicyProposals : Integer;
         attribute currentRevision : Integer;
         attribute consumed : Boolean;
         attribute heldBudget : Integer;

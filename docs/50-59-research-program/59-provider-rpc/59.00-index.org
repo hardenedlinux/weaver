@@ -48,6 +48,9 @@ custody, admission linearization and fail-closed owner handoff. Its
 [[file:59.44-cloud-rpc-arrow-boundaries.org][Cloud ingress, RPC and Arrow boundaries]] joins that topology to batch,
 backpressure, cancellation and reconnect obligations using the existing provider
 proof owners. The [[file:59.44-cloud-rpc-arrow-boundaries.svg][core data/control flow]] distinguishes capacity from authority.
+[[file:59.49-policy-proposal-barrier.org][Durable Policy proposal staging]] implements the single-store pending barrier,
+exact outcome recovery and final-effect guards. Its [[file:59.49-policy-proposal-barrier.svg][core protocol diagram]]
+separates proposal acknowledgment, historical decision and execution authority.
 
 Go and Rust communicate through the shared typed gRPC service in
 [[file:../../../proto/gateway/v1/gateway.proto][gateway.proto]]. The Rust server executable starts this service by default.

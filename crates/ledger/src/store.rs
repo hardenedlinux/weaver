@@ -260,6 +260,7 @@ fn receipt(connection: &Connection, family: &str, node: &str) -> Result<Option<R
 }
 
 fn guard(tx: &Transaction<'_>, p: &Proposal) -> Result<()> {
+    crate::publication_barrier::require_resolved(tx)?;
     let (revision, fence, policy): (u64, u64, String) = tx
         .query_row(
             "SELECT revision,fence,policy FROM authority WHERE singleton=1",

@@ -17,6 +17,39 @@ type activationRPC struct {
 	inspect       func(*pb.PublicationKey) (*pb.PublicationReceipt, error)
 	publish       func(*pb.PublishRequest) (*pb.PublicationReceipt, error)
 	reads, writes int
+	stages        int
+	stage         func(*pb.PublishRequest) (*pb.PublicationKey, error)
+}
+
+func (r *activationRPC) StageAuthority(_ context.Context, p *pb.PublishRequest, _ ...grpc.CallOption) (*pb.PublicationKey, error) {
+	r.stages++
+	if r.stage != nil {
+		return r.stage(p)
+	}
+	proposal := v1.Publication{OperationID: p.OperationId, ExpectedRevision: p.ExpectedRevision, Fence: p.Fence, Policy: p.Policy, Schema: p.Schema}
+	digest, err := proposal.Digest()
+	return &pb.PublicationKey{OperationId: p.OperationId, Digest: digest}, err
+}
+
+func TestFailedStageCannotSubmitFinalPublication(t *testing.T) {
+	proposal := v1.Publication{OperationID: "stage", Policy: "permit(principal,action,resource);", Schema: "{}"}
+	for _, failure := range []string{"unavailable", "absent", "wrong-identity"} {
+		t.Run(failure, func(t *testing.T) {
+			rpc := &activationRPC{stage: func(*pb.PublishRequest) (*pb.PublicationKey, error) {
+				switch failure {
+				case "unavailable":
+					return nil, status.Error(codes.Unavailable, "unknown stage")
+				case "absent":
+					return nil, nil
+				default:
+					return &pb.PublicationKey{OperationId: "other", Digest: "other"}, nil
+				}
+			}}
+			if _, err := (&Client{RPC: rpc}).Publish(t.Context(), proposal); err == nil || rpc.stages != 1 || rpc.writes != 0 {
+				t.Fatal("failed or unbound staging reached final CAS")
+			}
+		})
+	}
 }
 
 func (r *activationRPC) InspectPublication(_ context.Context, key *pb.PublicationKey, _ ...grpc.CallOption) (*pb.PublicationReceipt, error) {
@@ -49,7 +82,7 @@ func TestActivationReadsOriginalDecisionBeforeSubmission(t *testing.T) {
 				return r, nil
 			}}
 			r, err := (&Client{RPC: rpc}).ObserveOrPublish(t.Context(), proposal)
-			if rpc.reads != 1 || rpc.writes != 0 || r == nil {
+			if rpc.reads != 1 || rpc.writes != 0 || rpc.stages != 0 || r == nil {
 				t.Fatal("existing decision caused a source write")
 			}
 			if outcome == pb.PublicationOutcome_REJECTED && !errors.Is(err, ErrPublicationRejected) {
@@ -72,7 +105,7 @@ func TestActivationReadsOriginalDecisionBeforeSubmission(t *testing.T) {
 		if _, err := (&Client{RPC: rpc}).ObserveOrPublish(t.Context(), proposal); status.Code(err) != codes.Unavailable {
 			t.Fatal(err)
 		}
-		if rpc.reads != 1 || rpc.writes != 1 {
+		if rpc.reads != 1 || rpc.writes != 1 || rpc.stages != 1 {
 			t.Fatal("ambiguous publication was retried")
 		}
 	})

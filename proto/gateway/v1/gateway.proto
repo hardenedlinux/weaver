@@ -6,6 +6,9 @@ service Gateway {
   rpc Inspect(OperationKey) returns (ProviderReceipt);
   rpc RegisterTask(RegisterTaskRequest) returns (Empty);
   rpc PublishAuthority(PublishRequest) returns (PublicationReceipt);
+  // Durably block fresh effects for this exact proposal, or observe its existing decision.
+  // A returned key is not a publication outcome or an execution grant.
+  rpc StageAuthority(PublishRequest) returns (PublicationKey);
   rpc InspectPublication(PublicationKey) returns (PublicationReceipt);
 }
 message Empty {}

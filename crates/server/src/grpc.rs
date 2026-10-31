@@ -376,6 +376,28 @@ impl pb::gateway_server::Gateway for Gateway {
         self.ingress.source()?.register(task_contract(task)).await?;
         Ok(Response::new(pb::Empty {}))
     }
+    async fn stage_authority(
+        &self,
+        request: Request<pb::PublishRequest>,
+    ) -> std::result::Result<Response<pb::PublicationKey>, Status> {
+        self.authenticate(&request, RpcRole::Source)?;
+        let change = request.into_inner();
+        let key = self
+            .ingress
+            .source()?
+            .stage(weaver_contracts::Publication {
+                operation_id: change.operation_id,
+                expected_revision: change.expected_revision,
+                policy: change.policy,
+                schema: change.schema,
+                fence: change.fence,
+            })
+            .await?;
+        Ok(Response::new(pb::PublicationKey {
+            operation_id: key.operation_id,
+            digest: key.digest,
+        }))
+    }
     async fn publish_authority(
         &self,
         request: Request<pb::PublishRequest>,

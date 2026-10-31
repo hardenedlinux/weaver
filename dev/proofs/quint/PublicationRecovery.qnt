@@ -1,6 +1,7 @@
 module PublicationRecovery {
   type Decision = {payload:int,parent:int,requestedFence:int,outcome:int,resultHead:int,resultFence:int}
   type Event = {id:int,decision:Decision}
+  type Proposal = {id:int,payload:int,parent:int,fence:int}
   type Part={id:int,payload:int,key:int}
   type Cut={publication:List[Part],consumption:List[Part],account:List[Part],history:List[Part]}
   type Intent={id:int,payload:int,key:int,kind:int,scope:int,epoch:int,before:Cut}
@@ -10,25 +11,32 @@ module PublicationRecovery {
   type Floor={epoch:int,cut:Cut,outcomes:List[FloorOutcome],pending:Set[Intent],local:Cut,
     observed:Cut,observedEpoch:int,haveRead:bool,active:bool,burned:Set[int],admitted:Set[int],handles:Set[int],tickets:Set[{key:int,cut:Cut,epoch:int}],
     owner:int,liveOwners:Set[int],egressOwners:Set[int],handoff:bool,calls:int,external:int}
-  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor}
+  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal]}
   var authority:Ledger
   val ids=Set(0,1,2)
   val empty={payload:0,parent:-1,requestedFence:1,outcome:0,resultHead:-1,resultFence:1}
   val safe = authority.head==authority.commits.length()-1 and authority.held==4 and authority.calls==1 and
+    authority.pending.forall(p=>authority.records.get(p.id).outcome==0 and authority.pending.forall(q=>q.id!=p.id or q==p)) and
     authority.log.indices().forall(i=>authority.records.get(authority.log.nth(i).id)==authority.log.nth(i).decision) and
     authority.commits.indices().forall(i=>authority.commits.nth(i).decision.outcome==1 and
       authority.commits.nth(i).decision.resultHead==i and authority.commits.nth(i).decision.parent==i-1) and
     (authority.head>=0 implies authority.policy==authority.commits.nth(authority.head).decision.payload and authority.schema==authority.policy) and floorSafe(authority.floor)
   pure val emptyCut={publication:List(),consumption:List(),account:List(),history:List()}
   pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),owner:1,liveOwners:Set(1),egressOwners:Set(1),handoff:false,calls:0,external:0}
-  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0}
+  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set()}
+  action stage(q:Proposal):bool={val d=authority.records.get(q.id)
+    all {authority.pending.forall(p=>p.id!=q.id or p==q),
+      d.outcome==0 or (d.payload==q.payload and d.parent==q.parent and d.requestedFence==q.fence),
+      authority'=authority.with("pending",if(d.outcome==0)authority.pending.union(Set(q)) else authority.pending)}}
   action publish(id:int,payload:int,parent:int,fence:int):bool = {
     val accepted=parent==authority.head and fence>=authority.fence
     val d={payload:payload,parent:parent,requestedFence:fence,outcome:if(accepted)1 else 2,
       resultHead:if(accepted)authority.head+1 else authority.head,resultFence:if(accepted)fence else authority.fence}
     val event={id:id,decision:d}
     all {authority.records.get(id).outcome==0,
+      authority.pending.forall(p=>p.id!=id or p=={id:id,payload:payload,parent:parent,fence:fence}),
       authority'=authority.with("records",authority.records.set(id,d)).with("log",authority.log.append(event))
+        .with("pending",authority.pending.filter(p=>p.id!=id))
         .with("commits",if(accepted)authority.commits.append(event) else authority.commits)
         .with("head",d.resultHead).with("fence",d.resultFence)
         .with("policy",if(accepted)payload else authority.policy).with("schema",if(accepted)payload else authority.schema)}
@@ -105,7 +113,7 @@ module PublicationRecovery {
     val q={id:id+10,payload:payload,key:1,kind:kind,scope:scope,epoch:f.epoch,before:f.cut}
     nondet waiting=f.pending.union(Set(q)).oneOf()
     nondet actor=Set(0,f.owner,f.owner-1).oneOf()
-    any {publish(id,payload,parent,fence),replay(id,payload,parent,fence),observe,restart,floorStage(q),floorCommit(waiting,true),floorCommit(waiting,false),floorReplay(waiting),floorResolve(waiting),
+    any {stage({id:id,payload:payload,parent:parent,fence:fence}),publish(id,payload,parent,fence),replay(id,payload,parent,fence),observe,restart,floorStage(q),floorCommit(waiting,true),floorCommit(waiting,false),floorReplay(waiting),floorResolve(waiting),
       floorRead,floorLoseReply,floorRotate,floorRestore(emptyCut),floorRepair,floorActivate,floorBurnBy(actor,1,f.cut,f.epoch),floorAdmitBy(actor,1,f.cut,f.epoch),
       floorRequestHandoff,floorConfirmTransportStopped(true),floorConfirmTransportStopped(false),floorStartOwner}}
   action first = init.then(publish(0,0,-1,1))
@@ -165,4 +173,15 @@ module PublicationRecovery {
   run floorCommittedLostReplySurvivesOwnerChangeTest=floorConsumed.then(floorLoseReply).then(floorRequestHandoff)
     .then(floorConfirmTransportStopped(true)).then(floorStartOwner).then(floorReplay(consume0))
     .expect(safe and f.outcomes.nth(0).committed and f.outcomes.nth(0).intent.epoch==0 and f.epoch==1 and not(f.active))
+  pure val staged0={id:0,payload:0,parent:-1,fence:1}
+  run stagedPolicyCommitLostReplyAndLateStageTest=init.then(stage(staged0)).then(restart)
+    .expect(safe and authority.pending==Set(staged0)).then(publish(0,0,-1,1)).then(restart).then(stage(staged0))
+    .expect(safe and authority.pending==Set() and authority.records.get(0).outcome==1)
+  run stagedPolicyCannotReplaceOriginalCommandTest=init.then(stage(staged0))
+    .then(stage({id:0,payload:1,parent:-1,fence:1}).fail())
+  run stagedPolicyCannotFinalizeAReplacedCommandTest=init.then(stage(staged0)).then(publish(0,1,-1,1).fail())
+  run stagedPolicyConflictResolvesOnlyItsOriginalKeyTest=init.then(stage(staged0))
+    .then(stage({id:1,payload:1,parent:-1,fence:1})).then(publish(0,0,-1,1))
+    .expect(safe and authority.pending==Set({id:1,payload:1,parent:-1,fence:1})).then(publish(1,1,-1,1))
+    .expect(safe and authority.pending==Set() and authority.records.get(1).outcome==2)
 }

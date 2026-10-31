@@ -19,6 +19,7 @@ structure State (Key : Type) where
   head : Nat := 0
   fence : Nat := 1
   records : Key → Option Decision := fun _ => none
+  pending : Key → Option (Nat × Nat × Nat) := fun _ => none
   commits : List Key := []
   held : Nat := 4
   calls : Nat := 1
@@ -28,15 +29,23 @@ variable {Key : Type}
 def write [DecidableEq Key] (records : Key → Option Value) (id : Key) (d : Value) :=
   fun key => if key = id then some d else records key
 
+def clear [DecidableEq Key] (records : Key → Option Value) (id : Key) :=
+  fun key => if key = id then none else records key
+
 def Extends (s t : State Key) : Prop := ∀ id d, s.records id = some d → t.records id = some d
 def Safe (held calls : Nat) (s : State Key) : Prop := s.head = s.commits.length ∧ s.held = held ∧ s.calls = calls
 
 inductive Step [DecidableEq Key] : State Key → State Key → Prop where
-  | commit (s : State Key) (id : Key) (payload fence : Nat) (fresh : s.records id = none) (monotone : s.fence ≤ fence) :
-      Step s {s with head := s.head+1, fence := fence, commits := s.commits ++ [id], records := write s.records id ⟨payload,s.head,fence,true,s.head+1,fence⟩}
+  | stage (s : State Key) (id : Key) (q : Nat × Nat × Nat) (fresh : s.records id = none)
+      (bound : s.pending id = none ∨ s.pending id = some q) :
+      Step s {s with pending := write s.pending id q}
+  | commit (s : State Key) (id : Key) (payload fence : Nat) (fresh : s.records id = none) (monotone : s.fence ≤ fence)
+      (bound : s.pending id = none ∨ s.pending id = some (payload,s.head,fence)) :
+      Step s {s with head := s.head+1, fence := fence, commits := s.commits ++ [id], records := write s.records id ⟨payload,s.head,fence,true,s.head+1,fence⟩, pending := clear s.pending id}
   | reject (s : State Key) (id : Key) (payload parent fence : Nat) (fresh : s.records id = none)
-      (conflict : parent ≠ s.head ∨ fence < s.fence) :
-      Step s {s with records := write s.records id ⟨payload,parent,fence,false,s.head,s.fence⟩}
+      (conflict : parent ≠ s.head ∨ fence < s.fence)
+      (bound : s.pending id = none ∨ s.pending id = some (payload,parent,fence)) :
+      Step s {s with records := write s.records id ⟨payload,parent,fence,false,s.head,s.fence⟩, pending := clear s.pending id}
   | replayOrObservationOrRestart (s) : Step s s
 
 variable {s t : State Key}
@@ -45,11 +54,12 @@ variable {held calls : Nat}
 theorem step_preserves_original_decisions [DecidableEq Key] (step : Step s t) : Extends s t := by
   intro key d existing
   cases step with
-  | commit id payload fence fresh monotone =>
+  | stage => exact existing
+  | commit id payload fence fresh monotone bound =>
     by_cases same : key = id
     · subst key; rw [fresh] at existing; contradiction
     · simpa [write, same] using existing
-  | reject id payload parent fence fresh conflict =>
+  | reject id payload parent fence fresh conflict bound =>
     by_cases same : key = id
     · subst key; rw [fresh] at existing; contradiction
     · simpa [write, same] using existing
@@ -57,6 +67,31 @@ theorem step_preserves_original_decisions [DecidableEq Key] (step : Step s t) : 
 
 theorem step_preserves_accounting [DecidableEq Key] (h : Safe held calls s) (step : Step s t) : Safe held calls t := by
   cases step <;> simp_all [Safe]
+
+def Ready (s : State Key) : Prop := ∀ id, s.pending id = none
+
+def PreservesIntents (s t : State Key) : Prop := ∀ id q, s.pending id = some q →
+  t.pending id = some q ∨ ∃ d, t.records id = some d ∧ (d.payload,d.parent,d.requestedFence) = q
+
+theorem step_preserves_original_intents [DecidableEq Key] (step : Step s t) : PreservesIntents s t := by
+  intro key q existing
+  cases step with
+  | stage id candidate fresh bound =>
+    by_cases same : key = id <;> simp_all [write, clear]
+  | commit id payload fence fresh monotone bound =>
+    by_cases same : key = id <;> simp_all [write, clear]
+  | reject id payload parent fence fresh conflict bound =>
+    by_cases same : key = id <;> simp_all [write, clear]
+  | replayOrObservationOrRestart => exact Or.inl existing
+
+theorem staged_intent_blocks_effect_readiness [DecidableEq Key] (id : Key) (q : Nat × Nat × Nat) :
+    ¬ Ready {s with pending := write s.pending id q} := by
+  intro ready
+  have impossible := ready id
+  simp [write] at impossible
+
+theorem resolving_one_key_preserves_sibling [DecidableEq Key] (id sibling : Key) (different : sibling ≠ id) :
+    clear s.pending id sibling = s.pending sibling := by simp [clear, different]
 
 inductive Run [DecidableEq Key] : State Key → State Key → Prop where
   | refl (s : State Key) : Run s s
@@ -68,6 +103,18 @@ theorem run_preserves_original_decisions [DecidableEq Key] (run : Run s t) : Ext
   | next history step ih =>
     intro id d existing
     exact step_preserves_original_decisions step id d (ih id d existing)
+
+theorem run_preserves_original_intents [DecidableEq Key] (run : Run s t) : PreservesIntents s t := by
+  induction run with
+  | refl => intro id q existing; exact Or.inl existing
+  | next history step ih =>
+    intro id q existing
+    rcases ih id q existing with pending | ⟨d, recorded, bound⟩
+    · exact step_preserves_original_intents step id q pending
+    · exact Or.inr ⟨d, step_preserves_original_decisions step id d recorded, bound⟩
+
+#print axioms run_preserves_original_intents
+#print axioms staged_intent_blocks_effect_readiness
 
 theorem run_preserves_accounting [DecidableEq Key] (h : Safe held calls s) (run : Run s t) : Safe held calls t := by
   induction run with

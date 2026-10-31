@@ -202,6 +202,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.46-functional-security-frameworks.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.46-functional-security-frameworks.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.46-functional-security-frameworks.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.49-policy-proposal-barrier.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.49-policy-proposal-barrier.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.49-policy-proposal-barrier.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

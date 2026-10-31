@@ -69,7 +69,7 @@ pub(crate) fn apply(tx: &Transaction<'_>, change: AuthorityChange<'_>) -> Result
     })
 }
 
-fn lookup(
+pub(crate) fn lookup(
     connection: &Connection,
     operation_id: &str,
     digest: &str,
@@ -97,10 +97,43 @@ fn lookup(
         .transpose()
 }
 
+fn record_decision(
+    tx: &Transaction<'_>,
+    change: &Publication,
+    digest: &str,
+    decision: Decision,
+) -> Result<PublicationReceipt> {
+    let receipt = PublicationReceipt {
+        operation_id: change.operation_id.clone(),
+        digest: digest.into(),
+        outcome: decision.outcome,
+        revision: decision.head.as_ref().map(|h| h.revision),
+        fence: decision.head.as_ref().map(|h| h.fence),
+    };
+    receipt.validate()?;
+    tx.execute(
+        "INSERT INTO authority_publications VALUES(?1,?2,?3,?4)",
+        params![
+            change.operation_id,
+            digest,
+            serde_json::to_string(change)?,
+            serde_json::to_string(&receipt)?
+        ],
+    )
+    .map_err(db)?;
+    tx.execute(
+        "DELETE FROM authority_pending WHERE operation_id=?1 AND digest=?2",
+        params![change.operation_id, digest],
+    )
+    .map_err(db)?;
+    Ok(receipt)
+}
+
 impl Ledger {
     /// Exact retries observe their original committed or rejected outcome; never rebase a CAS.
     pub fn publish_authority(&mut self, change: &Publication) -> Result<PublicationReceipt> {
         let digest = change.digest()?;
+        crate::publication_barrier::require_binding(&self.connection, change)?;
         if let Some(receipt) = lookup(&self.connection, &change.operation_id, &digest)? {
             return Ok(receipt);
         }
@@ -109,6 +142,7 @@ impl Ledger {
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db)?;
+        crate::publication_barrier::require_binding(&tx, change)?;
         if let Some(receipt) = lookup(&tx, &change.operation_id, &digest)? {
             return Ok(receipt);
         }
@@ -121,24 +155,7 @@ impl Ledger {
                 fence: change.fence,
             },
         )?;
-        let receipt = PublicationReceipt {
-            operation_id: change.operation_id.clone(),
-            digest: digest.clone(),
-            outcome: decision.outcome,
-            revision: decision.head.as_ref().map(|h| h.revision),
-            fence: decision.head.as_ref().map(|h| h.fence),
-        };
-        receipt.validate()?;
-        tx.execute(
-            "INSERT INTO authority_publications VALUES(?1,?2,?3,?4)",
-            params![
-                change.operation_id,
-                digest,
-                serde_json::to_string(change)?,
-                serde_json::to_string(&receipt)?
-            ],
-        )
-        .map_err(db)?;
+        let receipt = record_decision(&tx, change, &digest, decision)?;
         tx.commit().map_err(db)?;
         Ok(receipt)
     }

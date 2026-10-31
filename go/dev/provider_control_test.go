@@ -350,6 +350,17 @@ func (p *publicationReplyLoss) RegisterTask(ctx context.Context, in *pb.Register
 	source := p.sourceClient()
 	return source.RPC.RegisterTask(source.Context(ctx), in)
 }
+func (p *publicationReplyLoss) StageAuthority(ctx context.Context, in *pb.PublishRequest) (*pb.PublicationKey, error) {
+	source := p.sourceClient()
+	key, err := source.RPC.StageAuthority(source.Context(ctx), in)
+	if err != nil {
+		return nil, err
+	}
+	if p.stages.Add(1) == 1 && p.loseStage {
+		return nil, status.Error(codes.Unavailable, "injected reply loss after durable staging")
+	}
+	return key, nil
+}
 func TestProviderControlPublicationReplyLossCannotActivateOrRebase(t *testing.T) {
 	exerciseControlPublicationReplyLoss(t, nil)
 }
@@ -377,6 +388,14 @@ func compileControlSource(t testing.TB, path string) config.Bundle {
 }
 
 func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string) {
+	exerciseControlSourceReplyLoss(t, source, false)
+}
+
+func TestProviderControlStagingReplyLossCannotActivateOrLosePending(t *testing.T) {
+	exerciseControlSourceReplyLoss(t, nil, true)
+}
+
+func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string, loseStage bool) {
 	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
@@ -394,7 +413,7 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 		t.Fatal(err)
 	}
 	server := grpc.NewServer(grpc.Creds(credentials.NewTLS(&tls.Config{Certificates: []tls.Certificate{certificate}, ClientCAs: f.pki.root, ClientAuth: tls.RequireAndVerifyClientCert, MinVersion: tls.VersionTLS13})))
-	proxy := &publicationReplyLoss{source: f.admin}
+	proxy := &publicationReplyLoss{source: f.admin, loseStage: loseStage}
 	pb.RegisterGatewayServer(server, proxy)
 	exited := make(chan error, 1)
 	go func() { exited <- server.Serve(listener) }()
@@ -424,13 +443,18 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 		t.Error("failed bootstrap did not exit naturally")
 	}
 	log.Close()
-	if proxy.calls.Load() != 1 || proxy.inspections.Load() != 1 {
+	writes := int64(1)
+	if loseStage {
+		writes = 0
+	}
+	if proxy.calls.Load() != writes || proxy.inspections.Load() != 1 || proxy.stages.Load() != 1 {
 		t.Fatal("bootstrap automatically retried publication")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	r, err := f.admin.InspectPublication(ctx, bundle.Publication)
-	if err != nil || r.GetOutcome() != pb.PublicationOutcome_COMMITTED || f.primary.Load() != 0 {
+	if (!loseStage && (err != nil || r.GetOutcome() != pb.PublicationOutcome_COMMITTED)) ||
+		(loseStage && status.Code(err) != codes.NotFound) || f.primary.Load() != 0 {
 		t.Fatal("lost reply changed committed outcome or sent", r, err)
 	}
 	connection, err := net.DialTimeout("tcp", c.address, 100*time.Millisecond)

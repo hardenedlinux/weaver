@@ -16,6 +16,11 @@ pub(crate) struct SourceOwner {
     capacity: Arc<Semaphore>,
 }
 enum Command {
+    Stage {
+        change: Publication,
+        reply: oneshot::Sender<Result<PublicationKey>>,
+        slot: OwnedSemaphorePermit,
+    },
     Register {
         task: Box<Task>,
         reply: oneshot::Sender<Result<()>>,
@@ -119,6 +124,17 @@ impl SourceOwner {
         })
         .await
     }
+    pub(crate) async fn stage(
+        &self,
+        change: Publication,
+    ) -> std::result::Result<PublicationKey, Status> {
+        self.submit(|reply, slot| Command::Stage {
+            change,
+            reply,
+            slot,
+        })
+        .await
+    }
     pub(crate) async fn inspect(
         &self,
         key: PublicationKey,
@@ -168,6 +184,14 @@ fn process(
         };
         ledger.require_quiescent()?;
         match command {
+            Command::Stage {
+                change,
+                reply,
+                slot,
+            } => {
+                let result = ledger.stage_authority(&change);
+                answer(ledger, reply, result, slot)?;
+            }
             Command::Register { task, reply, slot } => {
                 let result = register(ledger, &task);
                 answer(ledger, reply, result, slot)?;

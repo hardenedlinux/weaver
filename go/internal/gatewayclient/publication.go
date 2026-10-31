@@ -38,10 +38,14 @@ func Publication(p v1.Publication) *pb.PublishRequest {
 	return &pb.PublishRequest{OperationId: p.OperationID, ExpectedRevision: p.ExpectedRevision, Fence: p.Fence, Policy: p.Policy, Schema: p.Schema}
 }
 
-// Publish makes one RPC. Errors never trigger automatic resubmission or CAS rebasing.
+// Publish stages the exact proposal then makes one final CAS call. Errors never
+// trigger automatic resubmission or CAS rebasing; staging alone cannot activate.
 func (c *Client) Publish(ctx context.Context, p v1.Publication) (*pb.PublicationReceipt, error) {
 	digest, err := p.Digest()
 	if err != nil {
+		return nil, err
+	}
+	if err = c.StagePublication(ctx, p); err != nil {
 		return nil, err
 	}
 	receipt, err := c.RPC.PublishAuthority(c.Context(ctx), Publication(p))
@@ -55,6 +59,24 @@ func (c *Client) Publish(ctx context.Context, p v1.Publication) (*pb.Publication
 		return receipt, ErrPublicationRejected
 	}
 	return receipt, nil
+}
+
+// StagePublication makes one source-only call. A lost reply leaves an unknown
+// durable barrier; retry uses the original proposal and never invents a new ID.
+// Success is not a final decision and does not activate operation ingress.
+func (c *Client) StagePublication(ctx context.Context, p v1.Publication) error {
+	digest, err := p.Digest()
+	if err != nil {
+		return err
+	}
+	key, err := c.RPC.StageAuthority(c.Context(ctx), Publication(p))
+	if err != nil {
+		return err
+	}
+	if key == nil || key.OperationId != p.OperationID || key.Digest != digest {
+		return errors.New("publication staging binding")
+	}
+	return nil
 }
 
 // InspectPublication only observes the original decision. NotFound is not abort.

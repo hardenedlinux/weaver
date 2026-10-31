@@ -58,6 +58,24 @@ fn publication_operations(c: &mut Criterion) {
         policy: policy_fixture::POLICY.into(),
         schema: policy_fixture::SCHEMA.into(),
     };
+    c.bench_function("ledger/publication_stage_and_decide", |b| {
+        b.iter_batched(
+            || stores::fresh(128, "https://provider.invalid/v1/chat/completions"),
+            |(temp, mut ledger, _)| {
+                let key = ledger.stage_authority(&change).expect("durable barrier");
+                let receipt = ledger
+                    .publish_authority(&change)
+                    .expect("atomic resolution");
+                assert_eq!(key.digest, receipt.digest);
+                assert_eq!(
+                    receipt.outcome,
+                    weaver_contracts::PublicationOutcome::Committed
+                );
+                black_box((temp, ledger, receipt))
+            },
+            BatchSize::PerIteration,
+        )
+    });
     c.bench_function("ledger/publication_atomic_commit", |b| {
         b.iter_batched(
             || stores::fresh(128, "https://provider.invalid/v1/chat/completions"),

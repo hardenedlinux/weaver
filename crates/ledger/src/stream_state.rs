@@ -53,6 +53,7 @@ pub(crate) fn record(
     })
 }
 pub(crate) fn authority(tx: &Transaction<'_>) -> Result<(u64, u64, String)> {
+    crate::publication_barrier::require_resolved(tx)?;
     tx.query_row(
         "SELECT revision,fence,policy FROM authority WHERE singleton=1",
         [],

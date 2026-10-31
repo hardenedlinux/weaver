@@ -13,6 +13,66 @@ fn change(id: &str, expected: Option<u64>) -> Publication {
         schema: SCHEMA.into(),
     }
 }
+
+#[test]
+fn decision_failure_retains_pending_policy_until_the_same_atomic_outcome_commits() {
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("pending.db");
+    let mut ledger = Ledger::open(&path).expect("ledger");
+    let original = change("pending", None);
+    let key = ledger.stage_authority(&original).expect("durable stage");
+    ledger.connection.execute_batch("CREATE TRIGGER deny_decision BEFORE INSERT ON authority_publications BEGIN SELECT RAISE(ABORT,'injected decision failure'); END;").expect("fault");
+    assert!(ledger.publish_authority(&original).is_err());
+    assert!(ledger.publication_receipt(&key).expect("lookup").is_none());
+    assert!(crate::publication_barrier::require_resolved(&ledger.connection).is_err());
+    let head: bool = ledger
+        .connection
+        .query_row("SELECT EXISTS(SELECT 1 FROM authority)", [], |row| {
+            row.get(0)
+        })
+        .expect("head");
+    assert!(!head, "failed decision partially activated its Policy");
+    drop(ledger);
+    let mut ledger = Ledger::open(&path).expect("restart");
+    ledger
+        .connection
+        .execute_batch("DROP TRIGGER deny_decision")
+        .expect("recover storage");
+    assert_eq!(ledger.stage_authority(&original).expect("same stage"), key);
+    assert_eq!(
+        ledger
+            .publish_authority(&original)
+            .expect("same decision")
+            .outcome,
+        Committed
+    );
+    crate::publication_barrier::require_resolved(&ledger.connection).expect("resolved");
+}
+
+#[test]
+fn concurrent_stage_and_finalize_cannot_resurrect_a_decided_barrier() {
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("race.db");
+    let mut ledger = Ledger::open(&path).expect("ledger");
+    let original = change("race", None);
+    ledger.stage_authority(&original).expect("stage");
+    let gate = Arc::new(Barrier::new(2));
+    let child_gate = gate.clone();
+    let child_path = path.clone();
+    let child_change = original.clone();
+    let stage = std::thread::spawn(move || {
+        let mut old_worker = Ledger::open(child_path).expect("second handle");
+        child_gate.wait();
+        old_worker
+            .stage_authority(&child_change)
+            .expect("late stage")
+    });
+    gate.wait();
+    let decided = ledger.publish_authority(&original).expect("final CAS");
+    assert_eq!(stage.join().expect("worker").digest, decided.digest);
+    crate::publication_barrier::require_resolved(&ledger.connection)
+        .expect("late stage cannot reopen pending");
+}
 #[test]
 fn historical_decisions_survive_restart_and_cannot_rebase_or_replace_original_id() {
     let temp = tempfile::tempdir().expect("directory");

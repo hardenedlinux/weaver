@@ -8,6 +8,8 @@ mod properties;
 mod provider;
 #[path = "unit/provider_profiles.rs"]
 mod provider_profiles;
+#[path = "unit/publication_barrier.rs"]
+mod publication_barrier;
 #[path = "unit/recovery.rs"]
 mod recovery;
 #[path = "unit/serialization.rs"]

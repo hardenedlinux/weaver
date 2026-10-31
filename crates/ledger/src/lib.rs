@@ -3,6 +3,7 @@
 mod provider;
 mod provider_profiles;
 mod publication;
+mod publication_barrier;
 mod schema;
 pub use provider::{ProviderDispatch, ProviderRelease};
 mod store;

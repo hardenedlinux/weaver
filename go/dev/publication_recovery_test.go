@@ -29,6 +29,8 @@ type publicationReplyLoss struct {
 	sourceMu    sync.RWMutex
 	calls       atomic.Int64
 	inspections atomic.Int64
+	stages      atomic.Int64
+	loseStage   bool
 }
 
 func (s *publicationReplyLoss) sourceClient() *gatewayclient.Client {
@@ -51,8 +53,12 @@ func (s *publicationReplyLoss) InspectPublication(ctx context.Context, key *pb.P
 func (s *publicationReplyLoss) PublishAuthority(ctx context.Context, p *pb.PublishRequest) (*pb.PublicationReceipt, error) {
 	s.calls.Add(1)
 	source := s.sourceClient()
-	if _, err := source.RPC.PublishAuthority(source.Context(ctx), p); err != nil {
+	r, err := source.RPC.PublishAuthority(source.Context(ctx), p)
+	if err != nil {
 		return nil, err
+	}
+	if s.loseStage {
+		return r, nil
 	}
 	return nil, status.Error(codes.Unavailable, "injected reply loss after durable decision")
 }
