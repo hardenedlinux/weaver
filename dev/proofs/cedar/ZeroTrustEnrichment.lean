@@ -1,4 +1,6 @@
 import CedarPooSpec.Gateway.ZeroTrust
+import CedarPooSpec.Gateway.PublicationReview
+import PublicationRecovery
 import WeaverPolicyBridge
 
 /-! Candidate-library consumer, checked in isolation against the upstream PR.
@@ -7,6 +9,32 @@ The generic functional framework belongs to CedarPooSpec.ZeroTrust; Gateway
 specializes it through Gateway.ZeroTrust and existing POO publication; this file enriches
 the existing Weaver view and applies the library's final-use laws. -/
 namespace Weaver.ZeroTrustEnrichment
+
+-- The existing publication recovery owner supplies preservation. This adapter
+-- adds no ledger: the final invocation's exact post-state is related to that
+-- owner's actual Step by an explicit, still unproved native refinement premise.
+theorem reviewed_publication_keeps_recovery_contract
+    {Result : Type}
+    {authority : CedarPooSpec.Gateway.PublicationReview.Host Nat Result
+      (PublicationRecovery.State Nat) Nat Nat Nat}
+    {template : LeanPoo.Functional.DeclarativeMetadata.Contract Unit Nat Result}
+    {prepare : PublicationRecovery.State Nat → Nat → Except Unit (Result × PublicationRecovery.State Nat)}
+    {command : Nat} {actual : PublicationRecovery.State Nat}
+    (final : CedarPooSpec.Gateway.PublicationReview.Final authority template prepare command actual)
+    (refinement : ∀ before result after, authority.commit before result after →
+      PublicationRecovery.Step before after)
+    (safe : PublicationRecovery.Safe held calls actual) :
+    authority.security.currentAtUse actual ∧ authority.pendingAdmissible command actual ∧
+      PublicationRecovery.Extends actual final.receipt.state ∧
+      PublicationRecovery.PreservesIntents actual final.receipt.state ∧
+      PublicationRecovery.Safe held calls final.receipt.state := by
+  have step := refinement _ _ _ final.committed
+  exact ⟨final.current.2.2.1, final.pending,
+    PublicationRecovery.step_preserves_original_decisions step,
+    PublicationRecovery.step_preserves_original_intents step,
+    PublicationRecovery.step_preserves_accounting safe step⟩
+
+#print axioms reviewed_publication_keeps_recovery_contract
 
 structure RuntimeView extends PolicyBridge.PublicationContext where
   semanticContext : CedarPooSpec.Gateway.Context

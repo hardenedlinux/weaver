@@ -10,6 +10,24 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Publication pending admission is command-specific: a final CAS
+           may resolve its own staged intent while administrative siblings remain.
+           Requiring globally empty pending here deadlocks progress. Provider
+           effects still require the distinct global resolved-pending barrier. */
+        doc /* Publication review binds the independent authoritative parent,
+           exact original command, approved Delta/replay artifact and deciding
+           source cut under one final CAS. Caller-selected parent/evidence and
+           cached prechecks are insufficient. SPEC PublicationReview composes
+           LeanPoo Contract.bindEvidence with generic ZeroTrust requirements;
+           Weaver's existing recovery Step supplies outcome/intent/accounting
+           preservation under an explicit native refinement premise. */
+        doc /* Review registration is immutable per original command ID.
+           Unknown registration or publication replies retain pending intent.
+           Replacement evidence rejects; stale parent/fence is an original
+           terminal rejection, never an implicit rebase. Resolving one proposal
+           preserves siblings. Historical outcomes remain queryable but confer
+           no current execution authority. Production RPC has no Delta artifact
+           field yet: command commitment tests do not qualify review admission. */
         doc /* Native Cedar Policy values and cedar-language GovernanceSource assets project to one exact ordered Cedar policy set. Assets use explicit confined roots and bounded regular-file reads. Unsupported domain obligations reject. The publication carries the exact projected bytes; the native source manifest is compilation evidence and not a runtime permit. */
         doc /* Reviewed no-gain publication additionally needs exact original
            parent/profile/source/schema/policy evidence bound at the final CAS.

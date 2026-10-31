@@ -312,6 +312,10 @@
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityUncompiledSourceCannotRegisterTest"},
     {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"}]},
   {"id":"GovernancePolicyProjection","witnesses":[
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem reviewed_publication_keeps_recovery_contract"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run substitutedArtifactGetsOriginalRejectionTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run crossStoreReviewRollbackCounterexampleTest"},
+    {"file":"go/dev/provider_policy_pending_test.go","pattern":"func TestProviderPendingCommandSubstitutionAndHistoricalRecovery"},
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn typed_publication_does_not_yet_require_delta_evidence"},
     {"file":"scheme/policy/func.ss","pattern":"project-policy profile"},
     {"file":"scheme/policy/assets.ss","pattern":"read-policy-assets profile"},

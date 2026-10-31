@@ -211,6 +211,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.51-zero-trust-architecture.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.51-zero-trust-architecture.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.51-zero-trust-architecture.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.52-reviewed-publication-cas.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.52-reviewed-publication-cas.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.52-reviewed-publication-cas.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

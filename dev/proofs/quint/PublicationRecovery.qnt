@@ -1,7 +1,8 @@
 module PublicationRecovery {
-  type Decision = {payload:int,parent:int,requestedFence:int,outcome:int,resultHead:int,resultFence:int}
+  type Decision = {payload:int,parent:int,requestedFence:int,outcome:int,resultHead:int,resultFence:int,review:Set[Review],validatedFence:int,validatedCut:Cut,validatedEpoch:int}
   type Event = {id:int,decision:Decision}
   type Proposal = {id:int,payload:int,parent:int,fence:int}
+  type Review = {command:Proposal,artifact:int,head:int,fence:int,cut:Cut,epoch:int}
   type Part={id:int,payload:int,key:int}
   type Cut={publication:List[Part],consumption:List[Part],account:List[Part],history:List[Part]}
   type Intent={id:int,payload:int,key:int,kind:int,scope:int,epoch:int,before:Cut}
@@ -11,10 +12,10 @@ module PublicationRecovery {
   type Floor={epoch:int,cut:Cut,outcomes:List[FloorOutcome],pending:Set[Intent],local:Cut,
     observed:Cut,observedEpoch:int,haveRead:bool,active:bool,burned:Set[int],admitted:Set[int],handles:Set[int],tickets:Set[{key:int,cut:Cut,epoch:int}],
     owner:int,liveOwners:Set[int],egressOwners:Set[int],handoff:bool,calls:int,external:int}
-  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal]}
+  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review]}
   var authority:Ledger
   val ids=Set(0,1,2)
-  val empty={payload:0,parent:-1,requestedFence:1,outcome:0,resultHead:-1,resultFence:1}
+  val empty={payload:0,parent:-1,requestedFence:1,outcome:0,resultHead:-1,resultFence:1,review:Set(),validatedFence:1,validatedCut:emptyCut,validatedEpoch:0}
   val safe = authority.head==authority.commits.length()-1 and authority.held==4 and authority.calls==1 and
     authority.pending.forall(p=>authority.records.get(p.id).outcome==0 and authority.pending.forall(q=>q.id!=p.id or q==p)) and
     authority.log.indices().forall(i=>authority.records.get(authority.log.nth(i).id)==authority.log.nth(i).decision) and
@@ -23,15 +24,15 @@ module PublicationRecovery {
     (authority.head>=0 implies authority.policy==authority.commits.nth(authority.head).decision.payload and authority.schema==authority.policy) and floorSafe(authority.floor)
   pure val emptyCut={publication:List(),consumption:List(),account:List(),history:List()}
   pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),owner:1,liveOwners:Set(1),egressOwners:Set(1),handoff:false,calls:0,external:0}
-  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set()}
+  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set())}
   action stage(q:Proposal):bool={val d=authority.records.get(q.id)
     all {authority.pending.forall(p=>p.id!=q.id or p==q),
       d.outcome==0 or (d.payload==q.payload and d.parent==q.parent and d.requestedFence==q.fence),
       authority'=authority.with("pending",if(d.outcome==0)authority.pending.union(Set(q)) else authority.pending)}}
-  action publish(id:int,payload:int,parent:int,fence:int):bool = {
-    val accepted=parent==authority.head and fence>=authority.fence
+  action decidePublication(id:int,payload:int,parent:int,fence:int,review:Set[Review],qualified:bool):bool = {
+    val accepted=parent==authority.head and fence>=authority.fence and qualified
     val d={payload:payload,parent:parent,requestedFence:fence,outcome:if(accepted)1 else 2,
-      resultHead:if(accepted)authority.head+1 else authority.head,resultFence:if(accepted)fence else authority.fence}
+      resultHead:if(accepted)authority.head+1 else authority.head,resultFence:if(accepted)fence else authority.fence,review:review,validatedFence:authority.fence,validatedCut:authority.floor.cut,validatedEpoch:authority.floor.epoch}
     val event={id:id,decision:d}
     all {authority.records.get(id).outcome==0,
       authority.pending.forall(p=>p.id!=id or p=={id:id,payload:payload,parent:parent,fence:fence}),
@@ -41,6 +42,29 @@ module PublicationRecovery {
         .with("head",d.resultHead).with("fence",d.resultFence)
         .with("policy",if(accepted)payload else authority.policy).with("schema",if(accepted)payload else authority.schema)}
   }
+  // Existing native endpoint: this path does not yet mandate review evidence.
+  action publish(id:int,payload:int,parent:int,fence:int):bool =
+    decidePublication(id,payload,parent,fence,Set(),true)
+  // Trusted review registration is a Host premise: actual Delta/schema/replay
+  // qualification and independent parent selection are not simulated here.
+  // Registration may be separate from stage; the barrier remains until the
+  // original final outcome, even if registration or its acknowledgment fails.
+  action registerReview(r:Review):bool=all {authority.pending.contains(r.command),
+    r.head==authority.head,r.command.parent==r.head,r.fence==authority.fence,
+    r.cut==authority.floor.cut,r.epoch==authority.floor.epoch,
+    authority.reviews.get(r.command.id)==Set() or authority.reviews.get(r.command.id)==Set(r),
+    authority'=authority.with("reviews",authority.reviews.set(r.command.id,Set(r)))}
+  action publishReviewed(q:Proposal,r:Review):bool={
+    val qualified=authority.reviews.get(q.id)==Set(r) and r.command==q and r.head==authority.head and r.fence==authority.fence and
+      r.cut==authority.floor.cut and r.epoch==authority.floor.epoch and authority.floor.pending==Set() and not(authority.floor.handoff)
+    decidePublication(q.id,q.payload,q.parent,q.fence,Set(r),qualified)
+  }
+  val reviewSafe=safe and authority.commits.indices().forall(i=>{
+    val e=authority.commits.nth(i)
+    e.decision.review.exists(r=>authority.reviews.get(e.id)==Set(r) and
+        r.command=={id:e.id,payload:e.decision.payload,parent:e.decision.parent,fence:e.decision.requestedFence} and
+        r.head==e.decision.parent and r.fence==e.decision.validatedFence and
+        r.cut==e.decision.validatedCut and r.epoch==e.decision.validatedEpoch)})
   action replay(id:int,payload:int,parent:int,fence:int):bool = all {
     authority.records.get(id).outcome!=0,authority.records.get(id).payload==payload,authority.records.get(id).parent==parent,authority.records.get(id).requestedFence==fence,authority'=authority}
   action observe = authority'=authority
@@ -184,4 +208,59 @@ module PublicationRecovery {
     .then(stage({id:1,payload:1,parent:-1,fence:1})).then(publish(0,0,-1,1))
     .expect(safe and authority.pending==Set({id:1,payload:1,parent:-1,fence:1})).then(publish(1,1,-1,1))
     .expect(safe and authority.pending==Set() and authority.records.get(1).outcome==2)
+  pure val review0={command:staged0,artifact:70,head:-1,fence:1,cut:emptyCut,epoch:0}
+  pure val sibling={id:1,payload:1,parent:-1,fence:1}
+  pure val siblingReview={command:sibling,artifact:71,head:-1,fence:1,cut:emptyCut,epoch:0}
+  action reviewedFirst=init.then(stage(staged0)).then(registerReview(review0)).then(publishReviewed(staged0,review0))
+  action advanceReviewFence=authority'=authority.with("fence",authority.fence+1)
+  run registeredReviewCannotBeReplacedTest=init.then(stage(staged0)).then(registerReview(review0))
+    .then(registerReview(review0.with("artifact",999)).fail())
+  run substitutedArtifactGetsOriginalRejectionTest=init.then(stage(staged0)).then(registerReview(review0))
+    .then(publishReviewed(staged0,review0.with("artifact",999)))
+    .expect(reviewSafe and authority.head== -1 and authority.pending==Set() and authority.records.get(0).outcome==2)
+  run oldReviewedParentCannotWinAfterSiblingTest=init.then(stage(staged0)).then(stage(sibling))
+    .then(registerReview(review0)).then(registerReview(siblingReview)).then(publishReviewed(staged0,review0))
+    .then(publishReviewed(sibling,siblingReview)).expect(reviewSafe and authority.head==0 and authority.records.get(1).outcome==2 and authority.held==4)
+  run changedFenceInvalidatesMatchingReviewTest=init.then(stage(staged0)).then(registerReview(review0)).then(advanceReviewFence)
+    .then(publishReviewed(staged0,review0)).expect(reviewSafe and authority.head== -1 and authority.records.get(0).outcome==2)
+  run pendingReviewSurvivesMissingReplyTest=init.then(stage(staged0)).then(registerReview(review0)).then(restart).then(observe)
+    .expect(reviewSafe and authority.pending.contains(staged0) and authority.records.get(0).outcome==0 and authority.held==4)
+  run reviewCommitLostReplyRecoveryIsObservationTest=reviewedFirst.then(restart).then(replay(0,0,-1,1))
+    .expect(reviewSafe and authority.commits.length()==1 and authority.calls==1 and authority.held==4)
+  run reviewedDecisionCannotBeReopenedTest=reviewedFirst.then(restart).then(stage(staged0))
+    .expect(reviewSafe and authority.pending==Set()).then(publishReviewed(staged0,review0).fail())
+  run reviewCannotBeTransferredToNewIdTest=init.then(stage(sibling)).then(publishReviewed(sibling,review0))
+    .expect(reviewSafe and authority.head== -1 and authority.records.get(1).outcome==2)
+  run reviewResolvingOneIntentRetainsSiblingTest=init.then(stage(staged0)).then(stage(sibling)).then(registerReview(review0))
+    .then(publishReviewed(staged0,review0)).then(restart).expect(reviewSafe and authority.pending==Set(sibling) and authority.held==4)
+  pure val successor={id:2,payload:2,parent:0,fence:2}
+  pure val successorReview={command:successor,artifact:72,head:0,fence:1,cut:emptyCut,epoch:0}
+  action reviewedStep=any {stage(staged0),stage(sibling),stage(successor),
+    registerReview(review0),registerReview(siblingReview),registerReview(successorReview),
+    publishReviewed(staged0,review0),publishReviewed(sibling,siblingReview),publishReviewed(successor,successorReview),
+    publishReviewed(staged0,review0.with("artifact",999)),advanceReviewFence,
+    floorStage(consume0),floorCommit(consume0,true),floorResolve(consume0),floorRotate,
+    replay(0,0,-1,1),replay(1,1,-1,1),replay(2,2,0,2),restart,observe}
+  run historicalReviewCannotReplaceCurrentPublicationTest=reviewedFirst.then(stage(successor)).then(registerReview(successorReview))
+    .then(publishReviewed(successor,successorReview)).then(restart).then(replay(0,0,-1,1))
+    .expect(reviewSafe and authority.head==1 and authority.policy==2)
+  run omittedReviewGateCounterexampleTest=first.expect(safe and not(reviewSafe))
+  run forcedEvidenceSubstitutionCounterexampleTest=init.then(stage(staged0)).then(registerReview(review0))
+    .then(decidePublication(0,0,-1,1,Set(review0.with("artifact",999)),true)).expect(safe and not(reviewSafe))
+  action unsafeForgetReview=authority'=authority.with("reviews",authority.reviews.set(0,Set()))
+  run crossStoreReviewRollbackCounterexampleTest=reviewedFirst.then(unsafeForgetReview).expect(safe and not(reviewSafe))
+  action unsafeGlobalPendingPublication(q:Proposal,r:Review):bool=all {authority.pending==Set(),publishReviewed(q,r)}
+  run globalPendingGateDeadlocksOwnIntentCounterexampleTest=init.then(stage(staged0)).then(registerReview(review0))
+    .expect(reviewSafe and authority.pending.contains(staged0)).then(unsafeGlobalPendingPublication(staged0,review0).fail())
+  run ownPendingIntentCanFinalizeWithoutGlobalEmptinessTest=reviewedFirst.expect(reviewSafe and authority.pending==Set())
+  run unknownFactIntentCannotAuthorizePublicationTest=init.then(stage(staged0)).then(registerReview(review0)).then(floorStage(consume0))
+    .then(publishReviewed(staged0,review0)).expect(reviewSafe and authority.head== -1 and authority.floor.pending.contains(consume0) and authority.held==4)
+  run changedConsumptionPrefixInvalidatesReviewTest=init.then(stage(staged0)).then(registerReview(review0)).then(floorStage(consume0))
+    .then(floorCommit(consume0,true)).then(floorResolve(consume0)).then(publishReviewed(staged0,review0))
+    .expect(reviewSafe and authority.head== -1 and authority.floor.cut.consumption.length()==1 and authority.held==4)
+  run changedRecoveryEpochInvalidatesReviewTest=init.then(stage(staged0)).then(registerReview(review0)).then(floorRotate)
+    .then(publishReviewed(staged0,review0)).expect(reviewSafe and authority.head== -1)
+  run cachedReviewIgnoresChangedPrefixCounterexampleTest=init.then(stage(staged0)).then(registerReview(review0)).then(floorStage(consume0))
+    .then(floorCommit(consume0,true)).then(floorResolve(consume0)).then(decidePublication(0,0,-1,1,Set(review0),true))
+    .expect(safe and not(reviewSafe) and authority.floor.cut.consumption.length()==1 and authority.held==4)
 }
