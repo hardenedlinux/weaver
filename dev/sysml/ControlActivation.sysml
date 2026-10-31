@@ -3,6 +3,20 @@ package ControlActivation {
     requirement def SpecificSourceContracts {
         doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete native Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
+    requirement def SourceStartupObservation {
+        doc /* Local Go startup phases distinguish configuration readiness,
+           authority connections/reconciliation and issuing Serve; only the
+           actual authenticated channel proves readiness. Scheme compiler start,
+           successful/failed reaping and artifact decoding are separate events.
+           The native fixture records module readiness, entry, compilation and
+           artifact write with SDK CPU/real clocks and host-wall microseconds.
+           Clock origins differ; compare calibrated intervals and retain clock
+           adjustment/profiling premises. Phase text is forgeable diagnostics,
+           not proof of child quiescence, authority, source outcome or budget
+           release. Preserve failed deadlines and distinguish unavailable process
+           inventory from an absent process. No source/credential payload or path
+           belongs in producer-created phase attributes. */
+    }
     requirement def GovernorSourceHandoff {
         doc /* Cross-language qualification imports the package-built Scheme
            fixture library. Standard gerbil build owns its expansion; the fixture

@@ -104,6 +104,11 @@ func (c *controlProcess) start(t testing.TB) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	previousLog, err := log.Stat()
+	if err != nil {
+		log.Close()
+		t.Fatal(err)
+	}
 	child := exec.Command(controlBinary)
 	child.Env = append(os.Environ(), c.env...)
 	child.Stdout, child.Stderr = log, log
@@ -122,6 +127,20 @@ func (c *controlProcess) start(t testing.TB) {
 		c.stop(t)
 		data, _ := os.ReadFile(filepath.Join(c.directory, "control.log"))
 		t.Fatalf("control readiness: %v: %s", err, data)
+	}
+	// Preserve phase observations in the native test report, not persistent logs.
+	// These unauthenticated diagnostics never replace readiness or exit checks.
+	data, err := os.ReadFile(filepath.Join(c.directory, "control.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if previousLog.Size() > int64(len(data)) {
+		t.Fatal("control phase log was truncated during startup")
+	}
+	for _, line := range strings.Split(string(data[previousLog.Size():]), "\n") {
+		if strings.HasPrefix(line, "weaver scheme phase=") || strings.Contains(line, "Scheme source process") || strings.Contains(line, "Scheme source artifact") || strings.Contains(line, "Control startup") {
+			t.Log(line)
+		}
 	}
 }
 func (c *controlProcess) stop(t testing.TB) {
