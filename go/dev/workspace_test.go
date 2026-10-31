@@ -2,6 +2,7 @@ package dev
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"os"
@@ -22,9 +23,11 @@ func tool(t *testing.T, binary string, args ...string) []byte {
 	defer cancel()
 	cmd := exec.CommandContext(ctx, binary, args...)
 	cmd.Dir = root(t)
-	data, err := cmd.CombinedOutput()
+	var diagnostics bytes.Buffer
+	cmd.Stderr = &diagnostics
+	data, err := cmd.Output()
 	if err != nil {
-		t.Fatalf("%s %v: %v: %s", binary, args, err, data)
+		t.Fatalf("%s %v: %v: stdout=%s stderr=%s", binary, args, err, data, diagnostics.Bytes())
 	}
 	return data
 }

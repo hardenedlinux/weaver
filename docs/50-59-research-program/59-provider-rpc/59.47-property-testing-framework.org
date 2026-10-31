@@ -120,3 +120,11 @@ The new independent admission property passed, and the original replay/range
 and transport checks remained enabled. Ledger/server all-target Clippy passed
 with warnings denied. The ASP layout/import failures above remain separate
 failed checks and were not converted into passes by disabling the deny gate.
+
+The later merge retained functional-security framework work through =35e7963=.
+Its slow-consumer integration tests passed again. A concurrent Cargo operation
+exposed a separate tool-channel bug: a lock-wait diagnostic from stderr was
+combined with metadata stdout and caused JSON parsing to fail. The test helper
+now keeps machine-readable stdout separate and retains stderr in failures;
+the original thirty-second command deadline is unchanged. This is a tooling
+repair, not an authorization or performance change.
