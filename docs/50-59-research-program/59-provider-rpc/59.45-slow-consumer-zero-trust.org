@@ -4,6 +4,11 @@
 
 * Core design and research ownership
 
+[[file:59.46-functional-security-frameworks.org][59.46]] refines this allocation:
+ZeroTrust is a generic functional/POO framework; publication/consumption-specific
+Host, Proposal and FinalUse belong to =Gateway.ZeroTrust=. The core never imports
+Gateway. Receipt counts below describe this preceding review cohort.
+
 SysML remains authoritative: [[file:../../../Project.sysml][Project]] assigns proof
 responsibilities and [[file:../../../dev/sysml/WeaverExecution.sysml][WeaverExecution]]
 allocates the library and actual effect owners. The reusable Zero Trust API
@@ -54,7 +59,7 @@ not use the old permission. Request and response releases remain distinct effect
 
 * Consuming the SPEC contract without duplicating it
 
-The candidate =CedarPooSpec.ZeroTrust= composes actual =PublishedReceipt=,
+The candidate =CedarPooSpec.Gateway.ZeroTrust= composes actual =PublishedReceipt=,
 =consumeAdmission= and Authorization Delta laws. =Proposal= is inert;
 =FinalUse= requires the actual deciding pre-state, authoritative original
 publication, freshness, committed returned ledgers, unknown exposure retention

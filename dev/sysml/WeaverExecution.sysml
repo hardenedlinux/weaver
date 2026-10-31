@@ -121,26 +121,28 @@ package WeaverExecution {
         port effectObservations : ~PolicyEvidenceDesign::EffectObservationPort;
         port semanticEffectObservations : PolicyEvidenceDesign::EffectObservationPort;
     }
-    part def CedarGatewayLibrary {
-        doc /* Research alignment is upstream RFC 0010: NIST SP 800-207/207A
-           supply architecture requirements; UCON supplies continuity/mutable
-           attribute foundations; Cedar supplies executable authorization and
-           verified laws. The selected per-effect fragment is not the whole
-           UCON temporal model or NIST certification. Host currentness,
-           durability and complete mediation remain refinement premises.
-           FinalUse is duplicable proof data, not an affine runtime IO handle. */
-        doc /* Reusable Zero Trust semantics belong to cedar-poo-spec's
-           CedarPooSpec.ZeroTrust API: Host, propose and publication-indexed
-           FinalUse compose the existing LeanPoo Contract, Cedar admission,
-           original-operation/authority consumption and exact Delta laws. Weaver
-           enriches that Host with its complete runtime image and native final
-           mediation; it does not establish a competing Zero Trust core. */
-        doc /* Candidate consumer ZeroTrustEnrichment extends the existing
-           PublicationContext with semantic context, commit floor, budget version
-           and history prefix. It is checked against the upstream candidate in
-           isolation. The normal fixed-pin bridge remains unchanged and does not
-           yet expose the new API. Library laws do not by themselves authenticate
-           or prove this application's native current-view mapping. */
+    part def CedarSecurityFrameworks {
+        doc /* SPEC owns independent functional Authorization and ZeroTrust
+           frameworks, each under its own directory and aggregate entrypoint.
+           ZeroTrust/Model, Composition and Continuous define typed requirements,
+           adaptation, strengthening and ongoing effect checks. ProfileObject
+           interprets them through actual LeanPoo inheritance/Contract/Session.
+           The complete ZeroTrust import closure must exclude Gateway. */
+        doc /* Gateway.ZeroTrust consumes the generic functions with its own
+           publication-indexed admission and operation/authority ledger. Ongoing
+           use keeps the original committed prefix and re-assesses current
+           attributes; it never consumes the root again for each streamed row.
+           Authorization/Delta owns Cedar comparison and its conditional proofs.
+           Neither core framework imports the Gateway specialization. */
+        doc /* NIST provides architecture requirements and UCON provides the
+           continuity/mutable-attribute research basis. The checked fragment is
+           finite effect-boundary safety, not the full UCON temporal logic or a
+           deployed certification. Framework predicates and CommittedPrefix
+           require authenticated, rollback-resistant native materialization.
+           Proof records are duplicable, never affine native send handles. */
+        doc /* Weaver's candidate enrichment is checked in isolation. Normal
+           fixed-pin acceptance remains separate. Generic framework laws do not
+           establish the actual current-state/SQL/queue/IO refinement. */
         doc /* Core library dependency, not another daemon or authority store.
            Existing upstream owners supply PolicyModules, execution Delta,
            BoundOperation/PolicySnapshot, pure operation/authority checks and

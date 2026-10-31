@@ -243,6 +243,9 @@
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderPartialRequestAndRestartRetainUnknownClaim"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run unknownRefundCounterexampleTest"}]},
   {"id":"ReservedAuthorityAdmission","witnesses":[
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem gateway_specialization_retains_generic_framework"},
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem continuing_uses_current_state_and_original_consumption"},
+    {"file":"go/dev/provider_backpressure_test.go","pattern":"func TestProviderSlowConsumerRevocationRestartAndRestoredPolicyCannotReopen"},
     {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem capacity_cannot_rebase_changed_floor"},
     {"file":"crates/server/tests/unit/output_backpressure.rs","pattern":"async fn waiting_capacity_does_not_hold_sql_or_authorize_after_publication"},
     {"file":"crates/server/tests/unit/output_backpressure.rs","pattern":"async fn pending_range_history_created_during_capacity_wait_cannot_be_replayed"},

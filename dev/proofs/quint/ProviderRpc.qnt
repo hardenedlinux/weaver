@@ -66,6 +66,9 @@ module ProviderRpc {
   action deliver=all {s.queued!=Set(),s'=s.with("delivered",s.delivered.union(s.queued)).with("queued",Set()).with("frames",0)}
   action discardQueued=s'=s.with("dropped",s.dropped.union(s.queued)).with("queued",Set()).with("frames",0)
   action publish=s'=s.with("revision",s.revision+1).with("fence",s.fence+1).with("allow",false)
+  // Restoring Allow is a new authority generation, never an ABA reset of the
+  // consumed plan's observed generation or the original operation ledger.
+  action restorePolicy=s'=s.with("revision",s.revision+1).with("fence",s.fence+1).with("allow",true)
   action advanceDomainCut=s'=s.with("domainCut",s.domainCut+1)
   action reauthorize=all {s.stage==1,s'=s.with("observedRevision",s.revision).with("observedFence",s.fence).with("observedCut",s.domainCut).with("allow",true)}
   action cancel=s'=s.with("closing",true)
@@ -90,7 +93,7 @@ module ProviderRpc {
   action unsafeCreditAsAuthority=s'=appendFrame(s,s.next,1,s.encoding).with("next",s.next+1)
   action unsafeReplayPrepared=s'=appendFrame(s,s.preparedFirst,s.preparedRows,s.preparedEncoding)
   action unsafeRefund=s'=s.with("held",0)
-  action step={nondet nonce=Set(0,1,2).oneOf() any {proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),selectEncoding(0),selectEncoding(1),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(1,1),batch(2,1),reserveSlot,dropSlot,prepareBatch(1,0),prepareBatch(2,1),emitPrepared(0),emitPrepared(1),commitRelease,deliver,discardQueued,publish,advanceDomainCut,reauthorize,cancel,crash,reconnect,capacityWait,observeEOF,badPeer,wrongCredential,complete,restrictRows}}
+  action step={nondet nonce=Set(0,1,2).oneOf() any {proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),selectEncoding(0),selectEncoding(1),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(1,1),batch(2,1),reserveSlot,dropSlot,prepareBatch(1,0),prepareBatch(2,1),emitPrepared(0),emitPrepared(1),commitRelease,deliver,discardQueued,publish,restorePolicy,advanceDomainCut,reauthorize,cancel,crash,reconnect,capacityWait,observeEOF,badPeer,wrongCredential,complete,restrictRows}}
   action spent=init.then(admit(0)).then(consume(0)).then(burn).then(invoke)
   run defaultRpcCredentialRequiredTest=init.then(wrongCredential).then(admit(0).fail())
   run sameSubjectDifferentKeyRejectedTest=init.then(badPeer).then(admit(1).fail())
@@ -143,4 +146,9 @@ module ProviderRpc {
   run fullQueuePositiveControlCompletesTest=saturatedArrow.then(deliver).then(reserveSlot).then(prepareBatch(2,1)).then(emitPrepared(1)).then(commitRelease).then(complete).expect(safe and s.stage==3 and s.held==4)
   run doneAndEOFCannotResolveUnknownCommitTest=saturatedArrow.then(deliver).then(reserveSlot).then(prepareBatch(2,1)).then(emitPrepared(1)).then(crash).then(deliver).then(observeEOF)
     .expect(safe and s.pending and s.delivered==Set(0,1,2,3) and s.held==4).then(complete.fail())
+  run restoredAttributesDoNotReviveConsumedPlanTest=spent.then(publish).then(crash).then(restorePolicy).then(reconnect)
+    .expect(safe and s.allow and s.held==4 and s.burned).then(batch(1,0).fail())
+  run restoredPolicyCannotReconsumeOriginalTest=spent.then(publish).then(crash).then(restorePolicy).then(reconnect)
+    .expect(safe and s.allow and s.held==4 and s.burned).then(consume(0).fail())
+  run restoredPolicyOldGrantCounterexampleTest=spent.then(publish).then(restorePolicy).then(unsafeStaleRelease).expect(not(safe))
 }

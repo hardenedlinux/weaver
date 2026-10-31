@@ -138,7 +138,7 @@ package WeaverProject {
            capabilities are reused. The upstream Gateway Lean library composes
            admission with execution Delta; Weaver owns scenario-specific Rust
            execution, durable CAS and qualified storage/transport adapters. */
-        part cedarLibrary : WeaverExecution::CedarGatewayLibrary;
+        part cedarLibrary : WeaverExecution::CedarSecurityFrameworks;
         part semantics : WeaverExecution::SchemeSemanticPublisher;
         part control : WeaverExecution::GoControlAdapter;
         part policy : WeaverExecution::RustPolicy;
@@ -196,6 +196,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.45-slow-consumer-zero-trust.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.45-slow-consumer-zero-trust.svg' : File;
         part 'dev/proofs/cedar/ZeroTrustEnrichment.lean' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.46-functional-security-frameworks.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.46-functional-security-frameworks.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.46-functional-security-frameworks.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {
