@@ -1,12 +1,18 @@
 use criterion::{Criterion, criterion_group, criterion_main};
 use std::{hint::black_box, path::Path, time::Duration};
 fn staging(c: &mut Criterion) {
+    let application = weaver_governance_build::ProgramApplication::approved(
+        "operator/gateway/application",
+        Path::new("/tmp/approved/application.ss"),
+    )
+    .expect("application");
     c.bench_function("governance-build/staging_expression", |b| {
         b.iter(|| {
             weaver_governance_build::staging_expression(
-                black_box(Path::new("/tmp/package/t/fixtures/governance-program.ss")),
+                black_box(Path::new("/tmp/package/scheme/gateway/compiled.ss")),
                 Path::new("/tmp/prefix/lib"),
                 Path::new("/tmp/cargo-out/program"),
+                &application,
             )
             .expect("paths")
         })

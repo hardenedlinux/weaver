@@ -82,6 +82,10 @@ func exerciseProducerDeployment(t *testing.T, ctx context.Context, directory str
 		t.Fatal("producer deployment did not activate", err)
 	}
 	defer client.Connection.Close()
+	_, err = client.RPC.CompileSource(client.Context(ctx), &pb.ProducerRequest{Producer: "approved-AA"})
+	if status.Code(err) != codes.Unimplemented {
+		t.Fatal("operation frontend exposed privileged compilation", err)
+	}
 	_, err = client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { t.Error("forbidden deployment output"); return nil })
 	if status.Code(err) != codes.FailedPrecondition {
 		t.Fatal("deployment bypassed original final Policy", err)

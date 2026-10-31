@@ -1,6 +1,23 @@
 #+TITLE: 59.64 Original Governance Capture and Mutable Alias Refusal
 #+LANGUAGE: en
 
+* Current delivery boundary
+
+Rust now has an explicit compiled-application build and startup path, a fixed
+SDK ABI, real producer readiness and bounded startup catalog installation.
+Go producer deployment reaches that path through authenticated typed gRPC.
+There is no implicit production application or default fixture Profile.
+Acceptance uses an explicitly selected debug qualification application; an
+operator's approved production application still needs its own graph review.
+
+The most recent two-case executable campaign is not green: its first cold
+connection missed the unchanged three-second gate before exercising streaming.
+The separate missing-installation case passed. An earlier focused real-binary
+partial-stream/revocation/dual-restart run passed. These receipts remain separate;
+the later failure is not repaired by the earlier pass. Canonical registry
+recovery, independent rollback protection and full Governance adapter acceptance
+remain distinct open delivery gates.
+
 * Call-scoped source capture for the in-process handoff
 
 The Gateway scope now exposes =capture= with a specific native Function contract:
@@ -1303,3 +1320,142 @@ core diagram was rendered and visually inspected. The qualification's SDK
 still reports one maximum/active processor, with no host-sized SMP claim.
 The changed real SDK integration also passed targeted strict Clippy with the
 existing Rust deny gates. No dependency pin changed.
+
+* Explicit compiled application and service startup
+
+=scheme/gateway/compiled.ss= is the fixed SDK bridge library. It exports one
+installation function to the approved Scheme application and fixed C readiness
+and capture entries. It has no Governor, Profile, task, Policy or module-path
+default. The approved application imports that library, installs its typed
+producer, and supplies the SDK's returning library initializer. This is not a
+command executable, operation CLI or runtime evaluator.
+
+The application is the actual archive initializer root. Merely including it in
+the archive's module inventory does not run its installation. The build owner
+first produces a loadable/static ABI library, compiles the explicit application,
+then stages that application as the root. Archive contracts require the pinned
+SDK runtime, fixed bridge and expected application module. Known qualification
+application/control modules are forbidden in the production branch.
+The official Gerbil expander context ID of the selected source must also equal
+the declared application ID. Dependency membership alone cannot bind that source
+to its expected initializer. A real production-mode mismatch check supplied an
+operator module label with the qualification source and refused with
+=approved application root mismatch= before archive activation.
+
+| Build profile | Explicit inputs and refusal boundary |
+|---------------+--------------------------------------|
+| =scheme-program= | =WEAVER_GOVERNANCE_APPLICATION= is a validated module ID; =WEAVER_GOVERNANCE_APPLICATION_SOURCE= is its absolute source path; metadata must contain that expected module |
+| =scheme-qualification= | Select the fixed test application only in a debug test build; refuse simultaneous operator application inputs |
+| Release | Qualification selection refuses; use an explicit operator application instead |
+
+The server exposes =scheme-program= for the configured deployment build. The
+base data-administration binary remains available without a Scheme program.
+Enabling program support is not application approval: the operator owns source,
+dependency graph, initializer termination and semantic Profile review. The
+module/path checks and known-fixture exclusion are concrete build constraints,
+not a cryptographic certificate that arbitrary application code is safe.
+
+=SchemeCompiler= is the production thread-local owner. It checks the existing
+Policy ABI, initializes the linked SDK graph and requires a real readiness
+response before becoming usable. Its capture call constructs native input with
+=root_source= and materializes concrete owned output with the existing SDK
+converter. There is no test-owned constructor or arbitrary export pointer in the
+service path. One small =program/linked.rs= leaf contains the three reviewed SDK
+registration operations. It dereferences no raw pointer and accepts no runtime
+graph/export choice. The rest of Governance retains deny-mode unsafe checking;
+the server library still forbids unsafe code.
+
+A semantic decline returns a fresh rooted Boolean false. That valid data result
+fails the concrete source contract and leaves the VM usable. SDK/root-transfer
+failure is a different terminal owner error. The actual linked test first
+submits an invalid Cedar candidate, observes a contract decline, then compiles
+valid sources on the same production owner. A false data value is not a zero
+root token, a successful source, an execution outcome or a budget release.
+
+** Startup catalog and existing authority
+
+=WEAVER_GOVERNANCE_CATALOG= selects an explicit bounded JSON data file. It is
+external startup configuration, not the Scheme/Rust carrier. The record is
+=producers: [{name, authority, original}]=; =original= is the existing concrete
+SourceData contract and =authority= the existing identity/epoch eligibility
+binding. There are no callbacks, module paths, authority overrides or new Policy
+grammar fields. Duplicate keys and unknown fields refuse before catalog binding.
+The existing outer JSON bound is 2 MiB; existing 64-entry/family uniqueness,
+publication consistency and aggregate typed-text bounds also apply.
+
+The trusted file's fingerprints and epoch do not authenticate a caller, enroll
+a source, publish a Policy or reset the ledger. Actual source mTLS/key/credential
+verification and the durable floor still precede catalog selection at the RPC;
+the same caller is checked again after compilation. A wrong eligibility label
+cannot manufacture that observation. Reloading the file on process restart
+creates only a new local invocation set. It is not durable canonical registry
+recovery, a fresh origin authorization or anti-rollback evidence.
+
+The Rust deployment reads configuration on the existing startup worker, starts
+the production compiler on its tracked owner, checks readiness, publishes one
+catalog and only then binds ingress. A catalog without program support refuses.
+No catalog means the explicit data-administration profile, not a hidden compiler
+fallback. Source queue capacity follows available host parallelism without a
+fixed VM processor override. Shutdown/error drops the worker guard, closes
+delivery and waits for natural VM destruction through the shared runtime.
+Neither startup nor compilation sends provider traffic or reserves/refunds an
+execution budget. The ordinary source RPC remains the explicitly trusted
+administrative profile; full semantic-adapter restrictions on that profile are
+not newly claimed by the startup mechanism.
+
+** Evidence and retained gaps
+
+The first graph attempts failed during metadata import: importing a module
+that had only static intermediate Scheme output caused an illegal =declare=
+form. Building the ABI library before application staging fixed that ordering.
+The next attempt included the application as an extra graph member but did
+not run its initializer. The production readiness check returned false and
+refused startup in 0.06 seconds. Making the application the real root corrected
+the composition. These failures are preserved separately from native successes.
+
+The real SDK/server integration then passed in 11.52 seconds, using production
+=SchemeCompiler= rather than the test's manual ABI binding. It covered semantic
+decline/reuse, source-role mTLS, Go deployment, final Cedar denial, rotation and
+natural cleanup. The focused executable integration built both actual service
+entrypoints, installed the startup catalog, sent a real partial provider stream,
+revoked, restarted both processes and retained the original hold of four with
+one provider invocation. That earlier focused run passed in 14.25 seconds.
+
+The final two-case executable campaign subsequently failed its first cold
+three-second connection gate. Launch began at 18:40:03.214008 UTC; process-main
+appeared at 18:40:06.057163 UTC, about 2.843 seconds later. Once main began,
+configuration/listener binding took about 2.2 milliseconds. This establishes
+where the delay occurred, not its host/loader cause or a timing repair. The
+stream/revocation scenario did not execute in that run. The separate case with
+an initialized but deliberately unregistered qualification application refused
+naturally before listener binding and passed in 0.19 seconds. No timeout was
+widened and neither failed campaign nor unresolved cold readiness is erased.
+
+ASP deny checks initially rejected missing public docs, a property-test glob
+import and implementation placed in =mod.rs=. Those were corrected without
+changing the gate. Final library checks passed 22 Governance, three build-owner
+and 25 server tests, with the existing Go-owned fixture still intentionally
+ignored by the ordinary Rust unit runner. Catalog PBT reuses standard proptest
+for arbitrary names/epochs and alias refusal; it is not a custom test script.
+
+Quint's 23 named schedules now separate archive membership, expected-root
+matching, actual installation, catalog binding
+and producer-service activation. The metadata-as-initialization counterexample
+captures the failed design. Four additional fixed-SPEC Lean laws preserve
+readiness requirements and compose them with current-source original binding;
+all report no axioms. These do not prove the SDK, loader, application code or
+storage recovery. Cargo.lock changes only the local Governance test dependency
+membership for existing workspace serde_json; no package version or source pin
+changed. Approved production application acceptance and canonical registry/
+independent-anchor recovery remain open.
+
+Final focused receipts: fixed-ABI native conversion/capture passed in 12.33
+seconds, and the production compiler/shared-owner/actual Go frontend integration
+passed in 10.80 seconds. The latter also verifies that the operation frontend
+does not expose privileged CompileSource. These are focused runtime receipts,
+not replacements for the failed cold executable campaign. The production-mode
+missing-application and wrong-root commands both failed closed with the expected
+build diagnostics. The build-owner benchmark passed test mode only; no latency
+or throughput improvement is claimed. Strict Rust checks, Go race tests,
+standard Gerbil tests and linked SysML/module ownership checks passed. Raw
+logs stay temporary; the qualification gap stated at the top remains open.

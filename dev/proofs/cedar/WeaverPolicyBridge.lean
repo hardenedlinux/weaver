@@ -845,6 +845,31 @@ theorem program_result_composes_with_registered_original
 #print axioms active_program_duplicate_preserves_owner
 #print axioms closed_program_cannot_reopen
 #print axioms program_result_composes_with_registered_original
+/- Producer-enabled service readiness requires actual initialization and local
+   catalog installation. Membership in archive metadata is only one premise.
+   These predicates do not authenticate a source RPC or authorize execution. -/
+def LinkedProgramReady (member rootMatches initialized installed catalog : Prop) : Prop :=
+  member ∧ rootMatches ∧ initialized ∧ installed ∧ catalog
+theorem graph_membership_cannot_replace_initialization
+    (notInitialized : ¬ initialized) : ¬ LinkedProgramReady member rootMatches initialized installed catalog := by
+  intro ready
+  exact notInitialized ready.2.2.1
+theorem dependency_membership_cannot_replace_expected_root
+    (wrongRoot : ¬ rootMatches) : ¬ LinkedProgramReady member rootMatches initialized installed catalog := by
+  intro ready
+  exact wrongRoot ready.2.1
+theorem linked_program_requires_installed_catalog
+    (ready : LinkedProgramReady member rootMatches initialized installed catalog) : installed ∧ catalog :=
+  ready.2.2.2
+theorem linked_program_and_reply_keep_original
+    (program : LinkedProgramReady member rootMatches initialized installed localCatalog)
+    (reply : CompilationReplyReady catalog name entry before after) :
+    LinkedProgramReady member rootMatches initialized installed localCatalog ∧ ProducerSelected catalog name after entry :=
+  ⟨program, compilation_reply_keeps_registered_original reply⟩
+#print axioms graph_membership_cannot_replace_initialization
+#print axioms dependency_membership_cannot_replace_expected_root
+#print axioms linked_program_requires_installed_catalog
+#print axioms linked_program_and_reply_keep_original
 #print axioms changed_source_observation_rejects_producer
 #print axioms producer_selection_keeps_all_original_fields
 #print axioms source_owner_join_preserves_cleanup

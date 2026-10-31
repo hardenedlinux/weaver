@@ -326,7 +326,8 @@ package WeaverProject {
                synchronous native Scheme strong-root conversion. No VM object survives in
                OwnedSource; conversion and transport confer no publication/send
                authority. Program graph/export admission remains host-owned. The scheme-vm feature
-               exposes conversion only; scheme-qualification links the test graph.
+               exposes conversion only; scheme-program links an explicit application
+               and fixed ABI; scheme-qualification selects a debug-only test root.
                SourceExpectation retains the independently admitted original
                before producer invocation; BoundSource compares the whole typed
                image and remains inert data, never a publication/send permit. */
@@ -340,9 +341,20 @@ package WeaverProject {
                owner-thread local. Terminal close and cancellation fence future
                delivery; active foreign calls drain naturally before join.
                This lane has no publication, execution or budget authority. */
+            doc /* SchemeCompiler checks real installed-producer readiness before
+               becoming usable. program/linked.rs is the sole reviewed SDK ABI
+               exception to deny-mode unsafe policy; typed conversion and all
+               ownership/lifecycle code remain safe. Startup catalog data is
+               bounded/duplicate-free and supplies eligibility, never source PoP. */
             part 'weaver-contracts' : RuntimeDependency;
+            part 'weaver-policy-ffi' : RuntimeDependency;
         }
-        part 'crates/governance-build' : RustPackage;
+        part 'crates/governance-build' : RustPackage {
+            doc /* Match explicit application module/source to archive metadata;
+               initialize that application as the real root. The fixed ABI is a
+               dependency, not a replacement initializer. Production mode refuses
+               known fixture modules; qualification cannot build a release graph. */
+        }
         part 'crates/policy' : RustPackage {
             doc /* Reuse the existing fixed cedar-poo-spec revision's Rust
                runtime for schema-bound replay, declared IDs and entity checks.
@@ -376,8 +388,9 @@ package WeaverProject {
                drain waits for natural factory/call return and VM cleanup.
                One compiler owner is installed for this runtime incarnation;
                rejected duplicates cannot retire the current owner. This lifecycle
-               hook does not install the default production producer graph.
-               CompileSource only selects the explicitly installed catalog. */
+               run_from_env may install the compiled program and explicit startup
+               catalog through this owner before binding ingress. No implicit
+               application exists; CompileSource selects only the sealed set. */
             part 'weaver-contracts' : RuntimeDependency;
             part 'weaver-governance' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;

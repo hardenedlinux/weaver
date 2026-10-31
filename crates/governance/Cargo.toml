@@ -6,7 +6,8 @@ license.workspace = true
 
 [features]
 scheme-vm = ["dep:gerbil-scheme"]
-scheme-qualification = ["scheme-vm"]
+scheme-program = ["scheme-vm", "dep:gerbil-scheme-sys", "dep:weaver-policy-ffi"]
+scheme-qualification = ["scheme-program"]
 
 [dependencies]
 weaver-contracts.workspace = true
@@ -15,11 +16,14 @@ thiserror.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 gerbil-scheme = { workspace = true, optional = true }
+gerbil-scheme-sys = { workspace = true, optional = true }
+weaver-policy-ffi = { workspace = true, optional = true }
 
 [build-dependencies]
 weaver-governance-build.workspace = true
 
 [dev-dependencies]
+serde_json.workspace = true
 asp-rust.workspace = true
 criterion.workspace = true
 proptest.workspace = true
@@ -35,8 +39,8 @@ required-features = ["scheme-qualification"]
 name = "gateway"
 harness = false
 
-# The production library forbids unsafe code. Only the linked integration test
-# admits the two documented SDK linker/export bindings.
+# Unsafe is scoped to the fixed SDK linker/export binding module; all typed
+# conversion, lifecycle, catalog and source ownership code retains deny mode.
 [lints.rust]
 unsafe_code = "deny"
 unsafe_op_in_unsafe_fn = "deny"

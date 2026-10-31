@@ -193,7 +193,10 @@ func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixtu
 	exerciseControlPolicies(t, format, source, controlPolicySources{})
 }
 
-type controlPolicySources struct{ initial, revoked string }
+type controlPolicySources struct {
+	initial, revoked, producer string
+	configure                  func(*testing.T, *fixture, config.Bundle)
+}
 
 func exerciseControlPolicies(t *testing.T, format string, source func(*testing.T, *fixture, config.Bundle) string, policies controlPolicySources) {
 	t.Helper()
@@ -220,7 +223,19 @@ func exerciseControlPolicies(t *testing.T, format string, source func(*testing.T
 	if source != nil {
 		path = source(t, f, bundle)
 	}
+	if policies.configure != nil {
+		policies.configure(t, f, bundle)
+	}
 	c := newControlProcess(t, f, path)
+	if policies.producer != "" {
+		var environment []string
+		for _, value := range c.env {
+			if !strings.HasPrefix(value, "WEAVER_CONTROL_CONFIG=") {
+				environment = append(environment, value)
+			}
+		}
+		c.env = append(environment, "WEAVER_CONTROL_PRODUCER="+policies.producer)
+	}
 	c.start(t)
 	parent := uint64(1)
 	revocation := v1.Publication{OperationID: "control-revoke", ExpectedRevision: &parent, Fence: 3, Policy: `forbid(principal,action,resource);`, Schema: f.schema}

@@ -1,6 +1,8 @@
 //! Compiler-owned governance graph assembly for Cargo; no runtime execution API.
+mod application;
 mod program;
 mod stage;
+pub use application::ProgramApplication;
 pub use program::build_program;
 pub use stage::staging_expression;
 #[cfg(test)]

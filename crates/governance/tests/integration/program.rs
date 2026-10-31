@@ -5,7 +5,7 @@ unsafe extern "C" {
     fn ___LNK_weaver__governance__program(
         ctx: *mut gerbil_scheme_sys::GerbilGlobalState,
     ) -> *mut gerbil_scheme_sys::GerbilModuleOrLink;
-    fn weaver_capture_source_test_v1(root: i64) -> i64;
+    fn weaver_capture_source_v1(root: i64) -> i64;
     fn gerbil_scheme_instance_setup_diagnostic(out: *mut i64) -> i32;
 }
 /// Initialize this fixed graph once; initialization failure is terminal.
@@ -36,5 +36,5 @@ pub fn initialize() -> GerbilRuntime {
 pub fn capture(runtime: &GerbilRuntime) -> LinkedObjectExport<'_> {
     // SAFETY: this compiled export catches exceptions, borrows one input root
     // and transfers a fresh strong result with no retained pointer or reentry.
-    unsafe { runtime.bind_object_export(weaver_capture_source_test_v1) }.expect("source export")
+    unsafe { runtime.bind_object_export(weaver_capture_source_v1) }.expect("source export")
 }

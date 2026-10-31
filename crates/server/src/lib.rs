@@ -5,6 +5,7 @@ mod config;
 mod connections;
 pub mod encoding;
 pub mod entrypoint;
+mod governance_deployment;
 mod governance_owner;
 mod grpc;
 mod grpc_config;

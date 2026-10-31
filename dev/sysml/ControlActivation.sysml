@@ -1,5 +1,18 @@
 package ControlActivation {
     private import ScalarValues::*;
+    requirement def CompiledSourceStartup {
+        doc /* The official compiler context must match the declared source root;
+           a dependency with that name cannot stand in for the initializer.
+           Explicit build module/source, fixed SDK ABI and archive membership
+           do not prove initialization. The application is the returning graph
+           root and must actually install its producer. Rust checks readiness,
+           then publishes one bounded startup catalog before ingress. Missing
+           program support, malformed catalog or absent installation refuses.
+           Qualification is debug-only, with no production fixture fallback.
+           Catalog identity/epoch fields are eligibility data; actual TLS PoP,
+           durable source floor and final publication/use CAS remain independent.
+           Startup errors/cancellation close and naturally drain the same owner. */
+    }
     requirement def SpecificSourceContracts {
         doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete native Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }

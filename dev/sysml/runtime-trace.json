@@ -381,6 +381,16 @@
     {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"},
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
+  {"id":"CompiledSourceStartup","witnesses":[
+    {"file":"scheme/gateway/compiled.ss","pattern":"weaver_governance_ready_v1"},
+    {"file":"crates/governance-build/src/application.rs","pattern":"pub fn approved"},
+    {"file":"crates/governance-build/src/stage.rs","pattern":"approved application root mismatch"},
+    {"file":"crates/governance/src/program/compiler.rs","pattern":"pub fn initialize"},
+    {"file":"crates/governance/src/catalog/configuration.rs","pattern":"pub fn from_configuration"},
+    {"file":"crates/server/src/governance_deployment.rs","pattern":"async fn start_compiler"},
+    {"file":"go/dev/provider_program_deployment_test.go","pattern":"func TestProviderControlCompiledProgramRequiresRealInstallation"},
+    {"file":"dev/proofs/quint/GatewayProgram.qnt","pattern":"metadataAsInitializationCounterexampleTest"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem graph_membership_cannot_replace_initialization"}]},
   {"id":"GovernorSourceHandoff","witnesses":[
     {"file":"scheme/gateway/types.ss","pattern":"def GatewayProgram"},
     {"file":"scheme/gateway/program.ss","pattern":"def \\(make-gateway-program"},

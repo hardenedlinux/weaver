@@ -1,17 +1,14 @@
 //! Actual approved SDK graph on the server's existing tracked blocking owner.
-use gerbil_scheme::GerbilRuntime;
 use std::{cell::Cell, rc::Rc, sync::Arc, thread::ThreadId};
 use tokio::sync::{Semaphore, oneshot};
-use weaver_governance::{OwnedSource, SourceError, materialize_source, root_source};
+use weaver_governance::{OwnedSource, SchemeCompiler, SourceError};
 use weaver_server::ServiceRuntime;
 #[path = "../../../governance/tests/unit/fixture.rs"]
 mod fixture;
-#[path = "../../../governance/tests/integration/program.rs"]
-mod program;
 mod rpc_fixture;
 
 struct Compiler {
-    vm: Option<GerbilRuntime>,
+    compiler: Option<SchemeCompiler>,
     owner: ThreadId,
     local: Rc<Cell<usize>>,
     cleanup: Option<oneshot::Sender<usize>>,
@@ -29,42 +26,16 @@ impl Compiler {
                 .recv_timeout(std::time::Duration::from_secs(3))
                 .map_err(|_| SourceError::Scheme)?;
         }
-        let vm = self.vm.as_ref().ok_or(SourceError::Scheme)?;
-        let input = root_source(vm, source)?;
-        let capture = program::capture(vm);
-        let output = capture
-            .call(&input)
-            .into_result()
-            .map_err(|_| SourceError::Scheme)?;
-        // The qualification ABI normalizes exceptions to bounded text. This
-        // diagnostic is test-only; production RPC errors remain content-free.
-        if output.as_ref().kind().map_err(|_| SourceError::Scheme)?
-            == gerbil_scheme::ObjectKind::String
-        {
-            let text = output.into_string().map_err(|_| SourceError::Scheme)?;
-            if text.len().into_result().map_err(|_| SourceError::Scheme)? <= 512 {
-                let bytes = text
-                    .to_utf8_bytes()
-                    .into_result()
-                    .map_err(|_| SourceError::Scheme)?;
-                let bytes = bytes
-                    .to_vec()
-                    .into_result()
-                    .map_err(|_| SourceError::Scheme)?;
-                eprintln!(
-                    "qualification source refusal: {}",
-                    String::from_utf8_lossy(&bytes)
-                );
-            }
-            return Err(SourceError::Contract);
-        }
-        materialize_source(output)
+        self.compiler
+            .as_mut()
+            .ok_or(SourceError::Scheme)?
+            .compile(source)
     }
 }
 impl Drop for Compiler {
     fn drop(&mut self) {
         assert_eq!(std::thread::current().id(), self.owner);
-        drop(self.vm.take());
+        drop(self.compiler.take());
         if let Some(cleanup) = self.cleanup.take() {
             let _ = cleanup.send(self.local.get());
         }
@@ -96,13 +67,20 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
     let worker = runtime
         .start_governance(slot, capacity, move || {
             assert_eq!(weaver_policy_ffi::weaver_policy_abi_v1(), 0x0001_0000);
-            let vm = program::initialize();
+            let mut program = SchemeCompiler::initialize().expect("production linked compiler");
+            let mut declined = fixture::source();
+            declined.publication.policy = "not a Cedar policy".into();
+            let declined = OwnedSource::from_source(declined).expect("inert candidate");
+            assert!(
+                matches!(program.compile(&declined), Err(SourceError::Contract)),
+                "semantic rejection must not become a terminal SDK failure"
+            );
             eprintln!(
-                "server governance VM active_processors={}",
-                vm.active_processors().expect("processors")
+                "server governance SDK capabilities={:?}",
+                gerbil_scheme::VmCapabilities::linked()
             );
             let mut compiler = Compiler {
-                vm: Some(vm),
+                compiler: Some(program),
                 owner: std::thread::current().id(),
                 local: Rc::new(Cell::new(0)),
                 cleanup: Some(cleanup),

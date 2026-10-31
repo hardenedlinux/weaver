@@ -1,5 +1,5 @@
 //! Owned semantic source data. No method publishes, consumes, sends or refunds.
-#![forbid(unsafe_code)]
+#![deny(unsafe_code)]
 extern crate self as weaver_governance;
 mod binding;
 mod catalog;
@@ -21,6 +21,11 @@ pub use scheme::materialize_source;
 #[cfg(feature = "scheme-vm")]
 pub use scheme_input::root_source;
 
+#[cfg(feature = "scheme-program")]
+mod program;
+#[cfg(feature = "scheme-program")]
+pub use program::SchemeCompiler;
+
 #[cfg(test)]
 asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_rust_config());
 
@@ -37,6 +42,9 @@ mod source_tests;
 #[cfg(test)]
 #[path = "../tests/unit/catalog.rs"]
 mod catalog_tests;
+#[cfg(test)]
+#[path = "../tests/unit/configuration.rs"]
+mod configuration_tests;
 #[cfg(test)]
 #[path = "../tests/unit/host.rs"]
 mod host_tests;

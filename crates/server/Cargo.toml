@@ -24,8 +24,9 @@ arrow-ipc = { workspace = true, optional = true }
 gerbil-scheme = { workspace = true, optional = true }
 [features]
 default = []
+scheme-program = ["weaver-governance/scheme-program"]
 arrow = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
-governance-qualification = ["weaver-governance/scheme-qualification", "dep:gerbil-scheme"]
+governance-qualification = ["scheme-program", "weaver-governance/scheme-qualification", "dep:gerbil-scheme"]
 [build-dependencies]
 tonic-prost-build.workspace = true
 [dev-dependencies]
