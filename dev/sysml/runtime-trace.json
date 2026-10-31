@@ -1,4 +1,7 @@
 [
+  {"id":"ProductionAssetBoundary","witnesses":[
+    {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRuntimeAssetBoundary"},
+    {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRejectsRuntimeDevReferences"}]},
   {
     "id": "OriginalTaskBinding",
     "witnesses": [
@@ -320,6 +323,9 @@
     {"file":"crates/ledger/tests/unit/publication_review_storage.rs","pattern":"fn stage_review_requirement_and_legacy_final_cas_have_one_serial_order"},
     {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem native_review_recovery_composes_without_releasing_unknown"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run latchedReviewCannotUseLegacyPublicationTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run configurationImageCannotErasePersistentRevocationTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run registryAppendBetweenReadAndCASRequiresRejoinTest"},
+    {"file":"go/dev/provider_policy_pending_test.go","pattern":"func TestProviderSourceRollbackLostReplyRetainsUnknownConsumption"},
     {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem registrar_binding_reaches_final_cas"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run revocationBetweenValidationAndFinalCASTest"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run delayedIssuanceDecisionCannotReactivateOldEpochTest"},

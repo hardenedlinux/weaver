@@ -104,16 +104,16 @@ func TestProviderFailuresNeverRetryOrFallback(t *testing.T) {
 		})
 	}
 }
-func TestProviderPartialRequestAndRestartRetainUnknownClaim(t *testing.T) {
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		buffer := make([]byte, 1)
-		_, _ = r.Body.Read(buffer)
-		conn, _, err := w.(http.Hijacker).Hijack()
-		if err == nil {
-			conn.Close()
-		}
+func partialRequestDisconnect(w http.ResponseWriter, r *http.Request) {
+	buffer := make([]byte, 1)
+	_, _ = r.Body.Read(buffer)
+	conn, _, err := w.(http.Hijacker).Hijack()
+	if err == nil {
+		conn.Close()
 	}
-	f := newFixture(t, handler, true)
+}
+func TestProviderPartialRequestAndRestartRetainUnknownClaim(t *testing.T) {
+	f := newFixture(t, partialRequestDisconnect, true)
 	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil {
 		t.Fatal("partial request outcome accepted")
 	}
