@@ -48,7 +48,7 @@ theorem durable_review_binding_survives_final_cas
       ∃ entry, actual.reviewAnchor command = some entry ∧ entry.artifact = artifact)
     (refinement : ∀ before result after, authority.commit before result after →
       PublicationRecovery.Step before after) :
-    authority.registryRecovered actual ∧ authority.registrarCurrent actual ∧
+    authority.registryRecovered actual ∧ authority.registrarCurrent command actual ∧
       ∃ artifact entry, authority.approvedEvidenceAt actual command = some artifact ∧
         final.receipt.state.reviewAnchor command = some entry ∧ entry.artifact = artifact := by
   obtain ⟨artifact, present⟩ := final.approved
@@ -57,6 +57,31 @@ theorem durable_review_binding_survives_final_cas
     PublicationRecovery.step_preserves_review_anchor (refinement _ _ _ final.committed) registered, bound⟩
 
 #print axioms durable_review_binding_survives_final_cas
+
+-- Apply the sole SPEC identity meaning; no downstream identity evaluator or
+-- credential issuance/revocation state machine is defined here.
+theorem registrar_binding_reaches_final_cas
+    {Result : Type}
+    {authority : CedarPooSpec.Gateway.PublicationReview.Host Nat Result
+      (PublicationRecovery.State Nat) Nat Nat Nat}
+    {identity : CedarPooSpec.Gateway.PublicationReview.RegistrarAuthority Nat
+      (PublicationRecovery.State Nat) Nat Nat Nat Nat Nat}
+    {binding : CedarPooSpec.Gateway.PublicationReview.RegistrarBinding Nat Nat Nat Nat Nat}
+    {template : LeanPoo.Functional.DeclarativeMetadata.Contract Unit Nat Result}
+    {prepare : PublicationRecovery.State Nat → Nat → Except Unit (Result × PublicationRecovery.State Nat)}
+    {command : Nat} {actual : PublicationRecovery.State Nat}
+    (meaning : authority.registrarCurrent = identity.admitted binding)
+    (final : CedarPooSpec.Gateway.PublicationReview.Final authority template prepare command actual) :
+    binding = identity.current actual ∧ ¬ identity.revoked binding actual ∧
+      identity.possession binding command actual ∧
+      authority.security.consumptionCommitted command actual ∧
+      authority.security.unknownRetained command actual := by
+  have admitted := final.fenced
+  rw [meaning] at admitted
+  have bound := CedarPooSpec.Gateway.PublicationReview.registrar_admission_retains_exact_binding admitted
+  exact ⟨bound.1, bound.2.1, bound.2.2, final.current.2.2.2.1, final.current.2.2.2.2.1⟩
+
+#print axioms registrar_binding_reaches_final_cas
 
 structure RuntimeView extends PolicyBridge.PublicationContext where
   semanticContext : CedarPooSpec.Gateway.Context

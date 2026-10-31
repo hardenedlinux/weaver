@@ -10,6 +10,11 @@ actual-parent final-CAS guard. The statements below describe this audit's earlie
 evidence boundary. Independent anchor recovery, authenticated registrar custody
 and mandatory reviewed RPC admission remain unimplemented production targets.
 
+The follow-up [[file:59.54-source-incarnation-authority.org][source-incarnation audit]]
+defines the single credential meaning and distinguishes startup certificate
+rotation from durable revocation. Verification allocation is referenced from
+Project; credential semantics are not independently implemented in each model.
+
 [[file:../../../Project.sysml][Project]] and
 [[file:../../../dev/sysml/ControlActivation.sysml][GovernancePolicyProjection]]
 own this refinement of [[file:59.52-reviewed-publication-cas.org][reviewed publication CAS]].
