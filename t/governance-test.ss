@@ -112,6 +112,7 @@
       (check-property report)
       (check-equal? (property.report-accepted report) 128))
     (test-case "a typed ready assessment cannot omit an original blocking threat"
+      (def assessment-calls 0)
       (def context (.o request: 'publish source: "{\"original\":true}" policy_inputs: "[]"
                       profile_identity: "weaver/test" profile_revision: "1" profile_owner: "operator"
                       model_identity: "weaver/blocking"))
@@ -125,5 +126,7 @@
             threat-model: model
             .assess-governance:
             (lambda (current)
+              (set! assessment-calls (1+ assessment-calls))
               (agentic-ai-lab-governance-assessment-value profile model '() current))))
-      (check-exception (assess-governance! profile context) Error?))))
+      (check-exception (assess-governance! profile context) Error?)
+      (check-equal? assessment-calls 0))))

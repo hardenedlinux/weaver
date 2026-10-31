@@ -132,3 +132,21 @@ source freeze. The semantic-boundary owner passed 165 named Quint witnesses and
 its new corollary with only the existing logical assumptions and no sorryAx.
 Final committed-source gate and integration results are recorded after execution.
 No dependency pin, source limit, ASP deny rule or resource cleanup is relaxed.
+
+The first merged clean-source gates at =c8e4a83= failed the architecture trace
+because the new witness regular expression omitted escaping its literal opening
+parenthesis. Go's ordinary suite failed for the same trace error. Runtime Rust
+tests, Clippy, real provider integration and all formal stages passed, but those
+whole gate receipts remain failed. The trace expression was corrected without
+changing its intended definition match or weakening the checker. The original
+blocking-threat fixture now also requires zero callback invocations.
+
+After correcting the trace, the focused architecture test passed and the complete
+Governance suite passed, including the 128-case framework property and the zero
+callback assertion. The combined real Scheme integration invocation remained
+failed (240.858 seconds): the publication/reply-loss/restart case observed zero
+source calls before its bootstrap deadline; the existing deny and assessment-threats
+negative cases printed refusals but exceeded their fifteen-second natural-exit
+deadlines. These are retained failures, not evidence of successful restart or
+complete Scheme integration. Their causes remain unclosed; neither the timeout
+nor the exit behavior was relaxed. Framework PBT acceptance is a separate receipt.
