@@ -217,3 +217,28 @@ The full project objective remains open. The next required native boundary is
 authenticated semantic artifact admission plus the required reviewed RPC path,
 joined to current registry/source authority. Higher-order context admission and
 the independent anti-rollback protocol are not qualified by this local primitive.
+
+* Merged source receipt
+
+PR1's concurrent =98c08dd= source-incarnation changes are retained at merged
+source =f4a668cb0601568d6f327a742275c70b325d0abc=. The new native-adapter document
+uses 59.55 so the existing 59.54 identity contract retains its own inventory.
+Shared Project/SysML, Org and Quint conflicts preserve both allocations rather
+than selecting one side. Runtime trace references actual new Rust/PBT/Lean/Quint
+witnesses; that trace is structural evidence, not semantic certification.
+
+At that merged source, standard clean-source =check-go= passed all twenty stages,
+including the real mutual-TLS Go/Rust provider suite, reply loss/restart,
+revocation, partial output, early registration/origin refusal, and the concurrent
+source-certificate rotation/rollback coverage. Default fuzz workers use the
+current twelve-CPU host; exploration settings and natural cleanup are unchanged.
+This exercises existing operation/source RPCs, not a nonexistent reviewed RPC.
+
+The merged PublicationRecovery suite passed all 85 named witnesses; the dependent
+AuthorityPublication selection also passed. Imported scenarios overlap and must
+not be added as independent proofs. The explicit local-review and source-revocation
+schedules each passed 1,000 sampled runs of up to 60 steps, seed 293. The existing
+Lean recovery owner compiled again after merge. Production Rust source is
+identical to the 114-test workspace receipt above; concurrent changes affect
+models, trace, documents and Go source-ordering tests. No new cold Scheme/package
+or complete SPEC-candidate qualification is claimed. CI is not awaited.
