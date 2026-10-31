@@ -19,6 +19,10 @@ module LlmPolicyContinuation {
   type FactUse={evidence:FactEvidence,closure:FactClosure,scope:Set[int],sourceValue:int,sourceRows:Set[int],readValue:int,mode:int,grant:Freshness,connected:bool,channel:int,clock:int,now:int,timeFloor:int,owner:int}
   type FactDelta={before:FactClosure,after:FactClosure}
   // Adapter evidence refinement; this is not a second execution/session owner.
+  // Native source admission separately checks nonempty character/UTF-8 byte
+  // bounds before FFI. A readable/stable buffer and status zero do not prove
+  // bounded encoding allocation; Scheme/Rust framework properties own that
+  // implementation evidence. These protocol schedules grant no allocator proof.
   type BoundaryEvidence={kind:int,root:int,claim:int,profile:int,configurationSchema:int,normalizer:int,programModule:int,environment:int,
     vm:int,call:int,epoch:int,cut:int,input:int,output:int,schemaChecked:bool,governanceChecked:bool,
     readable:bool,stable:bool,owned:bool,retainedPointer:bool,reentrant:bool,status:int}

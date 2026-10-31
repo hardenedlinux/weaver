@@ -434,6 +434,11 @@ structure CaptureDependency where
   sourceCut : Nat
   deriving DecidableEq
 
+/- Native refinement also requires the independently checked Policy/schema byte
+   bounds before foreign calls. The Scheme character precheck prevents unbounded
+   encoding input; its actual UTF-8 byte check and Rust region guards have native
+   property evidence. Ready below proves neither encoding allocation bounds nor
+   address validity; retain those host premises and the inert-preflight boundary. -/
 structure BoundaryContext where
   entry : ConfigurationEntry
   configurationSchema : Nat

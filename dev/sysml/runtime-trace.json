@@ -397,6 +397,9 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlSchemeGovernorRejectsUnselectedPlans"},
     {"file":"go/internal/config/bundle_test.go","pattern":"func TestBundleRejectsSelectionAndCommitmentSubstitution"}]},
   {"id":"PolicyCAbiIsInert","witnesses":[
+    {"file":"scheme/policy/source-bytes.ss","pattern":"def \\(cedar-source-utf8"},
+    {"file":"t/policy-test.ss","pattern":"native PBT checks Unicode source bounds before the C ABI"},
+    {"file":"crates/policy-ffi/tests/unit/abi.rs","pattern":"fn unicode_byte_limits_apply_to_each_actual_abi_region"},
     {"file":"crates/policy-ffi/src/abi.rs","pattern":"pub unsafe extern \"C\" fn weaver_policy_validate_v1"},
     {"file":"scheme/policy/cedar-ffi.ss","pattern":"def-C-lambda policy-validate/raw"},
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authoritySourceCommitNeverSendsTest"}]},

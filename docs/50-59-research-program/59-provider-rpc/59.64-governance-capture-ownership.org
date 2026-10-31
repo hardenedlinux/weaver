@@ -200,3 +200,68 @@ made zero provider calls. Standard Gerbil build/test and the focused SysML/modul
 ownership tests passed. This qualifies that invocation at the installed prefix;
 it does not erase the retained failed invocation, identify the historic timeout
 cause, prove cold qualification or implement production runtime embedding.
+
+* Bounded Policy encoding at the actual foreign boundary
+
+The production Scheme predicate and C FFI previously called =string->utf8= on
+arbitrary strings before Rust rejected an overlong region. Rust's byte-length
+guard could not bound that earlier allocation. Both Scheme paths now reuse
+=scheme/policy/source-bytes.ss=: reject wrong-type, empty or overlong character
+inputs before encoding, then check the actual encoded byte count. Each accepted
+Policy/schema region remains nonempty and at most 65536 bytes. The character
+precheck bounds encoding input; valid Unicode scalars can still need up to four
+bytes each, so character count alone is insufficient. An admitted intermediate
+encoding can exceed the final byte limit and is refused before any C ABI call.
+This change is not a general allocator/Unicode-runtime correctness theorem.
+
+The shared encoder returns an inert bytevector or false. Native Cedar source
+Record contracts and the actual compiled FFI use the same function. Type errors
+retain their diagnostic; size errors now name the Scheme source boundary rather
+than claiming Rust performed a check that was never called. Rust independently
+retains its original null/length/UTF-8 guards, valid-region lifetime premise,
+panic containment and typed Cedar validation. No pointer crosses an await or a
+queue, and successful preflight remains independent of execution authorization.
+
+The inherited Scheme property framework runs 128 cases with seed 293 and finite
+shrinking. It covers one-, two-, three- and four-byte scalars, empty/small values,
+values below and at the largest fitting character count, and the first overflow.
+Required coverage includes every width and size class. An independent arithmetic
+oracle predicts acceptance; successful bytes must round-trip to the original
+string. Direct entry tests require the precise early refusal for oversized
+Policy and schema, including strings whose character count fits but UTF-8 bytes
+do not. Existing actual valid Cedar remains a positive control.
+
+Rust's actual C ABI has a separate workspace =proptest= property with 128 cases.
+It constructs valid Cedar comments containing those Unicode widths and a valid
+schema, varies byte-boundary position and schema overflow, and requires status
+zero for valid bounded pairs or status two for an oversized region. All borrowed
+buffers are real owned live immutable inputs; no invalid address is tested. The
+lockfile change adds only the already selected framework's development edge;
+existing package versions and revisions are unchanged.
+
+SysML and the native trace map name these owners. Existing Quint boundary
+schedules and Lean borrow/context laws retain their scope, with explicit native
+encoding premises. No duplicate temporal model or tautological encoding proof
+is introduced. Their results do not prove allocation bounds or resolve production
+Scheme VM embedding, producer authentication or the historic exit timeout cause.
+
+Focused implementation evidence: standard Gerbil build and the four native Policy
+tests passed, including the 128-case Unicode property and actual FFI early-refusal
+controls. Rust's package suite passed five tests, including its separate 128-case
+ABI property and ASP deny gate; all-target Clippy with warnings-as-errors passed.
+The focused architecture/requirement tests passed. Existing Quint semantic-boundary
+witnesses passed 165 cases and the actual fixed-SPEC Lean bridge rebuilt without
+sorryAx. The D2 output was rendered and visually checked.
+
+The three-owner real Scheme integration invocation failed overall (62.547
+seconds). The inert-FFI authorization case did not reach control readiness before
+its existing deadline; the watchdog killed startup and natural-exit checks failed
+(17.61 seconds). No timing cause is established. The separate partial-write,
+revocation and dual-restart scenario passed in 30.89 seconds with the original
+hold retained; shared-budget concurrency and SDK retry refusal passed in 10.53
+seconds. Those successes qualify their scenarios only, not the failed owner or
+the whole invocation. No timeout, cleanup or dependency pin was relaxed.
+
+The final complete standard =gerbil test -g -v 5 t= invocation passed all five
+modules and 23 cases, including both native framework properties (128 trials
+each). This receipt remains separate from the failed Go integration invocation.

@@ -127,6 +127,12 @@ package PolicyEvidenceDesign {
         attribute ownershipReceipt : String;
         attribute byteLength : Integer;
         attribute codecClosure : String;
+        doc /* The current Scheme preflight first bounds character count, then
+           encoded UTF-8 bytes, before calling Rust. The two Record predicates
+           share that owner. Native framework properties cover one-to-four-byte
+           Unicode scalars at both sides of the byte limit; Rust ABI properties
+           separately retain valid-buffer lifetime premises. This is not a proof
+           of allocator behavior, arbitrary addresses or concurrent mutation. */
         doc /* Current C ABI is synchronous inert Policy/schema preflight only;
            this target evidence does not invent a production callback ABI.
            Borrowed regions must already be valid, alive and immutable until
