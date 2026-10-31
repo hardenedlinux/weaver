@@ -6,21 +6,13 @@
 
 (def source-sink (make-parameter #f))
 
-(def (check-source-text! text)
-  (unless (and (string? text) (< 0 (string-length text) 8388609)
-               (<= (u8vector-length (string->utf8 text)) 8388608))
-    (error "Gateway source exceeds capture bound")))
-
 (def (gateway-source-json value)
   (json->string (json<- GatewayArtifact (validate GatewayArtifact value)) (JSONWriteOptions sort-keys: #t)))
 
 (def (deliver-gateway-source value)
   (let ((sink (source-sink)))
-    (if sink (sink value)
-      (let ((path (getenv "WEAVER_CONTROL_ARTIFACT" #f)) (text (gateway-source-json value)))
-        (check-source-text! text)
-        (unless path (error "WEAVER_CONTROL_ARTIFACT is required"))
-        (call-with-output-file path (lambda (port) (display text port))))))
+    (unless sink (error "Gateway delivery requires an active typed capture"))
+    (sink value))
   #t)
 
 (def (capture-gateway-source producer)

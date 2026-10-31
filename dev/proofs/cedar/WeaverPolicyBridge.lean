@@ -529,6 +529,15 @@ theorem coerced_key_cannot_preserve_source_identity (s : BoundaryContext)
   simp [BoundaryContext.ready,BoundaryContext.Ready,ambiguous]
 
 #print axioms encoded_blob_cannot_claim_native_capture
+
+/-- An exported configuration cannot substitute for a completed native call.
+This is a boundary refinement law, not a proof of the SDK or filesystem. -/
+theorem file_export_cannot_replace_typed_delivery (s : BoundaryContext)
+    (blob : s.nativeTyped = false) (incomplete : s.captureCompleted = false) :
+    s.ready = false := by
+  simp [BoundaryContext.ready, BoundaryContext.Ready, blob, incomplete]
+
+#print axioms file_export_cannot_replace_typed_delivery
 #print axioms lossy_integer_cannot_preserve_original_budget
 #print axioms coerced_key_cannot_preserve_source_identity
 

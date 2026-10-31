@@ -176,6 +176,9 @@
           seed: 293 cases: 128 size: 128 shrink-budget: 64))
       (check-property report)
       (check-equal? (property.report-accepted report) 128))
+    (test-case "delivery outside typed capture refuses"
+      (check-equal? (refusal-message (lambda () (deliver-gateway-source bundle)))
+                    "Gateway delivery requires an active typed capture"))
     (test-case "native PBT requires one completed emission and an independent image"
       (def report
         (property.check-property

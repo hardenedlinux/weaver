@@ -3,6 +3,61 @@
 
 * Current delivery boundary
 
+Production =deliver-gateway-source= now requires an active scoped capture. It
+cannot select an output file through an environment variable. The approved
+application returns native data through the pinned SDK's GC-rooted object
+interfaces; Rust materializes owned domain types before any queue or await.
+The Rust Serde visitor consumes native object kinds, not JSON text. Symbol
+field keys, string identifier keys, exact integers and traversal bounds remain
+explicit refinement obligations.
+
+The old JSON file fallback has been removed from the production module.
+Only =t/fixtures/governed-control.ss= exports captured data as a JSON
+configuration for existing configuration-import qualification. That fixture
+export is neither Scheme/Rust runtime transport nor evidence of a completed
+native callback. Production assessment still uses canonical JSON locally for
+detached comparison/context values; this remaining representation must not be
+confused with the SDK boundary or removed without preserving exact binding.
+Provider JSON bodies and Go JSON/YAML configuration are separate protocols.
+
+The standard Scheme suite checks refusal outside capture as well as native
+capture ownership properties. Quint rejects file export substituted for typed
+completion and records the unsafe bypass as a counterexample. The corresponding
+Lean theorem is conditional on native boundary predicates; it does not prove
+the SDK, loader or arbitrary Scheme callbacks. Neither model grants final-send
+authority: current Policy, source fence, original claim and shared reservation
+remain required at Rust execution.
+
+Scoped qualification for the file-fallback removal:
+
+- Standard =gerbil build= and =gerbil test -g -v 5 t= completed naturally;
+  all five modules reported =MODULE-OK= and the harness reported =HARNESS-OK=,
+  including outside-capture refusal and the existing framework properties.
+- Quint completed 214 tests at seed 293, including the rejected file-export
+  substitution and its unsafe counterexample. The pinned Lean 4.34.1 command
+  built all 100 jobs; =file_export_cannot_replace_typed_delivery= uses only
+  =propext=. Project SysML and Scheme ownership checks passed. The core D2
+  was rendered and visually inspected with its existing theme and icons.
+- The real compiled-asset deployment case passed in 11.43 seconds, covering
+  actual SDK capture, authenticated Go publication, partial Rust send,
+  revocation and dual restart with the original unknown hold retained.
+- The two-case Go race-enabled command failed overall in 98.088 seconds,
+  including an 81-second Rust rebuild. Its other case,
+  =TestProviderControlCedarFFIValidationCannotAuthorize=, missed the unchanged
+  three-second initial operation-channel connection gate before reaching the
+  configuration export. Process-main appeared about 2.66 seconds after launch;
+  listener setup then took about 2.25 milliseconds. This is another unresolved
+  cold-start failure, not evidence against or acceptance of fixture export.
+  The passing typed case does not erase it; no rerun was used to replace it.
+- An initial bare =lake= command selected ambient Lean 4.35.0 and failed in
+  =Batteries.Data.UInt=. The repository owner explicitly selects 4.34.1 through
+  =elan run=; that unchanged pinned command passed. No dependency pin changed.
+
+Raw transcripts are temporary =/private/tmp/weaver-typed-delivery-*= files;
+only this bounded evidence summary is tracked. Full =check-scheme= acceptance,
+configuration-export runtime coverage in this campaign and the prior cold
+startup issue remain open.
+
 Rust now has an explicit compiled-application build and startup path, a fixed
 SDK ABI, real producer readiness and bounded startup catalog installation.
 Go producer deployment reaches that path through authenticated typed gRPC.

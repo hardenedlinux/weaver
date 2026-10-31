@@ -671,6 +671,12 @@ module LlmPolicyContinuation {
     .then(recordBoundary(boundary0.with("exactIntegers",false)).fail())
   run symbolStringKeyCoercionCannotClaimSameRecordTest=init
     .then(recordBoundary(boundary0.with("keyKinds",false)).fail())
+  // Test-only configuration exports are not native callback completion.
+  run fileExportCannotReplaceTypedDeliveryTest=init
+    .then(recordBoundary(boundary0.with("nativeTyped",false).with("captureCompleted",false)).fail())
+  run fileExportAsDeliveryCounterexampleTest=init
+    .then(unsafeBoundaryRecord(boundary0.with("nativeTyped",false).with("captureCompleted",false)))
+    .expect(not(boundaryBound) and s.calls==0 and s.hold==6)
   run borrowedAssessmentImageCannotEnterBoundaryTest=init
     .then(recordBoundary(boundary0.with("assessmentImageOwned",false)).fail())
   run borrowedAssessmentImageCounterexampleTest=init

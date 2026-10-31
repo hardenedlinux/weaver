@@ -5,7 +5,6 @@
         :agentic-ai-lab/modules/governance/interface
         (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
         (only-in :clan/poo/object .o .ref)
-        (only-in :hardenedlinux/weaver/scheme/gateway/capture deliver-gateway-source)
         :hardenedlinux/weaver/scheme/gateway/func)
 (export emit-control-fixture capture-control-fixture)
 
@@ -22,15 +21,23 @@
 (trace-phase "fixture-module-ready")
 
 (def (emit-control-fixture init mode tasks plans publication asset-root)
-  (control-fixture init mode tasks plans publication asset-root #f))
+  ;; Configuration-import qualification only. Production delivery never writes
+  ;; files; the Rust SDK consumes the captured object directly.
+  (let* ((artifact (capture-control-fixture init mode tasks plans publication asset-root))
+         (text (gateway-source-json artifact))
+         (path (getenv "WEAVER_CONTROL_ARTIFACT" #f)))
+    (unless path (error "Test configuration export requires a destination"))
+    (unless (<= (u8vector-length (string->utf8 text)) 8388608)
+      (error "Test configuration export exceeds source bound"))
+    (call-with-output-file path (lambda (port) (display text port)))
+    #t))
 
 (def (capture-control-fixture init mode tasks plans publication asset-root)
-  (control-fixture init mode tasks plans publication asset-root #t))
+  (control-fixture init mode tasks plans publication asset-root))
 
-(def (control-fixture init mode tasks plans publication asset-root capture-result?)
+(def (control-fixture init mode tasks plans publication asset-root)
   (trace-phase "fixture-enter")
   (def prefixed? (string-prefix? "capture-" mode))
-  (def captured? (or capture-result? prefixed?))
   (when prefixed? (set! mode (substring mode 8 (string-length mode))))
   (def strategy
     (make-loop-strategy-plan 'weaver-routing
@@ -87,19 +94,8 @@
                            (list (agentic-ai-lab-governance-precondition "weaver/input" #f #f))))))
               (else assessment))))))
   (trace-phase "compile-begin")
-  (def (produce)
-    (emit-governed-gateway init (make-loop-governor 'weaver strategy overrides)
-                          profile (.o request: 'publish source_root: asset-root) states tasks plans publication))
-  (let ((result
-         (if captured?
-           (let ((artifact (capture-governed-gateway init (make-loop-governor 'weaver strategy overrides)
-                                               profile (.o request: 'publish source_root: asset-root)
-                                               states tasks plans publication)))
-             (when (and (not capture-result?) (file-exists? (getenv "WEAVER_CONTROL_ARTIFACT")))
-               (error "In-memory capture wrote a source artifact"))
-             ;; The current Go bridge still needs its artifact. Native VM
-             ;; assembly will consume the native Record directly; this write is outside capture.
-             (if capture-result? artifact (deliver-gateway-source artifact)))
-           (produce))))
-    (trace-phase (if capture-result? "source-captured" "source-delivered"))
+  (let ((result (capture-governed-gateway init (make-loop-governor 'weaver strategy overrides)
+                        profile (.o request: 'publish source_root: asset-root)
+                        states tasks plans publication)))
+    (trace-phase "source-captured")
     result))

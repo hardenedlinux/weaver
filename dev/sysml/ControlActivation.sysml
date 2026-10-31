@@ -105,6 +105,11 @@ package ControlActivation {
            producer authentication, durable source cut, general closure purity
            or final-send authority. Existing Policy projection and Rust current
            execution checks remain separate. */
+        doc /* Production source delivery requires an active scoped capture.
+           It has no environment-selected JSON file fallback. The SDK carries
+           GC-rooted typed objects and Rust materializes owned domain data.
+           Configuration export belongs only to explicit test fixtures; it
+           cannot certify a native callback or authorize an external send. */
         doc /* GatewaySourceInput is the exact private preparation Record for
            task/plan/publication data before Governor, Policy or assessment
            callbacks. The selected GatewayArtifact is an independently copied
