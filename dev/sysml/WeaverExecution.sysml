@@ -194,7 +194,35 @@ package WeaverExecution {
         doc /* Consume the upstream core library's semantic/runtime contracts;
            do not duplicate Cedar or Delta evaluation inside Weaver. */
     }
+    enum def AdmissionStorageEngine {
+        enum turso;
+    }
+    enum def AdmissionStorageOwner {
+        enum mrrDataBackend;
+    }
     part def RustLedger {
+        attribute targetEngine : AdmissionStorageEngine = AdmissionStorageEngine::turso;
+        attribute targetStorageOwner : AdmissionStorageOwner = AdmissionStorageOwner::mrrDataBackend;
+        doc /* Target default: the reviewed latest stable embedded Turso engine,
+           implemented behind a narrow data-layer admission persistence adapter.
+           Weaver owns original scope, authorization, fencing and final execution;
+           it does not own another general DB engine, ORM or analytics stack.
+           Reuse MRR Data PR 12's public mrr-data-backend interfaces: TursoProvider,
+           Backend/ProfilePort and transactional authority/exact-outcome recovery.
+           Hosts retaining their own schema use its public turso_driver export;
+           no parallel Weaver DB provider is required. Select only the turso
+           feature; query/Arrow/DuckDB/graph providers are not admission defaults.
+           Existing commerce reservation/consumption APIs remain domain-specific,
+           not an automatic replacement for LLM token accounting. The PR's current
+           release pin is behind the target latest stable Turso release; upgrade
+           and qualify that cohort upstream before changing production pins.
+           Physical driver reuse does not establish linearizable admission CAS,
+           retained-root independence or actual transport fencing. */
+        doc /* Existing rusqlite/SQLite code and tests are the current validation
+           baseline, not an implemented Turso adapter. This model neither changes
+           dependency pins nor qualifies a replacement engine. Release selection,
+           SQL/transaction conformance, durability, recovery and performance must
+           be verified before a later authorized production migration. */
         doc /* One deciding store owns immutable tasks, reservations, logical keys, current revision and fence. */
         doc /* Commit-floor target: reuse publication exact-result retention,
            account/WAL owner validation and current-cut CAS. Independent authority
@@ -281,7 +309,9 @@ package WeaverExecution {
            only for a demonstrated semantic-query/lineage requirement or measured
            advantage. No new direct dependency is added by this model. Both
            backends emit typed candidates, never authorization or accounting.
-           mrr-data remains an optional physical adapter. */
+           mrr-data remains an optional physical adapter for derived evidence.
+           This is separate from RustLedger's target mrr-data-backend storage
+           ownership; neither role makes MRR derivation a Policy authority. */
         attribute selectedBackend : PolicyEvidenceDesign::DerivationBackend = PolicyEvidenceDesign::DerivationBackend::inheritedAscent;
         port candidates : PolicyEvidenceDesign::DerivedFactsPort;
     }

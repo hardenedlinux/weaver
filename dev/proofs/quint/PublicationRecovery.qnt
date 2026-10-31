@@ -8,7 +8,8 @@ module PublicationRecovery {
   // scope, audience or signature semantics are evaluated in this schedule owner.
   type SourceDecision={slot:int,credential:int,key:int}
   type SourceUse={credential:int,epoch:int,owner:int,command:int,purpose:int,artifact:int}
-  type SourceCut={epoch:int,owner:int,revoked:Set[int],decisions:List[SourceDecision],registry:List[ReviewEntry],head:int,fence:int}
+  type ExecutionRetention={cut:Cut,burned:Set[int],reservation:int,exposure:int,held:int,owner:int,epoch:int}
+  type SourceCut={epoch:int,owner:int,revoked:Set[int],decisions:List[SourceDecision],registry:List[ReviewEntry],head:int,fence:int,execution:ExecutionRetention}
   type SourceObservation={use:SourceUse,cut:SourceCut,session:int}
   type RetainedQualification={source:SourceObservation,root:int,generation:int}
   type ReplayPair={parentPresent:bool,parentPolicy:int,parentSchema:int,candidatePolicy:int}
@@ -24,7 +25,7 @@ module PublicationRecovery {
     owner:int,liveOwners:Set[int],egressOwners:Set[int],handoff:bool,calls:int,external:int,
     registry:List[ReviewEntry],registrarOwner:int,registrarTerm:int,
     sourceDecisions:List[SourceDecision],sourceRevoked:Set[int]}
-  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int,registryQualifications:Set[SourceObservation],retainedSource:SourceCut,trustedRoot:int,retentionGeneration:int,retentionAvailable:bool,retainedQualifications:Set[RetainedQualification]}
+  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int,registryQualifications:Set[SourceObservation],retainedSource:SourceCut,trustedRoot:int,retentionGeneration:int,retentionAvailable:bool,retainedQualifications:Set[RetainedQualification],exposureProjection:ExecutionRetention}
   var authority:Ledger
   val ids=Set(0,1,2)
   val empty={payload:0,parent:-1,requestedFence:1,outcome:0,resultHead:-1,resultFence:1,review:Set(),validatedFence:1,validatedCut:emptyCut,validatedEpoch:0}
@@ -36,8 +37,11 @@ module PublicationRecovery {
     (authority.head>=0 implies authority.policy==authority.commits.nth(authority.head).decision.payload and authority.schema==authority.policy) and floorSafe(authority.floor)
   pure val emptyCut={publication:List(),consumption:List(),account:List(),history:List()}
   pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),owner:1,liveOwners:Set(1),egressOwners:Set(1),handoff:false,calls:0,external:0,registry:List(),registrarOwner:1,registrarTerm:0,sourceDecisions:List({slot:0,credential:100,key:100}),sourceRevoked:Set()}
-  pure val sourceCut0={epoch:0,owner:1,revoked:Set(),decisions:List({slot:0,credential:100,key:100}),registry:List(),head:-1,fence:1}
-  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0,registryQualifications:Set(),retainedSource:sourceCut0,trustedRoot:7,retentionGeneration:0,retentionAvailable:true,retainedQualifications:Set()}
+  // Opaque domain-qualified reservation/exposure references; no settlement or
+  // refund arithmetic is defined by this publication/recovery schedule owner.
+  pure val execution0={cut:emptyCut,burned:Set(),reservation:101,exposure:201,held:4,owner:1,epoch:0}
+  pure val sourceCut0={epoch:0,owner:1,revoked:Set(),decisions:List({slot:0,credential:100,key:100}),registry:List(),head:-1,fence:1,execution:execution0}
+  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0,registryQualifications:Set(),retainedSource:sourceCut0,trustedRoot:7,retentionGeneration:0,retentionAvailable:true,retainedQualifications:Set(),exposureProjection:execution0}
   def canStage(q:Proposal):bool={val d=authority.records.get(q.id)
     authority.pending.forall(p=>p.id!=q.id or p==q) and
       (d.outcome==0 or (d.payload==q.payload and d.parent==q.parent and d.requestedFence==q.fence))}
@@ -101,7 +105,8 @@ module PublicationRecovery {
     use.command==q.id,use.purpose==1,use.artifact==r.artifact,publishReviewedBy(use.owner,use.epoch,q,r)}
   // Read/restore/final-join timing only. Binding and signature meaning remain SPEC-owned.
   def sourceAuthorityCut:SourceCut={epoch:authority.floor.registrarTerm,owner:authority.floor.registrarOwner,
-    revoked:authority.floor.sourceRevoked,decisions:authority.floor.sourceDecisions,registry:authority.floor.registry,head:authority.head,fence:authority.fence}
+    revoked:authority.floor.sourceRevoked,decisions:authority.floor.sourceDecisions,registry:authority.floor.registry,head:authority.head,fence:authority.fence,
+    execution:{cut:authority.floor.cut,burned:authority.floor.burned,reservation:101,exposure:201,held:authority.held,owner:authority.floor.owner,epoch:authority.floor.epoch}}
   action readSourceObservation(use:SourceUse):bool=all {authority.sourceReachable,sourceUseCurrent(use),
     authority'=authority.with("sourceUses",authority.sourceUses.union(Set(use)))
       .with("sourceObservations",authority.sourceObservations.union(Set({use:use,cut:sourceAuthorityCut,session:authority.sourceSession}))).with("sourceImage",sourceAuthorityCut)}
@@ -121,7 +126,7 @@ module PublicationRecovery {
   // Recovery qualification orders existing opaque references; it supplies no
   // credential, Policy or independent-prefix authenticity semantics of its own.
   action qualifyRegistryRecovery(observed:SourceObservation):bool=all {
-    joinedSourceObservation(observed),registryRecovered,
+    joinedSourceObservation(observed),registryRecovered,authority.exposureProjection==sourceAuthorityCut.execution,
     authority'=authority.with("registryQualifications",Set(observed))}
   action publishAtQualifiedRegistry(observed:SourceObservation,q:Proposal,r:Review):bool=all {
     authority.registryQualifications.contains(observed),publishAtSourceObservation(observed,q,r)}
@@ -133,7 +138,16 @@ module PublicationRecovery {
     before.head<=after.head and before.fence<=after.fence and
     before.revoked.forall(c=>after.revoked.contains(c)) and
     before.decisions.indices().forall(i=>i<after.decisions.length() and before.decisions.nth(i)==after.decisions.nth(i)) and
-    before.registry.indices().forall(i=>i<after.registry.length() and before.registry.nth(i)==after.registry.nth(i))
+    before.registry.indices().forall(i=>i<after.registry.length() and before.registry.nth(i)==after.registry.nth(i)) and
+    inheritsExecutionRetention(before.execution,after.execution)
+  pure def inheritsParts(before:List[Part],after:List[Part]):bool=
+    before.indices().forall(i=>i<after.length() and before.nth(i)==after.nth(i))
+  pure def inheritsExecutionRetention(before:ExecutionRetention,after:ExecutionRetention):bool=
+    before.reservation==after.reservation and before.exposure==after.exposure and before.held==after.held and
+    before.epoch<=after.epoch and (before.epoch==after.epoch implies before.owner==after.owner) and
+    before.burned.forall(k=>after.burned.contains(k)) and
+    inheritsParts(before.cut.publication,after.cut.publication) and inheritsParts(before.cut.consumption,after.cut.consumption) and
+    inheritsParts(before.cut.account,after.cut.account) and inheritsParts(before.cut.history,after.cut.history)
   action retainSourcePrefix=all {authority.retentionAvailable,inheritsSourcePrefix(authority.retainedSource,sourceAuthorityCut),
     authority'=authority.with("retainedSource",sourceAuthorityCut)
       .with("retentionGeneration",if(authority.retainedSource==sourceAuthorityCut)authority.retentionGeneration else authority.retentionGeneration+1)}
@@ -144,11 +158,21 @@ module PublicationRecovery {
     retainedSourceCurrent(root,generation),registerAtSourceObservation(observed,r)}
   action qualifyRetainedRegistry(receipt:RetainedQualification):bool=all {
     retainedSourceCurrent(receipt.root,receipt.generation),joinedSourceObservation(receipt.source),registryRecovered,
-    authority.registryQualifications.contains(receipt.source),
+    authority.registryQualifications.contains(receipt.source),authority.exposureProjection==sourceAuthorityCut.execution,
     authority'=authority.with("retainedQualifications",authority.retainedQualifications.union(Set(receipt)))}
   action publishAtRetainedRegistry(receipt:RetainedQualification,q:Proposal,r:Review):bool=all {
     authority.retainedQualifications.contains(receipt),retainedSourceCurrent(receipt.root,receipt.generation),
-    publishAtQualifiedRegistry(receipt.source,q,r)}
+    authority.exposureProjection==sourceAuthorityCut.execution,publishAtQualifiedRegistry(receipt.source,q,r)}
+  action restoreExposureProjection(image:ExecutionRetention):bool=authority'=authority.with("exposureProjection",image)
+  action repairExposureProjection=all {authority.retentionAvailable,authority.retainedSource==sourceAuthorityCut,
+    authority'=authority.with("exposureProjection",authority.retainedSource.execution)}
+  def retainedExecutionQualified(receipt:RetainedQualification):bool=
+    authority.retainedQualifications.contains(receipt) and retainedSourceCurrent(receipt.root,receipt.generation) and
+    joinedSourceObservation(receipt.source) and registryRecovered and authority.exposureProjection==sourceAuthorityCut.execution
+  action burnAtRetainedExecution(receipt:RetainedQualification,k:int,c:Cut,epoch:int):bool=all {
+    retainedExecutionQualified(receipt),floorBurn(k,c,epoch)}
+  action admitAtRetainedExecution(receipt:RetainedQualification,k:int,c:Cut,epoch:int):bool=all {
+    retainedExecutionQualified(receipt),floorAdmit(k,c,epoch)}
   action registerReviewBy(actor:int,term:int,r:Review):bool={
     val existing=anchoredReviews(r.command.id)
     if(existing!=Set()) all {existing==Set(r),authority'=authority}
@@ -719,4 +743,46 @@ module PublicationRecovery {
     qualifyRegistryRecovery({use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession}),
     qualifyRetainedRegistry({source:{use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession},root:7,generation:authority.retentionGeneration}),
     publishAtRetainedRegistry({source:{use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession},root:7,generation:authority.retentionGeneration},staged0,review0)}
+  def executionReceipt={source:{use:sourcePublish0,cut:sourceAuthorityCut,session:authority.sourceSession},root:7,generation:authority.retentionGeneration}
+  action qualifyExecutionImage=repairExposureProjection.then(readSourceObservation(sourcePublish0))
+    .then(qualifyRegistryRecovery(executionReceipt.source)).then(qualifyRetainedRegistry(executionReceipt))
+  action executionRecovered=registeredObserved.then(publishAtSourceObservation(publishObservation0,staged0,review0))
+    .then(floorStage(consume0)).then(floorCommit(consume0,true)).then(floorResolve(consume0))
+    .then(floorRead).then(floorRepair).then(floorActivate).then(retainSourcePrefix).then(qualifyExecutionImage)
+  action executionBurned=executionRecovered.then(burnAtRetainedExecution(executionReceipt,1,f.cut,f.epoch))
+    .then(retainSourcePrefix).then(qualifyExecutionImage)
+  run burnWithoutRetainedConfirmationCannotAdmitTest=executionRecovered.then(burnAtRetainedExecution(executionReceipt,1,f.cut,f.epoch))
+    .expect(f.burned.contains(1) and f.external==0 and authority.held==4)
+    .then(admitAtRetainedExecution(executionReceipt,1,f.cut,f.epoch).fail())
+  run retainedBurnReservationAndExposurePermitOneAdmissionTest=executionBurned.then(admitAtRetainedExecution(executionReceipt,1,f.cut,f.epoch))
+    .expect(sourceDecisionSafe and f.external==1 and authority.retainedSource.execution.burned.contains(1) and authority.held==4)
+    .then(admitAtRetainedExecution(executionReceipt,1,f.cut,f.epoch).fail())
+  run lostBurnConfirmationReplyPreservesExactGenerationTest=executionBurned.then(retainSourcePrefix)
+    .expect(authority.retentionGeneration==2 and authority.retainedSource.execution.reservation==101 and authority.retainedSource.execution.exposure==201)
+    .then(admitAtRetainedExecution(executionReceipt,1,f.cut,f.epoch)).expect(sourceDecisionSafe and f.external==1)
+  run zeroHeldProjectionCannotQualifyOrRefundTest=executionBurned.then(restoreExposureProjection(sourceAuthorityCut.execution.with("held",0)))
+    .expect(authority.exposureProjection.held==0 and authority.retainedSource.execution.held==4 and authority.held==4)
+    .then(qualifyRegistryRecovery(executionReceipt.source).fail())
+  run cachedQualificationCannotAdmitWithZeroHeldProjectionTest=executionBurned.then(restoreExposureProjection(sourceAuthorityCut.execution.with("held",0)))
+    .then(admitAtRetainedExecution(executionReceipt,1,f.cut,f.epoch).fail())
+  run repairedProjectionDoesNotRecreateLostSendHandleTest=executionBurned.then(floorLoseReply).then(restartSourceObserver)
+    .then(restoreExposureProjection(execution0.with("held",0))).then(qualifyExecutionImage)
+    .expect(authority.exposureProjection.held==4 and f.handles==Set() and f.external==0)
+    .then(admitAtRetainedExecution(executionReceipt,1,f.cut,f.epoch).fail())
+  run retainedBurnCannotBeRemovedByWholeFloorImageTest=executionBurned.then(unsafeFloorForgetBurn)
+    .expect(authority.retainedSource.execution.burned.contains(1) and authority.held==4).then(retainSourcePrefix.fail())
+  run changedReservationProjectionCannotReuseExposureTest=executionBurned
+    .then(restoreExposureProjection(sourceAuthorityCut.execution.with("reservation",102)))
+    .then(admitAtRetainedExecution(executionReceipt,1,f.cut,f.epoch).fail())
+  run retainedOldWorkerCannotAdmitAfterExecutionOwnerHandoffTest=executionBurned.then(floorRequestHandoff)
+    .then(floorConfirmTransportStopped(true)).then(floorStartOwner).then(floorRead).then(floorRepair).then(floorActivate)
+    .then(retainSourcePrefix).then(qualifyExecutionImage).expect(f.owner==2 and f.burned.contains(1) and authority.held==4)
+    .then(admitAtRetainedExecution(executionReceipt,1,f.cut,f.epoch).fail())
+  action executionRecoverySchedule=any {retainSourcePrefix,repairExposureProjection,readSourceObservation(sourcePublish0),
+    qualifyRegistryRecovery(executionReceipt.source),qualifyRetainedRegistry(executionReceipt),
+    restoreExposureProjection(execution0.with("held",0)),restoreExposureProjection(execution0),
+    restartSourceObserver,reconnectSourceObserver,floorLoseReply,floorRead,floorRepair,floorActivate,
+    floorRequestHandoff,floorConfirmTransportStopped(true),floorStartOwner,
+    retentionAvailability(false),retentionAvailability(true),sourceAvailability(false),sourceAvailability(true),
+    burnAtRetainedExecution(executionReceipt,1,f.cut,f.epoch),admitAtRetainedExecution(executionReceipt,1,f.cut,f.epoch)}
 }

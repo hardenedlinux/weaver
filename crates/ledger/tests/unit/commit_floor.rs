@@ -3,7 +3,10 @@
 //! failure-domain independence. Domain payload validation stays with its owner.
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 use std::{collections::BTreeSet, path::Path};
+use weaver_contracts::{ProviderReceipt, ProviderState};
 use weaver_ledger::Ledger;
+#[path = "retained_admission.rs"]
+mod retained_admission;
 #[path = "transport_owner.rs"]
 mod transport_owner;
 
@@ -247,6 +250,21 @@ impl Floor {
         after_burn: impl FnOnce(&Connection),
         send: impl FnOnce(),
     ) -> bool {
+        self.send_bound_record(
+            (projection, observed_epoch, observed_cut, key),
+            None,
+            after_burn,
+            send,
+        )
+    }
+    fn send_bound_record(
+        &mut self,
+        original: (&Path, i64, &str, &str),
+        receipt: Option<&ProviderReceipt>,
+        after_burn: impl FnOnce(&Connection),
+        send: impl FnOnce(),
+    ) -> bool {
+        let (projection, observed_epoch, observed_cut, key) = original;
         let tx = self
             .0
             .transaction_with_behavior(TransactionBehavior::Immediate)
@@ -265,12 +283,40 @@ impl Floor {
         if !current || !consumed {
             return false;
         }
+        if let Some(receipt) = receipt {
+            let already_recorded: bool = tx
+                .query_row(
+                    "SELECT EXISTS(SELECT 1 FROM prefix WHERE kind=4 AND k=?1)",
+                    [key],
+                    |row| row.get(0),
+                )
+                .expect("original admission lookup");
+            if already_recorded
+                || format!("{}/{}", receipt.family, receipt.node) != key
+                || receipt.state != ProviderState::Unknown
+            {
+                return false;
+            }
+        }
         if tx
             .execute("INSERT OR IGNORE INTO burned VALUES(?1)", [key])
             .expect("one use")
             != 1
         {
             return false;
+        }
+        if let Some(receipt) = receipt {
+            let body = serde_json::to_string(&(SCOPE, key, receipt))
+                .expect("canonical admission/exposure body");
+            if tx
+                .execute(
+                    "INSERT INTO prefix(kind,k,body) VALUES(4,?1,?2)",
+                    params![key, body],
+                )
+                .is_err()
+            {
+                return false; // Dropping the transaction also rolls back burned.
+            }
         }
         let expected = cut(&tx);
         tx.commit().expect("burn durable");

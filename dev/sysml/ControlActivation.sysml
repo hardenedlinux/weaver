@@ -27,6 +27,19 @@ package ControlActivation {
            Historical handoff receipts grant no new permission. Source SPKI
            continuity is not independent subject/incarnation issuance, full
            reviewed-publication qualification or whole-store anti-rollback. */
+        doc /* The retained recovery cut includes the four existing domain
+           prefixes, execution owner/epoch, monotone one-use burns and the original
+           reservation/unknown-exposure commitment. The admission transaction
+           retains the burn and full obligation body together before any callback.
+           A missing reply cannot split these into independently reusable rights.
+           Root generation and qualified observations change with that cut. */
+        doc /* Local exposure/burn projections must conform to the retained cut
+           both when qualifying recovery and at actual admission. A restored zero
+           hold or missing receipt denies readiness; it does not establish unused
+           funds. Rebuilding records cannot recreate a lost live send ticket.
+           Final use still requires the existing Rust owner/fence/current-Policy
+           checks. Settlement requires its existing SPEC/domain witnesses and is
+           not decided by the temporal recovery envelope. */
         doc /* An independent retained-root witness binds the authority namespace,
            authenticated generation and inherited full-content source prefix.
            Configuration cannot enroll a replacement root. Registration and final
