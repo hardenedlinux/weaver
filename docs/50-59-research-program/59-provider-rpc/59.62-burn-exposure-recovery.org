@@ -308,6 +308,12 @@ Executed Weaver evidence:
   deadlines, queue limits and cleanup; source custody coverage is included in
   the merged selection. No production change from that concurrent work is
   attributed to this test/model review.
+- The final merge also preserves the concurrent authority-captured replay-pair
+  review and its six additional witnesses. At =6334774=, PublicationRecovery
+  passes 151 schedules, the execution recovery sampling still passes 1,000 by
+  60 steps, and the unchanged complete Go-managed Rust entry and 13-case real
+  recovery selection pass again. This final receipt supersedes the earlier
+  145-case merged snapshot without changing the retained execution contract.
 - The MRR Data receipts above separately establish existing Turso backend
   authority/outbox behavior. They are not a composed Weaver-to-MRR admission
   test, independent-root durability evidence, or a v0.8.3 release qualification.
