@@ -58,6 +58,58 @@ requirement def GovernorSourceHandoff {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Hot-path attribution uses test-only clocks at the existing public
+           provider seam and borrowed validator. Separate original-home lock
+           wait, API duration, provider pre-body/body/post-body, physical gets/
+           puts, validator read+integrity/decode and residual rendezvous time.
+           ProfilePort runs the borrowed validator on the async caller through
+           request/answer channels while the native worker holds its transaction;
+           body residual is not pure engine CPU. FULL post-body latency includes
+           COMMIT and release, not isolated fsync. Do not replace the provider or
+           weaken durability for instrumentation. Retain per-request samples,
+           rotated controls and cancellation/recovery tests at actual Host CPUs.
+           Host jitter requires corroboration; missing kernel I/O evidence must
+           remain explicit. Existing SPEC semantics and final-use ownership stay. */
+        doc /* A sequential diagnostic may invoke the existing public metadata
+           engine with the same immutable body, authority vector and native store
+           while a CPU-sized runtime services driver I/O. It removes ProfilePort
+           admission/rendezvous only as a causal control, never as a production
+           replacement for borrowed guards, cancellation or final admission.
+           Distinguish this lower-layer control from full-path throughput. */
+        doc /* CPU-matched writer requalification uses max(4, available Host CPUs)
+           for runtime, write/shared workers and reusable capacity in the native
+           lifecycle target and real-content paired benchmark. Record actual
+           CPUs, workers and blocking capacity. Compare WAL, fresh MVCC and reuse
+           in rotated matching rounds for original hot and independent homes;
+           retain every sample, refusal and Unknown. Do not overlap this task's
+           builds/tests with measurement or infer a new performance gain from
+           historical runs. Preserve the 30-second bound, exact operation and
+           authority recovery, held unknown exposure and terminal old owners.
+           Provider reconstruction and process-death evidence stay distinct. */
+        doc /* Native multithreaded acceptance uses at least four Tokio workers;
+           explicit blocking-thread budgets also have a four-thread minimum. CPU-derived performance drivers
+           scale to the available Host CPUs with a four-worker minimum and report
+           actual CPU/worker counts separately. Logical one-slot refusal controls
+           are resource-bound tests, never a reduction of runtime thread count.
+           Earlier two-thread receipts remain historical, not current acceptance. */
+        doc /* A SQL writer owner becomes terminal when close starts. Recovery
+           constructs a fresh provider around the original durable store; the
+           stopped object cannot reopen or accept a late lease. Open/close hold
+           one lifecycle lock across pool, reader and bootstrap resource changes.
+           Cancellation is not rollback, close is not domain revocation, and a
+           free slot is not discharged exposure. Driver Unknown discards a writer;
+           lost delivery after known commit may leave a healthy physical session
+           but still requires exact original operation/authority recovery. No
+           resource transition grants semantic authority or permits refund. */
+        doc /* Reusable Turso writers are bounded exclusive execution resources,
+           never cached authority or send capabilities. FULL is configured and
+           verified on private connection creation. Only successful COMMIT plus
+           confirmed autocommit permits return to the idle set; driver error/Unknown,
+           failed cleanup or unwinding discards the connection. Active plus idle
+           writers cannot exceed the explicit Host capacity. Close stops new
+           leases, refuses outstanding work and discards idle sessions; recovery
+           uses a new provider and cannot inherit a prior lease. Existing home-sequence, original keys,
+           unknown obligations and final Rust admission remain unchanged. */
         doc /* Turso concurrent admission is an explicit storage execution mode.
            The existing canonical home-sequence is the common write-conflict
            witness for content, authority changes and outbox acknowledgment.

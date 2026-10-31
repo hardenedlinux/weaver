@@ -1,0 +1,74 @@
+vars: { d2-config: { layout-engine: tala; theme-id: 3; pad: 80 } }
+classes: { card: { label.near: center-center; style.font-size: 24; style.border-radius: 12; style.stroke-width: 1 } }
+title: BORROWED GOVERNANCE / CONTINUOUS EXECUTION AUTHORITY {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+original: Scheme semantics / Go ingress\nOriginal claim / reservation / history\nCurrent authority binding {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+admission: Original canonical home\nOrdered head / bounded Host admission\nCPU-budgeted worker dispatch {
+  class: card
+  left: 810
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+transaction: MRR exclusive transaction\nCurrent head and authority checks\nWorker retains transaction through answer {
+  class: card
+  left: 1620
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+validator: Borrowed validator on Host runtime\nLive guard / original body integrity\nRequest and answer rendezvous {
+  class: card
+  left: 1620
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+commit: FULL commit / private session release\nPersist exact original outcome\nUnknown retains original exposure {
+  class: card
+  left: 810
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+execution: Rust final transport owner\nCurrent Policy / history / owner fence\nOne-use admission at actual release {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 0
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+original -> admission: Preserve original identity { style.font-size: 20 }
+admission -> transaction: Accepted bounded work { style.font-size: 20 }
+transaction <-> validator: Validation request / answer { style.font-size: 20 }
+transaction -> commit: Original durable decision { style.font-size: 20 }
+commit -> execution: Receipt plus separate current-use gate { style.font-size: 20 }
+footer: "Cancellation is not rollback · Historical recovery creates no send capability\nA returned connection or completed queue wait cannot release unknown budget" {
+  shape: text
+  left: 140
+  top: 1080
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}
