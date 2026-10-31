@@ -166,3 +166,37 @@ passed all 158 named witnesses (seed 293). An attempted ordinary workspace
 =cargo test -p weaver-ledger mrr_admission= selected zero tests; it is not native
 MRR qualification. That consumer intentionally uses an isolated research manifest,
 as documented by its owning chapter; no runtime dependency was added here.
+
+* Package-built fixture qualification
+
+The integration source previously imported =t/fixtures/governed-control= by an
+absolute source path. The root =gerbil build= now compiles that existing test-only
+library, and generated inert test data imports its canonical package module.
+The fixture itself imports the package Gateway library. No executable target,
+alternate Governance evaluator, dependency pin or production capability is added.
+Yuanxu still owns actual module selection and currentness. Go's source compiler
+process remains a separately open embedding boundary; compiling the fixture does
+not implement the required production in-process Scheme/Rust bridge.
+
+On the same host, the original source-import pair passed with natural refusal in
+6.01 seconds (deny) and 6.05 seconds (assessment-threats). After standard library
+compilation, the package-import pair passed in 6.61 and 6.01 seconds. These are
+fresh child-process observations with already installed dependencies, not an
+evicted-cache or cold-build experiment. They show no established runtime speedup
+and do not explain the earlier fifteen-second failures. The first invocation also
+rebuilt Rust dependencies (17.24 seconds), whereas the second did not (0.21
+seconds); total Go command times cannot attribute that difference to this change.
+
+The existing native PBT suite passed again under the standard Gerbil entrypoint.
+The original-capture Quint witnesses and conditional Lean law are unchanged:
+module import identity supplies no new authorization, atomic-snapshot theorem or
+execution permit. Complete cross-language results are recorded separately below.
+
+The package-built invocation passed both actual integration owners in 149.269
+seconds: publication reply-loss/restart took 33.57 seconds, and all nineteen
+negative controls passed in 113.00 seconds. Each refusal exited naturally in
+5.60--6.40 seconds, retained the expected diagnostic, emitted no artifact and
+made zero provider calls. Standard Gerbil build/test and the focused SysML/module
+ownership tests passed. This qualifies that invocation at the installed prefix;
+it does not erase the retained failed invocation, identify the historic timeout
+cause, prove cold qualification or implement production runtime embedding.

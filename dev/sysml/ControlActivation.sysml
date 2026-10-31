@@ -4,6 +4,11 @@ package ControlActivation {
         doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete native Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
     requirement def GovernorSourceHandoff {
+        doc /* Cross-language qualification imports the package-built Scheme
+           fixture library. Standard gerbil build owns its expansion; the fixture
+           is not a production module or executable. Changing load ownership
+           neither changes Governance semantics nor proves a timeout root cause.
+           Native properties and actual publication/send controls remain required. */
         doc /* Scheme captures independent canonical bytes for original Profile
            identity/revision/owner, model identity, complete native threat data
            and assessment context before invoking an AA method. A callback may

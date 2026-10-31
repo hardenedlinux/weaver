@@ -5,7 +5,7 @@
         :agentic-ai-lab/modules/governance/interface
         (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
         (only-in :clan/poo/object .o .ref)
-        ../../scheme/gateway/func)
+        :hardenedlinux/weaver/scheme/gateway/func)
 (export emit-control-fixture)
 
 (def (emit-control-fixture init mode tasks plans publication asset-root)

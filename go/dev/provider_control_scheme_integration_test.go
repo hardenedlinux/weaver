@@ -99,9 +99,10 @@ func schemeSource(t testing.TB, f *fixture, b config.Bundle, mode string) string
 	}
 	// Only inert fixture data crosses this printer. Native constructors and
 	// governance setup belong to the Scheme-owned integration fixture.
-	source := fmt.Sprintf(`(import (only-in :clan/poo/object object<-alist) %q)
+	source := fmt.Sprintf(`(import (only-in :clan/poo/object object<-alist)
+        :hardenedlinux/weaver/t/fixtures/governed-control)
 (emit-control-fixture %q %q %s %s %s %q)
-`, filepath.Join(root(t), "t/fixtures/governed-control"), filepath.Join(root(t), "init.ss"), mode,
+`, filepath.Join(root(t), "init.ss"), mode,
 		schemeDatum(t, value["tasks"]), schemeDatum(t, value["plans"]), schemeDatum(t, value["publication"]), directory)
 	path := filepath.Join(directory, "governed-"+mode+".ss")
 	if err = os.WriteFile(path, []byte(source), 0600); err != nil {

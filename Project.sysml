@@ -343,7 +343,11 @@ package WeaverProject {
         part 't/gateway-contracts-test.ss' : File;
         part 't/governance-test.ss' : File;
         part 't/policy-test.ss' : File;
-        part 't/fixtures/governed-control.ss' : File;
+        part 't/fixtures/governed-control.ss' : File {
+            doc /* Test-only library compiled by the root standard Gerbil build;
+               integration imports its canonical package module. No executable
+               or production Governance capability is introduced. */
+        }
 
         part 'prod/policies/provider/schema.json' : File;
         part 'prod/policies/provider/provider.cedar' : File;

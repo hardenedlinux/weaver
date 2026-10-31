@@ -15,4 +15,7 @@
   ((.get hardenedlinux/weaver.init.exports std-make-spec)
    (list `(gxc: "scheme/policy/cedar-ffi"
                 "-cc-options" ,(pkg-config-cflags policy-package)
-                "-ld-options" ,(pkg-config-libs policy-package)))))
+                "-ld-options" ,(pkg-config-libs policy-package))
+         ;; Cross-language fixtures are libraries too: the standard package build
+         ;; owns their expansion instead of repeating it during each bootstrap.
+         '(gxc: "t/fixtures/governed-control"))))
