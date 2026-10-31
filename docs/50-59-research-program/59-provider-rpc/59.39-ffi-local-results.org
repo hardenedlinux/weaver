@@ -64,6 +64,12 @@ restart records. Temporary logs/native samples are removed after curation; core
 execution diagrams retain their existing semantic boundaries without diagnostic
 timestamps or sample counts.
 
+After preserving the concurrent MRR ownership change, committed source =2bf31f5=
+passed the standard clean-source architecture gate. The actual JSON/YAML restart
+test passed again in 9.03 seconds (JSON 6.42, YAML 2.61), with each startup's
+records reported once. This post-merge check qualifies that implementation and
+reporting change; it does not override the retained failed native sample.
+
 * Fixed inputs and result boundary
 The fresh-prefix complete =check-scheme= run on
 =6c91131f8709e1538c6034d8426b8a0ed8439369= reported =FAIL=: thirteen of fourteen
