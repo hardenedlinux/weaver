@@ -551,6 +551,22 @@ theorem changed_assessment_snapshot_cannot_reuse_boundary (s : BoundaryContext)
 
 #print axioms changed_assessment_snapshot_cannot_reuse_boundary
 
+/-- Self-consistent replacement content cannot redefine the independently
+retained original. Authenticity of that original is still a host premise. -/
+theorem coherent_replacement_cannot_redefine_original (s : BoundaryContext)
+    (_coherent : s.inputValue = s.semanticOutput)
+    (changed : s.inputValue ≠ s.committedInput) : s.ready = false := by
+  simp [BoundaryContext.ready,BoundaryContext.Ready,changed]
+
+theorem ready_output_keeps_retained_original (s : BoundaryContext)
+    (ready : s.ready = true) : s.semanticOutput = s.committedOutput := by
+  have admitted : s.Ready := by simpa [BoundaryContext.ready] using ready
+  rcases admitted with ⟨_, _, _, _, _, _, _, output, _⟩
+  exact output
+
+#print axioms coherent_replacement_cannot_redefine_original
+#print axioms ready_output_keeps_retained_original
+
 theorem old_authenticated_callback_cannot_use_fresh_labels (s : BoundaryContext)
     (old : s.authenticatedCallback ≠ s.expectedCallback) : s.ready = false := by
   simp [BoundaryContext.ready,BoundaryContext.Ready,old]

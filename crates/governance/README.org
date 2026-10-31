@@ -23,3 +23,10 @@ The selected SDK's capacity must be reported separately from host core count.
 The existing Go process/file adapter is still an open production embedding owner.
 This crate does not silently substitute for that adapter or authorize an alternate
 runtime path. Benchmark boundaries live in =benches/README.org=.
+
+=OwnedSource= proves candidate consistency only. Production-host content admission
+uses =SourceExpectation::capture= on the independently admitted original before
+calling Scheme, then =materialize_bound_source= or =bind=. The resulting
+=BoundSource= preserves the entire original artifact and remains data. Capturing
+an expectation from the candidate is not original admission. Registry/callback
+authenticity and current Policy/history/fence/ledger checks remain mandatory.

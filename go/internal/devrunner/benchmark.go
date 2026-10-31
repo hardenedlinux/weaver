@@ -15,6 +15,7 @@ import (
 // Every timed case must produce fresh evidence; one case cannot qualify its package.
 var rustBenchmarkCases = []string{
 	"governance_owned_source_validate",
+	"governance_original_source_capture_and_bind",
 	"governance-build_staging_expression",
 	"contracts_provider_commitment/128",
 	"contracts_provider_commitment/16384",

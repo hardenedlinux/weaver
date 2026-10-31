@@ -1,6 +1,5 @@
-#[path = "../../benches/support/fixture.rs"]
-mod fixture;
 use crate::OwnedSource;
+use crate::source_fixture as fixture;
 use proptest::{prop_assert, proptest};
 #[test]
 fn owned_source_has_no_vm_borrow_and_survives_original_mutation() {

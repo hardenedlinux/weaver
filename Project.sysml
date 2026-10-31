@@ -316,7 +316,10 @@ package WeaverProject {
                synchronous native Scheme strong-root conversion. No VM object survives in
                OwnedSource; conversion and transport confer no publication/send
                authority. Program graph/export admission remains host-owned. The scheme-vm feature
-               exposes conversion only; scheme-qualification links the test graph. */
+               exposes conversion only; scheme-qualification links the test graph.
+               SourceExpectation retains the independently admitted original
+               before producer invocation; BoundSource compares the whole typed
+               image and remains inert data, never a publication/send permit. */
             part 'weaver-contracts' : RuntimeDependency;
         }
         part 'crates/governance-build' : RustPackage;
