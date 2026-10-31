@@ -285,6 +285,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.61-authority-bound-replay-pair.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.61-authority-bound-replay-pair.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.61-authority-bound-replay-pair.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.62-burn-exposure-recovery.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.62-burn-exposure-recovery.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.62-burn-exposure-recovery.svg' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.63-governance-capture-ownership.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.63-governance-capture-ownership.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.63-governance-capture-ownership.svg' : File;
