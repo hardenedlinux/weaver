@@ -1,5 +1,5 @@
 ;;; Scheme-to-Rust Cedar C ABI preflight. Final publication repeats validation.
-(import :std/ffi)
+(import :std/ffi (only-in "./source-bytes.ss" cedar-source-utf8))
 (export validate-source-policy!)
 
 (begin-foreign
@@ -16,9 +16,13 @@
 (def (validate-source-policy! policy schema)
   (unless (and (string? policy) (string? schema))
     (error "Policy and schema must be source strings"))
-  (unless (= (policy-abi) #x00010000)
-    (error "unsupported Rust Policy ABI"))
-  (let ((status (policy-validate/raw (string->utf8 policy) (string->utf8 schema))))
-    (unless (= status 0)
-      (error "Rust rejected inert source Policy/schema" status)))
+  (let ((policy-bytes (cedar-source-utf8 policy))
+        (schema-bytes (cedar-source-utf8 schema)))
+    (unless (and policy-bytes schema-bytes)
+      (error "Policy and schema require bounded UTF-8 source"))
+    (unless (= (policy-abi) #x00010000)
+      (error "unsupported Rust Policy ABI"))
+    (let ((status (policy-validate/raw policy-bytes schema-bytes)))
+      (unless (= status 0)
+        (error "Rust rejected inert source Policy/schema" status))))
   #t)
