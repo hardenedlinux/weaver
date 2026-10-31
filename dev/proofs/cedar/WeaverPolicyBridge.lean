@@ -477,6 +477,7 @@ structure BoundaryContext where
   nativeTyped : Bool
   exactIntegers : Bool
   keyKinds : Bool
+  assessmentImageOwned : Bool
   deriving DecidableEq
 
 def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
@@ -489,7 +490,8 @@ def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
   s.borrowedRegionStable = true ∧ s.rustOwned = true ∧
   s.retainsForeignPointer = false ∧ s.reentrant = false ∧
   s.captureEmissions = 1 ∧ s.captureCompleted = true ∧ s.capturePoisoned = false ∧
-  s.nativeTyped = true ∧ s.exactIntegers = true ∧ s.keyKinds = true
+  s.nativeTyped = true ∧ s.exactIntegers = true ∧ s.keyKinds = true ∧
+  s.assessmentImageOwned = true
 
 instance (s : BoundaryContext) : Decidable s.Ready := by
   unfold BoundaryContext.Ready
@@ -529,6 +531,15 @@ theorem coerced_key_cannot_preserve_source_identity (s : BoundaryContext)
 #print axioms encoded_blob_cannot_claim_native_capture
 #print axioms lossy_integer_cannot_preserve_original_budget
 #print axioms coerced_key_cannot_preserve_source_identity
+
+/-- An assessed image must be independent before delegated Policy/Governance
+calls, not just copied during later FFI materialization. The Scheme framework
+property and real linked application test refine this native ownership premise. -/
+theorem borrowed_source_cannot_claim_completed_assessment (s : BoundaryContext)
+    (borrowed : s.assessmentImageOwned = false) : s.ready = false := by
+  simp [BoundaryContext.ready,BoundaryContext.Ready,borrowed]
+
+#print axioms borrowed_source_cannot_claim_completed_assessment
 
 theorem configuration_cannot_skip_governance (s : BoundaryContext)
     (missing : s.governanceChecked = false) : s.ready = false := by

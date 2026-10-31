@@ -4,7 +4,7 @@
         (only-in :clan/poo/type Record List String)
         (only-in :clan/poo/number UIntN)
         (only-in :hardenedlinux/weaver/scheme/policy/types CedarPolicySource CedarSchemaSource))
-(export GatewayArtifact TaskContract ProviderPlanContract PublicationContract
+(export GatewayArtifact GatewaySourceInput TaskContract ProviderPlanContract PublicationContract
         ProviderProfileContract ProviderRouteContract Identifier Counter Credits)
 
 ;;; Preserve exact JSON integer tokens above 2^53; the default Integer JSON
@@ -69,6 +69,11 @@
   (.cc (Record operation_id: (list Identifier) expected_revision: (list Counter optional: #t)
                fence: (list Counter) policy: (list CedarPolicySource) schema: (list CedarSchemaSource))
        identity: 'weaver/publication sealed: #t))
+;;; Private preparation shape before Governor selection; no handoff or authority.
+(def GatewaySourceInput
+  (.cc (Record tasks: (list (List TaskContract)) plans: (list (List ProviderPlanContract))
+               publication: (list PublicationContract))
+       identity: 'weaver/gateway/source-input sealed: #t))
 (def GovernorHandoff
   (.cc (Record schema: (list String) family: (list Identifier)
                open_nodes: (list (List Identifier))) identity: 'weaver/governor-handoff sealed: #t))

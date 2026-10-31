@@ -3,7 +3,8 @@
         (only-in :std/error Error? Error-message)
         (only-in :clan/poo/object .o .get .slot? object-slots-set!)
         (only-in :clan/poo/mop TypeError?)
-        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
+        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile. agentic-ai-lab-governance-source)
+        (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
         (only-in ../scheme/policy/func project-policy)
         (only-in ../scheme/gateway/capture capture-gateway-source deliver-gateway-source)
         (only-in ../scheme/gateway/snapshot copy-source-data native->source-data source-data->native)
@@ -289,6 +290,78 @@
       (check (equal? first
                      (gateway-source-json (.o (:: @ bundle)
                        plans: (list (.o (:: @ plan) routes: (reverse (.get plan routes))))))) => #f))
+    (test-case "assessed compilation owns its image across all delegated callbacks"
+      (def field-labels '(policy schema family endpoint nodes routes profile root policy-id asset-path))
+      (def phase-labels '(after-return assessment reproject project governor preflight))
+      (def report
+        (property.check-property
+          (generator.generator-sequence
+            (list (generator.generator-integer 0 9) (generator.generator-integer 0 5)
+                  (generator.generator-integer 1 128)))
+          (lambda (row)
+            (let* ((field (car row)) (phase (cadr row)) (projections 0)
+                   (policy-text (string-append (.get source-publication policy) (make-string (caddr row) #\space)))
+                   (expected-policy (string-copy policy-text)) (schema-text (string-copy "{}"))
+                   (family-text (string-copy "family")) (endpoint-text (string-copy "https://primary.invalid"))
+                   (profile-label (string-copy "weaver/test")) (root-text (string-copy "."))
+                   (policy-id-text (string-copy "weaver/runtime")) (asset-path-text (string-copy "policy.cedar"))
+                   (native-policy (agentic-ai-lab-cedar-policy policy-id-text (string-copy policy-text)))
+                   (profile-value (.o (:: @ profile) identity: profile-label policies: (.o runtime: native-policy)
+                                      source-assets: (list (agentic-ai-lab-governance-source "weaver/runtime" asset-path-text 'cedar))))
+                   (node-values (list "infer")) (route-values (copy-source-data (.get plan routes)))
+                   (task-value (.o (:: @ task) family: family-text nodes: node-values
+                                  endpoints: (.o primary: endpoint-text backup: "https://backup.invalid")))
+                   (plan-value (.o (:: @ plan) family: family-text routes: route-values))
+                   (pub-value (.o (:: @ source-publication) policy: policy-text schema: schema-text)))
+              (def (mutate!)
+                (case field
+                  ((0) (string-set! policy-text 0 #\x))
+                  ((1) (string-set! schema-text 0 #\x))
+                  ((2) (string-set! family-text 0 #\x))
+                  ((3) (string-set! endpoint-text 0 #\x))
+                  ((4) (set-car! node-values "changed"))
+                  ((5) (set-car! route-values (.o target: "changed" endpoint: "https://changed.invalid")))
+                  ((6) (string-set! profile-label 0 #\x))
+                  ((7) (string-set! root-text 0 #\x))
+                  ((8) (string-set! policy-id-text 0 #\x))
+                  (else (string-set! asset-path-text 0 #\x))))
+              (def (project-image p text root)
+                (set! projections (1+ projections))
+                (when (or (and (= phase 3) (= projections 1))
+                          (and (= phase 2) (= projections 2))) (mutate!))
+                (project-policy p text '() root))
+              (def outcome
+                (with-catch (lambda (failure) (if (Error? failure) 'refused (raise failure)))
+                  (lambda ()
+                    (compile-gateway
+                      (.o open: (lambda (_governor _states) (when (= phase 4) (mutate!)) '("infer"))
+                          assess: (lambda (_profile _context) (when (= phase 1) (mutate!)) #t))
+                      (.o validate: (lambda (_policy _schema) (when (= phase 5) (mutate!)) #t)
+                          project: project-image)
+                      #f profile-value (.o request: 'publish source_root: root-text)
+                      '() (list task-value) (list plan-value) pub-value))))
+              (if (= phase 0)
+                (begin
+                  (mutate!)
+                  (and (not (eq? outcome 'refused))
+                       (equal? (.get (.get outcome publication) policy) expected-policy)
+                       (equal? (.get (.get outcome publication) schema) "{}")
+                       (equal? (.get (car (.get outcome tasks)) family) "family")
+                       (equal? (.get (car (.get outcome tasks)) nodes) '("infer"))
+                       (equal? (.get (.get (car (.get outcome tasks)) endpoints) primary) "https://primary.invalid")
+                       (equal? (.get (car (.get (car (.get outcome plans)) routes)) target) "primary")))
+                (eq? outcome 'refused))))
+          (property.make-specification
+            (lambda (row) (and (list? row) (= (length row) 3) (andmap exact-integer? row)
+                              (<= 0 (car row) 9) (<= 0 (cadr row) 5) (<= 1 (caddr row) 128)))
+            (lambda (row) (apply + row)))
+          seed: 293 cases: 128 size: 128 shrink-budget: 64
+          policy: (property.make-policy name: 'assessed-source-ownership
+                    labels: (lambda (row) (list (list-ref field-labels (car row))
+                                               (list-ref phase-labels (cadr row))))
+                    required: (map (lambda (label) (cons label 1)) (append field-labels phase-labels)))))
+      (check-property report)
+      (check-equal? (property.report-accepted report) 128))
     (test-case "a false Policy preflight cannot emit a source handoff"
       (check-equal?
         (refusal-message

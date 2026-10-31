@@ -106,6 +106,98 @@ Rust execution/consumption models retain responsibility for final authority.
 
 ** Scheme capture ownership
 
+*** Owned image before delegated compilation
+
+=compile-gateway= first validates and copies a =GatewaySourceInput= Record using
+the existing bounded =copy-source-data= mechanism. Its only fields are the exact
+task list, provider-plan list and publication; it introduces no new Governance
+DSL, wire format or runtime authority. This private preparation precedes Governor
+selection and every delegated Policy/assessment call. The selected artifact is
+copied into its own typed =GatewayArtifact= image before preflight or assessment.
+Only detached source, Policy, schema, root and context strings enter callbacks.
+The returned artifact owns its data even if the caller later changes its inputs.
+
+The compiler retains original Profile data and method references before the
+first delegation, reuses =governance-profile-snapshot=, and checks them before
+assessment and after final Policy reprojection. Source image, original caller
+data and source-root comparisons occur after all delegated callbacks, closing
+the prior gap after the final projection. Policy validation and assessment use
+the private image; matching live aliases cannot replace that image. Input must
+be stable during initial copying and native Governor-state selection. This
+does not sandbox approved application code, prove arbitrary closure purity or
+freeze external fact/history stores. Rust's independent original binding and
+current publication/final-send checks remain mandatory.
+
+The reused Profile snapshot now also covers native Cedar policy slot names,
+identities and source bytes, plus ordered source-asset identity/path/language
+descriptors. Slot-name order is normalized without changing asset order. It
+does not read files or implement another Policy projector; the existing confined
+asset reader remains responsible for content reads and projection equality.
+An independent negative control keeps the new artifact-copy code but restores
+the old Profile snapshot/types. The framework minimizes the failure to
+=(field=asset-path, phase=assessment, size=1)=: that descriptor changes while
+the pure projector still returns agreeing Policy data. Re-running a projector
+alone is not an independent commitment to the original Profile descriptors.
+
+The POO property framework generates mutations in Policy/schema strings, family,
+endpoints, node/route lists, Profile identity, source root, policy identity and
+asset path. Phases cover Governor selection, first Policy projection, preflight,
+assessment, final reprojection and
+post-return mutation. Earlier mutations must refuse; post-return mutations must
+leave the assessed image intact. All 128 generated cases use direct typed field
+assertions, not JSON equality as an output oracle. Framework coverage requires
+each field and phase category to occur at least once. The pre-fix implementation
+fails the property; its standard Gerbil test process still exits zero while
+printing =ERROR CHECK= and =ERROR HARNESS=. That exit is retained as failed
+evidence, never counted as acceptance. The final standard build/test run reports
+all five =MODULE-OK= markers and =HARNESS-OK= without error markers.
+
+Quint and Lean extend the existing semantic-boundary owner with the
+=assessmentImageOwned= refinement premise. Borrowed assessment images refuse;
+an unsafe boundary-record counterexample preserves the original hold and emits
+no sends. The Cedar/Lean refusal law is conditional on native ownership evidence;
+the Boolean is not added to RPC/configuration as a claimable certificate. The
+model does not establish allocation safety, atomic copying or actual producer
+authentication. Production application graph review remains a separate gate.
+
+Qualification: standard =gerbil build= and =gerbil test -g -v 5 t= passed with
+natural process completion. Quint passed all 212 semantic-boundary tests; the
+Cedar Lean bridge built successfully, and the new refusal law depends only on
+=propext=. An intermediate linked =governance_owner= candidate passed in 9.09
+seconds before the Profile policy/asset snapshot was expanded; that receipt is
+not promoted to final-source qualification.
+
+The complete Profile snapshot version subsequently passed the actual linked
+=governance_owner= test in 10.45 seconds, including semantic-decline recovery,
+authenticated Go producer/control use, retired-source fencing and VM cleanup
+before shared drain. This runtime duration is separate from rebuilding/linking;
+the two candidate timings establish no performance improvement.
+
+The latest real executable assets test passed in 14.46 seconds (Go test-package
+elapsed time including setup/build was 160.360 seconds). Its explicit debug
+qualification application captures =WEAVER_TEST_GOVERNANCE_ASSET_ROOT= once at
+initialization; no RPC chooses that path and no production application gains a
+default Profile. A real Cedar file passes through AA source-assets, actual
+Scheme projection/assessment and Rust preflight, rooted Rust materialization,
+Go's named-producer gRPC publication and the Rust streaming executor. The case
+checks a partial send, authoritative revocation and restart of both processes:
+the original hold remains and no retry reaches a provider. No Scheme process or
+artifact-file bridge supplies the compiled source to Go. Declared Policy assets
+and the startup catalog/configuration remain file inputs; the compiled artifact
+travels as typed gRPC data. Module loading may also read files as described below.
+This is qualification with a test application, not operator application
+acceptance or repair of the earlier failed cold-start campaign.
+
+An earlier candidate did not reach runtime testing: Apple ld terminated with
+=SIGBUS= during dead stripping. Its diagnostic report identifies excessive
+recursive =AtomFileConsolidator::markLive= traversal and thread-stack exhaustion.
+The compiler log and frozen linker snapshot remain temporary failure artifacts.
+The final candidate changed the source preparation graph and passed with the
+same selected linker; no stack, timeout, CPU, dependency pin or linker flag was
+changed. This later pass does not establish a repair or causal explanation of
+the earlier linker crash. Do not combine the two candidates into an all-green
+campaign or treat that host-tool failure as a Policy/test assertion failure.
+
 The Gateway scope now exposes =capture= with a specific native Function contract:
 it accepts a zero-argument Boolean producer and returns one independent =GatewayArtifact= Record. The public
 =capture-governed-gateway= facade uses the same admitted Yuanxu view, AA/Governor

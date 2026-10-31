@@ -105,6 +105,18 @@ package ControlActivation {
            producer authentication, durable source cut, general closure purity
            or final-send authority. Existing Policy projection and Rust current
            execution checks remain separate. */
+        doc /* GatewaySourceInput is the exact private preparation Record for
+           task/plan/publication data before Governor, Policy or assessment
+           callbacks. The selected GatewayArtifact is an independently copied
+           image; callbacks receive detached source/context strings. The final
+           comparison runs after the last Policy projection and checks original
+           caller data, Profile data/methods and source root. Profile snapshots
+           include native Cedar policy names/identities/source and ordered asset
+           identity/path/language descriptors before any delegation. They read
+           no asset file; existing confined Policy projection owns actual reads.
+           Stable input during
+           initial copy and Governor-state selection remains a native premise.
+           This ownership condition is not a caller-supplied readiness flag. */
         doc /* Scheme projects native governor open-patterns after denylist, conflict and max-actionable clipping. Selected nodes, original task nodes and plan nodes must form the same duplicate-free set. A typed inert Governance assessment must match the exact task/plan/publication source serialized with recursively sorted object keys while preserving array order and exact integers, Profile identity/revision/owner, threat-model identity and complete assessed threats. Native blocking threats cannot be erased by a ready flag. False Policy preflight or Governance results reject. Assessment is a trusted compilation fact, never a portable execution permit. Candidate actionable-patterns are not a qualified handoff or a monetary reservation. */
     }
     requirement def PolicyCAbiIsInert {

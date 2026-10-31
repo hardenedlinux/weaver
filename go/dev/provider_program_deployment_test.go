@@ -61,6 +61,22 @@ func TestProviderControlCompiledProgramRevocationAndRestart(t *testing.T) {
 	}})
 }
 
+func TestProviderControlCompiledAssetsRevocationAndRestart(t *testing.T) {
+	exerciseControlPolicies(t, "json", nil, controlPolicySources{producer: "approved-control", configure: func(t *testing.T, f *fixture, bundle config.Bundle) {
+		path := configuredCatalogPath(t, f, bundle)
+		assetRoot := filepath.Join(f.directory, "governance-assets")
+		if err := os.Mkdir(assetRoot, 0700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(assetRoot, "policy.cedar"), []byte(bundle.Publication.Policy), 0600); err != nil {
+			t.Fatal(err)
+		}
+		f.stop(t)
+		f.env = append(f.env, "WEAVER_GOVERNANCE_CATALOG="+path, "WEAVER_TEST_GOVERNANCE_ASSET_ROOT="+assetRoot)
+		f.start(t)
+	}})
+}
+
 func TestProviderControlCompiledProgramRequiresRealInstallation(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	path := configuredCatalogPath(t, f, controlBundle(t, f))
