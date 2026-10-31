@@ -10,6 +10,15 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Replay revision admission reads the immutable captured parent from
+           the existing review requirement, not candidate metadata. Full original
+           predecessor bytes match that authority-owned Policy/schema commitment;
+           both selected PolicySets match the actual fixed SPEC manifest. Missing
+           predecessor, legacy absent schema or a different schema rejects this
+           replay profile without clearing pending intent. Heavy replay occurs
+           outside SQL; registration and final CAS retain current-parent checks.
+           Historical exact replay remains observation and supplies no no-gain,
+           source authentication, independent root or provider-send authority. */
         doc /* Source RPC identity derives from actual authenticated mTLS leaf,
            SPKI and role-credential bytes. The existing ledger enrolls an empty
            unowned store once, retains the key prefix and decides exact handoffs.

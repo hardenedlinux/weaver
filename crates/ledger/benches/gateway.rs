@@ -6,6 +6,8 @@ mod fixtures;
 mod policy_fixture;
 #[path = "../../policy/tests/support/publication_replay.rs"]
 mod replay_fixture;
+#[path = "../../policy/tests/support/publication_revision.rs"]
+mod revision_fixture;
 #[path = "../../contracts/benches/support/source_authority.rs"]
 mod source_fixture;
 #[path = "support/fixtures.rs"]
@@ -187,6 +189,35 @@ fn replay_checked_publication(c: &mut Criterion) {
                 let receipt = ledger
                     .publish_authority(&change)
                     .expect("original final CAS");
+                assert_eq!(
+                    receipt.outcome,
+                    weaver_contracts::PublicationOutcome::Committed
+                );
+                black_box((temp, ledger, receipt))
+            },
+            BatchSize::PerIteration,
+        )
+    });
+    let (change, review, before) = revision_fixture::fixture(replay_fixture::fixture());
+    c.bench_function("ledger/spec_parent_bound_revision_registration", |b| {
+        b.iter_batched(
+            || {
+                let temp = tempfile::tempdir().expect("directory");
+                let mut ledger =
+                    weaver_ledger::Ledger::open(temp.path().join("revision.db")).expect("store");
+                ledger
+                    .publish_typed(None, &before, &change.schema, 1)
+                    .expect("parent");
+                ledger
+                    .stage_reviewed_authority(&change)
+                    .expect("captured parent");
+                (temp, ledger)
+            },
+            |(temp, mut ledger)| {
+                ledger
+                    .register_replay_checked_review(&change, &review)
+                    .expect("checked pair");
+                let receipt = ledger.publish_authority(&change).expect("original CAS");
                 assert_eq!(
                     receipt.outcome,
                     weaver_contracts::PublicationOutcome::Committed

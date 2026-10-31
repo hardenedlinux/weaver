@@ -315,6 +315,10 @@
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityUncompiledSourceCannotRegisterTest"},
     {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"}]},
   {"id":"GovernancePolicyProjection","witnesses":[
+    {"file":"crates/ledger/tests/unit/publication_replay.rs","pattern":"fn candidate_only_replay_cannot_register_for_a_real_predecessor"},
+    {"file":"crates/policy/tests/unit/publication_replay.rs","pattern":"fn replay_cannot_substitute_the_captured_predecessor"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem matched_replay_preserves_both_images"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run exactReplayPairSurvivesLostReplyAndCommitsOriginalTest"},
     {"file":"crates/ledger/tests/unit/source_authority.rs","pattern":"fn source_handoffs_and_old_workers_preserve_original_unknown_budget"},
     {"file":"crates/ledger/tests/unit/source_authority_storage.rs","pattern":"fn consistent_whole_store_rollback_remains_a_local_authority_counterexample"},
     {"file":"go/dev/provider_source_authority_test.go","pattern":"func TestProviderPersistentSourceRotationLostReplyFencesExistingWorkerAndReissuedKey"},

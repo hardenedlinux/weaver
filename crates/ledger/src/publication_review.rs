@@ -87,7 +87,8 @@ impl Ledger {
         change: &Publication,
         review: &PublicationReview,
     ) -> Result<String> {
-        weaver_policy::verify_publication_replay(change, review)?;
+        let parent = self.required_review_parent(&review.publication)?;
+        weaver_policy::verify_publication_replay(change, review, parent.as_ref())?;
         self.register_approved_review(review)
     }
     /// Atomically latch mandatory review and stage the original command. No downgrade exists.

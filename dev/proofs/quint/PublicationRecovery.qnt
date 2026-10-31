@@ -11,6 +11,8 @@ module PublicationRecovery {
   type SourceCut={epoch:int,owner:int,revoked:Set[int],decisions:List[SourceDecision],registry:List[ReviewEntry],head:int,fence:int}
   type SourceObservation={use:SourceUse,cut:SourceCut,session:int}
   type RetainedQualification={source:SourceObservation,root:int,generation:int}
+  type ReplayPair={parentPresent:bool,parentPolicy:int,parentSchema:int,candidatePolicy:int}
+  pure val genesisReplay={parentPresent:false,parentPolicy:0,parentSchema:0,candidatePolicy:0}
   type Part={id:int,payload:int,key:int}
   type Cut={publication:List[Part],consumption:List[Part],account:List[Part],history:List[Part]}
   type Intent={id:int,payload:int,key:int,kind:int,scope:int,epoch:int,before:Cut}
@@ -165,7 +167,9 @@ module PublicationRecovery {
     .then(recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm))
   // The exact native SPEC replay/ID/schema check belongs to Rust's upstream
   // adapter. This schedule receives its qualified result, not a second Cedar evaluator.
-  action registerReplayChecked(r:Review,checked:bool):bool=all {checked,
+  action registerReplayChecked(r:Review,checked:bool,pair:ReplayPair):bool=all {checked,
+    pair.parentPresent==(r.head>=0),pair.candidatePolicy==r.command.payload,
+    (pair.parentPresent implies pair.parentPolicy==r.parentPolicy and pair.parentSchema==r.parentSchema),
     registerReviewBy(authority.floor.registrarOwner,authority.floor.registrarTerm,r)}
   action publishReviewedBy(actor:int,term:int,q:Proposal,r:Review):bool={
     val qualified=authority.reviews.get(q.id)==Set(r) and r.command==q and r.head==authority.head and r.fence==authority.fence and r.parentPolicy==authority.policy and r.parentSchema==authority.schema and
@@ -487,12 +491,31 @@ module PublicationRecovery {
     revokeSource(100),revokeSource(101),rotateRegistrar,restoreReviewImage(List()),
     recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restart,observe}
   run failedNativeReplayRetainsOriginalPendingTest=init.then(stageRequiringReview(staged0))
-    .expect(safe and authority.pending==Set(staged0) and authority.held==4).then(registerReplayChecked(review0,false).fail())
+    .expect(safe and authority.pending==Set(staged0) and authority.held==4).then(registerReplayChecked(review0,false,genesisReplay).fail())
   run nativeReplayRegistrationLostObservationRecoveryTest=init.then(stageRequiringReview(staged0))
-    .then(registerReplayChecked(review0,true)).then(restart).then(observeRegistration(review0))
+    .then(registerReplayChecked(review0,true,genesisReplay)).then(restart).then(observeRegistration(review0))
     .then(recoverReviewsBy(1,0)).then(publish(0,0,-1,1)).expect(reviewSafe and authority.held==4)
   run successfulReplayCannotRegisterAtChangedParentTest=init.then(stageRequiringReview(staged0))
-    .then(publish(1,1,-1,1)).expect(safe and authority.pending==Set(staged0)).then(registerReplayChecked(review0,true).fail())
+    .then(publish(1,1,-1,1)).expect(safe and authority.pending==Set(staged0)).then(registerReplayChecked(review0,true,genesisReplay).fail())
+  pure val pairRevision={id:1,payload:1,parent:0,fence:2}
+  pure val pairReview={command:pairRevision,artifact:71,head:0,fence:1,parentPolicy:0,parentSchema:0,cut:emptyCut,epoch:0}
+  pure val originalPair={parentPresent:true,parentPolicy:0,parentSchema:0,candidatePolicy:1}
+  action pairStaged=init.then(publish(0,0,-1,1)).then(stageRequiringReview(pairRevision))
+  run candidateOnlyReplayCannotRegisterRevisionTest=pairStaged
+    .then(registerReplayChecked(pairReview,true,originalPair.with("parentPresent",false)).fail())
+  run changedReplayPredecessorCannotRegisterTest=pairStaged
+    .then(registerReplayChecked(pairReview,true,originalPair.with("parentPolicy",1)).fail())
+  run changedReplaySchemaCannotRegisterTest=pairStaged
+    .then(registerReplayChecked(pairReview,true,originalPair.with("parentSchema",1)).fail())
+  run changedReplayCandidateCannotRegisterTest=pairStaged
+    .then(registerReplayChecked(pairReview,true,originalPair.with("candidatePolicy",0)).fail())
+  run exactReplayPairSurvivesLostReplyAndCommitsOriginalTest=pairStaged
+    .then(registerReplayChecked(pairReview,true,originalPair)).then(restart).then(observeRegistration(pairReview))
+    .then(recoverReviewsBy(1,0)).then(publish(1,1,0,2))
+    .expect(localReviewSafe and authority.records.get(1).review==Set(pairReview) and authority.head==1 and authority.held==4 and authority.calls==1)
+  // Historical unsafe adapter used only for the retained expected counterexample.
+  run candidateOnlyApprovalOmissionCounterexampleTest=pairStaged
+    .then(registerReviewBy(1,0,pairReview)).expect(anchoredReviews(1)==Set(pairReview) and authority.held==4)
   run failedReplayIsNotTerminalRejectionTest=init.then(stageRequiringReview(staged0))
     .then(restart).expect(safe and authority.records.get(0).outcome==0 and authority.pending==Set(staged0))
     .then(publish(0,0,-1,1).fail())

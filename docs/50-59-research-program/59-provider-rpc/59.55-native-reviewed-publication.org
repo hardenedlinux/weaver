@@ -4,6 +4,11 @@
 
 * Architecture allocation and scope
 
+[[file:59.61-authority-bound-replay-pair.org][Authority-bound replay pair admission]]
+now binds revision replay to the captured actual predecessor as well as the
+candidate. It preserves the trusted-host and semantic qualification boundaries
+below; no replay-only approval RPC is exposed.
+
 The follow-up [[file:59.57-schema-bound-candidate-replay.org][schema-bound candidate
 adapter]] now reuses the actual fixed SPEC Rust runtime and preserves named Policy
 IDs through the official materialized JSON format. This concretizes candidate

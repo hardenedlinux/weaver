@@ -12,6 +12,8 @@ CAS for the complete named-Policy fixture. Its store/stage fixture is outside ti
 Persistent source-key handoff and source-authenticated publication bring this
 package to fourteen cases. Initial empty-store enrollment is outside timing;
 retained key history, actual source checks, atomic receipt and final CAS are timed.
+The fifteenth declared case measures parent-bound revision replay, registration
+and final CAS. Initial parent publication and staging are outside timing.
 The review case captures its actual parent and stages the requirement outside
 timing; registration persistence, exact artifact validation and final CAS are timed.
 No external producer authentication, solver or independent anchor is measured.

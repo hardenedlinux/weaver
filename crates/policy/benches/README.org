@@ -5,7 +5,9 @@
 
 Typed schema validation; warm compilation with a fresh authorization decision; sixteen-source compilation-cache churn.
 Named materialized PolicySet JSON schema validation and actual fixed-SPEC
-schema-bound candidate replay bring this package to five measured cases.
+schema-bound candidate replay and parent-bound revision replay bring this package
+to six declared cases. Revision replay binds exact predecessor bytes to the
+authority-captured head and both PolicySets to the actual upstream manifest.
 The complete four-case upstream manifest and receipts are prepared before timing;
 replay includes all four cases, while only two refer to the selected candidate.
 Neither measured success proves no-gain or producer authenticity.

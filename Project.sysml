@@ -282,6 +282,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.60-persistent-source-key-custody.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.60-persistent-source-key-custody.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.60-persistent-source-key-custody.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.61-authority-bound-replay-pair.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.61-authority-bound-replay-pair.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.61-authority-bound-replay-pair.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

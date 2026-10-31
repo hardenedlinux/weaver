@@ -300,6 +300,12 @@ package PolicyEvidenceDesign {
         attribute receiptDigest : String;
         attribute validatorIdentity : String;
         item coveredCases : Coverage;
+        doc /* Native revision replay binds the full predecessor and candidate
+           to the authority-captured parent and original command. Known genesis
+           is distinct from unknown or a missing predecessor. One-schema replay
+           does not admit schema evolution, a legacy absent schema, semantic
+           no-gain or any changed fact/Profile world. Existing upstream replay
+           owns policy revision consistency and concrete receipt recomputation. */
     }
     item def SourceAdmission {
         doc /* Authenticate the publishing source role and its incarnation,

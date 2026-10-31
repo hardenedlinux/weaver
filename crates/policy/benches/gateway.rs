@@ -6,6 +6,8 @@ mod fixtures;
 mod policy_fixture;
 #[path = "../tests/support/publication_replay.rs"]
 mod replay_fixture;
+#[path = "../tests/support/publication_revision.rs"]
+mod revision_fixture;
 fn current_policy(c: &mut Criterion) {
     let (task, plan) = fixtures::task_plan(128, "https://provider.invalid/v1/chat/completions");
     let binding = weaver_policy::bind_provider(&task, &plan, &plan.routes[0]).expect("binding");
@@ -61,8 +63,21 @@ fn candidate_replay(c: &mut Criterion) {
     });
     c.bench_function("policy/spec_schema_bound_candidate_replay", |b| {
         b.iter(|| {
-            black_box(weaver_policy::verify_publication_replay(&change, &review))
-                .expect("actual upstream receipt replay")
+            black_box(weaver_policy::verify_publication_replay(
+                &change, &review, None,
+            ))
+            .expect("actual upstream receipt replay")
+        })
+    });
+    let (change, review, _) = revision_fixture::fixture(replay_fixture::fixture());
+    c.bench_function("policy/spec_parent_bound_revision_replay", |b| {
+        b.iter(|| {
+            black_box(weaver_policy::verify_publication_replay(
+                &change,
+                &review,
+                review.parent.as_ref(),
+            ))
+            .expect("actual before/after replay")
         })
     });
 }

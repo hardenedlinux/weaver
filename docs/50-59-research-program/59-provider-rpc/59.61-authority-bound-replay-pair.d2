@@ -1,0 +1,31 @@
+vars: {d2-config: {layout-engine: tala; theme-id: 3; pad: 70}}
+classes: {card: {label.near: center-center; style.font-size: 21; style.border-radius: 12}}
+title: AUTHORITATIVE PREDECESSOR / EXACT REPLAY PAIR {shape: text; near: top-center; style.font-size: 32; style.bold: true}
+source: Scheme / Go original proposal\nOriginal task and Policy bytes\nExact immutable publication key\nNo caller-selected authority parent {
+  class: card; left: 0; top: 0; width: 500; height: 220; style.fill: "#eef3ef"
+  icon: ../../architecture/diagrams/assets/go.svg; icon.near: top-left
+}
+parent: Rust captured requirement\nActual Policy / schema / fence\nKnown genesis or original predecessor\nPersistent original pending intent {
+  class: card; left: 720; top: 0; width: 500; height: 220; style.fill: "#f4f2ec"
+}
+replay: Rust / SPEC replay adapter\nBind original before and after images\nOfficial Policy IDs and common schema\nRecompute concrete evidence {
+  class: card; left: 1440; top: 0; width: 500; height: 220; style.fill: "#e7edf4"
+  icon: ../../architecture/diagrams/assets/rust.svg; icon.near: top-left
+}
+continuity: Retained original constraints\nSource custody / claim / history\nShared reservation and unknown holds\nHistorical results grant no rights {
+  class: card; left: 0; top: 510; width: 500; height: 220; style.fill: "#f4f2ec"
+}
+commit: Rust deciding transaction\nOriginal immutable registration\nRecheck actual parent and source\nResolve only the original proposal {
+  class: card; left: 720; top: 510; width: 500; height: 220; style.fill: "#e7edf4"
+}
+send: Rust final executor\nFresh Cedar after capacity waits\nOriginal consumption and current fence\nUnknown sends cannot redispatch {
+  class: card; left: 1440; top: 510; width: 500; height: 220; style.fill: "#eef3ef"
+}
+source -> parent: Stage exact command {style.font-size: 18}
+parent -> replay: Authority-owned parent {style.font-size: 18}
+replay -> commit: Checked original pair {style.font-size: 18}
+continuity -> commit: Current deciding state {style.font-size: 18}
+commit -> send: Committed origin {style.font-size: 18}
+footer: "Replay is finite evidence · Semantic approval remains a separate contract · Publication never sends" {
+  shape: text; left: 70; top: 900; width: 1800; height: 70; style.font-size: 24; style.font-color: "#5c8b77"
+}

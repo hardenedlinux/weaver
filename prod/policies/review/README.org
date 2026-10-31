@@ -27,3 +27,10 @@ cover the selected =scoped-public= candidate PolicySet; four total manifest
 cases must not be reported as four selected-candidate checks. Receipt replay is
 finite evidence and does not prove semantic parent/profile binding, source
 authenticity, policy no-gain or current registry recovery.
+
+Revision replay additionally selects =published-public= as the predecessor
+case and supplies the original full Policy/schema bytes. The ledger's captured
+parent, not that label, fixes their required commitments. The two =published=
+cases cover the predecessor, and the two =scoped= cases cover the candidate.
+Both cohorts reuse official upstream replay; their combined count is not
+universal schema-environment coverage or a publication approval.

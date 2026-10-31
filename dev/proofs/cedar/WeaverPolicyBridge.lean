@@ -57,6 +57,8 @@ structure PublicationContext extends SuccessorContext where
   selectedProfilePayload : Nat
   profileSourceClosure : Nat
   policySchemaImage : Nat
+  replayPredecessorImage : Option Nat
+  replayCandidateImage : Nat
   executorSession : Nat
   deriving DecidableEq
 
@@ -103,6 +105,30 @@ theorem changed_original_assignment_rejects_publication_reuse
 #print axioms matched_publication_preserves_original_assignment
 #print axioms changed_publication_coordinate_rejects_reuse
 #print axioms changed_original_assignment_rejects_publication_reuse
+
+theorem matched_replay_preserves_both_images
+    [DecidableEq Effect] (project : Effect → PublicationContext → Request)
+    (operation : BoundOperation Effect PublicationContext project)
+    (effect : Effect) (actual : PublicationContext)
+    (matched : operation.matches effect actual = true) :
+    operation.state.replayPredecessorImage = actual.replayPredecessorImage ∧
+    operation.state.replayCandidateImage = actual.replayCandidateImage := by
+  have same := matched_publication_context_preserves_all_coordinates project operation effect actual matched
+  exact ⟨congrArg PublicationContext.replayPredecessorImage same,
+    congrArg PublicationContext.replayCandidateImage same⟩
+
+theorem changed_replay_predecessor_rejects_reuse
+    [DecidableEq Effect] (project : Effect → PublicationContext → Request)
+    (operation : BoundOperation Effect PublicationContext project)
+    (effect : Effect) (actual : PublicationContext)
+    (changed : operation.state.replayPredecessorImage ≠ actual.replayPredecessorImage) :
+    operation.matches effect actual = false := by
+  have different : operation.state ≠ actual := fun same =>
+    changed (congrArg PublicationContext.replayPredecessorImage same)
+  simp [BoundOperation.matches, different]
+
+#print axioms matched_replay_preserves_both_images
+#print axioms changed_replay_predecessor_rejects_reuse
 
 theorem changed_state_rejects_bound_reuse
     [DecidableEq Effect] [DecidableEq HostState]

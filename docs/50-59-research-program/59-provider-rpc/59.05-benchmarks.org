@@ -35,13 +35,13 @@ the guarded executor.
 | Workspace package | Required measured cases | Package-local target |
 |-------------------+-------------------------+----------------------|
 | weaver-contracts | 10 | crates/contracts/benches/gateway.rs |
-| weaver-policy | 5 | crates/policy/benches/gateway.rs |
+| weaver-policy | 6 | crates/policy/benches/gateway.rs |
 | weaver-policy-ffi | 1 | crates/policy-ffi/benches/gateway.rs |
-| weaver-ledger | 14 | crates/ledger/benches/gateway.rs |
+| weaver-ledger | 15 | crates/ledger/benches/gateway.rs |
 | weaver-execution | 1 | crates/execution/benches/gateway.rs |
 | weaver-server | 5 | crates/server/benches/gateway.rs |
 
-The current optimized all-features matrix contains 36 Rust cases. Three additional Go
+The current declared all-features matrix contains 38 Rust cases. Three additional Go
 benchmarks exercise the actual Rust service through mTLS gRPC, each repeated
 three times. These complement the package-local costs rather than replacing
 them with a single aggregate number.

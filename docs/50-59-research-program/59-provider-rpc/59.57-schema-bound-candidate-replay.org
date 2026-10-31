@@ -1,5 +1,10 @@
 #+TITLE: 59.57 Schema-Bound Candidate Replay and Policy Identity
 #+LANGUAGE: en
+
+The [[file:59.61-authority-bound-replay-pair.org][authority-bound replay pair follow-up]]
+extends the candidate adapter to actual captured predecessor binding. Existing
+candidate-only receipts remain finite genesis evidence; revision admission now
+requires the exact before image and the supported common-schema profile.
 #+OPTIONS: toc:2
 
 * Architecture and implemented boundary
