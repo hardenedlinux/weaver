@@ -5,14 +5,14 @@ module LlmRouting {
   type Plan = {root:int,payload:int,target:int,view:View,ranking:int,manifest:int,advised:bool}
   type Dispatch = {plan:Plan,snapshot:View}
   type Router = {catalog:int,policy:int,history:int,endpoint:int,metrics:int,unavailable:Set[int],
-    plans:Set[Plan],dispatches:Set[Dispatch],responses:Set[Plan],unknown:bool}
+    plans:Set[Plan],dispatches:Set[Dispatch],responses:Set[Plan],unknown:bool,callerTarget:int}
   var r:Router
   pure val root = 0
   pure val payload = 10
   pure val escrow = 10
   pure val candidates = 0.to(6)
   pure val emptyPlan = {root:-1,payload:-1,target:-1,view:{catalog:-1,policy:-1,history:-1,endpoint:-1},ranking:-1,manifest:-1,advised:false}
-  pure val initial = {catalog:0,policy:0,history:0,endpoint:0,metrics:0,unavailable:Set(),plans:Set(),dispatches:Set(),responses:Set(),unknown:false}
+  pure val initial = {catalog:0,policy:0,history:0,endpoint:0,metrics:0,unavailable:Set(),plans:Set(),dispatches:Set(),responses:Set(),unknown:false,callerTarget:0}
   action init = r' = initial
   def currentView = {catalog:r.catalog,policy:r.policy,history:r.history,endpoint:r.endpoint}
   pure def cost(m) = if (m==5) 12 else if (m==6) 8 else if (m==0) 6 else 1
@@ -46,6 +46,9 @@ module LlmRouting {
   action updateMetrics = r' = r.with("metrics",r.metrics+1)
   action markUnavailable(m) = r' = r.with("unavailable",r.unavailable.union(Set(m)))
   action timeoutOrLostReply = r' = r
+  // Native Go must materialize these immutable Plan values independently of
+  // caller and request storage. Framework properties qualify that premise.
+  action mutateCallerTarget(m) = r' = r.with("callerTarget",m)
   def planAt(m) = r.plans.fold(emptyPlan,(found,p) => if (p.target==m) p else found)
   val dispatchBound = r.dispatches.forall(d => d.plan.root==root and d.plan.payload==payload and d.plan.view==d.snapshot and validWire(d.plan))
   val originalRootOnce = r.dispatches.size()<=1
@@ -56,7 +59,7 @@ module LlmRouting {
     nondet m = candidates.oneOf()
     nondet p = r.plans.union(Set(emptyPlan)).oneOf()
     any {propose(m,100+m),proposeAdvised(m,100+m),dispatch(p,true),commitResponse(p,true),publishCatalog,publishPolicy,
-      restrictHistory,replaceEndpoint,updateMetrics,markUnavailable(m),timeoutOrLostReply}
+      restrictHistory,replaceEndpoint,updateMetrics,markUnavailable(m),mutateCallerTarget(m),timeoutOrLostReply}
   }
   action planned = init.then(propose(0,100))
   action dispatched = planned.then(dispatch(planAt(0),true))
@@ -100,4 +103,11 @@ module LlmRouting {
   run unknownRetryRouteCounterexampleTest = dispatched.then(unsafeSecondDispatch).expect(not(originalRootOnce))
   run mixedStreamRouteCounterexampleTest = dispatched.then(unsafeForeignResponse).expect(not(responseBound))
   run newAliasRootRouteCounterexampleTest = planned.then(unsafeRootRewrite).expect(not(dispatchBound))
+  run callerMutationCannotRewriteCompiledRouteTest = planned.then(mutateCallerTarget(6))
+    .then(dispatch(planAt(0),true)).expect(safety and r.dispatches.exists(d=>d.plan.target==0))
+  run callerMutationCannotSwitchResponseSourceTest = dispatched.then(mutateCallerTarget(6))
+    .then(commitResponse(planAt(0),true)).expect(safety and r.responses.forall(p=>p.target==0))
+  action unsafeBorrowedResponse = r' = r.with("responses",Set(planAt(0).with("target",r.callerTarget)))
+  run borrowedResponseRouteCounterexampleTest = dispatched.then(mutateCallerTarget(6))
+    .then(unsafeBorrowedResponse).expect(not(responseBound))
 }

@@ -44,7 +44,7 @@ not erase the separate cold-start failure reported above.
 
 Quint's =AuthorityPublication= now includes caller-parent changes independently
 of the captured proposal, a lost-response recovery schedule and an unsafe
-borrowed-parent counterexample. Lean's =PublicationCallRun= proves that arbitrary
+borrowed-parent counterexample. Lean's shared =ProposalCallRun= proves that arbitrary
 finite sequences of caller writes, request writes, submissions and observations
 preserve captured commands, conditional on an initially owned snapshot. Its
 composition with existing =Run= preserves the original durable decision.
@@ -60,6 +60,49 @@ Strict OpenSysML project checks passed. The real lost-reply/restart case ran in
 time (not a measurement of the complete command wall time). No bound,
 dependency pin, transport retry policy or runtime CPU setting changed. Raw
 negative-control and proof-authoring failure logs remain temporary artifacts.
+
+** Owned routing and stream observations
+
+=routing.CompileProvider= returns an independent copy of the validated ordered
+route slice. =gatewayclient.Task= copies every mutable list/map and the optional
+provider profile into its Protobuf request. =gatewayclient.Execute= bounds and
+copies the route slice before calling RPC or any receive callback. Strings and
+scalars retain value semantics; initial source memory must remain stable while
+the copy/validation runs. No JSON serialization is involved in these copies.
+
+The Go observer uses that retained plan throughout target/model checks and final
+receipt comparison. A callback changing its caller's original routes cannot
+rewrite the observation context. Outbound Protobuf mutation cannot modify the
+retained task or plan. This closes an ownership gap; it does not move final
+authorization into Go. Rust still validates the task/plan commitment, original
+claim, current Cedar/fence/history and budget at the deciding send boundary.
+An unknown or partially written send remains held and cannot be redispatched.
+
+Three Go framework properties exercise both directions of Task aliasing, Routing
+input/output separation and RPC-entry/receive-callback route changes, including
+a forged response target. The pre-fix implementations fail their property seed
+corpora. The fixes pass race tests and three separate 1000-execution fuzz runs,
+each with 12 host workers. Real Rust gRPC tests passed for caller mutation during
+Protobuf and Arrow streams, failure without retry/fallback, partial request write
+and restart, and mid-stream revocation. They retain one-provider-call and held
+budget assertions. These are focused execution receipts, not full Gateway
+acceptance or a resolution of the earlier cold-start failure.
+
+The existing Go verification plan now owns these fuzz stages and the prior
+publication snapshot property, plus the =LlmRouting= Quint tests/safety run.
+Source inventory includes that model, so changing it invalidates verification
+provenance. No parallel runner or test script is introduced.
+
+Quint separates caller-target mutation from stored plans and dispatched response
+sources, with an unsafe borrowed-response counterexample. All 35 routing tests
+and 1000 bounded 60-transition traces passed under seed 293. Lean reuses the
+generic owned-call relation in =PublicationRecovery=, renamed =ProposalCallRun=
+to cover publication, task and provider-plan values. The new
+=request_observation_keeps_original= law proves every submitted projection stays
+equal to the original across arbitrary finite caller/request mutations. It
+depends only on =propext=. This is conditional value-level composition: the Go
+PBTs and actual transport tests supply copy-fidelity evidence, and the existing
+Rust execution/consumption models retain responsibility for final authority.
 
 ** Scheme capture ownership
 

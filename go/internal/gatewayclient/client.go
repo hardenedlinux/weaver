@@ -6,6 +6,8 @@ import (
 	"crypto/tls"
 	"errors"
 	"io"
+	"maps"
+	"slices"
 	"time"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
@@ -53,12 +55,19 @@ func Task(t v1.Task) *pb.Task {
 	if p := t.ProviderProfile; p != nil {
 		profile = &pb.ProviderProfile{Id: p.ID, Protocol: p.Protocol, MaxOutputTokens: p.MaxOutputTokens, MaxMessages: p.MaxMessages, MaxBodyBytes: p.MaxBodyBytes}
 	}
-	return &pb.Task{Family: t.Family, Principal: t.Principal, Profile: t.Profile, ProviderProfile: profile, Nodes: t.Nodes, Targets: t.Targets, Endpoints: t.Endpoints, BodyDigests: t.BodyDigests, NodeCostBounds: t.NodeCostBounds, StreamContracts: t.StreamContracts, Models: t.Models, Budget: t.Budget}
+	return &pb.Task{Family: t.Family, Principal: t.Principal, Profile: t.Profile, ProviderProfile: profile, Nodes: slices.Clone(t.Nodes), Targets: slices.Clone(t.Targets), Endpoints: maps.Clone(t.Endpoints), BodyDigests: maps.Clone(t.BodyDigests), NodeCostBounds: maps.Clone(t.NodeCostBounds), StreamContracts: maps.Clone(t.StreamContracts), Models: slices.Clone(t.Models), Budget: t.Budget}
 }
 
 // Execute never retries. A disconnected, partial or indeterminate operation must
 // be inspected under its original key. A DONE event alone is not a durable receipt.
 func (c *Client) Execute(ctx context.Context, p v1.ProviderPlan, encoding pb.Encoding, batchRows uint32, receive func(*pb.Event) error) (*pb.ProviderReceipt, error) {
+	if len(p.Routes) == 0 || len(p.Routes) > 8 {
+		return nil, errors.New("provider route bound")
+	}
+	// Strings/scalars already have value semantics. Retain the sole mutable
+	// plan field before invoking RPC or user callbacks; no wire object aliases it.
+	// The caller must keep input stable during this initial bounded copy.
+	p.Routes = slices.Clone(p.Routes)
 	streamCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	stream, err := c.RPC.ExecuteProvider(c.Context(streamCtx), &pb.ProviderRequest{Plan: Plan(p), Encoding: encoding, BatchRows: batchRows})
