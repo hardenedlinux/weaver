@@ -106,9 +106,9 @@ package WeaverProject {
                Solver reports and finite replay records are not kernel proofs. */
         }
         part implementation : VerificationResponsibility {
-            doc /* Scheme suites and Rust/Go PBT/integration tests establish
+            doc /* Scheme/Rust/Go PBT and integration suites establish
                concrete composition, FFI, parsing, SQL and transport behavior.
-               Proptest and Go testing.F own generation, shrinking, corpora and
+               Inherited POO property testing, Proptest and Go testing.F own generation, shrinking, corpora and
                replay. Property contracts, independent oracles and typed command
                models precede Runtime changes; command runners only launch suites.
                They do not turn finite cases into universal theorems. */
@@ -285,6 +285,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.61-authority-bound-replay-pair.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.61-authority-bound-replay-pair.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.61-authority-bound-replay-pair.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.63-governance-capture-ownership.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.63-governance-capture-ownership.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.63-governance-capture-ownership.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

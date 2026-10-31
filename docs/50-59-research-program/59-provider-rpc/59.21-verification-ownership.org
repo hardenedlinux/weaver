@@ -38,8 +38,11 @@ compare every observed transition against an independent model, including restar
 stale owner, revocation, uncertain send and retained budget. A passing random run
 is sampling evidence. Quint explores protocol schedules; Lean proves invariants
 under explicit premises. Neither replaces implementation PBT. Scheme properties
-belong in =t/*-test.ss= using an upstream property library when integrated; the
-Rust and Go suites do not establish Scheme property coverage.
+belong in =t/*-test.ss= and now use the inherited
+=:clan/poo/testing/property= generators, reports, shrinking/replay and standard
+=property/test= assertions. The Governance property requires coverage of eight
+field classes plus stable and mutated cases. Rust and Go suites do not establish
+Scheme property coverage; runner loops are not another property engine.
 
 =FuzzRoutingRefinement= checks both permitted and rejected requests, original
 identity and byte commitments, endpoint eligibility, exact revision/fence and

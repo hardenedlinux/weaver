@@ -142,7 +142,7 @@ func TestProviderControlSchemeSharedBudgetRejectsConcurrentSendAndSDKRetry(t *te
 func TestProviderControlSchemeGovernorRejectsUnselectedPlans(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	b := controlBundle(t, f)
-	for _, mode := range []string{"deny", "collision", "clip", "invalid", "policy", "threat", "obligation", "task-type", "duplicate-plan", "assessment-context", "assessment-revision", "assessment-model", "assessment-threats", "asset-mismatch", "asset-traversal", "asset-language", "policy-substitution", "policy-identity"} {
+	for _, mode := range []string{"deny", "collision", "clip", "invalid", "policy", "threat", "obligation", "task-type", "duplicate-plan", "assessment-context", "assessment-revision", "assessment-model", "assessment-threats", "assessment-profile-mutation", "asset-mismatch", "asset-traversal", "asset-language", "policy-substitution", "policy-identity"} {
 		t.Run(mode, func(t *testing.T) {
 			source := schemeSource(t, f, b, mode)
 			artifact := filepath.Join(t.TempDir(), "rejected.json")
@@ -160,6 +160,9 @@ func TestProviderControlSchemeGovernorRejectsUnselectedPlans(t *testing.T) {
 			}
 			if mode == "threat" || strings.HasPrefix(mode, "assessment-") {
 				expected = "Scheme Governance assessment does not admit an inert source handoff"
+			}
+			if mode == "assessment-profile-mutation" {
+				expected = "Governance source changed during assessment"
 			}
 			if mode == "obligation" {
 				expected = "unsupported Governance policy value"

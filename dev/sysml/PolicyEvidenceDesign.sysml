@@ -94,6 +94,14 @@ package PolicyEvidenceDesign {
            YAML is an existing data normalization path, not another evaluator. */
     }
     item def SchemeCaptureAdmission {
+        doc /* The native Governance adapter now guards one callback with
+           private canonical data snapshots and stable local method references.
+           Caller-owned mutable strings/list values are not its expected image.
+           This concretizes persistent alias-mutation refusal for native Profile
+           metadata, threats and context. It does not serialize arbitrary live
+           closures, prove an atomic concurrent snapshot or retain a source cut
+           across processes. Explicit JSON Schema/Profile configuration admission
+           and owned durable Rust capture remain separate missing refinements. */
         item configuration : ConfigurationCommitment;
         attribute sourceCut : String;
         attribute sourceImageDigest : String;

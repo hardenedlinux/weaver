@@ -494,6 +494,17 @@ theorem changed_capture_cannot_reuse_adapter_evidence (s : BoundaryContext)
     (changed : s.captured ≠ s.expectedCapture) : s.ready = false := by
   simp [BoundaryContext.ready,BoundaryContext.Ready,changed]
 
+/-- The expected capture names the independently retained pre-assessment data,
+not a second pointer to the same mutable live Profile/context. Native canonical
+capture and method/source qualification remain explicit refinement premises. -/
+theorem changed_assessment_snapshot_cannot_reuse_boundary (s : BoundaryContext)
+    (changed : s.captured.environment ≠ s.expectedCapture.environment) : s.ready = false := by
+  apply changed_capture_cannot_reuse_adapter_evidence
+  intro same
+  exact changed (congrArg CaptureDependency.environment same)
+
+#print axioms changed_assessment_snapshot_cannot_reuse_boundary
+
 theorem old_authenticated_callback_cannot_use_fresh_labels (s : BoundaryContext)
     (old : s.authenticatedCallback ≠ s.expectedCallback) : s.ready = false := by
   simp [BoundaryContext.ready,BoundaryContext.Ready,old]

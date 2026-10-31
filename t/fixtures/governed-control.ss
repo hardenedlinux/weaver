@@ -41,12 +41,15 @@
               (if (equal? mode "policy-identity") "weaver/replacement" "weaver/runtime")
               (if (equal? mode "asset-traversal") "../policy.cedar" "policy.cedar")
               (if (equal? mode "asset-language") 'gql 'cedar)))))
+  (def original-profile-label (string-copy "weaver/source"))
   (def profile
     (.o (:: @ AgenticAILabGovernanceProfile.)
-        identity: "weaver/source" revision: "1" owner: "source-owner"
+        identity: original-profile-label revision: "1" owner: "source-owner"
         threat-model: source-threat-model policies: source-policies source-assets: asset-values
         .assess-governance:
         (lambda (assessment-context)
+          (when (equal? mode "assessment-profile-mutation")
+            (string-set! original-profile-label 0 #\x))
           (let ((assessment (agentic-ai-lab-governance-assessment profile assessment-context)))
             (cond
               ((equal? mode "assessment-context")

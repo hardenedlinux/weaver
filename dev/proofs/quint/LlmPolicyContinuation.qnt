@@ -491,6 +491,10 @@ module LlmPolicyContinuation {
   run changedNormalizerRejectsCaptureTest=init.then(recordBoundary(boundary0.with("normalizer",2)).fail())
   run changedProgramRejectsCaptureTest=init.then(recordBoundary(boundary0.with("programModule",1)).fail())
   run changedCapturedEnvironmentRejectsCaptureTest=init.then(recordBoundary(boundary0.with("environment",1)).fail())
+  // Source labels copied from two agreeing live aliases cannot replace the
+  // original captured binding. Native refinement must freeze that original.
+  run coordinatedLiveProfileLabelsCannotReplaceOriginalCaptureTest=init
+    .then(recordBoundary(boundary0.with("profile",21).with("environment",1)).fail())
   run newSourceCutCannotUseOldCaptureTest=factPending.then(changeFactContract(closure0.with("cut",1),Set(),true))
     .then(projectFromBoundary(boundary0).fail())
   run callerOutputCannotReplaceCommittedValueTest=init.then(recordBoundary(boundary0.with("output",1)).fail())
@@ -530,6 +534,9 @@ module LlmPolicyContinuation {
   run lostCaptureCannotManufactureOwnedArtifactTest=factPending.then(recordBoundary(boundary0)).then(loseVolatileCaptures)
     .expect(safety and s.pending==Set(30) and s.hold==6).then(projectFromCaptured(boundary0,0,true).fail())
   action unsafeBoundaryRecord(e)=s'=s.with("boundaryRecords",s.boundaryRecords.append(boundaryCheck(e)))
+  run agreeingLiveAliasesWithoutOriginalSnapshotCounterexampleTest=init
+    .then(unsafeBoundaryRecord(boundary0.with("profile",21).with("environment",1)))
+    .expect(not(boundaryBound) and s.hold==6 and s.calls==0)
   action unsafePreflightGrant=s'=s.with("pending",Set()).with("frontier",1).with("hold",0)
   run jsonGovernanceBypassCounterexampleTest=init.then(unsafeBoundaryRecord(boundary0.with("governanceChecked",false))).expect(not(boundaryBound))
   run retainedForeignPointerCounterexampleTest=init.then(unsafeBoundaryRecord(boundary0.with("retainedPointer",true))).expect(not(boundaryBound))
