@@ -100,6 +100,21 @@
           seed: 293 cases: 128 size: 128 shrink-budget: 64))
       (check-property report)
       (check-equal? (property.report-accepted report) 128))
+    (test-case "program contracts reject nested invalid data and recover on the same owner"
+      (def invalid (.o (:: @ bundle) tasks: (list (.o (:: @ task) budget: "8"))))
+      (def calls 0)
+      (let ((program (make-gateway-program)))
+        ((.get program install)
+         (lambda (value) (set! calls (1+ calls)) (if (= calls 1) invalid value)))
+        ;; Input refusal precedes the callback, so it cannot occupy the slot.
+        (check-exception ((.get program capture) invalid) TypeError?)
+        (check-equal? calls 0)
+        ;; The installed Function contract still checks nested output fields.
+        (check-exception ((.get program capture) bundle) TypeError?)
+        (check-equal? calls 1)
+        (check-equal? (gateway-source-json ((.get program capture) bundle))
+                      (gateway-source-json bundle))
+        (check-equal? calls 2)))
     (test-case "program close during callback fences output without holding the lifecycle lock"
       (let ((program (make-gateway-program)))
         ((.get program install)

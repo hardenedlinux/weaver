@@ -2,7 +2,7 @@
 ;;; not a Governance DSL, module loader, publisher or execution authority.
 (import (only-in :clan/poo/object .o seal-object!)
         (only-in :clan/poo/mop validate)
-        (only-in "./types.ss" GatewaySourceProducer GatewayProgram)
+        (only-in "./types.ss" GatewayProgram)
         (only-in "./contracts.ss" GatewayArtifact)
         (only-in "./snapshot.ss" copy-source-data))
 (export make-gateway-program)
@@ -20,7 +20,10 @@
           ;; The Function contract rejects invalid arguments before this body.
           ;; Once an admitted installation enters, internal failure is terminal.
           (set! phase 'closed)
-          (set! producer (validate GatewaySourceProducer candidate))
+          ;; GatewayProgram.install's Function contract already admitted and
+          ;; wrapped this producer. Revalidating here would wrap every later
+          ;; argument/result traversal a second time. Raw methods stay private.
+          (set! producer candidate)
           (set! phase 'active)
           #t)))
     (def (close-program!)

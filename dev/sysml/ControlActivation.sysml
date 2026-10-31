@@ -105,6 +105,13 @@ package ControlActivation {
            producer authentication, durable source cut, general closure purity
            or final-send authority. Existing Policy projection and Rust current
            execution checks remain separate. */
+        doc /* The sealed GatewayProgram Record owns the install Function
+           contract, including validation of the selected producer's input and
+           output. Private install code retains that already wrapped producer;
+           it must not construct another recursive Function wrapper. Native
+           tests must reject malformed nested inputs before callback entry,
+           reject malformed outputs, and permit subsequent valid compilation
+           on the same active owner without changing final-send authority. */
         doc /* Production source delivery requires an active scoped capture.
            It has no environment-selected JSON file fallback. The SDK carries
            GC-rooted typed objects and Rust materializes owned domain data.

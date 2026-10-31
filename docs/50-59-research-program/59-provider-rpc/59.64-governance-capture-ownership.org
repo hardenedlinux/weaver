@@ -1,6 +1,93 @@
 #+TITLE: 59.64 Original Governance Capture and Mutable Alias Refusal
 #+LANGUAGE: en
 
+* Frozen full-owner qualification and runtime follow-up
+
+The complete Go-owned =check-scheme= command was run with =-clean-source= on
+=74c1d0b606094cc1078335f4adade0c5ab0e6907=. Preparation used a newly allocated
+Gerbil prefix and the unchanged declared dependency graph, not the previous
+temporary library. The installed POO source matched Core's exact declared
+revision. The recorded build capacity was 12 CPUs. The final result is *FAIL*:
+13 checks passed and two failed. This is not full acceptance.
+
+| Boundary | Outcome | Evidence and limit |
+|----------+---------+--------------------|
+| Preparation and libraries | Pass | Declared dependencies, Weaver modules, pkg-config and build-environment checks completed. |
+| Standard Gerbil test | Fail | The unchanged 15-second watchdog terminated the process at 15.01006875 seconds. |
+| Rooted SDK suite | Fail | Apple linker crashed before the scheme_vm test could run; stage elapsed 3m23.218344958s. |
+| Go gRPC integration | Pass | Full TestProviderControl selection with race checking completed in 5m26.089359792s, including build work. |
+| Source currentness | Pass | Committed source and linked source checks passed before and after execution. |
+
+The Gerbil timing observer saw the harness and first case at 9.165009041 and
+9.1650155 seconds respectively. Termination occurred inside the program lifecycle
+property, after earlier Governance cases passed. There was no terminal harness
+marker. This observation separates pre-harness discovery/loading from execution;
+it does not prove natural-exit cleanup was reached or caused the failure. The
+watchdog termination is retained as failure, not a successful natural exit.
+
+The gRPC stage exercised configuration export and actual compiled Scheme program
+deployment, Cedar refusal, real source-assets, partial writes, revocation, dual
+restart, shared budget, SDK retry refusal, publication/staging reply loss and
+native negative Governance cases. In this campaign the previously unexercised
+configuration export was reached successfully. This does not repair the prior
+cold connection failure or substitute for the two failing owner stages.
+
+The linker diagnostic =ld-2026-11-01-052756.ips= reports excessive thread-stack
+recursion in =ld::AtomFileConsolidator::markLive= under =deadStrip=. Its captured
+input is =linker-crash-24c181/scheme_vm-b14d2daeb4c48029-2026-11-01-052747.ld-snapshot=;
+the =argv.res= SHA-256 is
+=e7df41f28e4c7fd52839d469a90ad7df2adf984e67421108037e006bfed15d4f=.
+A bounded direct replay using the saved objects, libraries and toolchain passed
+both with and without =dead_strip=. Neither diagnostic binary was executed or
+installed. This pair did not reproduce the Cargo failure and cannot establish
+that removing dead stripping repairs it. Formal build flags remain unchanged.
+
+The compact result is retained under ignored =.cache/verification/=; a frozen
+copy and the full unit/link failures are temporary
+=/private/tmp/weaver-check-scheme-74c1d0b-*= files. The result's start timestamp
+excludes dependency preparation; its stage times are not the whole-command
+wall time and are not Runtime performance measurements.
+
+Source review identified a separate redundant Runtime traversal: the sealed
+=GatewayProgram.install= Function contract already validates and wraps its
+producer argument. The private install body previously validated it again,
+adding another argument/result wrapper for every later capture. The body now
+retains the contract-owned wrapper. Public Record/Function contracts, owned
+input/result copies, close/reentry fencing and final Rust checks remain intact.
+Native tests explicitly check nested malformed input before callback entry,
+malformed output refusal and later valid capture on the same active owner.
+The lifecycle framework property retains all 128 generated cases. This is not
+a measured speedup or closure of the failed 15-second campaign.
+
+The follow-up standard build/test completed naturally with all five
+=MODULE-OK= markers and =HARNESS-OK=, including the new nested refusal/recovery
+case. SysML and Scheme module ownership checks passed. Its separate compiled
+assets executable test failed at the existing initial three-second connection
+gate after a 97-second build, with no process-main marker before termination;
+the complete Go command failed in 102.927 seconds. Thus this follow-up did not
+exercise the changed code through the executable deployment path. It is not a
+counterexample to the native contract property and does not establish native
+SDK acceptance. The full-owner passing gRPC stage above belongs to the earlier
+frozen revision and cannot certify this later source change.
+
+The existing real-VM/shared-owner integration subsequently passed on the changed
+source: =actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain=
+completed in 9.15 seconds after its separate build. It exercised actual SDK
+capture, the Go source frontend, Cedar refusal/allow controls, stale-source
+fencing and natural VM cleanup before shared drain. This independently refines
+the changed program's native contract; it does not replace the failed cold
+executable streaming case or the full-owner gate. Raw follow-up output remains
+in temporary =/private/tmp/weaver-producer-contract-*= files. No timeout,
+dependency pin, linker flag, PBT case count or host CPU setting was changed.
+
+Quint's existing lifecycle transitions and Lean's =ProgramOwner= composition
+remain the semantic specification: duplicate installation cannot replace the
+selected producer, close cannot reopen, and a completed source result must bind
+the registered original. The installed Function wrapper is a native refinement
+premise checked by the Scheme suite, not a new model-side permission or an
+extra final-send grant. The core diagram's ownership and execution boundaries
+therefore do not change for this validation deduplication.
+
 * Current delivery boundary
 
 Production =deliver-gateway-source= now requires an active scoped capture. It
@@ -54,8 +141,9 @@ Scoped qualification for the file-fallback removal:
   =elan run=; that unchanged pinned command passed. No dependency pin changed.
 
 Raw transcripts are temporary =/private/tmp/weaver-typed-delivery-*= files;
-only this bounded evidence summary is tracked. Full =check-scheme= acceptance,
-configuration-export runtime coverage in this campaign and the prior cold
+only this bounded evidence summary is tracked. These earlier focused receipts
+left configuration-export coverage open; the later frozen full-owner gRPC stage
+above exercised that path. Full =check-scheme= acceptance and the prior cold
 startup issue remain open.
 
 Rust now has an explicit compiled-application build and startup path, a fixed
@@ -65,7 +153,7 @@ There is no implicit production application or default fixture Profile.
 Acceptance uses an explicitly selected debug qualification application; an
 operator's approved production application still needs its own graph review.
 
-The most recent two-case executable campaign is not green: its first cold
+An earlier two-case executable campaign remains failed: its first cold
 connection missed the unchanged three-second gate before exercising streaming.
 The separate missing-installation case passed. An earlier focused real-binary
 partial-stream/revocation/dual-restart run passed. These receipts remain separate;
