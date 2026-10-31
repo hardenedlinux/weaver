@@ -1,0 +1,75 @@
+vars: { d2-config: { layout-engine: tala; theme-id: 3; pad: 80 } }
+classes: { card: { label.near: center-center; style.font-size: 24; style.border-radius: 12; style.stroke-width: 1 } }
+title: CANONICAL HOMES / CONCURRENT STORAGE {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+semantic: Original canonical home\nClaim / reservation / unknown exposure\nScheme semantics and Go ingress {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+storage: Bounded MRR transaction workers\nTurso MVCC / isolated connections\nInert validation / FULL durability {
+  class: card
+  left: 810
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+retained: Independent canonical homes\nOverlapping transactions\nExact original operation outcomes {
+  class: card
+  left: 1620
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+pending: Conflict / uncertain commit / restart\nRecover original operation and body\nUnknown exposure stays reserved {
+  class: card
+  left: 0
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+projection: Shared home sequence\nAuthority / head / outbox write order\nNo snapshot authorization write skew {
+  class: card
+  left: 810
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+execution: Rust final transport owner\nLive one-use ticket / current Policy\nSingle release / no replay authority {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+semantic -> storage: Canonical scope { style.font-size: 20 }
+storage -> retained: Overlap disjoint homes { style.font-size: 20 }
+storage -> projection: Same-home conflict witness { style.font-size: 20 }
+pending -> projection: Preserve original obligation { style.font-size: 20 }
+projection -> execution: Recheck current authorization { style.font-size: 20 }
+retained -> execution: Historical outcome is inert { style.font-size: 20 }
+footer: "Storage concurrency preserves semantic ownership · No automatic retry or new coordination key\nHistorical recovery cannot mint a send ticket or release an unknown obligation" {
+  shape: text
+  left: 140
+  top: 1080
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}

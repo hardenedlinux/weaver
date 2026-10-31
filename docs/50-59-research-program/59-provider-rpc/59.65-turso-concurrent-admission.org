@@ -1,0 +1,177 @@
+#+TITLE: 59.65 Turso Concurrent Admission Review
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Design decision before implementation
+
+[[file:../../../Project.sysml][Project]] and the existing
+=ControlActivation.GovernancePolicyProjection= own this refinement. Reuse the
+MRR shared engine and SPEC semantics. Only storage scheduling changes; Quint
+continues to own timing, and no parallel Lean accounting model is introduced.
+
+#+CAPTION: Independent canonical homes overlap; shared obligations retain one conflict order and final-use gate.
+#+ATTR_ORG: :width 1600
+#+ATTR_HTML: :width 100% :alt Canonical home, bounded MVCC transactions and Rust final use
+[[file:59.65-turso-concurrent-admission.svg]]
+
+The serialized provider holds a writer mutex across =BEGIN IMMEDIATE=,
+authority/head reads, the Host validation rendezvous, record writes and COMMIT.
+The Backend also defaults to one submitted write/shared worker. Increasing only
+the latter leaves the physical mutex as the global bottleneck. A separate
+historical reader already avoids waiting for that writer.
+
+The reviewed candidate is an explicit concurrent-write mode on the existing
+Turso provider, with short access to the database handle and a separate
+connection per owned transaction. The existing bounded Backend worker leases
+bound active connections. Use MVCC and =BEGIN CONCURRENT= with FULL durability
+verified for every writing connection. Default serialized construction remains
+available as the matched control. No automatic store conversion, hidden retry,
+second backend or replacement governance DSL is required.
+
+* Safety argument and rejection criteria
+
+The shared engine already calls =seal_home= for fresh content, authority changes
+and delivery acknowledgment. This increments the same =home-sequence= record
+for the original profile/namespace/scope. Its write conflict is essential:
+snapshot isolation alone would allow a content transaction to read an old
+authority row while an unrelated authority update commits. Keep this witness;
+do not recreate it in the provider or remove it for benchmark speed.
+
+Independent canonical homes may proceed concurrently. Shared claims, burn,
+reservation, account and unknown exposure must remain in the canonical home
+chosen by their domain owner. Distinct provider namespaces do not prove budget
+independence. An external authority not synchronized with this home remains a
+Host obligation and is not repaired by MVCC.
+
+| Boundary | Required behavior |
+|----------+-------------------|
+| Validation | At most one invocation per attempt, inside the protected snapshot; inert callback only |
+| Conflicting home | One serial order through the existing home sequence; stale attempts cannot acknowledge a fresh commit |
+| COMMIT failure | Unknown; query the original operation, never mint another reservation or send ticket |
+| Lost response or restart | Recover exact head/operation/outbox and original obligation body; replay skips validation |
+| Pending transaction crash | No partial head, operation or unknown-exposure replacement may become authoritative |
+| Journal mode | Existing stores must match the explicitly selected mode; no implicit WAL/MVCC downgrade or migration |
+| Shutdown | Drain accepted workers before releasing database ownership; no detached cleanup |
+
+Accept the mode only after native tests demonstrate independent overlap,
+same-home conflict, authority-update conflict, once-only validation, original
+operation recovery and rollback after abrupt process loss. Any missing FULL
+barrier, ambiguous recovery, silent callback retry or changed domain identity
+blocks default activation. There is no claim of exactly-once external delivery.
+
+* Qualification plan
+
+Run the old serialized suite unchanged. Add real provider tests using the same
+logical engine, including negative controls without a common home witness.
+Preserve original-reservation/unknown content through lost responses, reopen and
+partial transactions; use actual content bodies where body recovery is asserted.
+
+Use one paired native benchmark with the same binary, CPU-derived Host runtime,
+worker/admission bounds, operation bodies, durability, validation work and sample
+count. Alternate control/candidate order across three pairs. Measure independent
+homes and one contended canonical home, both without added validation work and
+with a declared fixed validation hold. Report successes, refusals, unknowns,
+exact recovery, elapsed time and latency distributions separately. Do not retry
+failures into a pass or divide attempted operations by time as successful TPS.
+Synthetic content acknowledgments qualify metadata scheduling only; they do not
+measure object-store, LLM, network or final transport performance.
+
+All storage tests and measurements use MRR Data's own workspace manifest.
+The native targets are =backend_concurrent=, =backend_exposure= and
+=backend_concurrency_paired=. There is no separate qualification crate or
+temporary-manifest runner. Weaver's former MRR-only consumer source moves to
+MRR Data's integration suite; Weaver retains its actual execution/ledger tests
+and consumes the resulting contract. The upstream exposure fixture is private
+typed opaque Host data, without a dependency on Weaver or another budget model.
+
+Raw evidence remains temporary. Weaver production dependencies remain unchanged.
+An opt-in scheduling mode is not proof of independent root custody, whole-machine
+rollback resistance or the final Rust transport release contract.
+
+* Implemented storage refinement
+
+MRR Data PR 12 commit =55cd3d893cf1bf71b622611d3cd77cb22ccac994= owns the
+implementation and standard tests. No semantic dependency version changes.
+The lockfile adds only the existing workspace serde dependency edge needed by
+the private test fixture; the filesystem test capability stays a dev dependency.
+
+The existing provider now exposes =with_concurrent_writes()=. It retains one
+database owner and obtains a separate connection per admitted transaction,
+verifying FULL on each writer. =BEGIN CONCURRENT= replaces the global writer
+mutex only in that explicit mode. The default and its original WAL path remain
+available. Backend worker settings still require explicit Host configuration;
+selecting MVCC alone does not increase a single submitted worker's parallelism.
+
+The first native failures identified two adapter assumptions: changing journal
+mode returns rows that must be consumed, and MVCC creates the engine-owned
+=__turso_internal_mvcc_meta= table before the business schema exists. The adapter
+now uses the returning PRAGMA API and excludes exactly that internal table when
+counting business tables. It retains the schema marker and refuses an existing
+incomplete store. Both existing journal-mode mismatch directions reject.
+
+The native race controls demonstrate two independent validations overlapping,
+one winner for conflicting snapshots in one home, and rejection when authority
+retirement commits after validation but before the original write. The unsafe
+raw-transaction control deliberately omits the common home witness and reproduces
+snapshot write skew. This is why the shared engine's existing =seal_home= cannot
+be replaced by a provider's generic isolation claim.
+
+The original eighteen consumers also pass with the concurrent factory, including
+partial-tuple process death, exact historical operation recovery and outbox
+handling. Four standard exposure tests pass in each mode with actual filesystem
+body publication/readback. They preserve the original claim, reservation,
+history and unknown-exposure identities and the held amount. Missing body stays
+unavailable; the native store supplies no refund or new admission decision.
+The callback-side-effect and caller-selected-new-home cases remain explicit
+unsafe Host counterexamples, not capabilities exposed by the production Gateway.
+
+* Paired native results and activation decision
+
+[[https://github.com/tao3k/mrr-data/blob/55cd3d893cf1bf71b622611d3cd77cb22ccac994/docs/benchmarks/shared-backend-concurrency.org][MRR Data's benchmark record]]
+owns executable entrypoints and full methodology. Both variants use all 12
+available Host CPUs, identical 12-worker admission, FULL durability, zero retries
+and 64 operations per lane. Three pairs alternate execution order in each cell.
+The post-lint run commits and exactly recovers 18,432 operations across 24
+cases, with zero failures/refusals/unknowns. No other task-owned build overlaps
+measurement; the shared Host itself is not dedicated.
+
+| Canonical workload | Inert validation hold | Candidate/control pair ratios | Median |
+|--------------------+----------------------+-------------------------------+--------|
+| Independent homes | Zero | 0.87, 0.94, 2.22 | 0.94 |
+| Independent homes | One millisecond | 3.81, 1.87, 5.28 | 3.81 |
+| One hot home | Zero | 0.67, 0.56, 0.57 | 0.57 |
+| One hot home | One millisecond | 0.61, 0.68, 0.67 | 0.67 |
+
+An earlier pilot before lint-only expression changes also has zero errors over
+18,432 operations, with median pair ratios 1.22, 4.46, 0.69 and 0.50 in the same
+cell order. Keep both receipts: trivial independent transactions show unstable
+benefit, while the held-validation independent workload benefits in every pair
+and the hot workload consistently regresses. Per-transaction connection/setup
+and MVCC costs matter when there is no independent work to overlap.
+
+The hot workload uses the same application head sequencer in both variants to
+produce valid predecessor CAS values; it measures sequential-domain overhead,
+not native conflict/retry TPS. Synthetic content acknowledgments isolate real
+database scheduling; body durability is checked separately in integration tests.
+No LLM throughput, cold build or whole-system performance claim follows.
+
+Keep concurrent scheduling opt-in and measure the actual domain mix before
+selection. Do not change the default or split one shared budget into artificial
+homes. Scheme retains Session/Workflow/Governor semantics; Go retains protocol
+and cloud-native ingress; Rust retains final-use mediation. Existing SPEC and
+Lean assumptions remain conditional on that Host refinement. The unchanged
+158 publication and 70 composition Quint witnesses pass; no duplicate semantic
+model or new proof owner is introduced.
+
+Both standard MRR suite modes pass 50 tests, including the unchanged ASP Rust
+gate, with four opt-in measurements excluded from that correctness count.
+Clippy passes with warnings denied. Weaver's existing architecture and full Rust
+verification entrypoints also pass after removing its MRR-only consumer. Remote
+CI is not counted as passing evidence; its MSRV and Ubuntu/Darwin jobs now include
+the explicit MVCC factory. No production Weaver module or dependency pin changes.
+
+* Primary references
+
+- [[https://turso.tech/blog/turso-0.8.0][Turso 0.8 concurrent-write design and workload methodology]].
+- [[https://docs.rs/crate/turso/0.8.3/source/examples/concurrent_writes.rs][Exact release Rust concurrent-write example]].
+- [[https://github.com/tao3k/mrr-data/pull/12][MRR Data PR 12 shared engine and provider]].

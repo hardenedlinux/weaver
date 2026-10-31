@@ -24,6 +24,18 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Turso concurrent admission is an explicit storage execution mode.
+           The existing canonical home-sequence is the common write-conflict
+           witness for content, authority changes and outbox acknowledgment.
+           Independent homes may execute concurrently; shared claims and budget
+           remain in their original canonical home. No namespace sharding may
+           evade that witness. A validation callback runs at most once per
+           attempt, without external effects. COMMIT failure stays Unknown and
+           recovery queries the original operation; no implicit retry or ticket
+           recreation is permitted. FULL durability, bounded Host workers and
+           drain-before-close remain required. Existing stores cannot silently
+           switch journal modes. SPEC semantics and Quint timing ownership do
+           not move into the storage provider. */
         doc /* MRR Data owns the optional Turso storage adapter. Weaver supplies
            the original canonical coordination home and immutable obligation body;
            reconnects cannot choose a new home. Content durability precedes the
