@@ -65,7 +65,8 @@ The Go runner now observes the existing public SDK output while preserving
 every original log byte. Receipts distinguish the first Harness/Case, successful
 Harness, terminal result and the interval from terminal output to process
 completion. Missing markers remain missing. Pre-Harness time combines startup,
-discovery and loading; no unsupported per-phase attribution is fabricated.
+discovery, loading and output delivery; these are byte-arrival observations,
+not internal SDK clocks. No unsupported per-phase attribution is fabricated.
 
 The observer neither changes test arguments nor grants acceptance. A fresh
 complete run must still finish naturally within fifteen seconds and preserve
@@ -73,3 +74,48 @@ all nineteen Cases and source checks. The existing Quint and Lean properties
 retain separate completion, cleanup, source and deadline obligations; a fast
 replay cannot retroactively qualify a failed run. Raw logs are temporary, and
 the current compact receipt belongs under ignored =.cache/verification=.
+
+* Subsequent complete fixed-source result
+A second full run on =cf2af574ad8cf47ed98de0d997187245d6ecf18f= completed
+=PASS=, fourteen of fourteen stages. It used another new isolated Gerbil
+prefix, official unchanged dependency installation/builds, and the twelve-CPU
+host. This is fresh-prefix evidence, not an OS-wide cold-boot measurement.
+Source, committed-input and linked-dependency checks passed before and after.
+The real Scheme/Cedar/Go/Rust integration stage passed in 3m26.063729875s.
+
+| First public package test in this prefix | Observed elapsed time |
+|-----------------------------------------+-----------------------|
+| First Harness output | 6.333291834 s |
+| First Case output | 6.333295125 s |
+| Successful Harness output | 8.068833875 s |
+| Terminal =OK= output | 8.068837500 s |
+| Terminal output to natural process completion | 1.825007542 s |
+| Complete process, natural exit 0 | 9.893845042 s |
+
+All nineteen original Cases passed. Four subsequent independent package-test
+processes also passed: 5.129443125, 5.049557042, 5.099636292 and 5.211156500
+seconds. Their post-terminal intervals were 1.763362333, 1.774865000,
+1.814391000 and 1.888166166 seconds. The repeated SDK output SHA-256 was
+=755f076aace8000951cdf39774ea994dfc4be4cbca19ee076483af64a5f4ae37=.
+The source guard remained stable. These later-use processes overlapped the
+integration suite; they are not isolated cold paired controls.
+
+The earlier fifteen-second failure remains a failed receipt. The added observer
+uses a drained output pipe instead of handing the SDK the log file directly;
+the SDK arguments and all output bytes remain unchanged. There is no matched
+first-use control isolating that output transport from prefix or host effects.
+Therefore this result qualifies the current complete entry locally; it does
+not establish a repaired Gerbil cleanup defect, prove the earlier timeout's
+cause, or establish a universal fifteen-second latency guarantee. No timeout,
+cleanup rule or dependency pin was relaxed.
+
+* Concurrent PR preservation
+After the complete run ended, parallel PR changes through =9c0e64d= were
+fast-forwarded without replacing the original dirty checkout. Those additions
+change models, diagrams and reference/resource tests, not production Gateway
+code. On the merged source, all forty-seven ledger tests passed; Go development,
+gateway-client and runner race tests passed; the existing PublicationRecovery
+and ProviderRpc Lean owners checked. Quint reported thirty-five publication
+scenarios, forty-one provider scenarios and 105 scenarios across the authority
+module's imported closure. The complete fourteen-stage receipt remains bound
+to =cf2af57= rather than being relabeled as a later-source execution.
