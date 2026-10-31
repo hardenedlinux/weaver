@@ -311,6 +311,29 @@ theorem retired_source_key_cannot_become_fresh [DecidableEq Key]
 
 #print axioms retired_source_key_cannot_become_fresh
 
+theorem step_preserves_source_key_uniqueness [DecidableEq Key]
+    (step : Step s t) (unique : s.sourceKeys.Nodup) : t.sourceKeys.Nodup := by
+  cases step with
+  | handoffSourceKey owner key fresh =>
+    apply List.nodup_append.mpr
+    refine ⟨unique, by simp, ?_⟩
+    intro a ha b hb equal
+    have same : b = key := List.mem_singleton.mp hb
+    subst b
+    subst a
+    exact fresh ha
+  | _ => exact unique
+
+/-- The initial native enrollment must provide a complete unique key prefix.
+No theorem infers that prefix from a restored configuration or missing store. -/
+theorem recovery_preserves_source_key_uniqueness [DecidableEq Key]
+    (run : Run s t) (unique : s.sourceKeys.Nodup) : t.sourceKeys.Nodup := by
+  induction run with
+  | refl => exact unique
+  | next history step ih => exact step_preserves_source_key_uniqueness step ih
+
+#print axioms recovery_preserves_source_key_uniqueness
+
 theorem historical_registration_is_not_current (stale : entry.parent ≠ s.head) :
     ¬ RegisteredCurrent s id entry actor epoch := fun accepted => stale accepted.2.2.2.1
 

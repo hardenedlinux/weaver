@@ -319,6 +319,7 @@
     {"file":"crates/ledger/tests/unit/source_authority_storage.rs","pattern":"fn consistent_whole_store_rollback_remains_a_local_authority_counterexample"},
     {"file":"go/dev/provider_source_authority_test.go","pattern":"func TestProviderPersistentSourceRotationLostReplyFencesExistingWorkerAndReissuedKey"},
     {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem retired_source_key_cannot_become_fresh"},
+    {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem recovery_preserves_source_key_uniqueness"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run confirmedRevocationAndHandoffRejectConsistentSourceRollbackTest"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run retainedRegistrationCannotReplaceAfterSnapshotRollbackTest"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run sameLengthArtifactReplacementCannotConfirmRetainedPrefixTest"},

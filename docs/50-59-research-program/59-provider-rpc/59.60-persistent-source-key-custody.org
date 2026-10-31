@@ -205,3 +205,26 @@ failed source-currentness because diagnostic source was edited while preparation
 was active; that receipt is not a successful clean-source qualification. Run
 the final gates after committing these diagnostic changes. No lock or dependency
 pin is changed to address either failure.
+
+At committed source =0f5e9a5=, the final standard clean-source Rust gate passed
+all ten stages, the Go gate passed all twenty-one stages, and the complete Policy
+gate passed after the pinned proof dependencies were prepared. The installed
+Scheme Governance/source-assets to Cedar FFI, Go publication and Rust execution
+lost-reply/restart test passed in 50.383 seconds. This is installed-prefix runtime
+evidence, not a new cold Scheme SDK qualification. The successful complete Go
+run does not retroactively explain the earlier backpressure failure.
+
+A subsequent coverage audit found that the earlier source recovery samples
+checked =safe=, which does not include source-key uniqueness. They therefore
+cannot qualify that property. The standard Policy plan now explicitly checks
+=sourceDecisionSafe= over both existing source recovery schedules, with actual
+key handoff and attempted reuse of the bootstrap key included as choices. Each
+retains 1000 samples, 60 steps and seed 293. Existing named negative witnesses
+still cover retired callers and reissued keys. No new identity evaluator or
+parallel temporal model is introduced. Native refinement must map the complete
+initial retained key prefix, including the enrolled bootstrap key, to Lean's
+=sourceKeys=; list non-reuse theorems do not supply that initialization premise.
+The added finite-run uniqueness theorem preserves =List.Nodup= from that explicit
+initial-prefix premise through the same existing Step relation. This connects the
+native fresh-key guard to the stronger sampled =sourceDecisionSafe= condition;
+it does not certify bootstrap provenance or independent storage retention.

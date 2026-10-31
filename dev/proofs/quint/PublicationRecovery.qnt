@@ -603,6 +603,8 @@ module PublicationRecovery {
     .expect(sourceUseCurrent(sourcePublish0) and authority.commits.length()==1 and authority.held==4)
   action sourceRecoverySchedule=any {stage(staged0),stage(sibling),
     recordSourceDecision(authority.floor.registrarTerm,100+authority.floor.registrarTerm),revokeSource(100),revokeSource(101),rotateRegistrar,
+    handoffSourceKey(currentRegisterReference.with("purpose",2),101+authority.floor.registrarTerm,101+authority.floor.registrarTerm),
+    handoffSourceKey(currentRegisterReference.with("purpose",2),101+authority.floor.registrarTerm,100),
     recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restoreReviewImage(List()),restart,reconnectSourceObserver,restartSourceObserver,observe,
     readSourceObservation(currentRegisterReference),readSourceObservation(currentRegisterReference.with("purpose",1)),
     restoreSourceObservation(observation0),restoreSourceObservation(publishObservation0),sourceAvailability(false),sourceAvailability(true),
@@ -684,6 +686,8 @@ module PublicationRecovery {
     .expect(authority.commits.length()==1 and sourceUseCurrent(sourcePublish0) and authority.held==4)
   action retainedSourceRecoverySchedule=any {stage(staged0),stage(sibling),
     recordSourceDecision(authority.floor.registrarTerm,100+authority.floor.registrarTerm),revokeSource(100),revokeSource(101),rotateRegistrar,
+    handoffSourceKey(currentRegisterReference.with("purpose",2),101+authority.floor.registrarTerm,101+authority.floor.registrarTerm),
+    handoffSourceKey(currentRegisterReference.with("purpose",2),101+authority.floor.registrarTerm,100),
     recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restoreReviewImage(List()),restart,reconnectSourceObserver,restartSourceObserver,observe,
     readSourceObservation(currentRegisterReference),readSourceObservation(currentRegisterReference.with("purpose",1)),
     restoreSourceObservation(observation0),restoreSourceObservation(publishObservation0),sourceAvailability(false),sourceAvailability(true),
