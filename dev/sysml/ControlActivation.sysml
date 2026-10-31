@@ -19,6 +19,15 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* MRR Data owns the optional Turso storage adapter. Weaver supplies
+           the original canonical coordination home and immutable obligation body;
+           reconnects cannot choose a new home. Content durability precedes the
+           metadata decision. Metadata without a recoverable body denies readiness
+           and retains unknown exposure. Validation callbacks are inert, and exact
+           replay or outbox acknowledgment creates no live send capability.
+           Final Rust admission rechecks the current retained cut, owner/fence,
+           Policy and existing one-use ticket after any storage approval. Generic
+           backend receipt equality does not prove this final-use refinement. */
         doc /* Replay revision admission reads the immutable captured parent from
            the existing review requirement, not candidate metadata. Full original
            predecessor bytes match that authority-owned Policy/schema commitment;

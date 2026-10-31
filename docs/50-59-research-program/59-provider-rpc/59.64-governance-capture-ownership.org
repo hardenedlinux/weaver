@@ -1,10 +1,10 @@
-#+TITLE: 59.63 Original Governance Capture and Mutable Alias Refusal
+#+TITLE: 59.64 Original Governance Capture and Mutable Alias Refusal
 #+LANGUAGE: en
 
 * Architecture and implemented boundary
 
 #+ATTR_HTML: :width 1500
-[[file:59.63-governance-capture-ownership.svg]]
+[[file:59.64-governance-capture-ownership.svg]]
 
 The existing Scheme Governance owner now captures independent canonical data
 before invoking an Agentic AI Lab assessment method. It compares that original
@@ -150,3 +150,11 @@ negative cases printed refusals but exceeded their fifteen-second natural-exit
 deadlines. These are retained failures, not evidence of successful restart or
 complete Scheme integration. Their causes remain unclosed; neither the timeout
 nor the exit behavior was relaxed. Framework PBT acceptance is a separate receipt.
+
+At committed source =d6a9c25=, the corrected standard clean-source gates passed:
+Rust 10/10 stages, Go 21/21 stages and Policy 46/46 stages. This includes the real
+Go/Rust mTLS provider integration and the semantic-boundary Quint tests/sampling.
+It excludes the separately failed Scheme cross-language invocation above. The
+native Governance suite passed through standard Gerbil testing. Concurrent MRR
+admission changes from PR1 are retained; their architecture links and focused
+tests are checked after merging, rather than relabeling the earlier gate source.

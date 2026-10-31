@@ -25,7 +25,7 @@ module PublicationRecovery {
     owner:int,liveOwners:Set[int],egressOwners:Set[int],handoff:bool,calls:int,external:int,
     registry:List[ReviewEntry],registrarOwner:int,registrarTerm:int,
     sourceDecisions:List[SourceDecision],sourceRevoked:Set[int]}
-  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int,registryQualifications:Set[SourceObservation],retainedSource:SourceCut,trustedRoot:int,retentionGeneration:int,retentionAvailable:bool,retainedQualifications:Set[RetainedQualification],exposureProjection:ExecutionRetention}
+  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int,registryQualifications:Set[SourceObservation],retainedSource:SourceCut,trustedRoot:int,retentionGeneration:int,retentionAvailable:bool,retainedQualifications:Set[RetainedQualification],exposureProjection:ExecutionRetention,mrrApprovals:Set[RetainedQualification],mrrBodyAvailable:bool}
   var authority:Ledger
   val ids=Set(0,1,2)
   val empty={payload:0,parent:-1,requestedFence:1,outcome:0,resultHead:-1,resultFence:1,review:Set(),validatedFence:1,validatedCut:emptyCut,validatedEpoch:0}
@@ -41,7 +41,7 @@ module PublicationRecovery {
   // refund arithmetic is defined by this publication/recovery schedule owner.
   pure val execution0={cut:emptyCut,burned:Set(),reservation:101,exposure:201,held:4,owner:1,epoch:0}
   pure val sourceCut0={epoch:0,owner:1,revoked:Set(),decisions:List({slot:0,credential:100,key:100}),registry:List(),head:-1,fence:1,execution:execution0}
-  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0,registryQualifications:Set(),retainedSource:sourceCut0,trustedRoot:7,retentionGeneration:0,retentionAvailable:true,retainedQualifications:Set(),exposureProjection:execution0}
+  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0,registryQualifications:Set(),retainedSource:sourceCut0,trustedRoot:7,retentionGeneration:0,retentionAvailable:true,retainedQualifications:Set(),exposureProjection:execution0,mrrApprovals:Set(),mrrBodyAvailable:true}
   def canStage(q:Proposal):bool={val d=authority.records.get(q.id)
     authority.pending.forall(p=>p.id!=q.id or p==q) and
       (d.outcome==0 or (d.payload==q.payload and d.parent==q.parent and d.requestedFence==q.fence))}
@@ -164,7 +164,7 @@ module PublicationRecovery {
     authority.retainedQualifications.contains(receipt),retainedSourceCurrent(receipt.root,receipt.generation),
     authority.exposureProjection==sourceAuthorityCut.execution,publishAtQualifiedRegistry(receipt.source,q,r)}
   action restoreExposureProjection(image:ExecutionRetention):bool=authority'=authority.with("exposureProjection",image)
-  action repairExposureProjection=all {authority.retentionAvailable,authority.retainedSource==sourceAuthorityCut,
+  action repairExposureProjection=all {authority.retentionAvailable,authority.mrrBodyAvailable,authority.retainedSource==sourceAuthorityCut,
     authority'=authority.with("exposureProjection",authority.retainedSource.execution)}
   def retainedExecutionQualified(receipt:RetainedQualification):bool=
     authority.retainedQualifications.contains(receipt) and retainedSourceCurrent(receipt.root,receipt.generation) and
@@ -785,4 +785,44 @@ module PublicationRecovery {
     floorRequestHandoff,floorConfirmTransportStopped(true),floorStartOwner,
     retentionAvailability(false),retentionAvailability(true),sourceAvailability(false),sourceAvailability(true),
     burnAtRetainedExecution(executionReceipt,1,f.cut,f.epoch),admitAtRetainedExecution(executionReceipt,1,f.cut,f.epoch)}
+  // The upstream port owns metadata Apply/Replay. This owner schedules only
+  // the external approval/body-to-actual-use boundary; no second MRR engine.
+  action mrrBodyAvailability(available:bool):bool=authority'=authority.with("mrrBodyAvailable",available)
+  action captureMRRApproval(receipt:RetainedQualification):bool=all {
+    authority.mrrBodyAvailable,retainedExecutionQualified(receipt),
+    authority'=authority.with("mrrApprovals",authority.mrrApprovals.union(Set(receipt)))}
+  action commitMRRBurn(receipt:RetainedQualification,k:int,c:Cut,epoch:int):bool=all {
+    authority.mrrApprovals.contains(receipt),burnAtRetainedExecution(receipt,k,c,epoch)}
+  action observeMRRReplay(k:int):bool=all {f.burned.contains(k),authority'=authority}
+  action admitAfterMRR(receipt:RetainedQualification,k:int,c:Cut,epoch:int):bool=all {
+    authority.mrrBodyAvailable,admitAtRetainedExecution(receipt,k,c,epoch)}
+  action unsafeMRRApprovalOnlyAdmit(receipt:RetainedQualification,k:int,c:Cut,epoch:int):bool=all {
+    authority.mrrApprovals.contains(receipt),floorAdmit(k,c,epoch)}
+  run mrrApprovalCannotOutliveExposureProjectionRollbackTest=executionRecovered.then(captureMRRApproval(executionReceipt))
+    .then(restoreExposureProjection(sourceAuthorityCut.execution.with("held",0)))
+    .expect(authority.held==4).then(commitMRRBurn(executionReceipt,1,f.cut,f.epoch).fail())
+  run mrrApprovalCannotOutliveSourceAuthorityHandoffTest=executionRecovered.then(captureMRRApproval(executionReceipt))
+    .then(handoffSourceKey(handoff0,101,101)).expect(authority.held==4)
+    .then(commitMRRBurn(executionReceipt,1,f.cut,f.epoch).fail())
+  run mrrCommitReplyLossAndReplayCannotMintAnotherTicketTest=executionRecovered.then(captureMRRApproval(executionReceipt))
+    .then(commitMRRBurn(executionReceipt,1,f.cut,f.epoch)).then(floorLoseReply).then(retainSourcePrefix)
+    .then(qualifyExecutionImage).then(observeMRRReplay(1)).expect(f.handles==Set() and authority.held==4)
+    .then(admitAfterMRR(executionReceipt,1,f.cut,f.epoch).fail())
+  run mrrMetadataWithoutBodyCannotRepairExposureTest=executionBurned.then(mrrBodyAvailability(false))
+    .expect(authority.retainedSource.execution.held==4).then(repairExposureProjection.fail())
+  run mrrMetadataWithoutBodyCannotAdmitEffectTest=executionBurned.then(mrrBodyAvailability(false))
+    .then(observeMRRReplay(1)).then(admitAfterMRR(executionReceipt,1,f.cut,f.epoch).fail())
+  run mrrCallbackApprovalOnlyCounterexampleTest=executionBurned.then(captureMRRApproval(executionReceipt))
+    .then(restoreExposureProjection(sourceAuthorityCut.execution.with("held",0)))
+    .then(unsafeMRRApprovalOnlyAdmit(executionReceipt,1,f.cut,f.epoch))
+    .expect(f.external==1 and authority.exposureProjection.held==0 and authority.held==4)
+  run mrrPublishedBodyWithoutAdmissionCannotCreateTicketTest=executionRecovered
+    .expect(authority.mrrBodyAvailable and f.burned==Set()).then(admitAfterMRR(executionReceipt,1,f.cut,f.epoch).fail())
+  action mrrAdmissionRecoverySchedule=any {retainSourcePrefix,repairExposureProjection,readSourceObservation(sourcePublish0),
+    qualifyRegistryRecovery(executionReceipt.source),qualifyRetainedRegistry(executionReceipt),
+    captureMRRApproval(executionReceipt),commitMRRBurn(executionReceipt,1,f.cut,f.epoch),observeMRRReplay(1),
+    mrrBodyAvailability(false),mrrBodyAvailability(true),restoreExposureProjection(execution0.with("held",0)),
+    restartSourceObserver,reconnectSourceObserver,floorLoseReply,floorRead,floorRepair,floorActivate,
+    floorRequestHandoff,floorConfirmTransportStopped(true),floorStartOwner,
+    retentionAvailability(false),retentionAvailability(true),admitAfterMRR(executionReceipt,1,f.cut,f.epoch)}
 }
