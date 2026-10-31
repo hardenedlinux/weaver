@@ -63,10 +63,30 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
         })
         .await
         .expect("approved compiler initialized on worker");
-    let client = worker.client();
     let original = fixture::source();
+    let authority = weaver_contracts::SourceAuthority {
+        epoch: 1,
+        identity: weaver_contracts::SourceIdentity {
+            certificate_sha256: "1".repeat(64),
+            public_key_sha256: "2".repeat(64),
+            credential_sha256: "3".repeat(64),
+        },
+    };
+    let catalog = weaver_governance::ProducerCatalog::from_entries(vec![
+        weaver_governance::ApprovedProducer::new(
+            "approved-AA".into(),
+            authority.clone(),
+            OwnedSource::from_source(original.clone()).expect("original"),
+        )
+        .expect("host binding"),
+    ])
+    .expect("catalog");
+    worker
+        .publish_producers(catalog)
+        .expect("publish immutable catalog");
+    let client = runtime.producers().expect("installed producer set");
     let result = client
-        .submit(OwnedSource::from_source(original.clone()).expect("original"))
+        .submit("approved-AA", &authority)
         .expect("bounded admission")
         .await
         .expect("actual AA capture and binding");
@@ -82,7 +102,9 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
     worker.finish().await.expect("tracked worker joined");
     assert!(result.source().data() == &original);
     assert!(matches!(
-        client.submit(OwnedSource::from_source(original).expect("original")),
-        Err(weaver_governance::SourceJobError::Closed)
+        client.submit("approved-AA", &authority),
+        Err(weaver_governance::CatalogError::Schedule(
+            weaver_governance::SourceJobError::Closed
+        ))
     ));
 }

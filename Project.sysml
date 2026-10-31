@@ -312,6 +312,12 @@ package WeaverProject {
 
         part 'crates/contracts' : RustPackage;
         part 'crates/governance' : RustPackage {
+            doc /* ApprovedProducer/ProducerCatalog seal a bounded local set of
+               names, immutable original artifacts and source identity/epoch
+               observations. A producer name cannot supply replacement input.
+               Private immutable SourceData ownership may be shared without
+               copying every body at queue admission. This catalog neither
+               authenticates observations nor replaces the durable source ledger. */
             doc /* Own checked concrete source records after a
                synchronous native Scheme strong-root conversion. No VM object survives in
                OwnedSource; conversion and transport confer no publication/send
@@ -353,6 +359,10 @@ package WeaverProject {
             part 'weaver-ledger' : RuntimeDependency;
         }
         part 'crates/server' : RustPackage {
+            doc /* An initialized GovernanceWorker may publish its producer
+               catalog once through the shared admission gate. Closed or duplicate
+               publication fails; the catalog uses this worker's fixed client.
+               Authenticated live-source RPC admission remains a separate boundary. */
             doc /* ServiceRuntime is the existing shared task/resource owner.
                Approved compiler factories construct non-Send Scheme VMs on its
                tracked blocking worker. Terminal shutdown closes source delivery;

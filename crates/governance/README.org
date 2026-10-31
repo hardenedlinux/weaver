@@ -38,6 +38,23 @@ calling Scheme, then =materialize_bound_source= or =bind=. The resulting
 an expectation from the candidate is not original admission. Registry/callback
 authenticity and current Policy/history/fence/ledger checks remain mandatory.
 
+=ProducerCatalog= seals up to 64 host-approved names with immutable originals and
+source-authority identity/epoch bindings. Aggregate UTF-8 data/key text plus names
+must fit =MAX_SOURCE_BYTES=; native traversal bounds remain separate. Duplicate
+families/names and conflicting publication IDs refuse. =ProducerClient= selects
+only a registered name and compares the full source observation before queueing
+its original. A supplied observation is not proof of current authority: the RPC
+owner must derive and recheck actual authenticated source state. Catalog lookup
+does not publish, send, consume, settle or authenticate a compiler.
+
+=OwnedSource= shares private immutable concrete data. No mutable/interior-mutable
+view is exposed, so retaining the original cannot follow changes to a caller's
+replacement handle or the Scheme object graph. It avoids copying/parsing each
+body again at admission; returned candidates still undergo complete record equality.
+=GovernanceWorker::publish_producers= installs one set for its initialized compiler
+through the shared runtime gate. Updates/recovery of authoritative registry state
+and production compilation RPC remain separate, unqualified work.
+
 =source_lane= supplies bounded =SourceClient=/=SourceInbox= ownership. The existing
 server runtime must track the blocking owner and construct its non-Send Scheme
 VM there. No VM or rooted Scheme object crosses the queue. Only concrete owned

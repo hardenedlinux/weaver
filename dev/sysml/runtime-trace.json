@@ -382,6 +382,12 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
   {"id":"GovernorSourceHandoff","witnesses":[
+    {"file":"crates/governance/src/catalog/admission.rs","pattern":"pub struct ProducerCatalog"},
+    {"file":"crates/governance/src/catalog/client.rs","pattern":"pub fn submit"},
+    {"file":"crates/governance/tests/unit/catalog.rs","pattern":"changed_source_observations_and_fresh_names_cannot_select_original"},
+    {"file":"crates/server/src/governance_owner.rs","pattern":"pub fn publish_producers"},
+    {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"oldCatalogObservationStillCannotPublishThroughNewFenceTest"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"producer_selection_keeps_all_original_fields"},
     {"file":"crates/server/src/governance_owner.rs","pattern":"pub async fn start_governance"},
     {"file":"crates/server/src/grpc.rs","pattern":"pub async fn serve_grpc_with_runtime"},
     {"file":"crates/server/tests/unit/governance_owner.rs","pattern":"shared_owner_schedules_preserve_cleanup_and_terminal_admission"},

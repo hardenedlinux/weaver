@@ -18,6 +18,15 @@ package ControlActivation {
            belongs in producer-created phase attributes. */
     }
     requirement def GovernorSourceHandoff {
+        doc /* The approved producer catalog is immutable and bounded by entry
+           count and aggregate UTF-8 source text. Names, family uniqueness and
+           publication ID/content consistency are checked before binding. Selection
+           compares certificate, SPKI, credential digest and source epoch, then
+           supplies the catalog's original to the existing bounded source lane.
+           Observations must come from authenticated/current source state; this
+           local lookup alone cannot supply that authentication or authorize final
+           publication/send. The shared runtime publishes one catalog after compiler
+           initialization. It has no replacement or reopening path after shutdown. */
         doc /* ServiceRuntime.start_governance installs a terminal tracked compiler
            owner using an explicit host resource permit and source queue budget.
            The Send factory builds its non-Send compiler on the owner thread.

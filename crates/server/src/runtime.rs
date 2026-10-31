@@ -6,7 +6,7 @@ use std::sync::{
 use tokio::sync::OwnedSemaphorePermit;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use weaver_contracts::{Error, Result};
-use weaver_governance::SourceClient;
+use weaver_governance::{ProducerClient, SourceClient};
 
 #[derive(Clone)]
 /// Shared terminal task/resource owner, exported as `ServiceRuntime` for embedding.
@@ -21,6 +21,7 @@ struct Inner {
 }
 struct AdmissionState {
     governance: Option<SourceClient>,
+    producers: Option<ProducerClient>,
 }
 pub(crate) struct ShutdownGuard {
     runtime: Option<RuntimeOwner>,
@@ -66,7 +67,10 @@ impl RuntimeOwner {
     pub fn new() -> Self {
         Self {
             inner: Arc::new(Inner {
-                gate: Mutex::new(AdmissionState { governance: None }),
+                gate: Mutex::new(AdmissionState {
+                    governance: None,
+                    producers: None,
+                }),
                 closed: AtomicBool::new(false),
                 cancel: CancellationToken::new(),
                 tasks: TaskTracker::new(),
@@ -116,6 +120,37 @@ impl RuntimeOwner {
         }
         state.governance = Some(client);
         Ok(())
+    }
+    pub(crate) fn install_producers(&self, client: ProducerClient) -> Result<()> {
+        let mut state = self
+            .inner
+            .gate
+            .lock()
+            .map_err(|_| Error::Conflict("runtime owner poisoned"))?;
+        if self.closing() {
+            return Err(Error::Conflict("runtime admission closed"));
+        }
+        if state.producers.is_some() {
+            return Err(Error::Conflict("producer catalog already installed"));
+        }
+        state.producers = Some(client);
+        Ok(())
+    }
+    /// Observe the sealed producer set installed by the initialized compiler
+    /// guard. This is not a source-authority observation or final-use permit.
+    pub fn producers(&self) -> Result<ProducerClient> {
+        let state = self
+            .inner
+            .gate
+            .lock()
+            .map_err(|_| Error::Conflict("runtime owner poisoned"))?;
+        if self.closing() {
+            return Err(Error::Conflict("runtime admission closed"));
+        }
+        state
+            .producers
+            .clone()
+            .ok_or(Error::Conflict("producer catalog not installed"))
     }
     /// Close attached source delivery and task admission before returning.
     /// This notification does not acknowledge foreign-call cleanup or drain.

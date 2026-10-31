@@ -30,6 +30,11 @@ control: Go source control and routing\nTyped source / exact reconciliation\nNo 
   icon: ../../architecture/diagrams/assets/go.svg; icon.near: top-left
 }
 profile -> capture: Capture before callback {style.font-size: 18}
+catalog: Host-approved producer catalog\nPinned immutable original artifacts\nSource identity and epoch binding\nNo final-use authority {
+  class: card; left: 1440; top: 640; width: 500; height: 220; style.fill: "#eef3ef"
+  icon: ../../architecture/diagrams/assets/rust.svg; icon.near: top-left
+}
+catalog -> native: Retained original {style.font-size: 18}
 capture -> assessment: Frozen input {style.font-size: 18}
 assessment -> native: Native data snapshot {style.font-size: 18}
 native -> host: Rust-owned bound data {style.font-size: 18}

@@ -709,6 +709,47 @@ theorem source_owner_cleanup_requires_natural_return (event : SourceHostStep s t
     s.factoryActive = false ∧ s.phase ≠ .running := by
   cases event <;> simp_all
 
+/- Immutable local lookup, not the authoritative canonical registry. Authenticity
+   and currentness of SourceAuthority must be established by the service owner.
+   Sharing immutable original values supplies no new execution or budget grant. -/
+structure ProducerIdentity where
+  certificate : Nat
+  key : Nat
+  credential : Nat
+  epoch : Nat
+  deriving DecidableEq
+structure ProducerBinding where
+  original : Nat
+  root : Nat
+  profile : Nat
+  budget : Nat
+  history : Nat
+  authority : ProducerIdentity
+  deriving DecidableEq
+def ProducerSelected (catalog : Nat → Option ProducerBinding) (name : Nat)
+    (observed : ProducerIdentity) (entry : ProducerBinding) : Prop :=
+  catalog name = some entry ∧ entry.authority = observed
+
+theorem producer_name_has_one_original (catalog : Nat → Option ProducerBinding)
+    (first : ProducerSelected catalog name observed a)
+    (second : ProducerSelected catalog name otherObserved b) : a = b := by
+  exact Option.some.inj (first.1.symm.trans second.1)
+theorem changed_source_observation_rejects_producer
+    (selected : ProducerSelected catalog name observed entry)
+    (changed : otherObserved ≠ observed) : ¬ ProducerSelected catalog name otherObserved entry := by
+  intro other
+  exact changed (other.2.symm.trans selected.2)
+theorem producer_selection_keeps_all_original_fields
+    (first : ProducerSelected catalog name observed a)
+    (second : ProducerSelected catalog name observed b) :
+    a.original = b.original ∧ a.root = b.root ∧ a.profile = b.profile ∧ a.budget = b.budget ∧ a.history = b.history := by
+  have same := producer_name_has_one_original catalog first second
+  subst b
+  exact ⟨rfl,rfl,rfl,rfl,rfl⟩
+
+#print axioms producer_name_has_one_original
+#print axioms changed_source_observation_rejects_producer
+#print axioms producer_selection_keeps_all_original_fields
 #print axioms source_owner_join_preserves_cleanup
 #print axioms source_owner_late_initialization_is_fenced
 #print axioms source_owner_cleanup_requires_natural_return

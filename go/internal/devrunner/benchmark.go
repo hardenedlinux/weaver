@@ -17,6 +17,8 @@ var rustBenchmarkCases = []string{
 	"governance_owned_source_validate",
 	"governance_original_source_capture_and_bind",
 	"governance_source_lane_roundtrip",
+	"governance_producer_catalog_roundtrip/1",
+	"governance_producer_catalog_roundtrip/64",
 	"governance-build_staging_expression",
 	"contracts_provider_commitment/128",
 	"contracts_provider_commitment/16384",

@@ -36,7 +36,10 @@ module LlmPolicyContinuation {
   type FactState={closure:FactClosure,candidate:FactEvidence,installed:FactEvidence,hostValue:int,sourceValue:int,sourceImages:Set[SourceImage],truth:Set[int],scope:Set[int],
     mode:int,grant:Freshness,connected:bool,channel:int,clock:int,now:int,timeFloor:int,uses:List[FactUse],deltas:List[FactDelta]}
   // Local compilation resources only: no publication, execution or refund right.
-  type SourceHost={closed:bool,phases:List[int],cancelled:Set[int],slots:int,deliveries:List[bool],worker:int,cleaned:bool,joined:bool,activations:List[bool]}
+  type ProducerIdentity={certificate:int,key:int,credential:int,epoch:int}
+  type Producer={name:int,root:int,profile:int,content:int,budget:int,history:int,publication:int,proposal:int,authority:ProducerIdentity}
+  type ProducerUse={producer:Producer,observed:ProducerIdentity}
+  type SourceHost={closed:bool,phases:List[int],cancelled:Set[int],slots:int,deliveries:List[bool],worker:int,cleaned:bool,joined:bool,activations:List[bool],catalog:Set[Producer],catalogUses:List[ProducerUse]}
   type State={staged:Set[Change],log:List[Publication],generation:int,allowed:bool,fence:int,revision:int,online:bool,
     inspections:Set[View],approvals:Set[Approval],winner:int,visibleWinner:int,acks:Set[int],aliases:Set[Alias],permits:Set[Permit],
     uses:List[Use],spent:bool,everSpent:bool,calls:int,hold:int,usage:int,
@@ -62,7 +65,12 @@ module LlmPolicyContinuation {
     factFloor:0,barriers:List(),resolved:Set(),pending:Set(),hardAllowed:true,visibleBarrier:-1,receipts:Set(),frontier:0,
     nextAdmissions:List(),visibleAdmission:-1,nextUses:List(),nextSpent:false,nextCalls:0,nextHold:0,facts:facts0,
     semanticVM:0,ffiCall:0,captureEpoch:0,configurationSchema:1,configurationNormalizer:1,schemeModule:0,boundaryRecords:List(),
-    host:{closed:false,phases:List(0,0),cancelled:Set(),slots:0,deliveries:List(),worker:1,cleaned:false,joined:false,activations:List()}}
+    host:{closed:false,phases:List(0,0),cancelled:Set(),slots:0,deliveries:List(),worker:1,cleaned:false,joined:false,activations:List(),catalog:Set(),catalogUses:List()}}
+  pure val producerIdentity0={certificate:1,key:2,credential:3,epoch:1}
+  pure val producer0={name:1,root:10,profile:20,content:0,budget:5,history:9,publication:30,proposal:100,authority:producerIdentity0}
+  pure def producerValid(e)=e.name>0 and (e.root==10 or e.root==20) and e.profile==20 and e.content==0 and e.budget==5 and e.history==9 and e.authority==producerIdentity0
+  pure def catalogValid(entries:Set[Producer]):bool=entries.size()>0 and entries.size()<=64 and entries.forall(e=>producerValid(e)) and
+    entries.forall(a=>entries.forall(b=>((a.name==b.name or a.root==b.root) implies a==b) and (a.publication==b.publication implies a.proposal==b.proposal)))
   pure val boundary0={kind:0,root:10,claim:11,profile:20,configurationSchema:1,normalizer:1,programModule:0,environment:0,
     vm:0,call:0,epoch:0,cut:0,input:0,output:0,schemaChecked:true,governanceChecked:true,
     readable:true,stable:true,owned:true,retainedPointer:false,reentrant:false,
@@ -111,7 +119,38 @@ module LlmPolicyContinuation {
   def hostSafe=s.host.slots==hostOccupied and s.host.slots<=2 and s.host.deliveries.indices().forall(i=>s.host.deliveries.nth(i)) and
     s.host.activations.indices().forall(i=>s.host.activations.nth(i)) and
     (s.host.joined implies (s.host.cleaned and s.host.worker==2)) and
-    (s.host.cleaned implies (s.host.closed and not(hostRunning)))
+    (s.host.cleaned implies (s.host.closed and not(hostRunning))) and
+    (s.host.catalog.size()==0 or catalogValid(s.host.catalog)) and
+    s.host.catalogUses.indices().forall(i=>{val use=s.host.catalogUses.nth(i)
+      s.host.catalog.contains(use.producer) and use.producer.authority==use.observed})
+  action catalogPublish(entries)=all {not(s.host.closed),s.host.worker==1,s.host.catalog.size()==0,catalogValid(entries),
+    s'=s.with("host",s.host.with("catalog",entries))}
+  action catalogSelect(name,observed)={
+    nondet e=s.host.catalog.oneOf()
+    all {not(s.host.closed),s.host.worker==1,e.name==name,e.authority==observed,
+      s'=s.with("host",s.host.with("catalogUses",s.host.catalogUses.append({producer:e,observed:observed})))}}
+  run freshProducerNameCannotReplaceOriginalTest=init.then(catalogPublish(Set(producer0))).then(catalogSelect(2,producerIdentity0).fail())
+  run producerAliasesCannotDuplicateOneFamilyTest=init.then(catalogPublish(Set(producer0,producer0.with("name",2))).fail())
+  run installedProducerSetCannotBeReplacedTest=init.then(catalogPublish(Set(producer0)))
+    .then(catalogPublish(Set(producer0.with("name",2))).fail())
+  run changedSourceEpochCannotSelectProducerTest=init.then(catalogPublish(Set(producer0)))
+    .then(catalogSelect(1,producerIdentity0.with("epoch",2)).fail())
+  run sharedPublicKeyCannotReplaceLeafAndCredentialTest=init.then(catalogPublish(Set(producer0)))
+    .then(catalogSelect(1,producerIdentity0.with("certificate",9).with("credential",9)).fail())
+  run producerSelectionKeepsOriginalObligationsTest=init.then(catalogPublish(Set(producer0))).then(catalogSelect(1,producerIdentity0))
+    .expect(hostSafe and s.hold==6 and s.calls==0 and not(s.spent) and s.pending==Set())
+  run conflictingProducerPublicationCannotInstallTest=init
+    .then(catalogPublish(Set(producer0,producer0.with("name",2).with("root",20).with("proposal",101))).fail())
+  action unsafeCatalogSelect(observed)=s'=s.with("host",s.host.with("catalogUses",s.host.catalogUses.append({producer:producer0,observed:observed})))
+  run sharedKeyOnlySelectionCounterexampleTest=init.then(catalogPublish(Set(producer0)))
+    .then(unsafeCatalogSelect(producerIdentity0.with("certificate",9))).expect(not(hostSafe))
+  // The supplied observation is not a live authority check. A later caller must
+  // use actual authenticated/current source state and recheck final publication.
+  run oldCatalogObservationStillCannotPublishThroughNewFenceTest=init.then(catalogPublish(Set(producer0)))
+    .then(restart).then(recover(true)).then(catalogSelect(1,producerIdentity0)).expect(hostSafe and s.hold==6 and s.calls==0)
+    .then(publish(original,0,true,true).fail())
+  run producerLookupCannotResetSpentClaimOrUnknownHoldTest=unknown.then(catalogPublish(Set(producer0)))
+    .then(catalogSelect(1,producerIdentity0)).expect(hostSafe and s.spent and s.everSpent and s.calls==1 and s.hold==6)
   action initHostStarting=s'=initial.with("host",initial.host.with("worker",0))
   action hostFactoryReturn=all {s.host.worker==0,s'=s.with("host",s.host.with("worker",3))}
   action hostActivate=all {s.host.worker==3,not(s.host.closed),
@@ -138,7 +177,8 @@ module LlmPolicyContinuation {
       .with("deliveries",s.host.deliveries.append(not(s.host.closed) and not(s.host.cancelled.contains(i)))))}
   action hostStep=any {hostSubmit(0),hostSubmit(1),hostStart(0),hostStart(1),hostFinish(0),hostFinish(1),
     hostCancel(0),hostCancel(1),hostDiscardWaiting(0),hostDiscardWaiting(1),hostClose,hostDeliver(0),hostDeliver(1),
-    hostFactoryReturn,hostActivate,hostCleanup,hostJoin}
+    hostFactoryReturn,hostActivate,hostCleanup,hostJoin,catalogPublish(Set(producer0)),catalogSelect(1,producerIdentity0),
+    catalogSelect(2,producerIdentity0),catalogSelect(1,producerIdentity0.with("epoch",2))}
   run abandonedFactoryRemainsTrackedTest=initHostStarting.then(hostClose).expect(hostSafe and not(s.host.joined))
     .then(hostCleanup.fail())
   run lateFactoryCannotActivateAfterCloseTest=initHostStarting.then(hostClose).then(hostFactoryReturn).then(hostActivate.fail())

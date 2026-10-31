@@ -29,6 +29,17 @@ fn binding_is_an_independent_snapshot_not_an_alias_or_permit() {
     assert_eq!(bound.source().task().family, "f");
 }
 #[test]
+fn immutable_original_sharing_survives_replacing_every_external_handle() {
+    let mut admitted = original();
+    let retained = admitted.clone();
+    let expected = SourceExpectation::capture(&admitted);
+    admitted = OwnedSource::from_source(replacement::coherent(fixture::source(), 2, 1))
+        .expect("replacement");
+    assert!(admitted.data() != retained.data());
+    drop(admitted);
+    assert!(expected.bind(retained).is_ok());
+}
+#[test]
 fn rebuilding_the_expectation_from_the_candidate_is_an_unsafe_negative_control() {
     let candidate =
         OwnedSource::from_source(replacement::coherent(fixture::source(), 2, 1)).expect("coherent");

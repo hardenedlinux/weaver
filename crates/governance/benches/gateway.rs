@@ -1,5 +1,7 @@
 use criterion::{Criterion, criterion_group, criterion_main};
 use std::{hint::black_box, time::Duration};
+#[path = "support/catalog.rs"]
+mod catalog;
 #[path = "../tests/unit/fixture.rs"]
 mod fixture;
 fn source(c: &mut Criterion) {
@@ -41,5 +43,5 @@ fn source(c: &mut Criterion) {
     client.close();
     worker.join().expect("owner drained");
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=source}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=source,catalog::catalog}
 criterion_main!(benches);

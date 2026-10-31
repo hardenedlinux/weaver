@@ -2,9 +2,11 @@
 #![forbid(unsafe_code)]
 extern crate self as weaver_governance;
 mod binding;
+mod catalog;
 mod host;
 mod source;
 pub use binding::{BoundSource, SourceExpectation};
+pub use catalog::{ApprovedProducer, CatalogError, ProducerCatalog, ProducerClient};
 pub use host::{SourceClient, SourceInbox, SourceJob, SourceJobError, source_lane};
 pub use source::{MAX_SOURCE_BYTES, OwnedSource, SourceData, SourceError, SourceSelection};
 
@@ -32,6 +34,9 @@ mod source_fixture;
 #[path = "../tests/unit/source.rs"]
 mod source_tests;
 
+#[cfg(test)]
+#[path = "../tests/unit/catalog.rs"]
+mod catalog_tests;
 #[cfg(test)]
 #[path = "../tests/unit/host.rs"]
 mod host_tests;

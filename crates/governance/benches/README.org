@@ -4,11 +4,17 @@
 * Workload
 
 Clone concrete source records and check original selection/profile/plan bindings.
-The capture-and-bind case also includes an independent original snapshot,
+The capture-and-bind case also retains an immutable original owner,
 candidate cloning/validation and complete native record equality.
 The lane roundtrip additionally measures bounded admission, one blocking-owner
 handoff, independent original binding and future delivery. Its identity callback
 uses concrete records; worker/runtime construction and drain are outside timing.
+Catalog roundtrips use one or 64 independently validated family entries, exact
+source-identity/epoch observation matching and a selected name. They include
+lookup, shared immutable-original retention, bounded queue and result binding.
+Catalog construction and compiler/runtime construction/drain are outside timing.
+The identity callback returns the immutable original; actual Scheme/Cedar work,
+live source-authority observation and final execution checks are excluded.
 
 * Measurement boundary
 

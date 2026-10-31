@@ -1,6 +1,6 @@
 //! Typed source selection and original commitment checks.
 use serde::Deserialize;
-use std::collections::BTreeSet;
+use std::{collections::BTreeSet, sync::Arc};
 use weaver_contracts::{ProviderPlan, Publication, Task};
 
 /// Maximum UTF-8 source payload copied at a boundary.
@@ -39,8 +39,9 @@ pub struct SourceData {
 
 /// Rust-owned typed source data, not an encoded transport blob or publisher permit.
 /// No VM, callback, raw pointer or borrowed source survives in this type.
+#[derive(Clone)]
 pub struct OwnedSource {
-    data: SourceData,
+    data: Arc<SourceData>,
 }
 
 impl OwnedSource {
@@ -51,7 +52,9 @@ impl OwnedSource {
     /// Validate concrete source records without decoding an interop blob.
     pub fn from_source(data: SourceData) -> Result<Self, SourceError> {
         validate(&data)?;
-        Ok(Self { data })
+        Ok(Self {
+            data: Arc::new(data),
+        })
     }
     pub fn task(&self) -> &Task {
         &self.data.tasks[0]

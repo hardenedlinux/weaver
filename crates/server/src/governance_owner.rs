@@ -3,7 +3,9 @@ use crate::runtime::RuntimeOwner;
 use std::{num::NonZeroUsize, sync::Arc};
 use tokio::sync::{OwnedSemaphorePermit, oneshot};
 use weaver_contracts::{Error, Result};
-use weaver_governance::{OwnedSource, SourceClient, SourceError, source_lane};
+use weaver_governance::{
+    OwnedSource, ProducerCatalog, ProducerClient, SourceClient, SourceError, source_lane,
+};
 
 /// Retain this guard for the lifetime of the approved compiler. Drop closes the
 /// shared service, while the runtime continues tracking natural worker cleanup.
@@ -71,6 +73,14 @@ impl RuntimeOwner {
     }
 }
 impl GovernanceWorker {
+    /// Install the immutable approved set for this initialized compiler. Only
+    /// the trusted embedding can call this; no module path/export comes from RPC.
+    /// A runtime cannot replace its installed catalog or reinterpret an old name.
+    pub fn publish_producers(&self, catalog: ProducerCatalog) -> Result<ProducerClient> {
+        let client = catalog.bind(self.client.clone());
+        self.runtime.install_producers(client.clone())?;
+        Ok(client)
+    }
     /// Typed inert data only; this handle cannot publish, send or release holds.
     pub fn client(&self) -> SourceClient {
         self.client.clone()

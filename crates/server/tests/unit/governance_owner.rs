@@ -40,6 +40,23 @@ fn original() -> OwnedSource {
     })
     .expect("original source")
 }
+fn authority() -> weaver_contracts::SourceAuthority {
+    weaver_contracts::SourceAuthority {
+        epoch: 1,
+        identity: weaver_contracts::SourceIdentity {
+            certificate_sha256: "1".repeat(64),
+            public_key_sha256: "2".repeat(64),
+            credential_sha256: "3".repeat(64),
+        },
+    }
+}
+fn catalog(name: &str) -> weaver_governance::ProducerCatalog {
+    weaver_governance::ProducerCatalog::from_entries(vec![
+        weaver_governance::ApprovedProducer::new(name.into(), authority(), original())
+            .expect("approved binding"),
+    ])
+    .expect("catalog")
+}
 struct Cleanup(Option<oneshot::Sender<()>>);
 impl Drop for Cleanup {
     fn drop(&mut self) {
@@ -155,6 +172,44 @@ async fn failed_initialization_is_terminal_and_releases_host_permit() {
     assert!(runtime.closing());
     runtime.drain().await;
     assert_eq!(permits.available_permits(), 2);
+}
+#[tokio::test]
+async fn installed_catalog_cannot_be_replaced_or_selected_after_shutdown() {
+    let runtime = ServiceRuntime::new();
+    let (_, slot) = budget();
+    assert!(runtime.producers().is_err());
+    let worker = runtime
+        .start_governance(slot, capacity(), || Ok(copy))
+        .await
+        .expect("initialized compiler");
+    worker
+        .publish_producers(catalog("approved"))
+        .expect("sealed set installed");
+    assert!(worker.publish_producers(catalog("replacement")).is_err());
+    assert!(!runtime.closing());
+    let client = runtime.producers().expect("original set");
+    assert!(matches!(
+        client.submit("replacement", &authority()),
+        Err(weaver_governance::CatalogError::Denied)
+    ));
+    let job = client
+        .submit("approved", &authority())
+        .expect("selected original");
+    assert!(
+        job.await
+            .is_ok_and(|bound| bound.source().task().budget == 8)
+    );
+    runtime.request_shutdown();
+    runtime.drain().await;
+    assert!(runtime.producers().is_err());
+    assert!(matches!(
+        client.submit("approved", &authority()),
+        Err(weaver_governance::CatalogError::Schedule(
+            weaver_governance::SourceJobError::Closed
+        ))
+    ));
+    assert!(worker.publish_producers(catalog("late")).is_err());
+    worker.finish().await.expect("joined");
 }
 #[tokio::test]
 async fn late_initialization_cannot_activate_after_shared_close() {

@@ -555,7 +555,7 @@ remain valid. Conversion success therefore cannot establish equality with the
 host's independently retained original. The production host must not publish
 merely because a returned object is typed, owned and internally consistent.
 
-=SourceExpectation::capture= deep-copies an already admitted =OwnedSource= before
+=SourceExpectation::capture= retains an immutable, already admitted =OwnedSource= before
 entering the approved producer. =bind= consumes that local expectation and compares
 complete concrete =SourceData= values. Tasks, principal, family, budget, profile,
 body/route commitments, plan ordering, selected nodes, Policy/schema and original
@@ -897,3 +897,126 @@ cold-readiness campaign. Both tests still exercise the legacy Scheme file adapte
 they do not prove a production native compilation RPC exists. The three-second
 readiness and fifteen-second Scheme limits were not changed, and no VM/process
 forced-exit workaround or dependency-pin update was introduced.
+
+* Sealed approved-producer catalog and immutable original ownership
+
+=ApprovedProducer= binds one validated name, a source-authority identity/epoch
+observation and an independently admitted original =OwnedSource=. =ProducerCatalog=
+seals at most 64 entries. Duplicate names or original families refuse; a shared
+publication ID must carry exactly the same proposal. Total UTF-8 source data/key
+text plus producer names must fit the existing =MAX_SOURCE_BYTES= budget. Text
+accounting destructures the concrete source records exhaustively and uses checked
+arithmetic; it does not encode JSON or count UTF-8 characters as bytes. Fixed
+record/identity metadata is structurally bounded separately. This copy-text budget
+is not a precise heap limit, nor does it replace native constructor traversal bounds.
+
+A =ProducerClient= accepts only a registered name and a supplied source-authority
+observation. It cannot receive a replacement artifact, module path, export address,
+family or budget in that call. Certificate digest, SPKI digest, role-credential
+digest and source epoch must all equal the frozen entry before the existing source
+lane receives the catalog-owned original. An unknown name cannot implicitly create
+another family. A refused lookup consumes no source slot and invokes no compiler.
+The client still produces only original-bound inert data, not an execution grant.
+These entries describe original source-handoff artifacts, not provider/model
+routing registrations or general dynamic task admission. The local entry bound
+does not bound the Gateway's total logical-message space. Admission of future
+originals and live manifest generations still needs its authoritative protocol.
+
+The trusted initialized =GovernanceWorker= may publish its producer set once
+through the shared runtime admission gate. =ServiceRuntime::producers= refuses an
+absent set or closed runtime. Duplicate publication cannot reinterpret an existing
+name or retire the current compiler. Publication binds the set to this worker's
+already initialized source client; no caller-selected program registration occurs.
+There is no in-place update or reopen path in this implementation. Any future
+catalog generation/update protocol must establish authoritative admission and
+fencing rather than mutating these entries or silently replacing old originals.
+
+This is a bounded local invocation catalog, not the durable canonical/origin
+registry or an authoritative Policy publication log. Constructing a new catalog
+after process restart does not by itself prove registry recovery, source freshness,
+claim continuity, original history-domain binding or budget entitlement. Persistent
+source key floors, original task/plan/profile bindings, pending outcomes and final
+publication/consumption CAS remain owned by the existing ledger protocols. Concrete
+SourceData also does not contain every AA threat/profile fact or every domain
+identity present in the broader formal models. Those semantic closure and recovery
+premises remain explicit; this change does not qualify them by naming a catalog.
+
+SourceAuthority is an observation, not an authenticated grant. The Rust API cannot
+prove that a caller obtained it from a current ledger read or an actual peer.
+Digest-format validation is not key possession. Reused SPKI with another leaf or
+credential refuses, but workers holding an identical complete credential tuple
+are not distinguished by this catalog. Independent incarnation/enrollment, PoP
+and durable fencing contracts retain their separate roles. A production RPC must
+derive identity from authenticated ingress and read current source authority,
+then recheck after asynchronous compilation and again at final publication/use;
+it must not accept SourceAuthority or replacement input as caller-supplied labels.
+The existing binary does not yet expose that native compilation RPC. Go's legacy
+file adapter is unchanged. Live catalog/RPC recovery and default approved-program
+deployment remain open; the new native test uses an explicit test authority tuple.
+
+=OwnedSource= now retains private immutable concrete data using shared ownership.
+The current graph contains owned strings, vectors, maps and numeric records with
+no exposed mutable/interior-mutable view. =SourceExpectation= retains that original
+owner before FFI; replacing or dropping every caller handle cannot change its
+value or make it follow the returned candidate. Scheme still receives a separate
+rooted native projection, and candidate equality still compares every concrete
+field. This is immutable data retention, not reuse of two mutable agreeing aliases
+or a source-authority cache. It removes repeated original body copying/parsing
+at catalog/queue admission while preserving independent original-value ownership.
+It does not establish a latency/throughput improvement without matched measurements.
+
+The existing Quint host refinement adds one-time catalog publication, protected
+original/name lookup and complete identity/epoch observation matching. Controls
+cover family aliases, conflicting publication proposals, new names, source epoch
+substitution and a deliberately unsafe SPKI-only selection. Another schedule
+explicitly permits lookup with an old supplied observation after an execution
+fence change, but rejects the later stale publication: local lookup is not live
+authorization. A spent-claim/unknown-hold schedule shows lookup does not reset
+those original obligations. These transitions reuse the original ledger state;
+they add no budget/nonce consumption or separate Policy owner.
+
+The Cedar-linked Lean bridge proves lookup uniqueness for one name in an immutable
+catalog, rejection of a different supplied identity observation for that entry,
+and preservation of its original/root/profile/budget/history fields. The proofs
+are conditional on a fixed admitted mapping; they do not prove the Rust catalog
+constructor, mTLS, currentness of the observation, arbitrary cross-origin scope
+or canonical registry recovery. Actual source selection is checked by framework
+properties and real SDK/server-owner qualification.
+
+Two package-owned Criterion workloads cover one and 64 approved families. Their
+setup admits the originals and constructs the catalog, runtime and worker outside
+timing. The timed path includes name/observation comparison, immutable retention,
+bounded queue delivery and original binding. The callback is an identity function;
+it excludes SDK/Cedar, live authority observation, gRPC and final execution. Test
+mode validates these workloads without claiming performance. Go's benchmark
+inventory names both cases explicitly.
+
+Retained draft failures: strict Clippy rejected a nested publication-conflict
+condition, and Quint required an explicit return type for an annotated predicate.
+The guards and model syntax were corrected without suppressions or weaker checks.
+The common benchmark fixture remains mounted once rather than copied into the
+catalog benchmark. Raw logs stay temporary and no dependency pin changed.
+
+** Catalog qualification receipt
+
+The final all-feature Governance/server entry passed 20 Governance unit tests,
+25 server unit tests and both actual SDK integrations. The existing Go-owned
+observed-server fixture remains intentionally ignored in the ordinary Rust
+runner. The native roundtrip/capture test took 7.23 seconds; registered producer
+lookup through the shared server owner and actual AA/Governor/Cedar capture took
+3.32 seconds, with natural owner-thread cleanup before drain and readable bound
+output afterward. Both SDK receipts still report active/max processors of one;
+no host-sized SMP or matched performance qualification is implied.
+
+Strict all-target/all-feature Clippy passed for both packages. All five package
+Criterion cases passed test mode, including one/64-entry catalog roundtrips.
+Go benchmark-inventory and linked Project/requirement tests passed. The D2 was
+rendered and visually inspected after adding the approved-catalog node.
+
+Quint passed 198 named schedules. Separate initialized-owner and factory-startup
+=hostStep= campaigns each sampled 1000 traces of at most 60 steps without a
+violation; these are not exhaustive verification or liveness proofs. The
+fixed-SPEC Lean bridge rebuilt, and all three new catalog laws report no axioms.
+They prove the conditional immutable-map properties stated above, not live RPC
+authentication or canonical source recovery. Earlier cold-readiness and linker
+failures retain their own status; this round does not relabel them as repaired.
