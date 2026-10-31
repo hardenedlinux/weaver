@@ -72,7 +72,7 @@ proof: LEAN / SEMANTIC PRESERVATION {
     class: runtime
   }
 }
-physical: RUNTIME / PHYSICAL GUARDS {
+execution: RUNTIME / EXECUTION GUARDS {
   top: 200
   left: 880
   width: 350
@@ -95,7 +95,7 @@ physical: RUNTIME / PHYSICAL GUARDS {
     height: 80
     class: ledger
   }
-  receipt: Physical boundary enforcement\nIdentity / stop / release / isolation {
+  receipt: Logical execution boundary\nIdentity / custody / release / fencing {
     top: 315
     left: 30
     width: 290
@@ -113,19 +113,19 @@ admit: Protected execution contract\nLive source / policy / budget / unique clai
 }
 foundation -> model: Model exact owner contracts
 foundation -> proof: Reuse / extend existing owners
-foundation -> physical: Bind runtime premises
+foundation -> execution: Bind runtime premises
 model.state -> model.faults
 model.faults -> model.receipt
 proof.meaning -> proof.relation
 proof.relation -> proof.receipt
-physical.adapters -> physical.faults
-physical.faults -> physical.receipt
+execution.adapters -> execution.faults
+execution.faults -> execution.receipt
 model.faults -> proof.relation: Step relation
-proof.relation -> physical.faults: Trace mapping
+proof.relation -> execution.faults: Trace mapping
 model.receipt -> admit: Concurrent safety contract
 proof.receipt -> admit: Preservation contract
-physical.receipt -> admit: Enforced physical premises
-rule: "Models expose fault schedules. Proofs preserve declared invariants. Runtime enforcement establishes the physical premises.\nEvery operation still needs live source, policy, budget, claim and final-send guards." {
+execution.receipt -> admit: Enforced execution premises
+rule: "Models expose fault schedules. Proofs preserve declared invariants. Runtime enforcement establishes execution premises.\nEvery operation still needs live source, policy, budget, claim and final-send guards." {
   shape: text
   class: note
   near: bottom-center

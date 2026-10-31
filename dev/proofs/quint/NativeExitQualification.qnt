@@ -3,6 +3,10 @@ module NativeExitQualification {
   // cases and cleanup through another entry do not qualify the package tool.
   // Open references cover FFI-loaded libraries. No executable build target is
   // required: the public package test exercises the library consumer directly.
+  // source denotes the complete project input closure. Go SourceInputs and its
+  // plan-derived tests refine that identity; filename labels alone do not.
+  // Before/after inventory equality is conditional on stable filesystem input,
+  // hash integrity and separately qualified dependency/toolchain caches.
   type Trial={id:int,study:int,artifact:int,firstUse:bool,profiled:bool,natural:bool,complete:bool,clean:bool,elapsed:int}
   pure def trialPass(t:Trial):bool=not(t.profiled) and t.natural and t.complete and t.clean and t.elapsed>=0 and t.elapsed<=15
   type State={entry:int,source:int,checks:int,duplicate:bool,complete:bool,returned:bool,opened:Set[int],closed:Set[int],elapsed:int,exited:bool,trials:List[Trial],failed:Set[int]}

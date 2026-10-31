@@ -75,6 +75,12 @@ package WeaverProject {
     }
 
     package Verification {
+        doc /* The Go verification owner inventories maintained project sources,
+           the complete Lean/Quint/Cedar proof source trees and Org/D2 design
+           sources. Gate inputs must be in that identity map. Before/after maps
+           and optional committed-blob checks bind the receipt to project bytes;
+           they do not prove an atomic filesystem snapshot or dependency-cache
+           integrity. Build outputs and archived run logs are not source inputs. */
         part rust : VerificationSuite { part 'check-rust' : VerificationMode; }
         part go : VerificationSuite { part 'check-go' : VerificationMode; }
         part scheme : VerificationSuite { part 'check-scheme' : VerificationMode; }
