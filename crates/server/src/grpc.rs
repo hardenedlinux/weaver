@@ -373,7 +373,34 @@ impl pb::gateway_server::Gateway for Gateway {
             .into_inner()
             .task
             .ok_or(Status::invalid_argument("task missing"))?;
-        self.ingress.source()?.register(task_contract(task)).await?;
+        self.ingress
+            .source()?
+            .register(task_contract(task), None)
+            .await?;
+        Ok(Response::new(pb::Empty {}))
+    }
+    async fn register_published_task(
+        &self,
+        request: Request<pb::RegisterPublishedTaskRequest>,
+    ) -> std::result::Result<Response<pb::Empty>, Status> {
+        self.authenticate(&request, RpcRole::Source)?;
+        let registration = request.into_inner();
+        let task = registration
+            .task
+            .ok_or(Status::invalid_argument("task missing"))?;
+        let key = registration
+            .publication
+            .ok_or(Status::invalid_argument("original publication missing"))?;
+        self.ingress
+            .source()?
+            .register(
+                task_contract(task),
+                Some(weaver_contracts::PublicationKey {
+                    operation_id: key.operation_id,
+                    digest: key.digest,
+                }),
+            )
+            .await?;
         Ok(Response::new(pb::Empty {}))
     }
     async fn stage_authority(

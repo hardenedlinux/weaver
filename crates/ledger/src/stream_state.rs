@@ -62,6 +62,7 @@ pub(crate) fn authority(tx: &Transaction<'_>) -> Result<(u64, u64, String)> {
     .map_err(db)
 }
 pub(crate) fn authorize(tx: &Transaction<'_>, check: StreamCheck<'_>) -> Result<()> {
+    crate::task_publication::require(tx, &check.contract.family)?;
     let (revision, fence, policy) = authority(tx)?;
     if revision != check.revision || fence != check.fence {
         return Err(Error::Conflict("stale stream authority"));

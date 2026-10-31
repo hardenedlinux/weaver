@@ -25,6 +25,7 @@ thirteen-scenario Governance adapter acceptance remains 0/13.
 | Operation | Durable action | Knowledge after reply loss |
 |-----------+----------------+---------------------------|
 | StageAuthority | Validate bounded typed Cedar input; BEGIN IMMEDIATE; bind ID, digest and full original proposal; insert pending unless exact decision already exists; commit | Unknown stage result; no automatic final CAS or ingress activation |
+| RegisterPublishedTask | Atomically store the immutable task and its required original publication key; require the actual matching committed decision before any fresh admission | Registration is inert for execution while its original decision is missing/rejected, even if another image permits |
 | PublishAuthority | Recheck original pending binding under BEGIN IMMEDIATE; decide original parent/fence CAS; record immutable committed/rejected outcome and remove only its pending row in the same transaction | Original decision may have committed; inspect by original ID/digest |
 | InspectPublication | Read immutable original decision, if present | NotFound is not abort, and includes the pending/no-decision case |
 | Exact stage replay | Return the same key for matching pending or matching historical decision; never recreate a decided pending row | Does not assert committed, current or eligible to send |
@@ -36,7 +37,10 @@ Already admitted buffers can drain. A bounded native write holding the deciding
 transaction finishes before staging can commit; later guards cannot pass pending.
 No staging, registration, decision or inspection method invokes provider I/O.
 
-Go Publish makes one staging RPC followed by at most one final CAS RPC. A failed
+Go Publish makes one staging RPC followed by at most one final CAS RPC. Bootstrap
+first inspects the original decision; if absent, it stages before registering
+publication-bound tasks and then makes one FinalizePublication call. A known
+rejection stops before registration. A failed
 stage stops the sequence; a failed final call stops without automatic retry or
 parent rebase. ObserveOrPublish first inspects the original outcome; a known
 decision is recovered read-only. A missing outcome permits the same original
@@ -58,8 +62,10 @@ authorize rejecting a real external fact change and silently restoring old facts
 | Scheme Governance/Policy projection | Reused unchanged; compilation remains inert and precedes staging |
 | proto/gateway/v1/gateway.proto | Source-only StageAuthority returns PublicationKey; existing final receipt/lookup retain their meaning |
 | Go gatewayclient | Stage exact proposal before new Publish; validate returned ID/digest; no staging for a known outcome |
+| Go control Bootstrap | Inspect, stage, register publication-bound tasks, then final CAS; never expose a fresh task to an old image before the barrier |
 | Rust SourceOwner | Existing bounded source lane executes Stage, tracks drain, checks SQL quiescence and stops on unknown storage errors |
 | Rust ledger | authority_pending is part of the existing WAL store; decision and pending removal are one transaction |
+| Task publication assignment | Task definition and original publication key commit together; a missing/rejected birth cannot authorize an operation; later Policy changes keep a committed original assignment |
 | Generic dispatch | Guard refuses pending before admission, consumption and final callback |
 | Message streaming | Shared authority read refuses pending before custody, range burn and final write |
 | Provider execution | Request and live-release guards refuse pending, including callbacks after output-capacity waits |
@@ -76,6 +82,52 @@ original proposal can resolve to its exact final decision; an unavailable store
 fails closed. Durable history retention/compaction and operational recovery of
 unavailable producers remain separate obligations, not implicit timeout refunds.
 
+The operation-role Rust service is a separate authority boundary from Go's
+readiness flag. Before a task's original publication commits, even an existing
+operation worker with a fresh current view cannot acquire its execution claim.
+After rejection, another current allowing Policy still cannot activate that
+task. Every generic/provider/stream guard joins the task-publication assignment
+with the immutable publication receipt in the same deciding transaction.
+A committed birth is necessary, not sufficient: current Cedar and the original
+claim, budget, profile and fence conditions remain required.
+
+The existing direct trusted-source registration profile remains available to
+native/bootstrap callers. It is not staged Governance evidence. Omitting a
+publication in a replay cannot erase an already bound task's origin. A different
+candidate origin cannot replace an unresolved/rejected original; after the
+original commits, re-registering the exact task during a later Policy update
+preserves that original assignment. Default weaver-control always supplies a
+publication key. This contract still assumes a trusted source role; it does not
+implement the separately designed producer-incarnation enrollment authority or
+authenticate a complete higher-order Profile/source closure from a key alone.
+Publication-bound registration is a distinct RPC with required typed fields.
+Adding an optional field to RegisterTask alone would let an older server silently
+ignore the binding. Unsupported RegisterPublishedTask stops bootstrap; there is
+no fallback to direct registration. A fault test verifies that Unimplemented
+causes no direct registration or provider call. The diagram contains capability
+and authority relationships, not deployment-version labels.
+
+** Reproduced registration window and repair
+
+At =1e1053c= both standard Go and Scheme gates passed, but they did not cover
+another operation-role worker racing task registration. A new real mTLS probe
+registered a fresh task while the old Policy permitted all, then attempted that
+task before the intended denying publication. It reached a provider and failed
+the new =TestProviderControlStagesBeforeTaskRegistration= check. Go now stages
+before registration. Rust also persists the original publication assignment:
+ordering alone cannot protect a task left materialized after a rejected CAS.
+The post-repair probe returns no transport call. A separate rejected-birth test
+uses an unrelated allowing image and a positive transport control, preventing
+TLS/credential failure from masquerading as enforcement.
+
+An initial test incorrectly expected a NotFound operation lookup. The API returns
+a generic failed-precondition error; that error is not evidence of zero balance
+or no execution. The integration check now rejects a positive receipt, while
+the native ledger test independently verifies zero new hold for the refused task.
+The new proptest model also caught its own missing-task/zero-account assumption
+and shrank it to =suffix = [(0, 0)]=. Its framework regression seed is retained;
+the oracle now distinguishes an absent task from an existing zero-held account.
+
 * Property and proof correspondence
 
 The native proptest suite separates typed Stage/Decide/Restart commands from an
@@ -85,6 +137,12 @@ sixty-four cases exercise two logical proposals and suffixes of one to thirty-on
 commands. Each prefix checks current custody eligibility and the original hold.
 Deterministic tests additionally check already-consumed ranges, changed original
 coordinates, storage-trigger failure and competing SQLite handles.
+The task-origin suite adds sixty-four framework cases with two publication
+keys and eight task nodes. Its independent birth/pending/decision/claim model
+checks registration, commit/reject, direct replay, fresh admission and restart.
+Existing claims are replayed with their original proposal; no implementation
+return value determines expected birth or credit. Its one-credit generic fixture
+is not numerically identical to Quint's four-credit provider fixture.
 
 Existing PublicationRecovery.qnt owns the pending command set and atomic
 decision/removal. AuthorityPublication.qnt composes it with the existing
@@ -99,6 +157,8 @@ another publication engine. It proves that every original pending commitment
 remains pending or has an exact corresponding immutable decision through any
 finite run; staging blocks readiness; resolving one key preserves siblings;
 existing original-decision and accounting preservation laws still compose.
+Additional laws keep rejected task births ineligible after any finite recovery
+run, and preserve an original committed birth across later Policy decisions.
 Authentication, full command materialization, SQLite non-rollback recovery and
 placing the pending check under every actual I/O guard remain native premises.
 The proofs do not establish physical isolation, storage anti-rollback or SDK
@@ -117,10 +177,12 @@ not establish the cause of the startup delay or erase that failed trial.
 
 | Check | Result / scope |
 |-------+----------------|
-| Full Rust workspace | 99 passed, one deliberately ignored service helper; includes ASP deny, native properties, actual TCP/TLS and all ledger tests |
+| Full Rust workspace after task-origin repair | 102 passed, one deliberately ignored service helper; includes ASP deny, native properties, actual TCP/TLS and all ledger tests |
 | Focused real Go/Rust source recovery | Passed with race detection: staging/final reply loss, control restart, two pending proposals, blocked old caller and partial output |
 | Normal Go packages | go test -race ./... passed before documentation synchronization; final standard gate recorded on delivery |
-| AuthorityPublication Quint | 33 authority scenarios passed, including four pending-barrier scenarios |
+| Full standard Scheme gate at =1e1053c= | 14/14 stages passed; nineteen Cases; natural gerbil test exit in 10.812896125 seconds under the unchanged fifteen-second bound; this preceded the newly discovered registration counterexample |
+| Scheme Governance/source-assets runtime after final capability repair | Actual Scheme to Cedar FFI to Go/Rust lost-publication-reply/restart test passed in 33.720 seconds using the existing installed Scheme prefix; not a second cold SDK/package qualification |
+| AuthorityPublication Quint | 38 authority scenarios passed, including pending barriers and operation-role task-birth counterexamples |
 | PublicationRecovery Quint | 39 scenarios passed; stage is included in normal exploration |
 | AuthorityPublication safety | 1,000 samples, sixty steps, seed 293; no violation, not exhaustive checking |
 | PublicationRecovery Lean | File elaborated; intent-preservation theorem uses propext/Quot.sound, no admitted proof |
@@ -138,6 +200,25 @@ microseconds (316.98–368.22) and consume/dispatch burn at 492.87 microseconds
 historical Criterion cache comparisons are not a controlled before/after study
 and do not qualify a speedup or a universal regression bound.
 
+After the origin repair, the existing benchmark fixture stages a publication,
+registers its original task with that publication key and commits the origin
+before timing. This measures the default bound control profile, including
+historical-origin checks; the earlier fixture used direct task registration.
+The first stronger-fixture run measured 680.41 microseconds fresh admission
+(511.01–958.84), 1.8716 milliseconds consume/dispatch burn (1.1778–2.9069), and
+2.1192 milliseconds stage/decision (1.6098–2.7372). Criterion reported worse
+results against its old cache: approximately +105%, +273% and +158%, respectively.
+These unfavorable measurements are retained. Both the workload and native
+checks changed, the host was not reserved, and no cause is established by that
+comparison. They do not qualify a performance improvement or a matched
+regression bound. Optimization and concurrent/full-path tail-latency acceptance
+remain open; origin enforcement must not be removed to improve these figures.
+
 Raw output is temporary. Keep the minimized framework counterexamples and
 curated observations, with fixed latest structured receipts under ignored cache.
 No code or proof result upgrades the complete external Governance adapter gate.
+
+The first final-capability Scheme-runtime trial failed its unchanged three-second
+Rust-owner startup deadline before entering Scheme, with no process-main marker
+in that trial's log. The independent replay above passed. No cause is inferred
+from that replay and no timeout or cleanup condition was relaxed.

@@ -132,7 +132,7 @@ async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finis
         .await
         .expect("bootstrap");
     let (task, plan) = fixtures::task_plan(16, "https://provider.invalid/v1/chat/completions");
-    owner.register(task).await.expect("task");
+    owner.register(task, None).await.expect("task");
     let mut writer = Ledger::open(&path).expect("writer");
     writer.enqueue_provider(&plan).expect("queue");
     let permit = writer

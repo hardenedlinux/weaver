@@ -18,3 +18,5 @@ mod serialization;
 mod stream_admission_pbt;
 #[path = "unit/stream_properties.rs"]
 mod stream_properties;
+#[path = "unit/task_publication.rs"]
+mod task_publication;

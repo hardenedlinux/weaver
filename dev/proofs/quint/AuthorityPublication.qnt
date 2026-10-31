@@ -10,17 +10,19 @@ module AuthorityPublication {
   type ReadUse={read:ReadView,actual:ReadView}
   // externalCalls is a trace observer outside the modeled store rollback, not
   // an implemented counter service or a second accounting owner.
-  type Control={compiled:int,desired:int,registered:bool,ack:bool,active:bool,reads:Set[ReadView],uses:List[ReadUse],externalCalls:int,submits:int,effectPending:List[Set[int]]}
+  type Control={compiled:int,desired:int,parent:int,requestedFence:int,registered:bool,ack:bool,active:bool,reads:Set[ReadView],uses:List[ReadUse],externalCalls:int,submits:int,effectPending:List[Set[int]],birthUses:List[int]}
   var c:Control
   val original=A::authority.records.get(0)
   val resolved=A::authority.pending==Set()
   val pendingIds=A::authority.pending.map(q=>q.id)
+  val taskAuthorized=c.registered and original.outcome==1
   val actualView={revision:A::authority.head,fence:A::authority.fence,assignment:0,stage:E::s.stage,held:E::s.held,next:E::s.next,domainCut:E::s.domainCut,pending:pendingIds}
   val safe=E::safe and A::safe and E::s.calls==c.externalCalls and c.uses.indices().forall(i=>c.uses.nth(i).read==c.uses.nth(i).actual) and
     c.submits<=1 and c.effectPending.indices().forall(i=>c.effectPending.nth(i)==Set()) and
+    c.birthUses.indices().forall(i=>c.birthUses.nth(i)==1) and
     (c.active implies c.compiled>=0 and c.registered and original.outcome==1 and original.payload==c.compiled and c.ack) and
     (A::authority.head>=0 implies E::s.revision==A::authority.head and E::s.fence==A::authority.fence)
-  action init=all {E::init,A::init,c'={compiled:-1,desired:0,registered:false,ack:false,active:false,reads:Set(),uses:List(),externalCalls:0,submits:0,effectPending:List()}}
+  action init=all {E::init,A::init,c'={compiled:-1,desired:0,parent:-1,requestedFence:1,registered:false,ack:false,active:false,reads:Set(),uses:List(),externalCalls:0,submits:0,effectPending:List(),birthUses:List()}}
   action stageIntent(id:int):bool=all {A::authority.head>=0,
     A::stage({id:id,payload:1,parent:A::authority.head,fence:A::authority.fence+1}),c'=c,E::observe}
   action decideIntent(id:int):bool={nondet q=A::authority.pending.filter(p=>p.id==id).oneOf()
@@ -28,16 +30,20 @@ module AuthorityPublication {
       if(q.parent==A::authority.head and q.fence>=A::authority.fence) E::publish else E::observe}}
   // Concrete source admission is witnessed by Scheme/FFI/Go tests, not a
   // duplicate Boolean implementation of those validators in this model.
-  action compile(accepted:bool):bool=all {accepted,c.compiled<0,c'=c.with("compiled",c.desired),E::observe,A::observe}
+  action compile(accepted:bool):bool=all {accepted,c.compiled<0,c'=c.with("compiled",c.desired).with("parent",A::authority.head)
+    .with("requestedFence",A::authority.fence+(if(A::authority.head>=0)1 else 0)),E::observe,A::observe}
   action editSource=all {c'=c.with("desired",1),E::observe,A::observe}
-  action register=all {c.compiled>=0,c'=c.with("registered",true),E::observe,A::observe}
+  action stageOriginal=all {c.compiled>=0,A::stage({id:0,payload:c.compiled,parent:c.parent,fence:c.requestedFence}),c'=c,E::observe}
+  action register=all {c.compiled>=0,(pendingIds.contains(0) or original.outcome==1),c'=c.with("registered",true),E::observe,A::observe}
+  action unsafeRegisterBeforeStage=all {c.compiled>=0,c'=c.with("registered",true),E::observe,A::observe}
   // A known durable outcome is observed, never submitted again by bootstrap.
   action commit=all {c.registered,original.outcome==0,
-    A::publish(0,c.compiled,-1,1),c'=c.with("submits",c.submits+1),E::observe}
+    A::publish(0,c.compiled,c.parent,c.requestedFence),c'=c.with("submits",c.submits+1),
+    if(c.parent==A::authority.head and c.requestedFence>=A::authority.fence and A::authority.head>=0)E::publish else E::observe}
   action inspectMissing=all {c.compiled>=0,original.outcome==0,c'=c,E::observe,A::observe}
   action inspectUnavailable=all {c'=c,E::observe,A::observe}
   action acknowledge=all {original.outcome==1,original.payload==c.compiled,c'=c.with("ack",true),E::observe,A::observe}
-  action recover(source:int):bool=all {original.outcome==1,source==c.compiled,A::replay(0,source,-1,1),c'=c.with("ack",true),E::observe}
+  action recover(source:int):bool=all {original.outcome==1,source==c.compiled,A::replay(0,source,c.parent,c.requestedFence),c'=c.with("ack",true),E::observe}
   action activate=all {original.outcome==1,c.ack,original.payload==c.compiled,c'=c.with("active",true),E::observe,A::observe}
   action loseReply=all {c'=c.with("ack",false).with("active",false),E::observe,A::observe}
   action restart=all {c'=c.with("active",false).with("ack",false).with("reads",Set()),E::crash,A::restart}
@@ -50,6 +56,12 @@ module AuthorityPublication {
   action invoke=all {c.active,resolved,c'=c.with("externalCalls",c.externalCalls+1).with("effectPending",c.effectPending.append(pendingIds)),E::invoke,A::observe}
   action release=all {c.active,resolved,c'=c.with("effectPending",c.effectPending.append(pendingIds)),E::batch(1,0),A::observe}
   action unsafePendingRelease=all {c.active,c'=c.with("effectPending",c.effectPending.append(pendingIds)),E::batch(1,0),A::observe}
+  // Another operation-role worker is not gated by this Go process's active flag.
+  action operationWorkerAdmit=all {taskAuthorized,resolved,c'=c.with("birthUses",c.birthUses.append(original.outcome)),E::admit(0),A::observe}
+  action unsafeTaskBirthOmission=all {c.registered,resolved,c'=c.with("birthUses",c.birthUses.append(original.outcome)),E::admit(0),A::observe}
+  action seedOldAllowingImage=all {A::publish(1,0,-1,1),c'=c,E::observe}
+  action publishOtherAllowingImage=all {A::publish(2,0,A::authority.head,A::authority.fence+1),c'=c,E::restorePolicy}
+  action currentProposal=all {E::observeCurrentProposal,c'=c,A::observe}
   action deliver=all {c'=c,E::deliver,A::observe}
   // Abstract an authenticated non-Policy budget/history deciding-cut change,
   // never a Go watch event. Concrete four-prefix projection remains a premise.
@@ -62,8 +74,8 @@ module AuthorityPublication {
   action unsafeReadUse(v:ReadView):bool=all {c.reads.contains(v),
     c'=c.with("uses",c.uses.append({read:v,actual:actualView})),E::unsafeStaleRelease,A::observe}
   action step={nondet v=c.reads.union(Set(actualView)).oneOf()
-    any {compile(true),editSource,register,commit,inspectMissing,inspectUnavailable,acknowledge,recover(0),recover(1),activate,loseReply,restart,publish,stageIntent(1),stageIntent(2),decideIntent(1),decideIntent(2),domainChange,transport,admit,consume,burn,invoke,release,deliver,readCurrent,consumeRead(v),releaseRead(v)}}
-  action prepared=init.then(compile(true)).then(register)
+    any {compile(true),editSource,stageOriginal,register,commit,inspectMissing,inspectUnavailable,acknowledge,recover(0),recover(1),activate,loseReply,restart,publish,stageIntent(1),stageIntent(2),decideIntent(1),decideIntent(2),currentProposal,operationWorkerAdmit,domainChange,transport,admit,consume,burn,invoke,release,deliver,readCurrent,consumeRead(v),releaseRead(v)}}
+  action prepared=init.then(compile(true)).then(stageOriginal).then(register)
   action ready=prepared.then(commit).then(acknowledge).then(activate)
   action spent=ready.then(admit).then(consume).then(burn).then(invoke)
   action unsafeRecoverDesired=all {original.outcome==1,c'=c.with("compiled",c.desired).with("ack",true).with("active",true),E::observe,A::observe}
@@ -115,4 +127,14 @@ module AuthorityPublication {
     .expect(safe and pendingIds==Set(2)).then(decideIntent(2))
     .expect(safe and resolved and A::authority.records.get(2).outcome==2)
   run authorityPendingGuardOmissionCounterexampleTest=spent.then(stageIntent(1)).then(unsafePendingRelease).expect(not(safe))
+  run authorityTaskCannotRegisterBeforeStageTest=init.then(seedOldAllowingImage).then(compile(true)).then(register.fail())
+  run authorityPendingBirthBlocksOldOperationWorkerTest=init.then(seedOldAllowingImage).then(compile(true))
+    .then(unsafeRegisterBeforeStage).expect(safe).then(operationWorkerAdmit.fail())
+  run authorityRegistrationAsActivationCounterexampleTest=init.then(seedOldAllowingImage).then(compile(true))
+    .then(unsafeRegisterBeforeStage).then(unsafeTaskBirthOmission).expect(not(safe))
+  action rejectedBirth=init.then(seedOldAllowingImage).then(compile(true)).then(stageOriginal).then(register)
+    .then(publishOtherAllowingImage).then(commit).then(currentProposal)
+  run authorityRejectedBirthCannotUseOtherCurrentPolicyTest=rejectedBirth.expect(safe and resolved and original.outcome==2)
+    .then(operationWorkerAdmit.fail())
+  run authorityRejectedBirthGuardOmissionCounterexampleTest=rejectedBirth.then(unsafeTaskBirthOmission).expect(not(safe))
 }

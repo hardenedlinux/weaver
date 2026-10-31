@@ -330,6 +330,7 @@ fn guard(
     format: &str,
 ) -> Result<()> {
     crate::publication_barrier::require_resolved(tx)?;
+    crate::task_publication::require(tx, &p.family)?;
     let (revision, fence, source): (u64, u64, String) = tx
         .query_row(
             "SELECT revision,fence,policy FROM authority WHERE singleton=1",
@@ -366,6 +367,7 @@ fn guard_live(
     format: &str,
 ) -> Result<()> {
     crate::publication_barrier::require_resolved(tx)?;
+    crate::task_publication::require(tx, &p.plan.family)?;
     let (revision, fence, source): (u64, u64, String) = tx
         .query_row(
             "SELECT revision,fence,policy FROM authority WHERE singleton=1",

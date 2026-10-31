@@ -3,6 +3,8 @@
 pub const SCHEMA: &str = r#"
 CREATE TABLE IF NOT EXISTS authority_pending (
  operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, proposal TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS task_publications (
+ family TEXT PRIMARY KEY REFERENCES tasks(family), operation_id TEXT NOT NULL, digest TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), revision INTEGER NOT NULL,
  fence INTEGER NOT NULL, policy TEXT NOT NULL);

@@ -5,6 +5,7 @@ service Gateway {
   rpc ExecuteProvider(ProviderRequest) returns (stream ProviderFrame);
   rpc Inspect(OperationKey) returns (ProviderReceipt);
   rpc RegisterTask(RegisterTaskRequest) returns (Empty);
+  rpc RegisterPublishedTask(RegisterPublishedTaskRequest) returns (Empty);
   rpc PublishAuthority(PublishRequest) returns (PublicationReceipt);
   // Durably block fresh effects for this exact proposal, or observe its existing decision.
   // A returned key is not a publication outcome or an execution grant.
@@ -34,6 +35,8 @@ message Task {
 }
 message ProviderProfile { string id = 1; string protocol = 2; uint64 max_output_tokens = 3; uint64 max_messages = 4; uint64 max_body_bytes = 5; }
 message RegisterTaskRequest { Task task = 1; }
+// Distinct source capability: both fields are required by the server. No fallback.
+message RegisterPublishedTaskRequest { Task task = 1; PublicationKey publication = 2; }
 message PublishRequest { optional uint64 expected_revision = 1; uint64 fence = 2; string policy = 3; string schema = 4; string operation_id = 5; }
 enum PublicationOutcome { PUBLICATION_OUTCOME_UNSPECIFIED = 0; COMMITTED = 1; REJECTED = 2; }
 message PublicationReceipt { string operation_id = 1; string digest = 2; PublicationOutcome outcome = 3; optional uint64 revision = 4; optional uint64 fence = 5; }

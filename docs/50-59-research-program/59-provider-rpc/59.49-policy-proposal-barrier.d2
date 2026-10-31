@@ -4,18 +4,18 @@ title: POLICY PROPOSALS / ONE DECIDING AUTHORITY {shape: text; near: top-center;
 scheme: Scheme Governance / AA\nOriginal semantic source\nExact Cedar projection\nInert compilation {
   class: card; left: 0; top: 0; width: 430; height: 200; style.fill: "#eef3ef"
 }
-go: Go control plane\nFreeze original command\nStage before final CAS\nReconcile the original outcome {
+go: Go control plane\nFreeze original command\nStage before task registration\nFinalize / reconcile original {
   class: card; left: 600; top: 0; width: 440; height: 200
   icon: ../../architecture/diagrams/assets/go.svg; icon.near: top-left
 }
-pending: Rust source owner\nDurable pending proposals\nExact command binding\nNo external effects {
+pending: Rust source owner\nPending and task-origin binding\nExact original command\nNo external effects {
   class: card; left: 1200; top: 0; width: 440; height: 200; style.fill: "#e7edf4"
   icon: ../../architecture/diagrams/assets/rust.svg; icon.near: top-left
 }
 outcome: Atomic decision\nOriginal parent / fence CAS\nImmutable committed or rejected\nResolve only this proposal {
   class: card; left: 1200; top: 420; width: 440; height: 200; style.fill: "#e7edf4"
 }
-guard: Rust final effect guard\nNo unresolved proposal\nCurrent Cedar / original binding\nDispatch and every stream range {
+guard: Rust final effect guard\nNo unresolved proposal\nCommitted task / current Cedar\nOriginal claim / budget / fence\nDispatch and every stream range {
   class: card; left: 600; top: 420; width: 440; height: 200; style.fill: "#e7edf4"
 }
 unknown: Unknown or interrupted\nOriginal command survives\nClaim and hold retained\nNo implicit retry or refund {

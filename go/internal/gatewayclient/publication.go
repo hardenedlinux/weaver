@@ -41,11 +41,17 @@ func Publication(p v1.Publication) *pb.PublishRequest {
 // Publish stages the exact proposal then makes one final CAS call. Errors never
 // trigger automatic resubmission or CAS rebasing; staging alone cannot activate.
 func (c *Client) Publish(ctx context.Context, p v1.Publication) (*pb.PublicationReceipt, error) {
-	digest, err := p.Digest()
-	if err != nil {
+	if err := c.StagePublication(ctx, p); err != nil {
 		return nil, err
 	}
-	if err = c.StagePublication(ctx, p); err != nil {
+	return c.FinalizePublication(ctx, p)
+}
+
+// FinalizePublication makes the one final CAS call. It grants no activation by
+// itself; staged control handoffs call this only after staging and registration.
+func (c *Client) FinalizePublication(ctx context.Context, p v1.Publication) (*pb.PublicationReceipt, error) {
+	digest, err := p.Digest()
+	if err != nil {
 		return nil, err
 	}
 	receipt, err := c.RPC.PublishAuthority(c.Context(ctx), Publication(p))

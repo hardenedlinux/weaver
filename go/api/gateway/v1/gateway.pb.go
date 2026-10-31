@@ -1010,6 +1010,59 @@ func (x *RegisterTaskRequest) GetTask() *Task {
 	return nil
 }
 
+// Distinct source capability: both fields are required by the server. No fallback.
+type RegisterPublishedTaskRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Task          *Task                  `protobuf:"bytes,1,opt,name=task,proto3" json:"task,omitempty"`
+	Publication   *PublicationKey        `protobuf:"bytes,2,opt,name=publication,proto3" json:"publication,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisterPublishedTaskRequest) Reset() {
+	*x = RegisterPublishedTaskRequest{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterPublishedTaskRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterPublishedTaskRequest) ProtoMessage() {}
+
+func (x *RegisterPublishedTaskRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterPublishedTaskRequest.ProtoReflect.Descriptor instead.
+func (*RegisterPublishedTaskRequest) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *RegisterPublishedTaskRequest) GetTask() *Task {
+	if x != nil {
+		return x.Task
+	}
+	return nil
+}
+
+func (x *RegisterPublishedTaskRequest) GetPublication() *PublicationKey {
+	if x != nil {
+		return x.Publication
+	}
+	return nil
+}
+
 type PublishRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	ExpectedRevision *uint64                `protobuf:"varint,1,opt,name=expected_revision,json=expectedRevision,proto3,oneof" json:"expected_revision,omitempty"`
@@ -1023,7 +1076,7 @@ type PublishRequest struct {
 
 func (x *PublishRequest) Reset() {
 	*x = PublishRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1035,7 +1088,7 @@ func (x *PublishRequest) String() string {
 func (*PublishRequest) ProtoMessage() {}
 
 func (x *PublishRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1048,7 +1101,7 @@ func (x *PublishRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishRequest.ProtoReflect.Descriptor instead.
 func (*PublishRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{12}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *PublishRequest) GetExpectedRevision() uint64 {
@@ -1099,7 +1152,7 @@ type PublicationReceipt struct {
 
 func (x *PublicationReceipt) Reset() {
 	*x = PublicationReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1111,7 +1164,7 @@ func (x *PublicationReceipt) String() string {
 func (*PublicationReceipt) ProtoMessage() {}
 
 func (x *PublicationReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1124,7 +1177,7 @@ func (x *PublicationReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicationReceipt.ProtoReflect.Descriptor instead.
 func (*PublicationReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{13}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *PublicationReceipt) GetOperationId() string {
@@ -1172,7 +1225,7 @@ type PublicationKey struct {
 
 func (x *PublicationKey) Reset() {
 	*x = PublicationKey{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1184,7 +1237,7 @@ func (x *PublicationKey) String() string {
 func (*PublicationKey) ProtoMessage() {}
 
 func (x *PublicationKey) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1197,7 +1250,7 @@ func (x *PublicationKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicationKey.ProtoReflect.Descriptor instead.
 func (*PublicationKey) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{14}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *PublicationKey) GetOperationId() string {
@@ -1301,7 +1354,10 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\fmax_messages\x18\x04 \x01(\x04R\vmaxMessages\x12$\n" +
 	"\x0emax_body_bytes\x18\x05 \x01(\x04R\fmaxBodyBytes\"B\n" +
 	"\x13RegisterTaskRequest\x12+\n" +
-	"\x04task\x18\x01 \x01(\v2\x17.weaver.gateway.v1.TaskR\x04task\"\xc1\x01\n" +
+	"\x04task\x18\x01 \x01(\v2\x17.weaver.gateway.v1.TaskR\x04task\"\x90\x01\n" +
+	"\x1cRegisterPublishedTaskRequest\x12+\n" +
+	"\x04task\x18\x01 \x01(\v2\x17.weaver.gateway.v1.TaskR\x04task\x12C\n" +
+	"\vpublication\x18\x02 \x01(\v2!.weaver.gateway.v1.PublicationKeyR\vpublication\"\xc1\x01\n" +
 	"\x0ePublishRequest\x120\n" +
 	"\x11expected_revision\x18\x01 \x01(\x04H\x00R\x10expectedRevision\x88\x01\x01\x12\x14\n" +
 	"\x05fence\x18\x02 \x01(\x04R\x05fence\x12\x16\n" +
@@ -1326,11 +1382,12 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x12PublicationOutcome\x12#\n" +
 	"\x1fPUBLICATION_OUTCOME_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCOMMITTED\x10\x01\x12\f\n" +
-	"\bREJECTED\x10\x022\x9c\x04\n" +
+	"\bREJECTED\x10\x022\x80\x05\n" +
 	"\aGateway\x12Y\n" +
 	"\x0fExecuteProvider\x12\".weaver.gateway.v1.ProviderRequest\x1a .weaver.gateway.v1.ProviderFrame0\x01\x12N\n" +
 	"\aInspect\x12\x1f.weaver.gateway.v1.OperationKey\x1a\".weaver.gateway.v1.ProviderReceipt\x12P\n" +
-	"\fRegisterTask\x12&.weaver.gateway.v1.RegisterTaskRequest\x1a\x18.weaver.gateway.v1.Empty\x12\\\n" +
+	"\fRegisterTask\x12&.weaver.gateway.v1.RegisterTaskRequest\x1a\x18.weaver.gateway.v1.Empty\x12b\n" +
+	"\x15RegisterPublishedTask\x12/.weaver.gateway.v1.RegisterPublishedTaskRequest\x1a\x18.weaver.gateway.v1.Empty\x12\\\n" +
 	"\x10PublishAuthority\x12!.weaver.gateway.v1.PublishRequest\x1a%.weaver.gateway.v1.PublicationReceipt\x12V\n" +
 	"\x0eStageAuthority\x12!.weaver.gateway.v1.PublishRequest\x1a!.weaver.gateway.v1.PublicationKey\x12^\n" +
 	"\x12InspectPublication\x12!.weaver.gateway.v1.PublicationKey\x1a%.weaver.gateway.v1.PublicationReceiptB=Z;github.com/HardenedLinux/weaver/go/api/gateway/v1;gatewayv1b\x06proto3"
@@ -1348,29 +1405,30 @@ func file_gateway_v1_gateway_proto_rawDescGZIP() []byte {
 }
 
 var file_gateway_v1_gateway_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_gateway_v1_gateway_proto_goTypes = []any{
-	(Encoding)(0),               // 0: weaver.gateway.v1.Encoding
-	(PublicationOutcome)(0),     // 1: weaver.gateway.v1.PublicationOutcome
-	(*Empty)(nil),               // 2: weaver.gateway.v1.Empty
-	(*OperationKey)(nil),        // 3: weaver.gateway.v1.OperationKey
-	(*Route)(nil),               // 4: weaver.gateway.v1.Route
-	(*ProviderPlan)(nil),        // 5: weaver.gateway.v1.ProviderPlan
-	(*ProviderRequest)(nil),     // 6: weaver.gateway.v1.ProviderRequest
-	(*Event)(nil),               // 7: weaver.gateway.v1.Event
-	(*ArrowBatch)(nil),          // 8: weaver.gateway.v1.ArrowBatch
-	(*ProviderFrame)(nil),       // 9: weaver.gateway.v1.ProviderFrame
-	(*ProviderReceipt)(nil),     // 10: weaver.gateway.v1.ProviderReceipt
-	(*Task)(nil),                // 11: weaver.gateway.v1.Task
-	(*ProviderProfile)(nil),     // 12: weaver.gateway.v1.ProviderProfile
-	(*RegisterTaskRequest)(nil), // 13: weaver.gateway.v1.RegisterTaskRequest
-	(*PublishRequest)(nil),      // 14: weaver.gateway.v1.PublishRequest
-	(*PublicationReceipt)(nil),  // 15: weaver.gateway.v1.PublicationReceipt
-	(*PublicationKey)(nil),      // 16: weaver.gateway.v1.PublicationKey
-	nil,                         // 17: weaver.gateway.v1.Task.EndpointsEntry
-	nil,                         // 18: weaver.gateway.v1.Task.BodyDigestsEntry
-	nil,                         // 19: weaver.gateway.v1.Task.NodeCostBoundsEntry
-	nil,                         // 20: weaver.gateway.v1.Task.StreamContractsEntry
+	(Encoding)(0),                        // 0: weaver.gateway.v1.Encoding
+	(PublicationOutcome)(0),              // 1: weaver.gateway.v1.PublicationOutcome
+	(*Empty)(nil),                        // 2: weaver.gateway.v1.Empty
+	(*OperationKey)(nil),                 // 3: weaver.gateway.v1.OperationKey
+	(*Route)(nil),                        // 4: weaver.gateway.v1.Route
+	(*ProviderPlan)(nil),                 // 5: weaver.gateway.v1.ProviderPlan
+	(*ProviderRequest)(nil),              // 6: weaver.gateway.v1.ProviderRequest
+	(*Event)(nil),                        // 7: weaver.gateway.v1.Event
+	(*ArrowBatch)(nil),                   // 8: weaver.gateway.v1.ArrowBatch
+	(*ProviderFrame)(nil),                // 9: weaver.gateway.v1.ProviderFrame
+	(*ProviderReceipt)(nil),              // 10: weaver.gateway.v1.ProviderReceipt
+	(*Task)(nil),                         // 11: weaver.gateway.v1.Task
+	(*ProviderProfile)(nil),              // 12: weaver.gateway.v1.ProviderProfile
+	(*RegisterTaskRequest)(nil),          // 13: weaver.gateway.v1.RegisterTaskRequest
+	(*RegisterPublishedTaskRequest)(nil), // 14: weaver.gateway.v1.RegisterPublishedTaskRequest
+	(*PublishRequest)(nil),               // 15: weaver.gateway.v1.PublishRequest
+	(*PublicationReceipt)(nil),           // 16: weaver.gateway.v1.PublicationReceipt
+	(*PublicationKey)(nil),               // 17: weaver.gateway.v1.PublicationKey
+	nil,                                  // 18: weaver.gateway.v1.Task.EndpointsEntry
+	nil,                                  // 19: weaver.gateway.v1.Task.BodyDigestsEntry
+	nil,                                  // 20: weaver.gateway.v1.Task.NodeCostBoundsEntry
+	nil,                                  // 21: weaver.gateway.v1.Task.StreamContractsEntry
 }
 var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	4,  // 0: weaver.gateway.v1.ProviderPlan.routes:type_name -> weaver.gateway.v1.Route
@@ -1378,30 +1436,34 @@ var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	0,  // 2: weaver.gateway.v1.ProviderRequest.encoding:type_name -> weaver.gateway.v1.Encoding
 	7,  // 3: weaver.gateway.v1.ProviderFrame.event:type_name -> weaver.gateway.v1.Event
 	8,  // 4: weaver.gateway.v1.ProviderFrame.arrow:type_name -> weaver.gateway.v1.ArrowBatch
-	17, // 5: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
-	18, // 6: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
-	19, // 7: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
-	20, // 8: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
+	18, // 5: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
+	19, // 6: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
+	20, // 7: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
+	21, // 8: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
 	12, // 9: weaver.gateway.v1.Task.provider_profile:type_name -> weaver.gateway.v1.ProviderProfile
 	11, // 10: weaver.gateway.v1.RegisterTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	1,  // 11: weaver.gateway.v1.PublicationReceipt.outcome:type_name -> weaver.gateway.v1.PublicationOutcome
-	6,  // 12: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
-	3,  // 13: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
-	13, // 14: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
-	14, // 15: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	14, // 16: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	16, // 17: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
-	9,  // 18: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
-	10, // 19: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
-	2,  // 20: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
-	15, // 21: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
-	16, // 22: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
-	15, // 23: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
-	18, // [18:24] is the sub-list for method output_type
-	12, // [12:18] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	11, // 11: weaver.gateway.v1.RegisterPublishedTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	17, // 12: weaver.gateway.v1.RegisterPublishedTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
+	1,  // 13: weaver.gateway.v1.PublicationReceipt.outcome:type_name -> weaver.gateway.v1.PublicationOutcome
+	6,  // 14: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
+	3,  // 15: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
+	13, // 16: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
+	14, // 17: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
+	15, // 18: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	15, // 19: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	17, // 20: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
+	9,  // 21: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
+	10, // 22: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
+	2,  // 23: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
+	2,  // 24: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
+	16, // 25: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
+	17, // 26: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
+	16, // 27: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
+	21, // [21:28] is the sub-list for method output_type
+	14, // [14:21] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_gateway_v1_gateway_proto_init() }
@@ -1413,15 +1475,15 @@ func file_gateway_v1_gateway_proto_init() {
 		(*ProviderFrame_Event)(nil),
 		(*ProviderFrame_Arrow)(nil),
 	}
-	file_gateway_v1_gateway_proto_msgTypes[12].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[13].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[14].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gateway_v1_gateway_proto_rawDesc), len(file_gateway_v1_gateway_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   19,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -11,6 +11,7 @@ mod stream_catalog;
 mod stream_custody;
 mod stream_ranges;
 mod stream_state;
+mod task_publication;
 pub use store::{Dispatch, Ledger};
 pub use stream_custody::{StreamClaim, StreamOwner};
 pub use stream_ranges::RangePermit;

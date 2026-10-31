@@ -35,6 +35,7 @@ module ProviderRpc {
     preparedFirst:0,preparedRows:0,preparedEncoding:0,preparedSession:0,dropped:Set(),releases:List(),invocations:[]}
   // Proposal fields are immutable after admission; no reconnect action resets them.
   action proposeCaps(modern:int,legacy:int):bool=all {s.stage==0,s'=s.with("modern",modern).with("legacy",legacy)}
+  action observeCurrentProposal=all {s.stage==0,s'=s.with("observedRevision",s.revision).with("observedFence",s.fence).with("observedCut",s.domainCut)}
   action selectEncoding(encoding:int):bool=all {s.stage==0,Set(0,1).contains(encoding),s'=s.with("encoding",encoding)}
   // RPC nonce and reconnect identifiers do not select the canonical task/node key.
   action admit(nonce:int):bool=all {authenticated,not(s.closing),current,s.stage==0,boundedCaps(s.modern,s.legacy),Set(0,1,2).contains(nonce),s'=s.with("stage",1).with("held",4)}
@@ -99,7 +100,7 @@ module ProviderRpc {
   action unsafeCreditAsAuthority=s'=appendFrame(s,s.next,1,s.encoding).with("next",s.next+1)
   action unsafeReplayPrepared=s'=appendFrame(s,s.preparedFirst,s.preparedRows,s.preparedEncoding)
   action unsafeRefund=s'=s.with("held",0)
-  action step={nondet nonce=Set(0,1,2).oneOf() any {proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),selectEncoding(0),selectEncoding(1),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(1,1),batch(2,1),reserveSlot,dropSlot,prepareBatch(1,0),prepareBatch(2,1),emitPrepared(0),emitPrepared(1),commitRelease,deliver,discardQueued,publish,restorePolicy,advanceDomainCut,reauthorize,cancel,crash,reconnect,capacityWait,observeEOF,badPeer,wrongCredential,complete,restrictRows}}
+  action step={nondet nonce=Set(0,1,2).oneOf() any {observeCurrentProposal,proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),selectEncoding(0),selectEncoding(1),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(1,1),batch(2,1),reserveSlot,dropSlot,prepareBatch(1,0),prepareBatch(2,1),emitPrepared(0),emitPrepared(1),commitRelease,deliver,discardQueued,publish,restorePolicy,advanceDomainCut,reauthorize,cancel,crash,reconnect,capacityWait,observeEOF,badPeer,wrongCredential,complete,restrictRows}}
   action spent=init.then(admit(0)).then(consume(0)).then(burn).then(invoke)
   run defaultRpcCredentialRequiredTest=init.then(wrongCredential).then(admit(0).fail())
   run sameSubjectDifferentKeyRejectedTest=init.then(badPeer).then(admit(1).fail())

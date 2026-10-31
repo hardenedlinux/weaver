@@ -19,12 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	Gateway_ExecuteProvider_FullMethodName    = "/weaver.gateway.v1.Gateway/ExecuteProvider"
-	Gateway_Inspect_FullMethodName            = "/weaver.gateway.v1.Gateway/Inspect"
-	Gateway_RegisterTask_FullMethodName       = "/weaver.gateway.v1.Gateway/RegisterTask"
-	Gateway_PublishAuthority_FullMethodName   = "/weaver.gateway.v1.Gateway/PublishAuthority"
-	Gateway_StageAuthority_FullMethodName     = "/weaver.gateway.v1.Gateway/StageAuthority"
-	Gateway_InspectPublication_FullMethodName = "/weaver.gateway.v1.Gateway/InspectPublication"
+	Gateway_ExecuteProvider_FullMethodName       = "/weaver.gateway.v1.Gateway/ExecuteProvider"
+	Gateway_Inspect_FullMethodName               = "/weaver.gateway.v1.Gateway/Inspect"
+	Gateway_RegisterTask_FullMethodName          = "/weaver.gateway.v1.Gateway/RegisterTask"
+	Gateway_RegisterPublishedTask_FullMethodName = "/weaver.gateway.v1.Gateway/RegisterPublishedTask"
+	Gateway_PublishAuthority_FullMethodName      = "/weaver.gateway.v1.Gateway/PublishAuthority"
+	Gateway_StageAuthority_FullMethodName        = "/weaver.gateway.v1.Gateway/StageAuthority"
+	Gateway_InspectPublication_FullMethodName    = "/weaver.gateway.v1.Gateway/InspectPublication"
 )
 
 // GatewayClient is the client API for Gateway service.
@@ -34,6 +35,7 @@ type GatewayClient interface {
 	ExecuteProvider(ctx context.Context, in *ProviderRequest, opts ...grpc.CallOption) (Gateway_ExecuteProviderClient, error)
 	Inspect(ctx context.Context, in *OperationKey, opts ...grpc.CallOption) (*ProviderReceipt, error)
 	RegisterTask(ctx context.Context, in *RegisterTaskRequest, opts ...grpc.CallOption) (*Empty, error)
+	RegisterPublishedTask(ctx context.Context, in *RegisterPublishedTaskRequest, opts ...grpc.CallOption) (*Empty, error)
 	PublishAuthority(ctx context.Context, in *PublishRequest, opts ...grpc.CallOption) (*PublicationReceipt, error)
 	// Durably block fresh effects for this exact proposal, or observe its existing decision.
 	// A returned key is not a publication outcome or an execution grant.
@@ -102,6 +104,16 @@ func (c *gatewayClient) RegisterTask(ctx context.Context, in *RegisterTaskReques
 	return out, nil
 }
 
+func (c *gatewayClient) RegisterPublishedTask(ctx context.Context, in *RegisterPublishedTaskRequest, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Gateway_RegisterPublishedTask_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gatewayClient) PublishAuthority(ctx context.Context, in *PublishRequest, opts ...grpc.CallOption) (*PublicationReceipt, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PublicationReceipt)
@@ -139,6 +151,7 @@ type GatewayServer interface {
 	ExecuteProvider(*ProviderRequest, Gateway_ExecuteProviderServer) error
 	Inspect(context.Context, *OperationKey) (*ProviderReceipt, error)
 	RegisterTask(context.Context, *RegisterTaskRequest) (*Empty, error)
+	RegisterPublishedTask(context.Context, *RegisterPublishedTaskRequest) (*Empty, error)
 	PublishAuthority(context.Context, *PublishRequest) (*PublicationReceipt, error)
 	// Durably block fresh effects for this exact proposal, or observe its existing decision.
 	// A returned key is not a publication outcome or an execution grant.
@@ -159,6 +172,9 @@ func (UnimplementedGatewayServer) Inspect(context.Context, *OperationKey) (*Prov
 }
 func (UnimplementedGatewayServer) RegisterTask(context.Context, *RegisterTaskRequest) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterTask not implemented")
+}
+func (UnimplementedGatewayServer) RegisterPublishedTask(context.Context, *RegisterPublishedTaskRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterPublishedTask not implemented")
 }
 func (UnimplementedGatewayServer) PublishAuthority(context.Context, *PublishRequest) (*PublicationReceipt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishAuthority not implemented")
@@ -239,6 +255,24 @@ func _Gateway_RegisterTask_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_RegisterPublishedTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterPublishedTaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).RegisterPublishedTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_RegisterPublishedTask_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).RegisterPublishedTask(ctx, req.(*RegisterPublishedTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Gateway_PublishAuthority_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PublishRequest)
 	if err := dec(in); err != nil {
@@ -307,6 +341,10 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterTask",
 			Handler:    _Gateway_RegisterTask_Handler,
+		},
+		{
+			MethodName: "RegisterPublishedTask",
+			Handler:    _Gateway_RegisterPublishedTask_Handler,
 		},
 		{
 			MethodName: "PublishAuthority",

@@ -70,6 +70,17 @@ theorem step_preserves_accounting [DecidableEq Key] (h : Safe held calls s) (ste
 
 def Ready (s : State Key) : Prop := ∀ id, s.pending id = none
 
+def TaskBirthCommitted (s : State Key) (id : Key) : Prop :=
+  ∃ d, s.records id = some d ∧ d.committed = true
+
+variable {id : Key} {d : Decision}
+
+theorem unresolved_birth_cannot_authorize (unknown : s.records id = none) : ¬ TaskBirthCommitted s id := by
+  simp [TaskBirthCommitted,unknown]
+
+theorem rejected_birth_cannot_authorize (recorded : s.records id = some d) (rejected : d.committed = false) :
+    ¬ TaskBirthCommitted s id := by simp [TaskBirthCommitted,recorded,rejected]
+
 def PreservesIntents (s t : State Key) : Prop := ∀ id q, s.pending id = some q →
   t.pending id = some q ∨ ∃ d, t.records id = some d ∧ (d.payload,d.parent,d.requestedFence) = q
 
@@ -77,7 +88,7 @@ theorem step_preserves_original_intents [DecidableEq Key] (step : Step s t) : Pr
   intro key q existing
   cases step with
   | stage id candidate fresh bound =>
-    by_cases same : key = id <;> simp_all [write, clear]
+    by_cases same : key = id <;> simp_all [write]
   | commit id payload fence fresh monotone bound =>
     by_cases same : key = id <;> simp_all [write, clear]
   | reject id payload parent fence fresh conflict bound =>
@@ -112,6 +123,17 @@ theorem run_preserves_original_intents [DecidableEq Key] (run : Run s t) : Prese
     rcases ih id q existing with pending | ⟨d, recorded, bound⟩
     · exact step_preserves_original_intents step id q pending
     · exact Or.inr ⟨d, step_preserves_original_decisions step id d recorded, bound⟩
+
+theorem rejected_birth_stays_ineligible_after_recovery [DecidableEq Key] (run : Run s t)
+    (recorded : s.records id = some d) (rejected : d.committed = false) : ¬ TaskBirthCommitted t id :=
+  rejected_birth_cannot_authorize (run_preserves_original_decisions run id d recorded) rejected
+
+theorem original_committed_birth_survives_policy_changes [DecidableEq Key] (run : Run s t)
+    (birth : TaskBirthCommitted s id) : TaskBirthCommitted t id := by
+  obtain ⟨d,recorded,committed⟩ := birth
+  exact ⟨d,run_preserves_original_decisions run id d recorded,committed⟩
+
+#print axioms rejected_birth_stays_ineligible_after_recovery
 
 #print axioms run_preserves_original_intents
 #print axioms staged_intent_blocks_effect_readiness

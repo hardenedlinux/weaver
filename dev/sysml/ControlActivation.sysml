@@ -15,7 +15,9 @@ package ControlActivation {
     requirement def ControlActivationAcknowledgment {
         doc /* Go exposes operation ingress only after original-task registration and an exact committed publication acknowledgment. Unknown outcomes cannot activate or trigger automatic rebase. Exact recovery may observe a historical decision without making it current authority. */
         doc /* Before a new final publication, Go stages its exact original ID,
-           parent, fence and Policy/schema body at the Rust source owner. A stage
+           parent, fence and Policy/schema body at the Rust source owner before
+           task registration. Each staged task atomically binds its immutable
+           family to its original publication key. A stage
            key proves durable pending or an already recorded exact decision,
            never current authority. All effect guards reject any unresolved
            Policy proposal under the same SQLite transaction. Final publication
@@ -23,6 +25,13 @@ package ControlActivation {
            atomically. Lost replies and restart preserve pending and unknown
            holds. This administrative Policy proposal protocol is not the
            external hard-fact capture/projection or independent floor protocol. */
+        doc /* Go readiness is not the Rust operation-role authorization boundary.
+           A materialized task whose original publication is missing or rejected
+           must not execute under another current allowing image. Every effect
+           guard requires that task's exact committed origin plus current Cedar,
+           pending, claim, budget and fence checks. Direct trusted registration
+           replay cannot erase an existing origin; later Policy updates preserve
+           a committed original assignment. */
     }
     requirement def ControlStreamRecoveryBinding {
         doc /* Go compiles proposals against the frozen original task and forwards one Rust execution stream over mutual TLS gRPC. Source methods are absent from operation ingress. Shared budgets, original claims and unknown holds survive partial output, revocation, SDK retries and both process restarts. Previously authorized queue entries may drain after revocation. */
@@ -37,6 +46,7 @@ package ControlActivation {
     }
     part def RustAuthority {
         attribute unresolvedPolicyProposals : Integer;
+        attribute originalTaskPublicationCommitted : Boolean;
         attribute currentRevision : Integer;
         attribute consumed : Boolean;
         attribute heldBudget : Integer;

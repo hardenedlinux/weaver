@@ -73,6 +73,23 @@ impl Ledger {
 
     /// Register or recover the exact immutable original task.
     pub fn register_task(&mut self, task: &Task) -> Result<()> {
+        self.register_task_binding(task, None)
+    }
+
+    /// Staged control tasks cannot execute before their original publication commits.
+    pub fn register_published_task(
+        &mut self,
+        task: &Task,
+        key: &weaver_contracts::PublicationKey,
+    ) -> Result<()> {
+        self.register_task_binding(task, Some(key))
+    }
+
+    fn register_task_binding(
+        &mut self,
+        task: &Task,
+        key: Option<&weaver_contracts::PublicationKey>,
+    ) -> Result<()> {
         task.validate()?;
         let record = serde_json::to_string(task)?;
         let tx = self
@@ -105,6 +122,7 @@ impl Ledger {
                 .map_err(db)?;
             }
         }
+        crate::task_publication::bind(&tx, &task.family, key)?;
         tx.commit().map_err(db)?;
         Ok(())
     }
@@ -261,6 +279,7 @@ fn receipt(connection: &Connection, family: &str, node: &str) -> Result<Option<R
 
 fn guard(tx: &Transaction<'_>, p: &Proposal) -> Result<()> {
     crate::publication_barrier::require_resolved(tx)?;
+    crate::task_publication::require(tx, &p.family)?;
     let (revision, fence, policy): (u64, u64, String) = tx
         .query_row(
             "SELECT revision,fence,policy FROM authority WHERE singleton=1",

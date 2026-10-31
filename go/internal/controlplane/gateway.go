@@ -38,14 +38,33 @@ func Bootstrap(ctx context.Context, source, owner *gatewayclient.Client, bundle 
 	if err != nil {
 		return nil, err
 	}
+	receipt, err := source.InspectPublication(ctx, frozen.Publication)
+	if err == nil && receipt.GetOutcome() == pb.PublicationOutcome_REJECTED {
+		return nil, gatewayclient.ErrPublicationRejected
+	}
+	if err != nil {
+		if status.Code(err) != codes.NotFound {
+			return nil, err
+		}
+		if err = source.StagePublication(ctx, frozen.Publication); err != nil {
+			return nil, err
+		}
+		receipt = nil
+	}
+	digest, err := frozen.Publication.Digest()
+	if err != nil {
+		return nil, err
+	}
 	for _, task := range frozen.Tasks {
-		if _, err = source.RPC.RegisterTask(source.Context(ctx), &pb.RegisterTaskRequest{Task: gatewayclient.Task(task)}); err != nil {
+		if _, err = source.RPC.RegisterPublishedTask(source.Context(ctx), &pb.RegisterPublishedTaskRequest{Task: gatewayclient.Task(task), Publication: &pb.PublicationKey{OperationId: frozen.Publication.OperationID, Digest: digest}}); err != nil {
 			return nil, err
 		}
 	}
-	receipt, err := source.ObserveOrPublish(ctx, frozen.Publication)
-	if err != nil {
-		return nil, err
+	if receipt == nil {
+		receipt, err = source.FinalizePublication(ctx, frozen.Publication)
+		if err != nil {
+			return nil, err
+		}
 	}
 	if receipt.GetRevision() != frozen.View().Revision || receipt.GetFence() != frozen.View().Fence {
 		return nil, errors.New("source activation observation")

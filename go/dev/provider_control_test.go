@@ -227,6 +227,9 @@ func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixtu
 	if _, err = c.client.RPC.RegisterTask(c.client.Context(ctx), &pb.RegisterTaskRequest{Task: gatewayclient.Task(bundle.Tasks[0])}); status.Code(err) != codes.Unimplemented {
 		t.Fatalf("frontend exposes registration: %v", err)
 	}
+	if _, err = c.client.RPC.RegisterPublishedTask(c.client.Context(ctx), &pb.RegisterPublishedTaskRequest{Task: gatewayclient.Task(bundle.Tasks[0])}); status.Code(err) != codes.Unimplemented {
+		t.Fatalf("frontend exposes publication-bound registration: %v", err)
+	}
 	wrongPlan := bundle.Plans[0]
 	wrongPlan.Body = strings.Replace(wrongPlan.Body, "hello", "forged", 1)
 	if _, err = c.client.Execute(ctx, wrongPlan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
@@ -349,6 +352,10 @@ func exerciseControlSharedBudget(t *testing.T, source func(*testing.T, *fixture,
 func (p *publicationReplyLoss) RegisterTask(ctx context.Context, in *pb.RegisterTaskRequest) (*pb.Empty, error) {
 	source := p.sourceClient()
 	return source.RPC.RegisterTask(source.Context(ctx), in)
+}
+func (p *publicationReplyLoss) RegisterPublishedTask(ctx context.Context, in *pb.RegisterPublishedTaskRequest) (*pb.Empty, error) {
+	source := p.sourceClient()
+	return source.RPC.RegisterPublishedTask(source.Context(ctx), in)
 }
 func (p *publicationReplyLoss) StageAuthority(ctx context.Context, in *pb.PublishRequest) (*pb.PublicationKey, error) {
 	source := p.sourceClient()

@@ -23,6 +23,7 @@ enum Command {
     },
     Register {
         task: Box<Task>,
+        publication: Option<PublicationKey>,
         reply: oneshot::Sender<Result<()>>,
         slot: OwnedSemaphorePermit,
     },
@@ -105,9 +106,14 @@ impl SourceOwner {
             .map_err(|_| Status::unavailable("source result unknown; reconcile original identity"))?
             .map_err(|_| Status::failed_precondition("source authority or state rejected"))
     }
-    pub(crate) async fn register(&self, task: Task) -> std::result::Result<(), Status> {
+    pub(crate) async fn register(
+        &self,
+        task: Task,
+        publication: Option<PublicationKey>,
+    ) -> std::result::Result<(), Status> {
         self.submit(|reply, slot| Command::Register {
             task: Box::new(task),
+            publication,
             reply,
             slot,
         })
@@ -192,8 +198,13 @@ fn process(
                 let result = ledger.stage_authority(&change);
                 answer(ledger, reply, result, slot)?;
             }
-            Command::Register { task, reply, slot } => {
-                let result = register(ledger, &task);
+            Command::Register {
+                task,
+                publication,
+                reply,
+                slot,
+            } => {
+                let result = register(ledger, &task, publication.as_ref());
                 answer(ledger, reply, result, slot)?;
             }
             Command::Publish {
@@ -229,11 +240,14 @@ fn answer<T>(
     let _ = reply.send(result);
     Ok(())
 }
-fn register(ledger: &mut Ledger, task: &Task) -> Result<()> {
+fn register(ledger: &mut Ledger, task: &Task, publication: Option<&PublicationKey>) -> Result<()> {
     for endpoint in task.endpoints.values() {
         weaver_execution::HttpsTransport::validate_endpoint(endpoint)?;
     }
-    ledger.register_task(task)
+    match publication {
+        Some(key) => ledger.register_published_task(task, key),
+        None => ledger.register_task(task),
+    }
 }
 
 #[cfg(test)]
