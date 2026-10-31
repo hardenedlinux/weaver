@@ -63,6 +63,25 @@ an independent liveness model for every possible fault schedule. Randomized
 cross-process wake/cancel/commit scheduling and arbitrary finite native domains
 remain explicit extension work.
 
+* Correspondence with existing formal owners
+=StreamingExecution.qnt= owns queue/hold, crash, current-owner and final-range
+guard schedules. Its =queueHasNoWireTest=, source-identity refusal and no-refund
+counterexamples correspond to native safety obligations; its three unit-cost
+messages are not numerically identical to the two-message, four-credit native
+fixture. No automatic trace-refinement result is claimed.
+
+=StreamingExecution.lean= supplies =safe_step=, =safe_run=,
+=arbitrary_finite_messages_and_ranges= and =held_never_decreases=. The new
+native model exercises a bounded admission/restart subset with budget eight.
+Native unlisted strings test materialization refusal at the boundary: they are
+not extra inhabitants of Lean's authorized finite message type. Faithful source
+binding, durable recovery, actual Cedar evaluation and effect observations remain
+explicit native premises, exercised through concrete tests rather than assumed
+proved by a passing random sample.
+
+=NativeExitQualification= separately owns qualification/evidence preservation.
+It does not become another message/account evaluator or a throughput proof.
+
 * Standard integration and resources
 =check-rust= runs native Cargo tests, including proptest and ASP deny admission.
 =check-go= runs normal Go tests and registered fuzz stages. The new measurement
@@ -84,3 +103,20 @@ proptest owner imports repair that layout violation; the deny gate is unchanged.
 The earlier focused property pass did not qualify whole-workspace style
 admission. Likewise, a property function's pass count is distinct from the
 framework's configured generated-case count and the Go engine's execution count.
+
+* Executed framework integration
+At fixed source =c6ab8382d9ac1d9603872ff0bd3b4940749605eb=, the standard
+=check-go= mode passed eighteen stages, including all registered native fuzz
+stages and real gRPC integration. All regular property stages retained their
+three-second setting and default machine concurrency. The dedicated new Go
+property separately completed 4,316 engine executions with twelve workers after
+its distinct-repetition oracle was added; this is not a count of unique cases.
+
+The complete Rust workspace passed ninety-five tests with one deliberately
+ignored integration-service helper. Its three ledger property functions and
+the SSE fragmentation property retain their existing sixty-four-case framework
+configuration; those generated cases are not counted as separate Cargo tests.
+The new independent admission property passed, and the original replay/range
+and transport checks remained enabled. Ledger/server all-target Clippy passed
+with warnings denied. The ASP layout/import failures above remain separate
+failed checks and were not converted into passes by disabling the deny gate.
