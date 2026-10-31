@@ -6,9 +6,10 @@ package ControlActivation {
     requirement def SourceStartupObservation {
         doc /* Local Go startup phases distinguish configuration readiness,
            authority connections/reconciliation and issuing Serve; only the
-           actual authenticated channel proves readiness. Scheme compiler start,
-           successful/failed reaping and artifact decoding are separate events.
-           The native fixture records module readiness, entry, compilation and
+           actual authenticated channel proves readiness. Go deployment never
+           starts a Scheme process. Compiler execution and artifact decoding in
+           source-preparation tests are separate events, not runtime interop.
+           The SDK fixture records module readiness, entry, compilation and
            artifact write with SDK CPU/real clocks and host-wall microseconds.
            Clock origins differ; compare calibrated intervals and retain clock
            adjustment/profiling premises. Phase text is forgeable diagnostics,

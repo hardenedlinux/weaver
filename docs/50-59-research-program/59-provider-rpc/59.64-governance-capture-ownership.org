@@ -35,7 +35,7 @@ that local commitment format is not the Scheme-to-Rust object transport.
 |-------+---------------------------------------|
 | Scheme | Typed scope, actual governed producer, bounded single completed output, duplicate fuse and late-sink fence |
 | Rust host / pinned upstream SDK | Assemble the admitted VM/program graph, bind its actual export, retain a strong result root, copy/validate into Rust-owned values before await/queue and release roots on the owner thread |
-| Go | Typed producer Bootstrap, publication/routing and reconciliation; the deployed Scheme file entry still uses the compiler/artifact adapter |
+| Go | Exclusive approved-producer RPC or JSON/YAML file deployment; typed Bootstrap, publication/routing and reconciliation; no Scheme process |
 | Quint | Existing boundary evidence now requires one emission, completion and an unpoisoned capture; existing borrow/VM restart and source/fence schedules remain shared |
 | Lean | Three conditional refusal laws strengthen the existing BoundaryContext; they do not prove Gambit mutexes, native ABI provenance, allocation or durability |
 
@@ -1055,12 +1055,12 @@ or successful compilation authorizes a final send. No retry is added to the
 compilation client; loss requires reconciliation of the original publication,
 not a new family, budget or execution opportunity.
 
-The public embedding API now joins approved compilation to Go Bootstrap. The
-default deployed environment entry still selects the historical Scheme
-process/file compiler for Scheme files. Replacing that entry requires an
-explicitly installed approved producer graph and its deployment lifecycle;
-the fixture's static catalog is not that deployment. This remaining work must
-not be hidden by the passing embedded bridge. Internal Scheme canonical JSON
+The public embedding API joins approved compilation to Go Bootstrap. The Go
+deployment entry now uses the same API for an explicit approved producer name;
+JSON/YAML remains a separate data-file choice. Rust still requires an explicitly
+installed approved producer graph and its deployment lifecycle; the fixture's
+static catalog is not that deployment. This remaining work must not be hidden
+by the passing embedded bridge. Internal Scheme canonical JSON
 commitments and Cedar/provider JSON documents also remain; none is the
 Scheme/Rust FFI carrier.
 
@@ -1125,3 +1125,72 @@ All 20 Governance and 25 server all-feature unit/property tests passed. The one
 existing observed-server fixture remains Go-owned and intentionally ignored by
 the ordinary Rust unit runner; this is separate from the actual SDK RPC test.
 The core D2 rendered and was visually inspected. No dependency pin changed.
+
+* Go deployment uses the approved producer boundary
+
+=RunFromEnv= now selects exactly one present setting: =WEAVER_CONTROL_PRODUCER=
+for an approved producer name, or =WEAVER_CONTROL_CONFIG= for JSON/YAML data.
+Both present (including an empty conflicting setting), neither present and an
+empty selected value refuse. Scheme file extensions, case-insensitively, refuse
+as deployment input. A named selection never opens a configuration file, starts
+a compiler or falls back after an unavailable catalog, rejected compilation,
+changed authority or publication failure. Selection retains the original file
+path rather than re-reading it from the environment during activation.
+
+The production Go compiler adapter and its temporary JSON artifact protocol are
+removed. Producer mode invokes the existing authenticated =BootstrapProducer=
+after both authority connections are ready. Only successful reconciliation can
+reach frontend Serve. File mode retains bounded JSON/YAML decoding and the same
+publication CAS; it is the explicitly trusted data-administration profile,
+not a substitute evaluator for Scheme programs. No new Governance DSL is added.
+
+The actual linked SDK test now exercises =RunFromEnv= over real source and
+operation mTLS channels and a second frontend mTLS connection. Its compiler
+setting points to a nonexistent path: activation must still complete using the
+producer RPC. The repeated compilation reconciles the same original publication.
+The frontend request still reaches Rust's final Cedar Forbid, and independent
+ledger inspection finds no provider admission. The Go deployment closes
+naturally before the original Rust fixture rotates the source during a third
+paused compilation. All three calls precede natural VM cleanup. This full
+integration passed in 8.21 seconds of runtime; its build was separate.
+
+This does not install a production Scheme graph into the stock Rust binary.
+It still must explicitly install its approved program and catalog through the
+shared lifecycle. The current SDK graph is a qualification fixture, with fixture
+Governor/Profile construction. Promoting it would silently impose test semantics
+on production. Without a catalog, named Go deployment refuses; it cannot quietly
+resume the removed compiler path. Program installation and canonical registry
+recovery remain open work.
+
+Existing Go-owned Scheme integration scenarios now prepare their source under
+the test owner, then feed only the resulting validated data file to the control
+process. Their negative source controls remain source-preparation tests. They
+do not establish runtime FFI or replace root Gerbil build/test qualification;
+the linked SDK/server test supplies the real in-process boundary evidence.
+Prospective revocation data is decoded directly instead of mistakenly invoking
+a compiler on an already prepared JSON file.
+
+Quint checks exclusive presence, empty producer refusal, Scheme-file refusal and
+absence of file fallback, bringing this slice to 210 named schedules. Lean's four
+new laws prove exclusive selection and conditional composition of actual
+compilation with publication; they report no axioms. The named-publication
+premise is owner evidence, not a proof of database/TLS implementation. Go's
+standard fuzz framework exercised 123336 selector inputs with 12 workers.
+An internal test also places a valid fallback Bundle beside a failing producer
+and confirms that only the compile RPC is called, with no staging or publication.
+
+The first updated SysML trace check failed because the deleted compiler adapter
+was still a startup witness. The trace now points to the actual deployment
+selector and retains authority reconciliation and authenticated readiness as
+separate observations. Historical compiler phase logs remain historical evidence,
+not current production lifecycle requirements.
+
+The migrated Go-owned preparation/control suite passed all six top-level
+scenarios, including all 20 source rejection controls, in 176.380 seconds total.
+Revocation after partial streaming and dual restart retained the original hold;
+shared-budget/SDK-retry and source publication reply-loss/restart scenarios
+passed. Each rejected source completed naturally under its unchanged 15-second
+per-source gate. Suite wall time includes repeated source preparation and is not
+Gateway runtime latency or a cold performance comparison. The three changed Go
+runtime packages passed race checks, and the corrected SysML/project checks
+passed. The D2 rendered and was visually inspected. No dependency pin changed.

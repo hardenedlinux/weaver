@@ -84,5 +84,6 @@ func TestApprovedSourceMTLSBootstrap(t *testing.T) {
 	if status.Code(err) != codes.FailedPrecondition {
 		t.Fatal("unexpected forbidden operation inspection", err)
 	}
+	exerciseProducerDeployment(t, ctx, directory, bundle.Plans[0])
 	t.Log("Scheme SDK -> authenticated CompileSource -> typed Go Bootstrap -> Rust final Policy denial")
 }

@@ -773,6 +773,37 @@ theorem compilation_reply_does_not_fix_future_authority
 #print axioms compilation_epoch_change_blocks_reply
 #print axioms compilation_reply_keeps_registered_original
 #print axioms compilation_reply_does_not_fix_future_authority
+/- Source presence is not source validity. The deployment selector forbids
+   ambiguity before opening files or attempting compilation. Successful producer
+   deployment additionally requires real compilation and publication evidence. -/
+def ExclusiveDeploymentSource (named file : Prop) : Prop :=
+  (named ∧ ¬ file) ∨ (file ∧ ¬ named)
+theorem deployment_source_cannot_be_ambiguous
+    (selected : ExclusiveDeploymentSource named file) : ¬ (named ∧ file) := by
+  intro both
+  rcases selected with producer | data
+  · exact producer.2 both.2
+  · exact data.2 both.1
+def ProducerDeploymentReady (catalog : Nat → Option ProducerBinding) (name : Nat)
+    (entry : ProducerBinding) (before after : ProducerIdentity)
+    (named file published : Prop) : Prop :=
+  ExclusiveDeploymentSource named file ∧ named ∧
+  CompilationReplyReady catalog name entry before after ∧ published
+theorem producer_deployment_never_uses_file_fallback
+    (ready : ProducerDeploymentReady catalog name entry before after named file published) : ¬ file := by
+  intro fallback
+  exact deployment_source_cannot_be_ambiguous ready.1 ⟨ready.2.1, fallback⟩
+theorem producer_deployment_requires_publication
+    (ready : ProducerDeploymentReady catalog name entry before after named file published) : published :=
+  ready.2.2.2
+theorem producer_deployment_keeps_registered_original
+    (ready : ProducerDeploymentReady catalog name entry before after named file published) :
+    ProducerSelected catalog name after entry :=
+  compilation_reply_keeps_registered_original ready.2.2.1
+#print axioms deployment_source_cannot_be_ambiguous
+#print axioms producer_deployment_never_uses_file_fallback
+#print axioms producer_deployment_requires_publication
+#print axioms producer_deployment_keeps_registered_original
 #print axioms changed_source_observation_rejects_producer
 #print axioms producer_selection_keeps_all_original_fields
 #print axioms source_owner_join_preserves_cleanup

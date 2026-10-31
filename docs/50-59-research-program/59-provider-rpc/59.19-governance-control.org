@@ -270,8 +270,9 @@ by the synchronous Scheme call. The ABI accepts two immutable borrowed regions,
 each at most 65536 bytes, keeps no pointer, allocates no returned buffer and
 performs no callback, ledger write or network call. Status zero certifies only
 typed Policy/schema validity. A valid =forbid= policy passes preflight and still
-denies every actual provider operation. Negative status, compilation failure,
-missing artifact or compiler timeout cannot activate ingress.
+denies every actual provider operation. Negative status or failed approved
+compilation cannot activate ingress. Build/test source preparation still rejects
+missing artifacts and compiler timeouts; Go deployment launches no compiler.
 
 The =crates/policy-ffi= leaf contains the reviewed raw-region conversion. Every
 existing Rust package retains the workspace unsafe-code prohibition. The ABI
@@ -459,21 +460,27 @@ go -C go run ./cmd/weaver-dev -scheme-source /absolute/agentic-ai-lab -scheme-po
 go -C go build ./cmd/weaver-control
 #+end_src
 
-Select =WEAVER_CONTROL_SCHEME_COMPILER= as an absolute =gxi= path before the native
-gate. The actual =weaver-control= executable uses =WEAVER_CONTROL_CONFIG= and
-=WEAVER_CONTROL_LISTEN=; it has no operation CLI or stdin protocol.
+Select =WEAVER_CONTROL_SCHEME_COMPILER= as an absolute =gxi= path for build/test
+preparation only. The actual =weaver-control= executable selects exactly one of
+=WEAVER_CONTROL_PRODUCER= (approved Rust producer name) and
+=WEAVER_CONTROL_CONFIG= (JSON/YAML data file), and uses =WEAVER_CONTROL_LISTEN=.
+It never starts a Scheme compiler or accepts a Scheme file as runtime code.
+An absent producer/catalog or failed compile cannot fall back to a data file.
+The Rust deployment must explicitly install the approved program/catalog;
+the test qualification graph is not a production program. There is no operation
+CLI or stdin protocol.
 
 | Environment group | Required settings |
 |-------------------+-------------------|
 | Frontend TLS | =WEAVER_CONTROL_SERVER_CERT=, =WEAVER_CONTROL_SERVER_KEY=, =WEAVER_CONTROL_CLIENT_CA= |
 | Frontend caller | =WEAVER_CONTROL_PEER_SHA256=, =WEAVER_CONTROL_TOKEN_SHA256= |
-| Native TLS | =WEAVER_CONTROL_AUTHORITY_CA=, =WEAVER_CONTROL_AUTHORITY_SERVER_NAME= |
-| Native operation role | =WEAVER_CONTROL_AUTHORITY_OPERATION_CERT=, =WEAVER_CONTROL_AUTHORITY_OPERATION_KEY=, =WEAVER_CONTROL_AUTHORITY_OPERATION_TOKEN=, =WEAVER_CONTROL_AUTHORITY_OPERATION_ADDRESS= |
-| Native source role | =WEAVER_CONTROL_AUTHORITY_SOURCE_CERT=, =WEAVER_CONTROL_AUTHORITY_SOURCE_KEY=, =WEAVER_CONTROL_AUTHORITY_SOURCE_TOKEN=, =WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS= |
+| Rust authority TLS | =WEAVER_CONTROL_AUTHORITY_CA=, =WEAVER_CONTROL_AUTHORITY_SERVER_NAME= |
+| Rust operation role | =WEAVER_CONTROL_AUTHORITY_OPERATION_CERT=, =WEAVER_CONTROL_AUTHORITY_OPERATION_KEY=, =WEAVER_CONTROL_AUTHORITY_OPERATION_TOKEN=, =WEAVER_CONTROL_AUTHORITY_OPERATION_ADDRESS= |
+| Rust source role | =WEAVER_CONTROL_AUTHORITY_SOURCE_CERT=, =WEAVER_CONTROL_AUTHORITY_SOURCE_KEY=, =WEAVER_CONTROL_AUTHORITY_SOURCE_TOKEN=, =WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS= |
 
 Certificates and keys are file paths; tokens are secrets and are never printed
 by the settings loader. =GERBIL_PATH= and =GERBIL_LOADPATH= select the admitted
-native source/dependency environment for Scheme configuration. Go uses a fixed
+Scheme build/test environment; they do not make Go a Scheme runtime. Go uses a fixed
 fifteen-second startup/drain bound; emergency cleanup is reported as failure.
 The native tests use loopback HTTPS provider implementations and actual network
 gRPC, not external paid provider accounts or an in-memory substitute ledger.

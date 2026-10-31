@@ -382,6 +382,11 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
   {"id":"GovernorSourceHandoff","witnesses":[
+    {"file":"go/internal/controlplane/deployment_source.go","pattern":"func selectDeploymentSource"},
+    {"file":"go/internal/controlplane/deployment_source_test.go","pattern":"func FuzzDeploymentSourceHasOneOwner"},
+    {"file":"go/internal/controlplane/producer_deployment_test.go","pattern":"func exerciseProducerDeployment"},
+    {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"deploymentCannotFallBackToFileTest"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem producer_deployment_keeps_registered_original"},
     {"file":"crates/server/src/grpc.rs","pattern":"async fn compile_source"},
     {"file":"go/internal/controlplane/source_compile.go","pattern":"func BootstrapProducer"},
     {"file":"go/internal/controlplane/approved_source_rpc_test.go","pattern":"func TestApprovedSourceMTLSBootstrap"},
@@ -439,7 +444,7 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlSchemeGovernorRejectsUnselectedPlans"},
     {"file":"go/internal/config/bundle_test.go","pattern":"func TestBundleRejectsSelectionAndCommitmentSubstitution"}]},
   {"id":"SourceStartupObservation","witnesses":[
-    {"file":"go/internal/controlplane/scheme.go","pattern":"phase\", \"reaped"},
+    {"file":"go/internal/controlplane/deployment_source.go","pattern":"func selectDeploymentSource"},
     {"file":"go/internal/controlplane/deployment.go","pattern":"trace\\(\"authority-reconciled\"\\)"},
     {"file":"t/fixtures/governed-control.ss","pattern":"fixture-module-ready"},
     {"file":"go/dev/provider_control_test.go","pattern":"These unauthenticated diagnostics never replace readiness or exit checks"}]},

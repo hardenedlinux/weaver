@@ -188,6 +188,10 @@ package WeaverProject {
         part cedarLibrary : WeaverExecution::CedarSecurityFrameworks;
         part semantics : WeaverExecution::SchemeSemanticPublisher;
         part control : WeaverExecution::GoControlAdapter;
+        doc /* Go deployment chooses an authenticated approved-producer RPC or
+           a JSON/YAML data file, exclusively. It never launches Scheme. Rust's
+           default production program installation remains a delivery gate;
+           qualification graphs do not silently become production semantics. */
         part policy : WeaverExecution::RustPolicy;
         part ledger : WeaverExecution::RustLedger;
         part broker : WeaverExecution::RustFinalBroker;

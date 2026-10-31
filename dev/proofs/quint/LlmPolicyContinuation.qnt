@@ -69,6 +69,16 @@ module LlmPolicyContinuation {
     host:{closed:false,phases:List(0,0),cancelled:Set(),slots:0,deliveries:List(),worker:1,cleaned:false,joined:false,activations:List(),catalog:Set(),catalogUses:List(),rpcAuthority:{certificate:1,key:2,credential:3,epoch:1},rpcBefore:Set(),rpcReplies:List()}}
   pure val producerIdentity0={certificate:1,key:2,credential:3,epoch:1}
   pure val producer0={name:1,root:10,profile:20,content:0,budget:5,history:9,publication:30,proposal:100,authority:producerIdentity0}
+  // Deployment source presence is exclusive. A Scheme file is not a runtime
+  // compiler instruction; an absent producer must not fall back to data input.
+  pure def deploymentSourceValid(named:bool,file:bool,nameValid:bool,schemeFile:bool):bool=
+    named!=file and (named implies nameValid) and (file implies not(schemeFile))
+  run deploymentSourcePresenceIsExclusiveTest=init.expect(Set(false,true).forall(named=>Set(false,true).forall(file=>
+    deploymentSourceValid(named,file,true,false)==(named!=file))))
+  run deploymentCannotSelectSchemeFileTest=init.expect(not(deploymentSourceValid(false,true,true,true)))
+  run deploymentCannotUseEmptyProducerTest=init.expect(not(deploymentSourceValid(true,false,false,false)))
+  run deploymentCannotFallBackToFileTest=init.expect(not(deploymentSourceValid(true,true,true,false)))
+  run deploymentFileAndProducerAreSeparateTest=init.expect(deploymentSourceValid(true,false,true,true) and deploymentSourceValid(false,true,false,false))
   pure def producerValid(e)=e.name>0 and (e.root==10 or e.root==20) and e.profile==20 and e.content==0 and e.budget==5 and e.history==9 and e.authority==producerIdentity0
   pure def catalogValid(entries:Set[Producer]):bool=entries.size()>0 and entries.size()<=64 and entries.forall(e=>producerValid(e)) and
     entries.forall(a=>entries.forall(b=>((a.name==b.name or a.root==b.root) implies a==b) and (a.publication==b.publication implies a.proposal==b.proposal)))

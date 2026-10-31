@@ -232,7 +232,7 @@ func exerciseControlPolicies(t *testing.T, format string, source func(*testing.T
 		revoked.Publication = revocation
 		// Compile prospective revocation before starting the bounded stream RPC.
 		// No source publication or provider send occurs during compilation.
-		revocation = compileControlSource(t, source(t, f, revoked)).Publication
+		revocation = preparedControlBundle(t, source(t, f, revoked)).Publication
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -403,18 +403,9 @@ func TestProviderControlPublicationReplyLossCannotActivateOrRebase(t *testing.T)
 	exerciseControlPublicationReplyLoss(t, nil)
 }
 
-func compileControlSource(t testing.TB, path string) config.Bundle {
+func preparedControlBundle(t testing.TB, path string) config.Bundle {
 	t.Helper()
-	artifact := filepath.Join(t.TempDir(), "source.json")
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER"), "-e", "(dump-stack-trace? #f)", path)
-	cmd.Env = append(os.Environ(), "WEAVER_CONTROL_ARTIFACT="+artifact)
-	out, err := cmd.CombinedOutput()
-	if err != nil || ctx.Err() != nil {
-		t.Fatalf("source compilation: %v %v %s", err, ctx.Err(), out)
-	}
-	data, err := os.ReadFile(artifact)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
 	}

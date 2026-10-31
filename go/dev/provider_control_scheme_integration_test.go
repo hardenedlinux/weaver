@@ -111,10 +111,40 @@ func schemeSource(t testing.TB, f *fixture, b config.Bundle, mode string) string
 	return path
 }
 
+// This is source-preparation qualification, not runtime Scheme interop. The
+// production Go service only consumes data or an authenticated producer RPC.
+// Actual Scheme/Rust ownership is exercised by the linked SDK/server test.
+func preparedSchemeSource(t testing.TB, f *fixture, bundle config.Bundle, mode string) string {
+	t.Helper()
+	source := schemeSource(t, f, bundle, mode)
+	artifact := filepath.Join(t.TempDir(), "prepared.json")
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER"), "-e", "(dump-stack-trace? #f)", source)
+	for _, entry := range os.Environ() {
+		if !strings.HasPrefix(entry, "WEAVER_CONTROL_ARTIFACT=") {
+			cmd.Env = append(cmd.Env, entry)
+		}
+	}
+	cmd.Env = append(cmd.Env, "WEAVER_CONTROL_ARTIFACT="+artifact)
+	output, err := cmd.CombinedOutput()
+	if err != nil || ctx.Err() != nil {
+		t.Fatalf("source preparation failed: %v %v %s", err, ctx.Err(), output)
+	}
+	data, err := os.ReadFile(artifact)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = config.DecodeBundle(data, config.ProfileJSON); err != nil {
+		t.Fatal(err)
+	}
+	return artifact
+}
+
 func TestProviderControlCedarFFIValidationCannotAuthorize(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	b := controlBundle(t, f)
-	c := newControlProcess(t, f, schemeSource(t, f, b, "denyall"))
+	c := newControlProcess(t, f, preparedSchemeSource(t, f, b, "denyall"))
 	c.start(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -126,20 +156,22 @@ func TestProviderControlCedarFFIValidationCannotAuthorize(t *testing.T) {
 	}
 }
 func TestProviderControlSchemeGovernorRevocationAndRestart(t *testing.T) {
-	exerciseControl(t, "ss", func(t *testing.T, f *fixture, b config.Bundle) string { return schemeSource(t, f, b, "valid") })
+	exerciseControl(t, "json", func(t *testing.T, f *fixture, b config.Bundle) string { return preparedSchemeSource(t, f, b, "valid") })
 }
 func TestProviderControlCapturedSchemeGovernorRevocationAndRestart(t *testing.T) {
-	exerciseControl(t, "ss", func(t *testing.T, f *fixture, b config.Bundle) string { return schemeSource(t, f, b, "capture-valid") })
+	exerciseControl(t, "json", func(t *testing.T, f *fixture, b config.Bundle) string {
+		return preparedSchemeSource(t, f, b, "capture-valid")
+	})
 }
 func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart(t *testing.T) {
 	exerciseControlPublicationReplyLoss(t, func(t *testing.T, f *fixture, b config.Bundle) string {
-		return schemeSource(t, f, b, "valid")
+		return preparedSchemeSource(t, f, b, "valid")
 	})
 }
 
 func TestProviderControlSchemeSharedBudgetRejectsConcurrentSendAndSDKRetry(t *testing.T) {
 	exerciseControlSharedBudget(t, func(t *testing.T, f *fixture, b config.Bundle) string {
-		return schemeSource(t, f, b, "valid")
+		return preparedSchemeSource(t, f, b, "valid")
 	})
 }
 

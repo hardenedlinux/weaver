@@ -21,7 +21,7 @@ impl Compiler {
     fn compile(&mut self, source: &OwnedSource) -> Result<OwnedSource, SourceError> {
         assert_eq!(std::thread::current().id(), self.owner);
         self.local.set(self.local.get() + 1);
-        if self.local.get() == 2
+        if self.local.get() == 3
             && let Some((entered, release)) = self.pause.take()
         {
             let _ = entered.send(());
@@ -166,6 +166,8 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
         ("source.key", &pki.source.key),
         ("operation.pem", &pki.operation.pem),
         ("operation.key", &pki.operation.key),
+        ("server.pem", &pki.server.pem),
+        ("server.key", &pki.server.key),
     ] {
         std::fs::write(consumer.join(name), value).expect("ephemeral test identity");
     }
@@ -249,7 +251,7 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
         cleaned
             .await
             .expect("natural VM cleanup before acknowledgment"),
-        2
+        3
     );
     assert_eq!(permits.available_permits(), capacity.get());
     worker.finish().await.expect("tracked worker joined");
