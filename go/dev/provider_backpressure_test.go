@@ -147,6 +147,9 @@ func (o *flowObserver) await(t *testing.T, ctx context.Context, phase string, id
 	for {
 		select {
 		case event := <-o.events:
+			if phase == "ready" && event.id == id && (event.phase == "expired" || event.phase == "cancelled") {
+				t.Fatalf("reservation %d ended as %s before required capacity wake; the existing native deadline and assertions remain unchanged", id, event.phase)
+			}
 			if event.phase == phase && (id == 0 || event.id == id) {
 				t.Logf("actual output phase=%s wait=%d first=%d rows=%d", event.phase, event.id, event.first, event.rows)
 				return event

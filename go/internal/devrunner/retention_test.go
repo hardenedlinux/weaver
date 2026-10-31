@@ -80,3 +80,17 @@ func TestFailureSummaryRetainsFirstCauseBeforePassingSuffix(t *testing.T) {
 		t.Fatal("first failure was lost or diagnostic storage grew")
 	}
 }
+
+func FuzzFailureExcerptRetainsPrecedingDiagnostic(f *testing.F) {
+	f.Add(uint16(0), uint16(0))
+	f.Add(uint16(8191), uint16(8191))
+	f.Fuzz(func(t *testing.T, prefix, suffix uint16) {
+		const cause = "    gateway_test.go:42: original capacity deadline exceeded\n"
+		const marker = "--- FAIL: TestGateway/PROTOBUF\n"
+		output := strings.Repeat("passing progress\n", int(prefix%8192)) + cause + marker + strings.Repeat("later passing case\n", int(suffix%8192))
+		excerpt, err := firstFailureExcerpt(strings.NewReader(output))
+		if err != nil || len(excerpt) > 2048 || !strings.Contains(string(excerpt), cause) || !strings.Contains(string(excerpt), marker) {
+			t.Fatalf("preceding diagnostic lost or retention unbounded: %q %v", excerpt, err)
+		}
+	})
+}

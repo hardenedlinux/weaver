@@ -35,7 +35,11 @@ impl ProviderOutput for Output {
                     #[cfg(not(all(test, unix)))]
                     { self.sender.clone().reserve_owned() }
                 })=>
-                    slot.map_err(|_|Error::Conflict("RPC flow control deadline"))?.map_err(|_|Error::Conflict("RPC receiver closed")),
+                    slot.map_err(|_|{
+                        #[cfg(all(test, unix))]
+                        backpressure_tests::expired();
+                        Error::Conflict("RPC flow control deadline")
+                    })?.map_err(|_|Error::Conflict("RPC receiver closed")),
             }
         })
     }

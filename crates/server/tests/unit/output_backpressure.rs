@@ -86,6 +86,12 @@ pub(super) fn cancelled() {
     }
 }
 
+pub(super) fn expired() {
+    if let Some(observer) = OBSERVER.get() {
+        observer.record("expired", observer.next.load(Ordering::SeqCst) - 1, 0, 0);
+    }
+}
+
 #[test]
 #[ignore = "Go integration starts this test-only server with private observation custody"]
 fn serve_observed_gateway() {

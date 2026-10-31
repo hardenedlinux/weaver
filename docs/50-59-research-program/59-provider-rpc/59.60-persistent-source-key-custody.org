@@ -163,3 +163,45 @@ no-gain qualification, independent authority prefix recovery and independently
 issued subject/incarnation remain open. Do not replace those requirements with
 the local source floor. In particular, an authorized raw source publication is
 still a trusted administrative profile; a source credential is not Cedar proof.
+
+* Merged-source verification and diagnostic correction
+
+The merge at =2ad2c7e= retains the independent-source, registry-qualification and
+retained-root work, including real rollback counterexamples. On that source the
+host Rust workspace passed 134 tests with one intentionally ignored helper;
+all-target workspace Clippy passed with warnings denied. The initial sandboxed
+Rust attempt failed ten real transport tests at socket binding; those failures
+remain environmental failures, not passing transport evidence.
+
+The merged PublicationRecovery module passed 136 named witnesses. Its ordinary
+and retained-source recovery schedules each sampled 1000 traces of 60 steps with
+seed 293. Lean checked the existing composition and retained-key theorems without
+admitting sorryAx. These results include expected unsafe counterexamples and do
+not establish that the independent root has been deployed.
+
+The first clean-source Go gate on this merge passed nineteen of twenty stages.
+The complete provider suite failed its PROTOBUF slow-consumer capacity-wake
+subcase in 14.62 seconds; its suite output hash was
+=dde6cc60d079a6a95cc79ba61a3eee63c8c5ec5eb5523da8473ba718913ea1ed=.
+The bounded summary retained the FAIL marker but lost its preceding assertion.
+The focused case then passed, and ten diagnostic repetitions passed both wire
+encodings in 25.979 seconds. Those passes do not explain the original failure.
+Keep its causal status unresolved rather than infer host noise or a runtime fix.
+
+The diagnostic correction retains a bounded window before the first failure
+marker as well as final status, still within the existing 4096-byte receipt cap.
+Native Go fuzzing checks that preceding diagnostics survive arbitrary bounded
+passing prefixes/suffixes: 249261 executions with twelve workers passed in a
+three-second workload. Actual reserve expiry is now reported by the test-build
+Rust observer, and the Go waiter fails immediately if its required wake instead
+expires or cancels. Production behavior, the one-second capacity deadline and
+the twelve-second scenario deadline are unchanged. The desired ready event and
+all original authorization/accounting assertions remain required.
+
+The initial proof gate failed only because the network sandbox could not resolve
+GitHub while fetching the existing locked SPEC dependency. Standard host proof
+preparation fetched and built the unchanged dependency graph. Its full receipt
+failed source-currentness because diagnostic source was edited while preparation
+was active; that receipt is not a successful clean-source qualification. Run
+the final gates after committing these diagnostic changes. No lock or dependency
+pin is changed to address either failure.

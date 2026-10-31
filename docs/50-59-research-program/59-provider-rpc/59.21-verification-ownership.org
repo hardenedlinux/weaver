@@ -55,6 +55,11 @@ Keep minimized framework corpora as regression tests; transient output stays
 temporary. Rust failures retain native =proptest= seed/regression information.
 Counterexamples remain failures until the production defect is fixed.
 
+The bounded failure-evidence property also runs through native =testing.F=.
+It generates passing prefix/suffix sizes and requires a diagnostic immediately
+before Go's FAIL marker to survive extraction. This protects failed-test evidence
+without preserving unbounded logs or changing the actual test verdict.
+
 The focused local routing check passed all ordinary tests and all thirteen new
 seed cases. A separate three-second native fuzz run used the host's twelve
 workers and completed 653351 executions without a counterexample. This is focused

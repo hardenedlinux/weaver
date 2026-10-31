@@ -81,14 +81,25 @@ func summarizeOutput(directory string, result *Result) error {
 
 func firstFailureExcerpt(input io.Reader) ([]byte, error) {
 	reader := bufio.NewReaderSize(input, 4096)
-	var excerpt []byte
+	var excerpt, preceding []byte
 	for {
 		fragment, err := reader.ReadSlice('\n')
-		if len(excerpt) > 0 || bytes.Contains(fragment, []byte("--- FAIL:")) || bytes.Contains(fragment, []byte("*** ERROR")) || bytes.Contains(fragment, []byte("error:")) || bytes.Contains(fragment, []byte("control readiness:")) || bytes.Contains(fragment, []byte("negative control")) {
+		marker := bytes.Contains(fragment, []byte("--- FAIL:")) || bytes.Contains(fragment, []byte("*** ERROR")) || bytes.Contains(fragment, []byte("error:")) || bytes.Contains(fragment, []byte("control readiness:")) || bytes.Contains(fragment, []byte("negative control"))
+		if len(excerpt) == 0 && marker {
+			// Go prints t.Fatal diagnostics before the FAIL marker. Keep a
+			// bounded preceding window rather than retaining only later passes.
+			excerpt = append(excerpt, preceding...)
+		}
+		if len(excerpt) > 0 || marker {
 			n := min(len(fragment), 2048-len(excerpt))
 			excerpt = append(excerpt, fragment[:n]...)
 			if len(excerpt) == 2048 {
 				return excerpt, nil
+			}
+		} else {
+			preceding = append(preceding, fragment...)
+			if len(preceding) > 1024 {
+				preceding = append(preceding[:0], preceding[len(preceding)-1024:]...)
 			}
 		}
 		if errors.Is(err, io.EOF) {
