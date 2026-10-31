@@ -1,0 +1,74 @@
+#+title: 59.47 Runtime Property Testing Framework
+#+language: en
+
+* Framework boundary
+Property testing is a first-class implementation discipline. Rust uses the
+workspace's existing =proptest= dependency; Go uses =testing.F= and the native
+fuzz engine. These frameworks own generation, shrinking, corpora, discovery,
+replay and failure reporting. The Go development runner only launches native
+test suites. There is no Python/Bash property runner or second random engine.
+
+Project.sysml's existing implementation responsibility owns the concrete tests.
+Quint searches protocol/fault schedules; Lean proves stated composition laws
+with Host premises and reuses cedar-poo-spec. These roles complement property
+tests and do not substitute one another's evidence.
+
+* Required property design before Runtime changes
+For each change, record the invariant and its exact native boundary first.
+Then specify typed commands/inputs, valid/invalid preconditions, an independent
+model/oracle, coverage classes and a shrink-preserving trace grammar. Finally
+bind the implementation driver, replay/minimal-counterexample policy and native
+integration controls. A property is not complete merely because it terminates.
+
+| Concern | Framework responsibility |
+|---------+--------------------------|
+| Generators | Produce meaningful boundary cases and legal positive paths as well as hostile inputs |
+| Command grammar | Preserve original identity and relevant causal prefixes during shrinking; do not filter away every difficult case |
+| Reference model | Predict the chosen contract independently of the implementation's success/failure return |
+| Driver | Exercise real public Rust/Go APIs and persistence/transport where claimed |
+| Oracle | Check every relevant prefix; separate expected denial, safety, progress and unavailable evidence |
+| Replay | Framework-owned seed/corpus and minimal counterexample; retain the original failure rather than replace it with a passing rerun |
+| Evidence | State case/trace bounds, source/pins, actual worker count and untested domains; no universal claim from finite sampling |
+
+A safety-only property may observe accepted operations and check their effects,
+but cannot thereby claim that legitimate operations succeed. Positive controls
+and independent admissibility models must cover that separate obligation.
+
+* Current concrete owners
+| Property | Native framework owner | Current scope |
+|----------+------------------------+---------------|
+| Routing cannot expand original scope/body/profile/cost | Go routing fuzz suites | Native plan compiler and request bounds; not actual sending |
+| Durable claims/holds survive replay, restart and range faults | Ledger proptest suites | Existing bounded event histories, real SQLite, two-message stream fixture |
+| Original admission/refusal agrees with an independent model | =stream_admission_pbt.rs= | New typed command/model/driver suite, sixty-four cases, mandatory positive admission, generated suffixes of one to thirty-one commands |
+| SSE fragmentation preserves event identity | Execution proptest suite | Sixty-four generated fragmentation/text cases over the actual decoder |
+| Every benchmark measurement survives order/noise and malformed data rejects | Go devrunner fuzz suite | Generated typed rows, distinct repetition values, bounded permutation/noise and independent expected records |
+| Revocation/cancellation/crash inside an actual output-capacity wait | Server unit and Go integration framework tests | Deterministic controlled schedules with real Rust/mTLS; not yet randomized native schedule generation |
+
+The new ledger suite separates =Command= strategies, =Model= transitions and a
+real =Driver=. The model owns its expected original claim set and held budget;
+it advances from the command without inspecting =enqueue_message='s result.
+Admissible originals/replays must succeed, replacing a claimed payload and using
+an unlisted logical key must fail, observations cannot mutate state, and restart
+must preserve all original claims. Every generated and shrunk trace starts with
+a valid admission. The model does not reimplement arbitrary Cedar semantics:
+it uses the controlled existing permit fixture and original two-message contract.
+
+Mixed revocation/partial-write/range tests retain their existing safety oracle
+and bounds. The new positive admission model does not upgrade those tests into
+an independent liveness model for every possible fault schedule. Randomized
+cross-process wake/cancel/commit scheduling and arbitrary finite native domains
+remain explicit extension work.
+
+* Standard integration and resources
+=check-rust= runs native Cargo tests, including proptest and ASP deny admission.
+=check-go= runs normal Go tests and registered fuzz stages. The new measurement
+property is registered in that existing mode. Regular Go property stages use
+the framework's default machine concurrency rather than force one worker; the
+local host supplies twelve workers. The existing three-second exploration
+setting is unchanged. The one-worker fuzz-coordinator negative control remains
+a separate bounded toolchain probe, not a Gateway performance benchmark.
+
+Use the native engine to replay a minimal failure; do not create a script that
+reconstructs another authorization/accounting implementation. Framework case
+counts and fuzz execution counts describe finite testing, not Lean proofs,
+exhaustive Quint checking, production performance or deployed fault admission.

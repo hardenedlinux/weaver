@@ -64,6 +64,9 @@ package WeaverProject {
         part implementation : VerificationResponsibility {
             doc /* Scheme suites and Rust/Go PBT/integration tests establish
                concrete composition, FFI, parsing, SQL and transport behavior.
+               Proptest and Go testing.F own generation, shrinking, corpora and
+               replay. Property contracts, independent oracles and typed command
+               models precede Runtime changes; command runners only launch suites.
                They do not turn finite cases into universal theorems. */
         }
     }

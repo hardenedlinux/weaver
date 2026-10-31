@@ -5,7 +5,7 @@ use weaver_contracts::{
 };
 use weaver_ledger::{Ledger, RangePermit, StreamOwner};
 
-fn fixture(path: &std::path::Path) -> (Ledger, StreamContract) {
+pub(super) fn fixture(path: &std::path::Path) -> (Ledger, StreamContract) {
     let mut ledger = Ledger::open(path).expect("open");
     ledger
         .publish(
@@ -60,7 +60,7 @@ fn fixture(path: &std::path::Path) -> (Ledger, StreamContract) {
     ledger.register_stream(&contract).expect("contract");
     (ledger, contract)
 }
-fn message(c: &StreamContract, id: u8, revision: u64, fence: u64) -> StreamMessage {
+pub(super) fn message(c: &StreamContract, id: u8, revision: u64, fence: u64) -> StreamMessage {
     StreamMessage {
         family: "f".into(),
         node: "emit".into(),

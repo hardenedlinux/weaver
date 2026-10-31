@@ -12,5 +12,7 @@ mod provider_profiles;
 mod recovery;
 #[path = "unit/serialization.rs"]
 mod serialization;
+#[path = "unit/stream_admission_pbt.rs"]
+mod stream_admission_pbt;
 #[path = "unit/stream_properties.rs"]
 mod stream_properties;

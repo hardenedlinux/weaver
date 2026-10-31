@@ -1,4 +1,4 @@
-#+title: 59.45 Gateway Runtime Baseline and Optimization Priorities
+#+title: 59.46 Gateway Runtime Baseline and Optimization Priorities
 #+language: en
 
 * Priority and implemented path
@@ -117,3 +117,24 @@ Continue through the existing owners and fixtures:
 The earlier fifteen-second SDK timeout remains documented and causally open.
 Its investigation is bounded and separate from the current Runtime priority.
 No Gateway Runtime implementation was changed by this baseline work.
+
+* Parallel safety qualification after the measured source
+PR changes at =af35317= add test-only output-queue observation and real
+Go/Rust slow-consumer race controls. They are preserved in the merged tree;
+the measured baseline above remains bound to =b4b1083=. Their deterministic
+capacity-wait/revocation and crash/reconnect evidence is described in
+[[file:59.45-slow-consumer-zero-trust.org][59.45]]. It complements this baseline but
+does not provide optimized full-path p99 or maximum throughput. Release-mode
+output behavior is retained; the observation hooks are test-only.
+
+The first post-merge server check passed sixteen tests, failed ASP deny admission
+and left one helper ignored: its external fixture mount pointed into another
+package's =benches/= tree. The repair keeps the server unit fixture under
+=crates/server/tests/unit/= and shares it between the server's test modules;
+benchmark fixtures retain their existing benchmark owner. The deny gate is
+unchanged. Real slow-consumer Go/Rust race tests passed on the merged source.
+After the fixture repair, seventeen server tests passed with one explicitly
+ignored service helper, ASP deny admission passed, server all-target Clippy
+passed with warnings denied, and all four real slow-consumer integration tests
+passed again. The framework-owned PBT organization and independent admission
+model are described in [[file:59.47-property-testing-framework.org][59.47]].
