@@ -1,6 +1,92 @@
 #+TITLE: 59.64 Original Governance Capture and Mutable Alias Refusal
 #+LANGUAGE: en
 
+* Call-scoped source capture for the in-process handoff
+
+The Gateway scope now exposes =capture= with a specific native Function contract:
+it accepts a zero-argument Boolean producer and returns one independent String. The public
+=capture-governed-gateway= facade uses the same admitted Yuanxu view, AA/Governor
+selection, native Governance assessment, Cedar preflight and currentness checks
+as =emit-governed-gateway=. Only the delivery mode changes. There is no additional
+DSL or evaluator. File delivery returns the emitter's Boolean; memory delivery
+returns the captured String after the final currentness check. Emission completion
+is not the admission evidence object.
+
+=scheme/gateway/capture.ss= owns a private thread-local sink. Its mutex serializes
+active state, the first image and an irreversible duplicate-attempt fuse. A
+producer must return exactly true and emit exactly once. Validation/copy failure
+consumes the call's emission slot as well: catching it cannot admit a replacement
+image in that call. Catching a duplicate exception cannot clear the fuse. Normal return and exceptional unwinding close
+the sink and discard its private image. An inherited old sink refuses even while
+a new capture is active. No lock is held while arbitrary producer code runs.
+Inputs must remain stable during encoding/copying; the mutex does not make an
+arbitrarily mutable Profile graph atomic or sandbox operator IO. Closing a sink
+does not certify all producer threads have stopped.
+
+The carrier checks character count before encoding and then the actual eight-MiB
+UTF-8 limit. It copies accepted text before returning it. The returned value is
+still a Scheme string, not a Rust-owned artifact, authenticated callback receipt,
+durable source cut or execution capability. A caller importing the low-level
+carrier can supply arbitrary text; actual semantic production belongs to the
+governed facade, followed by independent receiver validation and current authority.
+
+| Owner | Delivered or remaining responsibility |
+|-------+---------------------------------------|
+| Scheme | Typed scope, actual governed producer, bounded single completed output, duplicate fuse and late-sink fence |
+| Rust host / pinned upstream SDK | Still assemble the admitted VM/program graph, bind its actual export, retain a strong result root, copy/validate into Rust-owned values before await/queue and release roots on the owner thread |
+| Go | Existing typed publication/routing and reconciliation; the current integration still uses its compiler/artifact adapter after capture |
+| Quint | Existing boundary evidence now requires one emission, completion and an unpoisoned capture; existing borrow/VM restart and source/fence schedules remain shared |
+| Lean | Three conditional refusal laws strengthen the existing BoundaryContext; they do not prove Gambit mutexes, native ABI provenance, allocation or durability |
+
+The fixed gerbil-scheme-rust source exposes LinkedGerbilProgram and owner-thread
+LinkedStringExport/LinkedObjectExport with strong-root transfer. Those interfaces
+were inspected, not integrated into the production Rust server by this change.
+A compiler-owned initialized graph and actual AA producer export remain necessary;
+a synthetic root carrier or echoed JSON would not qualify their composition.
+
+The integration fixture checks that no output artifact exists after the governed
+capture returns, then writes the captured text outside that scope for today's Go
+adapter. Source-assets and module loading may still read files. This is not a
+file-free application, replacement of compileScheme, or production VM embedding.
+The core diagram describes source-to-authority semantics; it does not establish
+that every native transport/materialization stage has been delivered.
+
+Native PBT uses the inherited framework (seed 293, 128 cases, finite shrinking)
+with required zero/one/two/three-emission and completed/incomplete coverage. It
+also requires clean/invalid-first coverage. It preserves the original image despite
+caller mutation, and rejects caught invalid/duplicate attempts and incomplete
+producers. Native thread tests join every worker and
+check concurrent duplicates, exceptional cleanup and old-sink resumption during
+a fresh capture. Separate tests exercise exact byte limits. No script-based
+generator, shrinker or parallel state-machine implementation is added.
+
+The first real capture invocation failed: the former governed emitter returned
+the final module-admission result, which is not Boolean producer completion. The
+capture guard refused it naturally; no artifact could activate control. The
+whole invocation failed in 157.492 seconds, although all twenty refusal controls
+passed independently. The corrected common producer returns its actual typed
+emission result and still checks currentness before returning; the guard remains
+strict. The corrected captured partial-send/revoke/dual-restart test passed in
+23.01 seconds, retained the original hold, and the captured alias-mutation refusal
+passed naturally in 5.66 seconds (whole focused invocation 31.826 seconds).
+
+The first new Quint witness incorrectly chained a second action after =fail()=,
+leaving its state unset: 168 witnesses passed and one failed. Splitting zero and
+duplicate rejection into independent initialized witnesses corrected the harness,
+without weakening boundaryValid. All 170 named witnesses and the existing
+1000-sample/60-step boundary schedule then passed. The actual fixed-SPEC Lean
+bridge built all three new laws without sorryAx. These remain conditional
+composition evidence, not complete higher-order Governance or native embedding
+acceptance. Earlier startup/exit failures remain separate and unresolved.
+
+Final standard Gerbil testing passed five modules and 29 cases, including three
+128-trial properties. Exact source-size, caught duplicate, failed producer and
+old-sink/new-capture controls passed. This is installed-prefix native evidence;
+it is not an in-process Rust/AA VM qualification or a runtime speedup measurement.
+After the failed-slot refinement, the actual captured streaming/revocation and
+dual-restart test passed again in 23.08 seconds (whole command 26.373 seconds).
+The earlier corrected pair and retained failed invocation remain separate receipts.
+
 * Architecture and implemented boundary
 
 #+ATTR_HTML: :width 1500

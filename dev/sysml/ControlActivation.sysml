@@ -18,6 +18,14 @@ package ControlActivation {
            belongs in producer-created phase attributes. */
     }
     requirement def GovernorSourceHandoff {
+        doc /* The Gateway scope exposes typed call-scoped capture returning
+           inert source text. A serialized sink accepts exactly one emission,
+           latches caught duplicate attempts, requires true producer completion
+           and closes on return or exception. Old inherited sinks cannot emit
+           into a new capture. Both file and memory facades reuse actual admitted
+           AA/Governor/Cedar production and currentness checks; the emitter's
+           Boolean result is distinct from an admission evidence object. This
+           Scheme string is not yet an authenticated Rust-owned VM capture. */
         doc /* Cross-language qualification imports the package-built Scheme
            fixture library. Standard gerbil build owns its expansion; the fixture
            is not a production module or executable. Changing load ownership

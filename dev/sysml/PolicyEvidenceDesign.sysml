@@ -94,6 +94,13 @@ package PolicyEvidenceDesign {
            YAML is an existing data normalization path, not another evaluator. */
     }
     item def SchemeCaptureAdmission {
+        doc /* Current Gateway capture can return a bounded independent Scheme
+           string without writing the output artifact during its call. A mutex
+           protects emission count, irreversible duplicate fuse and call closure;
+           late inherited sinks remain closed even during a subsequent capture.
+           This concretizes local completion only. Stable serialization inputs,
+           worker quiescence, native strong-root transfer, Rust-owned copying and
+           authenticated producer/capture provenance remain distinct premises. */
         doc /* The native Governance adapter now guards one callback with
            private canonical data snapshots and stable local method references.
            Caller-owned mutable strings/list values are not its expected image.
