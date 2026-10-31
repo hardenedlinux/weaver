@@ -8,7 +8,8 @@ module PublicationRecovery {
   // Only this existing recovery owner models the protocol envelope. Domain
   // publication/account/effect validity remains with its existing owner.
   type Floor={epoch:int,cut:Cut,outcomes:List[FloorOutcome],pending:Set[Intent],local:Cut,
-    observed:Cut,observedEpoch:int,haveRead:bool,active:bool,burned:Set[int],admitted:Set[int],handles:Set[int],tickets:Set[{key:int,cut:Cut,epoch:int}],calls:int,external:int}
+    observed:Cut,observedEpoch:int,haveRead:bool,active:bool,burned:Set[int],admitted:Set[int],handles:Set[int],tickets:Set[{key:int,cut:Cut,epoch:int}],
+    owner:int,liveOwners:Set[int],egressOwners:Set[int],handoff:bool,calls:int,external:int}
   type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor}
   var authority:Ledger
   val ids=Set(0,1,2)
@@ -19,7 +20,7 @@ module PublicationRecovery {
       authority.commits.nth(i).decision.resultHead==i and authority.commits.nth(i).decision.parent==i-1) and
     (authority.head>=0 implies authority.policy==authority.commits.nth(authority.head).decision.payload and authority.schema==authority.policy) and floorSafe(authority.floor)
   pure val emptyCut={publication:List(),consumption:List(),account:List(),history:List()}
-  pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),calls:0,external:0}
+  pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),owner:1,liveOwners:Set(1),egressOwners:Set(1),handoff:false,calls:0,external:0}
   action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0}
   action publish(id:int,payload:int,parent:int,fence:int):bool = {
     val accepted=parent==authority.head and fence>=authority.fence
@@ -50,7 +51,8 @@ module PublicationRecovery {
     f.outcomes.indices().forall(i=>f.outcomes.indices().forall(j=>i==j or f.outcomes.nth(i).intent.id!=f.outcomes.nth(j).intent.id)) and
     committed.indices().forall(i=>{val d=committed.nth(i)
       d.intent.scope==7 and d.intent.epoch==d.epoch and d.intent.before==(if(i==0)emptyCut else committed.nth(i-1).after) and d.after==floorPost(d.intent.before,d.intent)}) and
-    (f.active implies f.haveRead and f.local==f.cut and f.observed==f.cut and f.observedEpoch==f.epoch and f.pending==Set()) and
+    f.liveOwners==f.egressOwners and (f.liveOwners==Set() or f.liveOwners==Set(f.owner)) and
+    (f.active implies f.haveRead and f.local==f.cut and f.observed==f.cut and f.observedEpoch==f.epoch and f.pending==Set() and not(f.handoff) and f.liveOwners==Set(f.owner)) and
     f.calls==f.external and f.calls==f.admitted.size() and f.admitted.forall(k=>f.burned.contains(k)) and f.burned.forall(k=>f.cut.consumption.indices().exists(i=>f.cut.consumption.nth(i).key==k))}
   def f=authority.floor
   pure val consume0={id:10,payload:100,key:1,kind:1,scope:7,epoch:0,before:emptyCut}
@@ -74,24 +76,38 @@ module PublicationRecovery {
   action floorRestore(c:Cut):bool=authority'=authority.with("floor",f.with("local",c).with("haveRead",false).with("active",false).with("handles",Set()))
   action floorRepair=all {f.haveRead,f.observed==f.cut,f.observedEpoch==f.epoch,
     authority'=authority.with("floor",f.with("local",f.cut).with("active",false))}
-  action floorActivate=all {f.haveRead,f.observed==f.cut,f.observedEpoch==f.epoch,f.local==f.cut,f.pending==Set(),
+  action floorActivate=all {not(f.handoff),f.liveOwners==Set(f.owner),f.haveRead,f.observed==f.cut,f.observedEpoch==f.epoch,f.local==f.cut,f.pending==Set(),
     authority'=authority.with("floor",f.with("active",true))}
   // Durable burn precedes actual admission; a crash/fence between may omit the
   // call forever. Only this sole transport owner retains a pending burn handle.
-  action floorBurn(k:int,c:Cut,epoch:int):bool=all {f.active,c==f.cut,epoch==f.epoch,f.cut.consumption.indices().exists(i=>f.cut.consumption.nth(i).key==k),not(f.burned.contains(k)),
+  // actor is the authenticated execution incarnation, not a supplied RPC field.
+  action floorBurnBy(actor:int,k:int,c:Cut,epoch:int):bool=all {actor==f.owner,f.liveOwners==Set(actor),f.egressOwners==Set(actor),not(f.handoff),f.active,c==f.cut,epoch==f.epoch,f.cut.consumption.indices().exists(i=>f.cut.consumption.nth(i).key==k),not(f.burned.contains(k)),
     authority'=authority.with("floor",f.with("burned",f.burned.union(Set(k))).with("handles",f.handles.union(Set(k))).with("tickets",f.tickets.union(Set({key:k,cut:c,epoch:epoch}))))}
-  action floorAdmit(k:int,c:Cut,epoch:int):bool=all {f.active,c==f.cut,epoch==f.epoch,f.burned.contains(k),f.handles.contains(k),f.tickets.contains({key:k,cut:c,epoch:epoch}),not(f.admitted.contains(k)),
+  action floorBurn(k:int,c:Cut,epoch:int):bool=floorBurnBy(f.owner,k,c,epoch)
+  action floorAdmitBy(actor:int,k:int,c:Cut,epoch:int):bool=all {actor==f.owner,f.liveOwners==Set(actor),f.egressOwners==Set(actor),not(f.handoff),f.active,c==f.cut,epoch==f.epoch,f.burned.contains(k),f.handles.contains(k),f.tickets.contains({key:k,cut:c,epoch:epoch}),not(f.admitted.contains(k)),
     authority'=authority.with("floor",f.with("handles",f.handles.exclude(Set(k))).with("admitted",f.admitted.union(Set(k))).with("calls",f.calls+1).with("external",f.external+1))}
+  action floorAdmit(k:int,c:Cut,epoch:int):bool=floorAdmitBy(f.owner,k,c,epoch)
+  action floorRequestHandoff=authority'=authority.with("floor",f.with("handoff",true).with("active",false).with("handles",Set()))
+  // verifiedStop denotes authentic exact-process/egress quiescence evidence.
+  // Kubernetes deletion/lease expiry and a caller Boolean cannot supply it.
+  action floorConfirmTransportStopped(verifiedStop:bool):bool=all {verifiedStop,f.handoff,
+    authority'=authority.with("floor",f.with("liveOwners",Set()).with("egressOwners",Set()).with("handles",Set()).with("active",false))}
+  action floorStartOwner=all {f.handoff,f.liveOwners==Set(),f.egressOwners==Set(),
+    authority'=authority.with("floor",f.with("owner",f.owner+1).with("epoch",f.epoch+1).with("liveOwners",Set(f.owner+1)).with("egressOwners",Set(f.owner+1)).with("handoff",false).with("handles",Set()).with("haveRead",false).with("active",false))}
   action floorSend(k:int,c:Cut,epoch:int):bool=floorBurn(k,c,epoch).then(floorAdmit(k,c,epoch))
   action unsafeFloorLocalActivation=authority'=authority.with("floor",f.with("active",true))
   action unsafeFloorForgetBurn=authority'=authority.with("floor",f.with("burned",Set()).with("calls",0))
+  action unsafeFloorLeaseOnlyPromotion=authority'=authority.with("floor",f.with("owner",f.owner+1).with("epoch",f.epoch+1).with("liveOwners",f.liveOwners.union(Set(f.owner+1))).with("egressOwners",f.egressOwners.union(Set(f.owner+1))).with("active",false))
+  action unsafeFloorEscapedSocketWrite=authority'=authority.with("floor",f.with("external",f.external+1))
   action step = {nondet id=ids.oneOf() nondet payload=Set(0,1).oneOf() nondet parent=Set(-1,0,1,2).oneOf() nondet fence=Set(1,2,3).oneOf()
     nondet kind=Set(0,1,2,3).oneOf()
     nondet scope=Set(7,8).oneOf()
     val q={id:id+10,payload:payload,key:1,kind:kind,scope:scope,epoch:f.epoch,before:f.cut}
     nondet waiting=f.pending.union(Set(q)).oneOf()
+    nondet actor=Set(0,f.owner,f.owner-1).oneOf()
     any {publish(id,payload,parent,fence),replay(id,payload,parent,fence),observe,restart,floorStage(q),floorCommit(waiting,true),floorCommit(waiting,false),floorReplay(waiting),floorResolve(waiting),
-      floorRead,floorLoseReply,floorRotate,floorRestore(emptyCut),floorRepair,floorActivate,floorBurn(1,f.cut,f.epoch),floorAdmit(1,f.cut,f.epoch)}}
+      floorRead,floorLoseReply,floorRotate,floorRestore(emptyCut),floorRepair,floorActivate,floorBurnBy(actor,1,f.cut,f.epoch),floorAdmitBy(actor,1,f.cut,f.epoch),
+      floorRequestHandoff,floorConfirmTransportStopped(true),floorConfirmTransportStopped(false),floorStartOwner}}
   action first = init.then(publish(0,0,-1,1))
   run lostReplyRestartReplayTest = first.then(observe).then(restart).then(replay(0,0,-1,1)).expect(safe and authority.head==0)
   run concurrentParentHasOneWinnerTest = first.then(publish(1,1,-1,2)).expect(safe and authority.records.get(1).outcome==2 and authority.head==0)
@@ -132,4 +148,21 @@ module PublicationRecovery {
   pure val wrongScope=consume0.with("scope",8)
   run floorWrongOriginalScopeCannotCommitTest=init.then(floorStage(wrongScope)).then(floorCommit(wrongScope,true))
     .expect(safe and f.cut==emptyCut and not(f.outcomes.nth(0).committed))
+  run floorWorkerCannotUseCurrentOwnerLabelTest=floorReady.expect(safe).then(floorBurnBy(0,1,floorPost(emptyCut,consume0),0).fail())
+  run floorLeaseExpiryCannotActivateReplacementTest=floorReady.then(floorRequestHandoff).expect(safe).then(floorStartOwner.fail())
+  run floorUnprovenStopCannotTransferEgressTest=floorReady.then(floorRequestHandoff).expect(safe).then(floorConfirmTransportStopped(false).fail())
+  action floorReplaced=floorReady.then(floorRequestHandoff).then(floorConfirmTransportStopped(true)).then(floorStartOwner).then(floorRead).then(floorRepair).then(floorActivate)
+  run floorOldIncarnationCannotBurnAtNewEpochTest=floorReplaced.expect(safe and f.owner==2).then(floorBurnBy(1,1,floorPost(emptyCut,consume0),1).fail())
+  run floorNewOwnerUsesOriginalClaimOnceTest=floorReplaced.then(floorSend(1,floorPost(emptyCut,consume0),1)).expect(safe and f.external==1 and authority.held==4)
+  run floorPendingBurnNotReconstructedOnOwnerChangeTest=floorReady.then(floorBurn(1,floorPost(emptyCut,consume0),0)).then(floorRequestHandoff)
+    .then(floorConfirmTransportStopped(true)).then(floorStartOwner).then(floorRead).then(floorRepair).then(floorActivate)
+    .expect(safe and f.external==0 and f.burned.contains(1)).then(floorAdmitBy(2,1,floorPost(emptyCut,consume0),1).fail())
+  run floorLeaseOnlyPromotionCounterexampleTest=floorReady.then(unsafeFloorLeaseOnlyPromotion).expect(not(safe))
+  run floorEscapedOldSocketCounterexampleTest=floorReady.then(floorRotate).then(unsafeFloorEscapedSocketWrite).expect(not(safe))
+  run floorLateOriginalCommitAfterOwnerChangeIsRejectedTest=init.then(floorStage(consume0)).then(floorAbsent).then(floorRequestHandoff)
+    .then(floorConfirmTransportStopped(true)).then(floorStartOwner).then(floorCommit(consume0,true))
+    .expect(safe and f.cut==emptyCut and not(f.outcomes.nth(0).committed) and f.pending.contains(consume0) and authority.held==4)
+  run floorCommittedLostReplySurvivesOwnerChangeTest=floorConsumed.then(floorLoseReply).then(floorRequestHandoff)
+    .then(floorConfirmTransportStopped(true)).then(floorStartOwner).then(floorReplay(consume0))
+    .expect(safe and f.outcomes.nth(0).committed and f.outcomes.nth(0).intent.epoch==0 and f.epoch==1 and not(f.active))
 }

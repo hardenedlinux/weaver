@@ -42,6 +42,9 @@ Lean/Quint laws and records the independent recovery-floor implementation gap.
 [[file:59.42-independent-commit-floor.org][Independent commit floor and recovery]] defines the four-prefix decision,
 unknown-outcome reconciliation and transport-owner admission protocol, with
 executable protocol references and explicit production refinement gaps.
+[[file:59.43-floor-transport-owner.org][Floor to final transport owner]] fixes the target deployment, credential
+custody, admission linearization and fail-closed owner handoff. Its
+[[file:59.43-floor-transport-owner.svg][core topology diagram]] shows execution authority outside worker restoration.
 
 Go and Rust communicate through the shared typed gRPC service in
 [[file:../../../proto/gateway/v1/gateway.proto][gateway.proto]]. The Rust server executable starts this service by default.

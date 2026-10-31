@@ -4,6 +4,8 @@
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 use std::{collections::BTreeSet, path::Path};
 use weaver_ledger::Ledger;
+#[path = "transport_owner.rs"]
+mod transport_owner;
 
 const SCOPE: &str = "original-task/profile/claim/budget/history";
 #[derive(Clone)]
@@ -226,11 +228,31 @@ impl Floor {
         after_burn: impl FnOnce(&Connection),
         send: impl FnOnce(),
     ) -> bool {
+        let observed_cut = cut(&Connection::open(projection).expect("observed projection"));
+        self.send_bound(
+            projection,
+            observed_epoch,
+            &observed_cut,
+            key,
+            after_burn,
+            send,
+        )
+    }
+    fn send_bound(
+        &mut self,
+        projection: &Path,
+        observed_epoch: i64,
+        observed_cut: &str,
+        key: &str,
+        after_burn: impl FnOnce(&Connection),
+        send: impl FnOnce(),
+    ) -> bool {
         let tx = self
             .0
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .expect("burn CAS");
         let current = epoch(&tx) == observed_epoch
+            && cut(&tx) == observed_cut
             && !unknown(&tx)
             && cut(&tx) == cut(&Connection::open(projection).expect("projection"));
         let consumed: bool = tx

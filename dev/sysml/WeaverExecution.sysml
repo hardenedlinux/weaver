@@ -37,6 +37,9 @@ package WeaverExecution {
     item def ConsumedPermit;
     item def CanonicalWireRequest;
     port def ProposalPort {
+        doc /* Default Go/Rust process boundary is authenticated gRPC with typed
+           Protobuf messages. External provider body/schema documents can contain
+           JSON without making this a JSON command transport. */
         out item proposal : CanonicalProposal;
     }
     port def OutcomePort {
@@ -74,6 +77,29 @@ package WeaverExecution {
            no send capability. Carry configuration/capture commitments and
            authenticated original source identity over gRPC. Reconcile ambiguity;
            never evaluate Scheme, manage GC roots or forward foreign pointers. */
+        doc /* Go's target value is cloud/protocol integration, not a language
+           monopoly on Kubernetes or networking. Own discovery/watch/reconcile,
+           bounded ingress connections and protocol adapters, routing candidates,
+           source-outcome recovery and cloud lifecycle integration. Reuse the Go
+           ecosystem instead of implementing a duplicate Rust control adapter.
+           Ingress TLS/cloud-management credentials are distinct from provider
+           execution secrets. A provider SDK that performs its own final request
+           cannot bypass Rust; only inert encoding/metadata facilities may be
+           reused here without another governed transport refinement. */
+        doc /* Informer caches, health probes and SDK observations are candidates,
+           not authoritative Policy/history facts. Re-list/reconnect preserves
+           original identities and unresolved intent; all final deciding joins
+           remain Rust-owned. Current Go code implements config/routing/RPC
+           recovery, not Kubernetes controllers or complete protocol discovery.
+           Target ecosystem integrations must earn their cost through measurable
+           adapter reuse and operator behavior; a pure forwarding layer provides
+           insufficient justification. No Go-versus-Rust speed claim follows. */
+        doc /* Existing provider responses support default Protobuf events and
+           optional Arrow IPC batches over the same gRPC stream. This is not a
+           Flight service or end-to-end zero-copy path. Schema, row/range binding,
+           ownership and per-release authorization apply to either encoding.
+           Scheme/Rust process-local C ABI is a separate boundary, not the
+           default communication mechanism between Go and Rust services. */
         port proposals : ProposalPort;
         port observations : ~OutcomePort;
         port sourceCandidates : ~PolicyEvidenceDesign::CandidatePort;
@@ -139,12 +165,57 @@ package WeaverExecution {
            serialize with authority changes. Never return a reusable permission
            that an old worker can send with offline. Unknown results retain the
            original reservation; already admitted bytes may drain. */
+        doc /* Target admission LP: after durable burn, recheck actual current
+           cut/epoch and authenticated transport incarnation, then enter the
+           bounded synchronous transport operation while holding the same gate
+           that serializes every floor mutation. Neither queue admission nor a
+           committed log entry sends. Do not release the gate then invoke IO.
+           Existing blocking provider dispatch holds its deciding transaction
+           through request/response headers; shortening that window needs a new
+           transport refinement and measurements, not a change of proof labels. */
         port consumed : ~ConsumedPort;
         port wire : WirePort;
     }
     part def HttpsExecutor {
         doc /* Exact committed target and body, no inherited proxy, redirect or automatic retry. */
         port wire : ~WirePort;
+    }
+    part def ExecutionAuthorityDeployment {
+        doc /* Target allocation of the existing gateway parts, not a second
+           implementation or a deployed manifest. Scheme/Go and retryable workers
+           belong to the worker restore domain. gateway.ledger, gateway.broker
+           and gateway.executor share one independent Rust execution-authority
+           domain and one active process/serialization gate per security shard.
+           Its authenticated committed prefix, immutable outcomes and burns must
+           survive restoration of any worker image. Floor, credentials and socket
+           state cannot share that worker rollback operation. */
+        doc /* Only the active executor holds provider secrets, TLS sessions and
+           outbound sockets. Workers have authenticated proposal/observation RPC
+           access, no provider secret mount, no direct provider egress and no raw
+           FD or reusable send-token handoff. Provider credentials are distinct
+           from Go publication and agent ingress credentials. Arrow is optional
+           bulk data transport and inherits the same final gate. */
+        doc /* All mutations of this shard's four-prefix floor enter the same
+           authority gate; direct storage writes and background log replay cannot
+           publish or send around it. The base deployment stops admission and
+           waits for authentic exact-owner process/egress quiescence before
+           replacement. Unreachable old node means no automatic takeover. Neither
+           Kubernetes leadership nor store leadership fences an existing socket.
+           Multi-node failover requires separately qualified final-egress fencing.
+           Trust roots and this durable authority's own rollback remain explicit
+           Host premises; logical isolation is sufficient, physical isolation is
+           not required. */
+        doc /* Current server RPC listeners are loopback-only. Cross-pod target
+           deployment therefore still needs a qualified reachable listen interface,
+           authenticated role separation and network policy; a same-host Unix
+           transport would need its own peer-identity qualification. Neither is
+           delivered by a diagram or by changing the batch encoding to Arrow. */
+        doc /* Partition only independent security domains. Original claim,
+           shared budget/history and publication ordering must share one shard
+           until a cross-shard protocol is actually proved. One active transport
+           owner does not constrain host CPU cores or unrelated shard concurrency.
+           Stage computation outside the gate; do not weaken final exclusion to
+           hide the present bounded-call contention cost. */
     }
     part def TelemetryService {
         doc /* Default service in the target architecture; implementation and exporter delivery remain pending. Local bounded signals observe source/authority/effects. Export needs explicit configuration and Policy. Telemetry cannot acknowledge an authority commit, authorize a send or release unknown budget. */
@@ -195,4 +266,5 @@ package WeaverExecution {
         connect ledger.consumed to broker.consumed;
         connect broker.wire to executor.wire;
     }
+    part targetDeployment : ExecutionAuthorityDeployment;
 }

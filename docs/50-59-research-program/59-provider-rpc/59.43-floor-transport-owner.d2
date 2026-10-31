@@ -1,0 +1,126 @@
+# Core target topology only; protocol premises and evidence are in the Org owner.
+vars: { d2-config: { layout-engine: tala; theme-id: 3; pad: 70 } }
+classes: {
+  card: {
+    label.near: center-center
+    style.font-size: 21
+    style.border-radius: 12
+    style.stroke-width: 1
+  }
+}
+title: ZERO TRUST / FLOOR TO FINAL TRANSPORT {
+  shape: text
+  near: top-center
+  style.font-size: 32
+  style.bold: true
+}
+workers: Worker restore domain {
+  left: 0
+  top: 0
+  width: 440
+  height: 650
+  style.font-size: 24
+  style.fill: "#f4f2ec"
+  scheme: Scheme / Agentic AI Lab\nSession · Workflow · Governor\nSemantic contracts / proposals {
+    class: card
+    left: 30
+    top: 80
+    width: 380
+    height: 160
+    style.fill: "#eef3ef"
+  }
+  go: Go cloud / protocol integration\nDiscovery · ingress · routing\nTyped gRPC / optional Arrow IPC\nFrozen cut / original identity {
+    class: card
+    icon: ../../architecture/diagrams/assets/go.svg
+    icon.near: top-left
+    left: 30
+    top: 330
+    width: 380
+    height: 190
+  }
+  boundary: No provider secrets\nNo direct provider egress {
+    shape: text
+    left: 40
+    top: 550
+    width: 360
+    height: 70
+    style.font-size: 22
+  }
+}
+authority: Independent execution authority {
+  left: 650
+  top: 0
+  width: 660
+  height: 650
+  style.font-size: 24
+  style.fill: "#eef3ef"
+  floor: Durable commit floor\nPublication · consumption · account · history\nImmutable outcomes / owner epoch {
+    class: card
+    left: 30
+    top: 80
+    width: 600
+    height: 160
+    style.fill: "#f4f2ec"
+  }
+  owner: Rust transport owner\nCurrent cut / epoch / incarnation\nOne-use burn → guarded socket call\nOwner-only credentials and connections {
+    class: card
+    icon: ../../architecture/diagrams/assets/rust.svg
+    icon.near: top-left
+    left: 30
+    top: 330
+    width: 600
+    height: 220
+    style.fill: "#e7edf4"
+  }
+  exclusion: One active process / one shared admission gate {
+    shape: text
+    left: 40
+    top: 580
+    width: 580
+    height: 50
+    style.font-size: 22
+  }
+}
+provider: LLM provider / tools\nExact destination and body\nAdmitted bytes may drain {
+  class: card
+  left: 1570
+  top: 360
+  width: 400
+  height: 180
+}
+supervisor: Process / egress supervisor\nExact old-owner stop evidence\nNo lease-only takeover {
+  class: card
+  left: 680
+  top: 850
+  width: 600
+  height: 150
+  style.fill: "#f4f2ec"
+}
+workers.scheme -> workers.go: Propose {
+  style.font-size: 18
+}
+workers.go -> authority.floor: gRPC authority commands {
+  style.font-size: 18
+}
+workers.go -> authority.owner: gRPC execution proposals {
+  style.font-size: 18
+}
+authority.floor -> authority.owner: Same serialization gate {
+  style.font-size: 18
+}
+authority.owner -> provider: Guarded HTTPS admission {
+  style.font-size: 18
+}
+supervisor -> authority.owner: Stop before replacement {
+  style.font-size: 18
+  style.stroke-dash: 5
+}
+footer: "Original claim · profile · shared budget · history stay bound\nUnknown outcome retains the original reservation" {
+  shape: text
+  left: 380
+  top: 1150
+  width: 1300
+  height: 90
+  style.font-size: 25
+  style.font-color: "#5c8b77"
+}

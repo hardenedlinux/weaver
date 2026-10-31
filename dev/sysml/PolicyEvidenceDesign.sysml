@@ -500,6 +500,39 @@ package PolicyEvidenceDesign {
            it proves neither no-execution nor final usage and cannot by itself
            release the original claim or unknown budget. */
     }
+    item def TransportAdmission {
+        item currentCut : CommitCut;
+        attribute executionShard : String;
+        attribute authenticatedOwnerIncarnation : String;
+        attribute ownerEpoch : Integer;
+        attribute originalLogicalKey : String;
+        attribute durableBurnIdentity : String;
+        attribute canonicalDestinationAndBody : String;
+        doc /* An internal live continuation at the sole Rust transport owner,
+           never a bearer capability returned over gRPC or Arrow. Final guard
+           checks current cut/epoch, original scope and actual authenticated
+           owner, then invokes the bounded synchronous socket operation while
+           holding the same exclusion gate used by every floor mutation. Burn
+           commits before possible bytes; replay never recreates this continuation.
+           The admission linearization point is the guarded transition into that
+           transport call, not prepare, log apply, enqueue, burn or remote read.
+           This is permission to attempt IO, not evidence of peer execution. */
+    }
+    item def TransportQuiescence {
+        attribute executionShard : String;
+        attribute retiredOwnerIncarnation : String;
+        attribute supervisorIdentity : String;
+        attribute stopEvidence : String;
+        attribute retiredConnections : String;
+        doc /* Authenticated evidence from the actual process/egress supervisor
+           that the exact old incarnation cannot initiate more provider writes.
+           Base topology waits for its real process exit and closes all owned
+           connections; no exported FD, credential or delegated sender may survive.
+           Already admitted bytes can drain and retain unknown budget. Kubernetes
+           object deletion, lease expiry, a PID without incarnation, epoch advance
+           or a caller Boolean cannot substitute. If old-host quiescence cannot
+           be proved, replacement activation remains blocked. */
+    }
     item def FinalEffectJoin {
         item effect : ActualEffect;
         item image : ArtifactImage;

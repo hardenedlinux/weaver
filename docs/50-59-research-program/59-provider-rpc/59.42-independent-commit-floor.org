@@ -81,7 +81,7 @@ timeout or temporary absence is never a deletion or budget-release certificate.
 | Cedar / cedar-poo-spec | Current schema-bound Policy and semantic authorization laws | Storage, authenticated provenance, floor independence and actual send ordering remain Weaver contracts |
 
 No domain-validity Boolean crosses a trusted API as a client assertion. Quint's
-=qualified= and Lean's =DomainValid= denote authenticated validation by the
+=qualified= and Lean's =DomainValid.assess= denote authenticated validation by the
 existing domain owner at final CAS. They are explicit refinement premises, not
 proof of Cedar evaluation, account arithmetic or semantic history completeness.
 
@@ -96,7 +96,8 @@ proof of Cedar evaluation, account arithmetic or semantic history completeness.
 | [[file:../../../dev/proofs/lean/LlmWalActivation.lean][LlmWalActivation]] | Reuse =actual_account_composition=, =original_reservation_once=, =account_conservation=, =committed_prefix_retained= and =unknown_budget_hold_retained= | The concrete floor-account-journal projection and authenticated source-ready binding remain required; prefix preservation alone does not prove balances |
 | Existing =AuthorityPublication= / =ProviderRpc= | Keep current read-to-final-CAS and per-release guards; historical receipts cannot reopen a spent claim | Whole-store rollback remains unsafe until the independent protocol is integrated |
 
-Lean's floor trace is parametric in a domain-validation predicate. Its burn law
+Lean's floor trace is parametric in a domain-validation predicate and, for owner
+replacement, an authentic exact-incarnation stop predicate. Its burn law
 proves preservation of spent status, not that a remote provider executed exactly
 once. The existing account theorem requires the real source reconciliation
 binding before releasing an unknown hold. These premises are not discharged by
@@ -178,3 +179,8 @@ Next production work requires agreement on the actual independent authority and
 transport-owner topology, authenticating source custody, durable record/body
 availability and the concrete account/history refinement. Keep Go's cloud-native
 control role and Scheme's semantic role; Rust remains the sole final executor.
+
+The follow-up [[file:59.43-floor-transport-owner.org][floor-to-transport review]] selects the base target topology and
+defines its actual admission linearization and no-overlap handoff. It also
+strengthens the test reference to compare the proposal's explicit observed cut;
+repairing a shared projection must not silently rebase a queued old proposal.

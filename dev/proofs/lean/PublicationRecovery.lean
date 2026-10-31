@@ -190,8 +190,9 @@ theorem owned_worker_and_publication_composition [DecidableEq Key]
 /- Independent recovery envelope, owned here rather than another policy or
    account machine. Lists stand for ordered canonical records, not lengths.
    Authentication, collision-resistant encoding and independence of this state
-   from restored projections remain runtime premises. DomainValid is the
-   existing publication/consumption/account/history owner's validation law. -/
+   from restored projections remain runtime premises. DomainValid.assess is the
+   existing publication/consumption/account/history owner's validation law;
+   transportStopped supplies the separate exact-incarnation Host premise. -/
 namespace CommitFloor
 
 structure Cut where
@@ -227,6 +228,10 @@ structure Authority where
   outcomes : Nat → Option Result := fun _ => none
   burned : Nat → Bool := fun _ => false
   held : Nat
+  transportOwner : Nat := 1
+  transportLive : Bool := true
+  handoff : Bool := false
+  quiesced : Bool := false
 
 structure Image where
   cut : Cut
@@ -236,21 +241,42 @@ structure Image where
 def Current (a : Authority) (i : Image) : Prop :=
   i.cut = a.cut ∧ i.epoch = a.epoch ∧ i.unresolved = []
 
-def DomainValid := Cut → Command → Cut → Prop
+structure DomainValid where
+  assess : Cut → Command → Cut → Prop
+  /-- Authentic evidence for the exact old process/egress incarnation. This is
+  a Host premise, not Kubernetes lease expiry or a client-supplied assertion. -/
+  transportStopped : Nat → Prop
+
+def OwnerCurrent (a : Authority) (actor : Nat) (i : Image) : Prop :=
+  Current a i ∧ actor = a.transportOwner ∧ a.transportLive = true ∧ a.handoff = false
+
+def CanStartReplacement (a : Authority) : Prop :=
+  a.transportLive = false ∧ a.quiesced = true ∧ a.handoff = true
 
 inductive Transition (valid : DomainValid) : Authority → Authority → Prop where
   | commit (a q) (fresh : a.outcomes q.identity = none)
       (scope : q.originalScope = a.originalScope) (epoch : q.epoch = a.epoch)
-      (parent : q.before = a.cut) (domain : valid a.cut q (append a.cut q.delta)) :
+      (parent : q.before = a.cut) (domain : valid.assess a.cut q (append a.cut q.delta)) :
       Transition valid a {a with
         cut := append a.cut q.delta
         outcomes := write a.outcomes q.identity ⟨q, true, append a.cut q.delta⟩}
   | reject (a q) (fresh : a.outcomes q.identity = none) :
       Transition valid a {a with outcomes := write a.outcomes q.identity ⟨q, false, a.cut⟩}
   | rotate (a) : Transition valid a {a with epoch := a.epoch + 1}
-  | burnAtTransportOwner (a i key) (current : Current a i) (unspent : a.burned key = false)
+  | burnAtTransportOwner (a i actor key) (current : OwnerCurrent a actor i) (unspent : a.burned key = false)
       (consumed : key ∈ a.cut.consumption) :
       Transition valid a {a with burned := fun k => if k = key then true else a.burned k}
+  | requestHandoff (a) : Transition valid a {a with handoff := true}
+  | confirmStopped (a) (requested : a.handoff = true)
+      (actualStop : valid.transportStopped a.transportOwner) :
+      Transition valid a {a with transportLive := false, quiesced := true}
+  | startReplacement (a) (eligible : CanStartReplacement a) :
+      Transition valid a {a with
+        transportOwner := a.transportOwner + 1
+        epoch := a.epoch + 1
+        transportLive := true
+        quiesced := false
+        handoff := false}
   | observeReplayOrRestoreProjection (a) : Transition valid a a
 
 variable {id : Nat}
@@ -336,6 +362,61 @@ theorem exact_replay_binds_original_scope_and_body
   exact ⟨kept, congrArg Command.originalScope exactCommand,
     congrArg Command.canonicalBody exactCommand⟩
 
+theorem lease_or_epoch_change_does_not_stop_transport {a : Authority}
+    (stillLive : a.transportLive = true) :
+    ¬ CanStartReplacement {a with epoch := a.epoch + 1} := by
+  simp_all [CanStartReplacement]
+
+theorem requested_handoff_blocks_new_admission (requested : a.handoff = true) :
+    ¬ OwnerCurrent a actor i := by
+  simp_all [OwnerCurrent]
+
+theorem wrong_incarnation_cannot_admit (wrong : actor ≠ a.transportOwner) :
+    ¬ OwnerCurrent a actor i := fun h => wrong h.2.1
+
+theorem step_preserves_verified_quiescence
+    (known : a.quiesced = true → valid.transportStopped a.transportOwner)
+    (step : Transition valid a b) :
+    b.quiesced = true → valid.transportStopped b.transportOwner := by
+  cases step <;> simp_all
+
+theorem trace_preserves_verified_quiescence
+    (known : a.quiesced = true → valid.transportStopped a.transportOwner)
+    (trace : Trace valid a b) :
+    b.quiesced = true → valid.transportStopped b.transportOwner := by
+  induction trace with
+  | refl => exact known
+  | next history step ih => exact step_preserves_verified_quiescence ih step
+
+theorem reachable_replacement_requires_verified_stop
+    (initiallyUnproven : a.quiesced = false) (trace : Trace valid a b)
+    (eligible : CanStartReplacement b) : valid.transportStopped b.transportOwner := by
+  have base : a.quiesced = true → valid.transportStopped a.transportOwner := by
+    simp [initiallyUnproven]
+  exact trace_preserves_verified_quiescence base trace eligible.2.1
+
+theorem replacement_invalidates_old_owner (current : OwnerCurrent a actor i) :
+    ¬ OwnerCurrent {a with
+      transportOwner := a.transportOwner + 1
+      epoch := a.epoch + 1} actor i := by
+  intro nextOwner
+  have oldIdentity := current.2.1
+  have newIdentity := nextOwner.2.1
+  simp only at newIdentity
+  omega
+
+/-- The composition does not turn a current image into a transferable permit.
+Native refinement must establish the final guard at the actual socket owner. -/
+theorem floor_recovery_and_transport_composition (trace : Trace valid a b)
+    (original : a.outcomes id = some result) (spent : a.burned key = true)
+    (actualOwner : OwnerCurrent b actor image) :
+    Prefix a.cut b.cut ∧ b.outcomes id = some result ∧ b.burned key = true ∧
+      b.originalScope = a.originalScope ∧ b.held = a.held ∧
+      image.cut = b.cut ∧ image.epoch = b.epoch ∧ actor = b.transportOwner := by
+  obtain ⟨outcome, burn, scope, hold⟩ := recovery_keeps_outcome_and_spent trace original spent
+  exact ⟨recovery_keeps_all_four_prefixes trace, outcome, burn, scope, hold,
+    actualOwner.1.1, actualOwner.1.2.1, actualOwner.2.1⟩
+
 #print axioms outcome_is_immutable
 #print axioms recovery_keeps_all_four_prefixes
 #print axioms recovery_keeps_outcome_and_spent
@@ -344,5 +425,11 @@ theorem exact_replay_binds_original_scope_and_body
 #print axioms rotation_invalidates_old_image
 #print axioms new_identity_cannot_remove_prior_burn
 #print axioms exact_replay_binds_original_scope_and_body
+#print axioms lease_or_epoch_change_does_not_stop_transport
+#print axioms requested_handoff_blocks_new_admission
+#print axioms wrong_incarnation_cannot_admit
+#print axioms reachable_replacement_requires_verified_stop
+#print axioms replacement_invalidates_old_owner
+#print axioms floor_recovery_and_transport_composition
 end CommitFloor
 end Weaver.PublicationRecovery
