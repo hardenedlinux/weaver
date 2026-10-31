@@ -145,6 +145,45 @@ count or requested time was changed to remove that warning. These are focused
 administrative costs with different boundaries, not a matched speedup or a
 complete-matrix/performance admission result.
 
+* Verification receipt
+
+The failing baseline used production source =53a1633= with only the new native
+=candidate_only_replay_cannot_register_for_a_real_predecessor= regression added.
+The focused Cargo test exited 101 at the assertion that candidate-only replay
+must not qualify a non-genesis predecessor: the original call had returned
+success. The same regression now passes without changing that assertion.
+
+At committed implementation source =28bdd73=:
+
+- Standard clean-source =check-rust= passed all 10 stages: complete workspace
+  tests, default profile, formatting, ASP deny and all-target warnings-as-errors.
+- Standard clean-source =check-go= passed all 21 stages, including native Go PBT
+  and the complete real mTLS provider streaming/recovery suite. The provider
+  stage took 68.076 seconds with output SHA-256
+  =c7338acd9b4e693fac3309f30e7e762803d02f02f8102d648377a47b8ce8a828=.
+- Standard clean-source =check-policy= passed all 44 stages. The existing
+  PublicationRecovery owner now passes 142 named witnesses, including all six
+  new pair-binding witnesses. Expected unsafe witnesses count as test successes,
+  not prevention by deployed code. Existing sampled schedules retain their own
+  unchanged scope; they do not become universal semantic Delta evidence.
+- The actual fixed-SPEC Lean bridge built with the two added context laws and
+  only its existing logical assumptions; no sorryAx was introduced. This does
+  not qualify separate candidate-library enrichment files against a new pin.
+- After explicitly rebuilding the current FFI library, the installed-prefix
+  Scheme Governance/source-assets → Cedar FFI → Go publication → Rust execution
+  lost-reply/restart integration passed in 34.861 seconds. This is runtime
+  integration evidence, not fresh cold Scheme package qualification or evidence
+  that a reviewed RPC has been implemented.
+
+The first broader sandbox test attempt failed three real transport checks at
+loopback binding; the host gate supplies separate actual transport evidence.
+A test initially tried equality on MessageReceipt without PartialEq; its corrected
+assertion compares every serialized receipt field without changing the runtime
+type. These failed development checks, the initial duplicate-module lint and
+the invalid Quint fixture remain failures in this record. Subsequent passes do
+not retroactively qualify them or explain the earlier unrelated backpressure
+failure retained in the source-custody chapter.
+
 * Still required for the complete architecture
 
 The native source RPC remains the explicit trusted administrative profile. A
