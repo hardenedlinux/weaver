@@ -87,10 +87,24 @@ pub async fn serve_grpc(
     settings: GrpcConfig,
     shutdown: impl std::future::Future<Output = ()> + Send + 'static,
 ) -> weaver_contracts::Result<()> {
-    validate_listeners(&listeners, &settings)?;
-    let _ = rustls::crypto::ring::default_provider().install_default();
-    let runtime = RuntimeOwner::new();
-    let result = serve_owned(listeners, settings, runtime.clone(), shutdown).await;
+    serve_grpc_with_runtime(listeners, settings, RuntimeOwner::new(), shutdown).await
+}
+/// Embed approved owners in the same tracked runtime as source/operation RPC.
+/// All attached owners must naturally drain before service completion.
+pub async fn serve_grpc_with_runtime(
+    listeners: GrpcListeners,
+    settings: GrpcConfig,
+    runtime: RuntimeOwner,
+    shutdown: impl std::future::Future<Output = ()> + Send + 'static,
+) -> weaver_contracts::Result<()> {
+    let _lifetime = runtime.shutdown_guard();
+    let result = match validate_listeners(&listeners, &settings) {
+        Ok(()) => {
+            let _ = rustls::crypto::ring::default_provider().install_default();
+            serve_owned(listeners, settings, runtime.clone(), shutdown).await
+        }
+        Err(error) => Err(error),
+    };
     runtime.drain().await;
     result
 }

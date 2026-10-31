@@ -1,9 +1,11 @@
 //! Authenticated local owner service; the execution crate owns all outbound message bytes.
+#![forbid(unsafe_code)]
 mod admission;
 mod config;
 mod connections;
 pub mod encoding;
 pub mod entrypoint;
+mod governance_owner;
 mod grpc;
 mod grpc_config;
 mod grpc_output;
@@ -17,9 +19,12 @@ mod source_owner;
 #[path = "../tests/unit/fixtures.rs"]
 mod test_fixtures;
 pub use config::ServerConfig;
+pub use governance_owner::GovernanceWorker;
 pub use grpc::serve_grpc;
+pub use grpc::serve_grpc_with_runtime;
 pub use grpc_config::run_from_env;
 pub use rpc_security::{GrpcConfig, GrpcListeners, RpcSecurity};
+pub use runtime::RuntimeOwner as ServiceRuntime;
 pub use source_identity::certificate_identity as source_certificate_identity;
 #[cfg(test)]
 asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_rust_config());

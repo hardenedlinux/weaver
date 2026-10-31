@@ -774,3 +774,126 @@ Unicode/NUL and optional revisions. All-target/all-feature strict Clippy and
 Project/requirement checks are separate receipts. The D2 was rendered and checked;
 Quint/Lean annotations map the existing conditional laws to this constructor,
 without claiming a new kernel proof of the SDK implementation.
+
+* Shared server runtime and Scheme owner lifecycle
+
+=weaver-server= now depends on the workspace Governance crate and exports its
+existing runtime owner as =ServiceRuntime=. =start_governance= installs one
+terminal compiler owner for this runtime incarnation. The trusted embedding
+supplies a Send factory, an existing host resource permit and an explicit nonzero
+source-queue budget. The factory constructs the compiler on the existing tracked
+blocking worker; the compiler itself need not be Send and may own the SDK VM.
+No new thread pool, independent tracker or execution-authority ledger is created.
+One installed owner is a lifecycle boundary, not a fixed VM processor setting.
+
+=GovernanceWorker= retains the initialized service guard. Dropping it closes the
+shared runtime and source lane, while the original task remains tracked until
+natural cleanup. Dropping the async startup future also closes admission but
+does not interrupt an executing factory. Late factory return after shared close
+is cleaned and rejected rather than acknowledged as a usable activation. A
+second owner is refused without retiring the installed owner; a closed/failed
+runtime cannot replace its compiler or silently restart a VM.
+
+| Event | Resource result | Authority result |
+| Initialized compiler | Caller receives a tracked guard and inert-data client | No producer/source registration or publication permit |
+| Startup future abandoned | Shared admission closes; factory still holds its host permit until natural return | No source outcome, no-execution evidence or refund |
+| Active guard dropped | New delivery claims are fenced; active foreign call drains naturally | Unknown sends/holds remain unchanged |
+| Native/compiler failure | Terminal owner exit closes the shared service; no automatic retry | Original claim/history/budget constraints remain mandatory |
+| Shared drain | TaskTracker waits for compiler/VM destruction and release of its worker permit | Cleanup is not a durable consumption or account application |
+| RPC configuration failure | =serve_grpc_with_runtime= still closes and drains attached owners | Invalid ingress configuration cannot leave a usable service |
+
+The existing default =serve_grpc= delegates to =serve_grpc_with_runtime= using a
+fresh owner. Trusted in-process embedding can supply the same owner to gRPC and
+the Scheme compiler. Configuration validation is inside the owned completion
+path, so an early validation failure cannot bypass compiler cleanup.
+RPC completion, startup abandonment and source-worker exit use the same private
+=ShutdownGuard=; dropping a polled service future closes admission immediately
+while tracked work still requires natural drain. No duplicate lifecycle owner is
+introduced. Current
+deployed binaries do not yet install an approved Scheme producer registry or
+expose a compilation RPC; this hook is concrete resource integration, not that
+remaining protocol. Go's process/file adapter is still not replaced.
+
+Shutdown publishes a terminal atomic admission state while holding the existing
+registration gate, then closes the attached source client and cancellation token
+outside that mutex. Cancellation wakers must not reenter a locked admission gate.
+Each concurrent shutdown caller closes the same client before acknowledging its
+notification; the client is not removed after the first caller observes it.
+=closing= remains an atomic/token observation without adding an admission mutex
+to each operation check. Notification completion and drain completion remain
+different events. Calls overlapping shutdown linearize at their existing claim
+or activation checks; inert data claimed earlier is not retroactively recalled.
+Final source publication and executor consumption must still recheck current
+credentials, Policy/history/fence and original durable obligations.
+
+The SDK qualification target reuses Governance's existing documented test ABI
+leaf for the approved linked graph. Server library and deployment entrypoint both
+forbid unsafe code. Package deny lints allow only that test leaf to bind compiler
+symbols; no production unsafe block, new ABI implementation or arbitrary runtime
+export/path registration is added. The graph remains qualification-only. The
+factory is an explicit trusted-host capability, not authentication for arbitrary
+callbacks or a substitute for the pending producer registry.
+
+The existing Quint SourceHost refinement now includes factory executing/returned,
+owner activation, natural cleanup and shared join. It distinguishes local reply
+slots from the worker's lifetime: unread Rust-owned replies may retain their own
+slots after VM cleanup, and an active foreign call prevents owner cleanup. A
+fresh startup fixture starts with its factory executing; the earlier source-lane
+fixture assumes an already initialized owner. Initialization success and shared
+close interleave; activation observations record eligibility at their actual
+linearization point. Deliberately unsafe early join and late activation witnesses
+violate host safety. These host transitions leave the original claim, history and
+unknown hold untouched; they do not create a parallel budget protocol.
+
+The Cedar-linked Lean bridge extends the same SourceHost step relation. New laws
+preserve cleanup-before-join, reject fresh activation after a closed cut, and
+require factory/call return before a new cleanup acknowledgment. Their premises
+still depend on faithful task tracking, SDK destruction and runtime semantics;
+they do not prove foreign-call termination, provider exactly-once delivery or
+raw memory validity. Existing ownership/delivery laws remain checked alongside
+these lifecycle laws.
+
+Retained failures: the initial workspace manifest lacked the new local Governance
+dependency edge; ASP rejected the newly public runtime's missing documentation;
+an active-call fixture accidentally consumed its one-shot sender and became
+FnOnce. The first server SDK target also inherited a global unsafe-forbid that
+blocked the existing approved test ABI leaf, and omitted its pinned sys dev edge.
+The production library/binary retain explicit forbid attributes; the existing
+reviewed leaf is the sole test exception under package deny lints. None of these
+iterations justifies relaxing ASP, time limits or dependency revisions. Raw logs
+remain temporary; only source-specific compact evidence is retained here.
+
+** Shared-runtime qualification receipt
+
+| Entry | Fresh scope and outcome |
+|-------+-------------------------|
+| =cargo test -p weaver-server --all-features --locked --offline -- --nocapture= | 24 unit tests passed, including ASP deny, shared-owner 32-case PBT, active guard drop, abandoned/late startup and invalid-RPC cleanup. One existing Go-owned observed-server fixture remains intentionally ignored by the ordinary Rust runner. |
+| Actual server SDK integration in that entry | One real AA/Governor/Cedar capture passed on the tracked blocking owner in 3.99 seconds. The compiler's destructor dropped the VM on its owner thread before cleanup acknowledgment; shared drain returned the worker permit. Bound output remained readable afterward. SDK max/active processors were 1, not host-sized SMP. |
+| =cargo clippy -p weaver-server --all-targets --all-features --locked --offline -- -D warnings= | Passed on the final shared shutdown guard, including ordinary/Arrow and SDK qualification targets. This compiles benchmark targets but is not measured runtime performance. |
+| =quint test dev/proofs/quint/LlmPolicyContinuation.qnt= | 188 schedules passed, including seven new lifecycle schedules and deliberate unsafe early-join/late-activation controls. |
+| =hostStep= / =hostSafe= sampling | Separate initialized-owner and =initHostStarting= campaigns each sampled 1000 traces of at most 60 steps without a violation. Sampling is not exhaustive verification or a fairness/termination proof. |
+| Fixed-SPEC =lake build= | Passed. The three new owner lifecycle laws report only =propext= and no =sorryAx=. Imported Cedar and earlier semantic laws retain their existing premises. |
+| Go linked Project / requirement tests | Passed with the new workspace dependency and implementation/proof witnesses. |
+| Core D2 | Rendered and visually checked; only core ownership and data flow appear in the figure. |
+
+The first Go regression command omitted =schemeintegration= from its build tags
+and selected no target tests. Its exit status is not integration acceptance.
+The corrected =go test -race -tags=integration,schemeintegration ./dev= campaign
+selected both intended cases but failed overall: captured-source partial-send/
+revocation/restart did not enter its behavior assertions because Rust owner
+readiness exceeded the unchanged three-second gate. Launch was recorded at
+15:32:15.240192 UTC and the first Rust process-main clock at 15:32:18.084830 UTC,
+about 2.84 seconds later. Rust configuration/listener phases then took about two
+milliseconds. This bounds the observed gap outside the instrumented service
+setup; it does not identify dyld, process creation, scheduling or a unique cause,
+and wall-clock calibration remains a premise. No cold-readiness repair is claimed.
+
+Within that same failed campaign, Governance assets/publication reply-loss/restart
+passed in 29.83 seconds. A separate focused execution of the previously unentered
+captured-source scenario passed in 22.52 seconds: actual partial send, revoke and
+dual restart retained the original hold. That focused run is behavioral evidence
+with the existing binary/cache state, not replacement evidence for the failed
+cold-readiness campaign. Both tests still exercise the legacy Scheme file adapter;
+they do not prove a production native compilation RPC exists. The three-second
+readiness and fifteen-second Scheme limits were not changed, and no VM/process
+forced-exit workaround or dependency-pin update was introduced.

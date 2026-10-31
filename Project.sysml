@@ -353,7 +353,15 @@ package WeaverProject {
             part 'weaver-ledger' : RuntimeDependency;
         }
         part 'crates/server' : RustPackage {
+            doc /* ServiceRuntime is the existing shared task/resource owner.
+               Approved compiler factories construct non-Send Scheme VMs on its
+               tracked blocking worker. Terminal shutdown closes source delivery;
+               drain waits for natural factory/call return and VM cleanup.
+               One compiler owner is installed for this runtime incarnation;
+               rejected duplicates cannot retire the current owner. This lifecycle
+               hook is not a producer registry or a public compilation RPC. */
             part 'weaver-contracts' : RuntimeDependency;
+            part 'weaver-governance' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;
             part 'weaver-execution' : RuntimeDependency;
         }

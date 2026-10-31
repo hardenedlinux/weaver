@@ -48,3 +48,13 @@ including an already-ready result. Close acknowledgment is not owner drain or
 VM cleanup acknowledgment. The embedding runtime must join the owner after
 natural cleanup. This primitive does not install an approved producer registry,
 replace the Go file adapter, publish Policy, send, or release unknown budget.
+
+The server's existing =ServiceRuntime::start_governance= now supplies that
+tracked owner. Its Send factory constructs a non-Send compiler on the worker;
+shared shutdown closes source delivery and shared drain waits for VM cleanup.
+=serve_grpc_with_runtime= permits the same owner to serve authenticated RPC.
+An embedding error or abandoned service future closes admission; the caller
+still needs drain for cleanup acknowledgment. The actual approved SDK graph is
+qualified by the server's opt-in =governance-qualification= integration target.
+That test capability does not install the production producer registry or an RPC
+that accepts arbitrary source modules, paths or callback addresses.

@@ -651,10 +651,22 @@ structure SourceHost where
   cancelled : Bool
   phase : SourcePhase
   slot : Bool
+  initializing : Bool
+  factoryActive : Bool
+  ownerCleaned : Bool
+  joined : Bool
 
 inductive SourceHostStep : SourceHost → SourceHost → Prop where
   | close (s) : SourceHostStep s {s with closed := true}
-  | start (s) (admitted : s.closed = false) (queued : s.phase = .queued) :
+  | factoryReturn (s) : SourceHostStep s {s with factoryActive := false}
+  | initialize (s) (starting : s.initializing = true) (returned : s.factoryActive = false)
+      (admitted : s.closed = false) (live : s.ownerCleaned = false) :
+      SourceHostStep s {s with initializing := false}
+  | cleanup (s) (closed : s.closed = true) (returned : s.factoryActive = false)
+      (idle : s.phase ≠ .running) : SourceHostStep s {s with ownerCleaned := true}
+  | join (s) (cleaned : s.ownerCleaned = true) : SourceHostStep s {s with joined := true}
+  | start (s) (admitted : s.closed = false) (queued : s.phase = .queued)
+      (initialized : s.initializing = false) (live : s.ownerCleaned = false) :
       SourceHostStep s {s with phase := .running}
   | cancel (s) :
       SourceHostStep s {s with cancelled := true}
@@ -685,6 +697,21 @@ theorem source_host_running_cancel_retains_slot (event : SourceHostStep s t)
     t.slot = s.slot := by
   cases event <;> simp_all
 
+def SourceHost.ResourcesSafe (s : SourceHost) : Prop := s.joined = true → s.ownerCleaned = true
+theorem source_owner_join_preserves_cleanup (event : SourceHostStep s t)
+    (safe : s.ResourcesSafe) : t.ResourcesSafe := by
+  cases event <;> simp_all [SourceHost.ResourcesSafe]
+theorem source_owner_late_initialization_is_fenced (event : SourceHostStep s t)
+    (before : s.initializing = true) (after : t.initializing = false) : s.closed = false := by
+  cases event <;> simp_all
+theorem source_owner_cleanup_requires_natural_return (event : SourceHostStep s t)
+    (before : s.ownerCleaned = false) (after : t.ownerCleaned = true) :
+    s.factoryActive = false ∧ s.phase ≠ .running := by
+  cases event <;> simp_all
+
+#print axioms source_owner_join_preserves_cleanup
+#print axioms source_owner_late_initialization_is_fenced
+#print axioms source_owner_cleanup_requires_natural_return
 #print axioms source_host_close_is_terminal
 #print axioms source_host_delivery_requires_open_gate
 #print axioms source_host_running_cancel_retains_slot

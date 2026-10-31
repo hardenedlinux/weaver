@@ -18,6 +18,14 @@ package ControlActivation {
            belongs in producer-created phase attributes. */
     }
     requirement def GovernorSourceHandoff {
+        doc /* ServiceRuntime.start_governance installs a terminal tracked compiler
+           owner using an explicit host resource permit and source queue budget.
+           The Send factory builds its non-Send compiler on the owner thread.
+           Shared shutdown fences source delivery before returning, and shared
+           drain waits for natural VM cleanup. Abandoned or late initialization
+           cannot report activation after close. Embedding gRPC configuration
+           failure still drains attached owners. Neither startup readiness nor
+           resource cleanup is source admission, no-execution or budget evidence. */
         doc /* Production root_source constructs native SDK input directly from
            OwnedSource, using fallible bounded constructors rather than a test
            fixture or encoded blob. Native roundtrips preserve all concrete fields,

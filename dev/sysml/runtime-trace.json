@@ -382,6 +382,12 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
   {"id":"GovernorSourceHandoff","witnesses":[
+    {"file":"crates/server/src/governance_owner.rs","pattern":"pub async fn start_governance"},
+    {"file":"crates/server/src/grpc.rs","pattern":"pub async fn serve_grpc_with_runtime"},
+    {"file":"crates/server/tests/unit/governance_owner.rs","pattern":"shared_owner_schedules_preserve_cleanup_and_terminal_admission"},
+    {"file":"crates/server/tests/integration/governance_owner.rs","pattern":"actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain"},
+    {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"lateFactoryActivationCounterexampleTest"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"source_owner_join_preserves_cleanup"},
     {"file":"crates/governance/src/scheme_input/records.rs","pattern":"pub fn root_source"},
     {"file":"crates/governance/src/scheme_input/values.rs","pattern":"fn bytes"},
     {"file":"crates/governance/src/host/client.rs","pattern":"pub fn source_lane"},

@@ -1,4 +1,5 @@
 //! Deployment entrypoint; runtime composition belongs to the server library.
+#![forbid(unsafe_code)]
 fn main() {
     eprintln!(
         "weaver startup stage=process-main clock={:?}",

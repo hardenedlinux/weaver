@@ -36,7 +36,7 @@ module LlmPolicyContinuation {
   type FactState={closure:FactClosure,candidate:FactEvidence,installed:FactEvidence,hostValue:int,sourceValue:int,sourceImages:Set[SourceImage],truth:Set[int],scope:Set[int],
     mode:int,grant:Freshness,connected:bool,channel:int,clock:int,now:int,timeFloor:int,uses:List[FactUse],deltas:List[FactDelta]}
   // Local compilation resources only: no publication, execution or refund right.
-  type SourceHost={closed:bool,phases:List[int],cancelled:Set[int],slots:int,deliveries:List[bool]}
+  type SourceHost={closed:bool,phases:List[int],cancelled:Set[int],slots:int,deliveries:List[bool],worker:int,cleaned:bool,joined:bool,activations:List[bool]}
   type State={staged:Set[Change],log:List[Publication],generation:int,allowed:bool,fence:int,revision:int,online:bool,
     inspections:Set[View],approvals:Set[Approval],winner:int,visibleWinner:int,acks:Set[int],aliases:Set[Alias],permits:Set[Permit],
     uses:List[Use],spent:bool,everSpent:bool,calls:int,hold:int,usage:int,
@@ -62,7 +62,7 @@ module LlmPolicyContinuation {
     factFloor:0,barriers:List(),resolved:Set(),pending:Set(),hardAllowed:true,visibleBarrier:-1,receipts:Set(),frontier:0,
     nextAdmissions:List(),visibleAdmission:-1,nextUses:List(),nextSpent:false,nextCalls:0,nextHold:0,facts:facts0,
     semanticVM:0,ffiCall:0,captureEpoch:0,configurationSchema:1,configurationNormalizer:1,schemeModule:0,boundaryRecords:List(),
-    host:{closed:false,phases:List(0,0),cancelled:Set(),slots:0,deliveries:List()}}
+    host:{closed:false,phases:List(0,0),cancelled:Set(),slots:0,deliveries:List(),worker:1,cleaned:false,joined:false,activations:List()}}
   pure val boundary0={kind:0,root:10,claim:11,profile:20,configurationSchema:1,normalizer:1,programModule:0,environment:0,
     vm:0,call:0,epoch:0,cut:0,input:0,output:0,schemaChecked:true,governanceChecked:true,
     readable:true,stable:true,owned:true,retainedPointer:false,reentrant:false,
@@ -106,10 +106,22 @@ module LlmPolicyContinuation {
   action init=s'=initial
   // 0 unused, 1 queued, 2 running, 3 ready, 4 delivered, 5 discarded.
   def hostOccupied=s.host.phases.indices().filter(i=>s.host.phases.nth(i)>=1 and s.host.phases.nth(i)<=3).size()
-  def hostSafe=s.host.slots==hostOccupied and s.host.slots<=2 and s.host.deliveries.indices().forall(i=>s.host.deliveries.nth(i))
-  action hostSubmit(i)=all {not(s.host.closed),s.host.slots<2,s.host.phases.nth(i)==0,
+  // Worker: 0 factory executing, 1 active owner, 2 cleaned, 3 factory returned.
+  def hostRunning=s.host.phases.indices().exists(i=>s.host.phases.nth(i)==2)
+  def hostSafe=s.host.slots==hostOccupied and s.host.slots<=2 and s.host.deliveries.indices().forall(i=>s.host.deliveries.nth(i)) and
+    s.host.activations.indices().forall(i=>s.host.activations.nth(i)) and
+    (s.host.joined implies (s.host.cleaned and s.host.worker==2)) and
+    (s.host.cleaned implies (s.host.closed and not(hostRunning)))
+  action initHostStarting=s'=initial.with("host",initial.host.with("worker",0))
+  action hostFactoryReturn=all {s.host.worker==0,s'=s.with("host",s.host.with("worker",3))}
+  action hostActivate=all {s.host.worker==3,not(s.host.closed),
+    s'=s.with("host",s.host.with("worker",1).with("activations",s.host.activations.append(not(s.host.closed))))}
+  action hostCleanup=all {s.host.closed,s.host.worker==1 or s.host.worker==3,not(hostRunning),
+    s'=s.with("host",s.host.with("worker",2).with("cleaned",true))}
+  action hostJoin=all {s.host.cleaned,s.host.worker==2,s'=s.with("host",s.host.with("joined",true))}
+  action hostSubmit(i)=all {s.host.worker==1,not(s.host.closed),s.host.slots<2,s.host.phases.nth(i)==0,
     s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,1)).with("slots",s.host.slots+1))}
-  action hostStart(i)=all {not(s.host.closed),not(s.host.cancelled.contains(i)),s.host.phases.nth(i)==1,
+  action hostStart(i)=all {s.host.worker==1,not(s.host.closed),not(hostRunning),not(s.host.cancelled.contains(i)),s.host.phases.nth(i)==1,
     s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,2)))}
   action hostFinish(i)=all {s.host.phases.nth(i)==2,
     val discard=s.host.closed or s.host.cancelled.contains(i)
@@ -125,7 +137,20 @@ module LlmPolicyContinuation {
     s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,4)).with("slots",s.host.slots-1)
       .with("deliveries",s.host.deliveries.append(not(s.host.closed) and not(s.host.cancelled.contains(i)))))}
   action hostStep=any {hostSubmit(0),hostSubmit(1),hostStart(0),hostStart(1),hostFinish(0),hostFinish(1),
-    hostCancel(0),hostCancel(1),hostDiscardWaiting(0),hostDiscardWaiting(1),hostClose,hostDeliver(0),hostDeliver(1)}
+    hostCancel(0),hostCancel(1),hostDiscardWaiting(0),hostDiscardWaiting(1),hostClose,hostDeliver(0),hostDeliver(1),
+    hostFactoryReturn,hostActivate,hostCleanup,hostJoin}
+  run abandonedFactoryRemainsTrackedTest=initHostStarting.then(hostClose).expect(hostSafe and not(s.host.joined))
+    .then(hostCleanup.fail())
+  run lateFactoryCannotActivateAfterCloseTest=initHostStarting.then(hostClose).then(hostFactoryReturn).then(hostActivate.fail())
+  run factoryReturnAllowsNaturalCleanupTest=initHostStarting.then(hostClose).then(hostFactoryReturn).then(hostCleanup).then(hostJoin)
+    .expect(hostSafe and s.host.joined and s.hold==6 and s.calls==0)
+  run activeCompilerPreventsSharedDrainTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostClose).then(hostCleanup.fail())
+  run activeCompilerReturnPrecedesSharedDrainTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostClose)
+    .then(hostFinish(0)).then(hostCleanup).then(hostJoin).expect(hostSafe and s.host.joined and s.hold==6)
+  action unsafeHostJoin=s'=s.with("host",s.host.with("joined",true))
+  run cancellationAsCleanupCounterexampleTest=initHostStarting.then(hostClose).then(unsafeHostJoin).expect(not(hostSafe))
+  action unsafeHostActivate=s'=s.with("host",s.host.with("worker",1).with("activations",s.host.activations.append(not(s.host.closed))))
+  run lateFactoryActivationCounterexampleTest=initHostStarting.then(hostClose).then(hostFactoryReturn).then(unsafeHostActivate).expect(not(hostSafe))
   run readySourceCannotCrossTerminalCloseTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostFinish(0))
     .then(hostClose).expect(hostSafe and s.hold==6 and s.calls==0).then(hostDeliver(0).fail())
   run runningSourceCancelKeepsSlotTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostCancel(0))

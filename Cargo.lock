@@ -4010,6 +4010,8 @@ dependencies = [
  "arrow-schema",
  "asp-rust",
  "criterion",
+ "gerbil-scheme",
+ "gerbil-scheme-sys",
  "hex",
  "proptest",
  "prost",
@@ -4026,7 +4028,9 @@ dependencies = [
  "tonic-prost-build",
  "weaver-contracts",
  "weaver-execution",
+ "weaver-governance",
  "weaver-ledger",
+ "weaver-policy-ffi",
 ]
 
 [[package]]

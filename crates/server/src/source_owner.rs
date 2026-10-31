@@ -1,5 +1,5 @@
 //! One tracked blocking owner for source-only SQLite work; no cached authority decisions.
-use crate::runtime::RuntimeOwner;
+use crate::runtime::{RuntimeOwner, ShutdownGuard};
 use std::{path::PathBuf, sync::Arc};
 use tokio::{
     runtime::Handle,
@@ -54,9 +54,6 @@ enum Command {
         slot: OwnedSemaphorePermit,
     },
 }
-struct Exit {
-    runtime: RuntimeOwner,
-}
 pub(crate) struct SourceWorker {
     pub(crate) client: SourceOwner,
     job: tokio::task::JoinHandle<Result<()>>,
@@ -68,11 +65,6 @@ impl SourceWorker {
             .map_err(|_| Error::Conflict("source worker panicked"))?
     }
 }
-impl Drop for Exit {
-    fn drop(&mut self) {
-        self.runtime.request_shutdown();
-    }
-}
 impl SourceOwner {
     pub(crate) async fn start(
         runtime: RuntimeOwner,
@@ -82,9 +74,7 @@ impl SourceOwner {
         let (sender, receiver) = mpsc::channel(1);
         let (ready_tx, ready_rx) = oneshot::channel();
         let handle = Handle::current();
-        let exit = Exit {
-            runtime: runtime.clone(),
-        };
+        let exit = runtime.shutdown_guard();
         let job = runtime.spawn_blocking(slot, move |cancel| {
             run(database, receiver, ready_tx, handle, cancel, exit)
         })?;
@@ -203,7 +193,7 @@ fn run(
     ready: oneshot::Sender<Result<()>>,
     handle: Handle,
     cancel: CancellationToken,
-    _exit: Exit,
+    _exit: ShutdownGuard,
 ) -> Result<()> {
     let mut ledger = match Ledger::open(database) {
         Ok(ledger) => ledger,
