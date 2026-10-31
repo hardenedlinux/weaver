@@ -39,6 +39,9 @@ boundaries distinct. These acceptance scenarios are specified, not executed.
 boundary and keeps scenario-specific Rust execution in Weaver.
 [[file:59.41-authority-read-final-cas.org][Authority reads and final CAS]] maps actual SQLite/gRPC recovery to reused
 Lean/Quint laws and records the independent recovery-floor implementation gap.
+[[file:59.42-independent-commit-floor.org][Independent commit floor and recovery]] defines the four-prefix decision,
+unknown-outcome reconciliation and transport-owner admission protocol, with
+executable protocol references and explicit production refinement gaps.
 
 Go and Rust communicate through the shared typed gRPC service in
 [[file:../../../proto/gateway/v1/gateway.proto][gateway.proto]]. The Rust server executable starts this service by default.

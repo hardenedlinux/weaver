@@ -474,6 +474,32 @@ package PolicyEvidenceDesign {
         attribute routineFrontier : String;
         attribute factValidityIdentity : String;
     }
+    item def CommitCut {
+        doc /* Full authenticated prefix commitments, not lengths or display
+           generations. Each commitment covers ordered IDs, canonical bodies,
+           original scope and predecessor. Domain owners validate actual effects. */
+        attribute originalAssignment : String;
+        attribute publicationPrefix : String;
+        attribute consumptionPrefix : String;
+        attribute accountApplicationPrefix : String;
+        attribute historyPrefix : String;
+    }
+    item def FloorDecision {
+        attribute intentIdentity : String;
+        attribute canonicalCommandDigest : String;
+        attribute ownerEpoch : Integer;
+        item predecessor : CommitCut;
+        item resultCut : CommitCut;
+        attribute outcomeIdentity : String;
+        attribute outcome : PublicationOutcome;
+        doc /* Independent authority atomically binds original intent/digest,
+           epoch, full predecessor and immutable committed/rejected result.
+           Exact retry observes its original result; it never rebases a parent.
+           Missing/failed lookup is unknown, not abort. Resolve an absent intent
+           by a durable fenced rejection. Rejection resolves that intent only;
+           it proves neither no-execution nor final usage and cannot by itself
+           release the original claim or unknown budget. */
+    }
     item def FinalEffectJoin {
         item effect : ActualEffect;
         item image : ArtifactImage;
@@ -497,6 +523,12 @@ package PolicyEvidenceDesign {
            The floor covers execution consumption, account applications and
            history prefixes as well as publication. A publication-only floor
            misses rollback of a spend under an unchanged valid publication.
+           Prepared local WAL is inert. Anchor decision precedes projection
+           visibility; repair every affected prefix before activation. Local
+           projection and authority epoch/cut are compared again at final use.
+           Final transport authority serializes burn and bounded send with floor
+           changes in the independent recovery domain. An online read followed
+           by a local send, a bearer token or a cached activation is insufficient.
            An unavailable/mismatched floor blocks new authority, dispatch and
            unknown-budget release. This is a target obligation, not an existing
            anti-rollback implementation. Already admitted sends may finish while
