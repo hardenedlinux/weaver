@@ -1,0 +1,75 @@
+#+title: 59.39 FFI-only Scheme Qualification: Local Evidence
+#+language: en
+
+* Fixed inputs and result boundary
+The fresh-prefix complete =check-scheme= run on
+=6c91131f8709e1538c6034d8426b8a0ed8439369= reported =FAIL=: thirteen of fourteen
+stages passed. The host reported twelve available process CPUs. All dependency
+pins and the fifteen-second package-test deadline were unchanged.
+
+The active package contains FFI-loaded libraries only. The removed =dev/scheme=
+inventory and observer, =dev/build.ss=, =dev/gerbil.pkg= and image-packaging runner
+are not project acceptance prerequisites. Production modules belong in
+=scheme/=; their Scheme test suites belong in =t/=. Standard Gerbil build/test
+commands own discovery, compilation and execution.
+
+* Complete gate observations
+| Stage group | Result |
+|-------------+--------|
+| Committed source before/after, source currentness, linked source before/after | PASS |
+| Project/SysML architecture | PASS |
+| Rust Cedar FFI library and twelve-CPU capacity report | PASS |
+| Declared POO library / inherited Core library / Weaver module build | PASS |
+| SDK tool and pkg-config environment tests | PASS |
+| =gerbil test -g -v 5 t= | FAIL, killed by the unchanged watchdog at 15.038839375 s |
+| Real Scheme/Cedar CFFI, Go authority and Rust streaming integration | PASS, 3m49.383082584s |
+
+The failed package process printed nineteen =CASE-OK= reports, =HARNESS-OK= and
+terminal =OK=. These markers do not establish a natural process exit. The
+original receipt did not timestamp them, so it cannot establish whether most
+of the delay occurred before the reports or during subsequent cleanup.
+
+The passing integration stage includes source-assets response-loss recovery,
+revocation after a partial stream, preserved unknown budget across dual-process
+restart, a shared-budget concurrency race and rejection of SDK retry. These are
+real local mTLS/transport tests with controlled provider endpoints, not live
+commercial provider qualification or proof of whole-store anti-rollback.
+
+A diagnostic replay of the same public command and prefix observed its first
+Harness at 3.070389 s, first Case at 3.070392250 s, terminal result at
+3.213005417 s and natural exit at 4.978567250 s. This is a later-use observation,
+not a replacement for the failed first-use receipt or evidence of its cause.
+
+* Earlier failures and focused checks
+The preceding fresh-prefix preparation attempt failed before gate execution:
+development links for inherited Core/POO created empty package tags, and the
+official dependency installer read =#!eof= where it required a string.
+Preparation now links the source package alone, lets =gerbil deps --install=
+install its declared dependency graph, and verifies installed Core/POO revisions
+against the unchanged source cohort. No tag or manifest is synthesized.
+
+The first focused Scheme shared-budget attempt exceeded control readiness and
+failed. After a standard root library build refresh, the same test passed in
+11.29 s; its complete Go test process took 15.937 s. This operation is distinct
+from the deadline-bound package test. One failed/successful pair does not
+attribute the difference exclusively to stale artifacts or host contention.
+
+Go development/project race tests passed. The FFI cleanup qualification model
+passed fourteen named Quint scenarios and its existing thousand-sample,
+sixty-step audit exploration at seed 293. Lean qualification passed with its
+compiled dependency closure. Authority publication passed twenty-seven named
+Quint scenarios. None of these results discharges native wall-clock acceptance.
+
+* Timing and next acceptance obligation
+The Go runner now observes the existing public SDK output while preserving
+every original log byte. Receipts distinguish the first Harness/Case, successful
+Harness, terminal result and the interval from terminal output to process
+completion. Missing markers remain missing. Pre-Harness time combines startup,
+discovery and loading; no unsupported per-phase attribution is fabricated.
+
+The observer neither changes test arguments nor grants acceptance. A fresh
+complete run must still finish naturally within fifteen seconds and preserve
+all nineteen Cases and source checks. The existing Quint and Lean properties
+retain separate completion, cleanup, source and deadline obligations; a fast
+replay cannot retroactively qualify a failed run. Raw logs are temporary, and
+the current compact receipt belongs under ignored =.cache/verification=.

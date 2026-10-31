@@ -1,0 +1,70 @@
+package devrunner
+
+import (
+	"io"
+	"strings"
+	"sync"
+	"time"
+)
+
+// SchemeTiming observes the SDK's existing output, without changing its entry,
+// cleanup or deadline. PreHarness includes discovery/loading; these timestamps
+// cannot distinguish boundaries the SDK does not expose.
+type SchemeTiming struct {
+	PreHarness    string `json:"preHarness,omitempty"`
+	FirstCase     string `json:"firstCase,omitempty"`
+	HarnessDone   string `json:"harnessDone,omitempty"`
+	Terminal      string `json:"terminal,omitempty"`
+	AfterTerminal string `json:"afterTerminal,omitempty"`
+}
+
+type schemeOutput struct {
+	mu          sync.Mutex
+	destination io.Writer
+	started     time.Time
+	line        []byte
+	observed    SchemeTiming
+	terminal    time.Time
+}
+
+func (s *schemeOutput) Write(data []byte) (int, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	n, err := s.destination.Write(data)
+	for _, b := range data[:n] {
+		if b == '\n' {
+			s.observe(string(s.line), time.Now())
+			s.line = s.line[:0]
+		} else if len(s.line) < 256 {
+			// Only short SDK marker prefixes are needed; never buffer arbitrary
+			// provider diagnostics or change the complete log written above.
+			s.line = append(s.line, b)
+		}
+	}
+	return n, err
+}
+
+func (s *schemeOutput) observe(line string, now time.Time) {
+	elapsed := now.Sub(s.started).String()
+	switch {
+	case strings.HasPrefix(line, "HARNESS ") && s.observed.PreHarness == "":
+		s.observed.PreHarness = elapsed
+	case strings.HasPrefix(line, "CASE ") && s.observed.FirstCase == "":
+		s.observed.FirstCase = elapsed
+	case strings.HasPrefix(line, "HARNESS-OK "):
+		s.observed.HarnessDone = elapsed
+	case line == "OK" && s.terminal.IsZero():
+		s.observed.Terminal = elapsed
+		s.terminal = now
+	}
+}
+
+func (s *schemeOutput) timing(finished time.Time) *SchemeTiming {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	result := s.observed
+	if !s.terminal.IsZero() {
+		result.AfterTerminal = finished.Sub(s.terminal).String()
+	}
+	return &result
+}

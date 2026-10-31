@@ -24,18 +24,19 @@ type Stage struct {
 	Args         []string
 }
 type Result struct {
-	Name           string   `json:"name"`
-	Status         string   `json:"status"`
-	Binary         string   `json:"binary"`
-	ResolvedBinary string   `json:"resolvedBinary,omitempty"`
-	Args           []string `json:"args"`
-	Log            string   `json:"log"`
-	OutputSHA256   string   `json:"outputSha256,omitempty"`
-	FailureTail    string   `json:"failureTail,omitempty"`
-	Details        string   `json:"details,omitempty"`
-	ExitCode       *int     `json:"exitCode,omitempty"`
-	Error          string   `json:"error,omitempty"`
-	Duration       string   `json:"duration"`
+	Name           string        `json:"name"`
+	Status         string        `json:"status"`
+	Binary         string        `json:"binary"`
+	ResolvedBinary string        `json:"resolvedBinary,omitempty"`
+	Args           []string      `json:"args"`
+	Log            string        `json:"log"`
+	OutputSHA256   string        `json:"outputSha256,omitempty"`
+	FailureTail    string        `json:"failureTail,omitempty"`
+	Details        string        `json:"details,omitempty"`
+	ExitCode       *int          `json:"exitCode,omitempty"`
+	Error          string        `json:"error,omitempty"`
+	Duration       string        `json:"duration"`
+	SchemeTiming   *SchemeTiming `json:"schemeTiming,omitempty"`
 }
 type Receipt struct {
 	Revision           string            `json:"revision,omitempty"`
@@ -226,9 +227,19 @@ func runStage(ctx context.Context, root, directory string, environment []string,
 	}
 	cmd.Dir = root
 	cmd.Env = environment
-	cmd.Stdout = log
-	cmd.Stderr = log
+	var output io.Writer = log
+	var observation *schemeOutput
+	if stage.Name == "scheme-unit-tests" {
+		observation = &schemeOutput{destination: log, started: started}
+		output = observation
+	}
+	cmd.Stdout = output
+	cmd.Stderr = output
 	err = cmd.Run()
+	finished := time.Now()
+	if observation != nil {
+		result.SchemeTiming = observation.timing(finished)
+	}
 	closeErr := log.Close()
 	if stage.Name == "scheme-unit-tests" && err == nil {
 		err = validateSchemeResult(filepath.Join(directory, result.Log))
@@ -236,7 +247,7 @@ func runStage(ctx context.Context, root, directory string, environment []string,
 			err = errors.Join(err, ctx.Err())
 		}
 	}
-	result.Duration = time.Since(started).String()
+	result.Duration = finished.Sub(started).String()
 	if cmd.ProcessState != nil {
 		code := cmd.ProcessState.ExitCode()
 		result.ExitCode = &code
