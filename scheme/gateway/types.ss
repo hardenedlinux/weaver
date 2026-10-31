@@ -7,7 +7,13 @@
                  GovernanceContext GovernorState AgenticAILabGovernanceProfile +loop-governor-type-contract+)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyScopeContract)
         "./contracts.ss")
-(export GatewayScopeContract GovernanceScopeContract PolicyScopeContract)
+(export GatewayScopeContract GovernanceScopeContract PolicyScopeContract GatewaySourceProducer GatewayProgram)
+(def GatewaySourceProducer (Function (list GatewayArtifact) (list GatewayArtifact)))
+(def GatewayProgram
+  (.cc (Record install: (list (Function (list Bool) (list GatewaySourceProducer)))
+               capture: (list (Function (list GatewayArtifact) (list GatewayArtifact)))
+               close: (list (Function (list Bool) '())))
+       identity: 'weaver/gateway/program sealed: #t))
 (def GatewayScopeContract
   (.cc YuanxuContract. value-contract: (Record
          compile: (list (Function (list GatewayArtifact)

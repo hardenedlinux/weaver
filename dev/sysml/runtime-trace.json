@@ -382,6 +382,11 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
   {"id":"GovernorSourceHandoff","witnesses":[
+    {"file":"scheme/gateway/types.ss","pattern":"def GatewayProgram"},
+    {"file":"scheme/gateway/program.ss","pattern":"def \\(make-gateway-program"},
+    {"file":"t/gateway-source-test.ss","pattern":"program installation and close follow an irreversible lifecycle"},
+    {"file":"dev/proofs/quint/GatewayProgram.qnt","pattern":"caughtReentryPoisonsOuterDeliveryTest"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem program_result_composes_with_registered_original"},
     {"file":"go/internal/controlplane/deployment_source.go","pattern":"func selectDeploymentSource"},
     {"file":"go/internal/controlplane/deployment_source_test.go","pattern":"func FuzzDeploymentSourceHasOneOwner"},
     {"file":"go/internal/controlplane/producer_deployment_test.go","pattern":"func exerciseProducerDeployment"},

@@ -19,6 +19,15 @@ package ControlActivation {
            belongs in producer-created phase attributes. */
     }
     requirement def GovernorSourceHandoff {
+        doc /* A Scheme GatewayProgram has sealed specific Record/Function
+           methods. Typed invalid arguments reject before installation entry;
+           admitted installation seals its slot, and duplicates preserve the
+           current callback. Capture copies input/result and invokes the existing
+           producer's admitted-scope capture; it never assumes a shared ambient
+           sink across Yuanxu scopes. Close/reentry fences late results while
+           natural call completion remains the Rust owner's cleanup condition.
+           Creating a new local object cannot create a new source authority,
+           claim, reservation or final send opportunity. */
         doc /* The approved producer catalog is immutable and bounded by entry
            count and aggregate UTF-8 source text. Names, family uniqueness and
            publication ID/content consistency are checked before binding. Selection

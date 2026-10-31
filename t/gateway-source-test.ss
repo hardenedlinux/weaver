@@ -1,11 +1,13 @@
 ;;; Source compilation checks stay in the native Scheme test suite.
 (import :std/test
         (only-in :std/error Error? Error-message)
-        (only-in :clan/poo/object .o .get)
+        (only-in :clan/poo/object .o .get object-slots-set!)
+        (only-in :clan/poo/mop TypeError?)
         (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
         (only-in ../scheme/policy/func project-policy)
         (only-in ../scheme/gateway/capture capture-gateway-source deliver-gateway-source)
         (only-in ../scheme/gateway/snapshot copy-source-data native->source-data source-data->native)
+        (only-in ../scheme/gateway/program make-gateway-program)
         (prefix-in :clan/poo/testing/property/generator generator.)
         (prefix-in :clan/poo/testing/property property.)
         (only-in :clan/poo/testing/property/test check-property)
@@ -39,6 +41,81 @@
 
 (def gateway-source-test
   (test-suite "Stable source assessment projection"
+    (test-case "program returns independent typed data without borrowing an ambient sink"
+      (let* ((program (make-gateway-program)) (held #f)
+             (text (string-copy (.get source-publication policy))) (original (string-copy text))
+             (input (.o (:: @ bundle) publication: (.o (:: @ source-publication) policy: text))))
+        ((.get program install) (lambda (value) (set! held value) value))
+        (let ((result ((.get program capture) input)))
+          (string-set! text 0 #\x)
+          (string-set! (.get (.get held publication) policy) 0 #\y)
+          (check-equal? (.get (.get result publication) policy) original))))
+    (test-case "a producer cannot return a Boolean in place of a typed source"
+      (let ((program (make-gateway-program)))
+        ((.get program install) (lambda (_) #t))
+        (check-exception ((.get program capture) bundle) TypeError?)
+        (check-equal? (refusal-message (lambda () ((.get program install) (lambda (value) value))))
+                      "Gateway program installation is sealed")))
+    (test-case "program lifecycle methods cannot be replaced through supported POO writes"
+      (let ((program (make-gateway-program)))
+        (check-equal? (refusal-message (lambda () (object-slots-set! program '()))) "sealed prototype")
+        ((.get program install) (lambda (value) value))
+        (check-equal? (gateway-source-json ((.get program capture) bundle)) (gateway-source-json bundle))
+        (check-equal? (refusal-message (lambda () (object-slots-set! program '()))) "sealed prototype")))
+    (test-case "program installation and close follow an irreversible lifecycle"
+      (def report
+        (property.check-property
+          (generator.generator-sequence (map (lambda (_) (generator.generator-integer 0 3)) (iota 8)))
+          (lambda (commands)
+            (let ((program (make-gateway-program)) (phase 'uninstalled) (calls 0) (expected-calls 0))
+              (def (produce value) (set! calls (1+ calls)) value)
+              (and
+                (andmap
+                  (lambda (command)
+                    (let* ((expected-refusal?
+                            (cond ((= command 0) (not (eq? phase 'uninstalled)))
+                                  ((= command 1) #t)
+                                  ((= command 2) (not (eq? phase 'active)))
+                                  (else #f)))
+                           (result
+                            (with-catch
+                              (lambda (failure) (if (Error? failure) 'refused (raise failure)))
+                              (lambda ()
+                                (case command
+                                  ((0) ((.get program install) produce))
+                                  ((1) ((.get program install) #f))
+                                  ((2) ((.get program capture) bundle))
+                                  (else ((.get program close))))))))
+                      (cond ((and (= command 0) (eq? phase 'uninstalled)) (set! phase 'active))
+                            ((and (= command 2) (eq? phase 'active)) (set! expected-calls (1+ expected-calls)))
+                            ((= command 3) (set! phase 'closed)))
+                      (eq? (eq? result 'refused) expected-refusal?)))
+                  commands)
+                (= calls expected-calls))))
+          (property.make-specification
+            (lambda (commands) (and (list? commands) (= (length commands) 8)
+                                   (andmap (lambda (command) (and (exact-integer? command) (<= 0 command 3))) commands)))
+            (lambda (commands) (apply + commands)))
+          seed: 293 cases: 128 size: 128 shrink-budget: 64))
+      (check-property report)
+      (check-equal? (property.report-accepted report) 128))
+    (test-case "program close during callback fences output without holding the lifecycle lock"
+      (let ((program (make-gateway-program)))
+        ((.get program install)
+         (lambda (value) ((.get program close)) value))
+        (check-equal? (refusal-message (lambda () ((.get program capture) bundle)))
+                      "Gateway program closed during capture")
+        (check-equal? (refusal-message (lambda () ((.get program capture) bundle)))
+                      "Gateway program is not active")))
+    (test-case "caught program reentry cannot promote the outer result"
+      (let ((program (make-gateway-program)))
+        ((.get program install)
+         (lambda (value)
+           (check-equal? (refusal-message (lambda () ((.get program capture) value)))
+                         "Gateway program capture is active")
+           value))
+        (check-equal? (refusal-message (lambda () ((.get program capture) bundle)))
+                      "Gateway program closed during capture")))
     (test-case "native snapshot bounds and mutable leaf ownership"
       (let* ((text (make-string 8388608 #\a)) (image (copy-source-data text)))
         (check-equal? (string-length image) 8388608)

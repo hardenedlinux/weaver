@@ -101,5 +101,5 @@
              ;; assembly will consume the native Record directly; this write is outside capture.
              (if capture-result? artifact (deliver-gateway-source artifact)))
            (produce))))
-    (trace-phase (if capture-result? "source-captured" "artifact-written"))
+    (trace-phase (if capture-result? "source-captured" "source-delivered"))
     result))

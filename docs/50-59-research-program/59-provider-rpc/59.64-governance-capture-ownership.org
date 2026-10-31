@@ -1194,3 +1194,112 @@ per-source gate. Suite wall time includes repeated source preparation and is not
 Gateway runtime latency or a cold performance comparison. The three changed Go
 runtime packages passed race checks, and the corrected SysML/project checks
 passed. The D2 rendered and was visually inspected. No dependency pin changed.
+
+* Typed Scheme program lifecycle and scoped composition
+
+=scheme/gateway/program.ss= supplies =make-gateway-program= as an ordinary
+domain function, exported through the existing Gateway function module. It adds
+no parser, Policy language or Governor/Profile default. =GatewayProgram= is a
+sealed specific Record of typed =install=, =capture= and =close= Functions.
+The normalized public receiver and its private method receiver are sealed
+against supported POO writes. Mutable lifecycle state stays private to the
+owner-local closures; the object is neither an authentication certificate nor
+an execution capability.
+
+=GatewaySourceProducer= takes and returns a concrete =GatewayArtifact=. An
+approved application installs its producer once; that producer calls the
+existing =capture-governed-gateway= with its actual Governor, Governance Profile,
+context, state and admitted module view. The lifecycle does not construct those
+semantics from labels or borrow the qualification fixture's default Profile.
+The SDK fixture now installs its test-specific producer into this shared
+production lifecycle. Its C ABI returns the resulting Record through the
+existing native object projection; there is no encoded interop carrier.
+Program capture is administrative source preparation, not a per-token or
+per-message provider hot path. Streaming sends continue to use Rust's current
+Policy/claim/history/reservation guards without invoking Scheme for each chunk.
+
+| Boundary | Actual obligation |
+|----------+-------------------|
+| Function normalization | Reject malformed producer arguments before entering installation; no slot has been consumed at this point |
+| Installation body | Admit one callback; an internal failure after admission seals the instance; duplicate installation preserves the existing callback |
+| Capture entry | Require an active instance; copy validated input before application code; keep the lifecycle lock out of that call |
+| Approved application | Reuse the actual admitted scope's existing Governance/Cedar capture and return one typed Record |
+| Capture return | Validate/copy the result; require the same instance to remain active before returning data |
+| Close or caught reentry | Terminally fence output; keep an active call running naturally; do not acknowledge VM cleanup or return a Rust slot early |
+| Rust composition | Retain the independent original, compare every result field, reobserve source authority and preserve final publication/execution CAS |
+
+A failed ordinary capture returns naturally and leaves the installed callback
+unchanged; it cannot install a replacement or refund an execution hold. An
+explicit close has no reopening operation. Creating another local program
+object is possible for trusted application composition, but supplies none of
+the original registry, source identity, claim, budget or history authority.
+The Rust catalog/owner/final-consumption contracts remain mandatory.
+
+** Reproducible failures and corrections
+
+The first standard Scheme run found =CyclicSlot=: fields such as =install= were
+initialized using same-named local bindings, which POO interpreted as recursive
+slot reads. Distinct local function names fixed the actual construction bug.
+
+The next framework property shrank its failure to an invalid producer followed
+by installation: =1 0 0 0 0 0 0 0=. Its oracle incorrectly assumed every invalid
+argument entered the installation body and consumed its slot. Existing POO
+Function normalization rejects it before entry. The corrected oracle preserves
+the uninstalled state and still requires one admitted callback, duplicate
+refusal, terminal close and exact callback counts. No Function contract was
+weakened or bypassed to satisfy the property.
+
+The first SDK composition failed with =WEAVER_CONTROL_ARTIFACT is required=.
+An outer ambient sink did not capture emission through the actual admitted
+Gateway scope. The existing scoped capture function already solves this;
+the producer now calls it and returns its typed Record. The owner validates
+and copies that result directly. A Boolean or a serialized blob is rejected.
+No artifact path, global sink workaround or JSON bridge was added. The
+bounded exception text is a qualification-only SDK diagnostic; production RPC
+errors still omit source content. Raw failure output remains temporary.
+
+The initial Quint test harness attempted to inspect state after a failed action
+without an explicit retained-state transition. Named rejection transitions now
+model the actual refused call and preserved owner. A Lean numeral-reduction
+proof also initially failed elaboration; all final laws must build and print
+their actual axiom dependencies. These model/tool failures do not count as
+passing runtime evidence.
+
+** Formal scope and runtime evidence
+
+=GatewayProgram.qnt= models local registration, typed pre-entry refusal,
+internal installation failure, running calls, closure, caught reentry, natural
+return and cleanup acknowledgment. Fourteen named schedules include expected
+counterexamples for premature cleanup, late delivery and callback replacement.
+A separate 1000-trace/60-step campaign found no safety violation. Its resource
+slot abstracts the Rust owner's retained call capacity; it is not a second
+Scheme-owned execution ledger. The fixed hold and zero-send properties describe
+the lifecycle helper's lack of execution operations, not arbitrary application
+code purity or a process sandbox.
+
+Five fixed-SPEC Lean laws establish close-preserves-running-call, closed-result
+refusal, duplicate-install preservation, no reopening and conditional composition
+with the original registered source. All five report no axioms. Original task
+truth, application authenticity, actual stable SDK data and the source-owner
+publication protocol remain independent premises. These laws do not replace
+the existing RPC/final-send models or prove arbitrary Scheme code safe.
+
+Standard root =gerbil build/test= owns the lifecycle properties, sealed-method
+regression, input/result alias tests, typed-result rejection, callback close and
+caught reentry. The actual SDK/server test composes the same implementation
+with Go deployment, final Cedar denial, source rotation and natural VM cleanup.
+The scoped-return correction passed in 7.55 seconds of runtime; the final sealed
+version has its own qualification receipt below. Neither run promotes the
+fixture's Governor/Profile construction into the stock Rust service. Production
+program linking/installation and canonical registry recovery remain open.
+
+The final sealed version passed standard root Gerbil build/test with all 36
+cases, including 128 generated eight-command lifecycle sequences. The actual
+SDK/server/Go deployment integration passed in 7.45 seconds of test runtime,
+including three captures, the final Cedar denial, source rotation and natural
+VM destruction. The preceding archive build is separate from runtime evidence.
+Go runner race checks and linked SysML/project/module-owner checks passed; the
+core diagram was rendered and visually inspected. The qualification's SDK
+still reports one maximum/active processor, with no host-sized SMP claim.
+The changed real SDK integration also passed targeted strict Clippy with the
+existing Rust deny gates. No dependency pin changed.

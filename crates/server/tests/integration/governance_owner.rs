@@ -36,6 +36,28 @@ impl Compiler {
             .call(&input)
             .into_result()
             .map_err(|_| SourceError::Scheme)?;
+        // The qualification ABI normalizes exceptions to bounded text. This
+        // diagnostic is test-only; production RPC errors remain content-free.
+        if output.as_ref().kind().map_err(|_| SourceError::Scheme)?
+            == gerbil_scheme::ObjectKind::String
+        {
+            let text = output.into_string().map_err(|_| SourceError::Scheme)?;
+            if text.len().into_result().map_err(|_| SourceError::Scheme)? <= 512 {
+                let bytes = text
+                    .to_utf8_bytes()
+                    .into_result()
+                    .map_err(|_| SourceError::Scheme)?;
+                let bytes = bytes
+                    .to_vec()
+                    .into_result()
+                    .map_err(|_| SourceError::Scheme)?;
+                eprintln!(
+                    "qualification source refusal: {}",
+                    String::from_utf8_lossy(&bytes)
+                );
+            }
+            return Err(SourceError::Contract);
+        }
         materialize_source(output)
     }
 }

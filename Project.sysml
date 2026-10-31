@@ -402,7 +402,14 @@ package WeaverProject {
 
         part 'scheme/governance' : SchemeModule;
         part 'scheme/policy' : SchemeModule;
-        part 'scheme/gateway' : SchemeModule;
+        part 'scheme/gateway' : SchemeModule {
+            doc /* program.ss owns a sealed Record/Function lifecycle for one
+               approved typed-return producer. Install/close are terminal at
+               their respective admission points; a duplicate cannot replace
+               the installed callback. Actual Governor/Profile construction
+               belongs to the approved application graph, never a default
+               fixture. This object supplies no publication or send authority. */
+        }
         part 't/gateway-contracts-test.ss' : File;
         part 't/governance-test.ss' : File;
         part 't/policy-test.ss' : File;

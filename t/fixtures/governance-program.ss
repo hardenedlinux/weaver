@@ -6,17 +6,22 @@
         :gerbil-scheme-rust/scheme/runtime
         ../../scheme/gateway/contracts
         ../../scheme/gateway/snapshot
+        (only-in ../../scheme/gateway/program make-gateway-program)
         ./governed-control)
 (export main)
 ;;; Keep the SDK's compiled scheduling policy; no fixed processor override.
 ;;; The retained host-sized activation failure is a separate SMP limitation.
 (def (main . _) (void))
+(def source-program (make-gateway-program))
+((.ref source-program 'install)
+ (lambda (bundle)
+   ;; Only this qualification application chooses the fixture Governor/Profile.
+   ;; The shared production lifecycle supplies neither a default nor a bypass.
+   (let ((init (path-expand "../../init.ss" (path-directory (this-source-file)))))
+     (capture-control-fixture init "policy-only"
+       (.ref bundle 'tasks) (.ref bundle 'plans) (.ref bundle 'publication) "."))))
 (def (capture-request value)
-  (let* ((bundle (validate GatewayArtifact (native->source-data value)))
-         (init (path-expand "../../init.ss" (path-directory (this-source-file)))))
-    (source-data->native
-      (capture-control-fixture init "policy-only"
-        (.ref bundle 'tasks) (.ref bundle 'plans) (.ref bundle 'publication) "."))))
+  (source-data->native ((.ref source-program 'capture) (native->source-data value))))
 (def (brief-irritants values (remaining 4))
   (if (or (zero? remaining) (not (pair? values))) ""
     (string-append

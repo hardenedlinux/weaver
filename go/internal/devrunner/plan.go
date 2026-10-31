@@ -81,6 +81,8 @@ func Plan(goBinary string) []Stage {
 		{"authority-publication-quint-tests", "quint", []string{"test", "dev/proofs/quint/AuthorityPublication.qnt", "--main", "AuthorityPublication", "--seed", "293", "--match", "^authority[A-Z]"}},
 		{"authority-publication-quint-safety", "quint", []string{"run", "dev/proofs/quint/AuthorityPublication.qnt", "--main", "AuthorityPublication", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"semantic-boundary-quint-tests", "quint", []string{"test", "dev/proofs/quint/LlmPolicyContinuation.qnt", "--main", "LlmPolicyContinuation", "--seed", "293"}},
+		{"gateway-program-quint-tests", "quint", []string{"test", "dev/proofs/quint/GatewayProgram.qnt", "--main", "GatewayProgram", "--seed", "293"}},
+		{"gateway-program-quint-safety", "quint", []string{"run", "dev/proofs/quint/GatewayProgram.qnt", "--main", "GatewayProgram", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"semantic-boundary-quint-safety", "quint", []string{"run", "dev/proofs/quint/LlmPolicyContinuation.qnt", "--main", "LlmPolicyContinuation", "--step", "boundaryStep", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
 	}
 }

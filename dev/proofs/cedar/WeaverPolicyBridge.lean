@@ -804,6 +804,47 @@ theorem producer_deployment_keeps_registered_original
 #print axioms producer_deployment_never_uses_file_fallback
 #print axioms producer_deployment_requires_publication
 #print axioms producer_deployment_keeps_registered_original
+/- Local program admission snapshots are separate from RPC and final-use
+   authority. `original` below is the first admitted callback token, not an
+   authenticated task or key. The existing ProducerSelected/owned-source
+   binding supplies those independent premises. -/
+structure ProgramOwner where
+  phase : Nat
+  selected : Nat
+  original : Nat
+  busy : Bool
+def closeProgram (owner : ProgramOwner) : ProgramOwner :=
+  {owner with phase := 2, selected := 0}
+def installProgram (owner : ProgramOwner) (candidate : Nat) : ProgramOwner :=
+  if owner.phase = 0 then {owner with phase := 1, selected := candidate, original := candidate} else owner
+def ProgramResultReady (owner : ProgramOwner) (original result : Nat) : Prop :=
+  owner.phase = 1 ∧ owner.selected = owner.original ∧ owner.original > 0 ∧ owner.busy = true ∧ original = result
+theorem program_close_preserves_running_call (owner : ProgramOwner) :
+    (closeProgram owner).busy = owner.busy := rfl
+theorem program_close_refuses_delivery (owner : ProgramOwner) :
+    ¬ ProgramResultReady (closeProgram owner) original result := by
+  intro ready
+  have impossible : (2 : Nat) = 1 := ready.1
+  exact (by decide : (2 : Nat) ≠ 1) impossible
+theorem active_program_duplicate_preserves_owner (owner : ProgramOwner)
+    (active : owner.phase = 1) : installProgram owner candidate = owner := by
+  have notZero : owner.phase ≠ 0 := by
+    intro zero
+    exact (by decide : (1 : Nat) ≠ 0) (active.symm.trans zero)
+  exact if_neg notZero
+theorem closed_program_cannot_reopen (owner : ProgramOwner) :
+    installProgram (closeProgram owner) candidate = closeProgram owner := by
+  exact if_neg (by decide : (2 : Nat) ≠ 0)
+theorem program_result_composes_with_registered_original
+    (selected : ProducerSelected catalog name observed entry)
+    (ready : ProgramResultReady owner entry.original result) :
+    catalog name = some entry ∧ entry.authority = observed ∧ result = entry.original :=
+  ⟨selected.1, selected.2, ready.2.2.2.2.symm⟩
+#print axioms program_close_preserves_running_call
+#print axioms program_close_refuses_delivery
+#print axioms active_program_duplicate_preserves_owner
+#print axioms closed_program_cannot_reopen
+#print axioms program_result_composes_with_registered_original
 #print axioms changed_source_observation_rejects_producer
 #print axioms producer_selection_keeps_all_original_fields
 #print axioms source_owner_join_preserves_cleanup

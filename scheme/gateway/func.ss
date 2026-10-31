@@ -6,8 +6,9 @@
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceAssessmentContext)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyProjection)
         (only-in "./capture.ss" deliver-gateway-source gateway-source-json)
+        (only-in "./program.ss" make-gateway-program)
         "./contracts.ss")
-(export compile-gateway emit-gateway emit-governed-gateway capture-governed-gateway gateway-source-json)
+(export compile-gateway emit-gateway emit-governed-gateway capture-governed-gateway gateway-source-json make-gateway-program)
 
 (def (compile-gateway governance policy governor profile context states task-values plan-values publication-value)
   (unless (= (length task-values) 1)
