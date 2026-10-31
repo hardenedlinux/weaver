@@ -382,6 +382,13 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
   {"id":"GovernorSourceHandoff","witnesses":[
+    {"file":"scheme/gateway/capture.ss","pattern":"Gateway capture requires one source emission"},
+    {"file":"scheme/gateway/func.ss","pattern":"def \\(capture-governed-gateway"},
+    {"file":"t/gateway-source-test.ss","pattern":"native PBT requires one completed emission"},
+    {"file":"t/gateway-source-test.ss","pattern":"a late inherited sink cannot replace an active next capture"},
+    {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"run ignoredCaptureFuseCounterexampleTest"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem caught_duplicate_cannot_clear_capture_fuse"},
+    {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlCapturedSchemeGovernorRevocationAndRestart"},
     {"file":"scheme/governance/capture.ss","pattern":"def \\(governance-profile-snapshot"},
     {"file":"t/governance-test.ss","pattern":"native PBT preserves every original assessment binding"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem changed_assessment_snapshot_cannot_reuse_boundary"},

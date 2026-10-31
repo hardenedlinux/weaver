@@ -5,6 +5,7 @@
         :agentic-ai-lab/modules/governance/interface
         (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
         (only-in :clan/poo/object .o .ref)
+        (only-in :hardenedlinux/weaver/scheme/gateway/capture deliver-gateway-source)
         :hardenedlinux/weaver/scheme/gateway/func)
 (export emit-control-fixture)
 
@@ -22,6 +23,8 @@
 
 (def (emit-control-fixture init mode tasks plans publication asset-root)
   (trace-phase "fixture-enter")
+  (def captured? (string-prefix? "capture-" mode))
+  (when captured? (set! mode (substring mode 8 (string-length mode))))
   (def strategy
     (make-loop-strategy-plan 'weaver-routing
       (list (make-loop-pattern-descriptor 'infer "Original inference" '((level . l2)))
@@ -77,7 +80,19 @@
                            (list (agentic-ai-lab-governance-precondition "weaver/input" #f #f))))))
               (else assessment))))))
   (trace-phase "compile-begin")
-  (let ((result (emit-governed-gateway init (make-loop-governor 'weaver strategy overrides)
-                                     profile (.o request: 'publish source_root: asset-root) states tasks plans publication)))
+  (def (produce)
+    (emit-governed-gateway init (make-loop-governor 'weaver strategy overrides)
+                          profile (.o request: 'publish source_root: asset-root) states tasks plans publication))
+  (let ((result
+         (if captured?
+           (let ((text (capture-governed-gateway init (make-loop-governor 'weaver strategy overrides)
+                                               profile (.o request: 'publish source_root: asset-root)
+                                               states tasks plans publication)))
+             (when (file-exists? (getenv "WEAVER_CONTROL_ARTIFACT"))
+               (error "In-memory capture wrote a source artifact"))
+             ;; The current Go bridge still needs its artifact. Native VM
+             ;; assembly will consume text directly; this write is outside capture.
+             (deliver-gateway-source text))
+           (produce))))
     (trace-phase "artifact-written")
     result))

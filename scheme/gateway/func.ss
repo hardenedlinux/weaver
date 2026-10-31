@@ -5,8 +5,9 @@
         (only-in :yuanxu/module-system/interface yuanxu-load-modules)
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceAssessmentContext)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyProjection)
+        (only-in "./capture.ss" deliver-gateway-source)
         "./contracts.ss")
-(export compile-gateway emit-gateway emit-governed-gateway gateway-source-json)
+(export compile-gateway emit-gateway emit-governed-gateway capture-governed-gateway gateway-source-json)
 
 ;;; SDK key sorting is recursive; route/message array order remains significant.
 (def (gateway-source-json bundle)
@@ -59,20 +60,33 @@
       bundle)))
 
 (def (emit-gateway bundle)
-  (let ((path (getenv "WEAVER_CONTROL_ARTIFACT" #f)))
-    (unless path (error "WEAVER_CONTROL_ARTIFACT is required"))
-    (let ((serialized (gateway-source-json bundle)))
-      (call-with-output-file path (lambda (port) (display serialized port)))))
-  #t)
+  (deliver-gateway-source (gateway-source-json bundle)))
 
-;;; Native source-generation guards qualify compilation, not final execution.
-(def (emit-governed-gateway init governor profile context states tasks plans publication)
+;;; Both delivery modes use one admitted module view and one semantic producer.
+(def (with-current-gateway init operation)
   ;; Use the public callable value rather than a compiler-private keyword entry.
   (let* ((view (apply yuanxu-load-modules (list init)))
          (gateway (.get view modules Weaver gateway))
          (admit-current (.get view admit-current)))
     (admit-current)
-    (let ((bundle ((.get gateway compile) governor profile context states tasks plans publication)))
+    (let ((result (operation gateway admit-current)))
       (admit-current)
-      ((.get gateway emit) bundle)
-      (admit-current))))
+      result)))
+
+(def (produce-governed-source gateway admit-current governor profile context states tasks plans publication)
+  (let ((bundle ((.get gateway compile) governor profile context states tasks plans publication)))
+    (admit-current)
+    ((.get gateway emit) bundle)))
+
+;;; Native source-generation guards qualify compilation, not final execution.
+(def (emit-governed-gateway init governor profile context states tasks plans publication)
+  (with-current-gateway init
+    (lambda (gateway admit-current)
+      (produce-governed-source gateway admit-current governor profile context states tasks plans publication))))
+
+(def (capture-governed-gateway init governor profile context states tasks plans publication)
+  (with-current-gateway init
+    (lambda (gateway admit-current)
+      ((.get gateway capture)
+       (lambda ()
+         (produce-governed-source gateway admit-current governor profile context states tasks plans publication))))))

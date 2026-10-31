@@ -25,7 +25,8 @@ module LlmPolicyContinuation {
   // implementation evidence. These protocol schedules grant no allocator proof.
   type BoundaryEvidence={kind:int,root:int,claim:int,profile:int,configurationSchema:int,normalizer:int,programModule:int,environment:int,
     vm:int,call:int,epoch:int,cut:int,input:int,output:int,schemaChecked:bool,governanceChecked:bool,
-    readable:bool,stable:bool,owned:bool,retainedPointer:bool,reentrant:bool,status:int}
+    readable:bool,stable:bool,owned:bool,retainedPointer:bool,reentrant:bool,
+    emissions:int,captureCompleted:bool,capturePoisoned:bool,status:int}
   type BoundaryCheck={evidence:BoundaryEvidence,configurationSchema:int,normalizer:int,programModule:int,environment:int,vm:int,call:int,epoch:int,cut:int,value:int,senderVM:int,senderCall:int,senderEpoch:int}
   type FactState={closure:FactClosure,candidate:FactEvidence,installed:FactEvidence,hostValue:int,sourceValue:int,sourceImages:Set[SourceImage],truth:Set[int],scope:Set[int],
     mode:int,grant:Freshness,connected:bool,channel:int,clock:int,now:int,timeFloor:int,uses:List[FactUse],deltas:List[FactDelta]}
@@ -56,7 +57,8 @@ module LlmPolicyContinuation {
     semanticVM:0,ffiCall:0,captureEpoch:0,configurationSchema:1,configurationNormalizer:1,schemeModule:0,boundaryRecords:List()}
   pure val boundary0={kind:0,root:10,claim:11,profile:20,configurationSchema:1,normalizer:1,programModule:0,environment:0,
     vm:0,call:0,epoch:0,cut:0,input:0,output:0,schemaChecked:true,governanceChecked:true,
-    readable:true,stable:true,owned:true,retainedPointer:false,reentrant:false,status:0}
+    readable:true,stable:true,owned:true,retainedPointer:false,reentrant:false,
+    emissions:1,captureCompleted:true,capturePoisoned:false,status:0}
   def tip=if(s.log.length()==0)0 else s.log.nth(s.log.length()-1).change.id
   def effective=if(s.log.length()==0)true else s.log.nth(s.log.length()-1).change.allowed
   def view={generation:s.generation,tip:tip,fence:s.fence,revision:s.revision}
@@ -85,7 +87,8 @@ module LlmPolicyContinuation {
     e.programModule==u.programModule and e.environment==u.environment and e.vm==u.vm and e.call==u.call and e.epoch==u.epoch and
     u.senderVM==u.vm and u.senderCall==u.call and u.senderEpoch==u.epoch and
     e.cut==u.cut and e.input==u.value and e.output==u.value and e.schemaChecked and e.governanceChecked and
-    e.readable and e.stable and e.owned and not(e.retainedPointer) and not(e.reentrant) and e.status==0}
+    e.readable and e.stable and e.owned and not(e.retainedPointer) and not(e.reentrant) and
+    e.emissions==1 and e.captureCompleted and not(e.capturePoisoned) and e.status==0}
   action recordBoundary(e)=all {boundaryValid(boundaryCheck(e)),s'=s.with("boundaryRecords",s.boundaryRecords.append(boundaryCheck(e)))}
   action semanticRestart=s'=s.with("semanticVM",s.semanticVM+1).with("ffiCall",s.ffiCall+1).with("captureEpoch",s.captureEpoch+1)
   action endBorrow=s'=s.with("ffiCall",s.ffiCall+1)
@@ -499,6 +502,14 @@ module LlmPolicyContinuation {
   // original captured binding. Native refinement must freeze that original.
   run coordinatedLiveProfileLabelsCannotReplaceOriginalCaptureTest=init
     .then(recordBoundary(boundary0.with("profile",21).with("environment",1)).fail())
+  run sourceCaptureRequiresOneEmissionTest=init
+    .then(recordBoundary(boundary0.with("emissions",0)).fail())
+  run duplicateEmissionsCannotCompleteCaptureTest=init
+    .then(recordBoundary(boundary0.with("emissions",2)).fail())
+  run caughtDuplicateCannotClearCaptureFuseTest=init
+    .then(recordBoundary(boundary0.with("capturePoisoned",true)).fail())
+  run zeroStatusCannotReplaceProducerCompletionTest=init
+    .then(recordBoundary(boundary0.with("captureCompleted",false)).fail())
   run newSourceCutCannotUseOldCaptureTest=factPending.then(changeFactContract(closure0.with("cut",1),Set(),true))
     .then(projectFromBoundary(boundary0).fail())
   run callerOutputCannotReplaceCommittedValueTest=init.then(recordBoundary(boundary0.with("output",1)).fail())
@@ -538,6 +549,9 @@ module LlmPolicyContinuation {
   run lostCaptureCannotManufactureOwnedArtifactTest=factPending.then(recordBoundary(boundary0)).then(loseVolatileCaptures)
     .expect(safety and s.pending==Set(30) and s.hold==6).then(projectFromCaptured(boundary0,0,true).fail())
   action unsafeBoundaryRecord(e)=s'=s.with("boundaryRecords",s.boundaryRecords.append(boundaryCheck(e)))
+  run ignoredCaptureFuseCounterexampleTest=init
+    .then(unsafeBoundaryRecord(boundary0.with("capturePoisoned",true)))
+    .expect(not(boundaryBound) and s.hold==6 and s.calls==0)
   run agreeingLiveAliasesWithoutOriginalSnapshotCounterexampleTest=init
     .then(unsafeBoundaryRecord(boundary0.with("profile",21).with("environment",1)))
     .expect(not(boundaryBound) and s.hold==6 and s.calls==0)

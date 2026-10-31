@@ -128,6 +128,9 @@ func TestProviderControlCedarFFIValidationCannotAuthorize(t *testing.T) {
 func TestProviderControlSchemeGovernorRevocationAndRestart(t *testing.T) {
 	exerciseControl(t, "ss", func(t *testing.T, f *fixture, b config.Bundle) string { return schemeSource(t, f, b, "valid") })
 }
+func TestProviderControlCapturedSchemeGovernorRevocationAndRestart(t *testing.T) {
+	exerciseControl(t, "ss", func(t *testing.T, f *fixture, b config.Bundle) string { return schemeSource(t, f, b, "capture-valid") })
+}
 func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart(t *testing.T) {
 	exerciseControlPublicationReplyLoss(t, func(t *testing.T, f *fixture, b config.Bundle) string {
 		return schemeSource(t, f, b, "valid")
@@ -143,7 +146,7 @@ func TestProviderControlSchemeSharedBudgetRejectsConcurrentSendAndSDKRetry(t *te
 func TestProviderControlSchemeGovernorRejectsUnselectedPlans(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	b := controlBundle(t, f)
-	for _, mode := range []string{"deny", "collision", "clip", "invalid", "policy", "threat", "obligation", "task-type", "duplicate-plan", "assessment-context", "assessment-revision", "assessment-model", "assessment-threats", "assessment-profile-mutation", "asset-mismatch", "asset-traversal", "asset-language", "policy-substitution", "policy-identity"} {
+	for _, mode := range []string{"deny", "collision", "clip", "invalid", "policy", "threat", "obligation", "task-type", "duplicate-plan", "assessment-context", "assessment-revision", "assessment-model", "assessment-threats", "assessment-profile-mutation", "capture-assessment-profile-mutation", "asset-mismatch", "asset-traversal", "asset-language", "policy-substitution", "policy-identity"} {
 		t.Run(mode, func(t *testing.T) {
 			source := schemeSource(t, f, b, mode)
 			artifact := filepath.Join(t.TempDir(), "rejected.json")
@@ -156,13 +159,14 @@ func TestProviderControlSchemeGovernorRejectsUnselectedPlans(t *testing.T) {
 				t.Fatalf("negative control must reject naturally, not time out: %v %v %s", err, ctx.Err(), out)
 			}
 			expected := "provider plans must exactly match the Governor source handoff"
-			if mode == "policy" {
+			semanticMode := strings.TrimPrefix(mode, "capture-")
+			if semanticMode == "policy" {
 				expected = "Rust rejected inert source Policy/schema"
 			}
-			if mode == "threat" || strings.HasPrefix(mode, "assessment-") {
+			if semanticMode == "threat" || strings.HasPrefix(semanticMode, "assessment-") {
 				expected = "Scheme Governance assessment does not admit an inert source handoff"
 			}
-			if mode == "assessment-profile-mutation" {
+			if semanticMode == "assessment-profile-mutation" {
 				expected = "Governance source changed during assessment"
 			}
 			if mode == "obligation" {

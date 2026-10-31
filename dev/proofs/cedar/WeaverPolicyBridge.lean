@@ -461,6 +461,9 @@ structure BoundaryContext where
   rustOwned : Bool
   retainsForeignPointer : Bool
   reentrant : Bool
+  captureEmissions : Nat
+  captureCompleted : Bool
+  capturePoisoned : Bool
   deriving DecidableEq
 
 def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
@@ -471,13 +474,30 @@ def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
   s.semanticOutput = s.committedOutput ∧ s.schemaChecked = true ∧
   s.governanceChecked = true ∧ s.borrowedRegionValid = true ∧
   s.borrowedRegionStable = true ∧ s.rustOwned = true ∧
-  s.retainsForeignPointer = false ∧ s.reentrant = false
+  s.retainsForeignPointer = false ∧ s.reentrant = false ∧
+  s.captureEmissions = 1 ∧ s.captureCompleted = true ∧ s.capturePoisoned = false
 
 instance (s : BoundaryContext) : Decidable s.Ready := by
   unfold BoundaryContext.Ready
   infer_instance
 
 def BoundaryContext.ready (s : BoundaryContext) : Bool := decide s.Ready
+
+theorem source_capture_requires_one_emission (s : BoundaryContext)
+    (wrong : s.captureEmissions ≠ 1) : s.ready = false := by
+  simp [BoundaryContext.ready,BoundaryContext.Ready,wrong]
+
+theorem caught_duplicate_cannot_clear_capture_fuse (s : BoundaryContext)
+    (poisoned : s.capturePoisoned = true) : s.ready = false := by
+  simp [BoundaryContext.ready,BoundaryContext.Ready,poisoned]
+
+theorem status_cannot_replace_source_completion (s : BoundaryContext)
+    (incomplete : s.captureCompleted = false) : s.ready = false := by
+  simp [BoundaryContext.ready,BoundaryContext.Ready,incomplete]
+
+#print axioms source_capture_requires_one_emission
+#print axioms caught_duplicate_cannot_clear_capture_fuse
+#print axioms status_cannot_replace_source_completion
 
 theorem configuration_cannot_skip_governance (s : BoundaryContext)
     (missing : s.governanceChecked = false) : s.ready = false := by
