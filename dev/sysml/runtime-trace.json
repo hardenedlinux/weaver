@@ -243,6 +243,9 @@
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderPartialRequestAndRestartRetainUnknownClaim"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run unknownRefundCounterexampleTest"}]},
   {"id":"ReservedAuthorityAdmission","witnesses":[
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem usage_control_keeps_current_consumption"},
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run recoveryDoesNotRefreshUsageEvidenceTest"},
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run allowWithoutCurrentUsageEvidenceCounterexampleTest"},
     {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem pending_policy_blocks_ongoing_use"},
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn final_release_keeps_current_guard_and_unknown_commit_in_one_transaction"},
     {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem retained_parent_and_selected_object_reach_gateway"},

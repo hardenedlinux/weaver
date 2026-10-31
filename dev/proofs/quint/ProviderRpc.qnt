@@ -169,4 +169,15 @@ module ProviderRpc {
     .expect(safe).then(prepareBatch(1,0).fail())
   run childOnlyPredicateDropsParentCounterexampleTest=spent.then(batch(1,0)).then(deliver).then(reserveSlot).then(restrictRows)
     .then(unsafeCreditAsAuthority).expect(not(safe))
+  // A posture, obligation or identity-source change is a hard-fact cut change.
+  // This reuses the existing cut owner; materializing those sources is a Host
+  // obligation, not a new Boolean authorization service in this model.
+  run usageConditionChangesAfterQueueWaitTest=saturatedArrow.then(advanceDomainCut)
+    .then(deliver).then(reserveSlot).expect(safe and s.held==4).then(prepareBatch(2,1).fail())
+  run recoveryDoesNotRefreshUsageEvidenceTest=spent.then(advanceDomainCut).then(crash).then(reconnect)
+    .expect(safe and s.burned and s.held==4).then(batch(1,0).fail())
+  run conditionChangeBetweenPrepareAndReleaseTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1))
+    .then(advanceDomainCut).expect(safe and s.pending and s.held==4).then(emitPrepared(1).fail())
+  run allowWithoutCurrentUsageEvidenceCounterexampleTest=spent.then(advanceDomainCut)
+    .then(unsafeCreditAsAuthority).expect(not(safe))
 }

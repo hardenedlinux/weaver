@@ -65,6 +65,24 @@ theorem gateway_consumes_core_contract (use : Gateway.ZeroTrust.FinalUse proposa
 #print axioms changed_owner_cannot_finalize
 #print axioms gateway_consumes_core_contract
 
+-- Usage control enriches the existing continuing Gateway interpretation. It
+-- neither introduces a second consumption ledger nor permits recovery to
+-- substitute a fresh root. Source authority remains a native refinement duty.
+theorem usage_control_keeps_current_consumption
+    (control : ZeroTrust.UsageControl E RuntimeView)
+    (assessment : ZeroTrust.Requirement E RuntimeView)
+    (bound : control.core = Gateway.ZeroTrust.continuing proposal assessment)
+    (accepted : control.step phase transition before effect after) :
+    host.currentAtUse before ∧ host.committed before proposal.after ∧
+      Nonempty (Gateway.ZeroTrust.CommittedPrefix proposal before) ∧
+      host.unknownRetained before proposal.after := by
+  have required := ZeroTrust.usage_retains_core control accepted
+  rw [bound] at required
+  exact ⟨required.2.2.1, required.2.2.2.1.1, required.2.2.2.1.2,
+    required.2.2.2.2.1⟩
+
+#print axioms usage_control_keeps_current_consumption
+
 -- Pure specialization preserves the actual POO publication's original Contract
 -- and all generic framework conditions. It grants no native IO capability.
 theorem gateway_specialization_retains_generic_framework
