@@ -80,6 +80,96 @@ func TestProviderSourceRollbackLostReplyRetainsUnknownConsumption(t *testing.T) 
 	}
 }
 
+// Hold the application delivery of a real gRPC result across source restart.
+// A late committed receipt is historical; it neither refreshes source identity
+// nor permits the original uncertain provider request to execute again.
+func TestProviderSourceLateCommitReplyAfterRotationRemainsHistorical(t *testing.T) {
+	f := newFixture(t, partialRequestDisconnect, true)
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil {
+		t.Fatal("partial request was treated as complete")
+	}
+	before := inspect(t, f)
+	if before.State != "unknown" || before.Held != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
+		t.Fatal("original unknown consumption missing", before)
+	}
+	original := pendingChange(f, "late-source-result")
+	if err := f.admin.StagePublication(ctx, original); err != nil {
+		t.Fatal(err)
+	}
+	oldCertificate, oldToken := f.pki.source, f.admin.Token
+	oldTLS := &tls.Config{RootCAs: f.pki.root, Certificates: []tls.Certificate{oldCertificate}, ServerName: "localhost", MinVersion: tls.VersionTLS13}
+	oldWorker, err := gatewayclient.Dial(ctx, f.sourceAddress, oldToken, oldTLS)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer oldWorker.Connection.Close()
+	type reply struct {
+		receipt *pb.PublicationReceipt
+		err     error
+	}
+	committed, delivered := make(chan reply, 1), make(chan reply, 1)
+	release, finished := make(chan struct{}), make(chan struct{})
+	go func() {
+		defer close(finished)
+		r, err := oldWorker.RPC.PublishAuthority(oldWorker.Context(ctx), gatewayclient.Publication(original))
+		result := reply{r, err}
+		committed <- result
+		select {
+		case <-release:
+		case <-ctx.Done():
+		}
+		delivered <- result
+	}()
+	defer func() { cancel(); <-finished }()
+	select {
+	case result := <-committed:
+		if result.err != nil || result.receipt.GetRevision() != 1 || result.receipt.GetOutcome() != pb.PublicationOutcome_COMMITTED {
+			t.Fatal("original commit missing", result)
+		}
+	case <-ctx.Done():
+		t.Fatal("commit barrier timed out", ctx.Err())
+	}
+	restartWithSourceCertificate(t, f, secondaryClient(t, f.pki))
+	if _, err := oldWorker.RPC.PublishAuthority(oldWorker.Context(ctx), gatewayclient.Publication(original)); status.Code(err) != codes.Unauthenticated {
+		t.Fatal("retained old channel reconnected with retired identity", err)
+	}
+	next := pendingChange(f, "new-owner-source-result")
+	parent := uint64(1)
+	next.ExpectedRevision, next.Fence = &parent, 3
+	if r, err := f.admin.Publish(ctx, next); err != nil || r.GetRevision() != 2 {
+		t.Fatal("current source failed positive control", r, err)
+	}
+	close(release)
+	select {
+	case late := <-delivered:
+		if late.err != nil || late.receipt.GetRevision() != 1 {
+			t.Fatal("late original outcome changed", late)
+		}
+	case <-ctx.Done():
+		t.Fatal("late receipt delivery timed out", ctx.Err())
+	}
+	if r, err := f.admin.InspectPublication(ctx, original); err != nil || r.GetRevision() != 1 {
+		t.Fatal("exact original history lost", r, err)
+	}
+	if r, err := f.admin.InspectPublication(ctx, next); err != nil || r.GetRevision() != 2 {
+		t.Fatal("late receipt replaced current publication", r, err)
+	}
+	for _, cut := range []struct{ revision, fence uint64 }{{1, 2}, {2, 3}} {
+		f.plan.Revision, f.plan.Fence = cut.revision, cut.fence
+		if _, _, err := execute(t, f, pb.Encoding_ARROW_IPC, 2); err == nil {
+			t.Fatal("late reply or current source reopened original claim", cut)
+		}
+	}
+	f.stop(t)
+	f.start(t)
+	after := inspect(t, f)
+	if after.State != "unknown" || after.Held != before.Held || after.Reserved != before.Reserved || f.primary.Load() != 1 || f.backup.Load() != 0 {
+		t.Fatal("late receipt or restart reset unknown exposure", after)
+	}
+}
+
 // Startup certificate pin rotation exercises the existing boundary; it is not
 // durable registrar epoch issuance or online credential revocation.
 func restartWithSourceCertificate(t *testing.T, f *fixture, next tls.Certificate) {

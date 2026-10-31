@@ -273,6 +273,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.57-schema-bound-candidate-replay.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.57-schema-bound-candidate-replay.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.57-schema-bound-candidate-replay.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.58-independent-source-recovery.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.58-independent-source-recovery.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.58-independent-source-recovery.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

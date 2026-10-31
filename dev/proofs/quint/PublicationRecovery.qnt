@@ -103,6 +103,9 @@ module PublicationRecovery {
       .with("sourceObservations",authority.sourceObservations.union(Set({use:use,cut:sourceAuthorityCut,session:authority.sourceSession}))).with("sourceImage",sourceAuthorityCut)}
   // Fresh channel-context reference from the adapter, not an identity issuer.
   action reconnectSourceObserver=authority'=authority.with("sourceSession",authority.sourceSession+1)
+  // Process recovery preserves durable authority, but never the authority-read
+  // capability of the previous observer incarnation. Context freshness is a Host premise.
+  action restartSourceObserver=authority'=authority.with("sourceSession",authority.sourceSession+1).with("sourceObservations",Set())
   action restoreSourceObservation(observed:SourceObservation):bool=authority'=authority.with("sourceImage",observed.cut)
   action sourceAvailability(available:bool):bool=authority'=authority.with("sourceReachable",available)
   def joinedSourceObservation(observed:SourceObservation):bool=authority.sourceReachable and authority.sourceObservations.contains(observed) and
@@ -495,9 +498,43 @@ module PublicationRecovery {
   run freshReadAfterSameEpochReconnectCanProgressTest=init.then(stage(staged0)).then(readSourceObservation(sourceRegister0)).then(reconnectSourceObserver)
     .then(readSourceObservation(sourceRegister0)).then(registerAtSourceObservation(observation0.with("session",1),review0))
     .expect(sourceDecisionSafe and authority.floor.registry.length()==1 and authority.held==4)
+  run observerRestartCannotRestoreReadCapabilityTest=registeredObserved.then(restartSourceObserver)
+    .then(restoreSourceObservation(publishObservation0)).expect(sourceDecisionSafe and authority.floor.registrarTerm==0)
+    .then(publishAtSourceObservation(publishObservation0,staged0,review0).fail())
+  run freshReadAfterObserverRestartPreservesExactRegistryTest=registeredObserved.then(restartSourceObserver)
+    .then(restoreReviewImage(List())).then(recoverReviewsBy(1,0)).then(readSourceObservation(sourcePublish0))
+    .then(publishAtSourceObservation(publishObservation0.with("session",1),staged0,review0))
+    .expect(sourceDecisionSafe and authority.commits.length()==1 and anchoredReviews(0)==Set(review0) and authority.held==4)
+  run exactCutCannotHideMissingRegistryProjectionTest=registeredObserved.then(restoreReviewImage(List()))
+    .expect(joinedSourceObservation(publishObservation0) and not(registryRecovered))
+    .then(publishAtSourceObservation(publishObservation0,staged0,review0).fail())
+  run exactRegistryRecoveryAllowsOriginalCASProgressTest=registeredObserved.then(restoreReviewImage(List())).then(recoverReviewsBy(1,0))
+    .then(readSourceObservation(sourcePublish0)).then(publishAtSourceObservation(publishObservation0,staged0,review0))
+    .expect(sourceDecisionSafe and authority.held==4)
+  pure val nextSourcePublish=sourcePublish0.with("credential",101).with("owner",2).with("epoch",1)
+  run lateRegistryReceiptAfterHandoffIsHistoricalTest=registeredObserved.then(rotateRegistrar).then(recordSourceDecision(1,101))
+    .then(restartSourceObserver).then(observeRegistration(review0)).then(restoreSourceObservation(publishObservation0))
+    .expect(not(joinedSourceObservation(publishObservation0))).then(recoverReviewsBy(2,1))
+    .then(readSourceObservation(nextSourcePublish))
+    .then(publishAtSourceObservation({use:nextSourcePublish,cut:sourceAuthorityCut,session:1},staged0,review0))
+    .expect(sourceDecisionSafe and anchoredReviews(0)==Set(review0) and authority.commits.length()==1)
+  run committedPublicationBeforeRevocationRemainsHistoricalTest=registeredObserved.then(publishAtSourceObservation(publishObservation0,staged0,review0))
+    .then(revokeSource(100)).then(restartSourceObserver).then(replay(0,0,-1,1))
+    .expect(sourceDecisionSafe and authority.commits.length()==1 and authority.held==4)
+    .then(readSourceObservation(sourcePublish0).fail())
+  // Deliberately outside the independent-prefix retention premise. A consistent
+  // rollback can pass local integrity checks and resurrect a revoked credential.
+  action unsafeRestoreIndependentSourceSnapshot=authority'=authority.with("floor",authority.floor
+    .with("registrarOwner",1).with("registrarTerm",0).with("sourceRevoked",Set())
+    .with("sourceDecisions",floor0.sourceDecisions).with("registry",List()))
+  run independentSnapshotRollbackResurrectsCredentialCounterexampleTest=init.then(stage(staged0))
+    .then(readSourceObservation(sourceRegister0)).then(revokeSource(100)).then(rotateRegistrar)
+    .then(unsafeRestoreIndependentSourceSnapshot).then(restoreSourceObservation(observation0))
+    .then(registerAtSourceObservation(observation0,review0))
+    .expect(sourceUseCurrent(sourceRegister0) and anchoredReviews(0)==Set(review0) and authority.held==4)
   action sourceRecoverySchedule=any {stage(staged0),stage(sibling),
     recordSourceDecision(authority.floor.registrarTerm,100+authority.floor.registrarTerm),revokeSource(100),revokeSource(101),rotateRegistrar,
-    recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restoreReviewImage(List()),restart,reconnectSourceObserver,observe,
+    recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restoreReviewImage(List()),restart,reconnectSourceObserver,restartSourceObserver,observe,
     readSourceObservation(currentRegisterReference),readSourceObservation(currentRegisterReference.with("purpose",1)),
     restoreSourceObservation(observation0),restoreSourceObservation(publishObservation0),sourceAvailability(false),sourceAvailability(true),
     registerAtSourceObservation(observation0,review0),publishAtSourceObservation(publishObservation0,staged0,review0),

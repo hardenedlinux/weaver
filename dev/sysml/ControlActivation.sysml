@@ -20,6 +20,26 @@ package ControlActivation {
            qualification and independent registry recovery are separate obligations.
            Cedar source may use official materialized PolicySet JSON to preserve
            named IDs; renderer comments cannot substitute for those identities. */
+        doc /* Recovery joins one independently retained authority generation and
+           committed prefix, not a maximum epoch copied from startup config.
+           Epoch/owner, issuance/revocation decisions, original artifact bindings
+           and publication outcomes inherit that prefix together. A new leader
+           may activate only after proving prefix inheritance; an unavailable or
+           ambiguous authority keeps registration and publication disabled. */
+        doc /* A process restart invalidates observer read capabilities even
+           when the authority epoch is unchanged. Late reads and acknowledgments
+           are historical observations; they cannot activate a new observer or
+           replace a fresh final join. Recovery distinguishes an exact committed
+           registration from a missing local projection. Unknown is neither an
+           abort nor permission to register replacement evidence. */
+        doc /* Trust anchors and prefix retention belong to the independent
+           authority deployment contract; a shared Kubernetes identity, restored
+           startup certificate or ordinary SQLite restart supplies neither.
+           Consistent rollback of the entire local registry can erase an earlier
+           artifact binding. Keep its executable counterexample until an actual
+           independent authority adapter demonstrates recovery. Runtime assets
+           obey Project.ProductionAssetBoundary; live authority state belongs to
+           configured durable storage, never a promoted prod config value. */
         doc /* The existing Rust ledger now supplies a trusted-host local review
            admission primitive. stage_reviewed_authority atomically latches its
            exact command and authority-selected complete Policy/schema parent.
