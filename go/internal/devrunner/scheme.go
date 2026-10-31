@@ -116,6 +116,13 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 		case "gerbil-poo":
 			settings["WEAVER_SCHEME_POO_PACKAGE"] = packageID
 		}
+		// Core and POO must be installed by the declared dependency graph.
+		// A development link creates an empty tag in this SDK; deps --install
+		// then reads EOF where it requires a version string. Only the source
+		// package itself is linked; no tag or manifest is synthesized here.
+		if name != "agentic-ai-lab" {
+			continue
+		}
 		cmd := exec.CommandContext(ctx, filepath.Join(filepath.Dir(compiler), "gxpkg"), "link", "-g", packageID, path)
 		cmd.Env = Environment(settings)
 		cmd.Stdout, cmd.Stderr = output, output
@@ -151,7 +158,7 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 	}
 	// Links do not install the manifests required by the public package build.
 	// Gerbil resolves the unchanged dependency declarations in this prefix.
-	tool, err := resolveImageTool(root, schemeTool(), Environment(settings))
+	tool, err := resolveBuildTool(root, schemeTool(), Environment(settings))
 	if err != nil {
 		return nil, err
 	}
@@ -163,6 +170,17 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 		cmd.Stdout, cmd.Stderr = output, output
 		if err = cmd.Run(); err != nil {
 			return nil, fmt.Errorf("Gerbil package preparation %v: %w", args, err)
+		}
+	}
+	for _, name := range []string{"gebril-yuanxu", "gerbil-poo"} {
+		installed := filepath.Join(directory, "pkg", "github.com", "tao3k", name)
+		cmd := exec.CommandContext(ctx, "git", "-C", installed, "rev-parse", "HEAD")
+		data, err := cmd.Output()
+		if err != nil {
+			return nil, fmt.Errorf("read installed %s identity: %w", name, err)
+		}
+		if strings.TrimSpace(string(data)) != heads[name] {
+			return nil, fmt.Errorf("installed %s differs from the declared source cohort: got %s want %s", name, strings.TrimSpace(string(data)), heads[name])
 		}
 	}
 	hashes, err := schemeSourceHashes(source, poo)

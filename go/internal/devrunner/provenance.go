@@ -38,7 +38,6 @@ func SourceInputs(root string) (map[string]string, error) {
 		"docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org",
 		"docs/50-59-research-program/59-provider-rpc/59.30-dynamic-gxi-qualification.org",
 		"docs/50-59-research-program/59-provider-rpc/59.32-build-environment-contract.org",
-		"dev/scheme/module-observer.c",
 		"devenv.nix", "devenv.lock",
 		"devenv.yaml", ".envrc",
 		"dev/proofs/lean/RuntimeAdmission.lean", "dev/proofs/lean/StreamingExecution.lean", "dev/proofs/lean/ProviderRpc.lean", "dev/proofs/lean/PublicationRecovery.lean",
@@ -53,7 +52,7 @@ func SourceInputs(root string) (map[string]string, error) {
 			return nil, err
 		}
 	}
-	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", "dev/scheme", ".github"} {
+	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", ".github"} {
 		err := filepath.WalkDir(filepath.Join(root, directory), func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err

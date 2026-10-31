@@ -12,6 +12,11 @@ The removed inventory executable did not contribute authority, Policy
 enforcement or final dispatch safety. Its earlier results remain historical
 evidence in 59.37; removing the declaration does not erase failed controls.
 Library acquisition and cleanup remain obligations of the real consumer.
+The obsolete =dev/scheme= inventory, observer and image-packaging experiment
+are removed from the active tree. Their sealed historical evidence is retained.
+SDK tool resolution stays with the Go development runner; Scheme source tests
+stay in =t/= and production modules stay in =scheme/=. No per-language development
+program package or second discovery driver is introduced.
 
 * Full gate and native consumer evidence
 The complete =check-scheme= command must run on one fixed committed input set:
