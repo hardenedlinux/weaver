@@ -315,6 +315,12 @@
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityUncompiledSourceCannotRegisterTest"},
     {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"}]},
   {"id":"GovernancePolicyProjection","witnesses":[
+    {"file":"crates/ledger/tests/integration/mrr_admission.rs","pattern":"fn original_burn_exposure_body_survives_lost_reply_without_revalidation"},
+    {"file":"crates/ledger/tests/integration/mrr_admission.rs","pattern":"fn metadata_recovery_does_not_reconstruct_missing_exposure_body"},
+    {"file":"crates/ledger/tests/integration/mrr_admission.rs","pattern":"fn validation_callback_side_effect_precedes_refusal_counterexample"},
+    {"file":"crates/ledger/tests/integration/mrr_admission.rs","pattern":"fn caller_selected_home_can_recommit_original_claim_counterexample"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run mrrApprovalCannotOutliveExposureProjectionRollbackTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run mrrCommitReplyLossAndReplayCannotMintAnotherTicketTest"},
     {"file":"crates/ledger/tests/unit/publication_replay.rs","pattern":"fn candidate_only_replay_cannot_register_for_a_real_predecessor"},
     {"file":"crates/policy/tests/unit/publication_replay.rs","pattern":"fn replay_cannot_substitute_the_captured_predecessor"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem matched_replay_preserves_both_images"},
