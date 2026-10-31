@@ -743,4 +743,46 @@ theorem untyped_fallback_cannot_authorize_profile_effect
 #print axioms untyped_fallback_cannot_authorize_profile_effect
 #print axioms profile_identity_and_digest_are_jointly_guarded
 end ProfileRegistryProofs
+namespace DecodeAllocation
+
+/- Conditional allocator law, not a bound on the entire Go heap. Native code
+   must route each Arrow buffer request through charge before allocation.
+   Free leaves used unchanged; each batch has an independent accumulator. -/
+def charge (limit used requested : Nat) : Option Nat :=
+  if used + requested ≤ limit then some (used + requested) else none
+
+theorem admitted_charge_is_bounded (h : charge limit used requested = some next) :
+    next ≤ limit ∧ used ≤ next := by
+  unfold charge at h
+  split at h <;> simp_all <;> omega
+
+theorem rejected_charge_cannot_allocate (h : limit < used + requested) :
+    charge limit used requested = none := by
+  simp [charge, Nat.not_le.mpr h]
+
+inductive Run (limit : Nat) : Nat → Nat → Prop where
+  | refl (used) : Run limit used used
+  | allocate (before after requested next)
+      (prior : Run limit before after)
+      (admitted : charge limit after requested = some next) : Run limit before next
+  | free (before after) (prior : Run limit before after) : Run limit before after
+  | reject (before after requested) (prior : Run limit before after)
+      (denied : charge limit after requested = none) : Run limit before after
+
+theorem finite_run_preserves_cumulative_bound (run : Run limit initial final)
+    (start : initial ≤ limit) : final ≤ limit ∧ initial ≤ final := by
+  induction run with
+  | refl => exact ⟨start, Nat.le_refl _⟩
+  | allocate after requested next prior admitted ih =>
+    have step := admitted_charge_is_bounded admitted
+    exact ⟨step.1, Nat.le_trans ih.2 step.2⟩
+  | free after prior ih => exact ih
+  | reject after requested prior denied ih => exact ih
+
+theorem wire_bound_does_not_prove_allocation_bound :
+    1 ≤ (4 : Nat) ∧ charge 8 0 9 = none := by decide
+
+end DecodeAllocation
+#print axioms DecodeAllocation.finite_run_preserves_cumulative_bound
+#print axioms DecodeAllocation.wire_bound_does_not_prove_allocation_bound
 end Weaver.ProviderRpc

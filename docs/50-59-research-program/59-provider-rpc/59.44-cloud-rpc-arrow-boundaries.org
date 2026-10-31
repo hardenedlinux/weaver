@@ -138,7 +138,7 @@ Session/Workflow edge and history contract. A server queue receipt or =complete=
 row alone cannot recover missing result bytes or prove that contract. Every
 follow-up tool/provider effect returns to Rust admission with current context.
 
-A four-megabyte IPC message cap is not a decoded-allocation cap. The unchanged
+A four-megabyte IPC message cap is not a decoded-allocation cap. The pinned
 Arrow library's reader supports compressed buffers and sizes decompressed
 buffers from metadata. The bounded [[file:../../../go/internal/gatewayclient/arrow_test.go][native counterexample]] generates a valid
 compressed four-row fixture: 880 IPC bytes decode to 262,144 bytes of text. This
@@ -146,8 +146,51 @@ is approximately 298 times logical-text expansion, not measured peak memory or
 a production compression benefit. The current Rust writer does not enable
 compression. The finding invalidates the general resource-bound assumption;
 it is not evidence of an untrusted production peer exploiting the pinned TLS
-connection. A hardened future decoder needs qualified decoded-byte/allocation,
-compression and metadata policies before accepting broader data sources.
+connection.
+
+The Go consumer now rejects invalid envelopes before calling the IPC reader:
+at most 64 KiB of metadata per message, exactly one schema and one record,
+declared bodies inside the received bytes and an exact end marker without a
+hidden suffix. Public Arrow Message APIs supply message type and body length;
+Weaver does not implement another Arrow semantic decoder. A fresh allocator per
+batch charges at most 8 MiB of cumulative requested Arrow buffer sizes, including
+the full requested replacement size. Free does not restore credit. The pinned
+synchronous reader converts an over-budget allocator panic into a read error.
+No partial event list returns on that error. A 4 MiB total kind/text limit bounds
+the copied strings returned to the application; owned strings no longer retain
+the whole Arrow data buffer. Sequence arithmetic must not wrap.
+
+These are separate bounds, not a claim of an 8 MiB total Go heap cap. Go allocator
+alignment, codec windows, runtime objects and FlatBuffer schema traversal are
+outside the Arrow allocation interface. The envelope check does not verify every
+FlatBuffer vector or nested metadata graph. Arbitrary hostile schemas and codec
+heap/CPU qualification remain open before accepting broader data sources. The
+current Rust writer still emits the fixed uncompressed schema. Compression stays
+a decoder test stimulus, not a newly enabled production feature.
+
+Before the repair, two new native tests failed: a compressed buffer requesting
+more than the full allocation allowance was returned successfully, and sequences
+=[max_uint64, 0]= were accepted as ordered. These failures are retained here;
+later passing runs do not replace their causal evidence. Existing small
+compressed expansion remains a positive control, not a rejected format.
+
+Native =testing.F= suites own generation/shrinking/replay. Allocation command
+traces compare cumulative acceptance with an independent integer model and a
+checked underlying allocator; a denied command must not change live allocation.
+Structured IPC properties generate row counts, payloads, compression and an
+invalid final sequence, checking exact observations or no returned prefix.
+They are registered in the existing =check-go= entrypoint with twelve local
+workers and the unchanged three-second exploration setting. They do not claim
+arbitrary malformed-FlatBuffer qualification or full process-memory measurement.
+
+The existing =ProviderRpc.qnt= owner checks budget saturation, no refund on Free
+and the wire-only counterexample in abstract units. =ProviderRpc.lean= proves
+the cumulative bound and monotonic usage for arbitrary finite allocation/free/
+rejection runs. Native routing of every requested Arrow buffer through the
+allocator is an explicit premise; native properties exercise that binding.
+Neither a decode failure nor freeing memory settles a reservation, reopens an
+invocation or authorizes a Scheme continuation. Existing Rust claim/hold and
+final release laws remain the execution authority.
 
 * Reused models, properties and limits
 
@@ -182,7 +225,7 @@ delivery, decoded heap limits or an implemented independent recovery authority.
 | Reconnect and encoding switch | =reconnectCannotUncancelOriginalStreamTest= / =preparedEncodingCannotSwitchTest= / =restartCannotReconstituteUnknownReleaseTest= | Original context and pending range survive |
 | Capacity treated as authorization / replaying prepared interval | Explicit unsafe Quint witnesses | Expected counterexamples retained outside safe =step= |
 | Malformed later row / mismatched encoding | New native Go decoder tests | No returned partial batch; no format adoption |
-| Encoded bytes treated as decoded memory bound | New bounded compressed IPC fixture | Expected resource counterexample, not a closed allocation gate |
+| Encoded bytes treated as decoded memory bound | Small compressed expansion control and over-budget refusal | Arrow buffer requests and returned text are bounded; total codec/runtime heap remains unqualified |
 | Real Go/Rust streaming, row denial, cancellation and duplicate RPC | Existing integration tests | Production-component evidence; independent floor and future cloud/protocol adapters remain unimplemented |
 
 Run existing configured Lean and Go proof/architecture entrypoints with the
@@ -210,8 +253,39 @@ Policy publication, cancellation/reconnect and enqueue-before-commit crash cases
 inside an observed private-queue capacity wait, retaining the one-second deadline.
 Rust component tests also cover provider range history changed during the wait.
 A general external history-domain publication is not implemented by these tests.
-Whole-pipeline buffer, decoded-allocation, concrete floor/account/history mapping
+Whole-pipeline buffer, total decoded-heap, concrete floor/account/history mapping
 and native trace-correspondence evidence remain open.
+
+** Allocation-boundary implementation receipt
+
+Local Darwin arm64, Apple M2 Pro, twelve logical CPUs; no dependency pins changed.
+The original two failing decoder tests above preceded the production repair.
+The allocation fuzzer also shrank a checked-allocator empty-buffer reallocation
+failure to =[]byte("10")=. The adapter now maps empty reallocation to Allocate
+and zero-size reallocation to Free. The framework corpus is checked in for exact
+replay; this harness failure is not evidence that a production stream crashed.
+The first Lean edit failed to elaborate because of a reserved binder and then
+constructor pattern arity; the final file elaborates without admitted proofs.
+
+| Executed check | Observed result |
+|----------------+-----------------|
+| Normal Go =go test -race ./...= | All packages passed, including Project/SysML and development-stage ownership checks |
+| Real provider suite =go test -race -tags=integration ./dev -run '^TestProvider' -count=1= | Passed in 31.097 seconds; actual Rust server and mTLS/HTTPS, not an untagged no-tests invocation |
+| =FuzzArrowAllocationBudget=, three seconds | 202,914 executions, twelve workers; minimized original failure retained as a corpus entry |
+| =FuzzArrowObservationRoundTrip=, three seconds | 26,467 executions, twelve workers; counts are engine executions, not unique cases |
+| ProviderRpc Quint tests | 52 named scenarios passed, seed 293 |
+| ProviderRpc safety exploration | 1,000 samples, sixty steps, seed 293; no violation, not exhaustive verification |
+| ProviderRpc Lean | File elaborated; new finite-run theorem uses =propext= and =Quot.sound=, no =sorryAx= |
+| Core D2 | SVG regenerated and rendered PNG visually inspected; only core relationships appear in the diagram |
+
+The actual decoder benchmark uses fixed uncompressed 1 KiB text per row, with
+fixture construction outside timing. Three one-second repetitions on this host
+measured 4,994–5,315 ns/op for one row (8,928 B/op, 114 allocs/op) and
+14,633–14,923 ns/op for thirty-two rows (83,873 B/op, 207 allocs/op).
+These are warm serial client-decoder microbenchmarks with the machine's default
+concurrency setting, not concurrent throughput, end-to-end latency, peak heap,
+cold startup or a before/after speedup comparison. The benchmark remains beside
+the actual Go decoder tests and uses the standard Go benchmark framework.
 
 * Comparison metric and remaining work
 
@@ -222,10 +296,10 @@ agentgateway's typed xDS reconnect provides control-plane lessons. None replaces
 the original claim, unknown reservation, authoritative history or final CAS.
 
 Metric this round: bounded model and native decoder evidence increases; full
-higher-order Governance adapter production acceptance remains 0/13. The only
-new compression figure is the bounded synthetic expansion witness above; no
+higher-order Governance adapter production acceptance remains 0/13. The
+compression figure remains a bounded synthetic expansion witness; no
 cross-product throughput, latency, memory saving or cost advantage was measured.
-Remaining work includes decoded-allocation qualification, whole-pipeline byte
+Remaining work includes codec/runtime heap and arbitrary metadata qualification, whole-pipeline byte
 and fairness limits, deployed cloud/protocol adapter reconnect tests, concrete
 floor/account/history projection and authoritative Session result recovery.
 Production code and dependency pins remain unchanged. CI is nonblocking.

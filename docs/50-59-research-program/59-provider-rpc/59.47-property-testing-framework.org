@@ -45,6 +45,8 @@ and independent admissibility models must cover that separate obligation.
 | Durable claims/holds survive replay, restart and range faults | Ledger proptest suites | Existing bounded event histories, real SQLite, two-message stream fixture |
 | Original admission/refusal agrees with an independent model | =stream_admission_pbt.rs= | New typed command/model/driver suite, sixty-four cases, mandatory positive admission, generated suffixes of one to thirty-one commands |
 | SSE fragmentation preserves event identity | Execution proptest suite | Sixty-four generated fragmentation/text cases over the actual decoder |
+| Arrow cumulative allocations cannot regain credit through Free | Go gatewayclient fuzz suite | Independent integer oracle, checked native allocator, bounded command traces and no-allocation denial |
+| Arrow observations round-trip or reject as a whole | Go gatewayclient fuzz suite | Actual IPC writer/reader, generated rows/text/compression and invalid final sequence; excludes arbitrary malformed metadata |
 | Every benchmark measurement survives order/noise and malformed data rejects | Go devrunner fuzz suite | Generated typed rows, distinct repetition values, bounded permutation/noise and independent expected records |
 | Revocation/cancellation/crash inside an actual output-capacity wait | Server unit and Go integration framework tests | Deterministic controlled schedules with real Rust/mTLS; not yet randomized native schedule generation |
 

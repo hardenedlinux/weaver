@@ -12,7 +12,7 @@ import (
 	"github.com/apache/arrow-go/v18/arrow/memory"
 )
 
-func encodedObservation(t *testing.T, sequences []uint64, text string, compressed bool) *pb.ProviderFrame {
+func encodedObservation(t testing.TB, sequences []uint64, text string, compressed bool) *pb.ProviderFrame {
 	t.Helper()
 	schema := arrow.NewSchema([]arrow.Field{
 		{Name: "sequence", Type: arrow.PrimitiveTypes.Uint64},
@@ -80,4 +80,114 @@ func TestArrowFrameCannotChangeNegotiatedEncoding(t *testing.T) {
 	if err == nil || events != nil {
 		t.Fatalf("encoding mismatch adopted: events=%v error=%v", events, err)
 	}
+}
+
+func TestArrowCompressedAllocationLimitReturnsNoBatch(t *testing.T) {
+	// A small valid IPC envelope asks the real reader for more than its entire
+	// buffer allowance. The check must happen before the decompression allocation.
+	frame := encodedObservation(t, []uint64{0}, strings.Repeat("x", arrowBufferBudget+1), true)
+	if len(frame.GetArrow().Ipc) >= 4<<20 {
+		t.Fatal("fixture exceeds wire cap")
+	}
+	events, err := Events(frame, pb.Encoding_ARROW_IPC)
+	if err == nil || events != nil {
+		t.Fatal("compressed allocation escaped budget")
+	}
+	if !strings.Contains(err.Error(), "allocation budget exceeded") {
+		t.Fatalf("wrong refusal: %v", err)
+	}
+	// A refused batch must not poison another stream's independent allowance.
+	valid := encodedObservation(t, []uint64{0}, "after refusal", false)
+	if events, err = Events(valid, pb.Encoding_ARROW_IPC); err != nil || len(events) != 1 {
+		t.Fatalf("fresh decoder failed: %v", err)
+	}
+}
+
+func TestArrowSequenceCannotWrap(t *testing.T) {
+	frame := encodedObservation(t, []uint64{^uint64(0), 0}, "small", false)
+	frame.GetArrow().FirstSequence = ^uint64(0)
+	if events, err := Events(frame, pb.Encoding_ARROW_IPC); err == nil || events != nil {
+		t.Fatal("wrapped sequence accepted")
+	}
+}
+
+func TestArrowEnvelopeRejectsOversizedMetadataAndTrailingBytes(t *testing.T) {
+	for _, data := range [][]byte{{255, 255, 255, 255, 255, 255, 255, 127}, {0, 0, 0, 0, 1}} {
+		if arrowEnvelope(data) == nil {
+			t.Fatal("invalid framing admitted")
+		}
+	}
+	frame := encodedObservation(t, []uint64{0}, "small", false)
+	frame.GetArrow().Ipc = append(frame.GetArrow().Ipc, 1)
+	if events, err := Events(frame, pb.Encoding_ARROW_IPC); err == nil || events != nil {
+		t.Fatal("trailing bytes admitted")
+	}
+}
+
+func TestArrowDecodedTextLimitReturnsNoBatch(t *testing.T) {
+	frame := encodedObservation(t, []uint64{0}, strings.Repeat("x", arrowTextBudget), true)
+	// Kind bytes count too, even though the text column alone is exactly at cap.
+	if events, err := Events(frame, pb.Encoding_ARROW_IPC); err == nil || events != nil ||
+		!strings.Contains(err.Error(), "decoded text bound") {
+		t.Fatalf("decoded text cap was not enforced: %v", err)
+	}
+}
+
+func BenchmarkArrowObservationDecode(b *testing.B) {
+	for _, rows := range []int{1, 32} {
+		name := "single"
+		if rows == 32 {
+			name = "batch32"
+		}
+		b.Run(name, func(b *testing.B) {
+			sequences := make([]uint64, rows)
+			for i := range sequences {
+				sequences[i] = uint64(i)
+			}
+			frame := encodedObservation(b, sequences, strings.Repeat("x", 1024), false)
+			b.ReportAllocs()
+			b.SetBytes(int64(rows * 1024))
+			b.ResetTimer()
+			for range b.N {
+				events, err := Events(frame, pb.Encoding_ARROW_IPC)
+				if err != nil || len(events) != rows {
+					b.Fatalf("decode: %v", err)
+				}
+			}
+		})
+	}
+}
+
+func FuzzArrowObservationRoundTrip(f *testing.F) {
+	f.Add("delta", uint8(2), true, false)
+	f.Add("", uint8(0), false, true)
+	f.Fuzz(func(t *testing.T, text string, count uint8, compressed, corrupt bool) {
+		if len(text) > 4096 {
+			text = text[:4096]
+		}
+		rows := int(count%32) + 1
+		sequences := make([]uint64, rows)
+		for i := range sequences {
+			sequences[i] = uint64(i)
+		}
+		if corrupt {
+			sequences[rows-1] += 8
+		}
+		frame := encodedObservation(t, sequences, text, compressed)
+		events, err := Events(frame, pb.Encoding_ARROW_IPC)
+		if corrupt {
+			if err == nil || events != nil {
+				t.Fatal("invalid batch returned a prefix")
+			}
+			return
+		}
+		if err != nil || len(events) != rows {
+			t.Fatalf("valid observation refused: %v", err)
+		}
+		for i, event := range events {
+			if event.Sequence != uint64(i) || event.Text != text || event.Kind != "delta" || event.Tokens != 0 {
+				t.Fatal("observation changed")
+			}
+		}
+	})
 }

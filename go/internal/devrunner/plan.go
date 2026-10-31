@@ -29,6 +29,8 @@ func Plan(goBinary string) []Stage {
 		{"go-fuzz-control-build", goBinary, []string{"-C", "go", "test", "-c", "./internal/devrunner/testdata/fuzzcontrol", "-o", "../.cache/fuzz-control.test"}},
 		{"go-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "./..."}},
 		{"go-benchmark-evidence-pbt", goBinary, []string{"-C", "go", "test", "./internal/devrunner", "-run", "^$", "-fuzz", "^FuzzBenchmarkGoRowsPreserveMeasurements$", "-fuzztime=3s"}},
+		{"go-arrow-allocation-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "^FuzzArrowAllocationBudget$", "-fuzztime=3s"}},
+		{"go-arrow-observation-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "^FuzzArrowObservationRoundTrip$", "-fuzztime=3s"}},
 		{"go-routing-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzCeilingNeverExpands", "-fuzztime=3s"}},
 		{"go-decoder-pbt", goBinary, []string{"-C", "go", "test", "./api/v1", "-run", "^$", "-fuzz", "FuzzDecoderNeverPanics", "-fuzztime=3s"}},
 		{"go-stream-pbt", goBinary, []string{"-C", "go", "test", "./internal/streaming", "-run", "^$", "-fuzz", "FuzzMessageBounds", "-fuzztime=3s"}},

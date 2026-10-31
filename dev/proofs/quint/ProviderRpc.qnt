@@ -10,6 +10,12 @@ module ProviderRpc {
   // it is not another budget evaluator or an informer-cache version.
   val current=s.revision==s.observedRevision and s.fence==s.observedFence and s.allow and s.domainCut==s.observedCut
   val authenticated=s.caller==1 and s.credential
+  // Abstract units, not native bytes. Every requested allocation is charged;
+  // freeing a buffer does not refund this batch-local cumulative allowance.
+  pure def allocationAdmitted(used:int,requested:int,limit:int):bool =
+    used>=0 and requested>=0 and used<=limit and requested<=limit-used
+  pure def charged(used:int,requested:int,limit:int):int =
+    if(allocationAdmitted(used,requested,limit)) used+requested else used
   // Zero denotes an absent field; a negative value denotes an invalid present value.
   pure def boundedCaps(modern:int,legacy:int):bool=
     (modern>0 and modern<=4096 and legacy==0) or (legacy>0 and legacy<=4096 and modern==0)
@@ -151,4 +157,10 @@ module ProviderRpc {
   run restoredPolicyCannotReconsumeOriginalTest=spent.then(publish).then(crash).then(restorePolicy).then(reconnect)
     .expect(safe and s.allow and s.held==4 and s.burned).then(consume(0).fail())
   run restoredPolicyOldGrantCounterexampleTest=spent.then(publish).then(restorePolicy).then(unsafeStaleRelease).expect(not(safe))
+  run decodedAllocationBudgetTest=init.expect(
+    charged(5,3,8)==8 and not(allocationAdmitted(8,1,8)) and charged(8,1,8)==8)
+  run freeCannotRestoreDecodeAllowanceTest=init.expect(
+    not(allocationAdmitted(charged(0,6,8),3,8)))
+  // The weaker wire-only premise permits a request larger than its allocation limit.
+  run wireOnlyAllocationCounterexampleTest=init.expect(1<=4 and not(allocationAdmitted(0,9,8)))
 }

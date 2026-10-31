@@ -37,8 +37,12 @@ package ProviderRpc {
            Arrow rows. Validate every row, schema, ordering, null/trailing content
            and actual original-stream binding. An admitted batch is immutable;
            changing encoding, schema, destination or context requires rejection,
-           not relabeling. Encoded-byte bounds alone are not a decoded-allocation
-           bound, and batching never increases the semantic or monetary budget. */
+           not relabeling. Go checks bounded IPC envelopes before reader allocation,
+           applies a per-batch cumulative Arrow-buffer request budget without
+           restoring credit on Free, bounds owned returned text and rejects
+           sequence overflow. This is not a bound on codec/runtime heap or a
+           verifier for arbitrary FlatBuffer graphs. Encoded-byte bounds alone
+           are insufficient; batching never increases semantic or monetary budget. */
     }
     requirement def ProviderUnknownRetention {
         doc /* Partial request or SSE delivery, lost response and interrupted completion retain the original reservation and canonical identity. Provider usage is observational, not settlement authority. */
