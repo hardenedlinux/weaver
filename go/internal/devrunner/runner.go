@@ -39,6 +39,7 @@ type Result struct {
 	SchemeTiming   *SchemeTiming `json:"schemeTiming,omitempty"`
 	UserCPU        string        `json:"userCpu,omitempty"`
 	SystemCPU      string        `json:"systemCpu,omitempty"`
+	GoBenchmarks   []GoBenchmark `json:"goBenchmarks,omitempty"`
 }
 type Receipt struct {
 	Revision           string            `json:"revision,omitempty"`
@@ -259,6 +260,9 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		result.SchemeTiming = observation.timing(finished)
 	}
 	closeErr := log.Close()
+	if stage.Name == "grpc-benchmark" && err == nil && closeErr == nil {
+		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
+	}
 	if stage.Name == "scheme-unit-tests" && err == nil {
 		err = validateSchemeResult(filepath.Join(directory, result.Log))
 		if ctx.Err() != nil {

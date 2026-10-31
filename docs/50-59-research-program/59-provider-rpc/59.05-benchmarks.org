@@ -110,6 +110,15 @@ threshold. Go runs the read-only RPC benchmark for two seconds, three times, wit
 allocation reporting. Compilation and one-iteration smoke checks are distinct
 from measured benchmark results.
 
+The RPC stage must retain all nine measurement rows as typed structured values
+before verbose fixture output is reduced to a tail. Each of the three named
+benchmarks must have exactly three repetitions, positive iteration/latency
+values, the actual host CPU count and valid allocation units. Missing, duplicate,
+nonfinite, mislabeled or wrong-CPU rows fail the stage. A successful process or
+a truncated log tail cannot qualify this data. The =latest-bench.json= stage's
+=goBenchmarks= entries preserve every admitted row; they do not create p99 or
+Rust-process allocation evidence from Go's per-operation averages.
+
 Task/Policy creation and fresh durable store provisioning are outside the timed
 ledger/execution closure. The closure returns its owning database/temp objects
 so their destruction also occurs outside the measured routine. The execution
