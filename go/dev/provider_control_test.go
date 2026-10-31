@@ -171,6 +171,12 @@ func writeControlBundle(t testing.TB, f *fixture, b config.Bundle, format string
 }
 
 func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixture, config.Bundle) string) {
+	exerciseControlPolicies(t, format, source, controlPolicySources{})
+}
+
+type controlPolicySources struct{ initial, revoked string }
+
+func exerciseControlPolicies(t *testing.T, format string, source func(*testing.T, *fixture, config.Bundle) string, policies controlPolicySources) {
 	t.Helper()
 	allowTail := make(chan struct{})
 	var once sync.Once
@@ -188,6 +194,9 @@ func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixtu
 		}
 	}, false)
 	bundle := controlBundle(t, f)
+	if policies.initial != "" {
+		bundle.Publication.Policy = policies.initial
+	}
 	path := writeControlBundle(t, f, bundle, format)
 	if source != nil {
 		path = source(t, f, bundle)
@@ -196,6 +205,9 @@ func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixtu
 	c.start(t)
 	parent := uint64(1)
 	revocation := v1.Publication{OperationID: "control-revoke", ExpectedRevision: &parent, Fence: 3, Policy: `forbid(principal,action,resource);`, Schema: f.schema}
+	if policies.revoked != "" {
+		revocation.Policy = policies.revoked
+	}
 	if source != nil {
 		revoked := bundle
 		revoked.Publication = revocation
@@ -447,7 +459,11 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	case <-time.After(15 * time.Second):
 		child.Process.Kill()
 		<-done
-		t.Error("failed bootstrap did not exit naturally")
+		data, readErr := os.ReadFile(filepath.Join(c.directory, "lost-publication.log"))
+		if len(data) > 8192 {
+			data = data[len(data)-8192:]
+		}
+		t.Errorf("failed bootstrap did not exit naturally: inspect=%d stage=%d final=%d log-error=%v log=%s", proxy.inspections.Load(), proxy.stages.Load(), proxy.calls.Load(), readErr, data)
 	}
 	log.Close()
 	writes := int64(1)
@@ -455,7 +471,7 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 		writes = 0
 	}
 	if proxy.calls.Load() != writes || proxy.inspections.Load() != 1 || proxy.stages.Load() != 1 {
-		t.Fatal("bootstrap automatically retried publication")
+		t.Fatalf("source protocol count mismatch: inspect=%d stage=%d final=%d; expected inspect=1 stage=1 final=%d (missing calls do not establish retry)", proxy.inspections.Load(), proxy.stages.Load(), proxy.calls.Load(), writes)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()

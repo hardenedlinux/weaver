@@ -636,4 +636,21 @@ theorem floor_recovery_and_transport_composition (trace : Trace valid a b)
 #print axioms replacement_invalidates_old_owner
 #print axioms floor_recovery_and_transport_composition
 end CommitFloor
+/-- Any omitted request can gain permission while every sampled decision remains
+unchanged. This is a finite-observation counterexample, not a second Cedar model.
+The native schema-bound replay receipt must therefore never supply no-gain. -/
+theorem finite_replay_does_not_certify_no_gain (samples : List Nat) (outside : Nat)
+    (unseen : outside ∉ samples) :
+    ∃ before after : Nat → Bool,
+      (∀ key ∈ samples, before key = after key) ∧
+      before outside = false ∧ after outside = true := by
+  refine ⟨fun _ => false, fun key => decide (key = outside), ?_, rfl, by simp⟩
+  intro key sampled
+  have different : key ≠ outside := by
+    intro same
+    subst key
+    exact unseen sampled
+  simp [different]
+
+#print axioms finite_replay_does_not_certify_no_gain
 end Weaver.PublicationRecovery

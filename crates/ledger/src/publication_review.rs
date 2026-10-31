@@ -79,6 +79,17 @@ pub(crate) fn require_approved(connection: &Connection, key: &PublicationKey) ->
 }
 
 impl Ledger {
+    /// Recompute SPEC schema-bound replay before trusted-host review admission.
+    /// This adds concrete candidate checks, not producer authentication or no-gain.
+    /// The deciding registration transaction still rechecks the original parent.
+    pub fn register_replay_checked_review(
+        &mut self,
+        change: &Publication,
+        review: &PublicationReview,
+    ) -> Result<String> {
+        weaver_policy::verify_publication_replay(change, review)?;
+        self.register_approved_review(review)
+    }
     /// Atomically latch mandatory review and stage the original command. No downgrade exists.
     /// Historical unreviewed decisions cannot be retroactively represented as reviewed.
     pub fn stage_reviewed_authority(&mut self, change: &Publication) -> Result<PublicationKey> {

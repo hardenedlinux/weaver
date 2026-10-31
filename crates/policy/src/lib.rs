@@ -3,9 +3,11 @@ mod authorize;
 mod compiled;
 mod provider;
 pub use provider::{BoundProviderPolicy, ProviderCheck, bind_provider};
+mod publication_replay;
 mod stream;
 mod typed;
 pub use authorize::{authorize, validate};
+pub use publication_replay::{PublicationReplayCheck, verify_publication_replay};
 pub use stream::{StreamCheck, authorize_stream};
 pub use typed::validate_typed;
 

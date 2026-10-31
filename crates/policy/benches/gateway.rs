@@ -4,6 +4,8 @@ use std::{hint::black_box, time::Duration};
 mod fixtures;
 #[path = "support/fixtures.rs"]
 mod policy_fixture;
+#[path = "../tests/support/publication_replay.rs"]
+mod replay_fixture;
 fn current_policy(c: &mut Criterion) {
     let (task, plan) = fixtures::task_plan(128, "https://provider.invalid/v1/chat/completions");
     let binding = weaver_policy::bind_provider(&task, &plan, &plan.routes[0]).expect("binding");
@@ -46,5 +48,23 @@ fn current_policy(c: &mut Criterion) {
         })
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=current_policy}
+fn candidate_replay(c: &mut Criterion) {
+    let (change, review, _) = replay_fixture::fixture();
+    c.bench_function("policy/materialized_json_schema_validation", |b| {
+        b.iter(|| {
+            black_box(weaver_policy::validate_typed(
+                &change.policy,
+                &change.schema,
+            ))
+            .expect("named Policy and schema")
+        })
+    });
+    c.bench_function("policy/spec_schema_bound_candidate_replay", |b| {
+        b.iter(|| {
+            black_box(weaver_policy::verify_publication_replay(&change, &review))
+                .expect("actual upstream receipt replay")
+        })
+    });
+}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=current_policy,candidate_replay}
 criterion_main!(benches);

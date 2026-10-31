@@ -108,6 +108,10 @@ module PublicationRecovery {
   action observeRegistration(r:Review):bool=all {anchoredReviews(r.command.id)==Set(r),authority'=authority}
   action registerReview(r:Review):bool=registerReviewBy(authority.floor.registrarOwner,authority.floor.registrarTerm,r)
     .then(recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm))
+  // The exact native SPEC replay/ID/schema check belongs to Rust's upstream
+  // adapter. This schedule receives its qualified result, not a second Cedar evaluator.
+  action registerReplayChecked(r:Review,checked:bool):bool=all {checked,
+    registerReviewBy(authority.floor.registrarOwner,authority.floor.registrarTerm,r)}
   action publishReviewedBy(actor:int,term:int,q:Proposal,r:Review):bool={
     val qualified=authority.reviews.get(q.id)==Set(r) and r.command==q and r.head==authority.head and r.fence==authority.fence and r.parentPolicy==authority.policy and r.parentSchema==authority.schema and
       r.cut==authority.floor.cut and r.epoch==authority.floor.epoch and authority.floor.pending==Set() and not(authority.floor.handoff)
@@ -426,4 +430,14 @@ module PublicationRecovery {
     registerUsingSource(sourceRegister0,review0),publishUsingSource(sourcePublish0,staged0,review0),
     revokeSource(100),revokeSource(101),rotateRegistrar,restoreReviewImage(List()),
     recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restart,observe}
+  run failedNativeReplayRetainsOriginalPendingTest=init.then(stageRequiringReview(staged0))
+    .expect(safe and authority.pending==Set(staged0) and authority.held==4).then(registerReplayChecked(review0,false).fail())
+  run nativeReplayRegistrationLostObservationRecoveryTest=init.then(stageRequiringReview(staged0))
+    .then(registerReplayChecked(review0,true)).then(restart).then(observeRegistration(review0))
+    .then(recoverReviewsBy(1,0)).then(publish(0,0,-1,1)).expect(reviewSafe and authority.held==4)
+  run successfulReplayCannotRegisterAtChangedParentTest=init.then(stageRequiringReview(staged0))
+    .then(publish(1,1,-1,1)).expect(safe and authority.pending==Set(staged0)).then(registerReplayChecked(review0,true).fail())
+  run failedReplayIsNotTerminalRejectionTest=init.then(stageRequiringReview(staged0))
+    .then(restart).expect(safe and authority.records.get(0).outcome==0 and authority.pending==Set(staged0))
+    .then(publish(0,0,-1,1).fail())
 }

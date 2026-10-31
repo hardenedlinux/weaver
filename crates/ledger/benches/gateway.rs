@@ -4,6 +4,8 @@ use std::{collections::BTreeSet, hint::black_box, time::Duration};
 mod fixtures;
 #[path = "../../policy/benches/support/fixtures.rs"]
 mod policy_fixture;
+#[path = "../../policy/tests/support/publication_replay.rs"]
+mod replay_fixture;
 #[path = "support/fixtures.rs"]
 mod stores;
 fn durable_operations(c: &mut Criterion) {
@@ -163,6 +165,36 @@ fn reviewed_publication(c: &mut Criterion) {
         )
     });
 }
+fn replay_checked_publication(c: &mut Criterion) {
+    let (change, review, _) = replay_fixture::fixture();
+    c.bench_function("ledger/spec_replay_register_and_commit", |b| {
+        b.iter_batched(
+            || {
+                let temp = tempfile::tempdir().expect("directory");
+                let mut ledger =
+                    weaver_ledger::Ledger::open(temp.path().join("replay.db")).expect("store");
+                ledger
+                    .stage_reviewed_authority(&change)
+                    .expect("original latch");
+                (temp, ledger)
+            },
+            |(temp, mut ledger)| {
+                ledger
+                    .register_replay_checked_review(&change, &review)
+                    .expect("native evidence check and registration");
+                let receipt = ledger
+                    .publish_authority(&change)
+                    .expect("original final CAS");
+                assert_eq!(
+                    receipt.outcome,
+                    weaver_contracts::PublicationOutcome::Committed
+                );
+                black_box((temp, ledger, receipt))
+            },
+            BatchSize::PerIteration,
+        )
+    });
+}
 fn profile_registration(c: &mut Criterion) {
     let (task, _) = fixtures::task_plan(128, "https://provider.invalid/v1/chat/completions");
     c.bench_function("ledger/profile_task_registration", |b| {
@@ -209,5 +241,5 @@ fn profile_registration(c: &mut Criterion) {
     }
     group.finish();
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,publication_operations,profile_registration,reviewed_publication}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,publication_operations,profile_registration,reviewed_publication,replay_checked_publication}
 criterion_main!(benches);

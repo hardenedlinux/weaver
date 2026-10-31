@@ -10,6 +10,16 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* verify_publication_replay delegates to the actual fixed SPEC
+           ValidatedManifest/SchemaBoundReceipt runtime. The candidate's complete
+           policy ID/body set and schema must equal the original publication.
+           register_replay_checked_review validates before registration, then the
+           deciding transaction rechecks the captured parent and original pending.
+           Failed replay leaves the original unresolved. Native replay is finite
+           evidence; actual no-gain, producer authenticity, semantic parent/Profile
+           qualification and independent registry recovery are separate obligations.
+           Cedar source may use official materialized PolicySet JSON to preserve
+           named IDs; renderer comments cannot substitute for those identities. */
         doc /* The existing Rust ledger now supplies a trusted-host local review
            admission primitive. stage_reviewed_authority atomically latches its
            exact command and authority-selected complete Policy/schema parent.

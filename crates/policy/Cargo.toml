@@ -4,10 +4,13 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 [dependencies]
+cedar-poo-runtime.workspace = true
+serde.workspace = true
 weaver-contracts.workspace = true
 cedar-policy.workspace = true
 serde_json.workspace = true
 [dev-dependencies]
+proptest.workspace = true
 asp-rust.workspace = true
 criterion.workspace = true
 [[bench]]

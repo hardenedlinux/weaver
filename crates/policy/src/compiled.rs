@@ -13,9 +13,7 @@ pub(crate) fn with_policy<T>(source: &str, run: impl FnOnce(&PolicySet) -> T) ->
         if let Some((_, policy)) = cache.iter().find(|(text, _)| text == source) {
             return Ok(run(policy));
         }
-        let policy: PolicySet = source
-            .parse()
-            .map_err(|_| Error::Policy("invalid policy set".into()))?;
+        let policy = parse(source)?;
         if cache.len() == 8 {
             cache.remove(0);
         }
@@ -25,6 +23,22 @@ pub(crate) fn with_policy<T>(source: &str, run: impl FnOnce(&PolicySet) -> T) ->
             .ok_or(Error::Policy("compiled cache missing".into()))?;
         Ok(run(policy))
     })
+}
+
+/// Cedar text or the official materialized PolicySet JSON, preserving named IDs.
+/// JSON is decoded with duplicate rejection before the upstream native loader.
+pub(crate) fn parse(source: &str) -> Result<PolicySet> {
+    if source.trim_start().starts_with('{') {
+        let value: serde_json::Value = weaver_contracts::decode(source.as_bytes())?;
+        let artifact = serde_json::to_string(&value)?
+            .parse()
+            .map_err(|_| Error::Policy("invalid compiled Cedar artifact".into()))?;
+        cedar_poo_runtime::load_policy_set(&artifact).map_err(Error::Policy)
+    } else {
+        source
+            .parse()
+            .map_err(|_| Error::Policy("invalid policy set".into()))
+    }
 }
 
 #[cfg(test)]

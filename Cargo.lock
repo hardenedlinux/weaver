@@ -614,6 +614,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "cedar-poo-core"
+version = "0.1.0"
+source = "git+https://github.com/HardenedLinux/cedar-poo-spec?rev=38af276ffbd17a378408bb7886e8122faadcbcfd#38af276ffbd17a378408bb7886e8122faadcbcfd"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "cedar-poo-runtime"
+version = "0.1.0"
+source = "git+https://github.com/HardenedLinux/cedar-poo-spec?rev=38af276ffbd17a378408bb7886e8122faadcbcfd#38af276ffbd17a378408bb7886e8122faadcbcfd"
+dependencies = [
+ "cedar-policy",
+ "cedar-poo-core",
+ "serde",
+ "serde_json",
+ "sha2 0.11.1",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3899,6 +3920,7 @@ name = "weaver-ledger"
 version = "0.1.0"
 dependencies = [
  "asp-rust",
+ "cedar-poo-runtime",
  "criterion",
  "proptest",
  "rusqlite",
@@ -3914,7 +3936,10 @@ version = "0.1.0"
 dependencies = [
  "asp-rust",
  "cedar-policy",
+ "cedar-poo-runtime",
  "criterion",
+ "proptest",
+ "serde",
  "serde_json",
  "weaver-contracts",
 ]

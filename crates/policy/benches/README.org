@@ -4,7 +4,11 @@
 * Workload
 
 Typed schema validation; warm compilation with a fresh authorization decision; sixteen-source compilation-cache churn.
-Three measured cases belong to this package.
+Named materialized PolicySet JSON schema validation and actual fixed-SPEC
+schema-bound candidate replay bring this package to five measured cases.
+The complete four-case upstream manifest and receipts are prepared before timing;
+replay includes all four cases, while only two refer to the selected candidate.
+Neither measured success proves no-gain or producer authenticity.
 
 * Measurement boundary
 

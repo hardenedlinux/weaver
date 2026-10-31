@@ -226,9 +226,17 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.56-schema-bound-candidate-replay.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.56-schema-bound-candidate-replay.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.56-schema-bound-candidate-replay.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {
+            doc /* Reuse the existing fixed cedar-poo-spec revision's Rust
+               runtime for schema-bound replay, declared IDs and entity checks.
+               Official materialized PolicySet JSON retains named policy identity;
+               text-renderer comments are never treated as identity metadata.
+               Finite replay supplies no no-gain, registrar or execution authority. */
             part 'weaver-contracts' : RuntimeDependency;
         }
         part 'crates/policy-ffi' : RustPackage {
@@ -277,6 +285,10 @@ package WeaverProject {
         part 'prod/policies/provider/profile.json' : File;
         part 'prod/policies/provider/profile.yaml' : File;
         part 'prod/policies/provider/request-cases.json' : File;
+        part 'prod/policies/review/namespaced-enum-validated.json' : File;
+        part 'prod/policies/review/named-permit.json' : File;
+        part 'prod/policies/review/named-forbid.json' : File;
+        part 'prod/policies/review/README.org' : File;
         part 'prod/policies/streaming/schema.json' : File;
         part 'prod/policies/streaming/stream.cedar' : File;
         part 'prod/policies/README.org' : File;

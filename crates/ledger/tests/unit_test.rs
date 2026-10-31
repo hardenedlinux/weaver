@@ -10,6 +10,8 @@ mod provider;
 mod provider_profiles;
 #[path = "unit/publication_barrier.rs"]
 mod publication_barrier;
+#[path = "unit/publication_replay.rs"]
+mod publication_replay;
 #[path = "unit/publication_review.rs"]
 mod publication_review;
 #[path = "unit/recovery.rs"]

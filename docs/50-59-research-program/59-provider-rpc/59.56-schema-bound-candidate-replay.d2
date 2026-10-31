@@ -1,0 +1,31 @@
+vars: {d2-config: {layout-engine: tala; theme-id: 3; pad: 70}}
+classes: {card: {label.near: center-center; style.font-size: 21; style.border-radius: 12}}
+title: SCHEMA-BOUND CANDIDATE / EXACT POLICY IDENTITY {shape: text; near: top-center; style.font-size: 32; style.bold: true}
+producer: SPEC producer\nOriginal compiled PolicySet\nNamed IDs / schema / concrete cases\nSemantic approval is a separate duty {
+  class: card; left: 0; top: 0; width: 470; height: 210; style.fill: "#eef3ef"
+}
+source: Scheme / Go source handoff\nExact original publication\nOfficial materialized PolicySet JSON\nNo identity from renderer comments {
+  class: card; left: 690; top: 0; width: 480; height: 210; style.fill: "#eef3ef"
+  icon: ../../architecture/diagrams/assets/go.svg; icon.near: top-left
+}
+check: Rust SPEC adapter\nMatch candidate IDs / bodies / schema\nRecompute schema-bound receipts\nFinite evidence / no execution grant {
+  class: card; left: 1380; top: 0; width: 480; height: 210; style.fill: "#e7edf4"
+  icon: ../../architecture/diagrams/assets/rust.svg; icon.near: top-left
+}
+parent: Existing authority ledger\nOriginal pending and captured parent\nClaim / budget / history retained\nEarlier replay cannot refresh authority {
+  class: card; left: 0; top: 490; width: 470; height: 210; style.fill: "#f4f2ec"
+}
+join: Rust deciding transaction\nJoin exact review and actual parent\nImmutable registration / original CAS\nFailure preserves original intent {
+  class: card; left: 690; top: 490; width: 480; height: 210; style.fill: "#e7edf4"
+}
+execute: Rust final execution\nFresh Cedar after every wait\nOriginal committed task and consumption\nNo replay of unknown sends {
+  class: card; left: 1380; top: 490; width: 480; height: 210; style.fill: "#eef3ef"
+}
+producer -> source: Original artifact {style.font-size: 18}
+source -> check: Exact candidate binding {style.font-size: 18}
+check -> join: Checked immutable evidence {style.font-size: 18}
+parent -> join: Current deciding state {style.font-size: 18}
+join -> execute: Committed origin {style.font-size: 18}
+footer: "Replay cannot prove no-gain · Registration never sends · Unknown exposure remains held" {
+  shape: text; left: 120; top: 870; width: 1640; height: 60; style.font-size: 24; style.font-color: "#5c8b77"
+}
