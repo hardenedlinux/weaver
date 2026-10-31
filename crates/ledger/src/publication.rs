@@ -146,6 +146,15 @@ impl Ledger {
         if let Some(receipt) = lookup(&tx, &change.operation_id, &digest)? {
             return Ok(receipt);
         }
+        // Capture review admission at the actual pre-state. A stale CAS can still
+        // record rejection; a would-be commit must satisfy the latched review.
+        let review = crate::publication_review::require_approved(
+            &tx,
+            &PublicationKey {
+                operation_id: change.operation_id.clone(),
+                digest: digest.clone(),
+            },
+        );
         let decision = apply(
             &tx,
             AuthorityChange {
@@ -155,6 +164,9 @@ impl Ledger {
                 fence: change.fence,
             },
         )?;
+        if decision.outcome == PublicationOutcome::Committed {
+            review?;
+        }
         let receipt = record_decision(&tx, change, &digest, decision)?;
         tx.commit().map_err(db)?;
         Ok(receipt)

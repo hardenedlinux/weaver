@@ -4,6 +4,12 @@
 
 * Allocation and evidence status
 
+The subsequent [[file:59.55-native-reviewed-publication.org][native local adapter]]
+implements the existing ledger's review latch, full artifact persistence and
+actual-parent final-CAS guard. The statements below describe this audit's earlier
+evidence boundary. Independent anchor recovery, authenticated registrar custody
+and mandatory reviewed RPC admission remain unimplemented production targets.
+
 [[file:../../../Project.sysml][Project]] and
 [[file:../../../dev/sysml/ControlActivation.sysml][GovernancePolicyProjection]]
 own this refinement of [[file:59.52-reviewed-publication-cas.org][reviewed publication CAS]].

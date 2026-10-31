@@ -2,7 +2,7 @@ module PublicationRecovery {
   type Decision = {payload:int,parent:int,requestedFence:int,outcome:int,resultHead:int,resultFence:int,review:Set[Review],validatedFence:int,validatedCut:Cut,validatedEpoch:int}
   type Event = {id:int,decision:Decision}
   type Proposal = {id:int,payload:int,parent:int,fence:int}
-  type Review = {command:Proposal,artifact:int,head:int,fence:int,cut:Cut,epoch:int}
+  type Review = {command:Proposal,artifact:int,head:int,fence:int,parentPolicy:int,parentSchema:int,cut:Cut,epoch:int}
   type ReviewEntry={review:Review,owner:int,term:int,index:int}
   type Part={id:int,payload:int,key:int}
   type Cut={publication:List[Part],consumption:List[Part],account:List[Part],history:List[Part]}
@@ -14,7 +14,7 @@ module PublicationRecovery {
     observed:Cut,observedEpoch:int,haveRead:bool,active:bool,burned:Set[int],admitted:Set[int],handles:Set[int],tickets:Set[{key:int,cut:Cut,epoch:int}],
     owner:int,liveOwners:Set[int],egressOwners:Set[int],handoff:bool,calls:int,external:int,
     registry:List[ReviewEntry],registrarOwner:int,registrarTerm:int}
-  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry]}
+  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],requiredReviews:Set[int]}
   var authority:Ledger
   val ids=Set(0,1,2)
   val empty={payload:0,parent:-1,requestedFence:1,outcome:0,resultHead:-1,resultFence:1,review:Set(),validatedFence:1,validatedCut:emptyCut,validatedEpoch:0}
@@ -26,11 +26,17 @@ module PublicationRecovery {
     (authority.head>=0 implies authority.policy==authority.commits.nth(authority.head).decision.payload and authority.schema==authority.policy) and floorSafe(authority.floor)
   pure val emptyCut={publication:List(),consumption:List(),account:List(),history:List()}
   pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),owner:1,liveOwners:Set(1),egressOwners:Set(1),handoff:false,calls:0,external:0,registry:List(),registrarOwner:1,registrarTerm:0}
-  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List()}
+  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),requiredReviews:Set()}
+  def canStage(q:Proposal):bool={val d=authority.records.get(q.id)
+    authority.pending.forall(p=>p.id!=q.id or p==q) and
+      (d.outcome==0 or (d.payload==q.payload and d.parent==q.parent and d.requestedFence==q.fence))}
   action stage(q:Proposal):bool={val d=authority.records.get(q.id)
-    all {authority.pending.forall(p=>p.id!=q.id or p==q),
-      d.outcome==0 or (d.payload==q.payload and d.parent==q.parent and d.requestedFence==q.fence),
+    all {canStage(q),
       authority'=authority.with("pending",if(d.outcome==0)authority.pending.union(Set(q)) else authority.pending)}}
+  action stageRequiringReview(q:Proposal):bool={val d=authority.records.get(q.id)
+    all {canStage(q),d.outcome==0 or authority.requiredReviews.contains(q.id),
+      authority'=authority.with("requiredReviews",authority.requiredReviews.union(Set(q.id)))
+        .with("pending",if(d.outcome==0)authority.pending.union(Set(q)) else authority.pending)}}
   action decidePublication(id:int,payload:int,parent:int,fence:int,review:Set[Review],qualified:bool):bool = {
     val accepted=parent==authority.head and fence>=authority.fence and qualified
     val d={payload:payload,parent:parent,requestedFence:fence,outcome:if(accepted)1 else 2,
@@ -44,9 +50,16 @@ module PublicationRecovery {
         .with("head",d.resultHead).with("fence",d.resultFence)
         .with("policy",if(accepted)payload else authority.policy).with("schema",if(accepted)payload else authority.schema)}
   }
-  // Existing native endpoint: this path does not yet mandate review evidence.
-  action publish(id:int,payload:int,parent:int,fence:int):bool =
-    decidePublication(id,payload,parent,fence,Set(),true)
+  // Native local review latch. Unlatched source RPCs retain their explicit
+  // trusted-source profile. This local guard does NOT establish floor recovery,
+  // registrar incarnation or independent semantic qualification.
+  def locallyApproved(q:Proposal):bool=authority.reviews.get(q.id).size()==1 and authority.reviews.get(q.id).exists(r=>
+    r.command==q and r.head==authority.head and r.fence==authority.fence and
+      r.parentPolicy==authority.policy and r.parentSchema==authority.schema)
+  action publish(id:int,payload:int,parent:int,fence:int):bool = all {
+    not(authority.requiredReviews.contains(id)) or parent!=authority.head or fence<authority.fence or
+      locallyApproved({id:id,payload:payload,parent:parent,fence:fence}),
+    decidePublication(id,payload,parent,fence,if(authority.requiredReviews.contains(id))authority.reviews.get(id) else Set(),true)}
   // Trusted review registration is a Host premise: actual Delta/schema/replay
   // qualification and independent parent selection are not simulated here.
   // Registration may be separate from stage; the barrier remains until the
@@ -62,6 +75,7 @@ module PublicationRecovery {
     if(existing!=Set()) all {existing==Set(r),authority'=authority}
     else all {actor==authority.floor.registrarOwner,term==authority.floor.registrarTerm,
       authority.pending.contains(r.command),r.head==authority.head,r.command.parent==r.head,r.fence==authority.fence,
+      r.parentPolicy==authority.policy,r.parentSchema==authority.schema,
       r.cut==authority.floor.cut,r.epoch==authority.floor.epoch,
       val entry={review:r,owner:actor,term:term,index:authority.floor.registry.length()}
       authority'=authority.with("floor",authority.floor.with("registry",authority.floor.registry.append(entry)))}}
@@ -73,7 +87,7 @@ module PublicationRecovery {
   action registerReview(r:Review):bool=registerReviewBy(authority.floor.registrarOwner,authority.floor.registrarTerm,r)
     .then(recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm))
   action publishReviewedBy(actor:int,term:int,q:Proposal,r:Review):bool={
-    val qualified=authority.reviews.get(q.id)==Set(r) and r.command==q and r.head==authority.head and r.fence==authority.fence and
+    val qualified=authority.reviews.get(q.id)==Set(r) and r.command==q and r.head==authority.head and r.fence==authority.fence and r.parentPolicy==authority.policy and r.parentSchema==authority.schema and
       r.cut==authority.floor.cut and r.epoch==authority.floor.epoch and authority.floor.pending==Set() and not(authority.floor.handoff)
     all {actor==authority.floor.registrarOwner,term==authority.floor.registrarTerm,registryRecovered,
       decidePublication(q.id,q.payload,q.parent,q.fence,Set(r),qualified)}
@@ -231,9 +245,9 @@ module PublicationRecovery {
     .then(stage({id:1,payload:1,parent:-1,fence:1})).then(publish(0,0,-1,1))
     .expect(safe and authority.pending==Set({id:1,payload:1,parent:-1,fence:1})).then(publish(1,1,-1,1))
     .expect(safe and authority.pending==Set() and authority.records.get(1).outcome==2)
-  pure val review0={command:staged0,artifact:70,head:-1,fence:1,cut:emptyCut,epoch:0}
+  pure val review0={command:staged0,artifact:70,head:-1,fence:1,parentPolicy:0,parentSchema:0,cut:emptyCut,epoch:0}
   pure val sibling={id:1,payload:1,parent:-1,fence:1}
-  pure val siblingReview={command:sibling,artifact:71,head:-1,fence:1,cut:emptyCut,epoch:0}
+  pure val siblingReview={command:sibling,artifact:71,head:-1,fence:1,parentPolicy:0,parentSchema:0,cut:emptyCut,epoch:0}
   action reviewedFirst=init.then(stage(staged0)).then(registerReview(review0)).then(publishReviewed(staged0,review0))
   action advanceReviewFence=authority'=authority.with("fence",authority.fence+1)
   run registeredReviewCannotBeReplacedTest=init.then(stage(staged0)).then(registerReview(review0))
@@ -257,7 +271,7 @@ module PublicationRecovery {
   run reviewResolvingOneIntentRetainsSiblingTest=init.then(stage(staged0)).then(stage(sibling)).then(registerReview(review0))
     .then(publishReviewed(staged0,review0)).then(restart).expect(reviewSafe and authority.pending==Set(sibling) and authority.held==4)
   pure val successor={id:2,payload:2,parent:0,fence:2}
-  pure val successorReview={command:successor,artifact:72,head:0,fence:1,cut:emptyCut,epoch:0}
+  pure val successorReview={command:successor,artifact:72,head:0,fence:1,parentPolicy:0,parentSchema:0,cut:emptyCut,epoch:0}
   action reviewedStep=any {stage(staged0),stage(sibling),stage(successor),
     registerReviewBy(authority.floor.registrarOwner,authority.floor.registrarTerm,review0),
     registerReviewBy(authority.floor.registrarOwner,authority.floor.registrarTerm,siblingReview),
@@ -316,4 +330,44 @@ module PublicationRecovery {
     .expect(reviewSafe and authority.pending==Set(sibling) and authority.floor.registry.length()==2 and authority.held==4)
   action unsafeRollbackRegistryAnchor=authority'=authority.with("floor",authority.floor.with("registry",List()))
   run independentRegistrationAnchorRollbackCounterexampleTest=reviewedFirst.then(unsafeRollbackRegistryAnchor).expect(safe and not(reviewSafe))
+  // Native local adapter witnesses share this ledger; they do not qualify the
+  // stronger independent registry/source-cut/registrar protocol above.
+  run latchedReviewCannotUseLegacyPublicationTest=init.then(stageRequiringReview(staged0))
+    .then(stage(staged0)).expect(safe and authority.pending==Set(staged0) and authority.records.get(0).outcome==0 and authority.held==4)
+    .then(publish(0,0,-1,1).fail())
+  run latchedReviewRegistrationAndFinalCASLostRepliesTest=init.then(stageRequiringReview(staged0))
+    .then(registerReview(review0)).then(restart).then(observeRegistration(review0)).then(registerReview(review0))
+    .then(publish(0,0,-1,1)).then(restart).then(replay(0,0,-1,1)).then(stageRequiringReview(staged0))
+    .expect(reviewSafe and authority.head==0 and authority.pending==Set())
+  run staleLatchedProposalCanRejectWithoutReviewAndKeepsSiblingTest=init.then(stageRequiringReview(staged0))
+    .then(stage(sibling)).then(publish(2,2,-1,1)).then(publish(0,0,-1,1))
+    .expect(safe and authority.records.get(0).outcome==2 and authority.pending==Set(sibling) and authority.held==4)
+  run unreviewedHistoryCannotBeRelabeledReviewedTest=first.expect(safe and authority.requiredReviews==Set())
+    .then(stageRequiringReview(staged0).fail())
+  action unsafeMutateParentSchema=authority'=authority.with("schema",authority.schema+1)
+  run sameOrdinalDifferentParentBytesBlockLatchedCASTest=init.then(stageRequiringReview(staged0))
+    .then(registerReview(review0)).then(unsafeMutateParentSchema)
+    .expect(authority.head== -1 and authority.pending==Set(staged0) and authority.held==4).then(publish(0,0,-1,1).fail())
+  run omittedNativeLatchCounterexampleTest=init.then(stageRequiringReview(staged0))
+    .then(decidePublication(0,0,-1,1,Set(),true)).expect(safe and not(reviewSafe) and authority.requiredReviews==Set(0))
+  run localReviewDoesNotEstablishIndependentSourceCurrentnessCounterexampleTest=init.then(stageRequiringReview(staged0))
+    .then(registerReview(review0)).then(floorRotate).then(publish(0,0,-1,1))
+    .expect(safe and not(reviewSafe))
+  val localReviewSafe=safe and authority.commits.indices().forall(i=>{
+    val e=authority.commits.nth(i)
+    not(authority.requiredReviews.contains(e.id)) or e.decision.review.exists(r=>
+      r.command=={id:e.id,payload:e.decision.payload,parent:e.decision.parent,fence:e.decision.requestedFence} and
+        r.head==e.decision.parent and r.fence==e.decision.validatedFence and
+        r.parentPolicy==(if(e.decision.parent<0)0 else authority.commits.nth(e.decision.parent).decision.payload) and
+        r.parentSchema==r.parentPolicy)})
+  action localReviewedStep=any {
+    stageRequiringReview(staged0),stageRequiringReview(sibling),stageRequiringReview(successor),
+    stage(staged0),stage(sibling),stage(successor),
+    registerReviewBy(authority.floor.registrarOwner,authority.floor.registrarTerm,review0),
+    registerReviewBy(authority.floor.registrarOwner,authority.floor.registrarTerm,siblingReview),
+    registerReviewBy(authority.floor.registrarOwner,authority.floor.registrarTerm,successorReview),
+    publish(0,0,-1,1),publish(1,1,-1,1),publish(2,2,0,2),
+    replay(0,0,-1,1),replay(1,1,-1,1),replay(2,2,0,2),
+    restoreReviewImage(List()),recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),
+    advanceReviewFence,floorRotate,restart,observe}
 }

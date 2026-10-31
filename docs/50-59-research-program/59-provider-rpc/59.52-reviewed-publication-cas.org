@@ -4,6 +4,11 @@
 
 * Allocation and decision
 
+Implementation follow-up: [[file:59.55-native-reviewed-publication.org][native local
+review admission]] now supplies the ledger latch, immutable registration and
+actual Policy/schema parent join. Its trusted-host API does not qualify the
+independent authority, semantic producer or public RPC path described below.
+
 The [[file:59.53-artifact-registry-recovery.org][registration recovery audit]] separates
 the independent registration commitment from a rollback-prone projection. Its
 stronger final-use contract also requires recovered registry evidence and a

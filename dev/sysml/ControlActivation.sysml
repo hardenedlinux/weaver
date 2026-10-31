@@ -10,6 +10,16 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* The existing Rust ledger now supplies a trusted-host local review
+           admission primitive. stage_reviewed_authority atomically latches its
+           exact command and authority-selected complete Policy/schema parent.
+           register_approved_review retains full immutable upstream evidence.
+           Final publication rechecks this binding under the deciding transaction;
+           ordinary staging cannot downgrade the requirement. Missing review keeps
+           an eligible proposal pending; a stale parent CAS records only its own
+           rejection. Native host authentication, actual Delta qualification,
+           independent registry prefix recovery and RPC integration remain open.
+           No source credential or opaque artifact is promoted to semantic proof. */
         doc /* Delta registration linearizes at the existing independent commit
            authority, not at a local projection write or an RPC reply. Its exact
            original command/artifact registration is immutable and survives owner
@@ -80,6 +90,8 @@ package ControlActivation {
         attribute active : Boolean;
     }
     part def RustAuthority {
+        attribute mandatoryLocalReview : Boolean;
+        attribute originalReviewRegistered : Boolean;
         attribute unresolvedPolicyProposals : Integer;
         attribute originalTaskPublicationCommitted : Boolean;
         attribute currentRevision : Integer;

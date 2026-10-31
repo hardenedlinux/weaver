@@ -217,6 +217,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.53-artifact-registry-recovery.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.53-artifact-registry-recovery.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.53-artifact-registry-recovery.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

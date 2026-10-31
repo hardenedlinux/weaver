@@ -34,14 +34,14 @@ the guarded executor.
 
 | Workspace package | Required measured cases | Package-local target |
 |-------------------+-------------------------+----------------------|
-| weaver-contracts | 8 | crates/contracts/benches/gateway.rs |
+| weaver-contracts | 9 | crates/contracts/benches/gateway.rs |
 | weaver-policy | 3 | crates/policy/benches/gateway.rs |
 | weaver-policy-ffi | 1 | crates/policy-ffi/benches/gateway.rs |
-| weaver-ledger | 9 | crates/ledger/benches/gateway.rs |
+| weaver-ledger | 11 | crates/ledger/benches/gateway.rs |
 | weaver-execution | 1 | crates/execution/benches/gateway.rs |
 | weaver-server | 4 | crates/server/benches/gateway.rs |
 
-The current optimized all-features matrix contains 26 Rust cases. Three additional Go
+The current optimized all-features matrix contains 29 Rust cases. Three additional Go
 benchmarks exercise the actual Rust service through mTLS gRPC, each repeated
 three times. These complement the package-local costs rather than replacing
 them with a single aggregate number.
@@ -51,10 +51,12 @@ them with a single aggregate number.
 | policy-ffi | Typed source preflight through the ABI's safe byte-oriented implementation | Cedar/schema validation only; excludes Scheme conversion, dynamic loading, gRPC, storage and actual sends |
 | contracts | Provider commitments at 128 B, 16 KiB and 512 KiB source payloads | Validation, canonical request hashing and plan commitment; byte throughput reported |
 | contracts | Publication commitment with a 16 KiB Policy comment plus typed fixture | Exact Policy/schema hashing and stable parent/fence/ID binding |
+| contracts | Exact immutable review artifact commitment | Hashing only; not semantic review or authenticated producer admission |
 | contracts | Immutable provider profile commitment; closed request validation at 128 B, 16 KiB and 512 KiB | Full semantic descriptor hashing and duplicate-aware request schema, message and sampling validation |
 | policy | Typed schema validation; warmed compilation with a fresh decision; sixteen-source cache churn | Schema/parse cost and actual Cedar evaluation; no decision-cache benchmark |
 | ledger | Fresh admission; consumption plus dispatch burn; idempotent admission | SQLite FULL/WAL operations, current authorization and original hold checks |
 | ledger | Atomic publication commit; exact publication replay; historical outcome lookup | Joint authority/schema/outcome commit versus immutable result observation; setup/teardown outside timed closure |
+| ledger | Durable staging plus decision; trusted-host review registration plus final CAS | FULL/WAL registration and actual-parent join; excludes upstream semantic approval and independent recovery |
 | ledger | Atomic task/profile registration; exact task replay with one and 256 retained tasks | Durable immutable profile join and indexed original-task semantic floors; population and teardown outside timing |
 | execution | Guarded HTTPS SSE request with three response events | Cold TLS connection, actual loopback provider request, source admission, durable burns, bounded parsing and final release guards |
 | server | Protobuf versus Arrow at one and 32 equivalent events | Pure frame creation and actual Protobuf/Arrow IPC serialization; record throughput reported |

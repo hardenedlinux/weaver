@@ -117,6 +117,52 @@ fn publication_operations(c: &mut Criterion) {
         })
     });
 }
+fn reviewed_publication(c: &mut Criterion) {
+    let change = weaver_contracts::Publication {
+        operation_id: "reviewed-benchmark".into(),
+        expected_revision: Some(0),
+        fence: 1,
+        policy: policy_fixture::POLICY.into(),
+        schema: policy_fixture::SCHEMA.into(),
+    };
+    c.bench_function("ledger/reviewed_publication_register_and_commit", |b| {
+        b.iter_batched(
+            || {
+                let (temp, mut ledger, _) =
+                    stores::fresh(128, "https://provider.invalid/v1/chat/completions");
+                let publication = ledger
+                    .stage_reviewed_authority(&change)
+                    .expect("review latch");
+                let parent = ledger
+                    .required_review_parent(&publication)
+                    .expect("independent parent");
+                (
+                    temp,
+                    ledger,
+                    weaver_contracts::PublicationReview {
+                        publication,
+                        parent,
+                        artifact: "trusted-host-benchmark".repeat(1024),
+                    },
+                )
+            },
+            |(temp, mut ledger, review)| {
+                ledger
+                    .register_approved_review(&review)
+                    .expect("exact local registration");
+                let receipt = ledger
+                    .publish_authority(&change)
+                    .expect("guarded final CAS");
+                assert_eq!(
+                    receipt.outcome,
+                    weaver_contracts::PublicationOutcome::Committed
+                );
+                black_box((temp, ledger, receipt))
+            },
+            BatchSize::PerIteration,
+        )
+    });
+}
 fn profile_registration(c: &mut Criterion) {
     let (task, _) = fixtures::task_plan(128, "https://provider.invalid/v1/chat/completions");
     c.bench_function("ledger/profile_task_registration", |b| {
@@ -163,5 +209,5 @@ fn profile_registration(c: &mut Criterion) {
     }
     group.finish();
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,publication_operations,profile_registration}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,publication_operations,profile_registration,reviewed_publication}
 criterion_main!(benches);

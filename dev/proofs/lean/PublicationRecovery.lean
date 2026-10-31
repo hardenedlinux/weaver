@@ -38,6 +38,7 @@ structure State (Key : Type) where
   registrarOwner : Nat := 1
   registrarEpoch : Nat := 0
   reviewCut : Nat := 0
+  reviewRequired : Key → Bool := fun _ => false
 
 variable {Key : Type}
 
@@ -50,12 +51,23 @@ def clear [DecidableEq Key] (records : Key → Option Value) (id : Key) :=
 def Extends (s t : State Key) : Prop := ∀ id d, s.records id = some d → t.records id = some d
 def Safe (held calls : Nat) (s : State Key) : Prop := s.head = s.commits.length ∧ s.held = held ∧ s.calls = calls
 
+/-- Local native admission only. Payload/parent stand for exact command/head
+commitments under the native encoding premise. This predicate does not establish
+independent registry recovery, Delta validity or registrar authentication. -/
+def LocalReviewAdmissible (s : State Key) (id : Key) (payload fence : Nat) : Prop :=
+  s.reviewRequired id = true → ∃ e, s.reviewProjection id = some e ∧
+    e.payload = payload ∧ e.parent = s.head ∧ e.requestedFence = fence
+
 inductive Step [DecidableEq Key] : State Key → State Key → Prop where
   | stage (s : State Key) (id : Key) (q : Nat × Nat × Nat) (fresh : s.records id = none)
       (bound : s.pending id = none ∨ s.pending id = some q) :
       Step s {s with pending := write s.pending id q}
+  | stageReviewed (s : State Key) (id : Key) (q : Nat × Nat × Nat) (fresh : s.records id = none)
+      (bound : s.pending id = none ∨ s.pending id = some q) :
+      Step s {s with pending := write s.pending id q, reviewRequired := fun key => if key = id then true else s.reviewRequired key}
   | commit (s : State Key) (id : Key) (payload fence : Nat) (fresh : s.records id = none) (monotone : s.fence ≤ fence)
-      (bound : s.pending id = none ∨ s.pending id = some (payload,s.head,fence)) :
+      (bound : s.pending id = none ∨ s.pending id = some (payload,s.head,fence))
+      (review : LocalReviewAdmissible s id payload fence) :
       Step s {s with head := s.head+1, fence := fence, commits := s.commits ++ [id], records := write s.records id ⟨payload,s.head,fence,true,s.head+1,fence⟩, pending := clear s.pending id}
   | reject (s : State Key) (id : Key) (payload parent fence : Nat) (fresh : s.records id = none)
       (conflict : parent ≠ s.head ∨ fence < s.fence)
@@ -82,8 +94,8 @@ variable {held calls : Nat}
 theorem step_preserves_original_decisions [DecidableEq Key] (step : Step s t) : Extends s t := by
   intro key d existing
   cases step with
-  | stage => exact existing
-  | commit id payload fence fresh monotone bound =>
+  | stage | stageReviewed => exact existing
+  | commit id payload fence fresh monotone bound review =>
     by_cases same : key = id
     · subst key; rw [fresh] at existing; contradiction
     · simpa [write, same] using existing
@@ -116,9 +128,9 @@ def PreservesIntents (s t : State Key) : Prop := ∀ id q, s.pending id = some q
 theorem step_preserves_original_intents [DecidableEq Key] (step : Step s t) : PreservesIntents s t := by
   intro key q existing
   cases step with
-  | stage id candidate fresh bound =>
+  | stage id candidate fresh bound | stageReviewed id candidate fresh bound =>
     by_cases same : key = id <;> simp_all [write]
-  | commit id payload fence fresh monotone bound =>
+  | commit id payload fence fresh monotone bound review =>
     by_cases same : key = id <;> simp_all [write, clear]
   | reject id payload parent fence fresh conflict bound =>
     by_cases same : key = id <;> simp_all [write, clear]
@@ -172,6 +184,50 @@ theorem run_preserves_accounting [DecidableEq Key] (h : Safe held calls s) (run 
   induction run with
   | refl => exact h
   | next history step ih => exact step_preserves_accounting ih step
+
+theorem step_cannot_remove_review_requirement [DecidableEq Key] (step : Step s t)
+    (required : s.reviewRequired id = true) : t.reviewRequired id = true := by
+  cases step <;> simp_all
+
+theorem recovery_cannot_remove_review_requirement [DecidableEq Key] (run : Run s t)
+    (required : s.reviewRequired id = true) : t.reviewRequired id = true := by
+  induction run with
+  | refl => exact required
+  | next history step ih => exact step_cannot_remove_review_requirement step ih
+
+/-- The native adapter must refine this guarded Step at the same SQL pre-state.
+An earlier review read followed by an unguarded native commit does not qualify. -/
+theorem latched_new_commit_requires_original_local_review [DecidableEq Key]
+    (step : Step s t) (required : s.reviewRequired id = true)
+    (fresh : s.records id = none) (recorded : t.records id = some d)
+    (committed : d.committed = true) :
+    ∃ e, s.reviewProjection id = some e ∧ e.payload = d.payload ∧
+      e.parent = d.parent ∧ e.requestedFence = d.requestedFence := by
+  cases step with
+  | commit key payload fence unused monotone bound review =>
+    by_cases same : id = key
+    · subst key
+      simp only [write, ite_true] at recorded
+      cases recorded
+      exact review required
+    · simp_all [write]
+  | reject key payload parent fence unused conflict bound =>
+    by_cases same : id = key
+    · subst key
+      simp only [write, ite_true] at recorded
+      cases recorded
+      simp at committed
+    · simp_all [write]
+  | _ => simp_all
+
+theorem native_review_recovery_composes_without_releasing_unknown [DecidableEq Key]
+    (run : Run s t) (safe : Safe held calls s) (required : s.reviewRequired id = true) :
+    t.reviewRequired id = true ∧ PreservesIntents s t ∧ Extends s t ∧ Safe held calls t :=
+  ⟨recovery_cannot_remove_review_requirement run required, run_preserves_original_intents run,
+    run_preserves_original_decisions run, run_preserves_accounting safe run⟩
+
+#print axioms latched_new_commit_requires_original_local_review
+#print axioms native_review_recovery_composes_without_releasing_unknown
 
 variable {id : Key} {entry : ReviewRegistration} {actor epoch : Nat}
 

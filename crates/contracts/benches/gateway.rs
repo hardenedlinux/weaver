@@ -28,6 +28,17 @@ fn commitments(c: &mut Criterion) {
     c.bench_function("contracts/publication_commitment", |b| {
         b.iter(|| black_box(publication.digest().expect("publication commitment")))
     });
+    let review = weaver_contracts::PublicationReview {
+        publication: weaver_contracts::PublicationKey {
+            operation_id: publication.operation_id.clone(),
+            digest: publication.digest().expect("command"),
+        },
+        parent: None,
+        artifact: "upstream-evidence".repeat(1024),
+    };
+    c.bench_function("contracts/publication_review_commitment", |b| {
+        b.iter(|| black_box(review.digest().expect("exact artifact commitment")))
+    });
 }
 fn profile_contracts(c: &mut Criterion) {
     let profile: weaver_contracts::ProviderProfile = weaver_contracts::decode(include_bytes!(

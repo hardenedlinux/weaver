@@ -5,7 +5,11 @@
 
 Fresh admission; consumption and dispatch burn; idempotent admission; atomic publication commit; exact publication replay; historical outcome lookup.
 Atomic task/profile registration and exact task replay with one or 256 tasks
-sharing the same immutable profile. Nine measured cases belong to this package.
+sharing the same immutable profile. Durable staging plus decision and trusted-host
+review registration plus final CAS bring this package to eleven measured cases.
+The review case captures its actual parent and stages the requirement outside
+timing; registration persistence, exact artifact validation and final CAS are timed.
+No external producer authentication, solver or independent anchor is measured.
 
 * Measurement boundary
 

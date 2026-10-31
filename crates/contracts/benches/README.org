@@ -5,7 +5,8 @@
 
 Provider request commitments for 128 B, 16 KiB and 512 KiB source payloads; publication commitment for a 16 KiB Policy comment and typed schema.
 Immutable provider profile commitment and closed request validation at the same
-three payload sizes. Eight measured cases belong to this package.
+three payload sizes. Exact review evidence commitment adds a ninth case, using
+a bounded immutable upstream artifact. It measures hashing, not Delta approval.
 
 * Measurement boundary
 

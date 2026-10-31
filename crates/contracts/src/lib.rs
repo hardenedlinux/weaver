@@ -5,10 +5,12 @@ mod provider;
 mod provider_profile;
 pub use provider_profile::{CHAT_TEXT_SSE, ProviderProfile, ProviderRequestFacts};
 mod publication;
+mod publication_review;
 pub use provider::{
     ProviderEvent, ProviderEventKind, ProviderPlan, ProviderReceipt, ProviderRoute, ProviderState,
 };
 pub use publication::{Publication, PublicationKey, PublicationOutcome, PublicationReceipt};
+pub use publication_review::{AuthorityParent, PublicationReview};
 mod stream;
 pub use json::decode;
 pub use model::{
