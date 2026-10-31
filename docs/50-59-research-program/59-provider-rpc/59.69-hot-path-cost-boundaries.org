@@ -1,0 +1,130 @@
+#+TITLE: 59.69 Hot-Path Cost Boundaries and Validator Rendezvous
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* SysML review and actual source boundary
+
+The existing =ControlActivation.GovernancePolicyProjection= owns this review.
+Preserve [[file:59.68-cpu-matched-writer-review.org][all earlier CPU-matched results]], including reuse/WAL=0.74. SPEC
+semantics and existing Lean/Quint ownership remain unchanged. Only MRR Data's
+standard test/benchmark instrumentation changes; no provider, dependency pin or
+qualification package is introduced.
+
+=ProfilePort::commit= sends a validation request from the worker and runs the
+borrowed validator on the asynchronous caller, then sends the answer back. The
+worker holds its original transaction throughout. Therefore the previous body
+residual contains validator work and cross-executor scheduling, not just SQL or
+engine CPU. The borrowed Host authority guard must remain alive through commit;
+moving validation or interpreting cancellation as abort requires another design
+review, not a profiling shortcut.
+
+* Accounting contract
+
+Separate original-home lock wait from API duration. At the existing physical
+transaction seam, measure pre-body, body and post-body with shared timestamps;
+require their sum to equal provider total, one body/validation bridge per original
+successful operation, and exact durable recovery. Within body, separate physical
+gets, puts, the inclusive request/answer bridge and remaining engine logic.
+Within the bridge, measure validator read/integrity and decode/compare on the
+caller. Bridge minus validator is channel/scheduling delay, not proven CPU time.
+API minus provider total aggregates admission/dispatch/delivery outside the
+provider; it is not a semaphore-only queue measurement.
+
+Post-body includes FULL COMMIT, autocommit verification and session release. It
+does not isolate fsync, kernel queueing or device latency. A direct native phase
+diagnostic and source inspection provide separate context. Kernel tracing on
+this Host requires privileges not currently available; retain that evidence gap.
+All durations are wall clocks. Parallel phase sums are not wall-time fractions.
+
+Record every bounded request sample and all mode/round outcomes. Use actual
+available Host CPUs with a four-worker minimum, FULL, original identities, zero
+implicit retries and unchanged watchdogs. Builds/tests must not overlap timed
+campaigns. Recheck the existing cancellation, retirement and process-recovery
+controls without releasing unknown exposure.
+
+#+CAPTION: Borrowed validation holds the original transaction across request and answer; durable outcomes still require a separate final-use gate.
+#+ATTR_ORG: :width 1600
+#+ATTR_HTML: :width 100% :alt Original-home admission, transaction-held validator rendezvous, FULL commit and separate Rust execution authority
+[[file:59.69-hot-path-cost-boundaries.svg]]
+
+* Native attribution and causal control
+
+MRR Data [[https://github.com/tao3k/mrr-data/pull/12][PR 12]] commit =fa351255= owns the test instrumentation and
+[[https://github.com/tao3k/mrr-data/blob/fa351255/docs/benchmarks/shared-backend-hot-path-attribution.org][complete matching sample tables, control results and standard reproduction commands]].
+Weaver consumes this record rather than duplicating the benchmark or provider.
+
+The Host reports 12 available CPUs: runtime/write/shared workers and reuse
+capacity are 12, blocking capacity 16. A preliminary full 18-case campaign adds
+body-boundary and per-request clocks. Two fixed later 18-case campaigns add the
+inclusive bridge clock. Preserve all three and the earlier 0.74 sample; different
+instrumentation stages cannot establish an optimization. The three full-path
+campaigns total 41,472 commits with exact original-operation recovery and no
+refusal, Unknown or unexpected failure. Every bounded request sample remains in
+temporary raw receipts; no logs are committed as production assets.
+
+| Full-bridge campaign | Hot reuse/WAL ratios, all rounds | Test-body/process wall seconds |
+|----------------------+----------------------------------+--------------------------------|
+| B | 1.48, 0.89, 0.94 | 30.25 / 32.26 |
+| C | 1.27, 0.68, 0.85 | 12.50 / 13.23 |
+
+The original 30-second bound applies to each case, not the whole multi-case
+suite. No task-owned build/test overlaps a timed campaign. Shared Host load,
+frequency and cache state remain uncontrolled; wall drift alone is not proof of
+Host jitter. Instrumentation/reporting can also perturb subsequent cases.
+
+C round 1 reproduces a strong regression. Mean per-operation microseconds:
+
+| Component | WAL | Reuse |
+|-----------+-----+-------|
+| Original-home wait, outside API | 4656.54 | 6810.99 |
+| API total | 425.13 | 620.73 |
+| Admission/dispatch/delivery outside provider | 10.93 | 80.40 |
+| Checkout/BEGIN before body | 5.67 | 8.72 |
+| Physical gets | 121.71 | 180.17 |
+| Physical puts | 82.56 | 93.52 |
+| Actual validator | 35.54 | 45.69 |
+| Bridge minus actual validator | 10.04 | 75.32 |
+| Remaining engine body | 39.96 | 48.03 |
+| FULL COMMIT/autocommit/session release | 118.74 | 88.87 |
+
+About 135 of the 196 microseconds API gap is outside-provider plus bridge delay;
+gets contribute another 58, while reuse post-body saves about 30. P95 is 26.56
+versus 7.18 ms for reuse/WAL. The original ordered service point amplifies slower
+service into eleven other lanes' waiting. This measured regression is not
+explained primarily by connection checkout or FULL-write completion. It does
+not retroactively identify the exact cause of the historical untraced 0.74 pair.
+
+A separate fixed sequential public-MetadataProvider control retains real body
+validation, original home/authority vector, FULL and exact recovery, while a
+CPU-sized runtime services native I/O. It removes only the ProfilePort queue/
+validator rendezvous as a diagnostic. Nine rotated cases commit/recover 6,912
+operations. Reuse/WAL total throughput is 1.22, 0.97, 1.04; gets remain about
+1.04--1.22x WAL. The combined evidence supports a lower-layer read-cost tradeoff
+plus full-path cross-executor/admission sensitivity, magnified by hot ordering.
+It does not identify a specific native MVCC routine or separate pure device I/O
+from driver scheduling. This control is not production admission or a proposal
+to move arbitrary borrowed Governance closures onto workers.
+
+* Acceptance and remaining work
+
+A new ordinary test executes a real hot-home workload and verifies nested
+request clocks, exact provider phase sums, once-only body/bridge invocation and
+original-operation recovery. Standard WAL/fresh configurations pass 64 tests
+each; reusable Arrow/query + graph/publication passes 79. Expanded strict Clippy
+and the unchanged ASP deny gate pass. Existing cancellation, retirement,
+late-return and independent-process recovery tests retain their bounds.
+
+No production provider, Weaver runtime, dependency pin or qualification package
+changes. No default mode switch, implicit retry, weakened FULL, claim/home split
+or unknown-budget release is justified by performance. SPEC semantics, existing
+Lean/Quint roles and Rust final-use authority remain unchanged.
+
+The cost-accounting gap is closed; causal isolation is partial. A privileged,
+process-scoped kernel trace and controlled Host load/frequency experiment are
+still needed to assign pure fsync and scheduler causes. The local fs_usage probe
+requires root and produced no kernel trace. Keep WAL available for hot ordered
+domains. Any production change to validator placement or queueing needs a fresh
+SysML review preserving live borrowed guards, cancellation and exact Unknown
+recovery. Provider reconstruction, process death and whole-machine rollback
+remain distinct evidence classes; none of these fixtures executes an external
+provider send or account refund.

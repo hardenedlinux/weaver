@@ -37,6 +37,9 @@ inside that diagram.
 
 * Native results and retained regression
 
+The later [[file:59.69-hot-path-cost-boundaries.org][cost-boundary review]] traces new reproductions without retroactively assigning
+their exact phase percentages to this historical 0.74 sample.
+
 MRR Data [[https://github.com/tao3k/mrr-data/pull/12][PR 12]] commit =b305f22= owns the native target updates and
 [[https://github.com/tao3k/mrr-data/blob/b305f22/docs/benchmarks/shared-backend-cpu-matched-reuse.org][complete sample table, component timings and reproduction commands]]. Weaver consumes that
 record; it does not maintain another benchmark implementation or storage backend.

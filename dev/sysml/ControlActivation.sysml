@@ -51,6 +51,24 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Hot-path attribution uses test-only clocks at the existing public
+           provider seam and borrowed validator. Separate original-home lock
+           wait, API duration, provider pre-body/body/post-body, physical gets/
+           puts, validator read+integrity/decode and residual rendezvous time.
+           ProfilePort runs the borrowed validator on the async caller through
+           request/answer channels while the native worker holds its transaction;
+           body residual is not pure engine CPU. FULL post-body latency includes
+           COMMIT and release, not isolated fsync. Do not replace the provider or
+           weaken durability for instrumentation. Retain per-request samples,
+           rotated controls and cancellation/recovery tests at actual Host CPUs.
+           Host jitter requires corroboration; missing kernel I/O evidence must
+           remain explicit. Existing SPEC semantics and final-use ownership stay. */
+        doc /* A sequential diagnostic may invoke the existing public metadata
+           engine with the same immutable body, authority vector and native store
+           while a CPU-sized runtime services driver I/O. It removes ProfilePort
+           admission/rendezvous only as a causal control, never as a production
+           replacement for borrowed guards, cancellation or final admission.
+           Distinguish this lower-layer control from full-path throughput. */
         doc /* CPU-matched writer requalification uses max(4, available Host CPUs)
            for runtime, write/shared workers and reusable capacity in the native
            lifecycle target and real-content paired benchmark. Record actual
