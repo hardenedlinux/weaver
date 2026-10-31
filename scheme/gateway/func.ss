@@ -5,14 +5,9 @@
         (only-in :yuanxu/module-system/interface yuanxu-load-modules)
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceAssessmentContext)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyProjection)
-        (only-in "./capture.ss" deliver-gateway-source)
+        (only-in "./capture.ss" deliver-gateway-source gateway-source-json)
         "./contracts.ss")
 (export compile-gateway emit-gateway emit-governed-gateway capture-governed-gateway gateway-source-json)
-
-;;; SDK key sorting is recursive; route/message array order remains significant.
-(def (gateway-source-json bundle)
-  (json->string (json<- GatewayArtifact (validate GatewayArtifact bundle))
-                (JSONWriteOptions sort-keys: #t)))
 
 (def (compile-gateway governance policy governor profile context states task-values plan-values publication-value)
   (unless (= (length task-values) 1)
@@ -60,7 +55,7 @@
       bundle)))
 
 (def (emit-gateway bundle)
-  (deliver-gateway-source (gateway-source-json bundle)))
+  (deliver-gateway-source bundle))
 
 ;;; Both delivery modes use one admitted module view and one semantic producer.
 (def (with-current-gateway init operation)

@@ -4,12 +4,12 @@
 * Call-scoped source capture for the in-process handoff
 
 The Gateway scope now exposes =capture= with a specific native Function contract:
-it accepts a zero-argument Boolean producer and returns one independent String. The public
+it accepts a zero-argument Boolean producer and returns one independent =GatewayArtifact= Record. The public
 =capture-governed-gateway= facade uses the same admitted Yuanxu view, AA/Governor
 selection, native Governance assessment, Cedar preflight and currentness checks
 as =emit-governed-gateway=. Only the delivery mode changes. There is no additional
 DSL or evaluator. File delivery returns the emitter's Boolean; memory delivery
-returns the captured String after the final currentness check. Emission completion
+returns the captured native Record after the final currentness check. Emission completion
 is not the admission evidence object.
 
 =scheme/gateway/capture.ss= owns a private thread-local sink. Its mutex serializes
@@ -19,33 +19,34 @@ consumes the call's emission slot as well: catching it cannot admit a replacemen
 image in that call. Catching a duplicate exception cannot clear the fuse. Normal return and exceptional unwinding close
 the sink and discard its private image. An inherited old sink refuses even while
 a new capture is active. No lock is held while arbitrary producer code runs.
-Inputs must remain stable during encoding/copying; the mutex does not make an
+Inputs must remain stable during native copying; the mutex does not make an
 arbitrarily mutable Profile graph atomic or sandbox operator IO. Closing a sink
 does not certify all producer threads have stopped.
 
-The carrier checks character count before encoding and then the actual eight-MiB
-UTF-8 limit. It copies accepted text before returning it. The returned value is
-still a Scheme string, not a Rust-owned artifact, authenticated callback receipt,
-durable source cut or execution capability. A caller importing the low-level
-carrier can supply arbitrary text; actual semantic production belongs to the
-governed facade, followed by independent receiver validation and current authority.
+The memory carrier validates the native =GatewayArtifact= contract and deep-copies
+its data leaves. It bounds aggregate UTF-8 string bytes to eight MiB, traversal
+to 16384 values and nesting to 64. It neither encodes nor parses a JSON blob.
+The file adapter explicitly serializes the resulting Record for its existing
+Go configuration-file entry; this legacy adapter is separate from native interop.
+Internal Governance context commitments still use canonical JSON for comparison;
+that local commitment format is not the Scheme-to-Rust object transport.
 
 | Owner | Delivered or remaining responsibility |
 |-------+---------------------------------------|
 | Scheme | Typed scope, actual governed producer, bounded single completed output, duplicate fuse and late-sink fence |
-| Rust host / pinned upstream SDK | Still assemble the admitted VM/program graph, bind its actual export, retain a strong result root, copy/validate into Rust-owned values before await/queue and release roots on the owner thread |
+| Rust host / pinned upstream SDK | Assemble the admitted VM/program graph, bind its actual export, retain a strong result root, copy/validate into Rust-owned values before await/queue and release roots on the owner thread |
 | Go | Existing typed publication/routing and reconciliation; the current integration still uses its compiler/artifact adapter after capture |
 | Quint | Existing boundary evidence now requires one emission, completion and an unpoisoned capture; existing borrow/VM restart and source/fence schedules remain shared |
 | Lean | Three conditional refusal laws strengthen the existing BoundaryContext; they do not prove Gambit mutexes, native ABI provenance, allocation or durability |
 
 The fixed gerbil-scheme-rust source exposes LinkedGerbilProgram and owner-thread
-LinkedStringExport/LinkedObjectExport with strong-root transfer. Those interfaces
-were inspected, not integrated into the production Rust server by this change.
+LinkedObjectExport with strong-root transfer. Those interfaces
+are used by the qualification crate; production Rust server assembly remains open.
 A compiler-owned initialized graph and actual AA producer export remain necessary;
 a synthetic root carrier or echoed JSON would not qualify their composition.
 
 The integration fixture checks that no output artifact exists after the governed
-capture returns, then writes the captured text outside that scope for today's Go
+capture returns, then serializes the captured Record outside that scope for today's Go
 adapter. Source-assets and module loading may still read files. This is not a
 file-free application, replacement of compileScheme, or production VM embedding.
 The core diagram describes source-to-authority semantics; it does not establish
@@ -351,3 +352,196 @@ the whole invocation. No timeout, cleanup or dependency pin was relaxed.
 The final complete standard =gerbil test -g -v 5 t= invocation passed all five
 modules and 23 cases, including both native framework properties (128 trials
 each). This receipt remains separate from the failed Go integration invocation.
+
+* Native type conversion and ownership refinement
+
+=crates/governance= owns concrete =SourceSelection=, =SourceData= and =OwnedSource=.
+The approved Scheme export returns native symbol-keyed field tables, string-keyed
+identifier maps, vectors, strings, Booleans and exact integers through the existing
+SDK strong-root API. Weaver uses those SDK conversions directly to deserialize
+into its concrete Rust contracts. No =serde_json::Value=, whole-record string,
+raw Scheme object word or foreign pointer is used as the interop carrier.
+Serde's =deserialize_any= is a required dispatcher method, not an application
+=Any= type: the accepted application result is always =SourceData=.
+
+Field tables require symbol keys; declared identifier maps require string keys.
+Unknown fields, duplicate normalized keys, wrong key kinds, floats, negative
+unsigned values, procedures and unsupported object shapes refuse. Integers use
+the SDK sign/magnitude conversion and checked =u64= reconstruction, never =f64=
+or decimal text. False, zero, absent fields and explicit nil are distinct; nil
+is admitted only where the destination type permits absence. No schema validation
+result authenticates the producer or supplies a current publication/send permit.
+
+The Scheme native snapshot precedes root transfer. During Rust traversal the
+source must remain stable and the host must authenticate the compiled export,
+program graph and owner thread. SDK table snapshots are shallow, not atomic deep
+snapshots. Traversal bounds do not constrain arbitrary hostile VM allocation;
+the trusted typed producer and its bounds remain explicit premises. Rust-owned
+strings, maps and records survive root release and VM cleanup; no VM object may
+cross an await, queue, worker or Go gRPC boundary.
+
+=crates/governance-build= owns build-time graph staging through the pinned SDK's
+compiler/archive API. The qualification fixture is a returning linked library
+initializer, not a runtime CLI or evaluator service. The production converter
+forbids unsafe code; only the integration test admits documented linker/export
+binding. Root package =gerbil build/test= remains the Scheme validation entry.
+The existing Go process/file adapter is not removed or silently presented as the
+native production host. Server embedding and replacement of that adapter require
+separate actual authority/publication/executor qualification.
+
+| Representation | Owner and purpose |
+|----------------+-------------------|
+| Native Record, table/vector and strong roots | Scheme/Rust in-process ownership transfer |
+| JSON/YAML configuration files | Explicit file decoding, not an FFI carrier |
+| Exact LLM request body bytes | Provider protocol payload and original body commitment |
+| Cedar JSON schema/entities | Cedar-defined document representation |
+| Protobuf over authenticated gRPC | Go/Rust process boundary |
+
+The existing Quint boundary slice now requires =nativeTyped=, =exactIntegers=
+and =keyKinds= alongside original capture, current source and one completed
+emission. Rejected schedules cover encoded blobs, rounded budget integers and
+symbol/string coercion; an unsafe blob witness demonstrates why ownership labels
+alone are insufficient. Lean adds three conditional refusal laws to the existing
+Cedar-linked =BoundaryContext=. These are refinement premises, not a proof of
+Gambit GC, the SDK implementation, ABI provenance or atomic snapshots. Existing
+final-use Cedar and source/fence laws remain the authorization owner.
+
+The package benchmark measures cloning/validation of concrete source records,
+including existing body/profile commitments. It excludes VM startup, AA execution,
+root traversal, gRPC and provider sends; no throughput improvement is claimed.
+
+** Retained failed qualification attempts
+
+The initial JSON-string materializer was rejected as the wrong native boundary
+and replaced before qualification. Early native graph attempts failed for stale
+fixture exports and misplaced static compiler outputs. Subsequent compilation
+caught a collection length API mismatch and an integration-only linker lint
+scope mismatch. These were failures, not native acceptance. Scheme initially
+rejected an unavailable SRFI import; using its existing list primitives corrected
+that package build. Raw command logs stay temporary; these normalized diagnostics
+retain the failure history without checking generated compiler output into Git.
+
+** Evidence boundaries for the native conversion change
+
+Standard =gerbil build -g= and =gerbil test -g -v 5 t= passed all five test modules
+and 29 cases, including the three inherited 128-trial properties. Native capture
+now tests Record ownership and keeps JSON only in the explicit file adapter.
+The concrete Rust contract suite passed four tests including its 128-trial PBT
+and ASP deny gate. Focused Go file-boundary, benchmark-inventory and SysML SDK
+requirement-trace checks passed. Quint passed 174 witnesses and its separate
+1000-by-60 boundary schedule sample; this is bounded sampling, not exhaustive
+verification. The actual fixed-SPEC Lean bridge rebuilt with the three new
+conditional laws, without =sorryAx=. D2 was rendered and visually inspected.
+
+The actual captured Scheme / Go authority / Rust partial-send, revocation and
+both-process restart scenario passed in 26.49 seconds. The complete Go command
+was 97.672 seconds including Rust rebuilding. Neither value is a cold-build or
+comparative runtime benchmark. This scenario still uses the named legacy file
+adapter and does not by itself qualify in-process VM embedding.
+
+Native SDK tests exercised exact integers, including zero, 2^53+1 and the
+maximum admitted credit value, before the AA composition refusal. This partial
+progress must not be reported as a passing complete native integration test.
+The first unqualified C-defined fixture used an unqualified Scheme name; moving
+the body into an ordinary compiled procedure and binding its full namespace
+allowed execution to reach actual AA/Yuanxu source compilation. A later refusal
+identified =SyntaxError::t= in that composition. The SDK's existing runtime
+metadata facility is the selected remedy; it does not replace Yuanxu loading.
+
+The isolated compiler prefix also contained stale SDK dynamic helper code: its
+loaded staging function accepted two arguments while the unchanged fixed source
+accepts three. Rebuilding only interface/static files did not update that loaded
+code. The qualification builder now explicitly rebuilds the UTF-8/runtime modules
+and both compiler helpers from the same fixed source, including dynamic outputs, before
+using the SDK's runtime-metadata registration. This is a build-time operation.
+No runtime source evaluator or alternate Governance interpreter is introduced.
+
+The host reports 12 logical CPUs. The selected linked SDK reports capability
+flags 1, maximum processors 1 and one active processor. A strict request for the
+host population failed initialization with SDK status 4 and diagnostic
+=[2, 1, 0, 0]=. That is retained failed SMP evidence. The converter test keeps the
+SDK's existing scheduling policy and applies no fixed processor override; any
+passing conversion result would qualify type/ownership behavior only. Twelve
+active native VM processors and throughput remain unqualified. Go/Rust host
+worker capacity does not establish native Scheme SMP capability.
+
+Apple's linker also failed with =Bus error: 10= on two native-link invocations.
+One used the default deployment target, another used the discovered Xcode linker
+and installed SDK deployment target. Intervening links succeeded. Therefore the
+target adjustment is not an established fix, and no compiler/host root cause or
+reproducible-link qualification is claimed. Dependency versions, Git revisions,
+existing lockfile dependency edges and runtime cleanup rules remain unchanged.
+
+** Actual AA rooted-SDK qualification
+
+The identified module-read failure was a missing =:gerbil/core= prelude while
+reading Yuanxu's installed interface. An embedded Rust executable does not have
+gxi's executable-relative SDK home. Supplying the selected SDK's explicit
+=GERBIL_HOME= closed that failure. The builder and linked fixture now require
+this standard environment input and check for the core interface before entering
+the graph. File existence is an early compatibility check, not authentication;
+the approved SDK home, compiler/module graph and captured environment remain
+host admission premises and part of the original semantic binding.
+
+The actual native integration then passed in 4.93 seconds and exited naturally.
+It constructed typed SDK input objects, ran 128 seeded integer cases (seed 293),
+checked explicit zero/2^53+1/maximum-credit boundaries, and refused false/nil/float
+counters, string field keys, unknown fields and encoded top-level blobs. The
+same initialized VM invoked the compiled AA/Governor/Cedar producer through its
+qualified C export and Yuanxu-selected scope. Its returned Record was converted
+through rooted table/vector/integer APIs into concrete Rust contracts. Input
+roots and the VM were released; original task, plan/body and publication data
+remained usable afterward. No whole-source JSON string participated in that
+native call. This success closes this composition refusal; the failed preceding
+invocations and the separate SDK one-processor limit remain recorded above.
+
+This is an installed-prefix functional qualification with build caches. It is
+not a comparative latency claim, a 12-processor qualification, production server
+embedding or removal of the Go compiler/file adapter. The package benchmark and
+formal models keep their separate scopes. The reviewed ABI bindings live
+in a test-only module; production conversion continues to forbid unsafe code.
+
+** Production and qualification feature ownership
+
+=scheme-vm= enables the rooted converter and SDK dependency only. It does not
+assemble the AA test graph. =scheme-qualification= additionally opts into the
+linked fixture and its compiled module metadata. Production host construction
+must supply its own approved graph/export and source credentials; it must not
+adopt a qualification fixture as that authority. The workspace build dependency
+has separate path/staging, helper-compilation and archive responsibilities with
+its own ASP deny gate. All-target, all-feature Clippy passed with warnings denied.
+
+The final Scheme key-kind refinement passed 30 cases under the standard package
+entrypoint. SDK inputs also require symbol field keys and string identifier-map
+keys; different kinds cannot collapse into one POO field. Duplicate canonical
+names refuse. Nil omission is restricted to declared optional fields, so an
+unknown nil-valued field remains visible to closed Record validation. The runtime
+and UTF-8 bridge modules are rebuilt from the same pinned checkout as their Rust
+bindings; a shared ABI number or same module name alone is not source provenance.
+
+The temporary Rust whole-source JSON/file decoder was removed rather than kept
+as a parallel configuration owner. Go owns JSON/YAML file decoding; Rust's source
+API accepts concrete records or an SDK strong root. Existing contract JSON codecs
+remain unchanged for their provider/Cedar document purposes. The native crate has
+no direct =serde_json= dependency. The explicit Go eight-MiB source-file decoder
+also fixes its previous mismatch with the ordinary two-MiB message decoder.
+
+The existing Go =check-scheme= owner now runs the rooted-SDK qualification after
+standard package tests. Preparation obtains =GERBIL_HOME= from an explicit
+inherited value or the selected compiler's public SDK-home query, then checks
+its core interface. An invalid explicit value refuses without fallback. This
+query is build-time tool discovery, not runtime process communication. Rust
+runtime checks and benchmarks explicitly enable both runtime options (Arrow and
+the converter) while leaving the test graph to the prepared Scheme owner.
+No verification owner or alternate runner is added, and runtime feature coverage
+is retained. The native crate's latest suite contains six tests: three source/ASP,
+one actual SDK composition with 128 integer trials, and two build-owner tests.
+
+Final same-source SDK qualification passed all six Rust tests, including both
+ASP deny gates and the 128-trial native property; the actual AA composition and
+natural VM cleanup completed in 6.39 seconds. Final all-target/all-feature Clippy
+passed with warnings denied. The runtime-only converter compiled successfully
+with all Scheme qualification environment variables removed. Both Criterion
+entries executed successfully in test mode; this is executable benchmark coverage,
+not measured release-profile latency or throughput evidence. Go's actual selected
+compiler home discovery and explicit-invalid-home refusal passed independently.

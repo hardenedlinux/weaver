@@ -11,8 +11,18 @@ const MaxInput = 2 * 1024 * 1024
 
 // Decode rejects duplicate/unknown keys and trailing data before using a record.
 func Decode[T any](source []byte) (T, error) {
+	return decodeBounded[T](source, MaxInput)
+}
+
+// DecodeSource preserves the separately declared eight-MiB inert source limit.
+// Ordinary protocol messages retain MaxInput; neither decoder grants authority.
+func DecodeSource[T any](source []byte) (T, error) {
+	return decodeBounded[T](source, 8*1024*1024)
+}
+
+func decodeBounded[T any](source []byte, limit int) (T, error) {
 	var out T
-	if len(source) > MaxInput {
+	if len(source) > limit {
 		return out, errors.New("input size exceeded")
 	}
 	decoder := json.NewDecoder(bytes.NewReader(source))

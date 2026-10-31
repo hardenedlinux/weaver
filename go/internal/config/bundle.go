@@ -52,7 +52,7 @@ func DecodeBundle(data []byte, format ProfileFormat) (Bundle, error) {
 	} else if format != ProfileJSON {
 		return zero, errors.New("source format")
 	}
-	bundle, err := v1.Decode[Bundle](data)
+	bundle, err := v1.DecodeSource[Bundle](data)
 	if err != nil {
 		return zero, err
 	}

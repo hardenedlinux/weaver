@@ -1218,6 +1218,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "gerbil-scheme"
+version = "0.1.0"
+source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=80e68254092589bbb778c9761a058da16fb6f72e#80e68254092589bbb778c9761a058da16fb6f72e"
+dependencies = [
+ "gerbil-scheme-rust-project-harness-policy",
+ "gerbil-scheme-sys",
+ "simdutf8",
+]
+
+[[package]]
 name = "gerbil-scheme-aot-build"
 version = "0.1.0"
 source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=80e68254092589bbb778c9761a058da16fb6f72e#80e68254092589bbb778c9761a058da16fb6f72e"
@@ -1255,6 +1265,15 @@ version = "0.1.0"
 source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=80e68254092589bbb778c9761a058da16fb6f72e#80e68254092589bbb778c9761a058da16fb6f72e"
 dependencies = [
  "gerbil-scheme-rust-project-harness",
+]
+
+[[package]]
+name = "gerbil-scheme-sys"
+version = "0.1.0"
+source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=80e68254092589bbb778c9761a058da16fb6f72e#80e68254092589bbb778c9761a058da16fb6f72e"
+dependencies = [
+ "gerbil-scheme-aot-build",
+ "gerbil-scheme-rust-project-harness-policy",
 ]
 
 [[package]]
@@ -3913,6 +3932,31 @@ dependencies = [
  "tempfile",
  "weaver-contracts",
  "weaver-ledger",
+]
+
+[[package]]
+name = "weaver-governance"
+version = "0.1.0"
+dependencies = [
+ "asp-rust",
+ "criterion",
+ "gerbil-scheme",
+ "gerbil-scheme-sys",
+ "proptest",
+ "serde",
+ "thiserror",
+ "weaver-contracts",
+ "weaver-governance-build",
+ "weaver-policy-ffi",
+]
+
+[[package]]
+name = "weaver-governance-build"
+version = "0.1.0"
+dependencies = [
+ "asp-rust",
+ "criterion",
+ "gerbil-scheme-aot-build",
 ]
 
 [[package]]

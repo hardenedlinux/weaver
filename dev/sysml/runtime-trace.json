@@ -382,6 +382,13 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
   {"id":"GovernorSourceHandoff","witnesses":[
+    {"file":"go/internal/devrunner/scheme_tools.go","pattern":"func schemeHome"},
+    {"file":"go/internal/devrunner/scheme_tools_test.go","pattern":"func TestSchemeQualificationStaysWithPreparedSchemeOwner"},
+    {"file":"t/gateway-source-test.ss","pattern":"SDK field symbols and identifier strings cannot be interchanged"},
+    {"file":"crates/governance/src/scheme.rs","pattern":"pub fn materialize_source"},
+    {"file":"crates/governance/tests/integration/scheme_vm.rs","pattern":"actual_aa_capture_materializes_owned_data_before_vm_cleanup"},
+    {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"run unsafeNativeBlobWitness"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem encoded_blob_cannot_claim_native_capture"},
     {"file":"scheme/gateway/capture.ss","pattern":"Gateway capture requires one source emission"},
     {"file":"scheme/gateway/func.ss","pattern":"def \\(capture-governed-gateway"},
     {"file":"t/gateway-source-test.ss","pattern":"native PBT requires one completed emission"},

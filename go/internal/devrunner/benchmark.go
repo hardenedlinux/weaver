@@ -14,6 +14,8 @@ import (
 
 // Every timed case must produce fresh evidence; one case cannot qualify its package.
 var rustBenchmarkCases = []string{
+	"governance_owned_source_validate",
+	"governance-build_staging_expression",
 	"contracts_provider_commitment/128",
 	"contracts_provider_commitment/16384",
 	"contracts_provider_commitment/524288",
@@ -56,7 +58,7 @@ var rustBenchmarkCases = []string{
 
 // Criterion sanitizes the package/group separator to an underscore on disk.
 func benchmarkPackage(name string) (string, error) {
-	for _, member := range []string{"contracts", "policy", "policy-ffi", "ledger", "execution", "server"} {
+	for _, member := range []string{"contracts", "governance", "governance-build", "policy", "policy-ffi", "ledger", "execution", "server"} {
 		if strings.HasPrefix(name, member+"_") {
 			return "weaver-" + member, nil
 		}

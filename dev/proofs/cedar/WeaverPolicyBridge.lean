@@ -464,6 +464,9 @@ structure BoundaryContext where
   captureEmissions : Nat
   captureCompleted : Bool
   capturePoisoned : Bool
+  nativeTyped : Bool
+  exactIntegers : Bool
+  keyKinds : Bool
   deriving DecidableEq
 
 def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
@@ -475,7 +478,8 @@ def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
   s.governanceChecked = true ∧ s.borrowedRegionValid = true ∧
   s.borrowedRegionStable = true ∧ s.rustOwned = true ∧
   s.retainsForeignPointer = false ∧ s.reentrant = false ∧
-  s.captureEmissions = 1 ∧ s.captureCompleted = true ∧ s.capturePoisoned = false
+  s.captureEmissions = 1 ∧ s.captureCompleted = true ∧ s.capturePoisoned = false ∧
+  s.nativeTyped = true ∧ s.exactIntegers = true ∧ s.keyKinds = true
 
 instance (s : BoundaryContext) : Decidable s.Ready := by
   unfold BoundaryContext.Ready
@@ -498,6 +502,23 @@ theorem status_cannot_replace_source_completion (s : BoundaryContext)
 #print axioms source_capture_requires_one_emission
 #print axioms caught_duplicate_cannot_clear_capture_fuse
 #print axioms status_cannot_replace_source_completion
+
+/-- Refinement premises are established by native SDK/PBT tests, not by these laws. -/
+theorem encoded_blob_cannot_claim_native_capture (s : BoundaryContext)
+    (blob : s.nativeTyped = false) : s.ready = false := by
+  simp [BoundaryContext.ready,BoundaryContext.Ready,blob]
+
+theorem lossy_integer_cannot_preserve_original_budget (s : BoundaryContext)
+    (rounded : s.exactIntegers = false) : s.ready = false := by
+  simp [BoundaryContext.ready,BoundaryContext.Ready,rounded]
+
+theorem coerced_key_cannot_preserve_source_identity (s : BoundaryContext)
+    (ambiguous : s.keyKinds = false) : s.ready = false := by
+  simp [BoundaryContext.ready,BoundaryContext.Ready,ambiguous]
+
+#print axioms encoded_blob_cannot_claim_native_capture
+#print axioms lossy_integer_cannot_preserve_original_budget
+#print axioms coerced_key_cannot_preserve_source_identity
 
 theorem configuration_cannot_skip_governance (s : BoundaryContext)
     (missing : s.governanceChecked = false) : s.ready = false := by

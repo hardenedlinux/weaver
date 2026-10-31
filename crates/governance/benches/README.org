@@ -1,0 +1,16 @@
+#+TITLE: Owned Source Validation Benchmark
+#+LANGUAGE: en
+
+* Workload
+
+Clone concrete source records and check original selection/profile/plan bindings.
+
+* Measurement boundary
+
+This includes existing body/profile commitment validation. It excludes VM startup,
+AA execution, SDK root conversion, gRPC and provider sends. It is not native VM
+acceptance or Gateway throughput. Thirty samples use existing collection settings.
+
+* Entrypoints
+
+=cargo bench -p weaver-governance --bench gateway --locked --offline=.

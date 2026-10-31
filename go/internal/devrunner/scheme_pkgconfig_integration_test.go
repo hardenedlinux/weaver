@@ -3,6 +3,7 @@
 package devrunner
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -79,5 +80,28 @@ func TestSchemePkgConfigUsesCargoAndEnvironment(t *testing.T) {
 	}
 	if !strings.Contains(query("--libs"), "\\ ") || !strings.Contains(query("--cflags"), "\\ ") {
 		t.Fatal("environment paths containing spaces lost argument boundaries")
+	}
+}
+
+func TestSchemeHomeUsesSelectedCompiler(t *testing.T) {
+	compiler := os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER")
+	if !filepath.IsAbs(compiler) {
+		t.Fatal("explicit selected Scheme compiler required")
+	}
+	environment := []string{}
+	for _, entry := range os.Environ() {
+		if !strings.HasPrefix(entry, "GERBIL_HOME=") {
+			environment = append(environment, entry)
+		}
+	}
+	home, err := schemeHome(context.Background(), t.TempDir(), compiler, environment)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !filepath.IsAbs(home) {
+		t.Fatalf("relative discovered SDK: %q", home)
+	}
+	if _, err := os.Stat(filepath.Join(home, "lib", "gerbil", "core.ssi")); err != nil {
+		t.Fatal(err)
 	}
 }

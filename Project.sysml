@@ -310,6 +310,15 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.svg' : File;
 
         part 'crates/contracts' : RustPackage;
+        part 'crates/governance' : RustPackage {
+            doc /* Own checked concrete source records after a
+               synchronous native Scheme strong-root conversion. No VM object survives in
+               OwnedSource; conversion and transport confer no publication/send
+               authority. Program graph/export admission remains host-owned. The scheme-vm feature
+               exposes conversion only; scheme-qualification links the test graph. */
+            part 'weaver-contracts' : RuntimeDependency;
+        }
+        part 'crates/governance-build' : RustPackage;
         part 'crates/policy' : RustPackage {
             doc /* Reuse the existing fixed cedar-poo-spec revision's Rust
                runtime for schema-bound replay, declared IDs and entity checks.
