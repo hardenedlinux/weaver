@@ -1,7 +1,7 @@
 ;;; Source compilation checks stay in the native Scheme test suite.
 (import :std/test
         (only-in :std/error Error? Error-message)
-        (only-in :clan/poo/object .o .get object-slots-set!)
+        (only-in :clan/poo/object .o .get .slot? object-slots-set!)
         (only-in :clan/poo/mop TypeError?)
         (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
         (only-in ../scheme/policy/func project-policy)
@@ -134,8 +134,47 @@
                       "Gateway bridge requires symbol field keys")
         (check-equal? (refusal-message (lambda () (native->source-data identifiers #t)))
                       "Gateway bridge requires string identifier keys"))
-      (check-equal? (gateway-source-json (native->source-data (source-data->native bundle)))
-                    (gateway-source-json bundle)))
+      (let ((image (native->source-data (source-data->native bundle))))
+        (check-equal? (.get (.get image governance) family) "family")
+        (check-equal? (.get (.get image publication) fence) 1)))
+    (test-case "SDK data projection preserves typed fields without a JSON oracle"
+      (def report
+        (property.check-property
+          (generator.generator-sequence
+            (list (generator.generator-integer 0 5) (generator.generator-integer 0 1)
+                  (generator.generator-integer 1 128)))
+          (lambda (row)
+            (let* ((counter (list-ref (list 0 1 (- (expt 2 53) 1) (expt 2 53)
+                                           (+ (expt 2 53) 1) (- (expt 2 63) 1)) (car row)))
+                   (present? (= (cadr row) 1))
+                   (text (string-append (string (integer->char 0) (integer->char 955)
+                                               (integer->char 128578))
+                                       (make-string (caddr row) (integer->char 233))))
+                   (pub-value (.o (:: @ source-publication) fence: counter policy: text))
+                   (value (.o (:: @ bundle) publication:
+                              (if present? (.o (:: @ pub-value) expected_revision: counter) pub-value)))
+                   (image (native->source-data (source-data->native value)))
+                   (actual (.get image publication))
+                   (actual-task (car (.get image tasks))))
+              (and (exact-integer? (.get actual fence)) (= (.get actual fence) counter)
+                   (equal? (.get actual policy) text)
+                   (eq? (.slot? actual 'expected_revision) present?)
+                   (or (not present?)
+                       (and (exact-integer? (.get actual expected_revision))
+                            (= (.get actual expected_revision) counter)))
+                   (equal? (.get actual-task family) (.get task family))
+                   (= (.get actual-task budget) (.get task budget))
+                   (equal? (.get actual-task nodes) (.get task nodes))
+                   (equal? (.get (.get actual-task endpoints) primary)
+                           (.get (.get task endpoints) primary)))))
+          (property.make-specification
+            (lambda (row) (and (list? row) (= (length row) 3)
+                              (andmap exact-integer? row) (<= 0 (car row) 5)
+                              (<= 0 (cadr row) 1) (<= 1 (caddr row) 128)))
+            (lambda (row) (apply + row)))
+          seed: 293 cases: 128 size: 128 shrink-budget: 64))
+      (check-property report)
+      (check-equal? (property.report-accepted report) 128))
     (test-case "native PBT requires one completed emission and an independent image"
       (def report
         (property.check-property

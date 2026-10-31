@@ -57,17 +57,36 @@ that local commitment format is not the Scheme-to-Rust object transport.
 | Lean | Three conditional refusal laws strengthen the existing BoundaryContext; they do not prove Gambit mutexes, native ABI provenance, allocation or durability |
 
 The fixed gerbil-scheme-rust source exposes LinkedGerbilProgram and owner-thread
-LinkedObjectExport with strong-root transfer. Those interfaces
-are used by the qualification crate; production Rust server assembly remains open.
-A compiler-owned initialized graph and actual AA producer export remain necessary;
-a synthetic root carrier or echoed JSON would not qualify their composition.
+LinkedObjectExport with strong-root transfer. The production SchemeCompiler and
+stock Rust server startup use those interfaces with the explicitly selected
+application and a readiness check. Qualification supplies a debug application;
+operator application acceptance remains open. A compiler-owned initialized graph
+and actual AA producer export remain necessary; a synthetic root carrier or
+echoed JSON would not qualify their composition.
 
-The integration fixture checks that no output artifact exists after the governed
-capture returns, then serializes the captured Record outside that scope for today's Go
-adapter. Source-assets and module loading may still read files. This is not a
-file-free application, replacement of compileScheme, or production VM embedding.
+The legacy file-adapter fixture checks that no output artifact exists after the
+governed capture returns, then serializes the captured Record outside that scope.
+The compiled-application integration instead transfers rooted values directly
+and deploys through Go's producer RPC. Source-assets and module loading may still
+read files; an in-process carrier does not imply a file-free application.
 The core diagram describes source-to-authority semantics; it does not establish
-that every native transport/materialization stage has been delivered.
+that every recovery and deployment acceptance gate has been completed.
+
+The standard Scheme property framework also exercises native data projection
+without JSON equality as an oracle. Generated cases combine exact counters at
+zero, the binary64 boundary and the signed 63-bit limit; absent or present
+expected revisions; and NUL, multibyte Unicode and variable-length strings.
+Field-level assertions require exact integer types and preserve family, budget,
+node lists and identifier maps. This tests Scheme Record/table projection;
+the separate Rust proptest on actual SDK roots covers native ABI conversion.
+Neither property establishes final-send authorization or durable recovery.
+
+The typed-projection test addition passed the standard =gerbil build= and
+=gerbil test -g -v 5 t= entries: all five modules and the full harness completed
+naturally, including 128 accepted property cases. Two preceding test-authoring
+failures (an unmatched delimiter and a POO self-slot shadowing error) are retained
+in temporary logs rather than committed artifacts. These corrected test failures
+are separate from the still-open executable cold-connection failure above.
 
 Native PBT uses the inherited framework (seed 293, 128 cases, finite shrinking)
 with required zero/one/two/three-emission and completed/incomplete coverage. It
