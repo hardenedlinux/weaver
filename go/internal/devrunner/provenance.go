@@ -39,7 +39,6 @@ func SourceInputs(root string) (map[string]string, error) {
 		"docs/50-59-research-program/59-provider-rpc/59.30-dynamic-gxi-qualification.org",
 		"docs/50-59-research-program/59-provider-rpc/59.32-build-environment-contract.org",
 		"dev/scheme/module-observer.c",
-		"dev/build.ss", "dev/gerbil.pkg",
 		"devenv.nix", "devenv.lock",
 		"devenv.yaml", ".envrc",
 		"dev/proofs/lean/RuntimeAdmission.lean", "dev/proofs/lean/StreamingExecution.lean", "dev/proofs/lean/ProviderRpc.lean", "dev/proofs/lean/PublicationRecovery.lean",
@@ -48,6 +47,7 @@ func SourceInputs(root string) (map[string]string, error) {
 		"dev/proofs/quint/ProviderProfile.qnt",
 		"dev/proofs/quint/GatewayComposition.qnt",
 		"dev/proofs/quint/AuthorityPublication.qnt",
+		"dev/proofs/lean/NativeExitQualification.lean", "dev/proofs/quint/NativeExitQualification.qnt",
 		"dev/proofs/cedar/lakefile.toml", "dev/proofs/cedar/lake-manifest.json", "dev/proofs/cedar/lean-toolchain", "dev/proofs/cedar/WeaverPolicyBridge.lean"} {
 		if err := add(filepath.Join(root, path)); err != nil {
 			return nil, err

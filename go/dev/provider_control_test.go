@@ -293,10 +293,19 @@ func TestProviderControlJSONYAMLRevocationAndRestart(t *testing.T) {
 }
 
 func TestProviderControlCompleteStreamsShareBudgetAndRejectSDKRetry(t *testing.T) {
+	exerciseControlSharedBudget(t, nil)
+}
+
+func exerciseControlSharedBudget(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string) {
+	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
 	bundle.Tasks[0].Budget = 4
-	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	path := writeControlBundle(t, f, bundle, "json")
+	if source != nil {
+		path = source(t, f, bundle)
+	}
+	c := newControlProcess(t, f, path)
 	c.start(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()

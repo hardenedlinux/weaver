@@ -1,6 +1,8 @@
 module NativeExitQualification {
   // Entry 0 is gerbil test; entry 1 is a diagnostic invocation. Even the same
   // cases and cleanup through another entry do not qualify the package tool.
+  // Open references cover FFI-loaded libraries. No executable build target is
+  // required: the public package test exercises the library consumer directly.
   type State={entry:int,source:int,checks:int,duplicate:bool,complete:bool,returned:bool,opened:Set[int],closed:Set[int],elapsed:int,exited:bool}
   var s:State
   pure val initial:State={entry:0,source:1,checks:0,duplicate:false,complete:false,returned:false,opened:Set(),closed:Set(),elapsed:0,exited:false}
@@ -23,6 +25,7 @@ module NativeExitQualification {
   run aotStillAllowsNaturalCleanupTest=checked.then(acquire(0)).then(returnMain).then(close(0)).then(naturalExit).expect(qualified)
   run noDynamicSchemeHandlesStillChecksTest=checked.then(returnMain).then(naturalExit).expect(qualified)
   run outstandingHandleBlocksExitTest=checked.then(acquire(0)).then(returnMain).then(naturalExit.fail())
+  run ffiLibraryReferencesMustCloseTest=checked.then(acquire(0)).then(acquire(1)).then(returnMain).then(close(0)).then(naturalExit.fail())
   run missingDecoderCheckRejectedTest=boot.then(check).then(check).then(finishChecks.fail())
   run incompleteChecksRejectedTest=boot.then(check).then(decoder).then(finishChecks.fail())
   run lateNaturalZeroExitStillFailsTest=checked.then(returnMain).then(late).then(naturalExit).expect(audit and not(qualified))

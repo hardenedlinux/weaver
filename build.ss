@@ -1,5 +1,5 @@
 #!/usr/bin/env gxi
-;;; Yuanxu owns module selection; Gerbil owns build commands and executable links.
+;;; Yuanxu owns module selection; Gerbil builds the FFI-loaded libraries.
 (import (for-syntax
           (only-in :std/source this-source-file)
           (only-in :yuanxu/module-system/building/source-package register-module-build-source!)))

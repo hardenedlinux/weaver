@@ -1,5 +1,7 @@
 import CommittedSemanticProfile
 namespace Weaver.NativeExitQualification
+-- Handles denote FFI-loaded library acquisitions. Qualification does not need
+-- an auxiliary executable; package tests and actual execution remain distinct.
 inductive Entry where
   | packageTest
   | diagnostic

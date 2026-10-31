@@ -63,16 +63,12 @@ func TestSchemeModuleOwnershipAndSpecificContracts(t *testing.T) {
 	if strings.Contains(string(build), "target/debug") {
 		t.Fatal("Scheme build must obtain FFI paths from pkg-config")
 	}
-	development, err := os.ReadFile(filepath.Join(repository, "dev/build.ss"))
-	if err != nil {
-		t.Fatal(err)
+	if strings.Contains(string(build), "exe:") || strings.Contains(string(build), "bin:") {
+		t.Fatal("FFI-loaded governance libraries must not acquire executable build targets")
 	}
-	for _, required := range []string{"../init.ss", ".for-files", "defbuild-script", "exe:", "bin:"} {
-		if !strings.Contains(string(development), required) {
-			t.Fatalf("development executable lost its init owner: %s", required)
+	for _, retired := range []string{"dev/build.ss", "dev/gerbil.pkg"} {
+		if _, err := os.Stat(filepath.Join(repository, retired)); !os.IsNotExist(err) {
+			t.Fatalf("unneeded Scheme executable package remains: %s", retired)
 		}
-	}
-	if strings.Contains(string(development), "(def (main") {
-		t.Fatal("development build must use generated Gerbil command dispatch")
 	}
 }

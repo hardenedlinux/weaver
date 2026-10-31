@@ -133,6 +133,12 @@ func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart(t *testin
 	})
 }
 
+func TestProviderControlSchemeSharedBudgetRejectsConcurrentSendAndSDKRetry(t *testing.T) {
+	exerciseControlSharedBudget(t, func(t *testing.T, f *fixture, b config.Bundle) string {
+		return schemeSource(t, f, b, "valid")
+	})
+}
+
 func TestProviderControlSchemeGovernorRejectsUnselectedPlans(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	b := controlBundle(t, f)

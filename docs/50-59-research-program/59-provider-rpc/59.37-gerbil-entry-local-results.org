@@ -2,6 +2,11 @@
 #+language: en
 
 * Fixed source and public commands
+This record describes the historical source below. Its auxiliary executable
+declaration has since been removed because the Gateway consumes FFI libraries.
+See 59.38 for the current complete gate. Historical build failures and successes
+remain unchanged here; they do not require a binary in the current architecture.
+
 The implementation qualified here is =09a3fed92aa0fc8cfcea5be96a6a54f573fdee5c=.
 The actual host reports twelve CPUs. Dependency pins did not change.
 This is evidence for =gerbil build= and =gerbil test=; it is not a new passing
