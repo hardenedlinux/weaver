@@ -4,7 +4,7 @@ module NativeExitQualification {
   // Open references cover FFI-loaded libraries. No executable build target is
   // required: the public package test exercises the library consumer directly.
   type Trial={id:int,study:int,artifact:int,firstUse:bool,profiled:bool,natural:bool,complete:bool,clean:bool,elapsed:int}
-  pure def trialPass(t:Trial):bool=not(t.profiled) and t.natural and t.complete and t.clean and t.elapsed<=15
+  pure def trialPass(t:Trial):bool=not(t.profiled) and t.natural and t.complete and t.clean and t.elapsed>=0 and t.elapsed<=15
   type State={entry:int,source:int,checks:int,duplicate:bool,complete:bool,returned:bool,opened:Set[int],closed:Set[int],elapsed:int,exited:bool,trials:List[Trial],failed:Set[int]}
   var s:State
   pure val initial:State={entry:0,source:1,checks:0,duplicate:false,complete:false,returned:false,opened:Set(),closed:Set(),elapsed:0,exited:false,trials:List(),failed:Set()}
@@ -55,6 +55,7 @@ module NativeExitQualification {
   run changedSourceIsNotMatchedPairTest=boot.expect(not(matched(failedTrial,passedTrial.with("study",1))))
   run reusedArtifactIsNotIndependentColdPairTest=boot.expect(not(matched(failedTrial,passedTrial.with("artifact",10))))
   run profiledTrialCannotQualifyTest=boot.expect(not(trialPass(passedTrial.with("profiled",true))))
+  run negativeElapsedCannotQualifyTest=boot.expect(not(trialPass(passedTrial.with("elapsed",-1))))
   // A small cleanup interval does not bound the sum of startup, discovery,
   // imports, execution and cleanup. Native clocks/mechanisms are Host premises.
   run shortCleanupStillMissesDeadlineTest=boot.expect(2+0+11+2+1>15 and 1<15)
