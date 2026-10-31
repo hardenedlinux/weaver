@@ -1,7 +1,7 @@
 use weaver_governance::{
-    OwnedSource, SourceExpectation, materialize_bound_source, materialize_source,
+    OwnedSource, SourceExpectation, materialize_bound_source, materialize_source, source_lane,
 };
-#[path = "../../benches/support/fixture.rs"]
+#[path = "../unit/fixture.rs"]
 mod fixture;
 mod program;
 #[path = "../support/replacement.rs"]
@@ -95,7 +95,32 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
     assert_eq!(owned.task().family, "f");
     assert_eq!(owned.plans().len(), 2);
 
+    // The caller receives only owned, original-bound data. All roots and the
+    // non-Send SDK runtime remain on this owner thread through natural cleanup.
+    let capacity = std::thread::available_parallelism().expect("host capacity");
+    let (client, inbox) = source_lane(capacity);
+    let lane_input = OwnedSource::from_source(data.clone()).expect("lane original");
+    let caller = std::thread::spawn(move || {
+        let executor = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .expect("caller runtime");
+        let result = executor.block_on(client.submit(lane_input).expect("admission"));
+        client.close();
+        result.expect("owned lane result")
+    });
+    inbox.run(|source| {
+        let input = rooted_source::source(&runtime, source.data());
+        let result = capture
+            .call(&input)
+            .into_result()
+            .map_err(|_| weaver_governance::SourceError::Scheme)?;
+        materialize_source(result)
+    });
+    let delivered = caller.join().expect("caller completed");
+
     drop(runtime);
+    assert!(delivered.source().data() == &data);
     assert_eq!(owned.publication().operation_id, "source");
     assert_eq!(owned.plans()[0].body, data.plans[0].body);
 }

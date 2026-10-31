@@ -30,3 +30,14 @@ calling Scheme, then =materialize_bound_source= or =bind=. The resulting
 =BoundSource= preserves the entire original artifact and remains data. Capturing
 an expectation from the candidate is not original admission. Registry/callback
 authenticity and current Policy/history/fence/ledger checks remain mandatory.
+
+=source_lane= supplies bounded =SourceClient=/=SourceInbox= ownership. The existing
+server runtime must track the blocking owner and construct its non-Send Scheme
+VM there. No VM or rooted Scheme object crosses the queue. Only concrete owned
+input and original-bound output cross it. Queued, active and unread ready replies
+retain capacity; cancelling active work waits for natural foreign-call return
+before releasing its slot. Close is terminal and fences final future delivery,
+including an already-ready result. Close acknowledgment is not owner drain or
+VM cleanup acknowledgment. The embedding runtime must join the owner after
+natural cleanup. This primitive does not install an approved producer registry,
+replace the Go file adapter, publish Policy, send, or release unknown budget.

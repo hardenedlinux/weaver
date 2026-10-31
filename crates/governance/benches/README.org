@@ -6,6 +6,9 @@
 Clone concrete source records and check original selection/profile/plan bindings.
 The capture-and-bind case also includes an independent original snapshot,
 candidate cloning/validation and complete native record equality.
+The lane roundtrip additionally measures bounded admission, one blocking-owner
+handoff, independent original binding and future delivery. Its identity callback
+uses concrete records; worker/runtime construction and drain are outside timing.
 
 * Measurement boundary
 

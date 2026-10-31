@@ -635,6 +635,54 @@ theorem owned_artifact_cannot_ignore_current_source (s : OwnedCaptureContext)
     (changed : s.captureReceipt.captured ≠ s.currentCapture) : s.ready = false := by
   simp [OwnedCaptureContext.ready,OwnedCaptureContext.Ready,changed]
 
+/- Local host resources refine inert capture delivery, not execution authority.
+   The embedding must implement the shared gate and natural foreign-call drain.
+   Cancellation marks data unusable; disposal or natural return releases slots. -/
+inductive SourcePhase where
+  | queued | running | ready | delivered | discarded
+  deriving DecidableEq
+structure SourceHost where
+  closed : Bool
+  cancelled : Bool
+  phase : SourcePhase
+  slot : Bool
+
+inductive SourceHostStep : SourceHost → SourceHost → Prop where
+  | close (s) : SourceHostStep s {s with closed := true}
+  | start (s) (admitted : s.closed = false) (queued : s.phase = .queued) :
+      SourceHostStep s {s with phase := .running}
+  | cancel (s) :
+      SourceHostStep s {s with cancelled := true}
+  | discardWaiting (s) (waiting : s.phase = .queued ∨ s.phase = .ready)
+      (blocked : s.closed = true ∨ s.cancelled = true) :
+      SourceHostStep s {s with phase := .discarded, slot := false}
+  | finish (s) (running : s.phase = .running)
+      (eligible : s.closed = false ∧ s.cancelled = false) :
+      SourceHostStep s {s with phase := .ready}
+  | discardFinished (s) (running : s.phase = .running)
+      (blocked : s.closed = true ∨ s.cancelled = true) :
+      SourceHostStep s {s with phase := .discarded, slot := false}
+  | deliver (s) (ready : s.phase = .ready)
+      (eligible : s.closed = false ∧ s.cancelled = false) :
+      SourceHostStep s {s with phase := .delivered, slot := false}
+
+theorem source_host_close_is_terminal (event : SourceHostStep s t)
+    (closed : s.closed = true) : t.closed = true := by
+  cases event <;> simp_all
+
+theorem source_host_delivery_requires_open_gate (event : SourceHostStep s t)
+    (fresh : s.phase ≠ .delivered) (delivered : t.phase = .delivered) :
+    s.closed = false ∧ s.cancelled = false := by
+  cases event <;> simp_all
+
+theorem source_host_running_cancel_retains_slot (event : SourceHostStep s t)
+    (running : s.phase = .running) (stillRunning : t.phase = .running) :
+    t.slot = s.slot := by
+  cases event <;> simp_all
+
+#print axioms source_host_close_is_terminal
+#print axioms source_host_delivery_requires_open_gate
+#print axioms source_host_running_cancel_retains_slot
 #print axioms owned_artifact_requires_admitted_capture
 #print axioms owned_artifact_cannot_ignore_current_source
 #print axioms configuration_cannot_skip_governance

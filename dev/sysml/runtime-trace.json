@@ -382,6 +382,11 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
   {"id":"GovernorSourceHandoff","witnesses":[
+    {"file":"crates/governance/src/host/client.rs","pattern":"pub fn source_lane"},
+    {"file":"crates/governance/src/host/owner.rs","pattern":"pub fn run"},
+    {"file":"crates/governance/tests/unit/host.rs","pattern":"cancelled_running_work_keeps_its_slot_until_natural_return"},
+    {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"checkThenSendCloseRaceCounterexampleTest"},
+    {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"source_host_delivery_requires_open_gate"},
     {"file":"crates/governance/src/binding.rs","pattern":"pub struct SourceExpectation"},
     {"file":"crates/governance/tests/unit/binding.rs","pattern":"coherent_replacements_cannot_change_original_content"},
     {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"unsafeSelfConsistentReplacementWitness"},

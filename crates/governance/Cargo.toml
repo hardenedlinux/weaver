@@ -12,6 +12,8 @@ scheme-qualification = ["scheme-vm"]
 weaver-contracts.workspace = true
 serde.workspace = true
 thiserror.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
 gerbil-scheme = { workspace = true, optional = true }
 
 [build-dependencies]

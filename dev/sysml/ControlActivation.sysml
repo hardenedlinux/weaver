@@ -18,6 +18,11 @@ package ControlActivation {
            belongs in producer-created phase attributes. */
     }
     requirement def GovernorSourceHandoff {
+        doc /* Compilation stays on an existing tracked blocking owner with a
+           thread-local Scheme VM. Bounded capacity includes queued, active and
+           unread ready replies. Running cancellation retains capacity until
+           natural return. Terminal close fences final delivery; owner join
+           follows VM cleanup and never implies no-execution or budget release. */
         doc /* The Rust host snapshots the independently admitted original
            artifact before producer invocation. Candidate consistency alone
            cannot authorize changed family, body/profile commitments or budget.

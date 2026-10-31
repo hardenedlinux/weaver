@@ -319,6 +319,11 @@ package WeaverProject {
                SourceExpectation retains the independently admitted original
                before producer invocation; BoundSource compares the whole typed
                image and remains inert data, never a publication/send permit. */
+            doc /* SourceClient/SourceInbox bound queued, running and unread
+               ready work on an existing tracked blocking owner. The VM remains
+               owner-thread local. Terminal close and cancellation fence future
+               delivery; active foreign calls drain naturally before join.
+               This lane has no publication, execution or budget authority. */
             part 'weaver-contracts' : RuntimeDependency;
         }
         part 'crates/governance-build' : RustPackage;

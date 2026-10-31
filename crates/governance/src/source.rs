@@ -44,7 +44,8 @@ pub struct OwnedSource {
 }
 
 impl OwnedSource {
-    pub(crate) fn contents(&self) -> &SourceData {
+    /// Borrow concrete source data; this conveys no publication or execution authority.
+    pub fn data(&self) -> &SourceData {
         &self.data
     }
     /// Validate concrete source records without decoding an interop blob.

@@ -624,3 +624,82 @@ bridge rebuilt and both new laws report only =propext=. Go benchmark inventory,
 SysML SDK structure and requirement traces passed. The D2 was rendered and
 inspected. These scoped results do not close production source-registry/VM-host
 migration, external history freshness or final publication/execution admission.
+
+* Bounded thread-affine compilation owner
+
+The Scheme/Rust boundary uses SDK strong roots and native typed conversion.
+=serde= here supplies a typed deserializer interface; it does not imply JSON
+encoding. JSON/YAML configuration files remain Go input formats, and provider
+payloads or official Cedar PolicySet JSON retain their own protocol meanings.
+None is a reason to encode the complete Scheme source artifact as JSON for FFI.
+
+=source_lane= returns a cloneable =SourceClient= and one =SourceInbox=. The
+embedding server supplies an existing tracked blocking worker and constructs
+the approved Scheme VM on that worker. The compiler closure need not be Send:
+it may borrow the thread-local runtime and approved export. SDK roots never
+cross the queue. The client captures the independently admitted original before
+enqueue; the worker converts the candidate and binds it before future delivery.
+
+| Boundary | Contract |
+| Capacity | Explicit nonzero host budget; queued, active and unread ready replies retain slots. VM processor capacity is separate. |
+| Queued cancellation | Mark unusable; owner disposal releases the queued work and skips compiler entry. |
+| Running cancellation | Do not interrupt foreign code. Preserve the slot until natural return, then discard its result. |
+| Ready cancellation | Mark unusable; receiver observation or destruction disposes the stored reply and releases its slot. |
+| Terminal close | Gate admission and final future delivery; waking or filling the reply channel alone is not delivery. |
+| Compiler failure/panic | Close the owner; do not retry or recreate a VM automatically. |
+| Drain | Natural compiler return, root destruction and VM cleanup must precede tracked owner join acknowledgment. |
+| Authority | A local scheduling result proves neither no-execution nor budget release; publication and final-use CAS remain separate. |
+
+The same gate orders close against final delivery. If delivery wins, the caller
+holds inert bound data and still needs current source/Policy/history/fence checks.
+If close wins, an already-ready response cannot cross the boundary. Cancellation
+does not retroactively recall a previously delivered value. The owner loop is
+not a sandbox, producer authenticator or replacement source registry. It must
+not run on the serialized database writer that services revocation/publication.
+If foreign code never returns, admission stays closed and drain remains
+unconfirmed; a cancellation notification cannot turn that state into successful
+cleanup, no-execution evidence or a refund. This is a safety contract with an
+explicit compiler-termination premise for shutdown progress.
+Production wiring into the server runtime and migration of Go's legacy file
+adapter remain open; the new SDK test is an actual capture qualification slice.
+
+The existing Quint owner now includes a local compilation-resource refinement,
+without another execution ledger. Seven schedules cover close, queued/running/
+ready cancellation, and unsafe check-then-send or premature slot release. A
+cancel request and resource disposal are separate transitions: treating them as
+one step would make the model more optimistic than the implementation. Its
+two-request bounded fixture does not prove arbitrary queue fairness. The three
+Lean step lemmas establish terminal close, fresh delivery's open/noncancelled
+gate and slot retention while an active call remains active. They assume the
+Rust gate and foreign-call drain are faithfully implemented; they do not prove
+FFI memory safety, OS scheduling, callback authenticity or provider delivery.
+
+Retained development failures: the first unit compilation omitted a property
+macro import; the unprepared shell lacked the SDK link path for =iconv=; ASP deny
+rejected implementation inside =mod.rs= and a benchmark-owned external test
+fixture. State now has its own leaf module and the shared fixture is owned by
+=tests/unit=. The SDK test initially used a Debug-requiring assertion on sensitive
+source data; direct equality preserves its deliberate lack of Debug. Quint first
+used a set predicate on a list and then inspected state after a deliberately
+failed action; both were fixture errors. Lean first used a reserved identifier.
+These failed iterations remain distinct from final checks; raw logs stay in
+temporary storage and no dependency revision was changed.
+
+The SDK-link attempt also reproduced Apple linker =Bus error: 10= before test
+execution. This remains a host-toolchain failure, not a passing runtime result or
+a diagnosed linker repair. After completing the additional disposal/failure
+properties, the final source state passed all 14 Rust tests, including ASP deny
+and the three 128-trial framework properties. The actual approved AA/Governor/
+Cedar capture passed twice in one VM, with one result delivered through the
+bounded owner lane; Rust-owned output remained readable after natural VM cleanup.
+That SDK integration test took 5.48 seconds. This is scoped integration evidence,
+not a cold-start performance claim or production Go-host migration acceptance.
+
+Quint passed 181 schedules, including the two deliberate unsafe host controls,
+and a separate 1000-sample, 60-step =hostStep=/=hostSafe= run. Lean rebuilt the
+fixed-SPEC bridge and the three host laws reported only =propext=. Go package
+benchmark inventory, linked Project architecture and requirement traces passed.
+The core D2 was rendered and visually inspected after adding the local owner.
+Strict all-target/all-feature Clippy passed with warnings denied. All three
+governance Criterion entries passed test mode, including the host roundtrip;
+test mode validates workloads and establishes no latency/throughput baseline.

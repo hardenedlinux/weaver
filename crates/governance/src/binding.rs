@@ -18,14 +18,14 @@ impl SourceExpectation {
     /// derive this expectation from the returned candidate or an agreeing alias.
     pub fn capture(original: &OwnedSource) -> Self {
         Self {
-            original: original.contents().clone(),
+            original: original.data().clone(),
         }
     }
 
     /// Consume this call's expectation and reject even self-consistent changes.
     /// Array order and exact strings remain part of the original source image.
     pub fn bind(self, candidate: OwnedSource) -> Result<BoundSource, SourceError> {
-        if candidate.contents() != &self.original {
+        if candidate.data() != &self.original {
             return Err(SourceError::Binding);
         }
         Ok(BoundSource { source: candidate })

@@ -30,13 +30,15 @@ module LlmPolicyContinuation {
   type BoundaryCheck={evidence:BoundaryEvidence,configurationSchema:int,normalizer:int,programModule:int,environment:int,vm:int,call:int,epoch:int,cut:int,value:int,senderVM:int,senderCall:int,senderEpoch:int}
   type FactState={closure:FactClosure,candidate:FactEvidence,installed:FactEvidence,hostValue:int,sourceValue:int,sourceImages:Set[SourceImage],truth:Set[int],scope:Set[int],
     mode:int,grant:Freshness,connected:bool,channel:int,clock:int,now:int,timeFloor:int,uses:List[FactUse],deltas:List[FactDelta]}
+  // Local compilation resources only: no publication, execution or refund right.
+  type SourceHost={closed:bool,phases:List[int],cancelled:Set[int],slots:int,deliveries:List[bool]}
   type State={staged:Set[Change],log:List[Publication],generation:int,allowed:bool,fence:int,revision:int,online:bool,
     inspections:Set[View],approvals:Set[Approval],winner:int,visibleWinner:int,acks:Set[int],aliases:Set[Alias],permits:Set[Permit],
     uses:List[Use],spent:bool,everSpent:bool,calls:int,hold:int,usage:int,
     factFloor:int,barriers:List[Barrier],resolved:Set[int],pending:Set[int],hardAllowed:bool,visibleBarrier:int,
     receipts:Set[Receipt],frontier:int,nextAdmissions:List[NextAdmission],visibleAdmission:int,nextUses:List[NextUse],
     nextSpent:bool,nextCalls:int,nextHold:int,facts:FactState,semanticVM:int,ffiCall:int,captureEpoch:int,
-    configurationSchema:int,configurationNormalizer:int,schemeModule:int,boundaryRecords:List[BoundaryCheck]}
+    configurationSchema:int,configurationNormalizer:int,schemeModule:int,boundaryRecords:List[BoundaryCheck],host:SourceHost}
   var s:State
   pure val original={id:10,root:10,parent:0,tip:0,content:100,allowed:true,claim:11,profile:20,budget:5,history:9}
   pure val external0=original.with("id",20).with("root",20).with("content",200).with("allowed",false)
@@ -54,7 +56,8 @@ module LlmPolicyContinuation {
     inspections:Set(),approvals:Set(),winner:-1,visibleWinner:-1,acks:Set(),aliases:Set(),permits:Set(permit0),uses:List(),spent:false,everSpent:false,calls:0,hold:6,usage:-1,
     factFloor:0,barriers:List(),resolved:Set(),pending:Set(),hardAllowed:true,visibleBarrier:-1,receipts:Set(),frontier:0,
     nextAdmissions:List(),visibleAdmission:-1,nextUses:List(),nextSpent:false,nextCalls:0,nextHold:0,facts:facts0,
-    semanticVM:0,ffiCall:0,captureEpoch:0,configurationSchema:1,configurationNormalizer:1,schemeModule:0,boundaryRecords:List()}
+    semanticVM:0,ffiCall:0,captureEpoch:0,configurationSchema:1,configurationNormalizer:1,schemeModule:0,boundaryRecords:List(),
+    host:{closed:false,phases:List(0,0),cancelled:Set(),slots:0,deliveries:List()}}
   pure val boundary0={kind:0,root:10,claim:11,profile:20,configurationSchema:1,normalizer:1,programModule:0,environment:0,
     vm:0,call:0,epoch:0,cut:0,input:0,output:0,schemaChecked:true,governanceChecked:true,
     readable:true,stable:true,owned:true,retainedPointer:false,reentrant:false,
@@ -96,6 +99,44 @@ module LlmPolicyContinuation {
   action rebindConfiguration=s'=s.with("configurationSchema",s.configurationSchema+1).with("captureEpoch",s.captureEpoch+1)
   action loseVolatileCaptures=s'=s.with("boundaryRecords",List())
   action init=s'=initial
+  // 0 unused, 1 queued, 2 running, 3 ready, 4 delivered, 5 discarded.
+  def hostOccupied=s.host.phases.indices().filter(i=>s.host.phases.nth(i)>=1 and s.host.phases.nth(i)<=3).size()
+  def hostSafe=s.host.slots==hostOccupied and s.host.slots<=2 and s.host.deliveries.indices().forall(i=>s.host.deliveries.nth(i))
+  action hostSubmit(i)=all {not(s.host.closed),s.host.slots<2,s.host.phases.nth(i)==0,
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,1)).with("slots",s.host.slots+1))}
+  action hostStart(i)=all {not(s.host.closed),not(s.host.cancelled.contains(i)),s.host.phases.nth(i)==1,
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,2)))}
+  action hostFinish(i)=all {s.host.phases.nth(i)==2,
+    val discard=s.host.closed or s.host.cancelled.contains(i)
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,if(discard)5 else 3))
+      .with("slots",s.host.slots-(if(discard)1 else 0)))}
+  action hostCancel(i)=all {s.host.phases.nth(i)>=1,s.host.phases.nth(i)<=3,
+    s'=s.with("host",s.host.with("cancelled",s.host.cancelled.union(Set(i))))}
+  action hostDiscardWaiting(i)=all {s.host.phases.nth(i)==1 or s.host.phases.nth(i)==3,
+    s.host.closed or s.host.cancelled.contains(i),
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,5)).with("slots",s.host.slots-1))}
+  action hostClose=s'=s.with("host",s.host.with("closed",true))
+  action hostDeliver(i)=all {not(s.host.closed),not(s.host.cancelled.contains(i)),s.host.phases.nth(i)==3,
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,4)).with("slots",s.host.slots-1)
+      .with("deliveries",s.host.deliveries.append(not(s.host.closed) and not(s.host.cancelled.contains(i)))))}
+  action hostStep=any {hostSubmit(0),hostSubmit(1),hostStart(0),hostStart(1),hostFinish(0),hostFinish(1),
+    hostCancel(0),hostCancel(1),hostDiscardWaiting(0),hostDiscardWaiting(1),hostClose,hostDeliver(0),hostDeliver(1)}
+  run readySourceCannotCrossTerminalCloseTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostFinish(0))
+    .then(hostClose).expect(hostSafe and s.hold==6 and s.calls==0).then(hostDeliver(0).fail())
+  run runningSourceCancelKeepsSlotTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostCancel(0))
+    .expect(hostSafe and s.host.slots==1).then(hostFinish(0)).expect(hostSafe and s.host.slots==0)
+  run queuedSourceCancelSkipsCompilerTest=init.then(hostSubmit(0)).then(hostCancel(0)).expect(hostSafe).then(hostStart(0).fail())
+  run readySourceCancelDiscardsDeliveryTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostFinish(0))
+    .then(hostCancel(0)).expect(hostSafe and s.host.slots==1).then(hostDiscardWaiting(0))
+    .expect(hostSafe and s.host.slots==0).then(hostDeliver(0).fail())
+  run closedSourceOwnerCannotReopenTest=init.then(hostClose).expect(hostSafe).then(hostSubmit(0).fail())
+  action unsafeHostDeliver(i)=s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,4)).with("slots",s.host.slots-1)
+    .with("deliveries",s.host.deliveries.append(not(s.host.closed) and not(s.host.cancelled.contains(i)))))
+  run checkThenSendCloseRaceCounterexampleTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostFinish(0))
+    .then(hostClose).then(unsafeHostDeliver(0)).expect(not(hostSafe))
+  action unsafeHostEarlyRelease=s'=s.with("host",s.host.with("slots",s.host.slots-1))
+  run runningCancelEarlySlotReleaseCounterexampleTest=init.then(hostSubmit(0)).then(hostStart(0))
+    .then(hostCancel(0)).then(unsafeHostEarlyRelease).expect(not(hostSafe))
   action stage(c,qualified)=all {qualified,c.root==10,s.staged.forall(old=>old.id!=c.id),s'=s.with("staged",s.staged.union(Set(c)))}
   action inspect(qualified)=all {s.online,s.winner == -1,s.log.indices().forall(i=>s.log.nth(i).change.root!=10),qualified,
     s'=s.with("inspections",s.inspections.union(Set(view)))}
