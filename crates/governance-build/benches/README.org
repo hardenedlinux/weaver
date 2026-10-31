@@ -1,0 +1,17 @@
+#+TITLE: Governance Build Input Benchmark
+#+LANGUAGE: en
+
+* Workload
+
+Prepare the compiler expression for explicit package, isolated library and Cargo
+staging paths, including path quoting and input validation.
+
+* Measurement boundary
+
+This measures build-input preparation only. It excludes the compiler, archive,
+linker, VM, Governance execution and provider traffic. It is not runtime performance.
+
+* Entrypoints
+
+=cargo bench -p weaver-governance-build --bench gateway --locked --offline=.
+Thirty samples use the existing collection settings.

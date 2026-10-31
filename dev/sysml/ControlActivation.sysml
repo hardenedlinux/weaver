@@ -17,15 +17,22 @@ package ControlActivation {
            inventory from an absent process. No source/credential payload or path
            belongs in producer-created phase attributes. */
     }
-    requirement def GovernorSourceHandoff {
+requirement def GovernorSourceHandoff {
+        doc /* Go preparation discovers the selected SDK home from explicit
+           environment or the selected compiler, refusing an invalid explicit
+           home. Embedded module lookup cannot infer it from the Rust executable.
+           The prepared check-scheme owner qualifies the fixed SDK graph after
+           standard Gerbil tests. Runtime Rust/Arrow checks enable converter
+           features without linking this qualification graph. Source contracts
+           preserve field-symbol versus identifier-string key kinds in both
+           directions; file JSON/YAML decoding stays in Go. */
         doc /* The Gateway scope exposes typed call-scoped capture returning
-           inert source text. A serialized sink accepts exactly one emission,
+           an inert GatewayArtifact Record. A serialized sink accepts exactly one emission,
            latches caught duplicate attempts, requires true producer completion
            and closes on return or exception. Old inherited sinks cannot emit
            into a new capture. Both file and memory facades reuse actual admitted
            AA/Governor/Cedar production and currentness checks; the emitter's
-           Boolean result is distinct from an admission evidence object. This
-           Scheme string is not yet an authenticated Rust-owned VM capture. */
+           Boolean result is distinct from an admission evidence object. The native SDK strong root is converted into concrete Rust-owned data before any await; no JSON blob is the in-process carrier. Host/export authentication and final authority remain separate. */
         doc /* Cross-language qualification imports the package-built Scheme
            fixture library. Standard gerbil build owns its expansion; the fixture
            is not a production module or executable. Changing load ownership

@@ -7,7 +7,7 @@
         (only-in :clan/poo/object .o .ref)
         (only-in :hardenedlinux/weaver/scheme/gateway/capture deliver-gateway-source)
         :hardenedlinux/weaver/scheme/gateway/func)
-(export emit-control-fixture)
+(export emit-control-fixture capture-control-fixture)
 
 ;;; Local phase evidence only. Labels and SDK clocks contain no source data;
 ;;; their presence cannot admit an artifact or certify natural process exit.
@@ -22,9 +22,16 @@
 (trace-phase "fixture-module-ready")
 
 (def (emit-control-fixture init mode tasks plans publication asset-root)
+  (control-fixture init mode tasks plans publication asset-root #f))
+
+(def (capture-control-fixture init mode tasks plans publication asset-root)
+  (control-fixture init mode tasks plans publication asset-root #t))
+
+(def (control-fixture init mode tasks plans publication asset-root capture-result?)
   (trace-phase "fixture-enter")
-  (def captured? (string-prefix? "capture-" mode))
-  (when captured? (set! mode (substring mode 8 (string-length mode))))
+  (def prefixed? (string-prefix? "capture-" mode))
+  (def captured? (or capture-result? prefixed?))
+  (when prefixed? (set! mode (substring mode 8 (string-length mode))))
   (def strategy
     (make-loop-strategy-plan 'weaver-routing
       (list (make-loop-pattern-descriptor 'infer "Original inference" '((level . l2)))
@@ -85,14 +92,14 @@
                           profile (.o request: 'publish source_root: asset-root) states tasks plans publication))
   (let ((result
          (if captured?
-           (let ((text (capture-governed-gateway init (make-loop-governor 'weaver strategy overrides)
+           (let ((artifact (capture-governed-gateway init (make-loop-governor 'weaver strategy overrides)
                                                profile (.o request: 'publish source_root: asset-root)
                                                states tasks plans publication)))
-             (when (file-exists? (getenv "WEAVER_CONTROL_ARTIFACT"))
+             (when (and (not capture-result?) (file-exists? (getenv "WEAVER_CONTROL_ARTIFACT")))
                (error "In-memory capture wrote a source artifact"))
              ;; The current Go bridge still needs its artifact. Native VM
-             ;; assembly will consume text directly; this write is outside capture.
-             (deliver-gateway-source text))
+             ;; assembly will consume the native Record directly; this write is outside capture.
+             (if capture-result? artifact (deliver-gateway-source artifact)))
            (produce))))
-    (trace-phase "artifact-written")
+    (trace-phase (if capture-result? "source-captured" "artifact-written"))
     result))

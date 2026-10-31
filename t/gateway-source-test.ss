@@ -5,6 +5,7 @@
         (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
         (only-in ../scheme/policy/func project-policy)
         (only-in ../scheme/gateway/capture capture-gateway-source deliver-gateway-source)
+        (only-in ../scheme/gateway/snapshot copy-source-data native->source-data source-data->native)
         (prefix-in :clan/poo/testing/property/generator generator.)
         (prefix-in :clan/poo/testing/property property.)
         (only-in :clan/poo/testing/property/test check-property)
@@ -38,18 +39,26 @@
 
 (def gateway-source-test
   (test-suite "Stable source assessment projection"
-    (test-case "capture enforces the source byte boundary without aliasing its input"
-      (let* ((text (make-string 8388608 #\a))
-             (image (capture-gateway-source (lambda () (deliver-gateway-source text)))))
+    (test-case "native snapshot bounds and mutable leaf ownership"
+      (let* ((text (make-string 8388608 #\a)) (image (copy-source-data text)))
         (check-equal? (string-length image) 8388608)
         (string-set! text 0 #\z)
         (check-equal? (string-ref image 0) #\a))
       (for-each
         (lambda (text)
-          (check-equal?
-            (refusal-message (lambda () (capture-gateway-source (lambda () (deliver-gateway-source text)))))
-            "Gateway source exceeds capture bound"))
-        (list "" (make-string 8388609 #\a) (make-string 4194305 (integer->char 233)))))
+          (check-equal? (refusal-message (lambda () (copy-source-data text)))
+                        "Gateway source exceeds capture bound"))
+        (list (make-string 8388609 #\a) (make-string 4194305 (integer->char 233)))))
+    (test-case "SDK field symbols and identifier strings cannot be interchanged"
+      (let ((fields (make-table test: equal?)) (identifiers (make-table test: equal?)))
+        (table-set! fields "family" "replacement")
+        (table-set! identifiers 'primary "https://primary.invalid")
+        (check-equal? (refusal-message (lambda () (native->source-data fields)))
+                      "Gateway bridge requires symbol field keys")
+        (check-equal? (refusal-message (lambda () (native->source-data identifiers #t)))
+                      "Gateway bridge requires string identifier keys"))
+      (check-equal? (gateway-source-json (native->source-data (source-data->native bundle)))
+                    (gateway-source-json bundle)))
     (test-case "native PBT requires one completed emission and an independent image"
       (def report
         (property.check-property
@@ -70,11 +79,11 @@
                               (lambda (_)
                                 ;; Swallowing a duplicate exception cannot clear its fuse.
                                 (with-catch (lambda (failure) (if (Error? failure) #f (raise failure)))
-                                  (lambda () (deliver-gateway-source text)))) (iota count))
+                                  (lambda () (deliver-gateway-source (.o (:: @ bundle) publication: (.o (:: @ source-publication) policy: text)))))) (iota count))
                             (string-set! text 0 #\z)
                             complete?))))))
               (if (and (= count 1) complete? (= (cadddr row) 0))
-                (equal? outcome original) (eq? outcome 'refused))))
+                (and (not (eq? outcome 'refused)) (equal? (.get (.get outcome publication) policy) original)) (eq? outcome 'refused))))
           (property.make-specification
             (lambda (row) (and (list? row) (= (length row) 4) (andmap exact-integer? row)
                               (<= 0 (car row) 3) (<= 0 (cadr row) 1) (<= 1 (caddr row) 128)
@@ -101,7 +110,7 @@
                                 (make-thread
                                   (lambda ()
                                     (with-catch (lambda (failure) (if (Error? failure) #f (raise failure)))
-                                      (lambda () (deliver-gateway-source text))))))) '("first" "second"))))
+                                      (lambda () (deliver-gateway-source bundle))))))) '("first" "second"))))
                   (for-each thread-join! workers)
                   #t)))))
         "Gateway capture requires one source emission"))
@@ -110,9 +119,9 @@
         (refusal-message
           (lambda ()
             (capture-gateway-source
-              (lambda () (deliver-gateway-source "discarded") (error "source failed after emission")))))
+              (lambda () (deliver-gateway-source bundle) (error "source failed after emission")))))
         "source failed after emission")
-      (check-equal? (capture-gateway-source (lambda () (deliver-gateway-source "next"))) "next"))
+      (check-equal? (gateway-source-json (capture-gateway-source (lambda () (deliver-gateway-source bundle)))) (gateway-source-json bundle)))
     (test-case "caught invalid emission cannot be replaced inside the same capture"
       (check-equal?
         (refusal-message
@@ -120,7 +129,7 @@
             (capture-gateway-source
               (lambda ()
                 (refusal-message (lambda () (deliver-gateway-source "")))
-                (refusal-message (lambda () (deliver-gateway-source "replacement")))
+                (refusal-message (lambda () (deliver-gateway-source bundle)))
                 #t))))
         "Gateway capture requires one source emission"))
     (test-case "a late inherited sink cannot replace an active next capture"
@@ -141,19 +150,19 @@
                     (make-thread
                       (lambda ()
                         (mutex-lock! release) (mutex-unlock! release)
-                        (refusal-message (lambda () (deliver-gateway-source "late")))))))
-                (deliver-gateway-source "original"))))
+                        (refusal-message (lambda () (deliver-gateway-source bundle)))))))
+                (deliver-gateway-source bundle))))
           (set! next
             (capture-gateway-source
               (lambda ()
                 (mutex-unlock! release) (set! release-held? #f)
                 (set! late (thread-join! worker)) (set! worker #f)
-                (deliver-gateway-source "next")))))
+                (deliver-gateway-source bundle)))))
         (lambda ()
           (when release-held? (mutex-unlock! release))
           (when worker (set! late (thread-join! worker)))))
-      (check-equal? image "original")
-      (check-equal? next "next")
+      (check-equal? (gateway-source-json image) (gateway-source-json bundle))
+      (check-equal? (gateway-source-json next) (gateway-source-json bundle))
       (check-equal? late "Gateway capture has ended"))
     (test-case "SDK sorted JSON preserves source identity and significant order"
       (def first (gateway-source-json bundle))

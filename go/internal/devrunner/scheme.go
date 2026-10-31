@@ -101,6 +101,10 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 		return nil, err
 	}
 	settings := map[string]string{"GERBIL_PATH": directory, "GERBIL_LOADPATH": strings.Join([]string{lib, sources, library}, string(os.PathListSeparator)), "WEAVER_CONTROL_SCHEME_COMPILER": compiler, "WEAVER_SCHEME_POO_SOURCE": poo, "WEAVER_SCHEME_CORE_SOURCE": core}
+	settings["GERBIL_HOME"], err = schemeHome(ctx, root, compiler, Environment(settings))
+	if err != nil {
+		return nil, err
+	}
 	settings["GERBIL_BUILD_CORES"] = strconv.Itoa(runtime.NumCPU())
 	settings["WEAVER_POLICY_PKG_CONFIG"] = filepath.Join(lib, "pkgconfig", "weaver-policy-ffi.pc")
 	settings["WEAVER_POLICY_PKG_CONFIG_PACKAGE"] = strings.TrimSuffix(filepath.Base(settings["WEAVER_POLICY_PKG_CONFIG"]), ".pc")

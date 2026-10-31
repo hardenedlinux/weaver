@@ -10,22 +10,27 @@ capture: Scheme canonical capture\nPrivate original data snapshots\nNative Recor
 assessment: AA assessment / source guard\nOriginal blocking threats refuse\nRecheck data and context after call\nOne completed source emission {
   class: card; left: 1440; top: 0; width: 500; height: 220; style.fill: "#eef3ef"
 }
+native: Rust native materializer\nSDK strong roots and typed conversion\nExact integers / explicit key kinds\nRust-owned data before queue or await {
+  class: card; left: 1440; top: 320; width: 500; height: 220; style.fill: "#e7edf4"
+  icon: ../../architecture/diagrams/assets/rust.svg; icon.near: top-left
+}
 send: Rust final executor\nFresh Cedar / current Policy and fence\nOriginal claim / history / shared hold\nUnknown sends cannot redispatch {
-  class: card; left: 0; top: 510; width: 500; height: 220; style.fill: "#e7edf4"
+  class: card; left: 0; top: 640; width: 500; height: 220; style.fill: "#e7edf4"
   icon: ../../architecture/diagrams/assets/rust.svg; icon.near: top-left
 }
 commit: Rust authority transaction\nOriginal pending intent and outcome\nCurrent source / parent / task origin\nPublication never sends {
-  class: card; left: 720; top: 510; width: 500; height: 220; style.fill: "#e7edf4"
+  class: card; left: 720; top: 640; width: 500; height: 220; style.fill: "#e7edf4"
 }
 control: Go source control and routing\nTyped source / exact reconciliation\nNo activation from unknown outcomes\nNo provider execution capability {
-  class: card; left: 1440; top: 510; width: 500; height: 220; style.fill: "#eef3ef"
+  class: card; left: 1440; top: 640; width: 500; height: 220; style.fill: "#eef3ef"
   icon: ../../architecture/diagrams/assets/go.svg; icon.near: top-left
 }
 profile -> capture: Capture before callback {style.font-size: 18}
 capture -> assessment: Frozen input {style.font-size: 18}
-assessment -> control: Admitted source data {style.font-size: 18}
+assessment -> native: Native data snapshot {style.font-size: 18}
+native -> control: Typed source over gRPC {style.font-size: 18}
 control -> commit: Source gRPC {style.font-size: 18}
 commit -> send: Original intent {style.font-size: 18}
 footer: "Bounded Policy inputs · Original capture · Assessment never grants execution" {
-  shape: text; left: 100; top: 900; width: 1750; height: 70; style.font-size: 24; style.font-color: "#5c8b77"
+  shape: text; left: 100; top: 1040; width: 1750; height: 70; style.font-size: 24; style.font-color: "#5c8b77"
 }

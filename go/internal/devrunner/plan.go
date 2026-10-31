@@ -5,6 +5,8 @@ import (
 	"os"
 )
 
+const rustRuntimeFeatures = "weaver-server/arrow,weaver-governance/scheme-vm"
+
 const proofToolchain = "leanprover/lean4:v4.34.1"
 
 func schemeTool() string {
@@ -24,8 +26,8 @@ func Plan(goBinary string) []Stage {
 		{"workflow-contract", "actionlint", nil},
 		{"rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
 		{"rust-default-profile", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
-		{"rust-tests", "cargo", []string{"test", "--workspace", "--all-features", "--locked", "--offline"}},
-		{"rust-clippy", "cargo", []string{"clippy", "--workspace", "--all-features", "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
+		{"rust-tests", "cargo", []string{"test", "--workspace", "--features", rustRuntimeFeatures, "--locked", "--offline"}},
+		{"rust-clippy", "cargo", []string{"clippy", "--workspace", "--features", rustRuntimeFeatures, "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
 		{"go-fuzz-control-build", goBinary, []string{"-C", "go", "test", "-c", "./internal/devrunner/testdata/fuzzcontrol", "-o", "../.cache/fuzz-control.test"}},
 		{"go-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "./..."}},
 		{"go-failure-evidence-pbt", goBinary, []string{"-C", "go", "test", "./internal/devrunner", "-run", "^$", "-fuzz", "^FuzzFailureExcerptRetainsPrecedingDiagnostic$", "-fuzztime=3s"}},
@@ -122,10 +124,11 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"scheme-declared-poo-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "dependencies"}},
 			{"scheme-core-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "core"}},
 			{"scheme-module-build", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline"}},
-			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^Test(SchemePkgConfig|SchemeTool|SourceInputsWithArchived)", "-v"}},
+			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^Test(SchemePkgConfig|SchemeHome|SchemeTool|SourceInputsWithArchived)", "-v"}},
 			// Package tools own discovery, execution and result reporting. Historical
 			// direct-gxi image experiments are not a prerequisite for gerbil test.
 			{"scheme-unit-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t"}},
+			{"scheme-rooted-sdk-integration", "cargo", []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "--features", "weaver-governance/scheme-qualification", "--locked", "--offline"}},
 			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration,schemeintegration", "./dev", "-run", "^TestProviderControl", "-v"}},
 		}, nil
 	case "bench":
@@ -134,7 +137,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"rust-environment", "rustc", []string{"-vV"}},
 			{"go-environment", goBinary, []string{"-C", "go", "version"}},
 			{"benchmark-package-contract", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "./internal/devrunner", "-run", "^Test(CargoWorkspaceAndDevelopmentGates|Benchmark.*)$"}},
-			{"rust-benchmarks", "cargo", []string{"bench", "--workspace", "--all-features", "--bench", "gateway", "--locked", "--offline", "--", "--noplot"}},
+			{"rust-benchmarks", "cargo", []string{"bench", "--workspace", "--features", rustRuntimeFeatures, "--bench", "gateway", "--locked", "--offline", "--", "--noplot"}},
 			{"grpc-benchmark", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGateway(Inspect|InspectReconnect|AuthorityPublish)$", "-benchtime=2s", "-count=3", "-benchmem"}},
 		}, nil
 	case "generate-rpc":
