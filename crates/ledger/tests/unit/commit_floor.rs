@@ -441,6 +441,135 @@ fn commit_floor_survives_gateway_restore_and_blocks_duplicate_real_dispatch() {
     assert_eq!(calls, 1);
 }
 
+// Expected counterexample: losing the independent burn store together with the
+// gateway defeats this reference envelope even when all four prefix bytes match.
+// This is not a deployed authority or an attestation of failure-domain independence.
+#[test]
+fn identical_prefix_after_whole_store_restore_can_replay_dispatch_counterexample() {
+    let temp = tempfile::tempdir().expect("directory");
+    let gateway = temp.path().join("gateway.db");
+    let gateway_snapshot = temp.path().join("gateway-snapshot.db");
+    let floor_path = temp.path().join("authority.db");
+    let floor_snapshot = temp.path().join("authority-snapshot.db");
+    let projection = temp.path().join("projection.db");
+    let (mut ledger, plan) = super::fixture(&gateway);
+    ledger
+        .enqueue_provider(&plan)
+        .expect("original reservation");
+    ledger.close().expect("closed gateway snapshot source");
+    std::fs::copy(&gateway, &gateway_snapshot).expect("queued gateway snapshot");
+    let mut floor = Floor::open(&floor_path);
+    let command = floor.command("original-consumption", 1, "f/infer");
+    floor.stage(&command);
+    assert!(floor.commit(&command).0);
+    floor.repair(&projection);
+    let retained_prefix = cut(&floor.0);
+    drop(floor);
+    std::fs::copy(&floor_path, &floor_snapshot).expect("closed pre-burn authority snapshot");
+    let mut calls = 0;
+    for restore_both in [false, true] {
+        if restore_both {
+            std::fs::copy(&gateway_snapshot, &gateway).expect("restore gateway");
+            std::fs::copy(&floor_snapshot, &floor_path)
+                .expect("restore authority and burned table");
+        }
+        floor = Floor::open(&floor_path);
+        assert_eq!(
+            cut(&floor.0),
+            retained_prefix,
+            "equal prefix does not retain burns"
+        );
+        assert!(
+            floor.qualified(&projection, 0),
+            "reference row/epoch equality still holds"
+        );
+        let mut worker = Ledger::open(&gateway).expect("restored worker");
+        let permit = worker
+            .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+            .expect("local consumption");
+        assert!(
+            floor.send(&projection, 0, "f/infer", || {
+                worker
+                    .dispatch_provider(&permit, || calls += 1)
+                    .expect("real ledger callback");
+            }),
+            "expected gap: restoring both stores reopens the burn"
+        );
+        let receipt = worker
+            .provider_receipt("f", "infer")
+            .expect("receipt")
+            .expect("original run");
+        assert_eq!(
+            (receipt.state, receipt.reserved, receipt.held),
+            (weaver_contracts::ProviderState::Unknown, 4, 4)
+        );
+        worker.close().expect("close before snapshot restore");
+        drop(floor);
+    }
+    assert_eq!(
+        calls, 2,
+        "expected duplicate: protected burn retention is a necessary premise"
+    );
+}
+
+// A retained reference floor can prevent another send while the restored local
+// budget projection has nevertheless forgotten the original unknown exposure.
+#[test]
+fn prefix_qualification_does_not_reconstruct_rolled_back_budget_counterexample() {
+    let temp = tempfile::tempdir().expect("directory");
+    let gateway = temp.path().join("gateway.db");
+    let snapshot = temp.path().join("before-reservation.db");
+    let projection = temp.path().join("projection.db");
+    let floor_path = temp.path().join("authority.db");
+    let (ledger, plan) = super::fixture(&gateway);
+    ledger.close().expect("closed pre-reservation source");
+    std::fs::copy(&gateway, &snapshot).expect("pre-reservation snapshot");
+    let mut ledger = Ledger::open(&gateway).expect("live owner");
+    ledger
+        .enqueue_provider(&plan)
+        .expect("original reservation");
+    let permit = ledger
+        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+        .expect("original consumption");
+    let mut floor = Floor::open(&floor_path);
+    let command = floor.command("original-consumption", 1, "f/infer");
+    floor.stage(&command);
+    assert!(floor.commit(&command).0);
+    floor.repair(&projection);
+    let mut calls = 0;
+    assert!(floor.send(&projection, 0, "f/infer", || {
+        ledger
+            .dispatch_provider(&permit, || calls += 1)
+            .expect("original actual dispatch");
+    }));
+    assert_eq!(ledger.held("f").expect("original unknown exposure"), 4);
+    ledger.close().expect("closed restore target");
+    drop(floor);
+    std::fs::copy(&snapshot, &gateway).expect("restore only local budget and claim state");
+    let recovered = Ledger::open(&gateway).expect("local snapshot recovery");
+    floor = Floor::open(&floor_path);
+    assert!(
+        floor.qualified(&projection, 0),
+        "reference qualification only compares its prefix/epoch"
+    );
+    assert_eq!(
+        recovered.held("f").expect("rolled-back projection"),
+        0,
+        "expected missing budget projection, not proven unused funds"
+    );
+    assert!(
+        recovered
+            .provider_receipt("f", "infer")
+            .expect("rolled-back receipt")
+            .is_none()
+    );
+    assert!(
+        !floor.send(&projection, 0, "f/infer", || calls += 1),
+        "retained burn still prevents duplicate dispatch"
+    );
+    assert_eq!(calls, 1);
+}
+
 #[test]
 fn commit_floor_competing_workers_serialize_and_recover_exact_shared_outcome() {
     use std::sync::{Arc, Barrier};

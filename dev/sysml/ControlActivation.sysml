@@ -18,6 +18,30 @@ package ControlActivation {
            Historical handoff receipts grant no new permission. Source SPKI
            continuity is not independent subject/incarnation issuance, full
            reviewed-publication qualification or whole-store anti-rollback. */
+        doc /* An independent retained-root witness binds the authority namespace,
+           authenticated generation and inherited full-content source prefix.
+           Configuration cannot enroll a replacement root. Registration and final
+           publication join that witness; lost confirmation is reconciled by the
+           original immutable decision, never by adopting a restored local root.
+           Retention confirmation is an existing-authority commit witness, not an
+           assertion that writes to two independent stores are atomic. */
+        doc /* Root retention coverage must include affine transport burns and
+           original claim/reservation/account/history state, not only the source
+           registry or four prefix ordinals. Equal prefixes can coexist with a
+           rolled-back burned table. A local held=0 after restore is not a release
+           certificate. Missing domain bodies or exposure projections deny
+           activation and preserve the original unknown obligation. Same-root
+           failover must inherit this complete recovery image before requalifying;
+           old worker handles and historical receipts confer no current rights. */
+        doc /* Registry recovery has distinct reconstruction, qualification and
+           final-use steps. Qualification binds the complete inherited prefix to
+           the current authority identity/generation, source cut and observer
+           context. Row equality or a persisted recovered flag is insufficient.
+           Restart, handoff, revocation, prefix append or projection loss requires
+           revalidation; final CAS rechecks both qualification and current data.
+           A stale NotFound is not permission to replace the original artifact,
+           resolve pending or release unknown budget. Qualification is never a
+           transport permit and cannot repair rollback of its own trust root. */
         doc /* verify_publication_replay delegates to the actual fixed SPEC
            ValidatedManifest/SchemaBoundReceipt runtime. The candidate's complete
            policy ID/body set and schema must equal the original publication.
@@ -28,6 +52,26 @@ package ControlActivation {
            qualification and independent registry recovery are separate obligations.
            Cedar source may use official materialized PolicySet JSON to preserve
            named IDs; renderer comments cannot substitute for those identities. */
+        doc /* Recovery joins one independently retained authority generation and
+           committed prefix, not a maximum epoch copied from startup config.
+           Epoch/owner, issuance/revocation decisions, original artifact bindings
+           and publication outcomes inherit that prefix together. A new leader
+           may activate only after proving prefix inheritance; an unavailable or
+           ambiguous authority keeps registration and publication disabled. */
+        doc /* A process restart invalidates observer read capabilities even
+           when the authority epoch is unchanged. Late reads and acknowledgments
+           are historical observations; they cannot activate a new observer or
+           replace a fresh final join. Recovery distinguishes an exact committed
+           registration from a missing local projection. Unknown is neither an
+           abort nor permission to register replacement evidence. */
+        doc /* Trust anchors and prefix retention belong to the independent
+           authority deployment contract; a shared Kubernetes identity, restored
+           startup certificate or ordinary SQLite restart supplies neither.
+           Consistent rollback of the entire local registry can erase an earlier
+           artifact binding. Keep its executable counterexample until an actual
+           independent authority adapter demonstrates recovery. Runtime assets
+           obey Project.ProductionAssetBoundary; live authority state belongs to
+           configured durable storage, never a promoted prod config value. */
         doc /* The existing Rust ledger now supplies a trusted-host local review
            admission primitive. stage_reviewed_authority atomically latches its
            exact command and authority-selected complete Policy/schema parent.

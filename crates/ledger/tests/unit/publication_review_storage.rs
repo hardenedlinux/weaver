@@ -207,3 +207,64 @@ fn stage_review_requirement_and_legacy_final_cas_have_one_serial_order() {
         assert!(ledger.stage_reviewed_authority(&proposal()).is_err());
     }
 }
+
+// Expected limitation of this trusted-host local profile, not an independent
+// registry recovery guarantee. Restore only after closing all SQLite owners.
+#[test]
+fn consistent_snapshot_rollback_can_replace_local_registered_artifact_counterexample() {
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("rollback.db");
+    let snapshot = temp.path().join("before-registration.db");
+    let (mut ledger, original) = prepare(&path);
+    drop(ledger);
+    std::fs::copy(&path, &snapshot).expect("closed pre-registration snapshot");
+    ledger = Ledger::open(&path).expect("original owner recovery");
+    ledger
+        .register_approved_review(&original)
+        .expect("registration whose reply is lost");
+    drop(ledger);
+    ledger = Ledger::open(&path).expect("process restart");
+    assert_eq!(
+        ledger
+            .publication_review(&original.publication)
+            .expect("durable read"),
+        Some(original.clone())
+    );
+    let mut replacement = original.clone();
+    replacement.artifact = "different upstream approval after rollback".into();
+    assert!(
+        ledger.register_approved_review(&replacement).is_err(),
+        "ordinary restart must retain the original artifact"
+    );
+    drop(ledger);
+    std::fs::copy(&snapshot, &path).expect("restore consistent old database");
+    ledger = Ledger::open(&path).expect("snapshot recovery");
+    assert!(
+        ledger
+            .publication_review(&original.publication)
+            .expect("rolled-back read")
+            .is_none()
+    );
+    assert!(
+        ledger.publish_authority(&proposal()).is_err(),
+        "missing review must still block final CAS"
+    );
+    crate::publication_barrier::require_resolved(&ledger.connection)
+        .expect_err("original pending survives this snapshot");
+    ledger
+        .register_approved_review(&replacement)
+        .expect("expected gap: no independent registry prefix rejects replacement");
+    assert_eq!(
+        ledger
+            .publication_review(&original.publication)
+            .expect("replacement read"),
+        Some(replacement)
+    );
+    assert_eq!(
+        ledger
+            .publish_authority(&proposal())
+            .expect("trusted-host local commit")
+            .outcome,
+        PublicationOutcome::Committed
+    );
+}

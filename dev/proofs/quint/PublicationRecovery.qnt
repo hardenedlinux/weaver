@@ -10,6 +10,7 @@ module PublicationRecovery {
   type SourceUse={credential:int,epoch:int,owner:int,command:int,purpose:int,artifact:int}
   type SourceCut={epoch:int,owner:int,revoked:Set[int],decisions:List[SourceDecision],registry:List[ReviewEntry],head:int,fence:int}
   type SourceObservation={use:SourceUse,cut:SourceCut,session:int}
+  type RetainedQualification={source:SourceObservation,root:int,generation:int}
   type Part={id:int,payload:int,key:int}
   type Cut={publication:List[Part],consumption:List[Part],account:List[Part],history:List[Part]}
   type Intent={id:int,payload:int,key:int,kind:int,scope:int,epoch:int,before:Cut}
@@ -21,7 +22,7 @@ module PublicationRecovery {
     owner:int,liveOwners:Set[int],egressOwners:Set[int],handoff:bool,calls:int,external:int,
     registry:List[ReviewEntry],registrarOwner:int,registrarTerm:int,
     sourceDecisions:List[SourceDecision],sourceRevoked:Set[int]}
-  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int}
+  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int,registryQualifications:Set[SourceObservation],retainedSource:SourceCut,trustedRoot:int,retentionGeneration:int,retentionAvailable:bool,retainedQualifications:Set[RetainedQualification]}
   var authority:Ledger
   val ids=Set(0,1,2)
   val empty={payload:0,parent:-1,requestedFence:1,outcome:0,resultHead:-1,resultFence:1,review:Set(),validatedFence:1,validatedCut:emptyCut,validatedEpoch:0}
@@ -34,7 +35,7 @@ module PublicationRecovery {
   pure val emptyCut={publication:List(),consumption:List(),account:List(),history:List()}
   pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),owner:1,liveOwners:Set(1),egressOwners:Set(1),handoff:false,calls:0,external:0,registry:List(),registrarOwner:1,registrarTerm:0,sourceDecisions:List({slot:0,credential:100,key:100}),sourceRevoked:Set()}
   pure val sourceCut0={epoch:0,owner:1,revoked:Set(),decisions:List({slot:0,credential:100,key:100}),registry:List(),head:-1,fence:1}
-  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0}
+  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0,registryQualifications:Set(),retainedSource:sourceCut0,trustedRoot:7,retentionGeneration:0,retentionAvailable:true,retainedQualifications:Set()}
   def canStage(q:Proposal):bool={val d=authority.records.get(q.id)
     authority.pending.forall(p=>p.id!=q.id or p==q) and
       (d.outcome==0 or (d.payload==q.payload and d.parent==q.parent and d.requestedFence==q.fence))}
@@ -104,6 +105,9 @@ module PublicationRecovery {
       .with("sourceObservations",authority.sourceObservations.union(Set({use:use,cut:sourceAuthorityCut,session:authority.sourceSession}))).with("sourceImage",sourceAuthorityCut)}
   // Fresh channel-context reference from the adapter, not an identity issuer.
   action reconnectSourceObserver=authority'=authority.with("sourceSession",authority.sourceSession+1)
+  // Process recovery preserves durable authority, but never the authority-read
+  // capability of the previous observer incarnation. Context freshness is a Host premise.
+  action restartSourceObserver=authority'=authority.with("sourceSession",authority.sourceSession+1).with("sourceObservations",Set()).with("registryQualifications",Set())
   action restoreSourceObservation(observed:SourceObservation):bool=authority'=authority.with("sourceImage",observed.cut)
   action sourceAvailability(available:bool):bool=authority'=authority.with("sourceReachable",available)
   def joinedSourceObservation(observed:SourceObservation):bool=authority.sourceReachable and authority.sourceObservations.contains(observed) and
@@ -112,6 +116,37 @@ module PublicationRecovery {
     joinedSourceObservation(observed),registerUsingSource(observed.use,r)}
   action publishAtSourceObservation(observed:SourceObservation,q:Proposal,r:Review):bool=all {
     joinedSourceObservation(observed),publishUsingSource(observed.use,q,r)}
+  // Recovery qualification orders existing opaque references; it supplies no
+  // credential, Policy or independent-prefix authenticity semantics of its own.
+  action qualifyRegistryRecovery(observed:SourceObservation):bool=all {
+    joinedSourceObservation(observed),registryRecovered,
+    authority'=authority.with("registryQualifications",Set(observed))}
+  action publishAtQualifiedRegistry(observed:SourceObservation,q:Proposal,r:Review):bool=all {
+    authority.registryQualifications.contains(observed),publishAtSourceObservation(observed,q,r)}
+  // Trusted commit-confirmation envelope, not an implementation of a root
+  // signer, consensus, cryptography, or multi-store atomic commit. The Host
+  // supplies authenticated complete bodies and must retain unresolved intents.
+  pure def inheritsSourcePrefix(before:SourceCut,after:SourceCut):bool=
+    before.epoch<=after.epoch and (before.epoch==after.epoch implies before.owner==after.owner) and
+    before.head<=after.head and before.fence<=after.fence and
+    before.revoked.forall(c=>after.revoked.contains(c)) and
+    before.decisions.indices().forall(i=>i<after.decisions.length() and before.decisions.nth(i)==after.decisions.nth(i)) and
+    before.registry.indices().forall(i=>i<after.registry.length() and before.registry.nth(i)==after.registry.nth(i))
+  action retainSourcePrefix=all {authority.retentionAvailable,inheritsSourcePrefix(authority.retainedSource,sourceAuthorityCut),
+    authority'=authority.with("retainedSource",sourceAuthorityCut)
+      .with("retentionGeneration",if(authority.retainedSource==sourceAuthorityCut)authority.retentionGeneration else authority.retentionGeneration+1)}
+  action retentionAvailability(available:bool):bool=authority'=authority.with("retentionAvailable",available)
+  def retainedSourceCurrent(root:int,generation:int):bool=authority.retentionAvailable and root==authority.trustedRoot and
+    generation==authority.retentionGeneration and authority.retainedSource==sourceAuthorityCut
+  action registerAtRetainedSource(observed:SourceObservation,root:int,generation:int,r:Review):bool=all {
+    retainedSourceCurrent(root,generation),registerAtSourceObservation(observed,r)}
+  action qualifyRetainedRegistry(receipt:RetainedQualification):bool=all {
+    retainedSourceCurrent(receipt.root,receipt.generation),joinedSourceObservation(receipt.source),registryRecovered,
+    authority.registryQualifications.contains(receipt.source),
+    authority'=authority.with("retainedQualifications",authority.retainedQualifications.union(Set(receipt)))}
+  action publishAtRetainedRegistry(receipt:RetainedQualification,q:Proposal,r:Review):bool=all {
+    authority.retainedQualifications.contains(receipt),retainedSourceCurrent(receipt.root,receipt.generation),
+    publishAtQualifiedRegistry(receipt.source,q,r)}
   action registerReviewBy(actor:int,term:int,r:Review):bool={
     val existing=anchoredReviews(r.command.id)
     if(existing!=Set()) all {existing==Set(r),authority'=authority}
@@ -497,14 +532,84 @@ module PublicationRecovery {
   run freshReadAfterSameEpochReconnectCanProgressTest=init.then(stage(staged0)).then(readSourceObservation(sourceRegister0)).then(reconnectSourceObserver)
     .then(readSourceObservation(sourceRegister0)).then(registerAtSourceObservation(observation0.with("session",1),review0))
     .expect(sourceDecisionSafe and authority.floor.registry.length()==1 and authority.held==4)
+  run observerRestartCannotRestoreReadCapabilityTest=registeredObserved.then(restartSourceObserver)
+    .then(restoreSourceObservation(publishObservation0)).expect(sourceDecisionSafe and authority.floor.registrarTerm==0)
+    .then(publishAtSourceObservation(publishObservation0,staged0,review0).fail())
+  run freshReadAfterObserverRestartPreservesExactRegistryTest=registeredObserved.then(restartSourceObserver)
+    .then(restoreReviewImage(List())).then(recoverReviewsBy(1,0)).then(readSourceObservation(sourcePublish0))
+    .then(publishAtSourceObservation(publishObservation0.with("session",1),staged0,review0))
+    .expect(sourceDecisionSafe and authority.commits.length()==1 and anchoredReviews(0)==Set(review0) and authority.held==4)
+  run exactCutCannotHideMissingRegistryProjectionTest=registeredObserved.then(restoreReviewImage(List()))
+    .expect(joinedSourceObservation(publishObservation0) and not(registryRecovered))
+    .then(publishAtSourceObservation(publishObservation0,staged0,review0).fail())
+  run exactRegistryRecoveryAllowsOriginalCASProgressTest=registeredObserved.then(restoreReviewImage(List())).then(recoverReviewsBy(1,0))
+    .then(readSourceObservation(sourcePublish0)).then(publishAtSourceObservation(publishObservation0,staged0,review0))
+    .expect(sourceDecisionSafe and authority.held==4)
+  pure val nextSourcePublish=sourcePublish0.with("credential",101).with("owner",2).with("epoch",1)
+  run lateRegistryReceiptAfterHandoffIsHistoricalTest=registeredObserved.then(rotateRegistrar).then(recordSourceDecision(1,101))
+    .then(restartSourceObserver).then(observeRegistration(review0)).then(restoreSourceObservation(publishObservation0))
+    .expect(not(joinedSourceObservation(publishObservation0))).then(recoverReviewsBy(2,1))
+    .then(readSourceObservation(nextSourcePublish))
+    .then(publishAtSourceObservation({use:nextSourcePublish,cut:sourceAuthorityCut,session:1},staged0,review0))
+    .expect(sourceDecisionSafe and anchoredReviews(0)==Set(review0) and authority.commits.length()==1)
+  run committedPublicationBeforeRevocationRemainsHistoricalTest=registeredObserved.then(publishAtSourceObservation(publishObservation0,staged0,review0))
+    .then(revokeSource(100)).then(restartSourceObserver).then(replay(0,0,-1,1))
+    .expect(sourceDecisionSafe and authority.commits.length()==1 and authority.held==4)
+    .then(readSourceObservation(sourcePublish0).fail())
+  // Deliberately outside the independent-prefix retention premise. A consistent
+  // rollback can pass local integrity checks and resurrect a revoked credential.
+  action unsafeRestoreIndependentSourceSnapshot=authority'=authority.with("floor",authority.floor
+    .with("registrarOwner",1).with("registrarTerm",0).with("sourceRevoked",Set())
+    .with("sourceDecisions",floor0.sourceDecisions).with("registry",List()))
+  run independentSnapshotRollbackResurrectsCredentialCounterexampleTest=init.then(stage(staged0))
+    .then(readSourceObservation(sourceRegister0)).then(revokeSource(100)).then(rotateRegistrar)
+    .then(unsafeRestoreIndependentSourceSnapshot).then(restoreSourceObservation(observation0))
+    .then(registerAtSourceObservation(observation0,review0))
+    .expect(sourceUseCurrent(sourceRegister0) and anchoredReviews(0)==Set(review0) and authority.held==4)
+  action qualifiedRegistry0=registeredObserved.then(qualifyRegistryRecovery(publishObservation0))
+  run copiedRowsWithoutRecoveryQualificationCannotPublishTest=registeredObserved
+    .expect(registryRecovered and authority.held==4).then(publishAtQualifiedRegistry(publishObservation0,staged0,review0).fail())
+  run missingProjectionCannotQualifyRegistryTest=registeredObserved.then(restoreReviewImage(List()))
+    .expect(authority.pending.contains(staged0) and authority.held==4).then(qualifyRegistryRecovery(publishObservation0).fail())
+  run qualifiedRegistryMakesExactOriginalProgressTest=qualifiedRegistry0.then(publishAtQualifiedRegistry(publishObservation0,staged0,review0))
+    .expect(sourceDecisionSafe and authority.commits.length()==1 and authority.held==4)
+  run registryQualificationCannotSurviveObserverRestartTest=qualifiedRegistry0.then(restartSourceObserver)
+    .then(readSourceObservation(sourcePublish0)).expect(registryRecovered and sourceDecisionSafe)
+    .then(publishAtQualifiedRegistry(publishObservation0.with("session",1),staged0,review0).fail())
+  run registryQualificationCannotSurviveHandoffTest=qualifiedRegistry0.then(rotateRegistrar).then(recordSourceDecision(1,101))
+    .then(recoverReviewsBy(2,1)).then(readSourceObservation(nextSourcePublish))
+    .then(publishAtQualifiedRegistry({use:nextSourcePublish,cut:sourceAuthorityCut,session:0},staged0,review0).fail())
+  run lateQualificationAfterRegistryAppendIsRefusedTest=registeredObserved.then(stage(sibling)).then(registerReviewBy(1,0,siblingReview))
+    .then(recoverReviewsBy(1,0)).expect(registryRecovered and authority.held==4).then(qualifyRegistryRecovery(publishObservation0).fail())
+  run appendAfterQualificationRequiresNewCutTest=qualifiedRegistry0.then(stage(sibling)).then(registerReviewBy(1,0,siblingReview))
+    .then(recoverReviewsBy(1,0)).expect(sourceDecisionSafe).then(publishAtQualifiedRegistry(publishObservation0,staged0,review0).fail())
+  run recoveredNewOwnerRequalifiesOriginalArtifactTest=qualifiedRegistry0.then(rotateRegistrar).then(recordSourceDecision(1,101))
+    .then(restartSourceObserver).then(restoreReviewImage(List())).then(recoverReviewsBy(2,1)).then(readSourceObservation(nextSourcePublish))
+    .then(qualifyRegistryRecovery({use:nextSourcePublish,cut:sourceAuthorityCut,session:1}))
+    .then(publishAtQualifiedRegistry({use:nextSourcePublish,cut:sourceAuthorityCut,session:1},staged0,review0))
+    .expect(sourceDecisionSafe and anchoredReviews(0)==Set(review0) and authority.held==4)
+  run cachedQualificationCannotHideProjectionLossTest=qualifiedRegistry0.then(restoreReviewImage(List()))
+    .expect(authority.registryQualifications.contains(publishObservation0) and authority.held==4)
+    .then(publishAtQualifiedRegistry(publishObservation0,staged0,review0).fail())
+  // Restoring the deciding trust root as well as its old complete registry is
+  // outside prefix inheritance. A locally saved qualification cannot detect it.
+  action unsafeRestoreRegisteredAuthoritySnapshot=authority'=authority.with("floor",authority.floor
+    .with("registrarOwner",1).with("registrarTerm",0).with("sourceRevoked",Set())
+    .with("sourceDecisions",floor0.sourceDecisions).with("registry",registeredCut0.registry))
+  run consistentAuthorityRollbackCanReplaySavedQualificationCounterexampleTest=qualifiedRegistry0
+    .then(revokeSource(100)).then(rotateRegistrar).then(unsafeRestoreRegisteredAuthoritySnapshot)
+    .then(restoreReviewImage(registeredCut0.registry)).then(restoreSourceObservation(publishObservation0))
+    .then(publishAtQualifiedRegistry(publishObservation0,staged0,review0))
+    .expect(sourceUseCurrent(sourcePublish0) and authority.commits.length()==1 and authority.held==4)
   action sourceRecoverySchedule=any {stage(staged0),stage(sibling),
     recordSourceDecision(authority.floor.registrarTerm,100+authority.floor.registrarTerm),revokeSource(100),revokeSource(101),rotateRegistrar,
-    recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restoreReviewImage(List()),restart,reconnectSourceObserver,observe,
+    recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restoreReviewImage(List()),restart,reconnectSourceObserver,restartSourceObserver,observe,
     readSourceObservation(currentRegisterReference),readSourceObservation(currentRegisterReference.with("purpose",1)),
     restoreSourceObservation(observation0),restoreSourceObservation(publishObservation0),sourceAvailability(false),sourceAvailability(true),
-    registerAtSourceObservation(observation0,review0),publishAtSourceObservation(publishObservation0,staged0,review0),
+    registerAtSourceObservation(observation0,review0),qualifyRegistryRecovery(publishObservation0),publishAtQualifiedRegistry(publishObservation0,staged0,review0),
     registerAtSourceObservation({use:currentRegisterReference,cut:sourceAuthorityCut,session:authority.sourceSession},review0),
-    publishAtSourceObservation({use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession},staged0,review0)}
+    qualifyRegistryRecovery({use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession}),
+    publishAtQualifiedRegistry({use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession},staged0,review0)}
   // Opaque key references come from the actual certificate/SPKI adapter. This
   // adds ordering/non-reuse to the existing authority, not X509 or identity semantics.
   action handoffSourceKey(use:SourceUse,nextReference:int,nextKey:int):bool=all {
@@ -530,4 +635,61 @@ module PublicationRecovery {
     .then(handoffSourceKey(source1.with("purpose",2),102,100).fail())
   run newSourceCanResolveExactPendingWithoutResettingExposureTest=init.then(stage(staged0)).then(handoffSourceKey(handoff0,101,101))
     .then(publishFromSourceKey(source1,staged0)).expect(safe and authority.records.get(0).outcome==1 and authority.held==4 and authority.calls==1)
+  pure val retainedReceipt0={source:publishObservation0,root:7,generation:1}
+  action retainedRegistry0=qualifiedRegistry0.then(retainSourcePrefix).then(qualifyRetainedRegistry(retainedReceipt0))
+  run retainedRootPermitsExactOriginalPublicationTest=retainedRegistry0.then(publishAtRetainedRegistry(retainedReceipt0,staged0,review0))
+    .expect(sourceDecisionSafe and authority.commits.length()==1 and authority.held==4)
+  run missingRetentionConfirmationCannotQualifyTest=qualifiedRegistry0.then(qualifyRetainedRegistry(retainedReceipt0).fail())
+  run originalRegistrationCanExtendRetainedPrefixTest=init.then(stage(staged0)).then(readSourceObservation(sourceRegister0))
+    .then(registerAtRetainedSource(observation0,7,0,review0)).then(retainSourcePrefix)
+    .expect(authority.retentionGeneration==1 and authority.retainedSource.registry==registeredCut0.registry and authority.held==4)
+  run retainedRegistrationCannotReplaceAfterSnapshotRollbackTest=retainedRegistry0.then(unsafeRestoreIndependentSourceSnapshot)
+    .then(restoreReviewImage(List())).then(readSourceObservation(sourceRegister0.with("artifact",71)))
+    .then(registerAtRetainedSource(observation0.with("use",sourceRegister0.with("artifact",71)),7,1,review0.with("artifact",71)).fail())
+  run unavailableRootCannotReplaySavedQualificationTest=retainedRegistry0.then(retentionAvailability(false))
+    .expect(authority.pending.contains(staged0) and authority.held==4).then(publishAtRetainedRegistry(retainedReceipt0,staged0,review0).fail())
+  run differentRootReferenceCannotQualifyTest=qualifiedRegistry0.then(retainSourcePrefix)
+    .then(qualifyRetainedRegistry(retainedReceipt0.with("root",8)).fail())
+  run confirmedRevocationAndHandoffRejectConsistentSourceRollbackTest=retainedRegistry0.then(revokeSource(100)).then(retainSourcePrefix)
+    .then(rotateRegistrar).then(retainSourcePrefix).then(unsafeRestoreRegisteredAuthoritySnapshot)
+    .then(restoreReviewImage(registeredCut0.registry)).then(restoreSourceObservation(publishObservation0))
+    .expect(authority.retainedSource.epoch==1 and authority.retainedSource.revoked.contains(100) and authority.held==4)
+    .then(publishAtRetainedRegistry(retainedReceipt0,staged0,review0).fail())
+  run inheritedPrefixCannotConfirmRollbackTest=retainedRegistry0.then(revokeSource(100)).then(retainSourcePrefix)
+    .then(unsafeRestoreRegisteredAuthoritySnapshot).then(retainSourcePrefix.fail())
+  run truncatedRegistryCannotConfirmRetainedPrefixTest=retainedRegistry0.then(unsafeRestoreIndependentSourceSnapshot)
+    .then(retainSourcePrefix.fail())
+  action unsafeSubstituteRegisteredArtifact=authority'=authority.with("floor",authority.floor.with("registry",
+    registeredCut0.registry.foldl(List(),(entries,e)=>entries.append(e.with("review",e.review.with("artifact",71))))))
+  run sameLengthArtifactReplacementCannotConfirmRetainedPrefixTest=retainedRegistry0.then(unsafeSubstituteRegisteredArtifact)
+    .then(retainSourcePrefix.fail())
+  run duplicateRetentionConfirmationRecoversLostReplyTest=retainedRegistry0.then(restart).then(retainSourcePrefix)
+    .expect(authority.retentionGeneration==1 and authority.retainedSource.registry==registeredCut0.registry)
+    .then(publishAtRetainedRegistry(retainedReceipt0,staged0,review0)).expect(sourceDecisionSafe and authority.held==4)
+  run retainedRootStillRequiresFreshObserverQualificationTest=retainedRegistry0.then(restartSourceObserver).then(readSourceObservation(sourcePublish0))
+    .expect(authority.retentionGeneration==1).then(publishAtRetainedRegistry(retainedReceipt0,staged0,review0).fail())
+  run currentOwnerCanRequalifyAgainstInheritedRootTest=retainedRegistry0.then(rotateRegistrar).then(recordSourceDecision(1,101)).then(retainSourcePrefix)
+    .then(restartSourceObserver).then(recoverReviewsBy(2,1)).then(readSourceObservation(nextSourcePublish))
+    .then(qualifyRegistryRecovery({use:nextSourcePublish,cut:sourceAuthorityCut,session:1}))
+    .then(qualifyRetainedRegistry({source:{use:nextSourcePublish,cut:sourceAuthorityCut,session:1},root:7,generation:2}))
+    .then(publishAtRetainedRegistry({source:{use:nextSourcePublish,cut:sourceAuthorityCut,session:1},root:7,generation:2},staged0,review0))
+    .expect(sourceDecisionSafe and anchoredReviews(0)==Set(review0) and authority.held==4)
+  action unsafeRestoreRetainedRootSnapshot=authority'=authority.with("retainedSource",registeredCut0)
+    .with("trustedRoot",7).with("retentionGeneration",1)
+  run wholeRetainedRootRollbackCanReplayQualificationCounterexampleTest=retainedRegistry0
+    .then(revokeSource(100)).then(retainSourcePrefix).then(rotateRegistrar).then(retainSourcePrefix)
+    .then(unsafeRestoreRegisteredAuthoritySnapshot).then(unsafeRestoreRetainedRootSnapshot)
+    .then(restoreReviewImage(registeredCut0.registry)).then(restoreSourceObservation(publishObservation0))
+    .then(publishAtRetainedRegistry(retainedReceipt0,staged0,review0))
+    .expect(authority.commits.length()==1 and sourceUseCurrent(sourcePublish0) and authority.held==4)
+  action retainedSourceRecoverySchedule=any {stage(staged0),stage(sibling),
+    recordSourceDecision(authority.floor.registrarTerm,100+authority.floor.registrarTerm),revokeSource(100),revokeSource(101),rotateRegistrar,
+    recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restoreReviewImage(List()),restart,reconnectSourceObserver,restartSourceObserver,observe,
+    readSourceObservation(currentRegisterReference),readSourceObservation(currentRegisterReference.with("purpose",1)),
+    restoreSourceObservation(observation0),restoreSourceObservation(publishObservation0),sourceAvailability(false),sourceAvailability(true),
+    retentionAvailability(false),retentionAvailability(true),retainSourcePrefix,
+    registerAtRetainedSource({use:currentRegisterReference,cut:sourceAuthorityCut,session:authority.sourceSession},7,authority.retentionGeneration,review0),
+    qualifyRegistryRecovery({use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession}),
+    qualifyRetainedRegistry({source:{use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession},root:7,generation:authority.retentionGeneration}),
+    publishAtRetainedRegistry({source:{use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession},root:7,generation:authority.retentionGeneration},staged0,review0)}
 }

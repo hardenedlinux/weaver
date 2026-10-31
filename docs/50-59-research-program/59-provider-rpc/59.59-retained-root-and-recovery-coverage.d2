@@ -1,0 +1,74 @@
+vars: { d2-config: { layout-engine: tala; theme-id: 3; pad: 80 } }
+classes: { card: { label.near: center-center; style.font-size: 24; style.border-radius: 12; style.stroke-width: 1 } }
+title: RETAINED ROOT / COMPLETE RECOVERY {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+root: Independent trust anchor\nExpected authority identity\nRetained generation and continuity {
+  class: card
+  left: 0
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+coverage: Complete retained security image\nRegistry / claims / exposure / history\nOne-use burns and exact outcomes {
+  class: card
+  left: 810
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+publication: Rust registration and publication\nRoot / prefix / observer join\nOriginal artifact and pending intent {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+restore: Restored worker or database image\nCached receipts and old handles\nLocal absence is not authority {
+  class: card
+  left: 0
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+reconcile: Uncertain or incomplete recovery\nRetain original intent and exposure\nRecover exact bodies and outcomes {
+  class: card
+  left: 810
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+execution: Rust final transport owner\nCurrent admission and retained burn\nNo replay or unknown-budget refund {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+root -> coverage: Authenticate retained cut { style.font-size: 20 }
+coverage -> publication: Current recovery witness { style.font-size: 20 }
+restore -> reconcile: Reconcile before activation { style.font-size: 20 }
+reconcile -> coverage: Verify complete recovery { style.font-size: 20 }
+publication -> execution: Recheck at actual use { style.font-size: 20 }
+footer: "Equal prefix bytes do not prove retained one-use burns or a correct budget projection\nHistorical receipts and restored configuration cannot mint current execution rights" {
+  shape: text
+  left: 140
+  top: 1080
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}

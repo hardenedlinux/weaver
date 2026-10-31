@@ -95,6 +95,141 @@ fn rejected_competing_caps_leave_no_claim_or_hold_after_restart() {
         .expect("original admission");
     assert_eq!(restarted.held("f").expect("hold"), 4);
 }
+
+#[test]
+fn stale_registry_read_and_reopened_worker_preserve_unknown_provider_exposure() {
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("registry-read-recovery.db");
+    let (mut ledger, plan) = fixture(&path);
+    ledger
+        .enqueue_provider(&plan)
+        .expect("original reservation");
+    let permit = ledger
+        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+        .expect("original consumption");
+    let mut calls = 0;
+    ledger
+        .dispatch_provider(&permit, || calls += 1)
+        .expect("original dispatch");
+    let range = ledger
+        .prepare_provider_release(&permit, "uncertain-tail", "arrow", 2)
+        .expect("unknown range before review");
+    let change = weaver_contracts::Publication {
+        operation_id: "registry-read-recovery".into(),
+        expected_revision: Some(0),
+        fence: 2,
+        policy: "forbid(principal,action,resource);".into(),
+        schema: SCHEMA.into(),
+    };
+    let key = ledger
+        .stage_reviewed_authority(&change)
+        .expect("original pending");
+    let review = weaver_contracts::PublicationReview {
+        publication: key.clone(),
+        parent: ledger.required_review_parent(&key).expect("actual parent"),
+        artifact: "trusted upstream approval fixture".into(),
+    };
+    // Pin an actual WAL reader before registration. Its later NotFound is an
+    // old projection, not evidence that the deciding registry has no record.
+    let reader = rusqlite::Connection::open(&path).expect("old read owner");
+    reader.execute_batch("BEGIN;").expect("read snapshot");
+    let registered = |connection: &rusqlite::Connection| -> i64 {
+        connection.query_row("SELECT COUNT(*) FROM authority_reviews WHERE operation_id='registry-read-recovery'", [], |row| row.get(0)).expect("registry count")
+    };
+    assert_eq!(registered(&reader), 0);
+    let mut old_worker = Ledger::open(&path).expect("worker before registration");
+    ledger
+        .register_approved_review(&review)
+        .expect("committed registration with discarded reply");
+    assert_eq!(
+        registered(&reader),
+        0,
+        "old snapshot must reproduce delayed absence"
+    );
+    assert_eq!(
+        old_worker
+            .publication_review(&key)
+            .expect("current deciding read"),
+        Some(review.clone())
+    );
+    let mut replacement = review.clone();
+    replacement.artifact = "replacement from stale NotFound".into();
+    assert!(
+        old_worker.register_approved_review(&replacement).is_err(),
+        "old worker must consult current immutable binding"
+    );
+    assert!(
+        ledger
+            .release_provider(&permit, range, "arrow", |_| {
+                calls += 1;
+                Ok(())
+            })
+            .is_err(),
+        "original pending blocks release"
+    );
+    assert_eq!(ledger.held("f").expect("retained hold"), 4);
+    assert_eq!(
+        old_worker
+            .publish_authority(&change)
+            .expect("exact original continuation")
+            .outcome,
+        weaver_contracts::PublicationOutcome::Committed
+    );
+    assert_eq!(
+        registered(&reader),
+        0,
+        "late absence remains historical after commit"
+    );
+    reader
+        .execute_batch("ROLLBACK;")
+        .expect("close old read snapshot");
+    assert_eq!(
+        registered(&reader),
+        1,
+        "fresh read sees inherited local registration"
+    );
+    drop(reader);
+    assert!(ledger.dispatch_provider(&permit, || calls += 1).is_err());
+    assert!(ledger.complete_provider(&permit, "arrow").is_err());
+    drop(old_worker);
+    drop(ledger);
+    let mut recovered = Ledger::open(&path).expect("process recovery");
+    assert_eq!(
+        recovered
+            .publication_review(&key)
+            .expect("registered artifact after restart"),
+        Some(review)
+    );
+    assert!(recovered.register_approved_review(&replacement).is_err());
+    assert!(recovered.dispatch_provider(&permit, || calls += 1).is_err());
+    assert!(
+        recovered
+            .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+            .is_err()
+    );
+    assert_eq!(recovered.held("f").expect("unknown budget remains held"), 4);
+    let receipt = recovered
+        .provider_receipt("f", "infer")
+        .expect("unknown receipt")
+        .expect("original run");
+    assert_eq!(
+        (receipt.state, receipt.reserved, receipt.held),
+        (weaver_contracts::ProviderState::Unknown, 4, 4)
+    );
+    assert_eq!(
+        calls, 1,
+        "recovery cannot release the uncertain tail or repeat dispatch"
+    );
+    let inspection = rusqlite::Connection::open(&path).expect("durable range inspection");
+    let state: String = inspection
+        .query_row(
+            "SELECT state FROM provider_releases WHERE family='f' AND node='infer'",
+            [],
+            |row| row.get(0),
+        )
+        .expect("original range");
+    assert_eq!(state, "unknown");
+}
 #[test]
 fn equal_batch_digests_cannot_transfer_release_between_original_nodes() {
     let temp = tempfile::tempdir().expect("temp");

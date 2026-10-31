@@ -1,10 +1,10 @@
-#+TITLE: 59.59 Persistent Source Key Custody and Final Transaction Admission
+#+TITLE: 59.60 Persistent Source Key Custody and Final Transaction Admission
 #+LANGUAGE: en
 
 * Architecture and exact implementation boundary
 
 #+ATTR_HTML: :width 1500
-[[file:59.59-persistent-source-key-custody.svg]]
+[[file:59.60-persistent-source-key-custody.svg]]
 
 The Rust source RPC host now binds every administrative call to the actual
 authenticated mTLS leaf certificate, its DER SubjectPublicKeyInfo digest and
