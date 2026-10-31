@@ -4,7 +4,7 @@
 
 * Architecture allocation and scope
 
-The follow-up [[file:59.56-schema-bound-candidate-replay.org][schema-bound candidate
+The follow-up [[file:59.57-schema-bound-candidate-replay.org][schema-bound candidate
 adapter]] now reuses the actual fixed SPEC Rust runtime and preserves named Policy
 IDs through the official materialized JSON format. This concretizes candidate
 replay qualification, without qualifying no-gain or authenticated reviewed RPCs.

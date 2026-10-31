@@ -226,9 +226,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.svg' : File;
-        part 'docs/50-59-research-program/59-provider-rpc/59.56-schema-bound-candidate-replay.org' : File;
-        part 'docs/50-59-research-program/59-provider-rpc/59.56-schema-bound-candidate-replay.d2' : File;
-        part 'docs/50-59-research-program/59-provider-rpc/59.56-schema-bound-candidate-replay.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.57-schema-bound-candidate-replay.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.57-schema-bound-candidate-replay.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.57-schema-bound-candidate-replay.svg' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

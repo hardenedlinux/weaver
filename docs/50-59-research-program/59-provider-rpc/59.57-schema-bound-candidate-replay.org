@@ -1,4 +1,4 @@
-#+TITLE: 59.56 Schema-Bound Candidate Replay and Policy Identity
+#+TITLE: 59.57 Schema-Bound Candidate Replay and Policy Identity
 #+LANGUAGE: en
 #+OPTIONS: toc:2
 
@@ -23,7 +23,7 @@ Existing text, typed schema, FFI and execution tests cover the resulting build.
 #+CAPTION: Exact candidate replay joins the original deciding parent; it grants no execution authority.
 #+ATTR_ORG: :width 1600
 #+ATTR_HTML: :width 100% :alt SPEC candidate replay exact Policy identity local registration and final execution
-[[file:59.56-schema-bound-candidate-replay.svg]]
+[[file:59.57-schema-bound-candidate-replay.svg]]
 
 The registered artifact still requires trusted-host semantic qualification.
 There is no public reviewed-registration RPC and ordinary source-role publication
