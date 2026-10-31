@@ -1,4 +1,6 @@
 import CedarPooSpec.Gateway.ZeroTrust
+import CedarPooSpec.Gateway.PublicationReview
+import PublicationRecovery
 import WeaverPolicyBridge
 
 /-! Candidate-library consumer, checked in isolation against the upstream PR.
@@ -8,11 +10,60 @@ specializes it through Gateway.ZeroTrust and existing POO publication; this file
 the existing Weaver view and applies the library's final-use laws. -/
 namespace Weaver.ZeroTrustEnrichment
 
+-- The existing publication recovery owner supplies preservation. This adapter
+-- adds no ledger: the final invocation's exact post-state is related to that
+-- owner's actual Step by an explicit, still unproved native refinement premise.
+theorem reviewed_publication_keeps_recovery_contract
+    {Result : Type}
+    {authority : CedarPooSpec.Gateway.PublicationReview.Host Nat Result
+      (PublicationRecovery.State Nat) Nat Nat Nat}
+    {template : LeanPoo.Functional.DeclarativeMetadata.Contract Unit Nat Result}
+    {prepare : PublicationRecovery.State Nat → Nat → Except Unit (Result × PublicationRecovery.State Nat)}
+    {command : Nat} {actual : PublicationRecovery.State Nat}
+    (final : CedarPooSpec.Gateway.PublicationReview.Final authority template prepare command actual)
+    (refinement : ∀ before result after, authority.commit before result after →
+      PublicationRecovery.Step before after)
+    (safe : PublicationRecovery.Safe held calls actual) :
+    authority.security.currentAtUse actual ∧ authority.pendingAdmissible command actual ∧
+      PublicationRecovery.Extends actual final.receipt.state ∧
+      PublicationRecovery.PreservesIntents actual final.receipt.state ∧
+      PublicationRecovery.Safe held calls final.receipt.state := by
+  have step := refinement _ _ _ final.committed
+  exact ⟨final.current.2.2.1, final.pending,
+    PublicationRecovery.step_preserves_original_decisions step,
+    PublicationRecovery.step_preserves_original_intents step,
+    PublicationRecovery.step_preserves_accounting safe step⟩
+
+#print axioms reviewed_publication_keeps_recovery_contract
+
+theorem durable_review_binding_survives_final_cas
+    {Result : Type}
+    {authority : CedarPooSpec.Gateway.PublicationReview.Host Nat Result
+      (PublicationRecovery.State Nat) Nat Nat Nat}
+    {template : LeanPoo.Functional.DeclarativeMetadata.Contract Unit Nat Result}
+    {prepare : PublicationRecovery.State Nat → Nat → Except Unit (Result × PublicationRecovery.State Nat)}
+    {command : Nat} {actual : PublicationRecovery.State Nat}
+    (final : CedarPooSpec.Gateway.PublicationReview.Final authority template prepare command actual)
+    (materializes : ∀ artifact, authority.registrationCommitted actual command artifact →
+      ∃ entry, actual.reviewAnchor command = some entry ∧ entry.artifact = artifact)
+    (refinement : ∀ before result after, authority.commit before result after →
+      PublicationRecovery.Step before after) :
+    authority.registryRecovered actual ∧ authority.registrarCurrent actual ∧
+      ∃ artifact entry, authority.approvedEvidenceAt actual command = some artifact ∧
+        final.receipt.state.reviewAnchor command = some entry ∧ entry.artifact = artifact := by
+  obtain ⟨artifact, present⟩ := final.approved
+  obtain ⟨entry, registered, bound⟩ := materializes artifact (final.durable artifact present)
+  exact ⟨final.recovered, final.fenced, artifact, entry, present,
+    PublicationRecovery.step_preserves_review_anchor (refinement _ _ _ final.committed) registered, bound⟩
+
+#print axioms durable_review_binding_survives_final_cas
+
 structure RuntimeView extends PolicyBridge.PublicationContext where
   semanticContext : CedarPooSpec.Gateway.Context
   commitFloor : Nat
   budgetVersion : Nat
   historyPrefix : List Nat
+  pendingPublications : List (String × String)
   deriving DecidableEq
 
 open CedarPooSpec
@@ -64,6 +115,24 @@ theorem gateway_consumes_core_contract (use : Gateway.ZeroTrust.FinalUse proposa
 #print axioms changed_owner_cannot_finalize
 #print axioms gateway_consumes_core_contract
 
+-- Usage control enriches the existing continuing Gateway interpretation. It
+-- neither introduces a second consumption ledger nor permits recovery to
+-- substitute a fresh root. Source authority remains a native refinement duty.
+theorem usage_control_keeps_current_consumption
+    (control : ZeroTrust.UsageControl E RuntimeView)
+    (assessment : ZeroTrust.Requirement E RuntimeView)
+    (bound : control.core = Gateway.ZeroTrust.continuing proposal assessment)
+    (accepted : control.step phase transition before effect after) :
+    host.currentAtUse before ∧ host.committed before proposal.after ∧
+      Nonempty (Gateway.ZeroTrust.CommittedPrefix proposal before) ∧
+      host.unknownRetained before proposal.after := by
+  have required := ZeroTrust.usage_retains_core control accepted
+  rw [bound] at required
+  exact ⟨required.2.2.1, required.2.2.2.1.1, required.2.2.2.1.2,
+    required.2.2.2.2.1⟩
+
+#print axioms usage_control_keeps_current_consumption
+
 -- Pure specialization preserves the actual POO publication's original Contract
 -- and all generic framework conditions. It grants no native IO capability.
 theorem gateway_specialization_retains_generic_framework
@@ -86,4 +155,34 @@ theorem continuing_uses_current_state_and_original_consumption
   exact ⟨accepted.2.2.1, accepted.2.2.2.1.2, retained.2.2.1, retained.2.2.2⟩
 
 #print axioms continuing_uses_current_state_and_original_consumption
+
+theorem retained_parent_and_selected_object_reach_gateway
+    {parentObject selectedObject : ZeroTrust.ProfileObject.Object (Gateway.ZeroTrust.framework proposal).required}
+    (requiredParent : ZeroTrust.ProfileObject.Session (Gateway.ZeroTrust.framework proposal).required parentObject)
+    (selected : ZeroTrust.ProfileObject.Session (Gateway.ZeroTrust.framework proposal).required selectedObject)
+    (composition : ZeroTrust.ProfileObject.Composed requiredParent selected)
+    (read : Gateway.ZeroTrust.fromFrameworkObject proposal requiredParent selected = some composition)
+    (accepted : composition.requirement requested actual) :
+    parentObject.read .profile = some composition.parentProfile ∧
+    selectedObject.read .profile = some composition.selectedProfile ∧
+    composition.parentProfile.requirement requested actual ∧
+    (Gateway.ZeroTrust.framework proposal).required requested actual ∧ original.Refines prepared.profile :=
+  Gateway.ZeroTrust.framework_object_preserves_gateway_contract proposal requiredParent selected composition read accepted
+
+#print axioms retained_parent_and_selected_object_reach_gateway
+
+theorem changed_pending_set_invalidates_initial_view (actual : RuntimeView)
+    (changed : actual.pendingPublications ≠ proposal.before.pendingPublications) :
+    ¬ ∃ use : Gateway.ZeroTrust.FinalUse proposal, use.actual = actual := by
+  apply Gateway.ZeroTrust.changed_complete_view_cannot_finalize proposal
+  exact fun same => changed (congrArg RuntimeView.pendingPublications same)
+
+theorem pending_policy_blocks_ongoing_use
+    (projectsBarrier : ∀ view, view.pendingPublications ≠ [] → ¬ host.currentAtUse view)
+    (pending : actual.pendingPublications ≠ []) :
+    ¬ (Gateway.ZeroTrust.continuing proposal assessment).required requested actual :=
+  fun accepted => projectsBarrier actual pending accepted.2.2.1
+
+#print axioms changed_pending_set_invalidates_initial_view
+#print axioms pending_policy_blocks_ongoing_use
 end Weaver.ZeroTrustEnrichment

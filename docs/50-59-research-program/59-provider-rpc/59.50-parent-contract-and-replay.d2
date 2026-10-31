@@ -1,0 +1,102 @@
+vars: { d2-config: { layout-engine: tala; theme-id: 3; pad: 70 } }
+classes: { card: { label.near: center-center; style.font-size: 21; style.border-radius: 12; style.stroke-width: 1 } }
+title: RETAINED CONTRACTS / CURRENT FINAL USE {
+  shape: text
+  near: top-center
+  style.font-size: 32
+  style.bold: true
+}
+parent: Required published parent\nExact source and Contract\nIndependently selected Session\nRetain approved requirements {
+  class: card
+  left: 0
+  top: 0
+  width: 490
+  height: 240
+  style.fill: "#eef3ef"
+}
+child: Selected inherited POO child\nActual C4 / Dataflow object\nSource-bound Session projection\nCannot select its own parent authority {
+  class: card
+  left: 700
+  top: 0
+  width: 490
+  height: 240
+  style.fill: "#eef3ef"
+}
+review: Authorization review contract\nExact Policy / schema / source pair\nBound Delta and replay evidence\nReview the actual publication parent {
+  class: card
+  left: 1400
+  top: 0
+  width: 490
+  height: 240
+  style.fill: "#e7edf4"
+}
+combined: Effective functional requirement\nRequired parent AND selected child\nPreserve actual source projections\nFresh assessment at each new effect {
+  class: card
+  left: 350
+  top: 450
+  width: 490
+  height: 240
+  style.fill: "#e7edf4"
+}
+gateway: Gateway contract join\nOriginal profile / claim / domains\nCurrent publication and owner\nBound review at authority CAS {
+  class: card
+  left: 1050
+  top: 450
+  width: 490
+  height: 240
+  style.fill: "#e7edf4"
+}
+durable: Durable original consumption\nCanonical claim and reservation\nDispatch burn and pending range\nRecovered committed prefix {
+  class: card
+  left: 0
+  top: 900
+  width: 490
+  height: 240
+  style.fill: "#f4f2ec"
+}
+rust: Rust final execution owner\nFresh check after every wait\nSerialize actual callback / enqueue\nCompletion commit follows insertion {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 700
+  top: 900
+  width: 490
+  height: 240
+  style.fill: "#e7edf4"
+}
+output: Bounded queue / transport\nOnly admitted buffers may drain\nOne-use native capability\nReceipt is an observation {
+  class: card
+  left: 1400
+  top: 900
+  width: 490
+  height: 240
+  style.fill: "#f4f2ec"
+}
+unknown: Unknown or interrupted result\nKeep original claim and hold\nPreserve range / consumed prefix\nNo replay and no inferred refund {
+  class: card
+  left: 700
+  top: 1370
+  width: 490
+  height: 220
+  style.fill: "#f4f2ec"
+}
+parent -> combined: Retained requirement { style.font-size: 18 }
+child -> combined: Selected requirement { style.font-size: 18 }
+combined -> gateway: Strengthening contract { style.font-size: 18 }
+review -> gateway: Bound evidence { style.font-size: 18 }
+gateway -> rust: Current deciding view { style.font-size: 18 }
+durable -> rust: Installed original prefix { style.font-size: 18 }
+rust -> output: Guarded final admission { style.font-size: 18 }
+rust -> unknown: Failure / revoke / lost completion {
+  style.font-size: 18
+  style.stroke-dash: 5
+}
+footer: "A root proof does not retain every parent · Preserve the selected commitments\nA solver report is not a send permit · Unknown exposure remains held" {
+  shape: text
+  left: 250
+  top: 1740
+  width: 1450
+  height: 100
+  style.font-size: 24
+  style.font-color: "#5c8b77"
+}

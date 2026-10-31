@@ -122,12 +122,31 @@ package WeaverExecution {
         port semanticEffectObservations : PolicyEvidenceDesign::EffectObservationPort;
     }
     part def CedarSecurityFrameworks {
+        doc /* Architecture alignment is maintained in 59.51-zero-trust-architecture.
+           NIST PE, PA and PEP are logical roles, not language or daemon names.
+           Scheme AA Session/Workflow/Governor owns semantic governance; Rust
+           owns authoritative Cedar assessment and final effect mediation; Go
+           owns cloud identity/protocol integration and control orchestration.
+           Authenticated transport alone never grants application authority. */
+        doc /* Generic ZeroTrust/UsageControl composes pre/ongoing authorization,
+           conditions, witnessed obligation actions and mutation relations over
+           the application's existing transitions. Recovery is not authorization;
+           closure requires terminal AND accounted. Post-use accounting is an
+           application extension, not an imported UCON eventuality theorem.
+           Required identity/resource/context interpretations and freshness cuts
+           must be bound at final use. All native claims require separate evidence. */
         doc /* SPEC owns independent functional Authorization and ZeroTrust
            frameworks, each under its own directory and aggregate entrypoint.
            ZeroTrust/Model, Composition and Continuous define typed requirements,
            adaptation, strengthening and ongoing effect checks. ProfileObject
            interprets them through actual LeanPoo inheritance/Contract/Session.
            The complete ZeroTrust import closure must exclude Gateway. */
+        doc /* A root-indexed profile proof preserves the root, not every extra
+           ancestor requirement under raw POO overrides. Gateway composition
+           must retain the independently required parent Session and selected
+           Session, then conjoin both actual projections. The trusted publisher
+           must bind the required parent's full source/Contract, not its name
+           or a Session selected by the child request. */
         doc /* Gateway.ZeroTrust consumes the generic functions with its own
            publication-indexed admission and operation/authority ledger. Ongoing
            use keeps the original committed prefix and re-assesses current

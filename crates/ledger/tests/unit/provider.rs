@@ -342,6 +342,159 @@ fn historical_publication_replay_cannot_reopen_original_claim_or_dispatch() {
     }
 }
 
+#[test]
+fn final_release_keeps_current_guard_and_unknown_commit_in_one_transaction() {
+    let temp = tempfile::tempdir().expect("temp");
+    let path = temp.path().join("release-order.db");
+    let (mut ledger, plan) = fixture(&path);
+    ledger.enqueue_provider(&plan).expect("reserve");
+    let owner = ledger
+        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+        .expect("consume original");
+    ledger
+        .dispatch_provider(&owner, || ())
+        .expect("durable invocation burn");
+    let release = ledger
+        .prepare_provider_release(&owner, "release-digest", "arrow", 2)
+        .expect("durable unknown range");
+    let inspection = rusqlite::Connection::open(&path).expect("independent observer");
+    inspection
+        .busy_timeout(std::time::Duration::ZERO)
+        .expect("no waiting in negative control");
+    let mut callbacks = 0;
+    let result: weaver_contracts::Result<()> =
+        ledger.release_provider(&owner, release, "arrow", |_| {
+            callbacks += 1;
+            let state: String = inspection
+                .query_row(
+                    "SELECT state FROM provider_releases WHERE family='f' AND node='infer'",
+                    [],
+                    |row| row.get(0),
+                )
+                .expect("read already committed unknown range");
+            assert_eq!(state, "unknown");
+            let dispatched: bool = inspection
+                .query_row(
+                    "SELECT dispatched FROM provider_runs WHERE family='f' AND node='infer'",
+                    [],
+                    |row| row.get(0),
+                )
+                .expect("read already committed burn");
+            assert!(dispatched);
+            let (held, reserved, state): (i64, i64, String) = inspection.query_row(
+                "SELECT t.held,r.reserved,r.state FROM provider_runs r JOIN tasks t ON t.family=r.family WHERE r.family='f' AND r.node='infer'",
+                [], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+            ).expect("durable consumed root and original reservation");
+            assert_eq!((held, reserved, state.as_str()), (4, 4, "unknown"));
+            let claim: String = inspection.query_row(
+                "SELECT kind FROM execution_claims WHERE family='f' AND node='infer'",
+                [], |row| row.get(0),
+            ).expect("canonical original claim");
+            assert_eq!(claim, "stream");
+            let blocked =
+                inspection.execute("UPDATE authority SET fence=fence+1 WHERE singleton=1", []);
+            assert!(
+                matches!(blocked, Err(rusqlite::Error::SqliteFailure(ref error, _))
+            if error.code == rusqlite::ErrorCode::DatabaseBusy)
+            );
+            // The send callback may have exposed bytes; loss of its completion
+            // observation must roll back only the release marker, never the hold.
+            Err(weaver_contracts::Error::Conflict(
+                "test lost completion observation",
+            ))
+        });
+    assert!(result.is_err());
+    assert_eq!(callbacks, 1);
+    drop(inspection);
+    ledger.close().expect("close failed release owner");
+    let mut recovered = Ledger::open(&path).expect("recover");
+    let receipt = recovered
+        .provider_receipt("f", "infer")
+        .expect("inspect")
+        .expect("original");
+    assert_eq!(receipt.events, 2);
+    assert_eq!(receipt.held, 4);
+    assert!(
+        recovered
+            .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+            .is_err()
+    );
+    assert!(
+        recovered
+            .dispatch_provider(&owner, || callbacks += 1)
+            .is_err()
+    );
+    assert_eq!(callbacks, 1);
+    recovered.close().expect("close recovered owner");
+}
+
+/// Expected coverage gap: typed, fenced publication is not a native
+/// Authorization Delta/no-gain evidence admission protocol.
+#[test]
+fn typed_publication_does_not_yet_require_delta_evidence() {
+    let temp = tempfile::tempdir().expect("temp");
+    let path = temp.path().join("delta-publication-gap.db");
+    let (mut ledger, plan) = fixture(&path);
+    let inspection = rusqlite::Connection::open(&path).expect("inspect original task");
+    let record: String = inspection
+        .query_row("SELECT record FROM tasks WHERE family='f'", [], |row| {
+            row.get(0)
+        })
+        .expect("original task record");
+    let task: Task = serde_json::from_str(&record).expect("typed original task");
+    let binding =
+        weaver_policy::bind_provider(&task, &plan, &plan.routes[0]).expect("actual binding");
+    let denied = "forbid(principal,action,resource);";
+    assert!(
+        binding
+            .authorize(
+                denied,
+                weaver_policy::ProviderCheck {
+                    action: "invokeProvider",
+                    sequence: 0,
+                    format: "protobuf",
+                }
+            )
+            .is_err()
+    );
+    assert!(
+        binding
+            .authorize(
+                POLICY,
+                weaver_policy::ProviderCheck {
+                    action: "invokeProvider",
+                    sequence: 0,
+                    format: "protobuf",
+                }
+            )
+            .is_ok()
+    );
+    for (id, expected, fence, policy) in [
+        ("deny-before-delta-review", 0, 2, denied),
+        ("allow-without-delta-evidence", 1, 3, POLICY),
+    ] {
+        let change = weaver_contracts::Publication {
+            operation_id: id.into(),
+            expected_revision: Some(expected),
+            fence,
+            policy: policy.into(),
+            schema: SCHEMA.into(),
+        };
+        ledger
+            .stage_authority(&change)
+            .expect("durable proposal barrier");
+        let outcome = ledger
+            .publish_authority(&change)
+            .expect("typed publication accepts the source command");
+        assert_eq!(
+            outcome.outcome,
+            weaver_contracts::PublicationOutcome::Committed
+        );
+    }
+    drop(inspection);
+    ledger.close().expect("close gap fixture");
+}
+
 /// Expected counterexample: FULL WAL durability does not authenticate freshness
 /// of an externally restored, internally consistent database image.
 #[test]

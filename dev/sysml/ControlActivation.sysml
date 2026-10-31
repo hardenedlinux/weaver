@@ -10,7 +10,42 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Delta registration linearizes at the existing independent commit
+           authority, not at a local projection write or an RPC reply. Its exact
+           original command/artifact registration is immutable and survives owner
+           handoff. Local projection rollback is repaired from that authority;
+           a missing projection blocks final CAS and is not an artifact rejection. */
+        doc /* Final publication must join the authority registry prefix and
+           authenticated registrar incarnation/term in the same authoritative
+           decision. Independent precheck followed by local SQLite commit is
+           insufficient. Source-role TLS/token authorization does not establish
+           registrar incarnation. Current production accepts retained source-role
+           credentials after restart; keep that expected coverage counterexample. */
+        doc /* Publication pending admission is command-specific: a final CAS
+           may resolve its own staged intent while administrative siblings remain.
+           Requiring globally empty pending here deadlocks progress. Provider
+           effects still require the distinct global resolved-pending barrier. */
+        doc /* Publication review binds the independent authoritative parent,
+           exact original command, approved Delta/replay artifact and deciding
+           source cut under one final CAS. Caller-selected parent/evidence and
+           cached prechecks are insufficient. SPEC PublicationReview composes
+           LeanPoo Contract.bindEvidence with generic ZeroTrust requirements;
+           Weaver's existing recovery Step supplies outcome/intent/accounting
+           preservation under an explicit native refinement premise. */
+        doc /* Review registration is immutable per original command ID.
+           Unknown registration or publication replies retain pending intent.
+           Replacement evidence rejects; stale parent/fence is an original
+           terminal rejection, never an implicit rebase. Resolving one proposal
+           preserves siblings. Historical outcomes remain queryable but confer
+           no current execution authority. Production RPC has no Delta artifact
+           field yet: command commitment tests do not qualify review admission. */
         doc /* Native Cedar Policy values and cedar-language GovernanceSource assets project to one exact ordered Cedar policy set. Assets use explicit confined roots and bounded regular-file reads. Unsupported domain obligations reject. The publication carries the exact projected bytes; the native source manifest is compilation evidence and not a runtime permit. */
+        doc /* Reviewed no-gain publication additionally needs exact original
+           parent/profile/source/schema/policy evidence bound at the final CAS.
+           Typed validation, a source credential and a publication receipt do
+           not establish Authorization Delta review. Current Rust publication
+           accepts an authorized widening command without such an artifact;
+           preserve that expected counterexample as an unimplemented target. */
     }
     requirement def ControlActivationAcknowledgment {
         doc /* Go exposes operation ingress only after original-task registration and an exact committed publication acknowledgment. Unknown outcomes cannot activate or trigger automatic rebase. Exact recovery may observe a historical decision without making it current authority. */
