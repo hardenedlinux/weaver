@@ -3,6 +3,21 @@
 
 * Coverage and entrypoint
 
+The primary target is the already running Gateway. Measure Go routing, current
+Cedar decisions, durable admission/budget operations, bounded transport queues
+and guarded stream release separately from dependency compilation, module
+discovery and service startup. The current Scheme source compiler participates
+in configuration/publication before activation; its package-test startup is not
+request latency. Compilation caches may reuse immutable code/facts but may not
+reuse an allow decision across current Policy, history or fence changes.
+
+The present Go integration fixture builds a debug-profile Rust service. Its RPC
+measurements are explicitly debug service/client boundary baselines. Optimized
+Criterion package measurements and these RPC results must not be combined into
+an optimized end-to-end latency claim. Criterion aggregate samples are not an
+independent per-request p99 distribution; concurrent slow-consumer tail latency
+and production-profile end-to-end measurement remain separate obligations.
+
 Every Rust workspace member has =benches/gateway.rs=, a harness-free =gateway=
 benchmark declaration and a workspace-inherited Criterion development dependency.
 The package gate rejects missing targets and production Criterion/ASP dependencies.

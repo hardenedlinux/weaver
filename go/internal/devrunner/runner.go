@@ -37,6 +37,8 @@ type Result struct {
 	Error          string        `json:"error,omitempty"`
 	Duration       string        `json:"duration"`
 	SchemeTiming   *SchemeTiming `json:"schemeTiming,omitempty"`
+	UserCPU        string        `json:"userCpu,omitempty"`
+	SystemCPU      string        `json:"systemCpu,omitempty"`
 }
 type Receipt struct {
 	Revision           string            `json:"revision,omitempty"`
@@ -208,6 +210,16 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	return directory, nil
 }
 func runStage(ctx context.Context, root, directory string, environment []string, stage Stage) Result {
+	return runStageCapture(ctx, root, directory, environment, stage, true)
+}
+
+// The direct-file arm is retained solely for paired tests of the historical
+// output boundary. Both arms use the same public command and admission rules.
+func runStageCapture(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool) Result {
+	return runStageObserved(ctx, root, directory, environment, stage, streamSchemeOutput, nil)
+}
+
+func runStageObserved(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool, onStart func(int)) Result {
 	if stage.Name == "scheme-unit-tests" {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
@@ -229,13 +241,19 @@ func runStage(ctx context.Context, root, directory string, environment []string,
 	cmd.Env = environment
 	var output io.Writer = log
 	var observation *schemeOutput
-	if stage.Name == "scheme-unit-tests" {
+	if stage.Name == "scheme-unit-tests" && streamSchemeOutput {
 		observation = &schemeOutput{destination: log, started: started}
 		output = observation
 	}
 	cmd.Stdout = output
 	cmd.Stderr = output
-	err = cmd.Run()
+	err = cmd.Start()
+	if err == nil {
+		if onStart != nil {
+			onStart(cmd.Process.Pid)
+		}
+		err = cmd.Wait()
+	}
 	finished := time.Now()
 	if observation != nil {
 		result.SchemeTiming = observation.timing(finished)
@@ -249,6 +267,8 @@ func runStage(ctx context.Context, root, directory string, environment []string,
 	}
 	result.Duration = finished.Sub(started).String()
 	if cmd.ProcessState != nil {
+		result.UserCPU = cmd.ProcessState.UserTime().String()
+		result.SystemCPU = cmd.ProcessState.SystemTime().String()
 		code := cmd.ProcessState.ExitCode()
 		result.ExitCode = &code
 	}

@@ -5,6 +5,7 @@ namespace Weaver.NativeExitQualification
 inductive Entry where
   | packageTest
   | diagnostic
+  | instrumentedPackageTest
   deriving DecidableEq
 structure Config where
   expectedChecks : Nat
@@ -104,6 +105,77 @@ theorem natural_pass_still_needs_gateway_policy (_accepted : Qualified c receipt
   obtain ⟨p,stored,bound,current,eligible,wire,policy,fresh⟩ := LlmRouting.actual_dispatch_rechecks_target event changed
   exact ⟨p,wire,policy⟩
 
+theorem instrumented_sdk_is_not_acceptance (profiled : s.entry = .instrumentedPackageTest) :
+    ¬ Qualified c s := by
+  intro accepted
+  have entry := package_entry_required accepted
+  simp [profiled] at entry
+
+namespace TimingStudy
+-- Ordered native observations are premises, not a proof of the OS clock,
+-- dyld implementation, file-cache state or host scheduling fairness.
+structure Cuts where
+  start : Nat
+  discoveryBegin : Nat
+  discoveryEnd : Nat
+  importsBegin : Nat
+  importsEnd : Nat
+  executionBegin : Nat
+  executionEnd : Nat
+  returned : Nat
+  exited : Nat
+
+def Ordered (o : Cuts) : Prop :=
+  o.start ≤ o.discoveryBegin ∧ o.discoveryBegin ≤ o.discoveryEnd ∧
+  o.discoveryEnd ≤ o.importsBegin ∧ o.importsBegin ≤ o.importsEnd ∧
+  o.importsEnd ≤ o.executionBegin ∧ o.executionBegin ≤ o.executionEnd ∧
+  o.executionEnd ≤ o.returned ∧ o.returned ≤ o.exited
+
+theorem observed_partition (ordered : Ordered o) :
+    (o.discoveryBegin-o.start) + (o.discoveryEnd-o.discoveryBegin) +
+    (o.importsBegin-o.discoveryEnd) + (o.importsEnd-o.importsBegin) +
+    (o.executionBegin-o.importsEnd) + (o.executionEnd-o.executionBegin) +
+    (o.returned-o.executionEnd) + (o.exited-o.returned) = o.exited-o.start := by
+  unfold Ordered at ordered
+  omega
+
+theorem bounded_cleanup_does_not_bound_total :
+    ∃ o : Cuts, Ordered o ∧ o.exited-o.returned ≤ 2 ∧ o.exited-o.start > 15 := by
+  exact ⟨⟨0,2,2,2,13,13,15,15,16⟩, by simp [Ordered], by decide, by decide⟩
+
+structure Trial where
+  id : Nat
+  study : Nat
+  artifact : Nat
+  firstUse : Bool
+  native : State
+
+def Matched (a b : Trial) : Prop :=
+  a.study = b.study ∧ a.firstUse = true ∧ b.firstUse = true ∧
+  a.artifact ≠ b.artifact ∧ a.native.entry = .packageTest ∧ b.native.entry = .packageTest
+
+theorem warm_replay_is_not_a_cold_pair (warm : b.firstUse = false) : ¬ Matched a b := by
+  intro pair
+  have cold := pair.2.2.1
+  simp [warm] at cold
+
+theorem new_source_cannot_be_silently_paired (changed : a.study ≠ b.study) : ¬ Matched a b := by
+  intro pair
+  exact changed pair.1
+
+theorem reused_artifact_is_not_independent (same : a.artifact = b.artifact) : ¬ Matched a b := by
+  intro pair
+  exact pair.2.2.2.1 same
+
+-- Appending a successful observation cannot mutate an earlier failed receipt.
+-- Native collectors must also enforce unique slot IDs and exact study keys.
+theorem append_preserves_failed_receipt (present : old ∈ history)
+    (failed : ¬ Qualified c old.native) (next : Trial) :
+    old ∈ history ++ [next] ∧ ¬ Qualified c old.native := by
+  exact ⟨List.mem_append_left _ present,failed⟩
+
+end TimingStudy
+
 #print axioms audit_step
 #print axioms package_entry_required
 #print axioms initialized_audit
@@ -114,4 +186,11 @@ theorem natural_pass_still_needs_gateway_policy (_accepted : Qualified c receipt
 #print axioms wrong_source_is_not_qualified
 #print axioms live_handle_blocks_qualification
 #print axioms natural_pass_still_needs_gateway_policy
+#print axioms instrumented_sdk_is_not_acceptance
+#print axioms TimingStudy.observed_partition
+#print axioms TimingStudy.bounded_cleanup_does_not_bound_total
+#print axioms TimingStudy.warm_replay_is_not_a_cold_pair
+#print axioms TimingStudy.new_source_cannot_be_silently_paired
+#print axioms TimingStudy.reused_artifact_is_not_independent
+#print axioms TimingStudy.append_preserves_failed_receipt
 end Weaver.NativeExitQualification

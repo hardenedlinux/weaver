@@ -119,3 +119,69 @@ and ProviderRpc Lean owners checked. Quint reported thirty-five publication
 scenarios, forty-one provider scenarios and 105 scenarios across the authority
 module's imported closure. The complete fourteen-stage receipt remains bound
 to =cf2af57= rather than being relabeled as a later-source execution.
+
+* Bounded cold-start investigation and Runtime priority
+The historical timeout is not declared repaired. An initial eight-slot
+experiment cloned dependency prefixes, removed product libraries, rebuilt them
+with =gerbil build= and used the same =gerbil test -g -v 5 t= command. Its first
+three completed observations were:
+
+| Slot | Output boundary | Runtime result |
+|------+-----------------+----------------|
+| 0 | Regular file with a diagnostic read observer | FAIL, 15.008740250 s, no Harness output |
+| 1 | Drained pipe | PASS, 11.740627584 s, terminal result at 9.879834250 s |
+| 2 | Drained pipe | FAIL, 15.013553084 s, no Harness output |
+
+The enclosing Go test hit its unchanged ten-minute default watchdog during the
+fourth build. That batch is incomplete, not a qualified paired matrix. Its SDK
+build processes subsequently finished naturally; the unobserved fourth slot is
+not assigned a result. A setup attempt also refused GNU =cp= with BSD clone
+flags; the diagnostic now uses the existing Go/x/sys Darwin =clonefile= API.
+Independent slot invocations and immutable, source-bound compact receipts
+replace the failed batch organization; neither watchdog is increased.
+
+The pipe failure falsifies the claim that replacing regular-file output alone
+reliably repairs cold startup. This initial batch does not separate host load,
+page/signature caches, inode identity or observer effects. Cold scope means new
+prefix paths and fresh product-library builds; it is not an OS-wide cold boot.
+The optional image study holds output constant and varies cloned versus
+hardlinked dependency-image identity. Shared seed hashes are checked before and
+after, and product images are always removed/rebuilt. An unrun study is not
+evidence for a causal conclusion.
+
+Temporary SDK overlays expose collection, individual imports, test execution
+and return boundaries while retaining the original nineteen Cases and complete
+output hash. Two exploratory profiles observed:
+
+| Profile | File discovery | Module imports | Execution | Post-return exit | Whole process |
+|---------+----------------+----------------+-----------+------------------+---------------|
+| Existing prepared prefix | 0.679 ms | 3.776589 s | 0.185873 s | approximately 2.11 s | 7.932098 s |
+| Rebuilt prefix not previously tested | 0.171 ms | 9.011746 s | 1.866710 s | approximately 1.83 s | 14.793552209 s |
+
+These are instrumented diagnostic runs, not original-SDK acceptance. Wall-clock
+phase timestamps are not silently promoted to monotonic deadline receipts. The
+Go collector also records process CPU and the SDK's CPU/real-time observations.
+The profiles show little file-enumeration work in these samples and materially
+larger import/first-execution costs in the latter; they do not uniquely attribute
+the earlier uninstrumented failure after terminal =OK=.
+
+One separate native sample during the first cloned-prefix build found 89 of 92
+main-thread samples under dyld =mapSegments -> fcntl= and three under load
+notifications. A later instrumented test sampled loading/validation and found
+a post-return branch containing 88 of 92 samples under
+=notifyDebuggerUnload=. Sampling is excluded from timing acceptance and does not
+prove every startup has the same dominant wait. Apple's
+[[https://github.com/apple-oss-distributions/dyld/blob/main/dyld/Loader.cpp][published Loader implementation]]
+places signature registration and =F_CHECK_LV= in =mapSegments=. That source
+supports the validation-path interpretation; the sample did not record the
+fcntl argument and is not a captured kernel-call trace of the historical run.
+
+The Runtime priority is now explicit: package preparation/startup remains an
+engineering-cost diagnostic; the primary optimization work measures the already
+running Gateway. The cold-start causal investigation remains open, and no larger
+matrix or SDK packaging optimization is claimed here. The original fifteen-second
+gate and all failures remain intact. Quint now checks twenty-three qualification
+and evidence scenarios; Lean proves the ordered-cut partition, diagnostic-entry
+exclusion, matching requirements and preservation of earlier failed receipts.
+Their clocks, exact source/image identities and native mechanisms remain Host
+premises. See 59.05 for request-path benchmark boundaries.

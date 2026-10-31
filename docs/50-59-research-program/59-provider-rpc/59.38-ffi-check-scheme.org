@@ -70,3 +70,26 @@ receipts stay under ignored =.cache/verification=. Failed source-preparation and
 historical gxi controls remain distinct from the final result. Results and all
 implementation/model changes are delivered through PR 1 only. GitHub CI is
 nonblocking under the requested private-project workflow.
+
+* Runtime priority and separate diagnostic evidence
+The primary performance target is the running Gateway: route selection, current
+Cedar decisions, original claim/budget consumption, bounded queues and actual
+stream release. The implemented Scheme source compiler runs before activation;
+its process startup and package-test discovery are not per-request Gateway
+latency. Scheme routines added to a live request path would require separate
+measurement and the same final Rust authority checks.
+
+Cold package diagnostics remain a separate optional study. They invoke only
+=gerbil build/test=, retain the existing fifteen-second test deadline, preserve
+the nineteen Cases and record failures rather than retrying a slot into success.
+Each matrix slot runs in its own normal Go test process, so compilation does not
+consume an entire multi-slot test process's default watchdog. SDK trace overlays
+are rebuilt only in temporary directories, identify original/modified source
+hashes and are explicitly diagnostic. They never qualify the original SDK.
+
+The existing NativeExitQualification Quint/Lean owners now distinguish original
+package tests from instrumented tests, preserve failed observations across
+successful replays, and require matched source/cold-artifact premises. Ordered
+phase-cut decomposition is conditional on faithful native clocks and event
+boundaries; it proves neither a dyld cause nor a latency bound for an unobserved
+historical run. A short cleanup interval does not bound whole-process time.
