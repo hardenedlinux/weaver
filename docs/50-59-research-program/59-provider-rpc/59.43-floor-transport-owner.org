@@ -10,6 +10,12 @@ unchanged. The [[file:59.43-floor-transport-owner.svg][core topology]] allocates
 introducing a second Gateway, Policy engine or proof owner. This review changes
 models and test references, not production Gateway code or dependency pins.
 
+#+NAME: fig:floor-transport-owner
+#+CAPTION: Independent execution authority and final transport-owner custody.
+#+ATTR_ORG: :width 1400
+#+ATTR_HTML: :width 100% :alt Independent commit floor and Rust transport owner
+[[file:59.43-floor-transport-owner.svg]]
+
 Base topology: one active Rust execution-authority process per security shard,
 containing the floor mutation gate, deciding ledger, broker and credentialed
 executor. Every publication, consumption, account application, history change
@@ -124,6 +130,11 @@ policy, or qualify a same-host local transport with its own peer-identity rules.
 Unix sockets are a transport option, not FFI and not automatic authentication.
 This remains a delivery gap; no listener setting or production code changes in
 this review.
+
+The follow-up [[file:59.44-cloud-rpc-arrow-boundaries.org][cloud/RPC/Arrow review]] specifies the response-release LP,
+queue-capacity waits, unknown release commits, decoder resource limits and
+observation-only reconnect behavior. Provider request admission and response
+queue admission are distinct protected effects under the same original scope.
 
 * Credential and deployment custody
 

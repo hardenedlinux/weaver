@@ -190,6 +190,8 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.42-independent-commit-floor.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.43-floor-transport-owner.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.43-floor-transport-owner.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.44-cloud-rpc-arrow-boundaries.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.44-cloud-rpc-arrow-boundaries.d2' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

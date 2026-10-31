@@ -6,14 +6,14 @@ module AuthorityPublication {
   // Read witnesses refine the existing owners; they allocate no second ledger.
   // assignment denotes the authenticated original profile/claim/domain tuple.
   // Its native payload authentication is an explicit refinement obligation.
-  type ReadView={revision:int,fence:int,assignment:int,stage:int,held:int,next:int}
+  type ReadView={revision:int,fence:int,assignment:int,stage:int,held:int,next:int,domainCut:int}
   type ReadUse={read:ReadView,actual:ReadView}
   // externalCalls is a trace observer outside the modeled store rollback, not
   // an implemented counter service or a second accounting owner.
   type Control={compiled:int,desired:int,registered:bool,ack:bool,active:bool,reads:Set[ReadView],uses:List[ReadUse],externalCalls:int,submits:int}
   var c:Control
   val original=A::authority.records.get(0)
-  val actualView={revision:A::authority.head,fence:A::authority.fence,assignment:0,stage:E::s.stage,held:E::s.held,next:E::s.next}
+  val actualView={revision:A::authority.head,fence:A::authority.fence,assignment:0,stage:E::s.stage,held:E::s.held,next:E::s.next,domainCut:E::s.domainCut}
   val safe=E::safe and A::safe and E::s.calls==c.externalCalls and c.uses.indices().forall(i=>c.uses.nth(i).read==c.uses.nth(i).actual) and
     c.submits<=1 and
     (c.active implies c.compiled>=0 and c.registered and original.outcome==1 and original.payload==c.compiled and c.ack) and
@@ -43,6 +43,9 @@ module AuthorityPublication {
   action invoke=all {c.active,c'=c.with("externalCalls",c.externalCalls+1),E::invoke,A::observe}
   action release=all {c.active,c'=c,E::batch(1,0),A::observe}
   action deliver=all {c'=c,E::deliver,A::observe}
+  // Abstract an authenticated non-Policy budget/history deciding-cut change,
+  // never a Go watch event. Concrete four-prefix projection remains a premise.
+  action domainChange=all {c'=c,E::advanceDomainCut,A::observe}
   action readCurrent=all {c'=c.with("reads",c.reads.union(Set(actualView))),E::observe,A::observe}
   action consumeRead(v:ReadView):bool=all {c.active,c.reads.contains(v),v==actualView,
     c'=c.with("uses",c.uses.append({read:v,actual:actualView})),E::consume(0),A::observe}
@@ -51,7 +54,7 @@ module AuthorityPublication {
   action unsafeReadUse(v:ReadView):bool=all {c.reads.contains(v),
     c'=c.with("uses",c.uses.append({read:v,actual:actualView})),E::unsafeStaleRelease,A::observe}
   action step={nondet v=c.reads.union(Set(actualView)).oneOf()
-    any {compile(true),editSource,register,commit,inspectMissing,inspectUnavailable,acknowledge,recover(0),recover(1),activate,loseReply,restart,publish,transport,admit,consume,burn,invoke,release,deliver,readCurrent,consumeRead(v),releaseRead(v)}}
+    any {compile(true),editSource,register,commit,inspectMissing,inspectUnavailable,acknowledge,recover(0),recover(1),activate,loseReply,restart,publish,domainChange,transport,admit,consume,burn,invoke,release,deliver,readCurrent,consumeRead(v),releaseRead(v)}}
   action prepared=init.then(compile(true)).then(register)
   action ready=prepared.then(commit).then(acknowledge).then(activate)
   action spent=ready.then(admit).then(consume).then(burn).then(invoke)
@@ -80,15 +83,17 @@ module AuthorityPublication {
   run authorityDesiredSourceRecoveryCounterexampleTest=prepared.then(commit).then(editSource).then(unsafeRecoverDesired).expect(not(safe))
   run authorityActivateWithoutOutcomeCounterexampleTest=prepared.then(unsafeActivateWithoutOutcome).expect(not(safe))
   run authorityRetryResetCounterexampleTest=spent.then(unsafeRetry).then(consume).then(burn).then(invoke).expect(not(safe))
-  val queuedView={revision:0,fence:1,assignment:0,stage:1,held:4,next:0}
-  val streamView={revision:0,fence:1,assignment:0,stage:2,held:4,next:0}
+  val queuedView={revision:0,fence:1,assignment:0,stage:1,held:4,next:0,domainCut:0}
+  val streamView={revision:0,fence:1,assignment:0,stage:2,held:4,next:0,domainCut:0}
   run authorityReadBeforeNewCommitCannotConsumeTest=ready.then(admit).then(readCurrent).then(publish).expect(safe).then(consumeRead(queuedView).fail())
   run authorityReadBeforeClaimAdmissionIsStaleTest=ready.then(readCurrent).then(admit)
-    .expect(safe).then(consumeRead({revision:0,fence:1,assignment:0,stage:0,held:0,next:0}).fail())
+    .expect(safe).then(consumeRead({revision:0,fence:1,assignment:0,stage:0,held:0,next:0,domainCut:0}).fail())
   run authorityRestartDiscardsReadWitnessTest=ready.then(admit).then(readCurrent).then(restart).then(recover(0)).then(activate).expect(safe).then(consumeRead(queuedView).fail())
   run authorityLostReplyRecoveryNeedsFreshReadTest=ready.then(admit).then(readCurrent).then(loseReply).then(restart).then(recover(0)).then(activate).then(readCurrent).then(consumeRead(queuedView)).expect(safe and E::s.calls==0 and E::s.held==4)
   run authorityPartialReleaseChangesHistoryViewTest=spent.then(readCurrent).then(releaseRead(streamView)).expect(safe and E::s.next==1 and E::s.held==4).then(releaseRead(streamView).fail())
   run authorityReadCannotRelabelAssignmentTest=ready.then(admit).then(readCurrent).expect(safe).then(consumeRead(queuedView.with("assignment",1)).fail())
+  run authorityBudgetHistoryChangeInvalidatesQueuedReadTest=ready.then(admit).then(readCurrent).then(domainChange).expect(safe).then(consumeRead(queuedView).fail())
+  run authorityBudgetHistoryChangeInvalidatesReleaseReadTest=spent.then(readCurrent).then(domainChange).expect(safe).then(releaseRead(streamView).fail())
   run authorityHistoricalReadCounterexampleTest=spent.then(readCurrent).then(publish).then(unsafeReadUse(streamView)).expect(not(safe))
   run authorityPartialHistoryReadCounterexampleTest=spent.then(readCurrent).then(release).then(unsafeReadUse(streamView)).expect(not(safe))
   run authorityWholeStoreRollbackCounterexampleTest=spent.then(unsafeSnapshotRollback).expect(not(safe) and c.externalCalls==1 and E::s.calls==0 and A::authority.head==0)

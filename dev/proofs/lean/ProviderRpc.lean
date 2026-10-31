@@ -341,6 +341,176 @@ theorem release_binding_and_execution_composition
   ⟨safe_run execution history, invocation_history_run admission history,
     release_run_preserves_original_binding release releases⟩
 
+/- Transport envelope in the existing provider owner. Context is the full
+   authenticated deciding view supplied by the existing floor owner, not a
+   second Policy/history/account evaluator. A native mapping must cover original
+   scope, profile, Policy/schema, shared budget, history and owner coordinates.
+   Batch values are immutable owned data; queue admission is not peer receipt. -/
+namespace Flow
+
+structure Batch (Key Context : Type) where
+  binding : ReleaseEvent Key
+  context : Context
+  first : Nat
+  rows : Nat
+  allowed : Nat → Prop
+
+def BatchSafe (b : Batch Key Context) : Prop :=
+  ReleaseBound b.binding ∧ RowsAuthorized b.binding.requestedEncoding b.allowed b.first b.rows ∧
+  0 < b.rows ∧ b.rows ≤ 32 ∧ (b.binding.requestedEncoding = Encoding.protobuf → b.rows = 1)
+
+structure Pipe (Key Context : Type) where
+  core : Releases Key
+  context : Context
+  originalPlan : Key
+  authorize : Context → Nat → Prop
+  session : Nat
+  encoding : Encoding
+  stopped : Bool := false
+  queue : List (Batch Key Context) := []
+  slot : Bool := false
+  pending : Option (Batch Key Context) := none
+  token : Bool := false
+  commitPending : Bool := false
+
+def Eligible (s : Pipe Key Context) (b : Batch Key Context) : Prop :=
+  BatchSafe b ∧ b.context = s.context ∧ b.allowed = s.authorize s.context ∧
+  b.binding.requestedPlan = s.originalPlan ∧ b.binding.currentSession = s.session ∧
+  b.binding.requestedEncoding = s.encoding ∧ s.stopped = false
+
+def CanEmit (s : Pipe Key Context) (b : Batch Key Context) : Prop :=
+  s.slot = true ∧ s.pending = some b ∧ s.token = true ∧ Eligible s b
+
+def Capacity (s : Pipe Key Context) : Prop :=
+  s.queue.length + (if s.slot then 1 else 0) ≤ 2
+
+def Continuations (s : Pipe Key Context) : Prop :=
+  (s.token = true → ∃ b, s.pending = some b ∧ s.commitPending = false ∧ b.binding.currentSession = s.session) ∧
+  (s.commitPending = true → ∃ b, s.pending = some b ∧ s.token = false)
+
+def Safe (cost : Nat) (s : Pipe Key Context) : Prop :=
+  ReleaseSafe cost s.core ∧ Capacity s ∧ (∀ b ∈ s.queue, BatchSafe b) ∧ Continuations s
+
+inductive Step : Pipe Key Context → Pipe Key Context → Prop where
+  | reserve (s) (room : s.queue.length < 2) (free : s.slot = false) (live : s.stopped = false) :
+      Step s {s with slot := true}
+  | dropSlot (s) : Step s {s with slot := false}
+  | prepare (s b) (slot : s.slot = true) (fresh : s.pending = none) (current : Eligible s b) :
+      Step s {s with pending := some b, token := true}
+  | enqueue (s b) (ready : CanEmit s b) (affine : b.binding.serial ∉ s.core.emitted.map ReleaseEvent.serial) :
+      Step s {s with
+        core := {s.core with emitted := b.binding :: s.core.emitted}
+        queue := s.queue ++ [b]
+        slot := false
+        token := false
+        commitPending := true}
+  | commitRelease (s) (live : s.commitPending = true) :
+      Step s {s with pending := none, commitPending := false}
+  | publishContext (s context) : Step s {s with context := context}
+  | cancel (s) : Step s {s with stopped := true}
+  | crash (s) : Step s {s with session := s.session + 1, slot := false, token := false, commitPending := false}
+  | dequeue (s b tail) (queued : s.queue = b :: tail) : Step s {s with queue := tail}
+  | discardQueue (s) : Step s {s with queue := []}
+  | reconnectOrObserve (s) : Step s s
+
+variable {Key Context : Type} {s t : Pipe Key Context}
+
+theorem release_projection (event : Step s t) : ReleaseStep s.core t.core := by
+  cases event with
+  | enqueue b ready affine => exact .enqueue _ _ ready.2.2.2.1.1 affine
+  | _ => exact .rejectOrObserveOrRestart _
+
+theorem step_preserves_capacity (capacity : Capacity s) (event : Step s t) : Capacity t := by
+  cases event <;> simp_all [Capacity, CanEmit] <;> omega
+
+theorem step_preserves_batch_authority
+    (known : ∀ b ∈ s.queue, BatchSafe b) (event : Step s t) : ∀ b ∈ t.queue, BatchSafe b := by
+  cases event <;> simp_all [CanEmit, Eligible] <;> grind
+
+theorem step_preserves_continuations (known : Continuations s) (event : Step s t) : Continuations t := by
+  cases event <;> simp_all [Continuations, CanEmit, Eligible] <;> grind
+
+theorem safe_step (safe : Safe cost s) (event : Step s t) : Safe cost t :=
+  ⟨release_step_preserves_original_binding safe.1 (release_projection event),
+   step_preserves_capacity safe.2.1 event, step_preserves_batch_authority safe.2.2.1 event,
+   step_preserves_continuations safe.2.2.2 event⟩
+
+inductive Run : Pipe Key Context → Pipe Key Context → Prop where
+  | refl (state : Pipe Key Context) : Run state state
+  | next {a b c : Pipe Key Context} : Run a b → Step b c → Run a c
+
+theorem safe_run (safe : Safe cost s) (history : Run s t) : Safe cost t := by
+  induction history with
+  | refl => exact safe
+  | next prior event ih => exact safe_step ih event
+
+theorem projects_existing_release_history (history : Run s t) : ReleaseRun s.core t.core := by
+  induction history with
+  | refl => exact .refl _
+  | next prior event ih => exact .next ih (release_projection event)
+
+theorem stale_context_blocks_even_reserved_slot (stale : b.context ≠ s.context) : ¬ CanEmit s b := by
+  intro ready
+  exact stale ready.2.2.2.2.1
+
+theorem observed_cancellation_blocks_release (stopped : s.stopped = true) : ¬ CanEmit s b := by
+  simp_all [CanEmit, Eligible]
+
+theorem final_guard_checks_actual_owner_rows (ready : CanEmit s b) (within : offset < b.rows) :
+    s.authorize s.context (b.first + offset) := by
+  rcases ready with ⟨_, _, _, bounds, _, rows, _, _, _, _⟩
+  have admitted := bounds.2.1 offset within
+  rw [rows] at admitted
+  exact admitted
+
+theorem original_plan_survives_batching (ready : CanEmit s b) : b.binding.preparedPlan = s.originalPlan := by
+  rcases ready with ⟨_, _, _, bounds, _, _, plan, _, _, _⟩
+  exact bounds.1.1.trans plan
+
+theorem crash_cannot_recreate_unknown_release (s : Pipe Key Context) (b : Batch Key Context) :
+    ¬ CanEmit {s with session := s.session + 1, slot := false, token := false, commitPending := false} b := by
+  simp [CanEmit]
+
+theorem uncertain_pending_survives_step
+    (pending : s.pending = some batch) (noToken : s.token = false) (noCommit : s.commitPending = false)
+    (event : Step s t) : t.pending = some batch ∧ t.token = false ∧ t.commitPending = false := by
+  cases event <;> simp_all [CanEmit]
+
+theorem uncertain_pending_survives_reconnect_history
+    (pending : s.pending = some batch) (noToken : s.token = false) (noCommit : s.commitPending = false)
+    (history : Run s t) : t.pending = some batch ∧ t.token = false ∧ t.commitPending = false := by
+  induction history with
+  | refl => exact ⟨pending, noToken, noCommit⟩
+  | next prior event ih => exact uncertain_pending_survives_step ih.1 ih.2.1 ih.2.2 event
+
+theorem transport_history_preserves_original_hold (safe : Safe cost s) (history : Run s t) :
+    t.core.held = cost ∧ (∀ b ∈ t.queue, BatchSafe b) :=
+  ⟨(safe_run safe history).1.2.2, (safe_run safe history).2.2.1⟩
+
+/-- Composes existing execution and release laws; no account arithmetic or
+second authorization machine is reconstructed in the transport envelope. -/
+theorem execution_and_backpressure_composition
+    (execution : Weaver.ProviderRpc.Safe cost budget a) (invocations : InvocationHistorySafe a)
+    (executed : Weaver.ProviderRpc.Run cost budget a b) (pipe : Safe cost s) (flow : Run s t) :
+    Weaver.ProviderRpc.Safe cost budget b ∧ InvocationHistorySafe b ∧
+      ReleaseSafe cost t.core ∧ Capacity t ∧ t.core.held = cost := by
+  have composed := release_binding_and_execution_composition execution invocations executed pipe.1
+    (projects_existing_release_history flow)
+  exact ⟨composed.1, composed.2.1, composed.2.2, (safe_run pipe flow).2.1,
+    (transport_history_preserves_original_hold pipe flow).1⟩
+
+#print axioms release_projection
+#print axioms safe_run
+#print axioms stale_context_blocks_even_reserved_slot
+#print axioms observed_cancellation_blocks_release
+#print axioms final_guard_checks_actual_owner_rows
+#print axioms original_plan_survives_batching
+#print axioms crash_cannot_recreate_unknown_release
+#print axioms uncertain_pending_survives_reconnect_history
+#print axioms transport_history_preserves_original_hold
+#print axioms execution_and_backpressure_composition
+end Flow
+
 /- A source commitment identifies bytes; it does not select between conflicting
    provider fields. The native decoder must refine this typed request premise.
    Token caps are not money, pricing proofs, usage receipts or refund authority. -/

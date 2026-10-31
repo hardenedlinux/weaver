@@ -5,6 +5,10 @@ package ProviderRpc {
     }
     requirement def TransportSetupIsolation {
         doc /* Connection setup retains caller cancellation and deadlines. Transport reconnects do not issue application RPCs, reauthorize release, reset spent roots or refund unknown holds. Initial connection backoff is distinct from SDK operation retry. Native capacity and fresh Cedar guards still decide every effect. */
+        doc /* A new HTTP/2 connection, MCP session, A2A task or client ACP handle
+           cannot adopt the original stream's cancelled output context, pending
+           range or live release token. Recover exact original observations;
+           reconnecting a configuration watch is not replaying an effect. */
     }
     requirement def CommittedProviderRouting {
         doc /* Go proposes an exact original task, body and ordered route commitment. Rust selects one permitted configured route before durable consumption. */
@@ -29,15 +33,32 @@ package ProviderRpc {
     }
     requirement def EncodingAuthorityEquivalence {
         doc /* Protobuf events and optional Arrow IPC batches use the same row-by-row current Cedar and fence guard before bounded queue admission. */
+        doc /* Fix encoding for each live RPC: one Protobuf event or at most 32
+           Arrow rows. Validate every row, schema, ordering, null/trailing content
+           and actual original-stream binding. An admitted batch is immutable;
+           changing encoding, schema, destination or context requires rejection,
+           not relabeling. Encoded-byte bounds alone are not a decoded-allocation
+           bound, and batching never increases the semantic or monetary budget. */
     }
     requirement def ProviderUnknownRetention {
         doc /* Partial request or SSE delivery, lost response and interrupted completion retain the original reservation and canonical identity. Provider usage is observational, not settlement authority. */
+        doc /* Queue insertion may occur before its ledger transaction commits.
+           A frame can be observed despite a lost/failed release commit; preserve
+           the unknown range and original hold. Frame drain, discard, decoder
+           success, HTTP/2 ACK and DONE do not prove final account/history outcome.
+           Go observations may propose a next step, never execute it directly. */
     }
     requirement def WorkspaceBenchmarkCoverage {
         doc /* Each Rust workspace member declares an executable benchmark target. Dependency versions are inherited from the workspace, and benchmarks remain distinct from safety and deployment qualification. */
     }
     requirement def ReservedAuthorityAdmission {
         doc /* Execution, source publication and canonical observation retain independent bounded native capacity. Authentication precedes lane selection. Caller disconnect does not release a tracked worker's slot. Publication is effective only after its deciding CAS commits. */
+        doc /* Reserve output queue capacity outside the deciding lock. Capacity
+           credit is not Policy or budget authority: recheck full deciding cut,
+           every row and observed cancellation after waiting, inside final queue
+           admission. Keep bounded native capacity until the actual worker ends.
+           Two private frames do not bound HTTP/2, network or Go application
+           buffers; those domains require their own limits and verification. */
     }
     requirement def ConnectionCustodyBound {
         doc /* Every accepted TCP connection owns capacity before TLS and retains it through actual socket destruction. TLS completion and peer loss cannot return capacity early. Stalled handshakes have a fixed deadline; shutdown drops listener reservations and drains owned resources. */
@@ -56,10 +77,21 @@ package ProviderRpc {
     }
     requirement def OriginalReleaseCapability {
         doc /* Each affine response-release token binds the immutable original plan commitment, prepared encoding and live ledger session, independently of its response batch digest. Equal payloads cannot transfer release between plans or reinterpret encoding. Reject, restart and stale-owner recovery preserve unknown releases and shared holds. */
+        doc /* Final use additionally joins the authenticated current profile,
+           shared budget/history and owner context supplied by the existing floor
+           owner. A queued request cannot silently adopt a repaired projection.
+           Persisting only Arrow bytes/sequence is not recoverable authorization. */
     }
     item def OriginalPlan;
     item def StreamEvent;
-    item def EncodedFrame;
+    item def EncodedFrame {
+        doc /* Logical evidence envelope, not newly implemented wire fields.
+           Live authenticated RPC/request context binds the original operation,
+           negotiated encoding, fixed schema and ordered sequence range. A cached
+           frame detached from that context cannot authorize a new stream/effect.
+           Already admitted data can drain after later revocation; that is not a
+           fresh release. Exact peer/application delivery is not a queue receipt. */
+    }
     item def AuthorityPublication;
     port def PlanPort { out item proposal : OriginalPlan; }
     port def EventPort { out item delta : StreamEvent; }
@@ -68,11 +100,38 @@ package ProviderRpc {
     part def SourcePublisher { port authority : PublicationPort; }
     part def RustSourceIngress { port authority : ~PublicationPort; port published : PublicationPort; }
     part def RustSourceWorker { port command : ~PublicationPort; port decided : PublicationPort; }
-    part def GoRoutingControl { port proposal : PlanPort; }
+    part def GoRoutingControl {
+        doc /* RPC view of the existing Go cloud/protocol integration owner.
+           Kubernetes watches, SDK health and discovered routes are typed source
+           candidates. Go validates/consumes response data under the original
+           stream context, applies bounded backpressure and propagates cancellation.
+           A receive callback must not directly invoke tools, refund money or
+           advance Scheme Session without authoritative terminal/history evidence
+           and fresh Rust admission of the next proposal. */
+        port proposal : PlanPort;
+        port received : ~FramePort;
+    }
     part def RustGrpcOwner { port proposal : ~PlanPort; port forwarded : PlanPort; }
     part def RustProviderBroker { port proposal : ~PlanPort; port response : EventPort; port authority : ~PublicationPort; }
     part def RustCedarRelease { port response : ~EventPort; port encoded : FramePort; }
-    part def ProtobufOrArrowEncoder { port encoded : ~FramePort; }
+    part def ProtobufOrArrowEncoder {
+        doc /* Pure owned encoding. Current Rust encoding runs inside the release
+           guard; moving it outside requires immutable frozen bytes and a fresh
+           final join. Encoder output is never itself an execution capability. */
+        port encoded : ~FramePort;
+        port frames : FramePort;
+    }
+    part def RustBoundedOutput {
+        doc /* Existing private gRPC output queue, not another transport process.
+           Reserve capacity before release preparation; the same deciding guard
+           spans final row checks, encoding and queue insertion. Queue admission
+           is the response-release LP; provider-request socket admission remains
+           the distinct LP in WeaverExecution. Observe cancellation immediately
+           before enqueue, then retain uncertainty if receiver loss/commit failure
+           races that insertion. Transport buffers may drain accepted data. */
+        port frames : ~FramePort;
+        port stream : FramePort;
+    }
     part providerPath {
         part control : GoRoutingControl;
         part source : SourcePublisher;
@@ -82,6 +141,7 @@ package ProviderRpc {
         part broker : RustProviderBroker;
         part guard : RustCedarRelease;
         part encoding : ProtobufOrArrowEncoder;
+        part output : RustBoundedOutput;
         connect control.proposal to rpc.proposal;
         connect source.authority to publication.authority;
         connect publication.published to sourceStore.command;
@@ -89,6 +149,8 @@ package ProviderRpc {
         connect rpc.forwarded to broker.proposal;
         connect broker.response to guard.response;
         connect guard.encoded to encoding.encoded;
+        connect encoding.frames to output.frames;
+        connect output.stream to control.received;
         attribute maximumRoutes : Integer = 8;
         attribute maximumRequestBytes : Integer = 1048576;
         attribute maximumSseEventBytes : Integer = 65536;

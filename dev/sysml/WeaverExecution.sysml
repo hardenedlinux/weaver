@@ -100,6 +100,18 @@ package WeaverExecution {
            ownership and per-release authorization apply to either encoding.
            Scheme/Rust process-local C ABI is a separate boundary, not the
            default communication mechanism between Go and Rust services. */
+        doc /* Discovery/watch caches, route candidates and transport flow credits
+           never publish their own authority. Preserve original canonical identity
+           on protocol reconnect, and propagate cancellation to the original RPC.
+           Delivered data can drive observation/proposal logic; any follow-up tool
+           or provider effect returns to Rust final admission. A receive callback
+           is not an exception to provider credential or execution custody. */
+        doc /* The same rule applies to cloud SDKs: an agent-triggered Kubernetes
+           mutation is a tool effect, not a discovery watch. Base Go integration
+           observes or compiles a canonical proposal; it cannot use SDK-managed
+           HTTP/retry hooks to perform that effect outside Rust. A separately
+           delegated executor would need its own qualified final-hop contract
+           before enablement; none is implied by importing a Go client library. */
         port proposals : ProposalPort;
         port observations : ~OutcomePort;
         port sourceCandidates : ~PolicyEvidenceDesign::CandidatePort;

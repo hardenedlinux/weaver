@@ -188,6 +188,8 @@
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderRPCIdentityAndCancellation"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_name_is_not_key_authority"}]},
   {"id":"TransportSetupIsolation","witnesses":[
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run reconnectCannotUncancelOriginalStreamTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem crash_cannot_recreate_unknown_release"},
     {"file":"go/internal/gatewayclient/connection_test.go","pattern":"func TestConnectionSetupRetainsCallerDeadlineAndCancellation"},
     {"file":"go/dev/provider_startup_test.go","pattern":"func TestProviderFreshImageAndRestartStartup"},
     {"file":"dev/proofs/quint/GatewayComposition.qnt","pattern":"run reconnectRetainsSpentRootTest"},
@@ -226,12 +228,20 @@
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run sdkRetryCannotConsumeAgainTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem consumed_unknown_retains_original_hold"}]},
   {"id":"EncodingAuthorityEquivalence","witnesses":[
+    {"file":"go/internal/gatewayclient/arrow_test.go","pattern":"func TestArrowWireBoundDoesNotBoundDecodedText"},
+    {"file":"go/internal/gatewayclient/arrow_test.go","pattern":"func TestArrowInvalidLaterRowReturnsNoPartialBatch"},
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run preparedEncodingCannotSwitchTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem final_guard_checks_actual_owner_rows"},
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderArrowChecksEveryRow"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem arrow_cannot_weaken_row_authority"}]},
   {"id":"ProviderUnknownRetention","witnesses":[
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run enqueueThenLostCommitRetainsUnknownTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem transport_history_preserves_original_hold"},
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderPartialRequestAndRestartRetainUnknownClaim"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run unknownRefundCounterexampleTest"}]},
   {"id":"ReservedAuthorityAdmission","witnesses":[
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run returnedCapacityDoesNotAuthorizeStaleReleaseTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem execution_and_backpressure_composition"},
     {"file":"crates/server/tests/unit/admission.rs","pattern":"async fn saturated_detached_execution_preserves_publication_and_observation_custody"},
     {"file":"go/dev/provider_capacity_test.go","pattern":"func TestProviderSaturatedExecutionPreservesRevocationAndObservation"},
     {"file":"dev/proofs/quint/AuthorityAdmission.qnt","pattern":"run sharedLaneStarvationCounterexampleTest"},
@@ -271,6 +281,8 @@
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run missingFinalCancellationCheckCounterexampleTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem cancellation_and_original_hold_composition"}]},
   {"id":"OriginalReleaseCapability","witnesses":[
+    {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityBudgetHistoryChangeInvalidatesReleaseReadTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem original_plan_survives_batching"},
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn equal_batch_digests_cannot_transfer_release_between_original_nodes"},
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn release_encoding_cannot_change_after_preparation"},
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn release_capabilities_bind_plan_encoding_and_restart_session"},
