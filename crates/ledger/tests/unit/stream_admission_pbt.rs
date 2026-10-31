@@ -1,7 +1,11 @@
 //! Model-based admission properties. Proptest owns generation and shrinking;
 //! model transitions never depend on whether the real ledger accepted a command.
 use super::stream_properties::{fixture, message};
-use proptest::{prelude::*, test_runner::TestCaseResult};
+use proptest::{
+    collection, prop_assert, prop_assert_eq, prop_oneof, proptest,
+    strategy::{Just, Strategy},
+    test_runner::TestCaseResult,
+};
 use std::{collections::BTreeSet, path::PathBuf};
 use weaver_contracts::{MessageState, StreamContract};
 use weaver_ledger::Ledger;
@@ -43,14 +47,10 @@ fn command_strategy() -> impl Strategy<Value = Command> {
     ]
 }
 fn trace_strategy() -> impl Strategy<Value = Vec<Command>> {
-    (
-        key_strategy(),
-        prop::collection::vec(command_strategy(), 1..32),
-    )
-        .prop_map(|(first, tail)| {
-            // Every generated/shrunk trace exercises at least one admissible command.
-            std::iter::once(Command::Admit(first)).chain(tail).collect()
-        })
+    (key_strategy(), collection::vec(command_strategy(), 1..32)).prop_map(|(first, tail)| {
+        // Every generated/shrunk trace exercises at least one admissible command.
+        std::iter::once(Command::Admit(first)).chain(tail).collect()
+    })
 }
 
 #[derive(Default)]

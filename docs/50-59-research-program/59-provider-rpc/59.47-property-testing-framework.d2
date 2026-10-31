@@ -1,0 +1,67 @@
+# Core developer-framework relationships; evidence and bounds belong in Org.
+direction: down
+vars: {d2-config: {layout-engine: elk; theme-id: 3; pad: 60}}
+classes: {
+  card: {
+    width: 410
+    height: 150
+    style.font-size: 21
+    style.border-radius: 12
+    style.stroke-width: 1
+  }
+}
+title: PROPERTY TESTING FRAMEWORK {
+  shape: text
+  near: top-center
+  style.font-size: 30
+  style.bold: true
+}
+proof: Existing proof owners\nQuint schedules / Lean and Cedar laws {
+  class: card
+  style.fill: "#eef0f6"
+}
+contract: Property contract\nOriginal task / claim / budget / fence {
+  class: card
+  style.fill: "#e7edf4"
+}
+rust: Rust / proptest\nGeneration / shrinking / replay {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  style.fill: "#f3eee9"
+}
+go: Go / testing.F\nCorpus / coverage / native fuzzing {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  style.fill: "#e8f2f5"
+}
+trace: Typed input / command trace\nPositive paths and invalid classes {
+  class: card
+  style.fill: "#f1f4f1"
+}
+model: Independent reference model\nPreconditions / expected outcome {
+  class: card
+  style.fill: "#eef3ef"
+}
+driver: Implementation driver\nPublic Rust / Go APIs\nReal storage and transport {
+  class: card
+  style.fill: "#e7edf4"
+}
+oracle: Refinement oracle\nCompare every relevant prefix {
+  class: card
+  style.fill: "#eef3ef"
+}
+replay: Framework shrink / replay\nPreserve causal preconditions\nRetain the minimal failure {
+  class: card
+  style.fill: "#f6efe4"
+}
+proof -> contract: assumptions / established laws {style.stroke-dash: 4}
+contract -> rust
+contract -> go
+rust -> trace
+go -> trace
+trace -> model
+trace -> driver
+model -> oracle
+driver -> oracle
+oracle -> replay: failing property
+replay -> trace: minimal replay {style.stroke-dash: 4}

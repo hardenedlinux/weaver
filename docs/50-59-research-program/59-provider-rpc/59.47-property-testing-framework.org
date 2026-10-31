@@ -13,6 +13,10 @@ Quint searches protocol/fault schedules; Lean proves stated composition laws
 with Host premises and reuses cedar-poo-spec. These roles complement property
 tests and do not substitute one another's evidence.
 
+#+caption: Framework-owned generation, independent refinement and minimal replay.
+#+attr_html: :width 1400
+[[file:59.47-property-testing-framework.svg]]
+
 * Required property design before Runtime changes
 For each change, record the invariant and its exact native boundary first.
 Then specify typed commands/inputs, valid/invalid preconditions, an independent
@@ -72,3 +76,11 @@ Use the native engine to replay a minimal failure; do not create a script that
 reconstructs another authorization/accounting implementation. Framework case
 counts and fuzz execution counts describe finite testing, not Lean proofs,
 exhaustive Quint checking, production performance or deployed fault admission.
+
+* Retained framework admission failures
+The first whole-workspace check of the new ledger suite failed ASP deny
+admission (=RUST-MOD-R010=) because it used a prelude glob import. Explicit
+proptest owner imports repair that layout violation; the deny gate is unchanged.
+The earlier focused property pass did not qualify whole-workspace style
+admission. Likewise, a property function's pass count is distinct from the
+framework's configured generated-case count and the Go engine's execution count.
