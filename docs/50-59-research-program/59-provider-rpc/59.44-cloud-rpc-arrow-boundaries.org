@@ -269,6 +269,7 @@ constructor pattern arity; the final file elaborates without admitted proofs.
 
 | Executed check | Observed result |
 |----------------+-----------------|
+| Standard =check-go= at =0d591b2e71ae47b87150752125cf04453d128aa4= | 20/20 stages passed with committed-source checks before/after, both new native PBT stages and real provider integration; ignored latest structured receipt retained |
 | Normal Go =go test -race ./...= | All packages passed, including Project/SysML and development-stage ownership checks |
 | Real provider suite =go test -race -tags=integration ./dev -run '^TestProvider' -count=1= | Passed in 31.097 seconds; actual Rust server and mTLS/HTTPS, not an untagged no-tests invocation |
 | =FuzzArrowAllocationBudget=, three seconds | 202,914 executions, twelve workers; minimized original failure retained as a corpus entry |
