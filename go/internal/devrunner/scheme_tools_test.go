@@ -108,7 +108,8 @@ func TestSchemeQualificationStaysWithPreparedSchemeOwner(t *testing.T) {
 	found := false
 	for _, stage := range stages {
 		if stage.Name == "scheme-rooted-sdk-integration" {
-			found = strings.Contains(strings.Join(stage.Args, " "), "scheme-qualification")
+			args := strings.Join(stage.Args, " ")
+			found = strings.Contains(args, "weaver-governance/scheme-qualification") && strings.Contains(args, "weaver-server/governance-qualification") && strings.Contains(args, "-p weaver-server")
 		}
 	}
 	if !found {

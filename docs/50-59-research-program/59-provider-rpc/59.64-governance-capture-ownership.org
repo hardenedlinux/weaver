@@ -35,7 +35,7 @@ that local commitment format is not the Scheme-to-Rust object transport.
 |-------+---------------------------------------|
 | Scheme | Typed scope, actual governed producer, bounded single completed output, duplicate fuse and late-sink fence |
 | Rust host / pinned upstream SDK | Assemble the admitted VM/program graph, bind its actual export, retain a strong result root, copy/validate into Rust-owned values before await/queue and release roots on the owner thread |
-| Go | Existing typed publication/routing and reconciliation; the current integration still uses its compiler/artifact adapter after capture |
+| Go | Typed producer Bootstrap, publication/routing and reconciliation; the deployed Scheme file entry still uses the compiler/artifact adapter |
 | Quint | Existing boundary evidence now requires one emission, completion and an unpoisoned capture; existing borrow/VM restart and source/fence schedules remain shared |
 | Lean | Three conditional refusal laws strengthen the existing BoundaryContext; they do not prove Gambit mutexes, native ABI provenance, allocation or durability |
 
@@ -386,8 +386,8 @@ initializer, not a runtime CLI or evaluator service. The production converter
 forbids unsafe code; only the integration test admits documented linker/export
 binding. Root package =gerbil build/test= remains the Scheme validation entry.
 The existing Go process/file adapter is not removed or silently presented as the
-native production host. Server embedding and replacement of that adapter require
-separate actual authority/publication/executor qualification.
+native production host. Actual server embedding is qualified below; deployment
+replacement still requires installing the approved producer graph and lifecycle.
 
 | Representation | Owner and purpose |
 |----------------+-------------------|
@@ -1020,3 +1020,108 @@ fixed-SPEC Lean bridge rebuilt, and all three new catalog laws report no axioms.
 They prove the conditional immutable-map properties stated above, not live RPC
 authentication or canonical source recovery. Earlier cold-readiness and linker
 failures retain their own status; this round does not relabel them as repaired.
+
+* Authenticated compilation and typed control publication
+
+=CompileSource= accepts only a bounded approved producer name. It does not
+accept replacement source data, a claimed authority, a module path or code.
+Rust authenticates the actual mTLS leaf and credential for the source role,
+reads the durable source authority, selects the sealed catalog entry and runs
+the existing bounded owner lane. After the owned result returns, Rust reads
+authority again for the same caller and requires exact equality. No source SQL
+lane remains occupied during the Scheme call: rotation can complete while
+compilation is active, and a retired caller cannot receive its late result.
+
+The existing authority read can enroll an authenticated source when the source
+store is empty. Compilation does not stage a Policy, register a task, commit a
+publication, reserve an execution budget or send external bytes. Missing catalog,
+wrong role, stale source, terminal owner, contract failure and oversize output
+refuse. A compiled response must fit the existing 4 MiB Protobuf RPC bound.
+This is distinct from the 8 MiB cumulative typed source text bound and the
+JSON/YAML encoded ingress bound. Their accepted byte sets are not identical.
+
+Go =BootstrapProducer= decodes the concrete Protobuf artifact, rejects unknown
+message fields and invalid contracts, checks the producer echo, and reobserves
+source authority. It then uses the existing staged publication/task registration
+and final publication CAS protocol. =FreezeBundle= copies maps, slices, optional
+profiles and revision values directly into independent typed ownership; it no
+longer JSON-encodes a Bundle merely to copy it. Callers must not mutate an input
+concurrently with its copy. The private result cannot follow later caller edits.
+
+A reply authenticates knowledge at its admission checks, not future authority.
+Rotation or a new Policy/history commit after those checks still invalidates
+later publication or execution through the existing deciding CAS. No response
+or successful compilation authorizes a final send. No retry is added to the
+compilation client; loss requires reconciliation of the original publication,
+not a new family, budget or execution opportunity.
+
+The public embedding API now joins approved compilation to Go Bootstrap. The
+default deployed environment entry still selects the historical Scheme
+process/file compiler for Scheme files. Replacing that entry requires an
+explicitly installed approved producer graph and its deployment lifecycle;
+the fixture's static catalog is not that deployment. This remaining work must
+not be hidden by the passing embedded bridge. Internal Scheme canonical JSON
+commitments and Cedar/provider JSON documents also remain; none is the
+Scheme/Rust FFI carrier.
+
+** Executable obligations and retained failure evidence
+
+The actual linked SDK integration starts source and operation mTLS endpoints
+on loopback, then invokes an independent Go test consumer over real gRPC. The
+consumer compiles an approved source, performs typed Bootstrap and requests
+execution under the resulting Cedar Forbid. It checks the public failure and
+authenticated inspection response. Rust independently reopens the ledger,
+checks absence of admission and the same denial, and publishes a Permit positive control for the same
+task/body/profile. That control only reserves execution; it opens no provider
+transport. A second compile pauses while source rotation commits; its old
+caller must be refused on return. Shutdown waits for natural VM cleanup.
+
+Retained fixture failures: a zero response batch stopped at request validation,
+so it did not test Policy. After fixing that input, the expected PermissionDenied
+status was wrong: execution RPCs intentionally return conservative
+FailedPrecondition and require inspecting the original operation. The corrected
+test adds durable absence and Permit controls rather than changing production
+error classification. A separate fuzz seed changed expected_revision to another
+valid value: typed decoding cannot establish provenance or current CAS. The
+property now distinguishes invalid shape from a valid unapproved proposal;
+original binding belongs to the sealed source producer and deciding ledger.
+The first durable-inspection assertion omitted the client's credential context
+and correctly received Unauthenticated. Its corrected call uses the same
+operation client's authenticated context. A sandboxed run failed at listener
+creation before any protocol step; the socket-capable run is recorded separately.
+Authenticated Inspect maps missing operations to the same conservative
+FailedPrecondition, not NotFound. The earlier NotFound assertion was another
+fixture assumption. Its correction does not infer durable absence from either
+RPC error; the independent Rust ledger check supplies that evidence.
+
+Quint adds before/after authority observations, role authentication, cancellation,
+rotation during work and after local delivery, and independent Go reobservation.
+The cached-authority counterexample shows why local capture alone cannot admit
+the RPC result. Later authority changes remain separate final-CAS obligations.
+The Lean compilation laws prove exact-authority reply admission, preservation
+of every original field and the absence of any implication about future
+authority. Their premises are the existing authenticated observation, immutable
+catalog and bound-source contracts; they do not prove TLS, SDK implementation,
+database durability or deployment installation.
+
+** Local qualification receipt
+
+The socket-capable actual SDK/server integration passed in 7.11 seconds of test
+runtime; its preceding graph build took 59.76 seconds and is separate evidence.
+The independent Go consumer ran over real mTLS and passed. Rotation completed
+while the second compilation was paused; its retired caller was rejected and
+both calls preceded natural VM cleanup. The same-task Permit admission control
+also passed. The SDK still reports maximum/active processors one; this is not
+host-sized Scheme SMP qualification.
+
+The four changed Go packages passed race checks. Separate standard fuzz campaigns
+ran with 12 workers: typed Protobuf ownership/binding exercised 96416 inputs,
+producer echo/current authority 69608, and independent Bundle ownership 183597.
+These finite executions are not exhaustive proof. Quint passed 205 named
+schedules and a separate initialized-owner campaign of 1000 traces/60 steps.
+The fixed-SPEC Lean bridge rebuilt; all three compilation laws report no axioms.
+Strict all-target/all-feature Clippy and linked Go SysML/project checks passed.
+All 20 Governance and 25 server all-feature unit/property tests passed. The one
+existing observed-server fixture remains Go-owned and intentionally ignored by
+the ordinary Rust unit runner; this is separate from the actual SDK RPC test.
+The core D2 rendered and was visually inspected. No dependency pin changed.

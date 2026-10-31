@@ -1,8 +1,8 @@
 //! Warm local catalog lookup and bounded data delivery; no SDK or authority check.
+use super::fixture;
 use criterion::Criterion;
 use weaver_contracts::{SourceAuthority, SourceIdentity};
 use weaver_governance::{ApprovedProducer, OwnedSource, ProducerCatalog, source_lane};
-use super::fixture;
 pub fn catalog(c: &mut Criterion) {
     for size in [1, 64] {
         let authority = SourceAuthority {

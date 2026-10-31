@@ -748,6 +748,31 @@ theorem producer_selection_keeps_all_original_fields
   exact ⟨rfl,rfl,rfl,rfl,rfl⟩
 
 #print axioms producer_name_has_one_original
+/- Response admission composes catalog selection with two actual source reads.
+   These reads/authenticated peer facts remain service-owner premises. This is
+   not a theorem that a response stays authoritative after its admission point. -/
+def CompilationReplyReady (catalog : Nat → Option ProducerBinding) (name : Nat)
+    (entry : ProducerBinding) (before after : ProducerIdentity) : Prop :=
+  ProducerSelected catalog name before entry ∧ before = after
+theorem compilation_epoch_change_blocks_reply
+    (changed : before.epoch ≠ after.epoch) :
+    ¬ CompilationReplyReady catalog name entry before after := by
+  intro ready
+  exact changed (congrArg ProducerIdentity.epoch ready.2)
+theorem compilation_reply_keeps_registered_original
+    (ready : CompilationReplyReady catalog name entry before after) :
+    ProducerSelected catalog name after entry := by
+  rcases ready with ⟨selected,same⟩
+  simpa [same] using selected
+theorem compilation_reply_does_not_fix_future_authority
+    (ready : CompilationReplyReady catalog name entry before after)
+    (changed : later ≠ after) :
+    ¬ CompilationReplyReady catalog name entry before later := by
+  intro future
+  exact changed (future.2.symm.trans ready.2)
+#print axioms compilation_epoch_change_blocks_reply
+#print axioms compilation_reply_keeps_registered_original
+#print axioms compilation_reply_does_not_fix_future_authority
 #print axioms changed_source_observation_rejects_producer
 #print axioms producer_selection_keeps_all_original_fields
 #print axioms source_owner_join_preserves_cleanup

@@ -39,7 +39,8 @@ module LlmPolicyContinuation {
   type ProducerIdentity={certificate:int,key:int,credential:int,epoch:int}
   type Producer={name:int,root:int,profile:int,content:int,budget:int,history:int,publication:int,proposal:int,authority:ProducerIdentity}
   type ProducerUse={producer:Producer,observed:ProducerIdentity}
-  type SourceHost={closed:bool,phases:List[int],cancelled:Set[int],slots:int,deliveries:List[bool],worker:int,cleaned:bool,joined:bool,activations:List[bool],catalog:Set[Producer],catalogUses:List[ProducerUse]}
+  type CompilationReply={before:ProducerIdentity,atAdmission:ProducerIdentity}
+  type SourceHost={closed:bool,phases:List[int],cancelled:Set[int],slots:int,deliveries:List[bool],worker:int,cleaned:bool,joined:bool,activations:List[bool],catalog:Set[Producer],catalogUses:List[ProducerUse],rpcAuthority:ProducerIdentity,rpcBefore:Set[ProducerIdentity],rpcReplies:List[CompilationReply]}
   type State={staged:Set[Change],log:List[Publication],generation:int,allowed:bool,fence:int,revision:int,online:bool,
     inspections:Set[View],approvals:Set[Approval],winner:int,visibleWinner:int,acks:Set[int],aliases:Set[Alias],permits:Set[Permit],
     uses:List[Use],spent:bool,everSpent:bool,calls:int,hold:int,usage:int,
@@ -65,7 +66,7 @@ module LlmPolicyContinuation {
     factFloor:0,barriers:List(),resolved:Set(),pending:Set(),hardAllowed:true,visibleBarrier:-1,receipts:Set(),frontier:0,
     nextAdmissions:List(),visibleAdmission:-1,nextUses:List(),nextSpent:false,nextCalls:0,nextHold:0,facts:facts0,
     semanticVM:0,ffiCall:0,captureEpoch:0,configurationSchema:1,configurationNormalizer:1,schemeModule:0,boundaryRecords:List(),
-    host:{closed:false,phases:List(0,0),cancelled:Set(),slots:0,deliveries:List(),worker:1,cleaned:false,joined:false,activations:List(),catalog:Set(),catalogUses:List()}}
+    host:{closed:false,phases:List(0,0),cancelled:Set(),slots:0,deliveries:List(),worker:1,cleaned:false,joined:false,activations:List(),catalog:Set(),catalogUses:List(),rpcAuthority:{certificate:1,key:2,credential:3,epoch:1},rpcBefore:Set(),rpcReplies:List()}}
   pure val producerIdentity0={certificate:1,key:2,credential:3,epoch:1}
   pure val producer0={name:1,root:10,profile:20,content:0,budget:5,history:9,publication:30,proposal:100,authority:producerIdentity0}
   pure def producerValid(e)=e.name>0 and (e.root==10 or e.root==20) and e.profile==20 and e.content==0 and e.budget==5 and e.history==9 and e.authority==producerIdentity0
@@ -122,7 +123,34 @@ module LlmPolicyContinuation {
     (s.host.cleaned implies (s.host.closed and not(hostRunning))) and
     (s.host.catalog.size()==0 or catalogValid(s.host.catalog)) and
     s.host.catalogUses.indices().forall(i=>{val use=s.host.catalogUses.nth(i)
-      s.host.catalog.contains(use.producer) and use.producer.authority==use.observed})
+      s.host.catalog.contains(use.producer) and use.producer.authority==use.observed}) and
+    s.host.rpcReplies.indices().forall(i=>{val reply=s.host.rpcReplies.nth(i)
+      reply.before==reply.atAdmission and sameProducerPeer(producerIdentity0,reply.atAdmission)})
+  pure def sameProducerPeer(a,b)=a.certificate==b.certificate and a.key==b.key and a.credential==b.credential
+  // RPC before/after reads come from actual source state. The request has only
+  // a producer name. Local typed delivery precedes response admission and frees
+  // its queue slot; response knowledge is never a later publication/send permit.
+  action rpcBegin=all {not(s.host.closed),s.host.worker==1,s.host.catalog.contains(producer0),s.host.rpcBefore.size()==0,
+    sameProducerPeer(producerIdentity0,s.host.rpcAuthority),producer0.authority==s.host.rpcAuthority,
+    s.host.slots<2,s.host.phases.nth(0)==0,
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(0,1)).with("slots",s.host.slots+1).with("rpcBefore",Set(s.host.rpcAuthority)))}
+  action rpcRotate= s'=s.with("host",s.host.with("rpcAuthority",{certificate:9,key:9,credential:9,epoch:s.host.rpcAuthority.epoch+1}))
+  action rpcAdmitReply=all {not(s.host.closed),s.host.phases.nth(0)==4,s.host.rpcReplies.length()==0,
+    s.host.rpcBefore.contains(s.host.rpcAuthority),sameProducerPeer(producerIdentity0,s.host.rpcAuthority),
+    s'=s.with("host",s.host.with("rpcReplies",s.host.rpcReplies.append({before:s.host.rpcAuthority,atAdmission:s.host.rpcAuthority})))}
+  action rpcGoAccept=all {s.host.rpcReplies.length()==1,s.host.rpcReplies.nth(0).atAdmission==s.host.rpcAuthority,s'=s}
+  action rpcReady=init.then(catalogPublish(Set(producer0))).then(rpcBegin).then(hostStart(0)).then(hostFinish(0)).then(hostDeliver(0))
+  run compilationRechecksActualSourceAfterLocalDeliveryTest=rpcReady.then(rpcRotate).then(rpcAdmitReply.fail())
+  run sourceRotationDoesNotNeedCompilerLaneTest=init.then(catalogPublish(Set(producer0))).then(rpcBegin).then(hostStart(0))
+    .then(rpcRotate).then(hostFinish(0)).then(hostDeliver(0)).then(rpcAdmitReply.fail())
+  run compiledResponseLeavesClaimAndUnknownHoldTest=rpcReady.then(rpcAdmitReply)
+    .expect(hostSafe and s.host.slots==0 and s.hold==6 and s.calls==0 and not(s.spent))
+  run compiledResponseStillNeedsFinalCurrentCASTest=rpcReady.then(rpcAdmitReply).then(ledgerWrite).then(consume(permit0).fail())
+  run responseKnowledgeDoesNotMeanLaterSourceAuthorityTest=rpcReady.then(rpcAdmitReply).then(rpcRotate)
+    .expect(hostSafe and s.host.rpcReplies.nth(0).atAdmission!=s.host.rpcAuthority and s.calls==0)
+  run goRejectsSourceChangeAfterResponseAdmissionTest=rpcReady.then(rpcAdmitReply).then(rpcRotate).then(rpcGoAccept.fail())
+  action unsafeCachedCompilationReply=s'=s.with("host",s.host.with("rpcReplies",s.host.rpcReplies.append({before:producerIdentity0,atAdmission:s.host.rpcAuthority})))
+  run cachedSourceReadAsReplyPermitCounterexampleTest=rpcReady.then(rpcRotate).then(unsafeCachedCompilationReply).expect(not(hostSafe))
   action catalogPublish(entries)=all {not(s.host.closed),s.host.worker==1,s.host.catalog.size()==0,catalogValid(entries),
     s'=s.with("host",s.host.with("catalog",entries))}
   action catalogSelect(name,observed)={
@@ -178,7 +206,7 @@ module LlmPolicyContinuation {
   action hostStep=any {hostSubmit(0),hostSubmit(1),hostStart(0),hostStart(1),hostFinish(0),hostFinish(1),
     hostCancel(0),hostCancel(1),hostDiscardWaiting(0),hostDiscardWaiting(1),hostClose,hostDeliver(0),hostDeliver(1),
     hostFactoryReturn,hostActivate,hostCleanup,hostJoin,catalogPublish(Set(producer0)),catalogSelect(1,producerIdentity0),
-    catalogSelect(2,producerIdentity0),catalogSelect(1,producerIdentity0.with("epoch",2))}
+    catalogSelect(2,producerIdentity0),catalogSelect(1,producerIdentity0.with("epoch",2)),rpcBegin,rpcRotate,rpcAdmitReply,rpcGoAccept}
   run abandonedFactoryRemainsTrackedTest=initHostStarting.then(hostClose).expect(hostSafe and not(s.host.joined))
     .then(hostCleanup.fail())
   run lateFactoryCannotActivateAfterCloseTest=initHostStarting.then(hostClose).then(hostFactoryReturn).then(hostActivate.fail())

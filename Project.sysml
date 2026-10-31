@@ -362,14 +362,18 @@ package WeaverProject {
             doc /* An initialized GovernanceWorker may publish its producer
                catalog once through the shared admission gate. Closed or duplicate
                publication fails; the catalog uses this worker's fixed client.
-               Authenticated live-source RPC admission remains a separate boundary. */
+               CompileSource authenticates the source connection, observes its
+               durable authority before compilation and rechecks after the owned
+               result returns. A response is knowledge, never a publication or
+               execution permit; Go uses existing source publication CAS. */
             doc /* ServiceRuntime is the existing shared task/resource owner.
                Approved compiler factories construct non-Send Scheme VMs on its
                tracked blocking worker. Terminal shutdown closes source delivery;
                drain waits for natural factory/call return and VM cleanup.
                One compiler owner is installed for this runtime incarnation;
                rejected duplicates cannot retire the current owner. This lifecycle
-               hook is not a producer registry or a public compilation RPC. */
+               hook does not install the default production producer graph.
+               CompileSource only selects the explicitly installed catalog. */
             part 'weaver-contracts' : RuntimeDependency;
             part 'weaver-governance' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;

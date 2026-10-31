@@ -13,6 +13,7 @@ pub mod pb;
 mod rpc_security;
 mod runtime;
 mod shutdown;
+mod source_artifact;
 mod source_identity;
 mod source_owner;
 #[cfg(test)]
