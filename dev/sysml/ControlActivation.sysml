@@ -70,6 +70,37 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Benchmark evidence has two grades independent of runtime authority.
+           Diagnostic runs may proceed on the shared Host when explicitly
+           requested; load, battery, missing reservation or unknown thermal
+           status are recorded, never silently relabeled controlled. Controlled
+           performance admission requires an attested exclusive window, stable
+           CPU/power/thermal profile, AC with low-power mode off, a 30-second
+           preflight with CPU idle at least 90 percent and one-minute load at most
+           half the logical CPU count, normal memory pressure and no swap-out
+           growth. Recheck envelope before/after every leg and retain all samples.
+           Allocate max(4, available CPUs); never shrink resources to pass.
+           Fixed ABBA contrasts isolate admission (original versus ready-only)
+           and validator (ready-only versus ready+Condvar); the latter is a
+           conditional effect, not validator-only versus original. Use identical
+           workload/SDK/profile and frozen binary identities. Safety failures
+           reject independently of Host grade:
+           exact original recovery, once-only validation, borrowed guard lifetime,
+           cancellation/restart and held unknown exposure remain mandatory.
+           Controlled gain needs three fixed ABBA blocks: primary hot/reuse and
+           independent/reuse median paired TPS at least 1.10x and each block's
+           median at least 1.05x. All six mode/domain strata allow no paired TPS
+           below 0.95x and no P95/P99 above 1.05x baseline. Native-control drift beyond
+           10 percent invalidates causal performance attribution. These are
+           predeclared engineering gates, not statistical confidence claims.
+           Diagnostic results cannot change defaults or authorize effects. */
+        doc /* Variant build identity is independent of Cargo's cached freshness.
+           When worktrees share byte-identical dependency artifacts, clean the
+           backend package before switching source, or isolate its target tree.
+           Require actual compile-path and candidate-specific test witnesses,
+           immutable base plus patch/source identities, identical lockfile and
+           executable digests before/after measurement. A cached success without
+           the candidate witness is provenance-invalid, never safety acceptance. */
         doc /* Borrowed validation retains pinned Tokio request/answer channels
            and the existing async admission task. Custom Condvar and ready-permit
            dispatch candidates were tested and rejected without attributable

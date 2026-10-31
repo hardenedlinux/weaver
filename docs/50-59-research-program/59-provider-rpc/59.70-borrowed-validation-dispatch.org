@@ -57,6 +57,9 @@ counts belong in the evidence record, not in another architecture diagram.
 
 * Measured outcome and acceptance
 
+The subsequent [[file:59.71-host-envelope-and-retest.org][Host-envelope review and direct retest]] fixes criteria before observation
+and separates admission A/O from conditional-validator AV/A instead of conflating both.
+
 MRR Data [[https://github.com/tao3k/mrr-data/pull/12][PR 12]] commit =895a06c3= owns the new native guard tests and
 [[https://github.com/tao3k/mrr-data/blob/895a06c3/docs/benchmarks/shared-backend-borrowed-dispatch.org][complete matching samples, frozen identities, rejected-source receipts and reproduction commands]].
 Weaver consumes this MRR-owned record; it adds no benchmark package or backend.
