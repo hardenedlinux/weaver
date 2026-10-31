@@ -7,6 +7,8 @@ Provider request commitments for 128 B, 16 KiB and 512 KiB source payloads; publ
 Immutable provider profile commitment and closed request validation at the same
 three payload sizes. Exact review evidence commitment adds a ninth case, using
 a bounded immutable upstream artifact. It measures hashing, not Delta approval.
+Source handoff commitment adds the tenth case, binding the original operation,
+expected epoch, actual certificate/SPKI and role-credential digests.
 
 * Measurement boundary
 

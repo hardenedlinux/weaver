@@ -99,6 +99,7 @@ impl Ledger {
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db)?;
+        crate::source_authority::require(&tx, self.source.as_ref())?;
         publication_barrier::require_binding(&tx, change)?;
         let key = PublicationKey {
             operation_id: change.operation_id.clone(),
@@ -145,6 +146,7 @@ impl Ledger {
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db)?;
+        crate::source_authority::require(&tx, self.source.as_ref())?;
         let encoded =
             requirement(&tx, &review.publication)?.ok_or(Error::Conflict("review not required"))?;
         let captured: Option<AuthorityParent> = weaver_contracts::decode(encoded.as_bytes())?;

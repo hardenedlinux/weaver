@@ -6,6 +6,8 @@ mod publication;
 mod publication_barrier;
 mod publication_review;
 mod schema;
+mod source_authority;
+mod source_rotation;
 pub use provider::{ProviderDispatch, ProviderRelease};
 mod store;
 mod stream_catalog;

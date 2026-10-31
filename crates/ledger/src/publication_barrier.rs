@@ -45,6 +45,7 @@ impl Ledger {
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db)?;
+        crate::source_authority::require(&tx, self.source.as_ref())?;
         require_binding(&tx, change)?;
         if publication::lookup(&tx, &change.operation_id, &digest)?.is_none() {
             tx.execute("INSERT INTO authority_pending VALUES(?1,?2,?3) ON CONFLICT(operation_id) DO NOTHING",

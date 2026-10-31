@@ -1,0 +1,114 @@
+//! Persistent administrative key floor. Whole-store rollback is outside this profile.
+#[cfg(test)]
+#[path = "../tests/unit/source_authority_storage.rs"]
+mod tests;
+use crate::{
+    Ledger,
+    store::{db, integer},
+};
+use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
+use weaver_contracts::{Error, Result, SourceAuthority, SourceIdentity};
+
+pub(crate) fn current(connection: &Connection) -> Result<Option<SourceAuthority>> {
+    let value: Option<(u64, String)> = connection
+        .query_row(
+            "SELECT epoch,record FROM source_authority WHERE singleton=1",
+            [],
+            |row| Ok((integer(row, 0)?, row.get(1)?)),
+        )
+        .optional()
+        .map_err(db)?;
+    value.map(|(epoch,encoded)| {
+        let identity:SourceIdentity=weaver_contracts::decode(encoded.as_bytes())?;
+        identity.validate()?;
+        let matched:bool=connection.query_row("SELECT EXISTS(SELECT 1 FROM source_keys WHERE epoch=?1 AND public_key_sha256=?2 AND certificate_sha256=?3) AND ?1=(SELECT MAX(epoch) FROM source_keys) AND (SELECT COUNT(*) FROM source_keys)=?1+1",params![epoch as i64,identity.public_key_sha256,identity.certificate_sha256],|r|r.get(0)).map_err(db)?;
+        if !matched {return Err(Error::Conflict("source authority prefix mismatch"));}
+        Ok(SourceAuthority {epoch,identity})
+    }).transpose()
+}
+
+pub(crate) fn require(connection: &Connection, caller: Option<&SourceIdentity>) -> Result<()> {
+    if let Some(caller) = caller {
+        let authority = current(connection)?.ok_or(Error::Denied)?;
+        if authority.identity != *caller {
+            return Err(Error::Denied);
+        }
+    }
+    Ok(())
+}
+
+pub(crate) fn write(connection: &Connection, authority: &SourceAuthority) -> Result<()> {
+    connection
+        .execute(
+            "INSERT INTO source_keys VALUES(?1,?2,?3)",
+            params![
+                authority.identity.public_key_sha256,
+                authority.epoch as i64,
+                authority.identity.certificate_sha256
+            ],
+        )
+        .map_err(db)?;
+    connection.execute("INSERT INTO source_authority VALUES(1,?1,?2) ON CONFLICT(singleton) DO UPDATE SET epoch=excluded.epoch,record=excluded.record",params![authority.epoch as i64,serde_json::to_string(&authority.identity)?]).map_err(db)?;
+    Ok(())
+}
+
+fn ensure(ledger: &mut Ledger, caller: &SourceIdentity) -> Result<()> {
+    caller.validate()?;
+    if current(&ledger.connection)?.is_some() {
+        return require(&ledger.connection, Some(caller));
+    }
+    let tx = ledger
+        .connection
+        .transaction_with_behavior(TransactionBehavior::Immediate)
+        .map_err(db)?;
+    if current(&tx)?.is_none() {
+        let occupied:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM authority) OR EXISTS(SELECT 1 FROM tasks) OR EXISTS(SELECT 1 FROM authority_publications) OR EXISTS(SELECT 1 FROM authority_pending) OR EXISTS(SELECT 1 FROM authority_review_requirements) OR EXISTS(SELECT 1 FROM source_keys) OR EXISTS(SELECT 1 FROM source_rotations) OR EXISTS(SELECT 1 FROM provider_profiles) OR EXISTS(SELECT 1 FROM execution_claims) OR EXISTS(SELECT 1 FROM operations) OR EXISTS(SELECT 1 FROM streams) OR EXISTS(SELECT 1 FROM provider_runs)",[],|r|r.get(0)).map_err(db)?;
+        if occupied {
+            return Err(Error::Conflict(
+                "source enrollment requires an empty unowned store",
+            ));
+        }
+        write(
+            &tx,
+            &SourceAuthority {
+                epoch: 0,
+                identity: caller.clone(),
+            },
+        )?;
+    }
+    require(&tx, Some(caller))?;
+    tx.commit().map_err(db)
+}
+
+struct Scope<'a> {
+    ledger: &'a mut Ledger,
+}
+impl Drop for Scope<'_> {
+    fn drop(&mut self) {
+        self.ledger.source = None;
+    }
+}
+
+impl Ledger {
+    /// RPC host supplies identity derived from actual authenticated mTLS and bearer.
+    /// Every source mutator rechecks it inside its own deciding transaction.
+    /// Local trusted-host callers remain a separate explicit API profile.
+    pub fn with_authenticated_source<T>(
+        &mut self,
+        caller: &SourceIdentity,
+        run: impl FnOnce(&mut Ledger) -> Result<T>,
+    ) -> Result<T> {
+        if self.source.is_some() {
+            return Err(Error::Conflict("nested source identity context"));
+        }
+        ensure(self, caller)?;
+        self.source = Some(caller.clone());
+        let scope = Scope { ledger: self };
+        run(scope.ledger)
+    }
+    /// Current observation is not permission to perform a later source mutation.
+    pub fn source_authority(&self) -> Result<Option<SourceAuthority>> {
+        require(&self.connection, self.source.as_ref())?;
+        current(&self.connection)
+    }
+}

@@ -7,15 +7,31 @@ use tokio::{
 };
 use tokio_util::sync::CancellationToken;
 use tonic::Status;
-use weaver_contracts::{Error, Publication, PublicationKey, PublicationReceipt, Result, Task};
+use weaver_contracts::{
+    Error, Publication, PublicationKey, PublicationReceipt, Result, SourceAuthority,
+    SourceIdentity, SourceRotation, SourceRotationReceipt, Task,
+};
 use weaver_ledger::Ledger;
 
 #[derive(Clone)]
 pub(crate) struct SourceOwner {
-    sender: mpsc::Sender<Command>,
+    sender: mpsc::Sender<Envelope>,
     capacity: Arc<Semaphore>,
 }
+struct Envelope {
+    caller: SourceIdentity,
+    command: Command,
+}
 enum Command {
+    Authority {
+        reply: oneshot::Sender<Result<SourceAuthority>>,
+        slot: OwnedSemaphorePermit,
+    },
+    Rotate {
+        change: SourceRotation,
+        reply: oneshot::Sender<Result<SourceRotationReceipt>>,
+        slot: OwnedSemaphorePermit,
+    },
     Stage {
         change: Publication,
         reply: oneshot::Sender<Result<PublicationKey>>,
@@ -90,6 +106,7 @@ impl SourceOwner {
     }
     async fn submit<T>(
         &self,
+        caller: SourceIdentity,
         make: impl FnOnce(oneshot::Sender<Result<T>>, OwnedSemaphorePermit) -> Command,
     ) -> std::result::Result<T, Status> {
         let slot = self
@@ -99,19 +116,28 @@ impl SourceOwner {
             .map_err(|_| Status::resource_exhausted("source command lane full"))?;
         let (reply, receiver) = oneshot::channel();
         self.sender
-            .try_send(make(reply, slot))
+            .try_send(Envelope {
+                caller,
+                command: make(reply, slot),
+            })
             .map_err(|_| Status::unavailable("source owner stopped"))?;
         receiver
             .await
             .map_err(|_| Status::unavailable("source result unknown; reconcile original identity"))?
-            .map_err(|_| Status::failed_precondition("source authority or state rejected"))
+            .map_err(|error| match error {
+                Error::Denied => {
+                    Status::permission_denied("source identity retired or unqualified")
+                }
+                _ => Status::failed_precondition("source authority or state rejected"),
+            })
     }
     pub(crate) async fn register(
         &self,
+        caller: SourceIdentity,
         task: Task,
         publication: Option<PublicationKey>,
     ) -> std::result::Result<(), Status> {
-        self.submit(|reply, slot| Command::Register {
+        self.submit(caller, |reply, slot| Command::Register {
             task: Box::new(task),
             publication,
             reply,
@@ -121,9 +147,10 @@ impl SourceOwner {
     }
     pub(crate) async fn publish(
         &self,
+        caller: SourceIdentity,
         change: Publication,
     ) -> std::result::Result<PublicationReceipt, Status> {
-        self.submit(|reply, slot| Command::Publish {
+        self.submit(caller, |reply, slot| Command::Publish {
             change,
             reply,
             slot,
@@ -132,9 +159,10 @@ impl SourceOwner {
     }
     pub(crate) async fn stage(
         &self,
+        caller: SourceIdentity,
         change: Publication,
     ) -> std::result::Result<PublicationKey, Status> {
-        self.submit(|reply, slot| Command::Stage {
+        self.submit(caller, |reply, slot| Command::Stage {
             change,
             reply,
             slot,
@@ -143,15 +171,35 @@ impl SourceOwner {
     }
     pub(crate) async fn inspect(
         &self,
+        caller: SourceIdentity,
         key: PublicationKey,
     ) -> std::result::Result<Option<PublicationReceipt>, Status> {
-        self.submit(|reply, slot| Command::Inspect { key, reply, slot })
+        self.submit(caller, |reply, slot| Command::Inspect { key, reply, slot })
             .await
+    }
+    pub(crate) async fn authority(
+        &self,
+        caller: SourceIdentity,
+    ) -> std::result::Result<SourceAuthority, Status> {
+        self.submit(caller, |reply, slot| Command::Authority { reply, slot })
+            .await
+    }
+    pub(crate) async fn rotate(
+        &self,
+        caller: SourceIdentity,
+        change: SourceRotation,
+    ) -> std::result::Result<SourceRotationReceipt, Status> {
+        self.submit(caller, |reply, slot| Command::Rotate {
+            change,
+            reply,
+            slot,
+        })
+        .await
     }
 }
 fn run(
     database: PathBuf,
-    receiver: mpsc::Receiver<Command>,
+    receiver: mpsc::Receiver<Envelope>,
     ready: oneshot::Sender<Result<()>>,
     handle: Handle,
     cancel: CancellationToken,
@@ -173,7 +221,7 @@ fn run(
 }
 fn process(
     ledger: &mut Ledger,
-    mut receiver: mpsc::Receiver<Command>,
+    mut receiver: mpsc::Receiver<Envelope>,
     handle: Handle,
     cancel: CancellationToken,
 ) -> Result<()> {
@@ -189,13 +237,29 @@ fn process(
             return Ok(());
         };
         ledger.require_quiescent()?;
+        let Envelope { caller, command } = command;
         match command {
+            Command::Authority { reply, slot } => {
+                let result = ledger.with_authenticated_source(&caller, |l| {
+                    l.source_authority()?.ok_or(Error::Denied)
+                });
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::Rotate {
+                change,
+                reply,
+                slot,
+            } => {
+                let result = ledger.rotate_source_authority(&caller, &change);
+                answer(ledger, reply, result, slot)?;
+            }
             Command::Stage {
                 change,
                 reply,
                 slot,
             } => {
-                let result = ledger.stage_authority(&change);
+                let result =
+                    ledger.with_authenticated_source(&caller, |l| l.stage_authority(&change));
                 answer(ledger, reply, result, slot)?;
             }
             Command::Register {
@@ -204,7 +268,9 @@ fn process(
                 reply,
                 slot,
             } => {
-                let result = register(ledger, &task, publication.as_ref());
+                let result = ledger.with_authenticated_source(&caller, |l| {
+                    register(l, &task, publication.as_ref())
+                });
                 answer(ledger, reply, result, slot)?;
             }
             Command::Publish {
@@ -212,11 +278,13 @@ fn process(
                 reply,
                 slot,
             } => {
-                let result = ledger.publish_authority(&change);
+                let result =
+                    ledger.with_authenticated_source(&caller, |l| l.publish_authority(&change));
                 answer(ledger, reply, result, slot)?;
             }
             Command::Inspect { key, reply, slot } => {
-                let result = ledger.publication_receipt(&key);
+                let result =
+                    ledger.with_authenticated_source(&caller, |l| l.publication_receipt(&key));
                 answer(ledger, reply, result, slot)?;
             }
         }

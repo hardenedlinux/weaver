@@ -11,6 +11,7 @@ pub mod pb;
 mod rpc_security;
 mod runtime;
 mod shutdown;
+mod source_identity;
 mod source_owner;
 #[cfg(test)]
 #[path = "../tests/unit/fixtures.rs"]
@@ -19,5 +20,6 @@ pub use config::ServerConfig;
 pub use grpc::serve_grpc;
 pub use grpc_config::run_from_env;
 pub use rpc_security::{GrpcConfig, GrpcListeners, RpcSecurity};
+pub use source_identity::certificate_identity as source_certificate_identity;
 #[cfg(test)]
 asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_rust_config());

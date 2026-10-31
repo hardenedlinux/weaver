@@ -32,6 +32,7 @@ struct Gateway {
     credential: [u8; 32],
     ingress: Ingress,
     peer: [u8; 32],
+    operation_peer: [u8; 32],
     transport: ProviderTransport,
     admission: Admission,
     runtime: RuntimeOwner,
@@ -205,6 +206,21 @@ async fn serve_listener(
     result.map_err(|_| Error::Conflict("gRPC server failed"))
 }
 impl Gateway {
+    fn source_identity<T>(
+        &self,
+        request: &Request<T>,
+    ) -> std::result::Result<weaver_contracts::SourceIdentity, Status> {
+        self.authenticate(request, RpcRole::Source)?;
+        let certificates=request.extensions().get::<tonic::transport::server::TlsConnectInfo<tonic::transport::server::TcpConnectInfo>>()
+            .and_then(|tls|tls.peer_certs()).ok_or(Status::unauthenticated("source certificate missing"))?;
+        let certificate = certificates
+            .first()
+            .ok_or(Status::unauthenticated("source certificate missing"))?;
+        crate::source_identity::certificate_identity(
+            certificate.as_ref(),
+            hex::encode(self.credential),
+        )
+    }
     fn new(
         settings: &GrpcConfig,
         ingress: Ingress,
@@ -223,6 +239,7 @@ impl Gateway {
             credential,
             ingress,
             peer,
+            operation_peer: settings.security.peer_sha256,
             transport: settings.provider.clone(),
             admission,
             runtime,
@@ -368,14 +385,14 @@ impl pb::gateway_server::Gateway for Gateway {
         &self,
         request: Request<pb::RegisterTaskRequest>,
     ) -> std::result::Result<Response<pb::Empty>, Status> {
-        self.authenticate(&request, RpcRole::Source)?;
+        let caller = self.source_identity(&request)?;
         let task = request
             .into_inner()
             .task
             .ok_or(Status::invalid_argument("task missing"))?;
         self.ingress
             .source()?
-            .register(task_contract(task), None)
+            .register(caller, task_contract(task), None)
             .await?;
         Ok(Response::new(pb::Empty {}))
     }
@@ -383,7 +400,7 @@ impl pb::gateway_server::Gateway for Gateway {
         &self,
         request: Request<pb::RegisterPublishedTaskRequest>,
     ) -> std::result::Result<Response<pb::Empty>, Status> {
-        self.authenticate(&request, RpcRole::Source)?;
+        let caller = self.source_identity(&request)?;
         let registration = request.into_inner();
         let task = registration
             .task
@@ -394,6 +411,7 @@ impl pb::gateway_server::Gateway for Gateway {
         self.ingress
             .source()?
             .register(
+                caller,
                 task_contract(task),
                 Some(weaver_contracts::PublicationKey {
                     operation_id: key.operation_id,
@@ -407,18 +425,21 @@ impl pb::gateway_server::Gateway for Gateway {
         &self,
         request: Request<pb::PublishRequest>,
     ) -> std::result::Result<Response<pb::PublicationKey>, Status> {
-        self.authenticate(&request, RpcRole::Source)?;
+        let caller = self.source_identity(&request)?;
         let change = request.into_inner();
         let key = self
             .ingress
             .source()?
-            .stage(weaver_contracts::Publication {
-                operation_id: change.operation_id,
-                expected_revision: change.expected_revision,
-                policy: change.policy,
-                schema: change.schema,
-                fence: change.fence,
-            })
+            .stage(
+                caller,
+                weaver_contracts::Publication {
+                    operation_id: change.operation_id,
+                    expected_revision: change.expected_revision,
+                    policy: change.policy,
+                    schema: change.schema,
+                    fence: change.fence,
+                },
+            )
             .await?;
         Ok(Response::new(pb::PublicationKey {
             operation_id: key.operation_id,
@@ -429,18 +450,21 @@ impl pb::gateway_server::Gateway for Gateway {
         &self,
         request: Request<pb::PublishRequest>,
     ) -> std::result::Result<Response<pb::PublicationReceipt>, Status> {
-        self.authenticate(&request, RpcRole::Source)?;
+        let caller = self.source_identity(&request)?;
         let change = request.into_inner();
         let receipt = self
             .ingress
             .source()?
-            .publish(weaver_contracts::Publication {
-                operation_id: change.operation_id,
-                expected_revision: change.expected_revision,
-                policy: change.policy,
-                schema: change.schema,
-                fence: change.fence,
-            })
+            .publish(
+                caller,
+                weaver_contracts::Publication {
+                    operation_id: change.operation_id,
+                    expected_revision: change.expected_revision,
+                    policy: change.policy,
+                    schema: change.schema,
+                    fence: change.fence,
+                },
+            )
             .await?;
         Ok(Response::new(publication_receipt(receipt)))
     }
@@ -448,20 +472,74 @@ impl pb::gateway_server::Gateway for Gateway {
         &self,
         request: Request<pb::PublicationKey>,
     ) -> std::result::Result<Response<pb::PublicationReceipt>, Status> {
-        self.authenticate(&request, RpcRole::Source)?;
+        let caller = self.source_identity(&request)?;
         let key = request.into_inner();
         let receipt = self
             .ingress
             .source()?
-            .inspect(weaver_contracts::PublicationKey {
-                operation_id: key.operation_id,
-                digest: key.digest,
-            })
+            .inspect(
+                caller,
+                weaver_contracts::PublicationKey {
+                    operation_id: key.operation_id,
+                    digest: key.digest,
+                },
+            )
             .await?
             .ok_or(Status::not_found(
                 "publication decision not observed; absence is not abort",
             ))?;
         Ok(Response::new(publication_receipt(receipt)))
+    }
+    async fn inspect_source_authority(
+        &self,
+        request: Request<pb::Empty>,
+    ) -> std::result::Result<Response<pb::SourceAuthorityView>, Status> {
+        let caller = self.source_identity(&request)?;
+        let authority = self.ingress.source()?.authority(caller).await?;
+        Ok(Response::new(crate::source_identity::view(authority)?))
+    }
+    async fn rotate_source_authority(
+        &self,
+        request: Request<pb::SourceRotationRequest>,
+    ) -> std::result::Result<Response<pb::SourceRotationReceipt>, Status> {
+        let caller = self.source_identity(&request)?;
+        let change = request.into_inner();
+        let next = crate::source_identity::certificate_identity(
+            &change.next_certificate,
+            change.next_credential_sha256,
+        )?;
+        if next.certificate_sha256 == hex::encode(self.operation_peer)
+            || next.credential_sha256 == hex::encode(self.config.token_sha256)
+        {
+            return Err(Status::invalid_argument(
+                "source successor aliases operation identity",
+            ));
+        }
+        let receipt = self
+            .ingress
+            .source()?
+            .rotate(
+                caller,
+                weaver_contracts::SourceRotation {
+                    operation_id: change.operation_id,
+                    expected_epoch: change.expected_epoch,
+                    next,
+                },
+            )
+            .await?;
+        Ok(Response::new(pb::SourceRotationReceipt {
+            operation_id: receipt.operation_id,
+            digest: receipt.digest,
+            outcome: match receipt.outcome {
+                weaver_contracts::SourceRotationOutcome::Committed => {
+                    pb::SourceRotationOutcome::SourceRotated as i32
+                }
+                weaver_contracts::SourceRotationOutcome::Rejected => {
+                    pb::SourceRotationOutcome::SourceRotationRejected as i32
+                }
+            },
+            authority: Some(crate::source_identity::view(receipt.authority)?),
+        }))
     }
 }
 fn publication_receipt(receipt: weaver_contracts::PublicationReceipt) -> pb::PublicationReceipt {

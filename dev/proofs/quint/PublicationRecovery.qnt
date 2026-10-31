@@ -6,7 +6,7 @@ module PublicationRecovery {
   type ReviewEntry={review:Review,owner:int,term:int,index:int}
   // Opaque references to Lean-qualified bindings. No role, subject, public-key,
   // scope, audience or signature semantics are evaluated in this schedule owner.
-  type SourceDecision={slot:int,credential:int}
+  type SourceDecision={slot:int,credential:int,key:int}
   type SourceUse={credential:int,epoch:int,owner:int,command:int,purpose:int,artifact:int}
   type SourceCut={epoch:int,owner:int,revoked:Set[int],decisions:List[SourceDecision],registry:List[ReviewEntry],head:int,fence:int}
   type SourceObservation={use:SourceUse,cut:SourceCut,session:int}
@@ -32,8 +32,8 @@ module PublicationRecovery {
       authority.commits.nth(i).decision.resultHead==i and authority.commits.nth(i).decision.parent==i-1) and
     (authority.head>=0 implies authority.policy==authority.commits.nth(authority.head).decision.payload and authority.schema==authority.policy) and floorSafe(authority.floor)
   pure val emptyCut={publication:List(),consumption:List(),account:List(),history:List()}
-  pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),owner:1,liveOwners:Set(1),egressOwners:Set(1),handoff:false,calls:0,external:0,registry:List(),registrarOwner:1,registrarTerm:0,sourceDecisions:List({slot:0,credential:100}),sourceRevoked:Set()}
-  pure val sourceCut0={epoch:0,owner:1,revoked:Set(),decisions:List({slot:0,credential:100}),registry:List(),head:-1,fence:1}
+  pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),owner:1,liveOwners:Set(1),egressOwners:Set(1),handoff:false,calls:0,external:0,registry:List(),registrarOwner:1,registrarTerm:0,sourceDecisions:List({slot:0,credential:100,key:100}),sourceRevoked:Set()}
+  pure val sourceCut0={epoch:0,owner:1,revoked:Set(),decisions:List({slot:0,credential:100,key:100}),registry:List(),head:-1,fence:1}
   action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0}
   def canStage(q:Proposal):bool={val d=authority.records.get(q.id)
     authority.pending.forall(p=>p.id!=q.id or p==q) and
@@ -85,11 +85,12 @@ module PublicationRecovery {
     if(existing!=Set()) all {existing.exists(i=>authority.floor.sourceDecisions.nth(i).credential==credential),authority'=authority}
     else all {slot==authority.floor.registrarTerm,
       authority.floor.sourceDecisions.indices().forall(i=>authority.floor.sourceDecisions.nth(i).credential!=credential),
-      authority'=authority.with("floor",authority.floor.with("sourceDecisions",authority.floor.sourceDecisions.append({slot:slot,credential:credential})))}}
+      authority.floor.sourceDecisions.indices().forall(i=>authority.floor.sourceDecisions.nth(i).key!=credential),
+      authority'=authority.with("floor",authority.floor.with("sourceDecisions",authority.floor.sourceDecisions.append({slot:slot,credential:credential,key:credential})))}}
   action revokeSource(credential:int):bool=authority'=authority.with("floor",authority.floor.with("sourceRevoked",authority.floor.sourceRevoked.union(Set(credential))))
   def sourceUseCurrent(use:SourceUse):bool=use.epoch==authority.floor.registrarTerm and use.owner==authority.floor.registrarOwner and
     not(authority.floor.sourceRevoked.contains(use.credential)) and authority.floor.sourceDecisions.indices().exists(i=>
-      authority.floor.sourceDecisions.nth(i)=={slot:use.epoch,credential:use.credential})
+      authority.floor.sourceDecisions.nth(i).slot==use.epoch and authority.floor.sourceDecisions.nth(i).credential==use.credential)
   action captureSourceUse(use:SourceUse):bool=all {sourceUseCurrent(use),authority'=authority.with("sourceUses",authority.sourceUses.union(Set(use)))}
   action registerUsingSource(use:SourceUse,r:Review):bool=all {authority.sourceUses.contains(use),sourceUseCurrent(use),
     use.command==r.command.id,use.purpose==0,use.artifact==r.artifact,registerReviewBy(use.owner,use.epoch,r)}
@@ -440,7 +441,8 @@ module PublicationRecovery {
   val sourceDecisionSafe=reviewSafe and authority.floor.sourceDecisions.indices().forall(i=>
     authority.floor.sourceDecisions.indices().forall(j=>i==j or
       (authority.floor.sourceDecisions.nth(i).slot!=authority.floor.sourceDecisions.nth(j).slot and
-       authority.floor.sourceDecisions.nth(i).credential!=authority.floor.sourceDecisions.nth(j).credential)))
+       authority.floor.sourceDecisions.nth(i).credential!=authority.floor.sourceDecisions.nth(j).credential and
+       authority.floor.sourceDecisions.nth(i).key!=authority.floor.sourceDecisions.nth(j).key)))
   def currentRegisterReference={credential:100+authority.floor.registrarTerm,epoch:authority.floor.registrarTerm,
     owner:authority.floor.registrarOwner,command:0,purpose:0,artifact:70}
   action sourceScheduleStep=any {stage(staged0),stage(sibling),recordSourceDecision(authority.floor.registrarTerm,100+authority.floor.registrarTerm),
@@ -503,4 +505,29 @@ module PublicationRecovery {
     registerAtSourceObservation(observation0,review0),publishAtSourceObservation(publishObservation0,staged0,review0),
     registerAtSourceObservation({use:currentRegisterReference,cut:sourceAuthorityCut,session:authority.sourceSession},review0),
     publishAtSourceObservation({use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession},staged0,review0)}
+  // Opaque key references come from the actual certificate/SPKI adapter. This
+  // adds ordering/non-reuse to the existing authority, not X509 or identity semantics.
+  action handoffSourceKey(use:SourceUse,nextReference:int,nextKey:int):bool=all {
+    sourceUseCurrent(use),use.purpose==2,
+    authority.floor.sourceDecisions.indices().forall(i=>authority.floor.sourceDecisions.nth(i).credential!=nextReference and authority.floor.sourceDecisions.nth(i).key!=nextKey),
+    authority'=authority.with("floor",authority.floor.with("registrarTerm",authority.floor.registrarTerm+1)
+      .with("registrarOwner",authority.floor.registrarOwner+1)
+      .with("sourceRevoked",authority.floor.sourceRevoked.union(Set(use.credential)))
+      .with("sourceDecisions",authority.floor.sourceDecisions.append({slot:authority.floor.registrarTerm+1,credential:nextReference,key:nextKey})))}
+  action publishFromSourceKey(use:SourceUse,q:Proposal):bool=all {sourceUseCurrent(use),use.purpose==1,
+    publish(q.id,q.payload,q.parent,q.fence)}
+  action observeSourceDecision(slot:int,key:int):bool=all {
+    authority.floor.sourceDecisions.indices().exists(i=>authority.floor.sourceDecisions.nth(i).slot==slot and authority.floor.sourceDecisions.nth(i).key==key),authority'=authority}
+  pure val handoff0=sourceRegister0.with("purpose",2)
+  pure val source1={credential:101,epoch:1,owner:2,command:0,purpose:1,artifact:70}
+  run durableSourceHandoffFencesPreviouslyAuthenticatedWorkerTest=init.then(stage(staged0)).then(captureSourceUse(sourcePublish0))
+    .then(handoffSourceKey(handoff0,101,101)).expect(safe and authority.pending==Set(staged0) and authority.held==4)
+    .then(publishFromSourceKey(sourcePublish0,staged0).fail())
+  run sourceHandoffLostReplyIsHistoricalObservationTest=init.then(handoffSourceKey(handoff0,101,101)).then(restart)
+    .then(observeSourceDecision(1,101)).expect(sourceDecisionSafe and authority.floor.registrarTerm==1)
+    .then(handoffSourceKey(handoff0,102,102).fail())
+  run sourceCertificateReissueCannotReuseRetiredKeyTest=init.then(handoffSourceKey(handoff0,101,101))
+    .then(handoffSourceKey(source1.with("purpose",2),102,100).fail())
+  run newSourceCanResolveExactPendingWithoutResettingExposureTest=init.then(stage(staged0)).then(handoffSourceKey(handoff0,101,101))
+    .then(publishFromSourceKey(source1,staged0)).expect(safe and authority.records.get(0).outcome==1 and authority.held==4 and authority.calls==1)
 }

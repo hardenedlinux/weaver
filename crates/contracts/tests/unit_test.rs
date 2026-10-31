@@ -6,3 +6,5 @@ mod provider_bounds;
 mod provider_profiles;
 #[path = "unit/publication_review.rs"]
 mod publication_review;
+#[path = "unit/source_authority.rs"]
+mod source_authority;

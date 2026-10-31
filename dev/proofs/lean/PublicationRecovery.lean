@@ -39,6 +39,7 @@ structure State (Key : Type) where
   registrarEpoch : Nat := 0
   reviewCut : Nat := 0
   reviewRequired : Key → Bool := fun _ => false
+  sourceKeys : List Nat := []
 
 variable {Key : Type}
 
@@ -86,6 +87,8 @@ inductive Step [DecidableEq Key] : State Key → State Key → Prop where
       Step s {s with reviewProjection := s.reviewAnchor}
   | rotateRegistrar (s : State Key) (owner : Nat) :
       Step s {s with registrarOwner := owner, registrarEpoch := s.registrarEpoch + 1}
+  | handoffSourceKey (s : State Key) (owner key : Nat) (fresh : key ∉ s.sourceKeys) :
+      Step s {s with registrarOwner := owner, registrarEpoch := s.registrarEpoch + 1, sourceKeys := s.sourceKeys ++ [key]}
   | advanceReviewCut (s : State Key) : Step s {s with reviewCut := s.reviewCut + 1}
 
 variable {s t : State Key}
@@ -104,7 +107,7 @@ theorem step_preserves_original_decisions [DecidableEq Key] (step : Step s t) : 
     · subst key; rw [fresh] at existing; contradiction
     · simpa [write, same] using existing
   | replayOrObservationOrRestart => exact existing
-  | registerReview | restoreReviewProjection | recoverReviewProjection | rotateRegistrar | advanceReviewCut => exact existing
+  | registerReview | restoreReviewProjection | recoverReviewProjection | rotateRegistrar | handoffSourceKey | advanceReviewCut => exact existing
 
 theorem step_preserves_accounting [DecidableEq Key] (h : Safe held calls s) (step : Step s t) : Safe held calls t := by
   cases step <;> simp_all [Safe]
@@ -135,7 +138,7 @@ theorem step_preserves_original_intents [DecidableEq Key] (step : Step s t) : Pr
   | reject id payload parent fence fresh conflict bound =>
     by_cases same : key = id <;> simp_all [write, clear]
   | replayOrObservationOrRestart => exact Or.inl existing
-  | registerReview | restoreReviewProjection | recoverReviewProjection | rotateRegistrar | advanceReviewCut => exact Or.inl existing
+  | registerReview | restoreReviewProjection | recoverReviewProjection | rotateRegistrar | handoffSourceKey | advanceReviewCut => exact Or.inl existing
 
 theorem staged_intent_blocks_effect_readiness [DecidableEq Key] (id : Key) (q : Nat × Nat × Nat) :
     ¬ Ready {s with pending := write s.pending id q} := by
@@ -261,6 +264,52 @@ theorem rolled_back_projection_cannot_publish (different : s.reviewProjection �
 
 theorem old_registrar_cannot_publish (stale : epoch ≠ s.registrarEpoch) :
     ¬ RegisteredCurrent s id entry actor epoch := fun accepted => stale accepted.2.2.1.2
+
+theorem step_source_epoch_monotone [DecidableEq Key] (step : Step s t) :
+    s.registrarEpoch ≤ t.registrarEpoch := by cases step <;> simp
+
+theorem recovery_source_epoch_monotone [DecidableEq Key] (run : Run s t) :
+    s.registrarEpoch ≤ t.registrarEpoch := by
+  induction run with
+  | refl => exact Nat.le_refl _
+  | next history step ih => exact Nat.le_trans ih (step_source_epoch_monotone step)
+
+/-- Native refinement must map actual authenticated retired keys to their old
+epoch and preserve the retained key prefix. Startup labels cannot supply epoch. -/
+theorem retired_source_stays_fenced_through_recovery [DecidableEq Key]
+    (run : Run s t) (retired : epoch < s.registrarEpoch) :
+    ¬ RegisteredCurrent t id entry actor epoch := by
+  apply old_registrar_cannot_publish
+  exact Nat.ne_of_lt (Nat.lt_of_lt_of_le retired (recovery_source_epoch_monotone run))
+
+#print axioms retired_source_stays_fenced_through_recovery
+
+theorem step_retains_source_keys [DecidableEq Key] (step : Step s t) :
+    ∃ tail, t.sourceKeys = s.sourceKeys ++ tail := by
+  cases step with
+  | handoffSourceKey owner key fresh => exact ⟨[key], rfl⟩
+  | _ => exact ⟨[], by simp⟩
+
+theorem recovery_retains_source_keys [DecidableEq Key] (run : Run s t) :
+    ∃ tail, t.sourceKeys = s.sourceKeys ++ tail := by
+  induction run with
+  | refl => exact ⟨[], by simp⟩
+  | next history step ih =>
+    obtain ⟨earlier, before⟩ := ih
+    obtain ⟨later, after⟩ := step_retains_source_keys step
+    exact ⟨earlier ++ later, by rw [after, before, List.append_assoc]⟩
+
+/-- Key references must denote actual authenticated SPKI identities. Relabeling
+a certificate or caller must not mint a fresh reference for the same retained key. -/
+theorem retired_source_key_cannot_become_fresh [DecidableEq Key]
+    (run : Run s t) (retained : key ∈ s.sourceKeys) : ¬ key ∉ t.sourceKeys := by
+  obtain ⟨tail, appended⟩ := recovery_retains_source_keys run
+  intro fresh
+  apply fresh
+  rw [appended]
+  exact List.mem_append.mpr (Or.inl retained)
+
+#print axioms retired_source_key_cannot_become_fresh
 
 theorem historical_registration_is_not_current (stale : entry.parent ≠ s.head) :
     ¬ RegisteredCurrent s id entry actor epoch := fun accepted => stale accepted.2.2.2.1

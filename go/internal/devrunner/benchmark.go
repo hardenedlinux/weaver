@@ -19,6 +19,7 @@ var rustBenchmarkCases = []string{
 	"contracts_provider_commitment/524288",
 	"contracts_publication_commitment",
 	"contracts_publication_review_commitment",
+	"contracts_source_rotation_commitment",
 	"contracts_profile_commitment",
 	"contracts_profile_request_validation/128",
 	"contracts_profile_request_validation/16384",
@@ -36,6 +37,8 @@ var rustBenchmarkCases = []string{
 	"ledger_publication_stage_and_decide",
 	"ledger_reviewed_publication_register_and_commit",
 	"ledger_spec_replay_register_and_commit",
+	"ledger_source_key_handoff",
+	"ledger_source_authenticated_publication",
 	"ledger_publication_exact_replay",
 	"ledger_publication_historical_lookup",
 	"ledger_profile_task_registration",
@@ -46,6 +49,7 @@ var rustBenchmarkCases = []string{
 	"server_response_encoding/protobuf_frames/32",
 	"server_response_encoding/arrow_batch/1",
 	"server_response_encoding/arrow_batch/32",
+	"server_source_certificate_spki_identity",
 }
 
 // Criterion sanitizes the package/group separator to an underscore on disk.

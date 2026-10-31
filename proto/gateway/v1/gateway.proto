@@ -11,6 +11,8 @@ service Gateway {
   // A returned key is not a publication outcome or an execution grant.
   rpc StageAuthority(PublishRequest) returns (PublicationKey);
   rpc InspectPublication(PublicationKey) returns (PublicationReceipt);
+  rpc InspectSourceAuthority(Empty) returns (SourceAuthorityView);
+  rpc RotateSourceAuthority(SourceRotationRequest) returns (SourceRotationReceipt);
 }
 message Empty {}
 message OperationKey { string family = 1; string node = 2; }
@@ -41,3 +43,8 @@ message PublishRequest { optional uint64 expected_revision = 1; uint64 fence = 2
 enum PublicationOutcome { PUBLICATION_OUTCOME_UNSPECIFIED = 0; COMMITTED = 1; REJECTED = 2; }
 message PublicationReceipt { string operation_id = 1; string digest = 2; PublicationOutcome outcome = 3; optional uint64 revision = 4; optional uint64 fence = 5; }
 message PublicationKey { string operation_id = 1; string digest = 2; }
+message SourceAuthorityView { uint64 epoch = 1; string identity_digest = 2; }
+// The Rust host derives certificate/SPKI identity from actual DER, never caller labels.
+message SourceRotationRequest { string operation_id = 1; uint64 expected_epoch = 2; bytes next_certificate = 3; string next_credential_sha256 = 4; }
+enum SourceRotationOutcome { SOURCE_ROTATION_OUTCOME_UNSPECIFIED = 0; SOURCE_ROTATED = 1; SOURCE_ROTATION_REJECTED = 2; }
+message SourceRotationReceipt { string operation_id = 1; string digest = 2; SourceRotationOutcome outcome = 3; SourceAuthorityView authority = 4; }

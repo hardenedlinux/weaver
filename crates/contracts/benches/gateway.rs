@@ -2,6 +2,8 @@ use criterion::{BenchmarkId, Criterion, Throughput, criterion_group, criterion_m
 use std::{hint::black_box, time::Duration};
 #[path = "support/fixtures.rs"]
 mod fixtures;
+#[path = "support/source_authority.rs"]
+mod source_fixture;
 fn commitments(c: &mut Criterion) {
     let mut group = c.benchmark_group("contracts/provider_commitment");
     for bytes in [128, 16384, 524288] {
@@ -64,5 +66,15 @@ fn profile_contracts(c: &mut Criterion) {
     }
     group.finish();
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=commitments,profile_contracts}
+fn source_commitment(c: &mut Criterion) {
+    let command = weaver_contracts::SourceRotation {
+        operation_id: "source-handoff".into(),
+        expected_epoch: 0,
+        next: source_fixture::source_identity(1),
+    };
+    c.bench_function("contracts/source_rotation_commitment", |b| {
+        b.iter(|| black_box(command.digest().expect("source command binding")))
+    });
+}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=commitments,profile_contracts,source_commitment}
 criterion_main!(benches);

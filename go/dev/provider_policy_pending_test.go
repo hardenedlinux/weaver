@@ -27,8 +27,8 @@ func pendingChange(f *fixture, id string) v1.Publication {
 	return v1.Publication{OperationID: id, ExpectedRevision: &parent, Fence: 2, Policy: f.policy, Schema: f.schema}
 }
 
-// This proves the existing consumption boundary under credential configuration
-// rollback. It does not qualify persistent source-epoch or revocation storage.
+// Credential rollback cannot lower the local persistent source-key floor or
+// remove original consumption. Independent whole-store anti-rollback remains separate.
 func TestProviderSourceRollbackLostReplyRetainsUnknownConsumption(t *testing.T) {
 	for _, phase := range []string{"stage", "commit"} {
 		t.Run(phase, func(t *testing.T) {
@@ -57,13 +57,18 @@ func TestProviderSourceRollbackLostReplyRetainsUnknownConsumption(t *testing.T) 
 					t.Fatal("durable commit reply was not lost", err)
 				}
 			}
-			restartWithSourceCertificate(t, f, secondaryClient(t, f.pki))
+			next := secondaryClient(t, f.pki)
+			rotateAndRestartSource(t, f, next)
 			_, err := f.admin.InspectPublication(ctx, original)
 			if phase == "stage" && status.Code(err) != codes.NotFound || phase == "commit" && err != nil {
 				t.Fatal("credential rotation changed the original outcome", err)
 			}
 			// Restore the retired startup identity, retaining the actual source DB.
 			restartWithSourceCertificate(t, f, oldCertificate)
+			if _, err := f.admin.ObserveOrPublish(ctx, original); status.Code(err) != codes.PermissionDenied {
+				t.Fatal("retired startup credential regained publication", err)
+			}
+			restartWithSourceCertificate(t, f, next)
 			outcome, err := f.admin.ObserveOrPublish(ctx, original)
 			if err != nil || outcome.GetOutcome() != pb.PublicationOutcome_COMMITTED || outcome.GetRevision() != 1 {
 				t.Fatal("exact original outcome could not reconcile", outcome, err)
@@ -80,8 +85,7 @@ func TestProviderSourceRollbackLostReplyRetainsUnknownConsumption(t *testing.T) 
 	}
 }
 
-// Startup certificate pin rotation exercises the existing boundary; it is not
-// durable registrar epoch issuance or online credential revocation.
+// Startup transport pin only: deliberately does not change durable authority.
 func restartWithSourceCertificate(t *testing.T, f *fixture, next tls.Certificate) {
 	t.Helper()
 	f.stop(t)
@@ -100,6 +104,21 @@ func restartWithSourceCertificate(t *testing.T, f *fixture, next tls.Certificate
 		t.Fatal("source certificate admission setting missing")
 	}
 	f.start(t)
+}
+func rotateAndRestartSource(t *testing.T, f *fixture, next tls.Certificate) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	current, err := f.admin.SourceAuthority(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	token := sha256.Sum256([]byte(f.admin.Token))
+	receipt, err := f.admin.RotateSource(ctx, v1.SourceRotation{OperationID: fmt.Sprintf("source-handoff-%d", current.Epoch), ExpectedEpoch: current.Epoch, NextCertificate: next.Certificate[0], NextCredentialSHA256: hex.EncodeToString(token[:])})
+	if err != nil || receipt.GetOutcome() != pb.SourceRotationOutcome_SOURCE_ROTATED {
+		t.Fatal("durable source handoff", receipt, err)
+	}
+	restartWithSourceCertificate(t, f, next)
 }
 
 func TestProviderSourceCertificateRotationRecoversLostReplyAndPending(t *testing.T) {
@@ -126,7 +145,7 @@ func TestProviderSourceCertificateRotationRecoversLostReplyAndPending(t *testing
 	if err := f.admin.StagePublication(ctx, b); err != nil {
 		t.Fatal(err)
 	}
-	restartWithSourceCertificate(t, f, next)
+	rotateAndRestartSource(t, f, next)
 	oldWorker, err := gatewayclient.Dial(ctx, f.sourceAddress, oldToken, oldTLS)
 	if err != nil {
 		t.Fatal(err)
@@ -161,13 +180,14 @@ func TestProviderSourceCertificateRotationRecoversLostReplyAndPending(t *testing
 	}
 }
 
-// Expected gap: a startup pin is not an independently persistent epoch floor.
+// Regression for the previously executed startup-pin rollback counterexample.
 func TestProviderSourceCertificateConfigRollbackReacceptsOldKeyCounterexample(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	old := f.pki.source
-	restartWithSourceCertificate(t, f, secondaryClient(t, f.pki))
+	next := secondaryClient(t, f.pki)
+	rotateAndRestartSource(t, f, next)
 	if _, err := f.admin.Publish(ctx, pendingChange(f, "current-source-key")); err != nil {
 		t.Fatal(err)
 	}
@@ -175,8 +195,12 @@ func TestProviderSourceCertificateConfigRollbackReacceptsOldKeyCounterexample(t 
 	parent := uint64(1)
 	proposal := pendingChange(f, "rolled-back-source-key")
 	proposal.ExpectedRevision, proposal.Fence = &parent, 3
-	if _, err := f.admin.Publish(ctx, proposal); err != nil {
-		t.Fatal("startup-pin rollback boundary changed; audit durable revocation", err)
+	if _, err := f.admin.Publish(ctx, proposal); status.Code(err) != codes.PermissionDenied {
+		t.Fatal("retired startup identity regained authority", err)
+	}
+	restartWithSourceCertificate(t, f, next)
+	if view, err := f.admin.SourceAuthority(ctx); err != nil || view.Epoch != 1 {
+		t.Fatal("durable source floor changed", view, err)
 	}
 	if f.primary.Load() != 0 {
 		t.Fatal("publication phase sent provider traffic")

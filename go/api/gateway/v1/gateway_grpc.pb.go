@@ -19,13 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	Gateway_ExecuteProvider_FullMethodName       = "/weaver.gateway.v1.Gateway/ExecuteProvider"
-	Gateway_Inspect_FullMethodName               = "/weaver.gateway.v1.Gateway/Inspect"
-	Gateway_RegisterTask_FullMethodName          = "/weaver.gateway.v1.Gateway/RegisterTask"
-	Gateway_RegisterPublishedTask_FullMethodName = "/weaver.gateway.v1.Gateway/RegisterPublishedTask"
-	Gateway_PublishAuthority_FullMethodName      = "/weaver.gateway.v1.Gateway/PublishAuthority"
-	Gateway_StageAuthority_FullMethodName        = "/weaver.gateway.v1.Gateway/StageAuthority"
-	Gateway_InspectPublication_FullMethodName    = "/weaver.gateway.v1.Gateway/InspectPublication"
+	Gateway_ExecuteProvider_FullMethodName        = "/weaver.gateway.v1.Gateway/ExecuteProvider"
+	Gateway_Inspect_FullMethodName                = "/weaver.gateway.v1.Gateway/Inspect"
+	Gateway_RegisterTask_FullMethodName           = "/weaver.gateway.v1.Gateway/RegisterTask"
+	Gateway_RegisterPublishedTask_FullMethodName  = "/weaver.gateway.v1.Gateway/RegisterPublishedTask"
+	Gateway_PublishAuthority_FullMethodName       = "/weaver.gateway.v1.Gateway/PublishAuthority"
+	Gateway_StageAuthority_FullMethodName         = "/weaver.gateway.v1.Gateway/StageAuthority"
+	Gateway_InspectPublication_FullMethodName     = "/weaver.gateway.v1.Gateway/InspectPublication"
+	Gateway_InspectSourceAuthority_FullMethodName = "/weaver.gateway.v1.Gateway/InspectSourceAuthority"
+	Gateway_RotateSourceAuthority_FullMethodName  = "/weaver.gateway.v1.Gateway/RotateSourceAuthority"
 )
 
 // GatewayClient is the client API for Gateway service.
@@ -41,6 +43,8 @@ type GatewayClient interface {
 	// A returned key is not a publication outcome or an execution grant.
 	StageAuthority(ctx context.Context, in *PublishRequest, opts ...grpc.CallOption) (*PublicationKey, error)
 	InspectPublication(ctx context.Context, in *PublicationKey, opts ...grpc.CallOption) (*PublicationReceipt, error)
+	InspectSourceAuthority(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SourceAuthorityView, error)
+	RotateSourceAuthority(ctx context.Context, in *SourceRotationRequest, opts ...grpc.CallOption) (*SourceRotationReceipt, error)
 }
 
 type gatewayClient struct {
@@ -144,6 +148,26 @@ func (c *gatewayClient) InspectPublication(ctx context.Context, in *PublicationK
 	return out, nil
 }
 
+func (c *gatewayClient) InspectSourceAuthority(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SourceAuthorityView, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SourceAuthorityView)
+	err := c.cc.Invoke(ctx, Gateway_InspectSourceAuthority_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayClient) RotateSourceAuthority(ctx context.Context, in *SourceRotationRequest, opts ...grpc.CallOption) (*SourceRotationReceipt, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SourceRotationReceipt)
+	err := c.cc.Invoke(ctx, Gateway_RotateSourceAuthority_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GatewayServer is the server API for Gateway service.
 // All implementations must embed UnimplementedGatewayServer
 // for forward compatibility
@@ -157,6 +181,8 @@ type GatewayServer interface {
 	// A returned key is not a publication outcome or an execution grant.
 	StageAuthority(context.Context, *PublishRequest) (*PublicationKey, error)
 	InspectPublication(context.Context, *PublicationKey) (*PublicationReceipt, error)
+	InspectSourceAuthority(context.Context, *Empty) (*SourceAuthorityView, error)
+	RotateSourceAuthority(context.Context, *SourceRotationRequest) (*SourceRotationReceipt, error)
 	mustEmbedUnimplementedGatewayServer()
 }
 
@@ -184,6 +210,12 @@ func (UnimplementedGatewayServer) StageAuthority(context.Context, *PublishReques
 }
 func (UnimplementedGatewayServer) InspectPublication(context.Context, *PublicationKey) (*PublicationReceipt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InspectPublication not implemented")
+}
+func (UnimplementedGatewayServer) InspectSourceAuthority(context.Context, *Empty) (*SourceAuthorityView, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InspectSourceAuthority not implemented")
+}
+func (UnimplementedGatewayServer) RotateSourceAuthority(context.Context, *SourceRotationRequest) (*SourceRotationReceipt, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RotateSourceAuthority not implemented")
 }
 func (UnimplementedGatewayServer) mustEmbedUnimplementedGatewayServer() {}
 
@@ -327,6 +359,42 @@ func _Gateway_InspectPublication_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_InspectSourceAuthority_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).InspectSourceAuthority(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_InspectSourceAuthority_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).InspectSourceAuthority(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gateway_RotateSourceAuthority_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SourceRotationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).RotateSourceAuthority(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_RotateSourceAuthority_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).RotateSourceAuthority(ctx, req.(*SourceRotationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Gateway_ServiceDesc is the grpc.ServiceDesc for Gateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -357,6 +425,14 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "InspectPublication",
 			Handler:    _Gateway_InspectPublication_Handler,
+		},
+		{
+			MethodName: "InspectSourceAuthority",
+			Handler:    _Gateway_InspectSourceAuthority_Handler,
+		},
+		{
+			MethodName: "RotateSourceAuthority",
+			Handler:    _Gateway_RotateSourceAuthority_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

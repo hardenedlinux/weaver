@@ -12,6 +12,7 @@ pub(crate) fn db(e: rusqlite::Error) -> Error {
 pub struct Ledger {
     pub(crate) connection: Connection,
     pub(crate) session: String,
+    pub(crate) source: Option<weaver_contracts::SourceIdentity>,
 }
 
 /// Unforgeable within the public API, deliberately not Clone or serializable.
@@ -52,6 +53,7 @@ impl Ledger {
         Ok(Self {
             connection,
             session,
+            source: None,
         })
     }
 
@@ -96,6 +98,7 @@ impl Ledger {
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db)?;
+        crate::source_authority::require(&tx, self.source.as_ref())?;
         if let Some(profile) = &task.provider_profile {
             crate::provider_profiles::register(&tx, profile)?;
         }

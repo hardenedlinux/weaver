@@ -10,6 +10,14 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Source RPC identity derives from actual authenticated mTLS leaf,
+           SPKI and role-credential bytes. The existing ledger enrolls an empty
+           unowned store once, retains the key prefix and decides exact handoffs.
+           Every source mutation rechecks current identity under its final SQL
+           transaction; startup pin restore cannot lower that local authority.
+           Historical handoff receipts grant no new permission. Source SPKI
+           continuity is not independent subject/incarnation issuance, full
+           reviewed-publication qualification or whole-store anti-rollback. */
         doc /* verify_publication_replay delegates to the actual fixed SPEC
            ValidatedManifest/SchemaBoundReceipt runtime. The candidate's complete
            policy ID/body set and schema must equal the original publication.
@@ -42,11 +50,11 @@ package ControlActivation {
            operation transcript; register and publish have separate purposes.
            Revocation and final use serialize at the authority journal. A delayed
            issuer outcome remains historical and cannot activate an old epoch. */
-        doc /* Startup source-certificate pin rotation can reject an old key while
-           retaining original pending commands. It does not establish durable
-           incarnation assignment, online revocation or anti-rollback: restoring
-           the old startup pin currently accepts the old key. Keep this concrete
-           coverage counterexample until the production authority adapter exists. */
+        doc /* The historical startup-pin rollback counterexample is now a
+           native regression: after an explicit durable key handoff, restoring
+           its old transport pin still cannot authorize source writes. Retain
+           whole-store rollback and missing incarnation/independent authority
+           counterexamples; the local key floor does not close those premises. */
         doc /* Delta registration linearizes at the existing independent commit
            authority, not at a local projection write or an RPC reply. Its exact
            original command/artifact registration is immutable and survives owner

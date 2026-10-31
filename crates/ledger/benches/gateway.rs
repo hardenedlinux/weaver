@@ -6,6 +6,8 @@ mod fixtures;
 mod policy_fixture;
 #[path = "../../policy/tests/support/publication_replay.rs"]
 mod replay_fixture;
+#[path = "../../contracts/benches/support/source_authority.rs"]
+mod source_fixture;
 #[path = "support/fixtures.rs"]
 mod stores;
 fn durable_operations(c: &mut Criterion) {
@@ -241,5 +243,66 @@ fn profile_registration(c: &mut Criterion) {
     }
     group.finish();
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,publication_operations,profile_registration,reviewed_publication,replay_checked_publication}
+fn source_authority(c: &mut Criterion) {
+    let caller = source_fixture::source_identity(0);
+    let command = weaver_contracts::SourceRotation {
+        operation_id: "source-handoff".into(),
+        expected_epoch: 0,
+        next: source_fixture::source_identity(1),
+    };
+    c.bench_function("ledger/source_key_handoff", |b| {
+        b.iter_batched(
+            || {
+                let temp = tempfile::tempdir().expect("directory");
+                let mut ledger =
+                    weaver_ledger::Ledger::open(temp.path().join("source.db")).expect("store");
+                ledger
+                    .with_authenticated_source(&caller, |_| Ok(()))
+                    .expect("enroll outside timing");
+                (temp, ledger)
+            },
+            |(temp, mut ledger)| {
+                black_box((
+                    ledger
+                        .rotate_source_authority(&caller, &command)
+                        .expect("atomic source handoff"),
+                    temp,
+                    ledger,
+                ))
+            },
+            BatchSize::PerIteration,
+        )
+    });
+    let publication = weaver_contracts::Publication {
+        operation_id: "source-publication".into(),
+        expected_revision: None,
+        fence: 1,
+        policy: policy_fixture::POLICY.into(),
+        schema: policy_fixture::SCHEMA.into(),
+    };
+    c.bench_function("ledger/source_authenticated_publication", |b| {
+        b.iter_batched(
+            || {
+                let temp = tempfile::tempdir().expect("directory");
+                let mut ledger =
+                    weaver_ledger::Ledger::open(temp.path().join("source.db")).expect("store");
+                ledger
+                    .with_authenticated_source(&caller, |_| Ok(()))
+                    .expect("enroll outside timing");
+                (temp, ledger)
+            },
+            |(temp, mut ledger)| {
+                black_box((
+                    ledger
+                        .with_authenticated_source(&caller, |l| l.publish_authority(&publication))
+                        .expect("fresh source join at final CAS"),
+                    temp,
+                    ledger,
+                ))
+            },
+            BatchSize::PerIteration,
+        )
+    });
+}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
 criterion_main!(benches);

@@ -1,6 +1,12 @@
 //! Deciding-store constraints; there is no budget release without evidence.
 /// Native owner boundary for `SCHEMA`.
 pub const SCHEMA: &str = r#"
+CREATE TABLE IF NOT EXISTS source_authority (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), epoch INTEGER NOT NULL CHECK(epoch>=0), record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS source_keys (
+ public_key_sha256 TEXT PRIMARY KEY, epoch INTEGER NOT NULL UNIQUE CHECK(epoch>=0), certificate_sha256 TEXT NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS source_rotations (
+ operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, proposer TEXT NOT NULL, command TEXT NOT NULL, receipt TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority_pending (
  operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, proposal TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority_review_requirements (

@@ -26,6 +26,7 @@ arrow = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
 [build-dependencies]
 tonic-prost-build.workspace = true
 [dev-dependencies]
+rcgen.workspace = true
 asp-rust.workspace = true
 criterion.workspace = true
 proptest.workspace = true

@@ -22,6 +22,44 @@ Concrete implementation evidence and structural/model results remain distinct
 receipts. Do not introduce another state machine merely to mirror the same
 invariant in a second verification language.
 
+* Property testing framework boundary
+
+Property-based testing is owned by native test frameworks. Rust uses the workspace
+=proptest= development dependency with package-owned strategies, shrinking and
+regression replay. Go uses =testing.F= with typed inputs, seed corpus execution
+under ordinary =go test=, native fuzz minimization and =testdata/fuzz/<target>/=
+regression replay. The Go development runner schedules standard commands and
+records results; it does not generate random cases, shrink failures or reinterpret
+failed properties. No project-owned property engine is introduced.
+
+Each property owns a named invariant, bounded input strategy, independent oracle,
+valid and invalid seeds, and replayable counterexamples. Stateful properties
+compare every observed transition against an independent model, including restart,
+stale owner, revocation, uncertain send and retained budget. A passing random run
+is sampling evidence. Quint explores protocol schedules; Lean proves invariants
+under explicit premises. Neither replaces implementation PBT. Scheme properties
+belong in =t/*-test.ss= using an upstream property library when integrated; the
+Rust and Go suites do not establish Scheme property coverage.
+
+=FuzzRoutingRefinement= checks both permitted and rejected requests, original
+identity and byte commitments, endpoint eligibility, exact revision/fence and
+reservation bounds. All-deny behavior fails valid seeds. Rejected requests must
+return no proposal. Seeds include zero, the signed accounting limit, unsigned
+overflow and individual authority mutations.
+
+Replay a retained Go counterexample with
+=go -C go test ./internal/routing -run 'FuzzRoutingRefinement/<corpus-hash>'=.
+Explore with
+=go -C go test ./internal/routing -run '^$' -fuzz '^FuzzRoutingRefinement$' -fuzztime=3s=.
+Keep minimized framework corpora as regression tests; transient output stays
+temporary. Rust failures retain native =proptest= seed/regression information.
+Counterexamples remain failures until the production defect is fixed.
+
+The focused local routing check passed all ordinary tests and all thirteen new
+seed cases. A separate three-second native fuzz run used the host's twelve
+workers and completed 653351 executions without a counterexample. This is focused
+implementation evidence, not a throughput benchmark or whole-Gateway acceptance.
+
 * Retired research drivers
 
 The earlier Python check, prepare and generated bundle-helper scripts are no

@@ -129,9 +129,43 @@ fn record_decision(
     Ok(receipt)
 }
 
+fn decide_publication(
+    tx: &Transaction<'_>,
+    change: &Publication,
+    digest: &str,
+    caller: Option<&weaver_contracts::SourceIdentity>,
+) -> Result<PublicationReceipt> {
+    crate::source_authority::require(tx, caller)?;
+    crate::publication_barrier::require_binding(tx, change)?;
+    if let Some(receipt) = lookup(tx, &change.operation_id, digest)? {
+        return Ok(receipt);
+    }
+    let review = crate::publication_review::require_approved(
+        tx,
+        &PublicationKey {
+            operation_id: change.operation_id.clone(),
+            digest: digest.into(),
+        },
+    );
+    let decision = apply(
+        tx,
+        AuthorityChange {
+            expected: change.expected_revision,
+            policy: &change.policy,
+            schema: Some(&change.schema),
+            fence: change.fence,
+        },
+    )?;
+    if decision.outcome == PublicationOutcome::Committed {
+        review?;
+    }
+    record_decision(tx, change, digest, decision)
+}
+
 impl Ledger {
     /// Exact retries observe their original committed or rejected outcome; never rebase a CAS.
     pub fn publish_authority(&mut self, change: &Publication) -> Result<PublicationReceipt> {
+        crate::source_authority::require(&self.connection, self.source.as_ref())?;
         let digest = change.digest()?;
         crate::publication_barrier::require_binding(&self.connection, change)?;
         if let Some(receipt) = lookup(&self.connection, &change.operation_id, &digest)? {
@@ -142,37 +176,13 @@ impl Ledger {
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db)?;
-        crate::publication_barrier::require_binding(&tx, change)?;
-        if let Some(receipt) = lookup(&tx, &change.operation_id, &digest)? {
-            return Ok(receipt);
-        }
-        // Capture review admission at the actual pre-state. A stale CAS can still
-        // record rejection; a would-be commit must satisfy the latched review.
-        let review = crate::publication_review::require_approved(
-            &tx,
-            &PublicationKey {
-                operation_id: change.operation_id.clone(),
-                digest: digest.clone(),
-            },
-        );
-        let decision = apply(
-            &tx,
-            AuthorityChange {
-                expected: change.expected_revision,
-                policy: &change.policy,
-                schema: Some(&change.schema),
-                fence: change.fence,
-            },
-        )?;
-        if decision.outcome == PublicationOutcome::Committed {
-            review?;
-        }
-        let receipt = record_decision(&tx, change, &digest, decision)?;
+        let receipt = decide_publication(&tx, change, &digest, self.source.as_ref())?;
         tx.commit().map_err(db)?;
         Ok(receipt)
     }
     /// Read a historical decision. Absence is not abort and cannot release any hold.
     pub fn publication_receipt(&self, key: &PublicationKey) -> Result<Option<PublicationReceipt>> {
+        crate::source_authority::require(&self.connection, self.source.as_ref())?;
         key.validate()?;
         lookup(&self.connection, &key.operation_id, &key.digest)
     }
@@ -200,6 +210,7 @@ impl Ledger {
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db)?;
+        crate::source_authority::require(&tx, self.source.as_ref())?;
         let decision = apply(&tx, change)?;
         if decision.outcome != PublicationOutcome::Committed {
             return Err(Error::Conflict("publication CAS or fence"));

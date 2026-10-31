@@ -4,7 +4,9 @@
 * Workload
 
 Equivalent one-event and thirty-two-event workloads encoded as Protobuf frames or actual Arrow IPC batches.
-Four measured cases belong to this package in the all-features matrix.
+Four encoding cases and one source certificate/SPKI identity case belong to this
+package in the all-features matrix. The fifth case measures bounded DER parsing
+and digest derivation, not a TLS handshake, CA validation or key possession.
 
 * Measurement boundary
 

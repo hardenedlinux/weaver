@@ -61,5 +61,20 @@ fn frame_encoding(c: &mut Criterion) {
     }
     group.finish();
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=frame_encoding}
+fn source_identity(c: &mut Criterion) {
+    let cert = rcgen::generate_simple_self_signed(vec!["localhost".into()]).expect("certificate");
+    let credential = weaver_contracts::body_digest("source role");
+    c.bench_function("server/source_certificate_spki_identity", |b| {
+        b.iter(|| {
+            black_box(
+                weaver_server::source_certificate_identity(
+                    cert.cert.der().as_ref(),
+                    credential.clone(),
+                )
+                .expect("exact DER/SPKI identity"),
+            )
+        })
+    });
+}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=frame_encoding,source_identity}
 criterion_main!(benches);

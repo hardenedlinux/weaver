@@ -34,14 +34,14 @@ the guarded executor.
 
 | Workspace package | Required measured cases | Package-local target |
 |-------------------+-------------------------+----------------------|
-| weaver-contracts | 9 | crates/contracts/benches/gateway.rs |
+| weaver-contracts | 10 | crates/contracts/benches/gateway.rs |
 | weaver-policy | 5 | crates/policy/benches/gateway.rs |
 | weaver-policy-ffi | 1 | crates/policy-ffi/benches/gateway.rs |
-| weaver-ledger | 12 | crates/ledger/benches/gateway.rs |
+| weaver-ledger | 14 | crates/ledger/benches/gateway.rs |
 | weaver-execution | 1 | crates/execution/benches/gateway.rs |
-| weaver-server | 4 | crates/server/benches/gateway.rs |
+| weaver-server | 5 | crates/server/benches/gateway.rs |
 
-The current optimized all-features matrix contains 32 Rust cases. Three additional Go
+The current optimized all-features matrix contains 36 Rust cases. Three additional Go
 benchmarks exercise the actual Rust service through mTLS gRPC, each repeated
 three times. These complement the package-local costs rather than replacing
 them with a single aggregate number.
@@ -59,9 +59,11 @@ them with a single aggregate number.
 | ledger | Atomic publication commit; exact publication replay; historical outcome lookup | Joint authority/schema/outcome commit versus immutable result observation; setup/teardown outside timed closure |
 | ledger | Durable staging plus decision; trusted-host review registration plus final CAS | FULL/WAL registration and actual-parent join; excludes upstream semantic approval and independent recovery |
 | ledger | Actual SPEC replay plus local registration and final CAS | Replay and FULL/WAL persistence; setup/staging excluded; no independent authority qualification |
+| ledger | Source-key handoff; source-authenticated publication | Persistent retained-key prefix, current caller and original outcome under SQLite transaction; enrollment excluded |
 | ledger | Atomic task/profile registration; exact task replay with one and 256 retained tasks | Durable immutable profile join and indexed original-task semantic floors; population and teardown outside timing |
 | execution | Guarded HTTPS SSE request with three response events | Cold TLS connection, actual loopback provider request, source admission, durable burns, bounded parsing and final release guards |
 | server | Protobuf versus Arrow at one and 32 equivalent events | Pure frame creation and actual Protobuf/Arrow IPC serialization; record throughput reported |
+| server | Certificate/SPKI identity derivation | Pure bounded DER parser and hashes; no TLS or authorization claim |
 | server through Go | Warm mTLS gRPC Inspect on an already completed operation | Actual authenticated RPC, principal join and canonical ledger observation; Go client allocations reported separately |
 | server reconnect through Go | Fresh TCP/mTLS/HTTP2 connection, Inspect and client close per iteration | Connection setup plus canonical read, distinct from warm RPC cost; Go client allocation counters only |
 | source server through Go | Warm mTLS PublishAuthority with strict typed Cedar validation and a fresh revision CAS per iteration | Actual source ingress and durable Policy publication; no provider invocation allowed |
