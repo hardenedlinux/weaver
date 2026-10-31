@@ -81,6 +81,14 @@ package WeaverProject {
            and optional committed-blob checks bind the receipt to project bytes;
            they do not prove an atomic filesystem snapshot or dependency-cache
            integrity. Build outputs and archived run logs are not source inputs. */
+        doc /* The standard unfiltered Gerbil test gate derives its module
+           inventory from direct -test.ss files in t using the SDK's
+           collection rule. Qualification requires the exact harness inventory,
+           balanced module/suite/case starts and completions, nonempty modules,
+           a final OK and natural process success within the existing deadline.
+           A historical case count, zero exit alone or a partial transcript is
+           not completion evidence. Go testing.F exercises protocol corruption;
+           transcript checks do not prove SDK execution or final-send safety. */
         part rust : VerificationSuite { part 'check-rust' : VerificationMode; }
         part go : VerificationSuite { part 'check-go' : VerificationMode; }
         part scheme : VerificationSuite { part 'check-scheme' : VerificationMode; }

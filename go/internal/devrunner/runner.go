@@ -264,7 +264,7 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
 	}
 	if stage.Name == "scheme-unit-tests" && err == nil {
-		err = validateSchemeResult(filepath.Join(directory, result.Log))
+		err = validateSchemeResult(root, filepath.Join(directory, result.Log))
 		if ctx.Err() != nil {
 			err = errors.Join(err, ctx.Err())
 		}
