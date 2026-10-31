@@ -158,3 +158,11 @@ It excludes the separately failed Scheme cross-language invocation above. The
 native Governance suite passed through standard Gerbil testing. Concurrent MRR
 admission changes from PR1 are retained; their architecture links and focused
 tests are checked after merging, rather than relabeling the earlier gate source.
+
+At merged source =f3050a6=, the standard clean-source architecture gate passed;
+standard =gerbil test -g -v 5 t= passed all five modules and 21 cases, including
+the framework's 128 generated trials. The changed =PublicationRecovery= owner
+passed all 158 named witnesses (seed 293). An attempted ordinary workspace
+=cargo test -p weaver-ledger mrr_admission= selected zero tests; it is not native
+MRR qualification. That consumer intentionally uses an isolated research manifest,
+as documented by its owning chapter; no runtime dependency was added here.
