@@ -703,3 +703,74 @@ The core D2 was rendered and visually inspected after adding the local owner.
 Strict all-target/all-feature Clippy passed with warnings denied. All three
 governance Criterion entries passed test mode, including the host roundtrip;
 test mode validates workloads and establishes no latency/throughput baseline.
+
+* Production native input construction
+
+The reverse Rust-to-Scheme direction now belongs to =scheme_input= in the
+production Governance crate, enabled by =scheme-vm=. =root_source= accepts a
+validated =OwnedSource= and the current owner-thread SDK runtime. It returns a
+root tied to that runtime, not to the lifetime of borrowed Rust source data.
+The original Rust record can be dropped before Scheme reads the native snapshot.
+The test fixture now delegates ordinary construction to this public API and
+retains only deliberately malformed-object controls; it no longer owns a second
+source projection or production =expect=-based conversion.
+
+The implementation directly reuses SDK string, binary exact-integer, symbol,
+vector and structural-table constructors. Record field keys are symbols;
+identifier-map keys are strings. Optional absent fields are omitted rather than
+filled with false, zero or a default revision. UTF-8 byte lengths preserve
+non-ASCII and embedded NUL. Every intermediate SDK object has an owned strong
+root. SDK errors return normalized =SourceError::Scheme=; traversal-bound errors
+return =SourceError::Bound=. No unsafe ABI declaration or application Any was
+added. This is native conversion with copies, not a zero-copy performance claim.
+
+Concrete SourceData, selection, task, provider profile, plan, route and publication
+records are destructured exhaustively, without =..=. Adding a contract field
+therefore requires updating the projection at compile time instead of silently
+omitting a future optional field. This complements, rather than replaces, the
+whole-record roundtrip and independent-original binding checks.
+
+The builder cumulatively bounds copied UTF-8/key bytes, node visits and collection
+sizes while constructing roots. The schema has fixed nesting, so arbitrary input
+recursion is unavailable. A failed partial construction drops its roots naturally.
+These are traversal/copy bounds, not a proof of a precise VM heap cap, allocator
+behavior or hostile Scheme program termination. =OwnedSource= validates individual
+contracts; a set of individually legal plans can still exceed the aggregate
+native handoff budget and must refuse before producer invocation. That refusal
+does not create no-execution evidence for any earlier request or release a hold.
+
+The real SDK framework property now compares every concrete field after
+rooting/materialization, with bounded exact integers, optional revision presence
+and arbitrary Unicode prefixed by embedded NUL/non-ASCII data. It destroys the
+Rust input before reading the root. An internally valid source containing 33
+large plans is required to fail the aggregate native bound, after which the
+same VM handles positive roundtrips and actual AA/Governor/Cedar capture.
+Arbitrary Policy text in the roundtrip generator tests byte ownership only;
+it is not asserted to be a valid Cedar policy or an Allow decision.
+
+Existing Quint =roundedIntegerCannotClaimSameBudgetTest=,
+=symbolStringKeyCoercionCannotClaimSameRecordTest= and original-content controls,
+plus Lean =coherent_replacement_cannot_redefine_original= and
+=ready_output_keeps_retained_original= retain their conditional roles. Native
+constructor fidelity is an implementation premise exercised by real SDK PBT,
+not a new axiom or a new Boolean approval flag. SysML maps this production API
+to the same =GovernorSourceHandoff= requirement. No second formal ledger or policy
+semantics was added. Approved producer registration, server lifecycle wiring,
+Go RPC compilation and replacement of the old file adapter remain required.
+
+The first qualification draft failed because the malformed-object fixture lost
+its IdentifierKind import after its ordinary projection was removed. The import
+was restored in that test owner; the failure is separate from subsequent native
+qualification. Raw logs remain temporary and dependency revisions are unchanged.
+
+Final production-constructor qualification passed all 14 Rust source/host/ASP
+tests and the actual linked SDK integration in 6.09 seconds. The SDK receipt
+reported max/active processors =1=; this does not qualify host-sized SMP. The
+aggregate-bound refusal marker preceded both actual source captures in the same
+VM. The bounded owner callback now invokes =root_source= directly on its original
+=OwnedSource=, without the fixture's extra validation/clone wrapper. The 128-case
+native property checks complete roundtrip equality, including input destruction,
+Unicode/NUL and optional revisions. All-target/all-feature strict Clippy and
+Project/requirement checks are separate receipts. The D2 was rendered and checked;
+Quint/Lean annotations map the existing conditional laws to this constructor,
+without claiming a new kernel proof of the SDK implementation.

@@ -9,6 +9,13 @@ With =scheme-vm=, =materialize_source= consumes an SDK strong root and converts
 native tables/vectors, strings and exact integers directly to Rust-owned records.
 There is no whole-record JSON encoding, dynamic application Any or retained VM
 pointer. Struct fields use symbol keys and identifier maps use string keys.
+=root_source= constructs the reverse direction with the same SDK: concrete
+validated records become rooted native values on the owner thread. Strings are
+UTF-8 length-delimited data, including embedded NUL, and integers use exact binary
+magnitude. Constructors return =SourceError=; they do not panic on SDK failure.
+Cumulative string/key bytes and node visits plus collection bounds limit each
+construction. Partial failure drops intermediate owned roots naturally. These
+are traversal bounds, not a bound on the VM heap or hostile producer allocation.
 
 The production library forbids unsafe code. =scheme-vm= exposes only conversion;
 =scheme-qualification= additionally links the test-only program graph. The optional integration fixture binds

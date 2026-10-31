@@ -320,6 +320,11 @@ package WeaverProject {
                SourceExpectation retains the independently admitted original
                before producer invocation; BoundSource compares the whole typed
                image and remains inert data, never a publication/send permit. */
+            doc /* root_source builds the reverse native input from concrete
+               validated original records using SDK rooted constructors. Field
+               symbols, identifier strings, exact integers and optional fields
+               retain their kinds. Fallible bounded construction owns temporary
+               roots; it confers neither producer admission nor execution rights. */
             doc /* SourceClient/SourceInbox bound queued, running and unread
                ready work on an existing tracked blocking owner. The VM remains
                owner-thread local. Terminal close and cancellation fence future

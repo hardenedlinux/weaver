@@ -1,5 +1,6 @@
 use weaver_governance::{
-    OwnedSource, SourceExpectation, materialize_bound_source, materialize_source, source_lane,
+    OwnedSource, SourceExpectation, materialize_bound_source, materialize_source, root_source,
+    source_lane,
 };
 #[path = "../unit/fixture.rs"]
 mod fixture;
@@ -19,7 +20,7 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
     let capture = program::capture(&runtime);
     // One runtime owns the whole framework run; no repeated VM initialization.
     use proptest::{
-        prop_assert_eq,
+        prop_assert, prop_assert_eq,
         test_runner::{Config, RngSeed, TestRunner},
     };
     let mut runner = TestRunner::new(Config {
@@ -29,16 +30,64 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
         ..Config::default()
     });
     runner
-        .run(&(0u64..=weaver_contracts::MAX_CREDITS), |fence| {
-            let mut sample = fixture::source();
-            sample.publication.fence = fence;
-            let root = rooted_source::source(&runtime, &sample);
-            let owned = materialize_source(root).expect("native exact integer");
-            prop_assert_eq!(owned.publication().fence, fence);
-            prop_assert_eq!(owned.task().family.as_str(), "f");
-            Ok(())
-        })
+        .run(
+            &(
+                0u64..=weaver_contracts::MAX_CREDITS,
+                proptest::option::of(0u64..=weaver_contracts::MAX_CREDITS),
+                proptest::collection::vec(proptest::char::any(), 1..32),
+            ),
+            |(fence, revision, chars)| {
+                let mut sample = fixture::source();
+                sample.publication.fence = fence;
+                sample.publication.expected_revision = revision;
+                sample.publication.policy =
+                    format!("\0λ🙂{}", chars.into_iter().collect::<String>());
+                let original = OwnedSource::from_source(sample.clone()).expect("original data");
+                let root = root_source(&runtime, &original).expect("native input");
+                drop(original);
+                let owned = materialize_source(root).expect("native exact integer");
+                prop_assert_eq!(owned.publication().fence, fence);
+                prop_assert_eq!(owned.task().family.as_str(), "f");
+                prop_assert!(owned.data() == &sample);
+                Ok(())
+            },
+        )
         .expect("native SDK exact integer property");
+    // Valid individual plans may exceed the aggregate native handoff bound.
+    // Conversion must refuse and leave the same VM usable for the next input.
+    let mut large = fixture::source();
+    let mut plan = large.plans[0].clone();
+    plan.body = format!(
+        r#"{{"model":"model-a","stream":true,"messages":[{{"role":"user","content":"{}"}}],"max_completion_tokens":32}}"#,
+        "x".repeat(256 * 1024)
+    );
+    let task = &mut large.tasks[0];
+    task.nodes.clear();
+    task.body_digests.clear();
+    task.stream_contracts.clear();
+    task.node_cost_bounds.clear();
+    large.plans.clear();
+    large.governance.open_nodes.clear();
+    for index in 0..33 {
+        let mut part = plan.clone();
+        part.node = format!("part-{index}");
+        task.nodes.push(part.node.clone());
+        task.body_digests
+            .insert(part.node.clone(), weaver_contracts::body_digest(&part.body));
+        task.stream_contracts
+            .insert(part.node.clone(), part.digest().expect("plan commitment"));
+        task.node_cost_bounds
+            .insert(part.node.clone(), part.ceiling);
+        large.governance.open_nodes.push(part.node.clone());
+        large.plans.push(part);
+    }
+    let large = OwnedSource::from_source(large).expect("internally valid oversized source");
+    assert!(matches!(
+        root_source(&runtime, &large),
+        Err(weaver_governance::SourceError::Bound)
+    ));
+    drop(large);
+    eprintln!("governance native input aggregate-bound refusal; same VM continues");
     for fence in [0, (1u64 << 53) + 1, weaver_contracts::MAX_CREDITS] {
         let mut sample = fixture::source();
         sample.publication.fence = fence;
@@ -110,7 +159,7 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
         result.expect("owned lane result")
     });
     inbox.run(|source| {
-        let input = rooted_source::source(&runtime, source.data());
+        let input = root_source(&runtime, source)?;
         let result = capture
             .call(&input)
             .into_result()

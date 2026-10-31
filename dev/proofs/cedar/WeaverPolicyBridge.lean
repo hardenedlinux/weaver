@@ -439,6 +439,11 @@ structure CaptureDependency where
    encoding input; its actual UTF-8 byte check and Rust region guards have native
    property evidence. Ready below proves neither encoding allocation bounds nor
    address validity; retain those host premises and the inert-preflight boundary. -/
+/- root_source and materialize_source implement native input/output in Rust.
+   Fidelity of SDK constructors, UTF-8/NUL, exact integer magnitude and field/map
+   key kinds remains a concrete refinement premise, checked by real-VM PBT.
+   These semantic laws do not verify the SDK allocator or raw C representation.
+   Aggregate construction refusal cannot establish a Ready boundary. -/
 structure BoundaryContext where
   entry : ConfigurationEntry
   configurationSchema : Nat

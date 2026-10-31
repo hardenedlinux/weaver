@@ -23,6 +23,11 @@ module LlmPolicyContinuation {
   // bounds before FFI. A readable/stable buffer and status zero do not prove
   // bounded encoding allocation; Scheme/Rust framework properties own that
   // implementation evidence. These protocol schedules grant no allocator proof.
+  // Production root_source constructs SDK input; materialize_source copies output.
+  // nativeTyped/exactIntegers/keyKinds cover both directions. Actual constructor
+  // fidelity, including UTF-8/NUL and optional-field presence, is a refinement
+  // premise exercised by the real-VM framework property, not derived here.
+  // Aggregate construction refusal supplies no BoundaryCheck or execution/refund.
   type BoundaryEvidence={kind:int,root:int,claim:int,profile:int,configurationSchema:int,normalizer:int,programModule:int,environment:int,
     vm:int,call:int,epoch:int,cut:int,input:int,output:int,schemaChecked:bool,governanceChecked:bool,
     readable:bool,stable:bool,owned:bool,retainedPointer:bool,reentrant:bool,

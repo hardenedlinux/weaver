@@ -382,6 +382,8 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"theorem governance_projection_and_actual_request_require_error_free_allow"}]},
   {"id":"GovernorSourceHandoff","witnesses":[
+    {"file":"crates/governance/src/scheme_input/records.rs","pattern":"pub fn root_source"},
+    {"file":"crates/governance/src/scheme_input/values.rs","pattern":"fn bytes"},
     {"file":"crates/governance/src/host/client.rs","pattern":"pub fn source_lane"},
     {"file":"crates/governance/src/host/owner.rs","pattern":"pub fn run"},
     {"file":"crates/governance/tests/unit/host.rs","pattern":"cancelled_running_work_keeps_its_slot_until_natural_return"},

@@ -18,6 +18,12 @@ package ControlActivation {
            belongs in producer-created phase attributes. */
     }
     requirement def GovernorSourceHandoff {
+        doc /* Production root_source constructs native SDK input directly from
+           OwnedSource, using fallible bounded constructors rather than a test
+           fixture or encoded blob. Native roundtrips preserve all concrete fields,
+           exact bounded integers, UTF-8/NUL data and optional revision presence.
+           An aggregate-size refusal leaves the same VM available; no original
+           claim, reservation, history or source outcome is consumed or released. */
         doc /* Compilation stays on an existing tracked blocking owner with a
            thread-local Scheme VM. Bounded capacity includes queued, active and
            unread ready replies. Running cancellation retains capacity until
