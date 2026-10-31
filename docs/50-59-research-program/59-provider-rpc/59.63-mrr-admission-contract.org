@@ -70,12 +70,14 @@ canonical-home binding, content durability and Rust final-use mediation.
 
 * Native consumer evidence
 
-[[file:../../../crates/ledger/tests/integration/mrr_admission.rs][The qualification-only Rust consumer]]
-compiles against unchanged MRR source through temporary manifests outside Git.
-It uses the real Turso provider, Backend, immutable filesystem content store and
-Weaver's typed =ProviderReceipt=. It is not an ordinary Weaver workspace test
-target and is not compiled into production. The acknowledged-file adapter is a
-same-host experiment, not evidence of independent anti-rollback storage.
+[[https://github.com/tao3k/mrr-data/blob/55cd3d893cf1bf71b622611d3cd77cb22ccac994/crates/mrr-data-backend/tests/integration/exposure.rs][MRR Data's native exposure integration suite]]
+owns these storage experiments. Run its normal =backend_exposure= Cargo test
+target in the MRR workspace. It uses the real Turso provider, Backend and immutable
+filesystem content store. Its private typed Host-obligation fixture is opaque
+storage data, not another budget or authorization model. The acknowledged-file
+adapter is a same-host experiment, not independent anti-rollback storage.
+Weaver consumes that contract and keeps its actual ledger/transport tests; it
+does not maintain a second MRR package or external-manifest runner.
 
 | Native scenario | Observed boundary |
 |-----------------+-------------------|
@@ -91,7 +93,7 @@ rollback experiments; the new consumer does not replace them.
 
 * Turso upgrade qualification and concurrency limits
 
-The isolated control and candidate select exact Turso =0.8.1= and =0.8.3= against
+The historical isolated control and candidate selected exact Turso =0.8.1= and =0.8.3= against
 the same original backend source. Both passed the original 18 consumer cases and
 the four cases above. Initial consumer builds failed because the test treated
 =Option<ContentRead>= as =ContentRead=; corrected consumer builds pass on both
@@ -112,7 +114,8 @@ maximum-machine scalability. Do not silently enable MVCC or remove serialization
 as part of a dependency bump. Any future sharding must preserve the original
 shared-budget coordination scope.
 
-Temporary raw logs and qualification manifests remain under =/private/tmp=.
+Historical raw logs remain under =/private/tmp=. Current executable acceptance
+uses MRR Data's own manifest and standard test targets, not a temporary package.
 Neither a shared dependency build cache nor paired successful tests constitutes
 a cold-start or performance comparison. Production artifacts belong in =prod=;
 production code must not import this consumer, proof assets or =dev=.

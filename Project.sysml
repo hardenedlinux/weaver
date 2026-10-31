@@ -291,6 +291,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.63-mrr-admission-contract.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.63-mrr-admission-contract.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.63-mrr-admission-contract.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.65-turso-concurrent-admission.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.65-turso-concurrent-admission.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.65-turso-concurrent-admission.svg' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.svg' : File;
