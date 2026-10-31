@@ -72,6 +72,11 @@ prefixes as well. Unknown cross-store floor/data commit outcomes retain the
 original claim and hold until exact reconciliation; a new nonce or owner session
 cannot repair this by allocating fresh capacity.
 
+The next [[file:59.42-independent-commit-floor.org][independent commit-floor review]] closes the target protocol for all
+four prefixes, exact outcome recovery and the independent transport owner. Its
+SQLite protocol reference composes with actual Ledger dispatch but does not
+install a production floor. AC-06 remains an expected unsafe production witness.
+
 Revision normalization remains explicit: the Lean recovery proof uses head zero
 for absence and one for the first committed entry; Quint/native wire revisions
 use minus one/absence and zero for the first entry. The Host refinement maps

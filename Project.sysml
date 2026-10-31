@@ -187,6 +187,7 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.30-governance-adapter-acceptance.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.40-core-gateway-library.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.41-authority-read-final-cas.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.42-independent-commit-floor.org' : File;
 
         part 'crates/contracts' : RustPackage;
         part 'crates/policy' : RustPackage {

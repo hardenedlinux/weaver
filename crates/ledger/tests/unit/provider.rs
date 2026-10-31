@@ -2,6 +2,8 @@ use proptest::{prop_assert, prop_assert_eq, proptest, test_runner::Config};
 use std::collections::BTreeSet;
 use weaver_contracts::{ProviderPlan, ProviderRoute, Task, body_digest};
 use weaver_ledger::{Ledger, ProviderDispatch, ProviderRelease};
+#[path = "commit_floor.rs"]
+mod commit_floor;
 const POLICY: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../../prod/policies/provider/provider.cedar"

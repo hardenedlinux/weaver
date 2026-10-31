@@ -25,7 +25,7 @@ structure State (Key : Type) where
 
 variable {Key : Type}
 
-def write [DecidableEq Key] (records : Key → Option Decision) (id : Key) (d : Decision) :=
+def write [DecidableEq Key] (records : Key → Option Value) (id : Key) (d : Value) :=
   fun key => if key = id then some d else records key
 
 def Extends (s t : State Key) : Prop := ∀ id d, s.records id = some d → t.records id = some d
@@ -187,4 +187,162 @@ theorem owned_worker_and_publication_composition [DecidableEq Key]
 #print axioms recovery_and_provider_accounting_composition
 #print axioms exact_observation_and_accounting_survive_recovery
 #print axioms recovered_decision_cannot_replace_advanced_head
+/- Independent recovery envelope, owned here rather than another policy or
+   account machine. Lists stand for ordered canonical records, not lengths.
+   Authentication, collision-resistant encoding and independence of this state
+   from restored projections remain runtime premises. DomainValid is the
+   existing publication/consumption/account/history owner's validation law. -/
+namespace CommitFloor
+
+structure Cut where
+  publication : List Nat := []
+  consumption : List Nat := []
+  account : List Nat := []
+  history : List Nat := []
+  deriving DecidableEq
+
+def append (a b : Cut) : Cut :=
+  ⟨a.publication ++ b.publication, a.consumption ++ b.consumption,
+   a.account ++ b.account, a.history ++ b.history⟩
+
+structure Command where
+  identity : Nat
+  canonicalBody : Nat
+  originalScope : Nat
+  epoch : Nat
+  before : Cut
+  delta : Cut
+  deriving DecidableEq
+
+structure Result where
+  command : Command
+  committed : Bool
+  after : Cut
+  deriving DecidableEq
+
+structure Authority where
+  originalScope : Nat
+  epoch : Nat
+  cut : Cut
+  outcomes : Nat → Option Result := fun _ => none
+  burned : Nat → Bool := fun _ => false
+  held : Nat
+
+structure Image where
+  cut : Cut
+  epoch : Nat
+  unresolved : List Nat := []
+
+def Current (a : Authority) (i : Image) : Prop :=
+  i.cut = a.cut ∧ i.epoch = a.epoch ∧ i.unresolved = []
+
+def DomainValid := Cut → Command → Cut → Prop
+
+inductive Transition (valid : DomainValid) : Authority → Authority → Prop where
+  | commit (a q) (fresh : a.outcomes q.identity = none)
+      (scope : q.originalScope = a.originalScope) (epoch : q.epoch = a.epoch)
+      (parent : q.before = a.cut) (domain : valid a.cut q (append a.cut q.delta)) :
+      Transition valid a {a with
+        cut := append a.cut q.delta
+        outcomes := write a.outcomes q.identity ⟨q, true, append a.cut q.delta⟩}
+  | reject (a q) (fresh : a.outcomes q.identity = none) :
+      Transition valid a {a with outcomes := write a.outcomes q.identity ⟨q, false, a.cut⟩}
+  | rotate (a) : Transition valid a {a with epoch := a.epoch + 1}
+  | burnAtTransportOwner (a i key) (current : Current a i) (unspent : a.burned key = false)
+      (consumed : key ∈ a.cut.consumption) :
+      Transition valid a {a with burned := fun k => if k = key then true else a.burned k}
+  | observeReplayOrRestoreProjection (a) : Transition valid a a
+
+variable {id : Nat}
+
+theorem outcome_is_immutable (step : Transition valid a b)
+    (original : a.outcomes id = some result) : b.outcomes id = some result := by
+  cases step <;> simp_all [write] <;> grind
+
+theorem spent_is_monotone (step : Transition valid a b)
+    (spent : a.burned key = true) : b.burned key = true := by
+  cases step <;> simp_all <;> split <;> simp_all
+
+theorem scope_and_unknown_hold_are_preserved (step : Transition valid a b) :
+    b.originalScope = a.originalScope ∧ b.held = a.held := by
+  cases step <;> simp
+
+def Prefix (a b : Cut) : Prop := ∃ tail, b = append a tail
+
+theorem step_keeps_all_four_prefixes (step : Transition valid a b) : Prefix a.cut b.cut := by
+  cases step with
+  | commit q => exact ⟨q.delta, rfl⟩
+  | _ => exact ⟨{}, by simp [append]⟩
+
+theorem prefix_transitive (ab : Prefix a b) (bc : Prefix b c) : Prefix a c := by
+  obtain ⟨d, rfl⟩ := ab
+  obtain ⟨e, rfl⟩ := bc
+  exact ⟨append d e, by simp [append, List.append_assoc]⟩
+
+inductive Trace (valid : DomainValid) : Authority → Authority → Prop where
+  | refl (a) : Trace valid a a
+  | next : Trace valid a b → Transition valid b c → Trace valid a c
+
+theorem recovery_keeps_all_four_prefixes (trace : Trace valid a b) : Prefix a.cut b.cut := by
+  induction trace with
+  | refl => exact ⟨{}, by simp [append]⟩
+  | next history step ih => exact prefix_transitive ih (step_keeps_all_four_prefixes step)
+
+theorem recovery_keeps_outcome_and_spent (trace : Trace valid a b)
+    (original : a.outcomes id = some result) (spent : a.burned key = true) :
+    b.outcomes id = some result ∧ b.burned key = true ∧
+      b.originalScope = a.originalScope ∧ b.held = a.held := by
+  induction trace with
+  | refl => exact ⟨original, spent, rfl, rfl⟩
+  | next history step ih =>
+    obtain ⟨outcome, burn, scope, hold⟩ := ih
+    obtain ⟨sameScope, sameHold⟩ := scope_and_unknown_hold_are_preserved step
+    exact ⟨outcome_is_immutable step outcome, spent_is_monotone step burn,
+      sameScope.trans scope, sameHold.trans hold⟩
+
+theorem stale_cut_or_epoch_cannot_activate
+    (stale : i.cut ≠ a.cut ∨ i.epoch ≠ a.epoch ∨ i.unresolved ≠ []) : ¬ Current a i := by
+  intro current
+  rcases stale with h | h | h
+  · exact h current.1
+  · exact h current.2.1
+  · exact h current.2.2
+
+theorem equal_lengths_do_not_certify_current (body : i.cut ≠ a.cut) : ¬ Current a i := by
+  exact fun h => body h.1
+
+theorem rotation_invalidates_old_image (current : Current a i) :
+    ¬ Current {a with epoch := a.epoch + 1} i := by
+  simp only [Current] at *
+  omega
+
+theorem new_identity_cannot_remove_prior_burn (trace : Trace valid a b)
+    (spent : a.burned key = true) : ¬ b.burned key = false := by
+  have kept : b.burned key = true := by
+    induction trace with
+    | refl => exact spent
+    | next history step ih => exact spent_is_monotone step ih
+  simp_all
+
+theorem exact_replay_binds_original_scope_and_body
+    (observed : a.outcomes q.identity = some result)
+    (exactCommand : result.command = q) (trace : Trace valid a b) :
+    b.outcomes q.identity = some result ∧ result.command.originalScope = q.originalScope ∧
+      result.command.canonicalBody = q.canonicalBody := by
+  have kept : b.outcomes q.identity = some result := by
+    induction trace with
+    | refl => exact observed
+    | next history step ih => exact outcome_is_immutable step ih
+  exact ⟨kept, congrArg Command.originalScope exactCommand,
+    congrArg Command.canonicalBody exactCommand⟩
+
+#print axioms outcome_is_immutable
+#print axioms recovery_keeps_all_four_prefixes
+#print axioms recovery_keeps_outcome_and_spent
+#print axioms stale_cut_or_epoch_cannot_activate
+#print axioms equal_lengths_do_not_certify_current
+#print axioms rotation_invalidates_old_image
+#print axioms new_identity_cannot_remove_prior_burn
+#print axioms exact_replay_binds_original_scope_and_body
+end CommitFloor
 end Weaver.PublicationRecovery

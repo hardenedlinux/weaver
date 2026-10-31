@@ -118,6 +118,12 @@ package WeaverExecution {
     }
     part def RustLedger {
         doc /* One deciding store owns immutable tasks, reservations, logical keys, current revision and fence. */
+        doc /* Commit-floor target: reuse publication exact-result retention,
+           account/WAL owner validation and current-cut CAS. Independent authority
+           records full four-prefix decisions and fences stale epochs. Local WAL
+           and materialized projections may roll back; floor authority may not
+           roll back with them. This boundary is a deployment/refinement premise,
+           not established by placing two SQLite files on one host. */
         port proposals : ~ProposalPort;
         port observations : OutcomePort;
         port consumed : ConsumedPort;
@@ -127,6 +133,12 @@ package WeaverExecution {
     }
     part def RustFinalBroker {
         doc /* Use the consuming ledger handle; serialize the final guard through the bounded transport call. */
+        doc /* Target rollback-safe mode requires the sole transport owner and
+           provider credentials outside the restored worker domain. Its current
+           cut/epoch check, durable one-use send burn and bounded socket admission
+           serialize with authority changes. Never return a reusable permission
+           that an old worker can send with offline. Unknown results retain the
+           original reservation; already admitted bytes may drain. */
         port consumed : ~ConsumedPort;
         port wire : WirePort;
     }
