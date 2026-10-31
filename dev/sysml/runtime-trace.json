@@ -315,6 +315,12 @@
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityUncompiledSourceCannotRegisterTest"},
     {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"}]},
   {"id":"GovernancePolicyProjection","witnesses":[
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run confirmedRevocationAndHandoffRejectConsistentSourceRollbackTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run retainedRegistrationCannotReplaceAfterSnapshotRollbackTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run sameLengthArtifactReplacementCannotConfirmRetainedPrefixTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run wholeRetainedRootRollbackCanReplayQualificationCounterexampleTest"},
+    {"file":"crates/ledger/tests/unit/commit_floor.rs","pattern":"fn identical_prefix_after_whole_store_restore_can_replay_dispatch_counterexample"},
+    {"file":"crates/ledger/tests/unit/commit_floor.rs","pattern":"fn prefix_qualification_does_not_reconstruct_rolled_back_budget_counterexample"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run copiedRowsWithoutRecoveryQualificationCannotPublishTest"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run lateQualificationAfterRegistryAppendIsRefusedTest"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run recoveredNewOwnerRequalifiesOriginalArtifactTest"},

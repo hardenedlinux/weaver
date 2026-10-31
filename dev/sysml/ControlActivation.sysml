@@ -10,6 +10,21 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* An independent retained-root witness binds the authority namespace,
+           authenticated generation and inherited full-content source prefix.
+           Configuration cannot enroll a replacement root. Registration and final
+           publication join that witness; lost confirmation is reconciled by the
+           original immutable decision, never by adopting a restored local root.
+           Retention confirmation is an existing-authority commit witness, not an
+           assertion that writes to two independent stores are atomic. */
+        doc /* Root retention coverage must include affine transport burns and
+           original claim/reservation/account/history state, not only the source
+           registry or four prefix ordinals. Equal prefixes can coexist with a
+           rolled-back burned table. A local held=0 after restore is not a release
+           certificate. Missing domain bodies or exposure projections deny
+           activation and preserve the original unknown obligation. Same-root
+           failover must inherit this complete recovery image before requalifying;
+           old worker handles and historical receipts confer no current rights. */
         doc /* Registry recovery has distinct reconstruction, qualification and
            final-use steps. Qualification binds the complete inherited prefix to
            the current authority identity/generation, source cut and observer
