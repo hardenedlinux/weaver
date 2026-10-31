@@ -42,8 +42,10 @@ authority: Independently retained authority\nEpoch / owner / revocation\nRegistr
   height: 230
   style.fill: "#e7edf4"
 }
-recovery: Recovered authoritative prefix\nInherited floor before activation\nMissing projection blocks use {
+recovery: Rust registry recovery qualification\nInherited prefix and fresh context\nMissing projection blocks use {
   class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
   left: 810
   top: 580
   width: 550
@@ -62,9 +64,9 @@ execution: Rust final transport admission\nFresh authorization at use\nOriginal 
 }
 source -> observer: Typed inert proposal { style.font-size: 20 }
 observer -> cas: Bound source operation { style.font-size: 20 }
-authority -> recovery: Inherit committed prefix { style.font-size: 20 }
+authority -> recovery: Verify inherited prefix { style.font-size: 20 }
 recovery -> observer: Fresh authority observation { style.font-size: 20 }
-recovery -> cas: Final deciding join { style.font-size: 20 }
+recovery -> cas: Join current recovery qualification { style.font-size: 20 }
 cas -> execution: Publication is not a send right { style.font-size: 20 }
 footer: "Unknown outcomes retain pending intent and budget exposure\nLate receipts remain history · Configuration cannot restore permission" {
   shape: text

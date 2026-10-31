@@ -21,7 +21,7 @@ module PublicationRecovery {
     owner:int,liveOwners:Set[int],egressOwners:Set[int],handoff:bool,calls:int,external:int,
     registry:List[ReviewEntry],registrarOwner:int,registrarTerm:int,
     sourceDecisions:List[SourceDecision],sourceRevoked:Set[int]}
-  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int}
+  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int,registryQualifications:Set[SourceObservation]}
   var authority:Ledger
   val ids=Set(0,1,2)
   val empty={payload:0,parent:-1,requestedFence:1,outcome:0,resultHead:-1,resultFence:1,review:Set(),validatedFence:1,validatedCut:emptyCut,validatedEpoch:0}
@@ -34,7 +34,7 @@ module PublicationRecovery {
   pure val emptyCut={publication:List(),consumption:List(),account:List(),history:List()}
   pure val floor0={epoch:0,cut:emptyCut,outcomes:List(),pending:Set(),local:emptyCut,observed:emptyCut,observedEpoch:0,haveRead:true,active:true,burned:Set(),admitted:Set(),handles:Set(),tickets:Set(),owner:1,liveOwners:Set(1),egressOwners:Set(1),handoff:false,calls:0,external:0,registry:List(),registrarOwner:1,registrarTerm:0,sourceDecisions:List({slot:0,credential:100}),sourceRevoked:Set()}
   pure val sourceCut0={epoch:0,owner:1,revoked:Set(),decisions:List({slot:0,credential:100}),registry:List(),head:-1,fence:1}
-  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0}
+  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0,registryQualifications:Set()}
   def canStage(q:Proposal):bool={val d=authority.records.get(q.id)
     authority.pending.forall(p=>p.id!=q.id or p==q) and
       (d.outcome==0 or (d.payload==q.payload and d.parent==q.parent and d.requestedFence==q.fence))}
@@ -105,7 +105,7 @@ module PublicationRecovery {
   action reconnectSourceObserver=authority'=authority.with("sourceSession",authority.sourceSession+1)
   // Process recovery preserves durable authority, but never the authority-read
   // capability of the previous observer incarnation. Context freshness is a Host premise.
-  action restartSourceObserver=authority'=authority.with("sourceSession",authority.sourceSession+1).with("sourceObservations",Set())
+  action restartSourceObserver=authority'=authority.with("sourceSession",authority.sourceSession+1).with("sourceObservations",Set()).with("registryQualifications",Set())
   action restoreSourceObservation(observed:SourceObservation):bool=authority'=authority.with("sourceImage",observed.cut)
   action sourceAvailability(available:bool):bool=authority'=authority.with("sourceReachable",available)
   def joinedSourceObservation(observed:SourceObservation):bool=authority.sourceReachable and authority.sourceObservations.contains(observed) and
@@ -114,6 +114,13 @@ module PublicationRecovery {
     joinedSourceObservation(observed),registerUsingSource(observed.use,r)}
   action publishAtSourceObservation(observed:SourceObservation,q:Proposal,r:Review):bool=all {
     joinedSourceObservation(observed),publishUsingSource(observed.use,q,r)}
+  // Recovery qualification orders existing opaque references; it supplies no
+  // credential, Policy or independent-prefix authenticity semantics of its own.
+  action qualifyRegistryRecovery(observed:SourceObservation):bool=all {
+    joinedSourceObservation(observed),registryRecovered,
+    authority'=authority.with("registryQualifications",Set(observed))}
+  action publishAtQualifiedRegistry(observed:SourceObservation,q:Proposal,r:Review):bool=all {
+    authority.registryQualifications.contains(observed),publishAtSourceObservation(observed,q,r)}
   action registerReviewBy(actor:int,term:int,r:Review):bool={
     val existing=anchoredReviews(r.command.id)
     if(existing!=Set()) all {existing==Set(r),authority'=authority}
@@ -532,12 +539,48 @@ module PublicationRecovery {
     .then(unsafeRestoreIndependentSourceSnapshot).then(restoreSourceObservation(observation0))
     .then(registerAtSourceObservation(observation0,review0))
     .expect(sourceUseCurrent(sourceRegister0) and anchoredReviews(0)==Set(review0) and authority.held==4)
+  action qualifiedRegistry0=registeredObserved.then(qualifyRegistryRecovery(publishObservation0))
+  run copiedRowsWithoutRecoveryQualificationCannotPublishTest=registeredObserved
+    .expect(registryRecovered and authority.held==4).then(publishAtQualifiedRegistry(publishObservation0,staged0,review0).fail())
+  run missingProjectionCannotQualifyRegistryTest=registeredObserved.then(restoreReviewImage(List()))
+    .expect(authority.pending.contains(staged0) and authority.held==4).then(qualifyRegistryRecovery(publishObservation0).fail())
+  run qualifiedRegistryMakesExactOriginalProgressTest=qualifiedRegistry0.then(publishAtQualifiedRegistry(publishObservation0,staged0,review0))
+    .expect(sourceDecisionSafe and authority.commits.length()==1 and authority.held==4)
+  run registryQualificationCannotSurviveObserverRestartTest=qualifiedRegistry0.then(restartSourceObserver)
+    .then(readSourceObservation(sourcePublish0)).expect(registryRecovered and sourceDecisionSafe)
+    .then(publishAtQualifiedRegistry(publishObservation0.with("session",1),staged0,review0).fail())
+  run registryQualificationCannotSurviveHandoffTest=qualifiedRegistry0.then(rotateRegistrar).then(recordSourceDecision(1,101))
+    .then(recoverReviewsBy(2,1)).then(readSourceObservation(nextSourcePublish))
+    .then(publishAtQualifiedRegistry({use:nextSourcePublish,cut:sourceAuthorityCut,session:0},staged0,review0).fail())
+  run lateQualificationAfterRegistryAppendIsRefusedTest=registeredObserved.then(stage(sibling)).then(registerReviewBy(1,0,siblingReview))
+    .then(recoverReviewsBy(1,0)).expect(registryRecovered and authority.held==4).then(qualifyRegistryRecovery(publishObservation0).fail())
+  run appendAfterQualificationRequiresNewCutTest=qualifiedRegistry0.then(stage(sibling)).then(registerReviewBy(1,0,siblingReview))
+    .then(recoverReviewsBy(1,0)).expect(sourceDecisionSafe).then(publishAtQualifiedRegistry(publishObservation0,staged0,review0).fail())
+  run recoveredNewOwnerRequalifiesOriginalArtifactTest=qualifiedRegistry0.then(rotateRegistrar).then(recordSourceDecision(1,101))
+    .then(restartSourceObserver).then(restoreReviewImage(List())).then(recoverReviewsBy(2,1)).then(readSourceObservation(nextSourcePublish))
+    .then(qualifyRegistryRecovery({use:nextSourcePublish,cut:sourceAuthorityCut,session:1}))
+    .then(publishAtQualifiedRegistry({use:nextSourcePublish,cut:sourceAuthorityCut,session:1},staged0,review0))
+    .expect(sourceDecisionSafe and anchoredReviews(0)==Set(review0) and authority.held==4)
+  run cachedQualificationCannotHideProjectionLossTest=qualifiedRegistry0.then(restoreReviewImage(List()))
+    .expect(authority.registryQualifications.contains(publishObservation0) and authority.held==4)
+    .then(publishAtQualifiedRegistry(publishObservation0,staged0,review0).fail())
+  // Restoring the deciding trust root as well as its old complete registry is
+  // outside prefix inheritance. A locally saved qualification cannot detect it.
+  action unsafeRestoreRegisteredAuthoritySnapshot=authority'=authority.with("floor",authority.floor
+    .with("registrarOwner",1).with("registrarTerm",0).with("sourceRevoked",Set())
+    .with("sourceDecisions",floor0.sourceDecisions).with("registry",registeredCut0.registry))
+  run consistentAuthorityRollbackCanReplaySavedQualificationCounterexampleTest=qualifiedRegistry0
+    .then(revokeSource(100)).then(rotateRegistrar).then(unsafeRestoreRegisteredAuthoritySnapshot)
+    .then(restoreReviewImage(registeredCut0.registry)).then(restoreSourceObservation(publishObservation0))
+    .then(publishAtQualifiedRegistry(publishObservation0,staged0,review0))
+    .expect(sourceUseCurrent(sourcePublish0) and authority.commits.length()==1 and authority.held==4)
   action sourceRecoverySchedule=any {stage(staged0),stage(sibling),
     recordSourceDecision(authority.floor.registrarTerm,100+authority.floor.registrarTerm),revokeSource(100),revokeSource(101),rotateRegistrar,
     recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restoreReviewImage(List()),restart,reconnectSourceObserver,restartSourceObserver,observe,
     readSourceObservation(currentRegisterReference),readSourceObservation(currentRegisterReference.with("purpose",1)),
     restoreSourceObservation(observation0),restoreSourceObservation(publishObservation0),sourceAvailability(false),sourceAvailability(true),
-    registerAtSourceObservation(observation0,review0),publishAtSourceObservation(publishObservation0,staged0,review0),
+    registerAtSourceObservation(observation0,review0),qualifyRegistryRecovery(publishObservation0),publishAtQualifiedRegistry(publishObservation0,staged0,review0),
     registerAtSourceObservation({use:currentRegisterReference,cut:sourceAuthorityCut,session:authority.sourceSession},review0),
-    publishAtSourceObservation({use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession},staged0,review0)}
+    qualifyRegistryRecovery({use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession}),
+    publishAtQualifiedRegistry({use:currentRegisterReference.with("purpose",1),cut:sourceAuthorityCut,session:authority.sourceSession},staged0,review0)}
 }

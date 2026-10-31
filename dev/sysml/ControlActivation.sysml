@@ -10,6 +10,15 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Registry recovery has distinct reconstruction, qualification and
+           final-use steps. Qualification binds the complete inherited prefix to
+           the current authority identity/generation, source cut and observer
+           context. Row equality or a persisted recovered flag is insufficient.
+           Restart, handoff, revocation, prefix append or projection loss requires
+           revalidation; final CAS rechecks both qualification and current data.
+           A stale NotFound is not permission to replace the original artifact,
+           resolve pending or release unknown budget. Qualification is never a
+           transport permit and cannot repair rollback of its own trust root. */
         doc /* verify_publication_replay delegates to the actual fixed SPEC
            ValidatedManifest/SchemaBoundReceipt runtime. The candidate's complete
            policy ID/body set and schema must equal the original publication.

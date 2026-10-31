@@ -315,6 +315,11 @@
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityUncompiledSourceCannotRegisterTest"},
     {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"}]},
   {"id":"GovernancePolicyProjection","witnesses":[
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run copiedRowsWithoutRecoveryQualificationCannotPublishTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run lateQualificationAfterRegistryAppendIsRefusedTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run recoveredNewOwnerRequalifiesOriginalArtifactTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run consistentAuthorityRollbackCanReplaySavedQualificationCounterexampleTest"},
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn stale_registry_read_and_reopened_worker_preserve_unknown_provider_exposure"},
     {"file":"crates/policy/tests/unit/publication_replay.rs","pattern":"fn text_rendering_cannot_silently_replace_original_policy_ids"},
     {"file":"crates/ledger/tests/unit/publication_replay.rs","pattern":"fn actual_spec_replay_registration_persists_before_original_final_cas"},
     {"file":"go/dev/provider_policy_json_test.go","pattern":"func TestProviderControlNamedPolicyJSONRevocationAndRestart"},

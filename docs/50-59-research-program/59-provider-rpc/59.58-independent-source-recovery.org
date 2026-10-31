@@ -89,6 +89,39 @@ Neither administrative outcome nor receipt recovery sends provider traffic.
 
 * Source-grounded semantic reuse
 
+** Recovery qualification is not a saved Boolean
+
+Reconstruction, qualification and final use are separate protocol steps. Copying
+rows completes only reconstruction. Qualification must bind the authenticated
+authority identity/generation, exact inherited committed prefix, complete registry
+content, current source cut and observer context. An adapter must not serialize
+a =recovered=true= flag and restore it as permission after restart. Its final
+transaction rechecks the qualified references and actual projection together.
+
+Registry append, owner/epoch transition, revocation, changed publication parent,
+observer restart/reconnect or projection loss invalidates the relevant join.
+Qualification may be recomputed for the new cut without changing the original
+command or artifact. Failure to qualify keeps the original unresolved; a stale
+=NotFound= never licenses replacement evidence, a fresh logical key or budget
+refund. This conservative whole-prefix binding trades additional revalidation
+for a simple deciding contract. A future key-local optimization needs its own
+noninterference evidence; equality of epoch numbers is insufficient.
+
+The authority identity/generation and prefix authenticity still come from the
+existing Host boundary. Quint's opaque references do not implement that trust
+root. If all authoritative state and its trust reference roll back consistently,
+a saved qualification cannot detect or repair the rollback. The retained unsafe
+snapshot counterexamples remain applicable; a new Boolean guard is not an
+independent persistence service.
+
+** Existing SPEC contract
+
+The target adapter discharges SPEC's =Host.registryRecovered= at the actual
+deciding view with complete prefix reconstruction and current recovery
+qualification. It must not identify that premise with the temporal model's
+row-equality check alone. Qualification does not replace =Final.durable=,
+=Final.fenced=, continuous authorization, pending admission or the commit witness.
+
 The reviewed SPEC checkout's =CedarPooSpec/Gateway/PublicationReview.lean= provides
 =RegistrarAuthority.admitted=: issued binding, allowed role, exact current
 binding, scope/audience, nonrevocation and command possession. Its
@@ -108,6 +141,66 @@ a witness. The local ledger's trusted-host review latch and the source RPC
 certificate pins do not discharge those premises.
 
 * Temporal checks and concrete recovery tests
+
+** Qualification ordering extension
+
+The existing owner now records =registryQualifications= as opaque observations.
+=qualifyRegistryRecovery= requires the current joined observation and complete
+projection; =publishAtQualifiedRegistry= joins that qualification with the existing
+source-use and final publication guards. =restartSourceObserver= discards local
+qualification. Cut/context equality and the final projection check prevent old
+qualification from surviving a concurrent append, handoff or projection loss.
+The strict sampled recovery relation uses the qualified final action. Existing
+lower-level actions remain available to their original witnesses and explicit
+unsafe counterexamples; they are not silently certified by the stricter wrapper.
+
+Nine additional witnesses cover copied rows without qualification, missing
+projection, exact positive progress, restart, handoff, late qualification after
+append, append after qualification, new-owner requalification and projection loss
+after qualification. These are protocol-order checks; neither identity admission
+nor Cedar/Delta meaning is duplicated.
+
+The publication envelope retains an existing fixed unknown hold. Its four-unit
+hold is a frame condition, not a newly proved account-arithmetic or settlement
+model. Those obligations stay with their existing owners; the native test below
+checks a concrete retained reservation, hold and unresolved range together.
+
+A tenth witness deliberately restores the independent deciding authority's old
+registry, epoch and revocation view while retaining a matching saved
+qualification. Final publication can then succeed under the resurrected old
+binding. This expected counterexample makes the trust-root retention premise
+checkable: qualification is useful against stale projections and scheduling
+races, but cannot authenticate its own fully rolled-back authority. The unsafe
+restore is excluded from the strict recovery sampling relation.
+
+** Real stale-read recovery
+
+=stale_registry_read_and_reopened_worker_preserve_unknown_provider_exposure=
+uses an actual SQLite WAL read transaction pinned before artifact registration.
+The reader continues to report zero rows after another connection commits the
+original registration and even after exact publication. A worker opened before
+registration nevertheless consults the deciding store, sees the original full
+record and refuses replacement. Ending the old read transaction exposes the
+committed registration to the reader.
+
+Before staging the reviewed change, this test reserves and consumes the original
+provider request, burns dispatch once and creates an unresolved response range.
+Pending review blocks response release. After the exact reviewed revocation
+commits, the old permit cannot dispatch or complete. Close/reopen retains the
+original artifact, unknown provider/range state and four held budget units;
+the original reservation also remains four units. Resumed,
+foreign or already-consumed permits cannot repeat the request. The send callback
+count remains one. The review is an explicitly trusted fixture, not a fabricated
+Delta proof, and no independent authority is mocked into the production API.
+
+This establishes the local deciding-store response to a stale observation and
+ordinary restart. It does not establish recovery from a consistent rollback of
+that deciding store. A pre-registration snapshot can still erase its only
+artifact record, as the separate retained counterexample demonstrates. Native
+authority identity/prefix verification, external qualification and their atomic
+final-use adapter remain outstanding acceptance evidence.
+
+** Earlier recovery evidence
 
 The existing =PublicationRecovery.qnt= adds =restartSourceObserver=, which clears
 old observations and advances an opaque adapter context while preserving durable
@@ -162,8 +255,10 @@ Executed results:
   source-currentness checks. The same entry passes again after integrating the
   concurrent named-Policy replay work. Existing ASP Rust deny gates remain in
   that full test run.
-- =PublicationRecovery= passes 104 executable schedules before that integration
-  and 108 afterward. The strict recovery relation passes 1,000 sampled runs of
+- =PublicationRecovery= now passes 118 executable schedules, including ten
+  recovery-qualification witnesses added to the previous 108. Expected unsafe
+  restores are counterexample witnesses, not successful production prevention.
+  The strict recovery relation passes 1,000 sampled runs of
   60 steps, seed 293, including observer restart. Sampling is not exhaustive
   verification; unsafe snapshot actions are excluded.
 - =GatewayComposition= passes its existing 70 witnesses after integration.
@@ -172,6 +267,12 @@ Executed results:
   new delayed-result test and the existing stage/commit reply-loss subcases.
   The library storage target executes five review recovery tests, including the
   new expected snapshot counterexample; the full Rust entry includes them too.
+- This follow-up also executes the real external-target WAL reader test. It
+  establishes late-absence behavior with an actual retained read transaction,
+  immutable registration, original unknown range, one dispatch callback and four
+  held budget units after ordinary process recovery. The full Go-managed Rust
+  entry passes with this test included; the unchanged real gRPC regression suite
+  again passes 12 top-level tests. No additional gRPC scenario is claimed here.
 - D2 renders and its SVG is embedded above. No downstream Lean semantic
   definition, production runtime implementation or dependency pin is changed
   by this review. Concurrent upstream changes are preserved, not attributed to
