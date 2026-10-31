@@ -1,0 +1,119 @@
+#+title: 59.45 Gateway Runtime Baseline and Optimization Priorities
+#+language: en
+
+* Priority and implemented path
+The primary performance target is the already running Gateway. Dependency
+compilation, module discovery, SDK process startup and publication are separate
+engineering/control-plane costs. The current Scheme source compiler runs before
+activation, not for each provider request. Future live Scheme routines need
+their own runtime measurements and cannot replace fresh Rust execution checks.
+
+Scheme supplies semantic contracts and Policy projection; Go supplies cloud and
+protocol integration and routing candidates; Rust supplies current Cedar checks,
+durable claim/budget consumption and guarded actual I/O. Compiled immutable
+Policy/facts can be reused. Allow decisions, current fences and unknown budget
+cannot be cached away to improve latency.
+
+* Fixed measurement and evidence
+The complete =bench= gate at =b4b10837d85889f22aec324cebd9ed3d28e47790= passed
+nine stages with committed/source checks before and after. The host has twelve
+CPUs. All six Rust packages produced their twenty-six required Criterion cases,
+each with thirty samples, the existing one-second warm-up and two-second target
+measurement. Three actual mTLS gRPC benchmarks each produced three admitted
+rows. No dependency pins, native deadlines or safety guards changed.
+
+The prior run at =66e1d82= passed the previous gate, but its compact RPC log tail
+did not retain the early measurement rows. That evidence gap is fixed: the
+runner now validates and stores all nine rows before reducing verbose logs.
+Missing/extra repetitions, wrong CPUs/units and invalid values fail the stage.
+The old process pass is not relabeled as complete retained RPC evidence.
+
+Raw logs remain temporary. Current typed receipts, the generated English Org
+summary and Criterion products remain ignored. The durable values below are
+curated results, not committed raw logs or repeated evidence directories.
+
+* Optimized Rust package measurements
+These are reported per-iteration means and Criterion intervals, not individual
+request percentiles or a production SLO.
+
+| Measured operation | Mean | Reported interval |
+|--------------------+------+-------------------|
+| Current Cedar decision with warmed compilation | 72.098 us | 67.860--76.560 us |
+| Fresh durable provider admission | 337.781 us | 300.081--398.629 us |
+| Consumption and dispatch burn | 527.658 us | 508.764--548.335 us |
+| Idempotent admission | 127.260 us | 126.607--127.937 us |
+| Guarded HTTPS SSE, three events | 3.469 ms | 3.165--3.903 ms |
+| Closed profile/request validation, 128-byte payload | 1.703 us | 1.697--1.710 us |
+| Provider commitment, 512-KiB source payload | 1.558 ms | 1.552--1.564 ms |
+| Protobuf serialization, one event | 0.286 us | 0.233--0.376 us |
+| Arrow serialization, one event | 8.473 us | 7.375--9.667 us |
+| Thirty-two individual Protobuf frames | 7.355 us | 6.543--8.248 us |
+| One Arrow batch of thirty-two equivalent rows | 7.852 us | 7.082--8.748 us |
+
+The HTTPS case includes a real loopback provider request, cold TLS connection,
+durable guards and bounded SSE parsing/release. Its output sink counts events;
+it excludes Go routing/frontend work, mTLS ingress and response-frame encoding.
+Store provisioning/destruction is outside timing. It does not include paid
+provider inference. The final unknown hold remains four; the benchmark does not
+refund capacity or redispatch a consumed logical message to create iterations.
+
+The encoding cases exclude admission, Policy and network transport. Thirty-two
+individual frames and one batch differ in grouping, so these numbers do not
+establish a transport-throughput win, zero copy or a reason to enable Arrow for
+every token. Typed Cedar source preflight is approximately 299.609 us in the
+separate Rust FFI-package case; it excludes Scheme conversion and process startup
+and is not a per-request authorization measurement.
+
+* Actual Go/Rust RPC boundary, debug service profile
+The existing Go integration fixture builds a debug-profile Rust service.
+The following three values in each row are the three independent Go benchmark
+averages. Allocation counters belong to the Go client.
+
+| Operation | Repeated means | Bytes/op | Allocs/op |
+|-----------+----------------+----------+-----------|
+| Warm authenticated canonical Inspect | 0.740190 / 0.760381 / 0.732011 ms | 6530--6543 | 115 |
+| New TCP/mTLS/HTTP2 connection plus Inspect | 2.623456 / 2.972419 / 2.715888 ms | 181626--181651 | 1278--1280 |
+| Typed authority publication and durable CAS | 3.173886 / 3.515792 / 3.484750 ms | 6584--6621 | 114--115 |
+
+Inspect is a canonical read, not permission to send. Publication is a
+control-plane operation and the fixture checks that it never invokes a provider.
+These clients connect directly to the Rust owner; the data does not measure the
+complete =weaver-control= frontend/routing path. Debug RPC and optimized Rust
+package values cannot be combined into optimized end-to-end latency.
+
+* Variability and unqualified claims
+The two sequential runs changed development evidence code only; Rust Runtime
+source was unchanged. Nevertheless, the guarded HTTPS mean changed from 5.140
+to 3.469 ms, while single-event Arrow encoding changed from 4.415 to 8.473 us.
+Criterion reported regressions as well as apparent improvements. Its retained
+change estimates for Arrow/one-event and Protobuf/one-event were approximately
++91.9% and +74.7%; the HTTPS estimate was -32.5%. These are observations, not
+causal benefits/regressions attributed to an implementation change.
+
+The host was not reserved and OS/cache/scheduling effects were not isolated.
+Reported intervals do not establish portable performance or host-jitter
+attribution. A successful evidence gate is not acceptance of a latency SLO.
+Per-request p95/p99, concurrent throughput, Rust allocations, slow-consumer
+buffer/fairness bounds and optimized full-path RPC remain unqualified.
+
+* Next Runtime work
+Continue through the existing owners and fixtures:
+
+- Add measured Go route/routine selection and optimized full-control-path
+  execution; retain exact original task/profile/provider/body commitments.
+- Measure finite authorized request pools and message/range release under
+  concurrent load, with queue wait, time to first event and per-request tails.
+  Repetitions need distinct legitimate claims; SDK retry, reconnect or budget
+  reset cannot manufacture another execution opportunity.
+- Profile immutable fact construction and repeated durable operations before
+  selecting optimizations. The deciding lock currently spans response headers;
+  reducing unnecessary waiting needs an explicit final-send linearization and
+  current Policy/history/fence proof, not an unchecked I/O continuation.
+- Preserve real revocation, partial-write, lost-response and restart controls
+  in any before/after comparison. Reuse existing ProviderRpc/PublicationRecovery
+  Quint and Lean laws; NativeExitQualification only owns tool/measurement
+  qualification and does not prove request-path speed.
+
+The earlier fifteen-second SDK timeout remains documented and causally open.
+Its investigation is bounded and separate from the current Runtime priority.
+No Gateway Runtime implementation was changed by this baseline work.
