@@ -51,6 +51,16 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* CPU-matched writer requalification uses max(4, available Host CPUs)
+           for runtime, write/shared workers and reusable capacity in the native
+           lifecycle target and real-content paired benchmark. Record actual
+           CPUs, workers and blocking capacity. Compare WAL, fresh MVCC and reuse
+           in rotated matching rounds for original hot and independent homes;
+           retain every sample, refusal and Unknown. Do not overlap this task's
+           builds/tests with measurement or infer a new performance gain from
+           historical runs. Preserve the 30-second bound, exact operation and
+           authority recovery, held unknown exposure and terminal old owners.
+           Provider reconstruction and process-death evidence stay distinct. */
         doc /* Native multithreaded acceptance uses at least four Tokio workers;
            explicit blocking-thread budgets also have a four-thread minimum. CPU-derived performance drivers
            scale to the available Host CPUs with a four-worker minimum and report

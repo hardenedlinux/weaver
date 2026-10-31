@@ -49,6 +49,10 @@ the existing Host/SPEC/executor obligations.
 
 * Native acceptance plan
 
+[[file:59.68-cpu-matched-writer-review.org][CPU-matched requalification]] subsequently raises the lifecycle fixture to actual
+Host parallelism with a four-worker floor; the fixed-four receipts below retain
+their original configurations. The core resource/authority diagram remains shared.
+
 First preserve a regression failure for same-object resurrection. Add bounded
 thread rendezvous tests for late successful return, simultaneous close, refusal
 of new checkout and fresh-object recovery. Use real MRR Backend/Turso transactions
