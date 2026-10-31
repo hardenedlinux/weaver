@@ -289,6 +289,47 @@ func TestProviderSlowConsumerCancellationAndReconnectRetainHistory(t *testing.T)
 	_ = drainStream(stream, pb.Encoding_ARROW_IPC)
 	originalStillSpent(t, f, before)
 }
+
+func TestProviderSlowConsumerRevocationRestartAndRestoredPolicyCannotReopen(t *testing.T) {
+	f, observer := observedFixture(t, false)
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	stream, _ := slowStream(t, ctx, f, pb.Encoding_ARROW_IPC)
+	pending := observer.await(t, ctx, "pending", 0)
+	before := inspect(t, f)
+	revision := uint64(0)
+	request := &pb.PublishRequest{OperationId: "revoke-before-restart", ExpectedRevision: &revision, Fence: 2, Policy: "forbid(principal,action,resource);", Schema: f.schema}
+	publication, err := f.admin.RPC.PublishAuthority(f.admin.Context(ctx), request)
+	if err != nil || publication.GetOutcome() != pb.PublicationOutcome_COMMITTED {
+		t.Fatalf("revocation did not commit: %v %v", publication, err)
+	}
+	finished := make(chan drained, 1)
+	go func() { finished <- drainStream(stream, pb.Encoding_ARROW_IPC) }()
+	observer.await(t, ctx, "ready", pending.id)
+	out := <-finished
+	if out.done || out.count > before.Events {
+		t.Fatalf("revocation admitted a later range: %+v", out)
+	}
+	f.stop(t) // Existing natural-exit gate and complete resource cleanup.
+	f.start(t)
+	recovered := inspect(t, f)
+	if recovered.Digest != before.Digest || recovered.Events != before.Events || recovered.Held != 4 {
+		t.Fatalf("consumption/hold changed across recovery: before=%v recovered=%v", before, recovered)
+	}
+	// Retry the exact original publication after restart, retaining its outcome.
+	publication, err = f.admin.RPC.PublishAuthority(f.admin.Context(ctx), request)
+	if err != nil || publication.GetOutcome() != pb.PublicationOutcome_COMMITTED {
+		t.Fatalf("publication outcome was not recoverable: %v %v", publication, err)
+	}
+	revision = 1
+	publication, err = f.admin.RPC.PublishAuthority(f.admin.Context(ctx), &pb.PublishRequest{OperationId: "restore-after-restart", ExpectedRevision: &revision, Fence: 3, Policy: f.policy, Schema: f.schema})
+	if err != nil || publication.GetOutcome() != pb.PublicationOutcome_COMMITTED {
+		t.Fatalf("restored policy failed: %v %v", publication, err)
+	}
+	f.plan.Revision, f.plan.Fence = 2, 3
+	originalStillSpent(t, f, recovered)
+}
+
 func TestProviderSlowConsumerPositiveControlCompletesAfterCapacityReturns(t *testing.T) {
 	f, observer := observedFixture(t, false)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)

@@ -2,7 +2,7 @@
 
 * Authoritative ownership
 
-=Project.sysml= and =WeaverExecution::CedarGatewayLibrary= define ownership.
+=Project.sysml= and =WeaverExecution::CedarSecurityFrameworks= define ownership.
 The reusable Gateway library belongs under =CedarPooSpec/Gateway/= in
 cedar-poo-spec and is written in Lean. Scenario-specific Gateway Rust execution
 belongs in Weaver. The upstream library composes existing capabilities; it does
