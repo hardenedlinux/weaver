@@ -360,6 +360,12 @@ package ControlActivation {
            may resolve its own staged intent while administrative siblings remain.
            Requiring globally empty pending here deadlocks progress. Provider
            effects still require the distinct global resolved-pending barrier. */
+        doc /* Go captures the optional parent in private typed storage before
+           its first observation or staging RPC and retains the same proposal
+           through final submission. Every outbound Protobuf request detaches
+           the parent again. Later caller/request mutation cannot rebase the
+           captured command; input must be stable during the initial copy.
+           Lost replies cause no automatic retry or replacement operation ID. */
         doc /* Publication review binds the independent authoritative parent,
            exact original command, approved Delta/replay artifact and deciding
            source cut under one final CAS. Caller-selected parent/evidence and

@@ -20,6 +20,49 @@ remain distinct open delivery gates.
 
 * Call-scoped source capture for the in-process handoff
 
+** Frozen Go publication calls
+
+The Go client takes one private typed copy of the optional expected revision
+before observing, staging or submitting a publication. =Publish= retains that
+same proposal across its two RPC stages, and =Publication= detaches the parent
+again for each outbound Protobuf message. All remaining proposal fields are Go
+value scalars or immutable strings. Caller memory must be stable during the
+initial copy; this does not synchronize concurrent writes to caller storage.
+Subsequent caller or transport-message mutation cannot alter the captured parent,
+digest, receipt-validation input or later final submission. A response loss still
+returns an unknown outcome without retry, rebasing or allocating another ID.
+Recovery uses the retained original command and its durable Rust decision;
+this call-local snapshot is not a durable registry or an anti-rollback anchor.
+
+The Go framework property exercises absent/present parents, integer boundaries,
+mutations at both RPC boundaries and stage/commit response loss. The pre-fix
+implementation fails its seed corpus; the fixed implementation passes race
+tests and 1000 fuzz executions with 12 host workers. The existing real Rust gRPC
+lost-commit-reply/restart/historical-decision test also passed, preserving its
+original non-redispatch and held-budget assertions. These focused receipts do
+not erase the separate cold-start failure reported above.
+
+Quint's =AuthorityPublication= now includes caller-parent changes independently
+of the captured proposal, a lost-response recovery schedule and an unsafe
+borrowed-parent counterexample. Lean's =PublicationCallRun= proves that arbitrary
+finite sequences of caller writes, request writes, submissions and observations
+preserve captured commands, conditional on an initially owned snapshot. Its
+composition with existing =Run= preserves the original durable decision.
+The model grants no send authority and does not establish native memory safety,
+concurrent-copy atomicity, SQLite durability or whole-store rollback protection.
+
+Qualification for this change: the complete =AuthorityPublication= schedule
+suite passed 256 tests; 1000 simulated traces of 60 transitions found no invariant
+violation (seed =0x18c0cb2eb5030d33=). The changed Lean file compiled; both new
+run/composition laws depend only on =propext=, with no =sorryAx= or added axiom.
+Strict OpenSysML project checks passed. The real lost-reply/restart case ran in
+1.83 seconds, separately from Go's reported 12.657-second test-package elapsed
+time (not a measurement of the complete command wall time). No bound,
+dependency pin, transport retry policy or runtime CPU setting changed. Raw
+negative-control and proof-authoring failure logs remain temporary artifacts.
+
+** Scheme capture ownership
+
 The Gateway scope now exposes =capture= with a specific native Function contract:
 it accepts a zero-argument Boolean producer and returns one independent =GatewayArtifact= Record. The public
 =capture-governed-gateway= facade uses the same admitted Yuanxu view, AA/Governor

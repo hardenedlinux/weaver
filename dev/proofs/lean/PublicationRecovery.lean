@@ -725,4 +725,59 @@ theorem finite_replay_does_not_certify_no_gain (samples : List Nat) (outside : N
   simp [different]
 
 #print axioms finite_replay_does_not_certify_no_gain
+
+/- Local adapter refinement only; this is not another authority owner. Command
+   denotes the complete exact proposal, including optional-parent presence.
+   The native initial copy requires stable input; outbound requests must not
+   share mutable storage with the captured proposal. Go framework properties
+   check both premises. Neither this value model nor a race test proves arbitrary
+   concurrent caller writes safe during that initial copy. -/
+structure PublicationCall (Command : Type) where
+  original : Command
+  captured : Command
+  caller : Command
+  wire : Command
+  requests : List Command := []
+
+def PublicationCall.Owned (s : PublicationCall Command) : Prop :=
+  s.captured = s.original ∧ ∀ q ∈ s.requests, q = s.original
+
+inductive PublicationCallStep : PublicationCall Command → PublicationCall Command → Prop where
+  | callerWrite (s : PublicationCall Command) (q : Command) : PublicationCallStep s {s with caller := q}
+  | transportWrite (s : PublicationCall Command) (q : Command) : PublicationCallStep s {s with wire := q}
+  | submit (s : PublicationCall Command) : PublicationCallStep s {s with wire := s.captured, requests := s.requests ++ [s.captured]}
+  | lostReplyOrObservation (s : PublicationCall Command) : PublicationCallStep s s
+
+variable {Command : Type} {a b c : PublicationCall Command}
+
+theorem call_step_preserves_snapshot (owned : a.Owned) (step : PublicationCallStep a b) : b.Owned := by
+  rcases owned with ⟨copied, requests⟩
+  cases step with
+  | callerWrite | transportWrite | lostReplyOrObservation => exact ⟨copied, requests⟩
+  | submit =>
+    refine ⟨copied, ?_⟩
+    intro q present
+    rcases List.mem_append.mp present with old | fresh
+    · exact requests q old
+    · have same : q = a.captured := by simpa using fresh
+      exact same.trans copied
+
+inductive PublicationCallRun : PublicationCall Command → PublicationCall Command → Prop where
+  | refl (s : PublicationCall Command) : PublicationCallRun s s
+  | next {a b c : PublicationCall Command} :
+      PublicationCallRun a b → PublicationCallStep b c → PublicationCallRun a c
+
+theorem call_run_preserves_snapshot (owned : a.Owned) (run : PublicationCallRun a b) : b.Owned := by
+  induction run with
+  | refl => exact owned
+  | next _ step ih => exact call_step_preserves_snapshot ih step
+
+theorem frozen_call_and_publication_recovery [DecidableEq Key]
+    (owned : a.Owned) (calls : PublicationCallRun a b) (run : Run s t)
+    (original : s.records id = some decision) :
+    b.Owned ∧ t.records id = some decision :=
+  ⟨call_run_preserves_snapshot owned calls, run_preserves_original_decisions run id decision original⟩
+
+#print axioms call_run_preserves_snapshot
+#print axioms frozen_call_and_publication_recovery
 end Weaver.PublicationRecovery
