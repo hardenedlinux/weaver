@@ -10,6 +10,17 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Delta registration linearizes at the existing independent commit
+           authority, not at a local projection write or an RPC reply. Its exact
+           original command/artifact registration is immutable and survives owner
+           handoff. Local projection rollback is repaired from that authority;
+           a missing projection blocks final CAS and is not an artifact rejection. */
+        doc /* Final publication must join the authority registry prefix and
+           authenticated registrar incarnation/term in the same authoritative
+           decision. Independent precheck followed by local SQLite commit is
+           insufficient. Source-role TLS/token authorization does not establish
+           registrar incarnation. Current production accepts retained source-role
+           credentials after restart; keep that expected coverage counterexample. */
         doc /* Publication pending admission is command-specific: a final CAS
            may resolve its own staged intent while administrative siblings remain.
            Requiring globally empty pending here deadlocks progress. Provider

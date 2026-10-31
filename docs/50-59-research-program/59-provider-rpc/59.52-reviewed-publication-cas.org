@@ -4,6 +4,11 @@
 
 * Allocation and decision
 
+The [[file:59.53-artifact-registry-recovery.org][registration recovery audit]] separates
+the independent registration commitment from a rollback-prone projection. Its
+stronger final-use contract also requires recovered registry evidence and a
+current registrar incarnation; the native source-role boundary is tested explicitly.
+
 [[file:../../../Project.sysml][Project]] and
 [[file:../../../dev/sysml/ControlActivation.sysml][GovernancePolicyProjection]]
 own this contract. SPEC's generic ZeroTrust framework remains independent of

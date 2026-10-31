@@ -15,6 +15,16 @@ structure Decision where
   resultFence : Nat
   deriving DecidableEq
 
+/-- Immutable commitment to the complete approved artifact and its command.
+The native adapter interprets artifact/sourceCut as authenticated commitments. -/
+structure ReviewRegistration where
+  payload : Nat
+  parent : Nat
+  requestedFence : Nat
+  artifact : Nat
+  sourceCut : Nat
+  deriving DecidableEq
+
 structure State (Key : Type) where
   head : Nat := 0
   fence : Nat := 1
@@ -23,6 +33,11 @@ structure State (Key : Type) where
   commits : List Key := []
   held : Nat := 4
   calls : Nat := 1
+  reviewAnchor : Key → Option ReviewRegistration := fun _ => none
+  reviewProjection : Key → Option ReviewRegistration := fun _ => none
+  registrarOwner : Nat := 1
+  registrarEpoch : Nat := 0
+  reviewCut : Nat := 0
 
 variable {Key : Type}
 
@@ -47,6 +62,19 @@ inductive Step [DecidableEq Key] : State Key → State Key → Prop where
       (bound : s.pending id = none ∨ s.pending id = some (payload,parent,fence)) :
       Step s {s with records := write s.records id ⟨payload,parent,fence,false,s.head,s.fence⟩, pending := clear s.pending id}
   | replayOrObservationOrRestart (s) : Step s s
+  | registerReview (s : State Key) (id : Key) (entry : ReviewRegistration) (actor epoch : Nat)
+      (caller : actor = s.registrarOwner ∧ epoch = s.registrarEpoch)
+      (fresh : s.reviewAnchor id = none)
+      (pending : s.pending id = some (entry.payload,entry.parent,entry.requestedFence))
+      (current : entry.parent = s.head ∧ s.fence ≤ entry.requestedFence ∧ entry.sourceCut = s.reviewCut) :
+      Step s {s with reviewAnchor := write s.reviewAnchor id entry}
+  | restoreReviewProjection (s : State Key) (image : Key → Option ReviewRegistration) :
+      Step s {s with reviewProjection := image}
+  | recoverReviewProjection (s : State Key) :
+      Step s {s with reviewProjection := s.reviewAnchor}
+  | rotateRegistrar (s : State Key) (owner : Nat) :
+      Step s {s with registrarOwner := owner, registrarEpoch := s.registrarEpoch + 1}
+  | advanceReviewCut (s : State Key) : Step s {s with reviewCut := s.reviewCut + 1}
 
 variable {s t : State Key}
 variable {held calls : Nat}
@@ -64,6 +92,7 @@ theorem step_preserves_original_decisions [DecidableEq Key] (step : Step s t) : 
     · subst key; rw [fresh] at existing; contradiction
     · simpa [write, same] using existing
   | replayOrObservationOrRestart => exact existing
+  | registerReview | restoreReviewProjection | recoverReviewProjection | rotateRegistrar | advanceReviewCut => exact existing
 
 theorem step_preserves_accounting [DecidableEq Key] (h : Safe held calls s) (step : Step s t) : Safe held calls t := by
   cases step <;> simp_all [Safe]
@@ -83,6 +112,7 @@ theorem step_preserves_original_intents [DecidableEq Key] (step : Step s t) : Pr
   | reject id payload parent fence fresh conflict bound =>
     by_cases same : key = id <;> simp_all [write, clear]
   | replayOrObservationOrRestart => exact Or.inl existing
+  | registerReview | restoreReviewProjection | recoverReviewProjection | rotateRegistrar | advanceReviewCut => exact Or.inl existing
 
 theorem staged_intent_blocks_effect_readiness [DecidableEq Key] (id : Key) (q : Nat × Nat × Nat) :
     ¬ Ready {s with pending := write s.pending id q} := by
@@ -120,6 +150,55 @@ theorem run_preserves_accounting [DecidableEq Key] (h : Safe held calls s) (run 
   induction run with
   | refl => exact h
   | next history step ih => exact step_preserves_accounting ih step
+
+variable {id : Key} {entry : ReviewRegistration} {actor epoch : Nat}
+
+/-- Historical registration survives parent advancement and local image loss.
+The independent authority's own rollback is deliberately outside Step. -/
+theorem step_preserves_review_anchor [DecidableEq Key] (step : Step s t)
+    (registered : s.reviewAnchor id = some entry) : t.reviewAnchor id = some entry := by
+  cases step with
+  | registerReview key candidate actor epoch caller fresh pending current =>
+    by_cases same : id = key
+    · subst id; rw [fresh] at registered; contradiction
+    · simpa [write, same] using registered
+  | _ => exact registered
+
+theorem run_preserves_review_anchor [DecidableEq Key] (run : Run s t)
+    (registered : s.reviewAnchor id = some entry) : t.reviewAnchor id = some entry := by
+  induction run with
+  | refl => exact registered
+  | next history step ih => exact step_preserves_review_anchor step ih
+
+def RegistryCurrent (s : State Key) (actor epoch : Nat) : Prop :=
+  actor = s.registrarOwner ∧ epoch = s.registrarEpoch
+
+def RegisteredCurrent (s : State Key) (id : Key) (entry : ReviewRegistration) (actor epoch : Nat) : Prop :=
+  s.reviewAnchor id = some entry ∧ s.reviewProjection = s.reviewAnchor ∧
+    RegistryCurrent s actor epoch ∧ entry.parent = s.head ∧
+    entry.sourceCut = s.reviewCut ∧ s.fence ≤ entry.requestedFence
+
+theorem rolled_back_projection_cannot_publish (different : s.reviewProjection ≠ s.reviewAnchor) :
+    ¬ RegisteredCurrent s id entry actor epoch := fun accepted => different accepted.2.1
+
+theorem old_registrar_cannot_publish (stale : epoch ≠ s.registrarEpoch) :
+    ¬ RegisteredCurrent s id entry actor epoch := fun accepted => stale accepted.2.2.1.2
+
+theorem historical_registration_is_not_current (stale : entry.parent ≠ s.head) :
+    ¬ RegisteredCurrent s id entry actor epoch := fun accepted => stale accepted.2.2.2.1
+
+theorem changed_review_source_cannot_publish (stale : entry.sourceCut ≠ s.reviewCut) :
+    ¬ RegisteredCurrent s id entry actor epoch := fun accepted => stale accepted.2.2.2.2.1
+
+theorem review_recovery_keeps_original_constraints [DecidableEq Key]
+    (run : Run s t) (safe : Safe held calls s) (registered : s.reviewAnchor id = some entry) :
+    t.reviewAnchor id = some entry ∧ PreservesIntents s t ∧ Extends s t ∧ Safe held calls t :=
+  ⟨run_preserves_review_anchor run registered, run_preserves_original_intents run,
+    run_preserves_original_decisions run, run_preserves_accounting safe run⟩
+
+#print axioms review_recovery_keeps_original_constraints
+#print axioms rolled_back_projection_cannot_publish
+#print axioms old_registrar_cannot_publish
 
 theorem recovery_and_provider_accounting_composition [DecidableEq Key]
     {id : Key} {decision : Decision}

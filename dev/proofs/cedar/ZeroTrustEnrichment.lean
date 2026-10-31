@@ -36,6 +36,28 @@ theorem reviewed_publication_keeps_recovery_contract
 
 #print axioms reviewed_publication_keeps_recovery_contract
 
+theorem durable_review_binding_survives_final_cas
+    {Result : Type}
+    {authority : CedarPooSpec.Gateway.PublicationReview.Host Nat Result
+      (PublicationRecovery.State Nat) Nat Nat Nat}
+    {template : LeanPoo.Functional.DeclarativeMetadata.Contract Unit Nat Result}
+    {prepare : PublicationRecovery.State Nat → Nat → Except Unit (Result × PublicationRecovery.State Nat)}
+    {command : Nat} {actual : PublicationRecovery.State Nat}
+    (final : CedarPooSpec.Gateway.PublicationReview.Final authority template prepare command actual)
+    (materializes : ∀ artifact, authority.registrationCommitted actual command artifact →
+      ∃ entry, actual.reviewAnchor command = some entry ∧ entry.artifact = artifact)
+    (refinement : ∀ before result after, authority.commit before result after →
+      PublicationRecovery.Step before after) :
+    authority.registryRecovered actual ∧ authority.registrarCurrent actual ∧
+      ∃ artifact entry, authority.approvedEvidenceAt actual command = some artifact ∧
+        final.receipt.state.reviewAnchor command = some entry ∧ entry.artifact = artifact := by
+  obtain ⟨artifact, present⟩ := final.approved
+  obtain ⟨entry, registered, bound⟩ := materializes artifact (final.durable artifact present)
+  exact ⟨final.recovered, final.fenced, artifact, entry, present,
+    PublicationRecovery.step_preserves_review_anchor (refinement _ _ _ final.committed) registered, bound⟩
+
+#print axioms durable_review_binding_survives_final_cas
+
 structure RuntimeView extends PolicyBridge.PublicationContext where
   semanticContext : CedarPooSpec.Gateway.Context
   commitFloor : Nat

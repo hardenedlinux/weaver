@@ -312,6 +312,12 @@
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityUncompiledSourceCannotRegisterTest"},
     {"file":"t/policy-projection-test.ss","pattern":"Governance Cedar projection"}]},
   {"id":"GovernancePolicyProjection","witnesses":[
+    {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem review_recovery_keeps_original_constraints"},
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem durable_review_binding_survives_final_cas"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run registrationLostReplyCannotPublishUnrecoveredProjectionTest"},
+    {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run oldRegistrarCannotPublishAlreadyRegisteredArtifactTest"},
+    {"file":"go/dev/provider_policy_pending_test.go","pattern":"func TestProviderStagingLostReplyRetainsConcurrentPendingAcrossRestart"},
+    {"file":"go/dev/provider_policy_pending_test.go","pattern":"func TestProviderSourceRoleCredentialIsNotRegistrarIncarnationEvidence"},
     {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem reviewed_publication_keeps_recovery_contract"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run substitutedArtifactGetsOriginalRejectionTest"},
     {"file":"dev/proofs/quint/PublicationRecovery.qnt","pattern":"run crossStoreReviewRollbackCounterexampleTest"},
