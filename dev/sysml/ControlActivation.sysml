@@ -140,6 +140,11 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Hosted dynamic-library discovery uses the package manager's
+           current prefix as an explicit native linker search path. SDK build-host
+           Cellar paths are not deployment authority. Preserve ABI, existing
+           compiler flags and pinned SDK identity; successful archive compilation
+           alone does not qualify final linking or source recovery. */
         doc /* Native archive diagnosis must track Cargo build-script lifetime,
            not infer a quiet owner from the last Rust artifact. SDK-selected GCC
            may use Gambit's declared CORCXXFLAGS_GAMBUILD override to disable
