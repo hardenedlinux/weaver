@@ -284,3 +284,27 @@ proptest! {
         prop_assert_eq!(ledger.held("family").expect("projection"),projected);
     }
 }
+
+proptest! {
+    #![proptest_config(Config::with_cases(64))]
+    #[test]
+    fn balanced_stream_projection_never_funds_the_next_logical_message(
+        original in 5u64..9, restart in proptest::bool::ANY
+    ) {
+        let temp=tempfile::tempdir().expect("directory");
+        let path=temp.path().join("balanced-stream.db");
+        let (mut ledger,contract)=stream_properties::fixture(&path);
+        let mut first=stream_properties::message(&contract,0,0,1);first.ceiling=original;
+        ledger.enqueue_message(&first).expect("original message hold");
+        let owner=ledger.claim_stream(StreamClaim{family:"f",node:"emit",destination:&contract.destination,revision:0,fence:1}).expect("custody");
+        let permit=ledger.consume_range(&owner,"m0",4).expect("unknown original range");
+        drop(permit);drop(owner);
+        let connection=rusqlite::Connection::open(&path).expect("fault writer");
+        connection.execute_batch("BEGIN IMMEDIATE; UPDATE stream_messages SET reserved=1 WHERE message='m0'; UPDATE tasks SET held=1; COMMIT;").expect("balanced incomplete recovery");
+        drop(connection);
+        if restart {drop(ledger);ledger=Ledger::open(&path).expect("restart");}
+        prop_assert!(ledger.enqueue_message(&stream_properties::message(&contract,1,0,1)).is_err());
+        prop_assert!(ledger.message_receipt("f","emit","m1").expect("observation").is_none());
+        prop_assert_eq!(ledger.held("f").expect("unchanged projection"),1);
+    }
+}

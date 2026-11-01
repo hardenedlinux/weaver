@@ -16,6 +16,13 @@ fn fixture(path: &std::path::Path) -> (Ledger, ProviderPlan) {
     fixture_nodes(path, &["infer"])
 }
 fn fixture_nodes(path: &std::path::Path, nodes: &[&str]) -> (Ledger, ProviderPlan) {
+    fixture_with_ceiling(path, nodes, 4)
+}
+fn fixture_with_ceiling(
+    path: &std::path::Path,
+    nodes: &[&str],
+    ceiling: u64,
+) -> (Ledger, ProviderPlan) {
     let mut ledger = Ledger::open(path).expect("ledger");
     let policy = POLICY.replace(
         "context.node == \"infer\"",
@@ -30,7 +37,7 @@ fn fixture_nodes(path: &std::path::Path, nodes: &[&str]) -> (Ledger, ProviderPla
             "/../../prod/policies/provider/profile.json"
         )))
         .expect("source profile");
-    let plan=ProviderPlan{family:"f".into(),node:"infer".into(),profile:"p".into(),profile_commitment:profile.digest().expect("commitment"),model:"model-a".into(),body:r#"{"model":"model-a","stream":true,"messages":[{"role":"user","content":"hello"}],"max_completion_tokens":32}"#.into(),routes:vec![ProviderRoute{target:"primary".into(),endpoint:"https://provider.invalid/v1/chat/completions".into()}],ceiling:4,revision:0,fence:1};
+    let plan=ProviderPlan{family:"f".into(),node:"infer".into(),profile:"p".into(),profile_commitment:profile.digest().expect("commitment"),model:"model-a".into(),body:r#"{"model":"model-a","stream":true,"messages":[{"role":"user","content":"hello"}],"max_completion_tokens":32}"#.into(),routes:vec![ProviderRoute{target:"primary".into(),endpoint:"https://provider.invalid/v1/chat/completions".into()}],ceiling,revision:0,fence:1};
     ledger
         .register_task(&Task {
             provider_profile: Some(profile),
@@ -804,5 +811,28 @@ proptest! {
             }
             prop_assert!(calls<=1);prop_assert_eq!(ledger.held("f").expect("held"),if admitted {4}else{0});
         }
+    }
+}
+
+proptest! {
+    #![proptest_config(Config::with_cases(64))]
+    #[test]
+    fn balanced_provider_projection_never_funds_a_different_original_plan(
+        original in 5u64..8, restart in proptest::bool::ANY
+    ) {
+        let temp=tempfile::tempdir().expect("directory");
+        let path=temp.path().join("balanced-provider.db");
+        let (mut ledger,plan)=fixture_with_ceiling(&path,&["infer","second"],original);
+        ledger.enqueue_provider(&plan).expect("original hold");
+        let permit=ledger.consume_provider("f","infer",&BTreeSet::from(["primary".into()])).expect("unknown original");
+        drop(permit);
+        let connection=rusqlite::Connection::open(&path).expect("fault writer");
+        connection.execute_batch("BEGIN IMMEDIATE; UPDATE provider_runs SET reserved=1 WHERE node='infer'; UPDATE tasks SET held=1; COMMIT;").expect("balanced incomplete recovery");
+        drop(connection);
+        if restart {drop(ledger);ledger=Ledger::open(&path).expect("restart");}
+        let mut second=plan.clone();second.node="second".into();
+        prop_assert!(ledger.enqueue_provider(&second).is_err());
+        prop_assert!(ledger.provider_receipt("f","second").expect("observation").is_none());
+        prop_assert_eq!(ledger.held("f").expect("unchanged projection"),1);
     }
 }
