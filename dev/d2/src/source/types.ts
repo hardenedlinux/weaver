@@ -6,5 +6,5 @@ export function isViewKind(value:string):value is ViewKind{return viewKinds.some
 export interface ViewEntry{id:string;source:string;title:string;kind:ViewKind;sha256:string;}
 export interface SourceCatalog{views:ViewEntry[];fs:Record<string,string>;documents:Record<string,string>;modelCapture?:ModelCapture;}
 export interface SourceNode{id:string;label:string;type:string;parent?:string;}
-export interface SourceEdge{id:string;source:string;target:string;label:string;sourceArrow?:boolean;targetArrow?:boolean;}
+export interface SourceEdge{id:string;source:string;target:string;label:string;sourceArrow?:boolean;targetArrow?:boolean;sourceMarker?:string;targetMarker?:string;}
 export interface Scene{view:ViewEntry;figure:FigureInput;nodes:SourceNode[];edges:SourceEdge[];svg:string;}

@@ -18,7 +18,11 @@ SVG scenes: a hand-drawn overview, a Zero Trust execution corridor and a separat
 assurance map. Domain
 composition and visual theme are independent choices. Legacy technical views
 still embed the D2 reference SVG; they are not evidence of conversion to the
-new measured scene engine.
+new measured scene engine. Twenty-seven flat D2 views now use the measured
+=model-map= path, alongside the three SysML-driven README figures. Seventy-five
+older views explicitly select =d2-reference=; three existing specialized project
+compositions remain separate migration work. No failure in a measured model view
+switches to any reference renderer.
 
 Each D2 view declares its presentation Question, copy, purpose, layout, ordered
 theme layers and variants through the library's existing =data.figure= contract.
@@ -94,7 +98,7 @@ go -C go run ./cmd/weaver-dev render-diagrams
 
 A focused selection requires the current Go-owned capture digest in
 =WEAVER_DIAGRAM_MODEL_SHA256=; direct invocation without that receipt refuses a
-model-driven figure. The normal Go entrypoint supplies it. Technical D2-only
+SysML-backed figure. The normal Go entrypoint supplies it. Technical D2-only
 views can also be selected from =dev/d2=:
 
 #+begin_src text
@@ -150,3 +154,63 @@ coverage and bound endpoints in the full model SVG. Question-led projections may
 aggregate those relationships explicitly, as the owner matrix does. Compilation
 and project mapping remain trust premises. Export checks do not prove runtime
 Policy enforcement or replace Quint/Lean, geometry review and human inspection.
+
+* D2 model-map fidelity and remaining notation
+
+The =model-map= composition consumes =compileFigureSource= through the published
+Library API. It does not instantiate a D2 compiler or reuse D2 SVG geometry.
+An explicit ELK capture option avoids obsolete source =tala= hints; actual display
+layout is independently owned by the Library's measured scene pipeline.
+
+D2 stores integer word-break positions, not a second copy of subject wording.
+Each partition must cover every captured word in order and preserve the source
+paragraph boundaries. Missing captions, omitted relations, substituted native
+arrowheads and changed subject wording/type/ownership refuse. Disconnected native
+text subjects may become visible headings or constraint panels; connected
+subjects cannot disappear into annotation layout. Class/SQL member notation and
+missing endpoints require a supported dedicated adapter rather than prefix
+inference or filtering on the measured path.
+
+Compact model nodes retain source titles and technology/engineering glyphs.
+Their complete descriptions appear in keyed responsibility cards. Numbered
+connection labels retain native IDs, endpoints and arrowheads, with every native
+relationship caption in the matching numbered card. This is an explicit display
+projection; it does not invent a second semantic relationship model. System,
+flow, assurance, data and state views select different published theme layers.
+
+The Go gate now typechecks, renders the complete source inventory, verifies
+source/SDK/image bindings, then runs the property and independent SVG browser
+checks against those newly generated artifacts. It binds each SVG's declared
+composition to the image receipt. Independent checks cover all measured model
+views, including effective fonts at 830 pixels and annotation bounds, rather
+than checking only the README or a stale previous image generation.
+
+A direct 12-lane, in-process whole-corpus capture completed naturally but showed
+an approximately 11-GB resident-memory sample and two ELK parse failures. This
+is not a memory-qualified capture. The existing reclaimable compiler process
+scope now owns every source, including SysML-backed declarations; the former
+string-search bypass is removed. A scope drains and exits after four captures.
+The Library still owns its parser workers; the outer legacy worker remains only
+while the old D2 API lacks a release method. The two affected source controls
+parse successfully through the bounded owner. Scoped samples near 1 GB are
+observations, not a matched whole-workload memory improvement or process-tree
+upper bound. Browser export still schedules jobs from the host CPU count.
+
+The old member-endpoint/lifeline transformations live only in
+=src/source/legacy-reference.ts=. Their presence is not admitted as full notation
+conversion. The remaining work is explicit parent projection, class/SQL member
+endpoints, sequence lifelines and the specialized relationship/correspondence
+compositions. Unsupported cases remain in the complete image gate; they are
+neither omitted from inventory nor silently advertised as migrated.
+
+* Standalone canvas contract
+
+The functional theme extension declares
+=[data-figure]{background:var(--background)}= once for every project composition.
+The published Library exports that root's computed background into its SVG
+canvas; a body or inner =main= background alone does not survive this boundary.
+No SVG rewriting or additional exporter is needed. Without this declaration,
+non-sketch themes produced a transparent canvas and dark text became unreadable
+against GitHub's dark page. The independent browser check now decodes the SVG
+as an image, checks opaque corner pixels, and previews it against a dark host.
+This complements the existing text-size, overlap and source-binding checks.

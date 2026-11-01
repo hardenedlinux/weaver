@@ -1,4 +1,3 @@
-import {compileLibraryView} from './source/library-view';
 import { fork, type ChildProcess } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import type { Scene, SourceCatalog } from './source/types';
@@ -8,18 +7,18 @@ export class CompilationOwner {
   private worker?: ChildProcess;
   private jobs = 0;
   rssBytes = 0;
+  observedPeakRSSBytes = 0;
   private queue: Promise<void> = Promise.resolve();
   constructor(private readonly catalog: SourceCatalog) {}
   compile(index: number): Promise<Scene> {
     const view=this.catalog.views[index];
     if(!view) return Promise.reject(new Error('Unknown source index'));
-    if(this.catalog.fs[view.source]?.includes('"modelView"'))return compileLibraryView(this.catalog,view);
     const result = this.queue.then(async () => {
       if (!this.worker || this.jobs >= 4) {
         if (this.worker) await this.release(this.worker);
         this.worker = fork(fileURLToPath(new URL('./compiler-process.ts', import.meta.url)), [], { execPath: process.execPath, stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
         this.rssBytes = 0;
-        this.worker.on('message', (response: { rssBytes?: number }) => { if (response.rssBytes !== undefined) this.rssBytes = response.rssBytes; });
+        this.worker.on('message', (response: { rssBytes?: number }) => { if (response.rssBytes !== undefined) {this.rssBytes=response.rssBytes;this.observedPeakRSSBytes=Math.max(this.observedPeakRSSBytes,response.rssBytes);} });
         this.worker.send({ catalog: this.catalog });
         this.jobs = 0;
       }

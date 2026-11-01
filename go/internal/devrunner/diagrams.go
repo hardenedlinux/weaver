@@ -106,6 +106,7 @@ func checkDiagramSVG(data []byte) error {
 }
 
 type diagramImage struct {
+	Layout       string `json:"layout"`
 	Source       string `json:"source"`
 	Theme        string `json:"theme"`
 	SourceSHA256 string `json:"sourceSHA256"`
@@ -132,6 +133,7 @@ func diagramEvidence(data []byte, image diagramImage) error {
 	connections := map[string][2]string{}
 	metadataCount := 0
 	var metadata struct {
+		Layout string `json:"layout"`
 		Source string `json:"source"`
 		Digest string `json:"sourceDigest"`
 		Nodes  []struct {
@@ -201,6 +203,9 @@ func diagramEvidence(data []byte, image diagramImage) error {
 	if metadataCount != 1 {
 		return errors.New("missing graph metadata")
 	}
+	if image.Layout != "" && image.Layout != metadata.Layout {
+		return errors.New("SVG composition differs from its declared source layout")
+	}
 	if metadata.Source != image.Source || metadata.Digest != image.SourceSHA256 || len(nodes) != image.Nodes || len(edges) != image.Edges || len(metadata.Nodes) != len(nodes) || len(metadata.Edges) != len(edges) {
 		return fmt.Errorf("SVG source binding or graph coverage differs: %s", image.Source)
 	}
@@ -239,17 +244,23 @@ func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
 	if err != nil {
 		return err
 	}
-	for _, args := range [][]string{{"run", "typecheck"}, {"test"}} {
+	run := func(args ...string) error {
 		command := exec.CommandContext(ctx, binary, args...)
 		command.Env = append(os.Environ(), "WEAVER_DIAGRAM_MODEL_SHA256="+modelDigest)
 		command.Dir = filepath.Join(root, "dev/d2")
 		command.Stdout = out
 		command.Stderr = out
-		if err := command.Run(); err != nil {
-			return err
-		}
+		return command.Run()
 	}
-	return renderDiagrams(ctx, root, modelDigest, out)
+	if err := run("run", "typecheck"); err != nil {
+		return err
+	}
+	if err := renderDiagrams(ctx, root, modelDigest, out); err != nil {
+		return err
+	}
+	// Browser assertions inspect the newly generated standalone vectors, not the
+	// previous checked-in image generation. Unit/property suites run once here.
+	return run("test")
 }
 
 // RenderDiagrams owns a shell-free TypeScript -> SVG/PNG build, not an HTTP service.
@@ -306,6 +317,9 @@ func renderDiagrams(ctx context.Context, root, modelDigest string, out io.Writer
 	}
 	seen := map[string]bool{}
 	for _, image := range report.Images {
+		if image.Layout == "" {
+			failures = append(failures, errors.New("missing declared image composition"))
+		}
 		if !expected[image.Source] || seen[image.Source] || before[image.Source] != image.SourceSHA256 {
 			failures = append(failures, fmt.Errorf("unexpected image source: %s", image.Source))
 			continue

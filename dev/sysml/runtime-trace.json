@@ -1,5 +1,7 @@
 [
   {"id":"ArchitectureViewGrammar","witnesses":[
+    {"file":"dev/d2/src/compositions/model-map.ts","pattern":"export function partitionWords"},
+    {"file":"dev/d2/test/model-map.test.ts","pattern":"source-authored breaks preserve every captured word exactly once"},
     {"file":"dev/sysml/ArchitectureViews.sysml","pattern":"view zeroTrust"},
     {"file":"go/internal/devrunner/model_views.go","pattern":"func CaptureModelViews"},
     {"file":"go/internal/devrunner/model_views_test.go","pattern":"func TestModelViewsUseActualSDK"},

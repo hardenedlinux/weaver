@@ -1,5 +1,5 @@
 import { test, expect } from 'bun:test';
-import { generatedLifeline } from '../src/source/compile';
+import { generatedLifeline } from '../src/source/legacy-reference';
 
 test('only exact generated sequence lifelines are decorations', () => {
   const ids = new Set(['adapter']);

@@ -15,12 +15,12 @@ export function bindSceneSVG(scene:Pick<Scene,'view'|'nodes'|'edges'>&Partial<Pi
   return `<g ${before}data-scene-${kind}="${encoded}"${after} ${kind==='node'?`data-source-node="${escape(id)}"`:`data-source-edge="${escape(id)}" data-source-from="${escape(edge!.source)}" data-source-to="${escape(edge!.target)}"`}>`;
  });
  for(const id of [...scene.nodes.map(node=>node.id),...scene.edges.map(edge=>edge.id)])if(!seen.has(id))throw new Error('Measured scene omitted identity: '+id);
- const metadata=escape(JSON.stringify({source:scene.view.source,sourceDigest:scene.view.sha256,nodes:scene.nodes,edges:scene.edges,modelSource:scene.figure?.modelSource,modelTrace:scene.figure?.modelTrace}));
+ const metadata=escape(JSON.stringify({source:scene.view.source,sourceDigest:scene.view.sha256,layout:scene.figure?.layout,nodes:scene.nodes,edges:scene.edges,modelSource:scene.figure?.modelSource,modelTrace:scene.figure?.modelTrace}));
  svg=svg.replace(/<metadata\b[^>]*>[\s\S]*?<\/metadata>/g,'');
  return svg.replace(/(<svg\b[^>]*>)/,`$1<metadata>${metadata}</metadata>`);
 }
 /** Bind actual native D2 groups, never fabricate empty identity markers. */
-export function bindD2SVG(scene:Pick<Scene,'view'|'nodes'|'edges'|'svg'>,files:Record<string,string>):string{
+export function bindD2SVG(scene:Pick<Scene,'view'|'nodes'|'edges'|'svg'>&Partial<Pick<Scene,'figure'>>,files:Record<string,string>):string{
  const nodes=new Map(scene.nodes.map(n=>[Buffer.from(escape(n.id)).toString('base64'),n.id]));
  const edges=new Map(scene.edges.map(e=>[Buffer.from(escape(e.id)).toString('base64'),e]));
  if(nodes.size!==scene.nodes.length||edges.size!==scene.edges.length)throw new Error('Duplicate captured identities');
@@ -39,6 +39,6 @@ export function bindD2SVG(scene:Pick<Scene,'view'|'nodes'|'edges'|'svg'>,files:R
   const asset=files[file];if(!asset)throw new Error('Uncaptured native image asset: '+url);
   return start+'data:image/svg+xml;base64,'+Buffer.from(asset).toString('base64')+end;
  });
- const metadata=escape(JSON.stringify({source:scene.view.source,sourceDigest:scene.view.sha256,nodes:scene.nodes,edges:scene.edges}));
+ const metadata=escape(JSON.stringify({source:scene.view.source,sourceDigest:scene.view.sha256,layout:scene.figure?.layout,nodes:scene.nodes,edges:scene.edges}));
  return svg.replace(/(<svg\b[^>]*>)/,`$1<metadata>${metadata}</metadata>`);
 }

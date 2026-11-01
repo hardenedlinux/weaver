@@ -1,23 +1,32 @@
 import {gatewayComposition} from './compositions/gateway';
 import {composeFigure,type ComposedFigure,type FigureInput} from '@deterministic-engineering/render';
 import {questionMap} from './compositions/question-map';
+import {modelMap} from './compositions/model-map';
+import {defaultPresentationTheme,extendPresentationTheme} from '@deterministic-engineering/render/presentation-theme';
 import type {Scene} from './source/types';
 
 /** Weaver extension: a question-specific execution/proof composition, never a graph engine. */
 export function composeProjectFigure(scene:Scene,variant?:NonNullable<FigureInput['variants']>[number]):ComposedFigure{
  let input=variant?{...scene.figure,theme:variant.theme,layout:variant.layout??scene.figure.layout,icons:{...scene.figure.icons,...variant.icons}}:scene.figure;
+ // The Library serializes the figure root's computed background into SVG.
+ // Declare the canvas on that root, not only on its HTML body or inner main.
+ input={...input,theme:extendPresentationTheme(input.theme??defaultPresentationTheme,{stylesheet:'[data-figure]{background:var(--background)}'})};
  const ids=new Set(scene.nodes.map(n=>n.id));
  if(input.model?.subjects.some(n=>!ids.has(n.id))||input.model?.subjects.length!==ids.size)throw new Error('Figure replaced the captured node inventory');
- const owner=(id:string)=>ids.has(id)?id:[...ids].filter(n=>id.startsWith(n+'.')).sort((a,b)=>b.length-a.length)[0]??id;
+ const measured=['question-map','model-map'].includes(input.layout??'');
+ if(measured&&input.model?.subjects.some(node=>{const original=scene.nodes.find(n=>n.id===node.id)!;return node.type!==original.type||(node.label??node.id)!==original.label||node.parent!==original.parent;}))throw new Error('Figure changed captured subject wording, type or ownership');
+ if(measured&&input.model?.relations.some(edge=>{const original=scene.edges.find(e=>e.id===edge.id);return !original||(edge.srcArrow??'none')!==(original.sourceMarker??'none')||(edge.dstArrow??'none')!==(original.targetMarker??'none');}))throw new Error('Figure changed captured arrowhead notation');
+ const owner=(id:string)=>measured?id:ids.has(id)?id:[...ids].filter(n=>id.startsWith(n+'.')).sort((a,b)=>b.length-a.length)[0]??id;
  if(input.model?.relations.length!==scene.edges.length||input.model.relations.some(edge=>!scene.edges.some(e=>e.id===edge.id&&e.source===owner(edge.src)&&e.target===owner(edge.dst)&&e.label===edge.label)))throw new Error('Figure replaced the captured relationship inventory');
  if(input.layout==='question-map')return composeFigure(input,questionMap);
+ if(input.layout==='model-map')return composeFigure(input,modelMap);
  if(input.layout==='gateway-responsibility-map'||input.layout==='gateway-relationship-matrix')return composeFigure(input,context=>gatewayComposition(context,scene,input.layout==='gateway-relationship-matrix'));
- if(input.layout==='native-d2'){
+ if(input.layout==='d2-reference'){
   const dimensions=scene.svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
-  if(!dimensions)throw new Error('Native D2 has no finite viewport');
+  if(!dimensions)throw new Error('D2 reference has no finite viewport');
   const width=Math.ceil(Number(dimensions[1]));
   input={...input,width:Math.min(4096,Math.max(input.width,width+64))};
-  return composeFigure(input,({question,text,copy,icon})=>({markup:`<main><h1 data-heading>${icon('question')}${text(question(input.view.question.ref).text)}</h1><section data-question="${text(input.view.question.ref)}" data-region="diagram" class="native-view">${scene.svg.replace(/<\?xml[^>]*>/,'')}</section></main>`,css:`main{padding:32px}h1{display:flex;gap:16px;align-items:center;font-size:26px;margin-bottom:24px}.native-view{width:${Math.min(width,input.width-64)}px;max-width:100%}.native-view>svg{width:100%;height:auto}[data-summary]{margin-top:24px;padding:16px;font-size:15px;line-height:1.5}` }));
+  return composeFigure(input,({question,text,copy,icon})=>({markup:`<main><h1 data-heading>${icon('question')}${text(question(input.view.question.ref).text)}</h1><section data-question="${text(input.view.question.ref)}" data-region="diagram" class="reference-view">${scene.svg.replace(/<\?xml[^>]*>/,'')}</section></main>`,css:`main{padding:32px}h1{display:flex;gap:16px;align-items:center;font-size:26px;margin-bottom:24px}.reference-view{width:${Math.min(width,input.width-64)}px;max-width:100%}.reference-view>svg{width:100%;height:auto}[data-summary]{margin-top:24px;padding:16px;font-size:15px;line-height:1.5}` }));
  }
  if(input.layout!=='execution-proof-correspondence')throw new Error('Unsupported Weaver composition: '+input.layout);
  const p=input.presentation;

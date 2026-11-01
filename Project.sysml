@@ -13,6 +13,12 @@ package WeaverProject {
            captured source bytes. D2 declares Questions and presentation; the
            upstream functional Library owns model projection and image generation.
            README embeds the resulting architecture and Zero Trust SVGs directly.
+           Model-map presentation retains native identities, arrowheads and every
+           source word; D2 selects only explicit word breaks and visual roles.
+           Disconnected text annotations cannot absorb connected subjects, and
+           unsupported member notation cannot silently drop fields or endpoints.
+           WASM capture uses a reclaimable compiler process scope; image export
+           uses the host CPU count without a global runtime concurrency clamp.
            Missing SDK capabilities, stale captures or unresolved model selections
            must refuse generation rather than using a separate legacy renderer.
            The Go development owner renders local bundled assets with the actual
