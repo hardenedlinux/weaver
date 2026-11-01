@@ -25,7 +25,7 @@ let peakRSSBytes = process.memoryUsage().rss;
 let cancelled = false;
 const memoryBudgetBytes = 4 * 1024 ** 3;
 const memorySampler = setInterval(() => {
-  peakRSSBytes = Math.max(peakRSSBytes, process.memoryUsage().rss);
+  peakRSSBytes = Math.max(peakRSSBytes, process.memoryUsage().rss + compiler.rssBytes);
   if (peakRSSBytes > memoryBudgetBytes && !cancelled) {
     errors.push('Renderer exceeded 4 GiB RSS admission budget; stop scheduling and drain owned jobs');
     cancelled = true;

@@ -25,9 +25,9 @@ bun run render --view docs/architecture/diagrams/01-system-boundaries.d2
 
 SVGs accompany their D2 sources. PNGs and digest receipts live under =.cache/d2=;
 existing adjacent PNG previews are refreshed too. Workers use the host CPU count,
-limited by selected image count. One shared D2/WASM compiler replaces per-image-worker compiler instances. Its
+limited by selected image count. One shared D2/WASM compiler subprocess replaces per-image-worker compiler instances. Its
 scope is recycled after four compilations; CPU-parallel image workers remain
-independent. RSS is sampled, and crossing a 4 GiB admission budget stops new
+independent. Parent RSS plus sampled compiler-process RSS is observed; crossing a 4 GiB admission budget stops new
 scheduling and drains owned jobs as a failed run. This is a scheduling guard,
 not an operating-system hard memory limit. Completed workers release resources.
 
