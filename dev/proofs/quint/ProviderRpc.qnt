@@ -5,6 +5,17 @@ module ProviderRpc {
     preparedFirst:int,preparedRows:int,preparedEncoding:int,preparedSession:int,dropped:Set[int],
     releases:List[{rows:Set[int],permitted:Set[int],guardRevision:int,currentRevision:int,guardCut:int,currentCut:int,encoding:int,requested:int,cancelled:bool}],invocations:List[{cancelled:bool,guardRevision:int,currentRevision:int}]}
   var s:S
+  // Native refinement guard over a complete authoritative family projection.
+  // Recovery faults are inputs here, not reachable safe protocol transitions.
+  pure def providerExposure(claim:bool,reserved:int,original:int,held:int,budget:int,reservations:List[int]):bool =
+    claim and reserved==original and reservations.indices().forall(i=>reservations.nth(i)>0) and
+    reservations.foldl(0,(total,n)=>total+n)<=held and held<=budget
+  run missingDurableClaimBlocksUseTest=init.expect(not(providerExposure(false,4,4,8,8,List(4,4))))
+  run substitutedClaimBlocksUseTest=init.expect(not(providerExposure(false,4,4,8,8,List(4,4))))
+  run changedReservationBlocksUseTest=init.expect(not(providerExposure(true,1,4,8,8,List(1,4))))
+  run sharedHoldLossBlocksUseTest=init.expect(not(providerExposure(true,4,4,4,8,List(4,4))))
+  run completeSharedExposurePositiveTest=init.expect(providerExposure(true,4,4,8,8,List(4,4)))
+  run individualHoldOnlyCounterexampleTest=init.expect(4<=4 and not(providerExposure(true,4,4,4,8,List(4,4))))
   // domainCut denotes the authenticated original profile/shared-budget/history
   // deciding context. Its concrete mapping is an existing floor-owner premise;
   // it is not another budget evaluator or an informer-cache version.

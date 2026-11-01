@@ -239,6 +239,11 @@
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderArrowChecksEveryRow"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem arrow_cannot_weaken_row_authority"}]},
   {"id":"ProviderUnknownRetention","witnesses":[
+    {"file":"crates/ledger/src/provider.rs","pattern":"fn require_exposure"},
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn zero_trust_final_use_requires_durable_claim_and_shared_exposure"},
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run individualHoldOnlyCounterexampleTest"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_provider_exposure_cannot_be_released"},
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem provider_exposure_strengthens_continuing_zero_trust"},
     {"file":"go/dev/provider_backpressure_test.go","pattern":"func TestProviderSlowConsumerEnqueueBeforeCommitCrashCannotReplayPendingRange"},
     {"file":"go/dev/provider_backpressure_test.go","pattern":"func TestProviderSlowConsumerCancellationAndReconnectRetainHistory"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run enqueueThenLostCommitRetainsUnknownTest"},

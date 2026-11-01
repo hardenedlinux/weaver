@@ -18,8 +18,132 @@ makes those obligations explicit instead of treating their names as evidence.
 [[file:../../../dev/sysml/WeaverExecution.sysml][CedarSecurityFrameworks]] remain
 the responsibility authority. SPEC owns the generic functional/POO library;
 Weaver owns application refinement and deployment. Existing Lean and Quint
-owners are reused. No new Gateway production implementation or dependency pin
-change is part of this architecture review.
+owners are reused. The implementation follow-up below strengthens the actual
+provider final-use boundary; dependency pins remain unchanged.
+
+* Zero Trust authorization at actual use
+
+The source-reviewed upstream contract is
+[[https://github.com/hardenedlinux/cedar-poo-spec/pull/8][SPEC ZeroTrust and Gateway composition]]. The generic framework is the
+authorization contract: authenticated, authorized, current at use, consumption
+committed, unknown retained, not revoked and mediated. Cedar Allow is one
+condition. Neither a Go proposal, Scheme receipt, proof object nor an SDK handle
+is by itself permission to send.
+
+The required parent is the authoritative original semantic contract, not a
+caller-selected replacement and not necessarily the historical global Policy.
+An authorized later Policy change may change permissions. It cannot rebind the
+original task/profile, recreate a spent claim, discard pending history or refund
+unknown exposure. Do not intersect every future decision with a birth Policy:
+that would also incorrectly prohibit legitimate authorized changes.
+
+| SPEC obligation | Concrete Weaver enforcement and remaining premise |
+|-----------------+----------------------------------------------------|
+| Authenticated | Existing distinct mTLS/credential-bound gRPC ingress and private Rust session custody; complete external identity lifecycle remains an adapter obligation |
+| Authorized | Scheme supplies retained task/profile semantics through AA Governor; Rust validates those commitments and evaluates current Cedar against the exact route, request and row |
+| Current at use / not revoked | Pending-publication barrier, current revision/fence and profile checks run after waits inside the final deciding transaction |
+| Consumption committed | Original canonical task/node claim and consumed provider run precede dispatch; final use now requires that the persisted claim still has stream ownership |
+| Unknown retained | Exact original per-run reservation and aggregate retained provider exposure are checked against shared task held/budget at consumption and every final-use boundary |
+| Mediated | Rust alone invokes the private transport/queue callback while holding deciding write order; affine burns and unknown release ranges prevent replay after ambiguity |
+
+Go manages cloud-native integration, configuration publication and routing
+proposals over typed gRPC. It cannot turn a cached Allow into an execution
+permit. Scheme retains the AA semantic/governance owner; it does not introduce
+a second authorization DSL. Rust owns current Cedar assessment, durable claim
+and exposure checks, and final execution. These checks do not add JSON to the
+Scheme/Rust SDK conversion boundary.
+
+** Durable claim and exposure refinement
+
+=crates/ledger/src/provider.rs:require_exposure= joins the original stream
+claim, exact plan reservation and shared task accounting under the existing
+SQLite deciding writer. It requires the held amount to cover the sum of every
+retained provider reservation in the family, including queued and complete
+runs: provider completion currently never authorizes settlement/refund.
+Checking only the current run's cost would allow two reservations of four to
+survive with a shared held projection of four. SQLite SUM overflow or a failed
+read denies use. The check runs before queued consumption and through =active=
+at dispatch, range preparation, range release and completion. No new ledger,
+permit type, scheduler or caller-supplied truth flag is introduced.
+
+This is a provider-exposure lower bound, not proof of conservation across all
+execution kinds. It does not detect a coherent rollback of every correlated
+record, establish external identity authority or implement an independent
+anti-rollback anchor. An inconsistent recovery image is rejected, not repaired
+from the request. A previously admitted physical write cannot be unsent.
+
+The family reservation sum uses the existing family/node primary-key prefix.
+Its cost grows with retained family runs; do not describe it as constant time.
+The existing consume/dispatch benchmark measures this path. Any future
+materialized aggregate must preserve the same atomic claim/reservation/hold
+invariant and be validated before replacing this source-of-truth check.
+
+** Proof and dependency boundary
+
+=ProviderRpc.lean= supplies finite-list exposure obligations and rejection laws;
+=ProviderRpc.qnt= supplies explicit bad recovery projections and the shared-hold
+counterexample. Native Proptest drives real SQLite faults through dispatch,
+range release and completion, with callback counts and restart checks.
+=ZeroTrustEnrichment.lean= imports SPEC's real functional framework and uses
+=withRequirement= to strengthen its continuing contract with this exposure
+obligation. It cannot replace the original framework or consume a fresh root.
+Native materialization of the claim and complete family reservation list under
+the final transaction remains an explicit refinement premise, not a theorem
+about Rust or SQLite supplied by the SPEC library.
+
+The reviewed new models are in open PR #8 at commit
+=9489ee91ac26562bd0e34275d5bd78165ed627f5=. Upstream main and Weaver's
+existing runtime/proof pin remain =38af276ffbd17a378408bb7886e8122faadcbcfd=.
+Thus current runtime enforcement and default standalone proof checks are
+landable now; the new upstream Lean consumer remains isolated candidate
+qualification until an explicit dependency promotion. Do not label this as a
+default fixed-pin ZeroTrust import or complete deployment qualification.
+
+** Implementation verification receipt
+
+The pre-fix native property failed with minimized input =fault = 0, phase = 0=:
+deleting the original claim after consumption still admitted the callback. The
+Proptest regression seed is retained in the crate's test corpus. The repaired
+property covers missing/substituted claims, changed reservation and a lost
+shared-hold projection through dispatch, range release and completion; none may
+invoke the callback or make the run complete. Restart cannot reconsume the
+original run. These are injected recovery inconsistencies, not a claim that
+ordinary API transactions can independently lose one SQLite row.
+
+- =cargo test -p weaver-ledger=: 22 library and 68 integration tests passed,
+  including the 64-case native property and existing real socket tests. The
+  first sandboxed run retained its three local-socket permission failures;
+  the complete run with socket access passed without skipping those tests.
+- Strict all-target Clippy and formatting passed without gate exceptions.
+- =ProviderRpc.qnt=: 64 witnesses passed with seed 293; 1,000 sampled safety
+  traces of 60 steps found no violation. Sampling is not exhaustive proof.
+- Standalone =ProviderRpc.lean= checked with the existing Lean toolchain; no
+  new axioms or =sorry= were added. The initial =Decidable= authoring failure
+  in the concrete counterexample is retained separately from the repaired run.
+- An isolated, clean checkout of the exact PR commit built
+  =CedarPooSpec.Gateway.ZeroTrust= and =PublicationReview= successfully (381
+  build jobs, not theorem count), with its declared LeanPoo commit
+  =c684858fdbf3df2557b96868d02b451676ea9784=. The complete updated Weaver
+  =ZeroTrustEnrichment= consumer passed, including the new exposure-strengthening
+  law; its axioms are =propext=, =Classical.choice= and =Quot.sound=, with no
+  =sorryAx=. The isolated copy of the fixed-pin bridge required six namespace
+  replacements from =CompoundAuthorization= to =Authorization.Compound=;
+  its initial unmigrated import failure remains recorded. This temporary
+  migration changes neither the maintained fixed-pin bridge nor dependency
+  pins. The unchanged default =WeaverPolicyBridge= also built successfully.
+- Four race-enabled Go/Rust TLS/gRPC integration tests passed: slow-consumer
+  revocation/restart/restored Policy, publication reply loss, partial request
+  and restart, and source profile/Cedar final-send binding. This is focused
+  integration coverage, not a fresh full =check-scheme= receipt.
+- Existing Criterion =ledger/consume_and_dispatch_burn= completed with 30
+  samples, one-second warmup and two-second requested measurement: estimate
+  2.2871 ms, interval 1.0611--4.6244 ms. Concurrent proof/build work and the
+  wide interval prohibit a performance improvement or regression claim.
+- Go-owned SysML/project/source-currentness checks passed; the updated D2
+  rendered and its raster preview was visually inspected.
+
+Raw failing and passing transcripts remain in temporary storage. Only curated
+evidence and the replayable property seed are committed.
 
 #+NAME: fig:zero-trust-architecture
 #+CAPTION: Identity, governance and enforcement form a continuous resource protection loop.

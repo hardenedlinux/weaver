@@ -1,5 +1,35 @@
 namespace Weaver.ProviderRpc
 
+/- Native final-use projection: complete family provider reservations are read
+   under the same deciding writer as claim, hold and actual callback. This is a
+   lower bound, not settlement authority or proof of an anti-rollback store. -/
+def ProviderExposure (claim : Bool) (reserved original held budget : Nat)
+    (reservations : List Nat) : Prop :=
+  claim = true ∧ reserved = original ∧ reservations.sum ≤ held ∧ held ≤ budget
+
+theorem missing_claim_blocks_final_use
+    (missing : claim = false) : ¬ ProviderExposure claim reserved original held budget reservations := by
+  intro accepted
+  simp [ProviderExposure, missing] at accepted
+
+theorem changed_reservation_blocks_final_use
+    (changed : reserved ≠ original) : ¬ ProviderExposure claim reserved original held budget reservations :=
+  fun accepted => changed accepted.2.1
+
+theorem shared_provider_exposure_cannot_be_released
+    (insufficient : held < reservations.sum) :
+    ¬ ProviderExposure claim reserved original held budget reservations := by
+  intro accepted
+  have bound := accepted.2.2.1
+  omega
+
+theorem individual_hold_only_is_insufficient :
+    4 ≤ 4 ∧ ¬ ProviderExposure true 4 4 4 8 [4, 4] := by
+  simp [ProviderExposure]
+
+#print axioms missing_claim_blocks_final_use
+#print axioms shared_provider_exposure_cannot_be_released
+
 /- Native premises: authenticated original source and adequate declared cost bound;
    canonical task/node key independent of RPC nonce; durable, non-rollback deciding
    CAS; affine native dispatch/release capabilities; current Cedar checks serialized
