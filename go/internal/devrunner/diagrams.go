@@ -128,6 +128,8 @@ func diagramEvidence(data []byte, image diagramImage) error {
 	}
 	decoder := xml.NewDecoder(bytes.NewReader(data))
 	nodes, edges := map[string]bool{}, map[string]bool{}
+	connections := map[string][2]string{}
+	metadataCount := 0
 	var metadata struct {
 		Source string `json:"source"`
 		Digest string `json:"sourceDigest"`
@@ -149,6 +151,10 @@ func diagramEvidence(data []byte, image diagramImage) error {
 			continue
 		}
 		if element.Name.Local == "metadata" {
+			metadataCount++
+			if metadataCount != 1 {
+				return errors.New("duplicate graph metadata")
+			}
 			var text string
 			if err := decoder.DecodeElement(&text, &element); err != nil {
 				return err
@@ -157,7 +163,16 @@ func diagramEvidence(data []byte, image diagramImage) error {
 				return err
 			}
 		}
+		var edgeID, from, to string
 		for _, attr := range element.Attr {
+			switch attr.Name.Local {
+			case "data-source-edge":
+				edgeID = attr.Value
+			case "data-source-from":
+				from = attr.Value
+			case "data-source-to":
+				to = attr.Value
+			}
 			var target map[string]bool
 			switch attr.Name.Local {
 			case "data-source-node":
@@ -167,21 +182,45 @@ func diagramEvidence(data []byte, image diagramImage) error {
 			default:
 				continue
 			}
+			if attr.Value == "" {
+				return errors.New("empty visual source identity")
+			}
 			if target[attr.Value] {
 				return fmt.Errorf("duplicated visual source identity: %s", attr.Value)
 			}
 			target[attr.Value] = true
 		}
+		if edgeID != "" {
+			if from == "" || to == "" {
+				return errors.New("visual relationship has no bound endpoints")
+			}
+			connections[edgeID] = [2]string{from, to}
+		}
+	}
+	if metadataCount != 1 {
+		return errors.New("missing graph metadata")
 	}
 	if metadata.Source != image.Source || metadata.Digest != image.SourceSHA256 || len(nodes) != image.Nodes || len(edges) != image.Edges || len(metadata.Nodes) != len(nodes) || len(metadata.Edges) != len(edges) {
 		return fmt.Errorf("SVG source binding or graph coverage differs: %s", image.Source)
 	}
+	seenNodes, seenEdges := map[string]bool{}, map[string]bool{}
 	for _, node := range metadata.Nodes {
+		if node.ID == "" || seenNodes[node.ID] {
+			return errors.New("duplicate or empty declared node identity")
+		}
+		seenNodes[node.ID] = true
 		if !nodes[node.ID] {
 			return fmt.Errorf("source node omitted: %s", node.ID)
 		}
 	}
 	for _, edge := range metadata.Edges {
+		if edge.ID == "" || seenEdges[edge.ID] {
+			return errors.New("duplicate or empty declared relationship identity")
+		}
+		seenEdges[edge.ID] = true
+		if connections[edge.ID] != [2]string{edge.Source, edge.Target} {
+			return errors.New("visual relationship endpoints differ from declaration")
+		}
 		if !edges[edge.ID] || !nodes[edge.Source] || !nodes[edge.Target] {
 			return fmt.Errorf("source relationship omitted: %s", edge.ID)
 		}
@@ -189,7 +228,7 @@ func diagramEvidence(data []byte, image diagramImage) error {
 	return nil
 }
 
-// CheckDiagrams runs native TypeScript type/property checks and offline image rendering.
+// CheckDiagrams runs TypeScript type/property checks and offline image rendering.
 func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
 	binary, err := exec.LookPath("bun")
 	if err != nil {

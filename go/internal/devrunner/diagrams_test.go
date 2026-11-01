@@ -63,13 +63,14 @@ func TestDiagramSVGRejectsInvalidToolOutput(t *testing.T) {
 
 func TestDiagramEvidenceRejectsLostNodesAndRelationships(t *testing.T) {
 	image := diagramImage{Source: "docs/view.d2", SourceSHA256: "bound-source", Nodes: 2, Edges: 1}
-	valid := `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><metadata>{"source":"docs/view.d2","sourceDigest":"bound-source","nodes":[{"id":"a"},{"id":"b"}],"edges":[{"id":"edge","source":"a","target":"b"}]}</metadata><g data-source-node="a"/><g data-source-node="b"/><g data-source-edge="edge"/></svg>`
+	valid := `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><metadata>{"source":"docs/view.d2","sourceDigest":"bound-source","nodes":[{"id":"a"},{"id":"b"}],"edges":[{"id":"edge","source":"a","target":"b"}]}</metadata><g data-source-node="a"/><g data-source-node="b"/><g data-source-edge="edge" data-source-from="a" data-source-to="b"/></svg>`
 	if err := diagramEvidence([]byte(valid), image); err != nil {
 		t.Fatal(err)
 	}
 	for _, broken := range []string{
 		strings.Replace(valid, `<g data-source-node="b"/>`, "", 1),
-		strings.Replace(valid, `<g data-source-edge="edge"/>`, "", 1),
+		strings.Replace(valid, `<g data-source-edge="edge" data-source-from="a" data-source-to="b"/>`, "", 1),
+		strings.Replace(valid, `data-source-from="a" data-source-to="b"`, `data-source-from="b" data-source-to="a"`, 1),
 		strings.Replace(valid, `"target":"b"`, `"target":"missing"`, 1),
 		strings.Replace(valid, `"sourceDigest":"bound-source"`, `"sourceDigest":"old-source"`, 1),
 		strings.Replace(valid, `<g data-source-node="b"/>`, `<g data-source-node="a"/>`, 1),
@@ -128,5 +129,13 @@ func TestSourceInputsIncludeDiagramThemesAndLocalBrandAssets(t *testing.T) {
 		if inputs[path] == "" {
 			t.Fatalf("design source missing from provenance: %s", path)
 		}
+	}
+}
+
+func TestDiagramEvidenceRejectsDuplicateMetadataInventory(t *testing.T) {
+	image := diagramImage{Source: "docs/view.d2", SourceSHA256: "bound", Nodes: 2, Edges: 0}
+	svg := `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><metadata>{"source":"docs/view.d2","sourceDigest":"bound","nodes":[{"id":"a"},{"id":"a"}],"edges":[]}</metadata><g data-source-node="a"/><g data-source-node="b"/></svg>`
+	if err := diagramEvidence([]byte(svg), image); err == nil {
+		t.Fatal("duplicate metadata concealed an unmatched rendered node")
 	}
 }

@@ -58,6 +58,7 @@ describe('measured architecture graphics', () => {
       const svg = renderToStaticMarkup(<ArchitectureImage scene={scene} brands={{}}/>);
       expect((svg.match(/<g data-source-node=/g) ?? []).length).toBe(source.nodes.length);
       expect((svg.match(/<g data-source-edge=/g) ?? []).length).toBe(source.edges.length);
+      for (const edge of source.edges) expect(svg).toContain(`data-source-edge="${edge.id}" data-source-from="${edge.source}" data-source-to="${edge.target}"`);
       expect(svg).not.toContain('<script>');
       expect(svg).not.toContain('<foreignObject');
       expect(svg).not.toContain('<iframe');

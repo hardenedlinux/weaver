@@ -80,7 +80,7 @@ function edgePath(points: Point[]): string {
 }
 function Connection({ edge, scene, prefix }: { edge: SceneEdge; scene: Scene; prefix: string }) {
   const box = edge.labelBox;
-  return <g data-source-edge={edge.id}>
+  return <g data-source-edge={edge.id} data-source-from={edge.source} data-source-to={edge.target}>
     <title>{edge.label}</title>
     <path d={edgePath(edge.points)} fill="none" stroke={edge.dashed ? '#7A9AA8' : '#7F8CA6'} strokeWidth={1.65} strokeLinejoin="round" strokeLinecap="round" strokeDasharray={edge.dashed ? '5 5' : undefined} markerEnd={edge.targetArrow ? `url(#${prefix}-arrow)` : undefined} markerStart={edge.sourceArrow ? `url(#${prefix}-arrow-back)` : undefined}/>
     {box?.leader && <path d={edgePath(box.leader)} fill="none" stroke="#C6D2DE" strokeDasharray="2 4" strokeWidth={1}/>}
