@@ -192,7 +192,7 @@ matrix and 1200/30 limits remain unchanged. Silence still fails at the original
 bound. Detailed compiler tracing is an opt-in diagnostic workload, not a source
 of invented progress or a substitute for complete recovery acceptance.
 
-The correction keeps numeric native verbosity 1, leaves LLVM pass/assembly
+The 788ffe02 experiment keeps numeric native verbosity 1, leaves LLVM pass/assembly
 diagnostics opt-in and uses the supported GCC diagnostic destination solely to
 suppress optional optimizer notes. Real native events, collector output, errors
 and compiler-written artifacts remain enabled. A real paired compiler control
@@ -215,3 +215,34 @@ These are separate environment receipts, not an erased failure or a complete
 local Python pass. The existing local cold-launch failures remain retained;
 remote Python on 6a2fb69d passes all 71 cases. No timeout, assertion or inspection
 fallback is changed, and absence of inspection never becomes progress.
+
+* Received progress is a separate contract
+
+At 788ffe02 Darwin completes the original-source, link and recovery gate.
+Ubuntu fails idle30 after the linker preprocessed artifact reaches 59716516
+bytes. That failure does not independently timestamp GCC's internal pipe, so
+it cannot fully distinguish compiler silence from delayed forwarding.
+
+A real isolated Rust/Cargo control makes the framing boundary explicit: a
+flushed fragment followed by a one-second wait reaches the receiver together
+with its terminating newline; the received marker gap is zero. A newline-first
+control yields a 1.005142-second received gap. SDK callback invocation, emitted
+bytes, Cargo-visible records and final process completion are distinct facts.
+The earlier note-suppression controls prove object equality, not progress
+protocol equivalence; their failed acceptance experiments remain retained.
+
+The current correction restores GCC notes by default and compacts them only
+at the existing receiver. Exact received native lines and failure tails remain
+in temporary files, uploaded by the source CI even on failure. Actual errors,
+phases, artifact growth and Cargo build identities remain visible. Existing
+raw-input wall/idle policy is unchanged; counters require real received data,
+not a timer or CPU/input-read heartbeat. No diagnostic is execution authority.
+
+The updated existing process/artifact suite passes 76 local cases, followed
+by a separate real Rust/Cargo integration control for success, exact raw
+retention and failed-build identity refusal. One retained-tail static replay
+reduces display bytes to 46.477% while keeping all native lines separately;
+this is neither whole-log coverage nor a compiler/runtime speedup claim.
+Full hosted acceptance remains an independent gate. Benchmark samples,
+unknown-exposure constraints, dependency pins and the embedded core SVG remain
+unchanged.

@@ -143,8 +143,12 @@ package ControlActivation {
         doc /* Acceptance retains real compiler/operation observations. The
            pinned MRR adapter couples its CargoObserver to numeric Gerbil
            verbosity; SDK callbacks alone do not prove emitted progress. Keep
-           native verbosity enabled, suppress optional GCC optimizer notes via
-           its documented diagnostic sink, and leave LLVM pass ordinals opt-in.
+           native verbosity and genuine newline-bearing compiler output enabled;
+           Cargo can withhold byte fragments until a newline. Compact native
+           diagnostics only after receipt, retain exact native lines separately,
+           and leave LLVM pass ordinals opt-in. Counters advance on received
+           compiler events, never a timer or a read-only input. A display filter
+           does not change the existing raw-input idle or wall deadline.
            Allocation dumps remain coupled to the pinned native implementation;
            independent native diagnostics remain an upstream API gap.
            Removing diagnostic work never removes
