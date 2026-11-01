@@ -1,6 +1,6 @@
 namespace Weaver.RuntimeAdmission
 
-/- The native CAS/SQLite durability, authentic source task and actual transport
+/- The native CAS/Turso durability, authentic source task and actual transport
    are refinement premises. These are transition invariants, not compiled-code proofs. -/
 structure State where
   spent : Bool := false
@@ -194,4 +194,70 @@ theorem manifest_bound_runtime_step (root rows : List ReservationCommitment)
 #print axioms surviving_member_is_not_complete_stream_coverage
 #print axioms manifest_bound_runtime_step
 
+namespace Persistence
+/- MRR Data supplies the physical driver. Atomic native image visibility, FULL
+durability and faithful canonical-key decoding are implementation premises.
+Reuse the admission State/Step/Safe laws; do not introduce another budget model. -/
+structure Pending where
+  before : State
+  after : State
+structure Image where
+  committed : State
+  pending : Option Pending := none
+
+def SafeImage (budget : Nat) (image : Image) : Prop := Safe budget image.committed
+
+inductive StorageStep (budget : Nat) : Image → Image → Prop where
+  | prepare (image next) (idle : image.pending = none)
+      (domain : Step budget image.committed next)
+      (noExternalSend : next.calls = image.committed.calls) : StorageStep budget image
+      {image with pending := some ⟨image.committed,next⟩}
+  | commit (image write) (pending : image.pending = some write)
+      (sameParent : write.before = image.committed)
+      (domain : Step budget write.before write.after)
+      (noExternalSend : write.after.calls = write.before.calls) : StorageStep budget image
+      ⟨write.after,none⟩
+  | abortOrCrash (image) : StorageStep budget image {image with pending := none}
+  | replyLoss (image) : StorageStep budget image image
+  | finalUse (image next) (idle : image.pending = none)
+      (guarded : Step budget image.committed next) : StorageStep budget image ⟨next,none⟩
+
+theorem storage_step_retains_admission_safety (safe : SafeImage budget before)
+    (step : StorageStep budget before after) : SafeImage budget after := by
+  cases step with
+  | prepare next idle domain noSend => exact safe
+  | commit write pending bound domain noSend =>
+      apply safe_step (s := write.before) _ domain
+      simpa [SafeImage,bound] using safe
+  | abortOrCrash => exact safe
+  | replyLoss => exact safe
+  | finalUse next idle guarded => exact safe_step safe guarded
+
+theorem stale_parent_cannot_commit (image : Image) (write : Pending)
+    (changed : write.before ≠ image.committed) :
+    ¬ (image.pending = some write ∧ write.before = image.committed ∧
+       Step budget write.before write.after) := fun admission => changed admission.2.1
+
+theorem crash_retains_original_committed_exposure (image : Image) :
+    ({image with pending := none} : Image).committed.held = image.committed.held ∧
+    ({image with pending := none} : Image).committed.spent = image.committed.spent := ⟨rfl,rfl⟩
+
+theorem commit_itself_does_not_send (write : Pending)
+    (metadataOnly : write.after.calls = write.before.calls) :
+    (Image.mk write.after none).committed.calls = write.before.calls := metadataOnly
+
+def CanConsume (image : Image) : Prop := image.pending = none ∧ image.committed.spent = false
+
+theorem committed_consume_survives_reply_loss_and_restart (image : Image)
+    (spent : image.committed.spent = true) :
+    ¬ CanConsume {image with pending := none} := by
+  intro admissible
+  simp [CanConsume,spent] at admissible
+
+#print axioms storage_step_retains_admission_safety
+#print axioms stale_parent_cannot_commit
+#print axioms crash_retains_original_committed_exposure
+#print axioms commit_itself_does_not_send
+#print axioms committed_consume_survives_reply_loss_and_restart
+end Persistence
 end Weaver.RuntimeAdmission

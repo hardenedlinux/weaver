@@ -33,9 +33,11 @@ func tool(t *testing.T, binary string, args ...string) []byte {
 }
 
 type cargoDependency struct {
-	Name   string
-	Kind   *string
-	Source *string
+	Name                string
+	Kind                *string
+	Source              *string
+	Features            []string
+	UsesDefaultFeatures bool `json:"uses_default_features"`
 }
 type cargoPackage struct {
 	ID, Name     string
@@ -47,12 +49,63 @@ type cargoPackage struct {
 	}
 }
 type cargoNode struct {
-	ID   string
-	Deps []struct {
+	ID       string
+	Features []string
+	Deps     []struct {
 		Pkg   string
 		Kinds []struct{ Kind *string } `json:"dep_kinds"`
 	}
 }
+
+func TestProjectArchitectureStorageUsesMRRDataTursoOnly(t *testing.T) {
+	var metadata cargoMetadata
+	if err := json.Unmarshal(tool(t, "cargo", "metadata", "--locked", "--offline", "--format-version", "1"), &metadata); err != nil {
+		t.Fatal(err)
+	}
+	members := map[string]bool{}
+	for _, id := range metadata.Members {
+		members[id] = true
+	}
+	backendID := ""
+	ledgerUsesBackend := false
+	for _, p := range metadata.Packages {
+		if p.Name == "rusqlite" || p.Name == "libsqlite3-sys" {
+			t.Fatalf("retired SQLite implementation remains in dependency graph: %s", p.Name)
+		}
+		if p.Name == "mrr-data-backend" {
+			if backendID != "" {
+				t.Fatal("multiple backend identities")
+			}
+			backendID = p.ID
+		}
+		if !members[p.ID] {
+			continue
+		}
+		for _, dependency := range p.Dependencies {
+			if dependency.Name == "turso" {
+				t.Fatalf("bypassed MRR Data driver ownership: %s", p.Name)
+			}
+			if dependency.Name == "mrr-data-backend" {
+				if p.Name != "weaver-ledger" || dependency.Kind != nil || dependency.Source == nil || !regexp.MustCompile(`[?&]rev=[a-f0-9]{40}(?:$|&)`).MatchString(*dependency.Source) {
+					t.Fatalf("unowned or unpinned backend edge: %s", p.Name)
+				}
+				if dependency.UsesDefaultFeatures || len(dependency.Features) != 1 || dependency.Features[0] != "turso" {
+					t.Fatalf("admission enabled another backend capability: %+v", dependency)
+				}
+				ledgerUsesBackend = true
+			}
+		}
+	}
+	if backendID == "" || !ledgerUsesBackend {
+		t.Fatal("ledger does not use the shared backend")
+	}
+	for _, node := range metadata.Resolve.Nodes {
+		if node.ID == backendID && (len(node.Features) != 1 || node.Features[0] != "turso") {
+			t.Fatalf("shared backend feature leakage: %v", node.Features)
+		}
+	}
+}
+
 type cargoMetadata struct {
 	Packages []cargoPackage
 	Members  []string `json:"workspace_members"`

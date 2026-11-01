@@ -243,7 +243,7 @@ func diagramEvidence(data []byte, image diagramImage) error {
 
 // CheckDiagrams runs TypeScript type/property checks and offline image rendering.
 func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
-	modelDigest, err := publishModelViews(ctx, root)
+	modelDigest, err := publishArchitecture(ctx, root)
 	if err != nil {
 		return err
 	}
@@ -275,7 +275,7 @@ func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
 
 // RenderDiagrams owns a shell-free TypeScript -> SVG/PNG build, not an HTTP service.
 func RenderDiagrams(ctx context.Context, root string, out io.Writer) error {
-	modelDigest, err := publishModelViews(ctx, root)
+	modelDigest, err := publishArchitecture(ctx, root)
 	if err != nil {
 		return err
 	}

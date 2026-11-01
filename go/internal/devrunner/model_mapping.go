@@ -72,14 +72,23 @@ var mappedJSON = regexp.MustCompile(`(?s)\|json\s*\n(.*?)\n\|`)
 // options) survive from its prior declaration; all semantic copy comes from SDK
 // attributes and source-bound Lean references. The Library still owns drawing.
 func mapModelDeclarations(root string, capture *ModelViewCapture) error {
-	inputs, err := SourceInputs(root)
-	if err != nil {
-		return err
-	}
 	results, err := currentLeanResults(root)
 	if err != nil {
 		return err
 	}
+	return mapModelDeclarationsWithEvidence(root, capture, results)
+}
+
+func mapModelDeclarationsWithEvidence(root string, capture *ModelViewCapture, results []Result) error {
+	inputs, err := SourceInputs(root)
+	if err != nil {
+		return err
+	}
+	contracts, err := currentLeanEnvironment(root, results)
+	if err != nil {
+		return err
+	}
+	capture.LeanContracts = contracts
 	capture.ProofReferences, err = proofReferences(root, results)
 	if err != nil {
 		return err
@@ -176,7 +185,20 @@ func mapModelDeclarations(root string, capture *ModelViewCapture) error {
 			if caption.ID == "" || labels[caption.ID] != "" {
 				return fmt.Errorf("missing or duplicate SDK caption ID: %s", view)
 			}
-			labels[caption.ID] = caption.Label
+			label := caption.Label
+			if description.LeanEnvironment {
+				contract, exists := contracts[caption.LeanDeclaration]
+				if !exists {
+					return fmt.Errorf("view %s lacks current Lean environment declaration %s", view, caption.LeanDeclaration)
+				}
+				// Model-assisted architectural explanation stays in SysML.
+				// Imported Lean constrains its references; field lists do not
+				// become user-facing architecture or prove implementation.
+				if err := validateLeanAllocation(caption, contract); err != nil {
+					return err
+				}
+			}
+			labels[caption.ID] = label
 			presentation.Icons[caption.ID] = caption.Icon
 			if caption.Role != "" {
 				presentation.Roles[caption.ID] = caption.Role

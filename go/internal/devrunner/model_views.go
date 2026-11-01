@@ -24,6 +24,7 @@ type ModelViewCapture struct {
 	Mapped          map[string]string                  `json:"mapped,omitempty"`
 	ProofReferences []ProofReference                   `json:"proofReferences,omitempty"`
 	ProofSources    map[string]string                  `json:"proofSources,omitempty"`
+	LeanContracts   map[string]LeanContract            `json:"leanContracts,omitempty"`
 }
 
 // MarshalJSON uses the official SDK's lower-camel-case transport field names.
@@ -49,7 +50,8 @@ func (capture ModelViewCapture) MarshalJSON() ([]byte, error) {
 		Mapped          map[string]string            `json:"mapped,omitempty"`
 		ProofReferences []ProofReference             `json:"proofReferences,omitempty"`
 		ProofSources    map[string]string            `json:"proofSources,omitempty"`
-	}{capture.ModelHash, capture.Sources, views, capture.Descriptions, capture.Mapped, capture.ProofReferences, capture.ProofSources})
+		LeanContracts   map[string]LeanContract      `json:"leanContracts,omitempty"`
+	}{capture.ModelHash, capture.Sources, views, capture.Descriptions, capture.Mapped, capture.ProofReferences, capture.ProofSources, capture.LeanContracts})
 }
 
 func sdkJSONFields(raw json.RawMessage) (json.RawMessage, error) {
@@ -165,6 +167,14 @@ func CaptureModelViews(ctx context.Context, root string) (*ModelViewCapture, err
 }
 
 func publishModelViews(ctx context.Context, root string) (string, error) {
+	results, err := currentLeanResults(root)
+	if err != nil {
+		return "", err
+	}
+	return publishModelViewsWithEvidence(ctx, root, results)
+}
+
+func publishModelViewsWithEvidence(ctx context.Context, root string, results []Result) (string, error) {
 	before, err := SourceInputs(root)
 	if err != nil {
 		return "", err
@@ -173,7 +183,7 @@ func publishModelViews(ctx context.Context, root string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := mapModelDeclarations(root, capture); err != nil {
+	if err := mapModelDeclarationsWithEvidence(root, capture, results); err != nil {
 		return "", err
 	}
 	after, err := SourceInputs(root)

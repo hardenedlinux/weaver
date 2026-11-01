@@ -51,6 +51,8 @@ func Plan(goBinary string) []Stage {
 		{"quint-tests", "quint", []string{"test", "dev/proofs/quint/RuntimeAdmission.qnt", "--main", "RuntimeAdmission", "--seed", "293"}},
 		{"quint-safety", "quint", []string{"run", "dev/proofs/quint/RuntimeAdmission.qnt", "--main", "RuntimeAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "50", "--seed", "293"}},
 		{"lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/RuntimeAdmission.lean"}},
+		{"turso-atomicity-tests", "quint", []string{"test", "dev/proofs/quint/TursoAdmission.qnt", "--main", "TursoAdmission", "--seed", "293"}},
+		{"turso-atomicity-safety", "quint", []string{"run", "dev/proofs/quint/TursoAdmission.qnt", "--main", "TursoAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"provider-routing-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzProviderPlanCannotExpandAuthority", "-fuzztime=3s"}},
 		{"provider-routing-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzCompiledProviderOwnsRouteOrder", "-fuzztime=3s"}},
 		{"provider-stream-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "FuzzProviderExecutionOwnsRouteObservation", "-fuzztime=3s"}},
@@ -107,6 +109,19 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "check":
 		return Plan(goBinary), nil
+	case "check-storage":
+		selected := []Stage{
+			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates)", "-v"}},
+			{"storage-rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
+			{"storage-rust-tests", "cargo", []string{"test", "-p", "weaver-ledger", "-p", "weaver-execution", "--locked", "--offline"}},
+			{"storage-rust-clippy", "cargo", []string{"clippy", "-p", "weaver-ledger", "-p", "weaver-execution", "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
+		}
+		for _, stage := range Plan(goBinary) {
+			if stage.Name == "lean" || stage.Name == "lean-stream" || stage.Name == "turso-atomicity-tests" || stage.Name == "turso-atomicity-safety" {
+				selected = append(selected, stage)
+			}
+		}
+		return append(selected, Stage{"storage-grpc-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}}), nil
 	case "bootstrap-build", "bootstrap-proofs":
 		stages, err := Stages("bootstrap", goBinary)
 		if err != nil {

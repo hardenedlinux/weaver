@@ -1,0 +1,143 @@
+#+TITLE: 59.77 MRR Data Backend and Turso Admission Storage
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Decision and ownership
+
+Weaver uses =mrr-data-backend::turso_driver= as its only physical database
+implementation. The public MRR Data export explicitly supports hosts retaining
+their own domain schema and transaction policy. Weaver does not route its SQL
+schema through the generic Backend's opaque metadata-key protocol, add another
+provider, or retain a rusqlite compatibility path. Production, recovery tools,
+fault injection, PBT and benchmarks use the same Turso boundary.
+
+[[file:59.77-mrr-turso-storage.svg]]
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme / Agentic AI Lab | Original task/profile/Policy semantics and source commitments |
+| Go | Authenticated control, routing and proposals; one development validation driver |
+| MRR Data Backend | Public physical Turso dependency and its supported native interfaces |
+| Weaver ledger | Original schema, typed manifests, shared exposure, Policy/fence and exact historical outcomes |
+| Rust final broker | Current final-use checks and sole private transport custody |
+
+The =persistence= module binds the existing domain code to native Turso rows,
+parameters and transactions. Standard future driving adds no runtime, worker
+pool, remote service or business-operation retry. This is a synchronous host
+boundary for the Gateway's existing blocking execution workers, not a general
+ORM or a second database implementation. Only the =turso= backend feature is
+selected; Arrow query, DuckDB, graph publication and remote synchronization are
+not admission defaults.
+
+* Atomicity and final use
+
+Each durable session reads back WAL journal mode, FULL synchronous behavior and
+enabled foreign keys. Missing capabilities reject opening; there is no fallback
+or automatic mode conversion. Local multiprocess WAL support is explicit.
+Network-filesystem correctness and hardware power-loss behavior remain native
+deployment premises, distinct from the process/restart tests.
+
+=WriteScope= exclusively borrows its session and owns a native immediate write
+transaction. Original member claims, reservation amounts, consumption, current
+Policy/fence and result records remain in the same deciding database. The write
+lock excludes authority changes while the final bounded callback runs.
+
+| Event | Required result |
+|-------+-----------------|
+| Staging or metadata commit | No provider send |
+| Range or release consumption commits | Original opportunity is spent before possible external bytes |
+| Final guarded use | Rejoin exact scope, original claim/hold, current Policy/fence and owner under the write transaction |
+| Statement failure or abandoned scope | Eager native rollback; no partial manifest, hold or authority outcome |
+| Commit error | Keep an unknown outcome, poison the session, finish/attempt native rollback and refuse old-session reentry |
+| Lost response | Recover the same canonical operation/outcome; do not reserve or dispatch again |
+| Partial or uncertain external write | Keep the original hold; no automatic tail replay or refund |
+| Restart | Reconstruct from committed records; volatile permits and old owner sessions do not become current |
+
+Native commit can fail before or after its durable effect. Session poisoning does
+not decide which occurred and cannot authorize settlement. A fresh session must
+read the original operation's authoritative outcome. Cleanup releases an abandoned
+writer where possible; an unresolved rollback still cannot report reusable
+completion or create another send opportunity.
+
+* Exact manifests and SQL dialect
+
+Turso does not accept all of the former SQLite subquery positions. The profile
+floor keeps two composite-index range seeks using two EXISTS expressions rather
+than a compound SELECT inside EXISTS. Original-profile semantics and index-work
+assertions remain required.
+
+The shared-family check reads native rows under one immediate transaction and
+compares typed finite manifests. Every retained request, stream message and
+provider row must have exactly one original member with matching kind, key,
+digest and ceiling; every original member must have its row. Projected amounts
+must equal their original amounts, their checked sum must equal held exposure,
+and the projected budget must equal the original task budget. Empty claims,
+duplicate members, missing siblings, overflow and type/shape changes reject use.
+Duplicate JSON keys are rejected while decoding; ordinary map normalization must
+not discard a conflicting original member. These checks reuse the existing
+manifest/budget laws, not another accounting model or governance DSL.
+
+* Recovery images
+
+A closed Turso database can retain committed frames in its WAL. Copying only the
+main file does not model complete rollback. The shared Rust fault-image fixture
+copies main file and WAL after all owners close, and removes derived destination
+SHM. Missing source WAL removes a stale destination WAL. This is closed-store
+fault injection, not a live backup API.
+
+Ordinary restart must retain original publication, consumption, budget and fence.
+The retained independent-floor tests still distinguish rollback of a local
+projection from coherent rollback of both domains. Coherent rollback of all
+authority remains a negative control requiring independent anti-rollback custody;
+changing engines does not remove that premise. Old exported writable sockets
+remain an explicit unsafe counterexample, which the real broker avoids.
+
+* Models and executable verification
+
+=WeaverExecution.TursoAdmissionAtomicity= allocates the persistence contract.
+=TursoAdmission.qnt= imports the existing RuntimeAdmission model and adds native
+write-scope visibility, commit acknowledgment loss, rollback/restart and fencing.
+Its torn-commit counterexample drops a retained hold after consumption. The
+original model's unsafe controls remain counterexamples, not accepted schedules.
+
+=RuntimeAdmission.Persistence= in Lean reuses the existing =State=, =Step= and
+=Safe= definitions. It proves guarded storage-step preservation, stale-parent
+rejection, committed exposure retention through crash, no external send from
+metadata commit and rejection of reconsumption after a committed-but-unacknowledged
+consume. Atomic native visibility, FULL durability, exact decoding and transport
+fidelity remain explicit refinement premises; compiler JSON is not proof of IO.
+
+The existing Go development runner owns the complete storage lane:
+
+#+begin_src text
+go -C go run ./cmd/weaver-dev check-storage
+#+end_src
+
+It checks the actual Cargo dependency/feature graph, SysML and trace coverage,
+Rust format/tests/ASP deny/Clippy, Lean JSON, Quint tests and bounded schedules,
+then real multi-process gRPC/HTTPS integration with the race detector. Existing
+provider tests cover concurrent consumption, SDK retry/fallback refusal,
+publication/reply loss, restart, shared budgets, response backpressure and partial
+writes. A green focused test is not a substitute for this complete lane.
+
+Initial migration failures are retained outside Git: dependency-cohort conflict,
+unported async test calls, unsupported compound/nested SQL, incomplete main-file
+snapshots and model syntax/test-fixture errors. No timeout, budget invariant or
+deny gate is relaxed to turn these failures into passes.
+
+* Dependency and performance boundary
+
+The storage dependency is pinned to MRR Data PR 12 at
+=daa6487820f798f0583713de8d03110aeac5d1fd=, which owns Turso =0.8.3=.
+Its exact Tokio =1.53.1= constraint requires the same cohort in Weaver; =full=
+features remain enabled. Cedar, Scheme and Go pins are unchanged. Lockfile
+changes must be audited as part of the migration rather than described as an
+unchanged dependency graph.
+
+Per-crate benchmarks retain their existing entrypoints and source-bounded
+workloads. =ledger/range_tail_guard= checks prefix histories of zero, eight and
+sixty-four ranges; original shared-family and maximum-manifest workloads remain.
+An indexed latest-tail lookup does not scan range history. Cross-family write
+parallelism through MVCC is not enabled: the present contract deliberately keeps
+the immediate WAL writer order. New measurements describe this Turso cohort;
+without a matched frozen baseline they establish neither a speedup nor p99.

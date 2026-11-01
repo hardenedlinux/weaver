@@ -7,31 +7,31 @@ use crate::{
     Ledger, publication, publication_barrier,
     store::{db, integer},
 };
-use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 use weaver_contracts::{
     AuthorityParent, Error, Publication, PublicationKey, PublicationReview, Result, body_digest,
 };
 
-pub(crate) fn parent(connection: &Connection) -> Result<Option<AuthorityParent>> {
-    connection.query_row(
-        "SELECT revision,fence,policy,(SELECT schema FROM authority_schema WHERE singleton=1) FROM authority WHERE singleton=1",
-        [], |row| Ok(AuthorityParent {
+pub(crate) fn parent(
+    connection: &crate::persistence::driver::Connection,
+) -> Result<Option<AuthorityParent>> {
+    crate::persistence::maybe(connection, "SELECT revision,fence,policy,(SELECT schema FROM authority_schema WHERE singleton=1) FROM authority WHERE singleton=1", (), |row| Ok(AuthorityParent {
             revision: integer(row,0)?, fence: integer(row,1)?,
-            policy_digest: body_digest(&row.get::<_,String>(2)?),
-            schema_digest: row.get::<_,Option<String>>(3)?.map(|s| body_digest(&s)),
-        }),
-    ).optional().map_err(db)
+            policy_digest: body_digest(&row.get::<String>(2)?),
+            schema_digest: row.get::<Option<String>>(3)?.map(|s| body_digest(&s)),
+        })).map_err(db)
 }
 
-fn requirement(connection: &Connection, key: &PublicationKey) -> Result<Option<String>> {
-    let record: Option<(String, String)> = connection
-        .query_row(
-            "SELECT digest,parent FROM authority_review_requirements WHERE operation_id=?1",
-            [&key.operation_id],
-            |row| Ok((row.get(0)?, row.get(1)?)),
-        )
-        .optional()
-        .map_err(db)?;
+fn requirement(
+    connection: &crate::persistence::driver::Connection,
+    key: &PublicationKey,
+) -> Result<Option<String>> {
+    let record: Option<(String, String)> = crate::persistence::maybe(
+        connection,
+        "SELECT digest,parent FROM authority_review_requirements WHERE operation_id=?1",
+        crate::persistence::params![key.operation_id.to_owned()],
+        |row| Ok((row.get(0)?, row.get(1)?)),
+    )
+    .map_err(db)?;
     record
         .map(|(digest, parent)| {
             if digest != key.digest {
@@ -42,15 +42,17 @@ fn requirement(connection: &Connection, key: &PublicationKey) -> Result<Option<S
         .transpose()
 }
 
-fn registered(connection: &Connection, key: &PublicationKey) -> Result<Option<PublicationReview>> {
-    let record: Option<(String, String, String)> = connection
-        .query_row(
-            "SELECT digest,artifact_digest,record FROM authority_reviews WHERE operation_id=?1",
-            [&key.operation_id],
-            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
-        )
-        .optional()
-        .map_err(db)?;
+fn registered(
+    connection: &crate::persistence::driver::Connection,
+    key: &PublicationKey,
+) -> Result<Option<PublicationReview>> {
+    let record: Option<(String, String, String)> = crate::persistence::maybe(
+        connection,
+        "SELECT digest,artifact_digest,record FROM authority_reviews WHERE operation_id=?1",
+        crate::persistence::params![key.operation_id.to_owned()],
+        |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+    )
+    .map_err(db)?;
     record
         .map(|(digest, artifact_digest, record)| {
             let review: PublicationReview = weaver_contracts::decode(record.as_bytes())?;
@@ -66,7 +68,10 @@ fn registered(connection: &Connection, key: &PublicationKey) -> Result<Option<Pu
 }
 
 /// Called inside the publication transaction, before authority mutation.
-pub(crate) fn require_approved(connection: &Connection, key: &PublicationKey) -> Result<()> {
+pub(crate) fn require_approved(
+    connection: &crate::persistence::driver::Connection,
+    key: &PublicationKey,
+) -> Result<()> {
     let Some(encoded) = requirement(connection, key)? else {
         return Ok(());
     };
@@ -96,10 +101,7 @@ impl Ledger {
     pub fn stage_reviewed_authority(&mut self, change: &Publication) -> Result<PublicationKey> {
         let digest = change.digest()?;
         weaver_policy::validate_typed(&change.policy, &change.schema)?;
-        let tx = self
-            .connection
-            .transaction_with_behavior(TransactionBehavior::Immediate)
-            .map_err(db)?;
+        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
         crate::source_authority::require(&tx, self.source.as_ref())?;
         publication_barrier::require_binding(&tx, change)?;
         let key = PublicationKey {
@@ -112,19 +114,19 @@ impl Ledger {
             if decided {
                 return Err(Error::Conflict("unreviewed decision already final"));
             }
-            tx.execute(
+            crate::persistence::exec(
+                &tx,
                 "INSERT INTO authority_review_requirements VALUES(?1,?2,?3)",
-                params![
-                    key.operation_id,
-                    key.digest,
-                    serde_json::to_string(&parent(&tx)?)?
+                crate::persistence::params![
+                    (key.operation_id).to_owned(),
+                    (key.digest).to_owned(),
+                    (serde_json::to_string(&parent(&tx)?)?).to_owned()
                 ],
             )
             .map_err(db)?;
         }
         if !decided {
-            tx.execute("INSERT INTO authority_pending VALUES(?1,?2,?3) ON CONFLICT(operation_id) DO NOTHING",
-                params![key.operation_id,key.digest,serde_json::to_string(change)?]).map_err(db)?;
+            crate::persistence::exec(&tx, "INSERT INTO authority_pending VALUES(?1,?2,?3) ON CONFLICT(operation_id) DO NOTHING", crate::persistence::params![(key.operation_id).to_owned(),(key.digest).to_owned(),(serde_json::to_string(change)?).to_owned()]).map_err(db)?;
         }
         tx.commit().map_err(db)?;
         Ok(key)
@@ -143,10 +145,7 @@ impl Ledger {
     /// This function provides immutable local registration, not those semantic proofs.
     pub fn register_approved_review(&mut self, review: &PublicationReview) -> Result<String> {
         let digest = review.digest()?;
-        let tx = self
-            .connection
-            .transaction_with_behavior(TransactionBehavior::Immediate)
-            .map_err(db)?;
+        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
         crate::source_authority::require(&tx, self.source.as_ref())?;
         let encoded =
             requirement(&tx, &review.publication)?.ok_or(Error::Conflict("review not required"))?;
@@ -173,18 +172,20 @@ impl Ledger {
 }
 
 fn register_current(
-    connection: &Connection,
+    connection: &crate::persistence::driver::Connection,
     review: &PublicationReview,
     digest: &str,
 ) -> Result<()> {
-    let pending: Option<String> = connection
-        .query_row(
-            "SELECT proposal FROM authority_pending WHERE operation_id=?1 AND digest=?2",
-            params![review.publication.operation_id, review.publication.digest],
-            |row| row.get(0),
-        )
-        .optional()
-        .map_err(db)?;
+    let pending: Option<String> = crate::persistence::maybe(
+        connection,
+        "SELECT proposal FROM authority_pending WHERE operation_id=?1 AND digest=?2",
+        crate::persistence::params![
+            (review.publication.operation_id).to_owned(),
+            (review.publication.digest).to_owned()
+        ],
+        |row| row.get(0),
+    )
+    .map_err(db)?;
     let proposal: Publication = weaver_contracts::decode(
         pending
             .ok_or(Error::Conflict("original review intent missing"))?
@@ -200,16 +201,16 @@ fn register_current(
     {
         return Err(Error::Conflict("review deciding parent changed"));
     }
-    connection
-        .execute(
-            "INSERT INTO authority_reviews VALUES(?1,?2,?3,?4)",
-            params![
-                review.publication.operation_id,
-                review.publication.digest,
-                digest,
-                serde_json::to_string(review)?
-            ],
-        )
-        .map_err(db)?;
+    crate::persistence::exec(
+        connection,
+        "INSERT INTO authority_reviews VALUES(?1,?2,?3,?4)",
+        crate::persistence::params![
+            (review.publication.operation_id).to_owned(),
+            (review.publication.digest).to_owned(),
+            (digest).to_owned(),
+            (serde_json::to_string(review)?).to_owned()
+        ],
+    )
+    .map_err(db)?;
     Ok(())
 }

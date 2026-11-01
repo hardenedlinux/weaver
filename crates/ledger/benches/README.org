@@ -35,7 +35,7 @@ provider reservations and verifies their execution-kind claims and original
 budget. These fixtures expose family-size cost; they do not measure mixed-kind
 throughput, external network IO or an independently anchored recovery protocol.
 
-SQLite FULL/WAL operations and current authorization. Fresh database setup and object destruction are outside timing. Serial measurements do not establish concurrent throughput or crash recovery.
+MRR Data/Turso FULL/WAL operations and current authorization. Fresh database setup and object destruction are outside timing. Serial measurements do not establish concurrent throughput or crash recovery.
 Profile replay includes the retained original-task semantic floor and registry
 join. The one/256 fixtures are populated before timing; they expose history-size
 cost without including setup in the measurement. Index-plan tests verify bounded
@@ -82,3 +82,12 @@ original shared hold remains retained. This measures the deciding path with a
 multi-member root; it does not measure socket throughput, fixture admission,
 refunds or independent rollback recovery. Use the unchanged thirty-sample,
 one-second warm-up and two-second requested measurement configuration.
+
+* Durable range tail
+
+=ledger/range_tail_guard/{0,8,64}= retains that many completed ranges before
+timing. Consumption and final guarded use validate the indexed latest tail
+against the original message cursor. Setup is outside timing; the callback is
+local, with no network IO. All cases use the same MRR Data / Turso driver and
+unchanged thirty-sample protocol. These results do not establish a speedup
+over the retired engine or concurrent throughput.

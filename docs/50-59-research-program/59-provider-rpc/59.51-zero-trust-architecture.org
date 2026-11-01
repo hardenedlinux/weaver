@@ -4,6 +4,47 @@
 
 * Decision and evidence status
 
+The architecture projection combines imported formal constraints with
+model-assisted architectural synthesis. =cedar-poo-spec= owns the security
+definitions; Org and implementation sources provide the application context.
+The model completes the SysML allocation, interactions, lifecycle and failure
+paths. It must not invent a replacement Zero Trust framework. Go/OpenSysML
+checks that allocation and its references before the shared rendering Library
+produces the view. A diagram is an explanation of the design, not a raw dump of
+Lean fields and not proof that the explanation is implemented.
+
+=dev/proofs/cedar/ZeroTrustArchitecture.lean= reflects declarations, structure
+fields, types and definition bodies directly from the imported Lean environment.
+The existing Lean JSON reader now retains this structured payload as well as
+compiler diagnostics and axiom audits. SysML supplies the runtime owners and
+reader-facing explanation; =leanDeclaration= and =leanFields= bind that
+explanation to imported contracts. Lean identifies proof-valued fields in the imported environment. Go rejects
+absent, duplicate, stale or unresolved references, including an allocation that
+omits an imported proof condition. This checks references and provenance; it does not prove
+the truth or completeness of natural-language explanation or Rust refinement.
+Typed requirements, transition proofs and implementation tests remain necessary.
+
+The corrected generation path is:
+
+#+begin_example
+Imported SPEC / Lean environment + Org / source context
+  -> model-assisted SysML architecture and explicit constraint allocation
+  -> Go / OpenSysML validation and source-current Lean JSON join
+  -> generated D2 presentation declaration
+  -> upstream Library composition and standalone image export
+#+end_example
+
+The ordinary Go rendering entrypoint uses the existing locked Lake dependency
+closure. It must not substitute the ignored upstream research checkout. The
+locked revision =38af276ffbd17a378408bb7886e8122faadcbcfd= does not provide
+=CedarPooSpec.Gateway.ZeroTrust=; the attempted export failed with a missing
+module and produced no accepted environment. The isolated reference at
+=9489ee91ac26562bd0e34275d5bd78165ed627f5= exported twelve declarations and
+five theorem axiom audits, and the Go/OpenSysML join passed. This is isolated
+projection evidence, not acceptance of the unchanged locked dependency.
+The initial exporter syntax failure and the locked-dependency failure remain
+under temporary or ignored evidence paths; no raw logs are committed.
+
 The follow-up [[file:59.52-reviewed-publication-cas.org][reviewed publication CAS audit]]
 restricts ordinary review-record splicing and adds exact LeanPoo evidence-binding
 composition. Mandatory native review admission remains an implementation gap.
@@ -28,9 +69,11 @@ provider final-use boundary; dependency pins remain unchanged.
 [[file:../../../dev/sysml/ZeroTrustRefinement.sysml][ZeroTrustRefinement.sysml]]
 defines a semantic contract view over existing owners, not another runtime
 topology. Its arrows mean requirements carried into an interpretation. The
-README view is generated from that exact SDK model through the shared Library.
+contract-refinement reference is generated from that exact SDK model through
+the shared Library. It belongs to this design document. The README uses the
+separate runtime trust-boundary model in GatewayArchitecture.sysml.
 
-[[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]
+[[file:59.51-zero-trust-contract-refinement.svg]]
 
 | Model subject | SPEC source meaning | Weaver proof consumer / actual owner |
 |---------------+---------------------+--------------------------------------|

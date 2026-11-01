@@ -20,8 +20,9 @@ module RuntimeAdmission {
         (s.spent.contains(k) implies s.holds.get(k)>0) and
         (s.calls.get(k)>0 implies s.spent.contains(k)))
     val safety=aggregateSafety and originalBindings and claimCoverage and memberBindings
-    action init=s'={queued:Set(),retained:Set(),spent:Set(),calls:Map(0->0,1->0),digests:Map(0->0,1->1),holds:Map(0->0,1->0),originals:Map(0->0,1->0),
+    val initial:State={queued:Set(),retained:Set(),spent:Set(),calls:Map(0->0,1->0),digests:Map(0->0,1->1),holds:Map(0->0,1->0),originals:Map(0->0,1->0),
         revision:0,fence:1,qRevision:Map(0->0,1->0),qFence:Map(0->1,1->1),tickets:Set(),lock:false,lockKey: -1,staleSend:false}
+    action init=s'=initial
     action queue(k:int,n:int,original:bool):bool=all {
         claimCoverage, memberBindings, originalBindings, original, logicalKeys.contains(k),not(s.queued.contains(k)),n>=3,held+n<=10,
         s'=s.with("queued",s.queued.union(Set(k))).with("retained",s.retained.union(Set(k))).with("holds",s.holds.set(k,n)).with("originals",s.originals.set(k,n))

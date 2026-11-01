@@ -23,6 +23,10 @@ func TestD2SemanticCopyCannotOverrideSDKProjection(t *testing.T) {
 		t.Fatal(err)
 	}
 	isolated := copyVerificationInputs(t, root, inputs)
+	if err := mapModelDeclarations(isolated, capture); err == nil || !strings.Contains(err.Error(), "lacks current Lean environment") {
+		t.Fatalf("missing Lean environment must block security projection: %v", err)
+	}
+	delete(capture.Descriptions, "WeaverViews::zeroTrust")
 	if err := mapModelDeclarations(isolated, capture); err != nil {
 		t.Fatal(err)
 	}
@@ -30,8 +34,8 @@ func TestD2SemanticCopyCannotOverrideSDKProjection(t *testing.T) {
 	for source, body := range capture.Mapped {
 		baseline[source] = body
 	}
-	if len(baseline) != 3 {
-		t.Fatalf("expected all README projections, got %d", len(baseline))
+	if len(baseline) != 6 {
+		t.Fatalf("expected product and development projections, got %d", len(baseline))
 	}
 	for source, body := range baseline {
 		forged := body

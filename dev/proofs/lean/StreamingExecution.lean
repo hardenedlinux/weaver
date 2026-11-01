@@ -1,7 +1,7 @@
 namespace Weaver.StreamingExecution
 
-/- Native refinement premises: authentic source and cost bounds; durable SQLite
-   CAS/lock semantics; non-forgeable Rust capabilities; immutable BLOB ownership;
+/- Native refinement premises: authentic source and cost bounds; durable Turso FULL/WAL
+   CAS/immediate-write semantics; non-forgeable Rust capabilities; immutable BLOB ownership;
    unused canonical range at send; faithful bounded TCP/TLS observations.
    No compiler, filesystem power-loss, provider exactly-once or native timing proof. -/
 structure State (Message : Type) where
@@ -210,4 +210,91 @@ theorem guarded_step_preserves_safety {M : Type} [DecidableEq M]
 #print axioms inexact_cannot_refine_execution
 #print axioms guarded_step_preserves_safety
 end RangeReceipt
+
+namespace RangeProgress
+/- The SQL adapter must faithfully read the latest durable range and mutable
+message projection under one deciding transaction. This is not an anti-rollback
+anchor: coherent rollback/deletion of both histories is outside this premise. -/
+inductive Phase where | queued | active | unknown | complete
+  deriving DecidableEq
+inductive Outcome where | unknown | partialWrite | complete | notSent
+  deriving DecidableEq
+structure Projection where
+  phase : Phase := .queued
+  cursor : Nat := 0
+  nextSequence : Nat := 0
+  deriving DecidableEq
+structure Tail where
+  sequence : Nat
+  offset : Nat
+  length : Nat
+  written : Option Nat
+  outcome : Outcome
+
+def ValidTail (total : Nat) (tail : Tail) : Prop :=
+  0 < tail.length ∧ tail.offset + tail.length ≤ total ∧
+  match tail.outcome with
+  | .unknown => tail.written = none
+  | .partialWrite => ∃ n, tail.written = some n ∧ n < tail.length
+  | .complete => tail.written = some tail.length
+  | .notSent => tail.written = some 0
+
+def expected (total : Nat) : Option Tail → Projection
+  | none => {}
+  | some tail =>
+    let endOffset := tail.offset + tail.length
+    match tail.outcome with
+    | .unknown | .partialWrite => ⟨.unknown, tail.offset, tail.sequence + 1⟩
+    | .complete => ⟨if endOffset = total then .complete else .active, endOffset, tail.sequence + 1⟩
+    | .notSent => ⟨if tail.offset = 0 then .queued else .active, tail.offset, tail.sequence + 1⟩
+
+def Joined (total : Nat) (tail : Option Tail) (actual : Projection) : Prop :=
+  (∀ t, tail = some t → ValidTail total t) ∧ actual = expected total tail
+
+def CanAdmit (total : Nat) (tail : Option Tail) (actual : Projection) : Prop :=
+  Joined total tail actual ∧ (actual.phase = .queued ∨ actual.phase = .active) ∧ actual.cursor < total
+
+theorem changed_projection_rejected (changed : actual ≠ expected total tail) :
+    ¬ Joined total tail actual := fun joined => changed joined.2
+
+theorem unresolved_tail_blocks_admission (tail : Tail)
+    (unresolved : tail.outcome = .unknown ∨ tail.outcome = .partialWrite) :
+    ¬ CanAdmit total (some tail) actual := by
+  rintro ⟨joined,phase,_⟩
+  rcases unresolved with h | h <;>
+    simp [joined.2, expected, h] at phase
+
+theorem completed_tail_preserves_cursor (tail : Tail) (complete : tail.outcome = .complete)
+    (joined : Joined total (some tail) actual) :
+    actual.cursor = tail.offset + tail.length ∧ actual.nextSequence = tail.sequence + 1 := by
+  simp [joined.2, expected, complete]
+
+def ProgressGuardedStep {M : Type} [DecidableEq M] (owner : ExecutorEvidence M)
+    (budget : Nat) (s t : State M) (total : Nat) (tail : Option Tail) (actual : Projection)
+    (record : RangeReceipt.Record) (permit : RangeReceipt.Identity) : Prop :=
+  Joined total tail actual ∧ RangeReceipt.GuardedStep owner budget s t record permit
+
+theorem changed_progress_cannot_execute {M : Type} [DecidableEq M]
+    {owner : ExecutorEvidence M} {s t : State M}
+    (changed : actual ≠ expected total tail) :
+    ¬ ProgressGuardedStep owner budget s t total tail actual record permit :=
+  fun step => changed step.1.2
+
+theorem joined_execution_preserves_safety {M : Type} [DecidableEq M]
+    {owner : ExecutorEvidence M} {s t : State M}
+    (safe : Safe budget s)
+    (step : ProgressGuardedStep owner budget s t total tail actual record permit) : Safe budget t :=
+  RangeReceipt.guarded_step_preserves_safety safe step.2
+
+example : ¬ Joined 8 (some ⟨0,0,1,none,.unknown⟩) ({} : Projection) := by
+  intro h
+  have phase := congrArg Projection.phase h.2
+  simp [expected] at phase
+
+#print axioms changed_projection_rejected
+#print axioms unresolved_tail_blocks_admission
+#print axioms completed_tail_preserves_cursor
+#print axioms changed_progress_cannot_execute
+#print axioms joined_execution_preserves_safety
+end RangeProgress
 end Weaver.StreamingExecution

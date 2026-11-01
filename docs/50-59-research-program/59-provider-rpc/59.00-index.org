@@ -3,6 +3,11 @@
 
 * Current implementation
 
+[[file:59.77-mrr-turso-storage.org][MRR Data Backend / Turso storage]] is the current implementation.
+Runtime, PBT, recovery fault injection and benchmarks share one driver and
+immediate transaction boundary. Earlier SQLite measurements and opt-in storage
+proposals below remain historical evidence, not qualification of this cohort.
+
 [[file:59.76-embedded-tooling-and-darwin-io.org][Embedded tooling and Darwin I/O ownership]] separates the required upstream
 C ABI build/test API from proven process-path counterexamples and remaining image qualification.
 

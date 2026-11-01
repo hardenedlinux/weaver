@@ -21,22 +21,25 @@ module StreamingExecution {
     s'=s.with("status",s.status.set(m,1)).with("hold",s.hold.set(m,1))
       .with("authRev",s.authRev.set(m,s.revision)).with("authFence",s.authFence.set(m,s.fence))
   }
-  action claim=all {
+  action projectionOnlyClaim=all {
     not(s.lock),ids.exists(m=>s.status.get(m)==1),
     ids.forall(m=>not(Set(3,5).contains(s.status.get(m))) and not(s.status.get(m)==2 and s.cursor.get(m)>0)),
     s.allowed,s'=s.with("generation",s.generation+1).with("ownerFence",s.fence)
   }
+  action claim=all {s.receiptExact,projectionOnlyClaim}
   action resume(m:int):bool=all {
+    s.receiptExact,
     s.status.get(m)==1,s.cursor.get(m)==0,s.ownerFence==s.fence,s.allowed,
     s'=s.with("authRev",s.authRev.set(m,s.revision)).with("authFence",s.authFence.set(m,s.fence))
   }
-  action burn(m:int,cap:int):bool=all {
+  action projectionOnlyBurn(m:int,cap:int):bool=all {
     not(s.lock),s.permit == -1,cap==s.generation,cap>0,s.ownerFence==s.fence,s.allowed,
     Set(1,2).contains(s.status.get(m)),s.authRev.get(m)==s.revision,s.authFence.get(m)==s.fence,
     ids.forall(i=>i>=m or s.status.get(i)==4),
     s'=s.with("status",s.status.set(m,3)).with("permit",m).with("permitOffset",s.cursor.get(m))
       .with("permitGen",cap).with("burned",s.burned+1)
   }
+  action burn(m:int,cap:int):bool=all {s.receiptExact,projectionOnlyBurn(m,cap)}
   // Exact durable sequence, offset, length, unwritten state and message successor.
   // Storage faults are adversarial traces, not normal transitions or rollback detection.
   action finalGuard=all {not(s.lock),current,s.receiptExact,s'=s.with("lock",true)}
@@ -59,7 +62,7 @@ module StreamingExecution {
   action warmOldCompilation=s'=s.with("cachedRevision",s.revision-1)
   action unsafeRefund(m:int):bool=s'=s.with("hold",s.hold.set(m,0))
   action unsafeCachedGuard=all {s.permit>=0,s'=s.with("stale",true)}
-  action unsafeResetUnknown=s'=s.with("status",s.status.set(0,1))
+  action unsafeResetUnknown=s'=s.with("status",s.status.set(0,1)).with("cursor",s.cursor.set(0,0)).with("receiptExact",false)
   action unsafeDamageRange=all {not(s.lock),s.permit>=0,s'=s.with("receiptExact",false)}
   action unsafeStateOnlyGuard=all {not(s.lock),current,s'=s.with("lock",true)}
   action step={nondet m=ids.oneOf() any{queue(m,true),claim,resume(m),burn(m,s.generation),finalGuard,fullWrite,commit,partial,noSend,publish(true),publish(false),crash,lostReply,warmOldCompilation}}
@@ -86,5 +89,10 @@ module StreamingExecution {
   run stateOnlyRangeCounterexampleTest=consumed.then(unsafeDamageRange).then(unsafeStateOnlyGuard).then(fullWrite).expect(not(safe))
   run duplicateRefundCounterexampleTest=consumed.then(crash).then(unsafeRefund(0)).expect(not(safe))
   run cachedGrantCounterexampleTest=consumed.then(publish(false)).then(unsafeCachedGuard).expect(not(safe))
-  run unknownResetDuplicatesRangeCounterexampleTest=consumed.then(finalGuard).then(fullWrite).then(crash).then(unsafeResetUnknown).then(claim).then(burn(0,2)).then(finalGuard).then(fullWrite).expect(not(safe))
+  run restoredUnknownProjectionBlocksAdmissionTest=consumed.then(crash).then(unsafeResetUnknown).expect(held==1 and s.invoked==0).then(claim.fail())
+  run restoredCompletedPrefixBlocksAdmissionTest=first.then(unsafeResetUnknown).expect(held==1 and s.invoked==1).then(burn(0,1).fail())
+  run restoredPartialProjectionBlocksAdmissionTest=consumed.then(finalGuard).then(partial).then(unsafeResetUnknown).expect(held==1 and s.invoked==1).then(burn(0,1).fail())
+  run restoredUnknownProjectionBlocksResumeTest=consumed.then(crash).then(unsafeResetUnknown).expect(held==1).then(resume(0).fail())
+  run restoredUnknownProjectionBlocksConsumeTest=consumed.then(crash).then(unsafeResetUnknown).expect(held==1).then(burn(0,1).fail())
+  run unknownResetDuplicatesRangeCounterexampleTest=consumed.then(finalGuard).then(fullWrite).then(crash).then(unsafeResetUnknown).then(projectionOnlyClaim).then(projectionOnlyBurn(0,2)).then(unsafeStateOnlyGuard).then(fullWrite).expect(not(safe) and s.calls.get(0)==2)
 }

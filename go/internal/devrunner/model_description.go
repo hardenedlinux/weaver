@@ -9,26 +9,29 @@ import (
 )
 
 type ModelCaption struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Type  string `json:"type"`
-	Label string `json:"label"`
-	Icon  string `json:"icon"`
-	Role  string `json:"role,omitempty"`
+	ID              string   `json:"id"`
+	Name            string   `json:"name"`
+	Type            string   `json:"type"`
+	Label           string   `json:"label"`
+	Icon            string   `json:"icon"`
+	Role            string   `json:"role,omitempty"`
+	LeanDeclaration string   `json:"leanDeclaration,omitempty"`
+	LeanFields      []string `json:"leanFields,omitempty"`
 }
 type ModelRequirement struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 type ModelDescription struct {
-	File         string             `json:"file"`
-	Heading      string             `json:"heading"`
-	Subtitle     string             `json:"subtitle"`
-	Eyebrow      string             `json:"eyebrow"`
-	Question     string             `json:"question"`
-	Captions     []ModelCaption     `json:"captions"`
-	Source       string             `json:"source"`
-	Requirements []ModelRequirement `json:"requirements"`
+	File            string             `json:"file"`
+	Heading         string             `json:"heading"`
+	Subtitle        string             `json:"subtitle"`
+	Eyebrow         string             `json:"eyebrow"`
+	Question        string             `json:"question"`
+	Captions        []ModelCaption     `json:"captions"`
+	Source          string             `json:"source"`
+	Requirements    []ModelRequirement `json:"requirements"`
+	LeanEnvironment bool               `json:"leanEnvironment,omitempty"`
 }
 
 func stringAttributes(symbol *opensysml.Symbol) map[string]string {
@@ -58,6 +61,7 @@ func describeModelView(ctx context.Context, client opensysml.Client, model *open
 		}
 	}
 	description := &ModelDescription{File: attributes["mappedFile"], Heading: attributes["displayTitle"], Subtitle: attributes["displaySubtitle"], Eyebrow: attributes["displayEyebrow"], Question: attributes["readerQuestion"]}
+	description.LeanEnvironment = attributes["leanEnvironment"] == "required"
 	obligations, err := client.Query(ctx, model, opensysml.Query{Scope: []string{name}, Where: opensysml.Equals("@type", "RequirementUsage")})
 	if err != nil {
 		return nil, err
@@ -100,6 +104,12 @@ func describeModelView(ctx context.Context, client opensysml.Client, model *open
 			return nil, err
 		}
 		values := stringAttributes(subject)
+		if description.LeanEnvironment {
+			if values["securityName"] == "" || values["securityResponsibility"] == "" {
+				return nil, fmt.Errorf("security view lacks architecture explanation: %s", id)
+			}
+			values["displayName"], values["responsibility"] = values["securityName"], values["securityResponsibility"]
+		}
 		if strings.TrimSpace(values["displayName"]) == "" || strings.TrimSpace(values["glyph"]) == "" {
 			return nil, fmt.Errorf("model subject lacks reader interpretation: %s", id)
 		}
@@ -107,7 +117,13 @@ func describeModelView(ctx context.Context, client opensysml.Client, model *open
 		if detail := values["responsibility"]; detail != "" {
 			label += "\n" + detail
 		}
-		description.Captions = append(description.Captions, ModelCaption{ID: node.ID, Name: node.Name, Type: node.Type, Label: label, Icon: values["glyph"], Role: values["visualRole"]})
+		caption := ModelCaption{ID: node.ID, Name: node.Name, Type: node.Type, Label: label, Icon: values["glyph"], Role: values["visualRole"], LeanDeclaration: values["leanDeclaration"]}
+		if description.LeanEnvironment {
+			for _, field := range strings.Split(values["leanFields"], ",") {
+				caption.LeanFields = append(caption.LeanFields, strings.TrimSpace(field))
+			}
+		}
+		description.Captions = append(description.Captions, caption)
 	}
 	return description, nil
 }

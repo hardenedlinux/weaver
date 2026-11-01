@@ -1,10 +1,10 @@
 //! Executable protocol reference, not a deployed independent authority.
 //! Two files only define this test's restore boundary; they do not establish
 //! failure-domain independence. Domain payload validation stays with its owner.
-use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 use std::{collections::BTreeSet, path::Path};
 use weaver_contracts::{ProviderReceipt, ProviderState};
 use weaver_ledger::Ledger;
+use weaver_ledger::persistence::Session;
 #[path = "retained_admission.rs"]
 mod retained_admission;
 #[path = "transport_owner.rs"]
@@ -34,35 +34,27 @@ impl Command {
         .to_string()
     }
 }
-struct Floor(Connection);
-fn cut(db: &Connection) -> String {
-    let mut query = db
-        .prepare("SELECT kind,k,body FROM prefix ORDER BY ordinal")
-        .expect("prefix query");
-    let entries = query
-        .query_map([], |r| {
-            Ok((
-                r.get::<_, i64>(0)?,
-                r.get::<_, String>(1)?,
-                r.get::<_, String>(2)?,
-            ))
-        })
-        .expect("read prefix")
-        .collect::<Result<Vec<_>, _>>()
-        .expect("complete prefix");
+struct Floor(Session);
+fn cut(db: &weaver_ledger::persistence::driver::Connection) -> String {
+    let entries = weaver_ledger::persistence::read_all(
+        db,
+        "SELECT kind,k,body FROM prefix ORDER BY ordinal",
+        (),
+        |r| Ok((r.get::<i64>(0)?, r.get::<String>(1)?, r.get::<String>(2)?)),
+    )
+    .expect("complete prefix");
     serde_json::to_string(&entries).expect("canonical full prefix")
 }
-fn epoch(db: &Connection) -> i64 {
-    db.query_row("SELECT epoch FROM owner", [], |r| r.get(0))
-        .expect("epoch")
+fn epoch(db: &weaver_ledger::persistence::driver::Connection) -> i64 {
+    weaver_ledger::persistence::one(db, "SELECT epoch FROM owner", (), |r| r.get(0)).expect("epoch")
 }
-fn unknown(db: &Connection) -> bool {
-    db.query_row("SELECT EXISTS(SELECT 1 FROM pending p LEFT JOIN outcomes o ON p.id=o.id WHERE o.id IS NULL)",[],|r|r.get(0)).expect("pending outcomes")
+fn unknown(db: &weaver_ledger::persistence::driver::Connection) -> bool {
+    weaver_ledger::persistence::one(db, "SELECT EXISTS(SELECT 1 FROM pending p LEFT JOIN outcomes o ON p.id=o.id WHERE o.id IS NULL)", (), |r|r.get(0)).expect("pending outcomes")
 }
 impl Floor {
     fn open(path: &Path) -> Self {
-        let db = Connection::open(path).expect("authority store");
-        db.execute_batch("PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL;
+        let db = Session::open(path).expect("authority store");
+        weaver_ledger::persistence::script(&db, "
             CREATE TABLE IF NOT EXISTS owner(epoch INTEGER NOT NULL);
             INSERT INTO owner SELECT 0 WHERE NOT EXISTS(SELECT 1 FROM owner);
             CREATE TABLE IF NOT EXISTS prefix(ordinal INTEGER PRIMARY KEY,kind INTEGER,k TEXT,body TEXT);
@@ -82,18 +74,19 @@ impl Floor {
         }
     }
     fn stage(&self, c: &Command) {
-        self.0
-            .execute(
-                "INSERT OR IGNORE INTO pending VALUES(?1,?2)",
-                params![c.id, c.canonical()],
-            )
-            .expect("durable prepare");
-        let frozen: String = self
-            .0
-            .query_row("SELECT command FROM pending WHERE id=?1", [&c.id], |r| {
-                r.get(0)
-            })
-            .expect("prepared");
+        weaver_ledger::persistence::exec(
+            &self.0,
+            "INSERT OR IGNORE INTO pending VALUES(?1,?2)",
+            weaver_ledger::persistence::params![(c.id).to_owned(), (c.canonical()).to_owned()],
+        )
+        .expect("durable prepare");
+        let frozen: String = weaver_ledger::persistence::one(
+            &self.0,
+            "SELECT command FROM pending WHERE id=?1",
+            weaver_ledger::persistence::params![c.id.to_owned()],
+            |r| r.get(0),
+        )
+        .expect("prepared");
         assert_eq!(
             frozen,
             c.canonical(),
@@ -103,19 +96,16 @@ impl Floor {
     fn inspect(&self, c: &Command) -> Option<(bool, String)> {
         Self::inspect_at(&self.0, c)
     }
-    fn inspect_at(db: &Connection, c: &Command) -> Option<(bool, String)> {
-        db.query_row(
+    fn inspect_at(
+        db: &weaver_ledger::persistence::driver::Connection,
+        c: &Command,
+    ) -> Option<(bool, String)> {
+        weaver_ledger::persistence::maybe(
+            db,
             "SELECT command,accepted,post FROM outcomes WHERE id=?1",
-            [&c.id],
-            |r| {
-                Ok((
-                    r.get::<_, String>(0)?,
-                    r.get::<_, bool>(1)?,
-                    r.get::<_, String>(2)?,
-                ))
-            },
+            weaver_ledger::persistence::params![c.id.to_owned()],
+            |r| Ok((r.get::<String>(0)?, r.get::<bool>(1)?, r.get::<String>(2)?)),
         )
-        .optional()
         .expect("inspect")
         .map(|(original, accepted, post)| {
             assert_eq!(original, c.canonical());
@@ -123,84 +113,99 @@ impl Floor {
         })
     }
     fn commit(&mut self, c: &Command) -> (bool, String) {
-        let tx = self
-            .0
-            .transaction_with_behavior(TransactionBehavior::Immediate)
-            .expect("floor CAS");
+        let tx = weaver_ledger::persistence::begin(&mut self.0).expect("floor CAS");
         if let Some(original) = Self::inspect_at(&tx, c) {
             return original;
         }
-        let frozen: String = tx
-            .query_row("SELECT command FROM pending WHERE id=?1", [&c.id], |r| {
-                r.get(0)
-            })
-            .expect("must prepare");
+        let frozen: String = weaver_ledger::persistence::one(
+            &tx,
+            "SELECT command FROM pending WHERE id=?1",
+            weaver_ledger::persistence::params![c.id.to_owned()],
+            |r| r.get(0),
+        )
+        .expect("must prepare");
         assert_eq!(frozen, c.canonical());
-        let duplicate: bool = tx
-            .query_row(
-                "SELECT EXISTS(SELECT 1 FROM prefix WHERE kind=?1 AND k=?2)",
-                params![c.kind, c.key],
-                |r| r.get(0),
-            )
-            .expect("logical uniqueness");
-        let consumed: bool = tx
-            .query_row(
-                "SELECT EXISTS(SELECT 1 FROM prefix WHERE kind=1 AND k=?1)",
-                [&c.key],
-                |r| r.get(0),
-            )
-            .expect("original consumption");
+        let duplicate: bool = weaver_ledger::persistence::one(
+            &tx,
+            "SELECT EXISTS(SELECT 1 FROM prefix WHERE kind=?1 AND k=?2)",
+            weaver_ledger::persistence::params![(c.kind).to_owned(), (c.key).to_owned()],
+            |r| r.get(0),
+        )
+        .expect("logical uniqueness");
+        let consumed: bool = weaver_ledger::persistence::one(
+            &tx,
+            "SELECT EXISTS(SELECT 1 FROM prefix WHERE kind=1 AND k=?1)",
+            weaver_ledger::persistence::params![c.key.to_owned()],
+            |r| r.get(0),
+        )
+        .expect("original consumption");
         let accepted = c.before == cut(&tx)
             && c.epoch == epoch(&tx)
             && (0..4).contains(&c.kind)
             && !(matches!(c.kind, 1 | 2) && duplicate)
             && (c.kind != 2 || consumed);
         if accepted {
-            tx.execute(
+            weaver_ledger::persistence::exec(
+                &tx,
                 "INSERT INTO prefix(kind,k,body) VALUES(?1,?2,?3)",
-                params![c.kind, c.key, c.canonical()],
+                weaver_ledger::persistence::params![
+                    (c.kind).to_owned(),
+                    (c.key).to_owned(),
+                    (c.canonical()).to_owned()
+                ],
             )
             .expect("full record");
         }
         let post = cut(&tx);
-        tx.execute(
+        weaver_ledger::persistence::exec(
+            &tx,
             "INSERT INTO outcomes VALUES(?1,?2,?3,?4)",
-            params![c.id, c.canonical(), accepted, post],
+            weaver_ledger::persistence::params![
+                (c.id).to_owned(),
+                (c.canonical()).to_owned(),
+                (accepted).to_owned(),
+                (post).to_owned()
+            ],
         )
         .expect("immutable decision");
         tx.commit().expect("durable result before reply");
         (accepted, post)
     }
     fn rotate(&self) {
-        self.0
-            .execute("UPDATE owner SET epoch=epoch+1", [])
+        weaver_ledger::persistence::exec(&self.0, "UPDATE owner SET epoch=epoch+1", ())
             .expect("durable fence");
     }
     fn repair(&self, projection: &Path) {
-        let mut local = Connection::open(projection).expect("projection");
-        local.execute_batch("CREATE TABLE IF NOT EXISTS prefix(ordinal INTEGER PRIMARY KEY,kind INTEGER,k TEXT,body TEXT);").expect("projection schema");
-        let tx = local.transaction().expect("projection atomic replace");
-        tx.execute("DELETE FROM prefix", [])
+        let mut local = Session::open(projection).expect("projection");
+        weaver_ledger::persistence::script(&local, "CREATE TABLE IF NOT EXISTS prefix(ordinal INTEGER PRIMARY KEY,kind INTEGER,k TEXT,body TEXT);").expect("projection schema");
+        let tx = weaver_ledger::persistence::begin(&mut local).expect("projection atomic replace");
+        weaver_ledger::persistence::exec(&tx, "DELETE FROM prefix", ())
             .expect("replace projection");
-        let mut query = self
-            .0
-            .prepare("SELECT ordinal,kind,k,body FROM prefix ORDER BY ordinal")
-            .expect("source prefix");
-        for row in query
-            .query_map([], |r| {
+        for row in weaver_ledger::persistence::read_all(
+            &self.0,
+            "SELECT ordinal,kind,k,body FROM prefix ORDER BY ordinal",
+            (),
+            |r| {
                 Ok((
-                    r.get::<_, i64>(0)?,
-                    r.get::<_, i64>(1)?,
-                    r.get::<_, String>(2)?,
-                    r.get::<_, String>(3)?,
+                    r.get::<i64>(0)?,
+                    r.get::<i64>(1)?,
+                    r.get::<String>(2)?,
+                    r.get::<String>(3)?,
                 ))
-            })
-            .expect("source records")
+            },
+        )
+        .expect("source records")
         {
-            let (ordinal, kind, key, body) = row.expect("complete source record");
-            tx.execute(
+            let (ordinal, kind, key, body) = row;
+            weaver_ledger::persistence::exec(
+                &tx,
                 "INSERT INTO prefix VALUES(?1,?2,?3,?4)",
-                params![ordinal, kind, key, body],
+                weaver_ledger::persistence::params![
+                    (ordinal).to_owned(),
+                    (kind).to_owned(),
+                    (key).to_owned(),
+                    (body).to_owned()
+                ],
             )
             .expect("repair full body");
         }
@@ -209,7 +214,8 @@ impl Floor {
     fn qualified(&self, projection: &Path, observed_epoch: i64) -> bool {
         observed_epoch == epoch(&self.0)
             && !unknown(&self.0)
-            && cut(&Connection::open(projection).expect("projection")) == cut(&self.0)
+            && cut(&weaver_ledger::persistence::Session::open(projection).expect("projection"))
+                == cut(&self.0)
     }
     // Independent transport owner, never a permit returned to the worker. Burn
     // commits first; a second deciding transaction rechecks before the callback.
@@ -228,10 +234,12 @@ impl Floor {
         projection: &Path,
         observed_epoch: i64,
         key: &str,
-        after_burn: impl FnOnce(&Connection),
+        after_burn: impl FnOnce(&weaver_ledger::persistence::driver::Connection),
         send: impl FnOnce(),
     ) -> bool {
-        let observed_cut = cut(&Connection::open(projection).expect("observed projection"));
+        let observed_cut =
+            cut(&weaver_ledger::persistence::Session::open(projection)
+                .expect("observed projection"));
         self.send_bound(
             projection,
             observed_epoch,
@@ -247,7 +255,7 @@ impl Floor {
         observed_epoch: i64,
         observed_cut: &str,
         key: &str,
-        after_burn: impl FnOnce(&Connection),
+        after_burn: impl FnOnce(&weaver_ledger::persistence::driver::Connection),
         send: impl FnOnce(),
     ) -> bool {
         self.send_bound_record(
@@ -261,36 +269,34 @@ impl Floor {
         &mut self,
         original: (&Path, i64, &str, &str),
         receipt: Option<&ProviderReceipt>,
-        after_burn: impl FnOnce(&Connection),
+        after_burn: impl FnOnce(&weaver_ledger::persistence::driver::Connection),
         send: impl FnOnce(),
     ) -> bool {
         let (projection, observed_epoch, observed_cut, key) = original;
-        let tx = self
-            .0
-            .transaction_with_behavior(TransactionBehavior::Immediate)
-            .expect("burn CAS");
+        let tx = weaver_ledger::persistence::begin(&mut self.0).expect("burn CAS");
         let current = epoch(&tx) == observed_epoch
             && cut(&tx) == observed_cut
             && !unknown(&tx)
-            && cut(&tx) == cut(&Connection::open(projection).expect("projection"));
-        let consumed: bool = tx
-            .query_row(
-                "SELECT EXISTS(SELECT 1 FROM prefix WHERE kind=1 AND k=?1)",
-                [key],
-                |r| r.get(0),
-            )
-            .expect("spent record");
+            && cut(&tx)
+                == cut(&weaver_ledger::persistence::Session::open(projection).expect("projection"));
+        let consumed: bool = weaver_ledger::persistence::one(
+            &tx,
+            "SELECT EXISTS(SELECT 1 FROM prefix WHERE kind=1 AND k=?1)",
+            weaver_ledger::persistence::params![(key).to_owned()],
+            |r| r.get(0),
+        )
+        .expect("spent record");
         if !current || !consumed {
             return false;
         }
         if let Some(receipt) = receipt {
-            let already_recorded: bool = tx
-                .query_row(
-                    "SELECT EXISTS(SELECT 1 FROM prefix WHERE kind=4 AND k=?1)",
-                    [key],
-                    |row| row.get(0),
-                )
-                .expect("original admission lookup");
+            let already_recorded: bool = weaver_ledger::persistence::one(
+                &tx,
+                "SELECT EXISTS(SELECT 1 FROM prefix WHERE kind=4 AND k=?1)",
+                weaver_ledger::persistence::params![(key).to_owned()],
+                |row| row.get(0),
+            )
+            .expect("original admission lookup");
             if already_recorded
                 || format!("{}/{}", receipt.family, receipt.node) != key
                 || receipt.state != ProviderState::Unknown
@@ -298,9 +304,12 @@ impl Floor {
                 return false;
             }
         }
-        if tx
-            .execute("INSERT OR IGNORE INTO burned VALUES(?1)", [key])
-            .expect("one use")
+        if weaver_ledger::persistence::exec(
+            &tx,
+            "INSERT OR IGNORE INTO burned VALUES(?1)",
+            weaver_ledger::persistence::params![(key).to_owned()],
+        )
+        .expect("one use")
             != 1
         {
             return false;
@@ -308,12 +317,12 @@ impl Floor {
         if let Some(receipt) = receipt {
             let body = serde_json::to_string(&(SCOPE, key, receipt))
                 .expect("canonical admission/exposure body");
-            if tx
-                .execute(
-                    "INSERT INTO prefix(kind,k,body) VALUES(4,?1,?2)",
-                    params![key, body],
-                )
-                .is_err()
+            if weaver_ledger::persistence::exec(
+                &tx,
+                "INSERT INTO prefix(kind,k,body) VALUES(4,?1,?2)",
+                weaver_ledger::persistence::params![(key).to_owned(), (body).to_owned()],
+            )
+            .is_err()
             {
                 return false; // Dropping the transaction also rolls back burned.
             }
@@ -321,10 +330,7 @@ impl Floor {
         let expected = cut(&tx);
         tx.commit().expect("burn durable");
         after_burn(&self.0);
-        let tx = self
-            .0
-            .transaction_with_behavior(TransactionBehavior::Immediate)
-            .expect("final admission");
+        let tx = weaver_ledger::persistence::begin(&mut self.0).expect("final admission");
         if epoch(&tx) != observed_epoch || cut(&tx) != expected || unknown(&tx) {
             return false;
         }
@@ -365,18 +371,17 @@ fn commit_floor_lost_reply_and_partial_projection_recover_all_four_bodies() {
     );
     recovered.repair(&projection);
     assert!(recovered.qualified(&projection, 0));
-    let local = Connection::open(&projection).expect("local");
-    local
-        .execute("DELETE FROM prefix WHERE kind=3", [])
+    let local = Session::open(&projection).expect("local");
+    weaver_ledger::persistence::exec(&local, "DELETE FROM prefix WHERE kind=3", ())
         .expect("partial application");
     assert!(!recovered.qualified(&projection, 0));
     recovered.repair(&projection);
-    local
-        .execute(
-            "UPDATE prefix SET body='same-length-wrong-body' WHERE kind=2",
-            [],
-        )
-        .expect("body substitution");
+    weaver_ledger::persistence::exec(
+        &local,
+        "UPDATE prefix SET body='same-length-wrong-body' WHERE kind=2",
+        (),
+    )
+    .expect("body substitution");
     assert!(!recovered.qualified(&projection, 0));
     recovered.repair(&projection);
     assert_eq!(cut(&local), committed);
@@ -452,7 +457,7 @@ fn commit_floor_survives_gateway_restore_and_blocks_duplicate_real_dispatch() {
         .enqueue_provider(&plan)
         .expect("original reservation");
     ledger.close().expect("closed snapshot source");
-    std::fs::copy(&gateway, &snapshot).expect("snapshot");
+    crate::snapshot::copy_closed(&gateway, &snapshot).expect("snapshot");
     let mut floor = Floor::open(&floor_path);
     let command = floor.command("consume", 1, "f/infer");
     floor.stage(&command);
@@ -461,7 +466,7 @@ fn commit_floor_survives_gateway_restore_and_blocks_duplicate_real_dispatch() {
     let mut calls = 0;
     for restore in [false, true, true] {
         if restore {
-            std::fs::copy(&snapshot, &gateway).expect("restore only gateway");
+            crate::snapshot::copy_closed(&snapshot, &gateway).expect("restore only gateway");
         }
         let mut ledger = Ledger::open(&gateway).expect("worker restart");
         let permit = ledger
@@ -503,7 +508,7 @@ fn identical_prefix_after_whole_store_restore_can_replay_dispatch_counterexample
         .enqueue_provider(&plan)
         .expect("original reservation");
     ledger.close().expect("closed gateway snapshot source");
-    std::fs::copy(&gateway, &gateway_snapshot).expect("queued gateway snapshot");
+    crate::snapshot::copy_closed(&gateway, &gateway_snapshot).expect("queued gateway snapshot");
     let mut floor = Floor::open(&floor_path);
     let command = floor.command("original-consumption", 1, "f/infer");
     floor.stage(&command);
@@ -511,12 +516,13 @@ fn identical_prefix_after_whole_store_restore_can_replay_dispatch_counterexample
     floor.repair(&projection);
     let retained_prefix = cut(&floor.0);
     drop(floor);
-    std::fs::copy(&floor_path, &floor_snapshot).expect("closed pre-burn authority snapshot");
+    crate::snapshot::copy_closed(&floor_path, &floor_snapshot)
+        .expect("closed pre-burn authority snapshot");
     let mut calls = 0;
     for restore_both in [false, true] {
         if restore_both {
-            std::fs::copy(&gateway_snapshot, &gateway).expect("restore gateway");
-            std::fs::copy(&floor_snapshot, &floor_path)
+            crate::snapshot::copy_closed(&gateway_snapshot, &gateway).expect("restore gateway");
+            crate::snapshot::copy_closed(&floor_snapshot, &floor_path)
                 .expect("restore authority and burned table");
         }
         floor = Floor::open(&floor_path);
@@ -569,7 +575,7 @@ fn prefix_qualification_does_not_reconstruct_rolled_back_budget_counterexample()
     let floor_path = temp.path().join("authority.db");
     let (ledger, plan) = super::fixture(&gateway);
     ledger.close().expect("closed pre-reservation source");
-    std::fs::copy(&gateway, &snapshot).expect("pre-reservation snapshot");
+    crate::snapshot::copy_closed(&gateway, &snapshot).expect("pre-reservation snapshot");
     let mut ledger = Ledger::open(&gateway).expect("live owner");
     ledger
         .enqueue_provider(&plan)
@@ -591,7 +597,8 @@ fn prefix_qualification_does_not_reconstruct_rolled_back_budget_counterexample()
     assert_eq!(ledger.held("f").expect("original unknown exposure"), 4);
     ledger.close().expect("closed restore target");
     drop(floor);
-    std::fs::copy(&snapshot, &gateway).expect("restore only local budget and claim state");
+    crate::snapshot::copy_closed(&snapshot, &gateway)
+        .expect("restore only local budget and claim state");
     let recovered = Ledger::open(&gateway).expect("local snapshot recovery");
     floor = Floor::open(&floor_path);
     assert!(
@@ -644,10 +651,9 @@ fn commit_floor_competing_workers_serialize_and_recover_exact_shared_outcome() {
     assert_eq!(results[0], results[1]);
     assert!(results[0].0);
     assert_eq!(
-        floor
-            .0
-            .query_row("SELECT COUNT(*) FROM prefix", [], |r| r.get::<_, i64>(0))
-            .expect("prefix count"),
+        weaver_ledger::persistence::one(&floor.0, "SELECT COUNT(*) FROM prefix", (), |r| r
+            .get::<i64>(0))
+        .expect("prefix count"),
         1
     );
 }
@@ -670,7 +676,7 @@ fn commit_floor_fence_between_burn_and_send_omits_effect_without_refund() {
         0,
         "f/infer",
         |db| {
-            db.execute("UPDATE owner SET epoch=epoch+1", [])
+            weaver_ledger::persistence::exec(db, "UPDATE owner SET epoch=epoch+1", ())
                 .expect("concurrent fence");
         },
         || calls += 1

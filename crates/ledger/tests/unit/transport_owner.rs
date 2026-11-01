@@ -1,7 +1,6 @@
 //! TCP ordering witnesses for the independent floor reference. This is not the
 //! production TLS transport, gRPC authentication or a Kubernetes fencing test.
 use super::{Floor, cut, epoch};
-use rusqlite::{Connection, ErrorCode};
 use std::{
     io::{Read, Write},
     net::{SocketAddr, TcpListener, TcpStream},
@@ -14,6 +13,7 @@ use std::{
     thread,
     time::Duration,
 };
+use weaver_ledger::persistence::Session;
 
 const WAIT: Duration = Duration::from_secs(3);
 const KEY: &str = "original-claim";
@@ -222,16 +222,18 @@ fn floor_mutation_is_excluded_through_actual_tcp_write_admission() {
         .recv_timeout(WAIT)
         .expect("guarded transport entered");
     // Deterministic lock evidence, rather than timing a racing thread or sleep.
-    let competing = Connection::open(&authority).expect("competing authority mutation");
+    let competing = Session::open(&authority).expect("competing authority mutation");
     competing
         .busy_timeout(Duration::ZERO)
         .expect("nonblocking conflict observation");
-    let conflict = competing
-        .execute("UPDATE owner SET epoch=epoch+1", [])
-        .expect_err("no commit inside guarded transport");
-    assert!(
-        matches!(conflict,rusqlite::Error::SqliteFailure(e,_) if e.code==ErrorCode::DatabaseBusy)
-    );
+    let conflict =
+        weaver_ledger::persistence::exec(&competing, "UPDATE owner SET epoch=epoch+1", ())
+            .expect_err("no commit inside guarded transport");
+    assert!(matches!(
+        conflict,
+        weaver_ledger::persistence::Error::Busy(_)
+            | weaver_ledger::persistence::Error::BusySnapshot(_)
+    ));
     release.send(()).expect("finish bounded write");
     owner.join().expect("owner");
     let (mut socket, _) = listener.accept().expect("already queued connection");
@@ -239,8 +241,7 @@ fn floor_mutation_is_excluded_through_actual_tcp_write_admission() {
     let mut bytes = Vec::new();
     socket.read_to_end(&mut bytes).expect("actual bytes");
     assert_eq!(bytes, b"firstlast");
-    competing
-        .execute("UPDATE owner SET epoch=epoch+1", [])
+    weaver_ledger::persistence::exec(&competing, "UPDATE owner SET epoch=epoch+1", ())
         .expect("mutation after admission completes");
     assert!(
         !floor.qualified(&projection, 0),
@@ -268,10 +269,9 @@ fn old_exported_socket_bypasses_floor_epoch_counterexample() {
     let mut bytes = [0_u8; 7];
     peer.read_exact(&mut bytes).expect("external bytes");
     assert_eq!(&bytes, b"escaped");
-    let burns: i64 = floor
-        .0
-        .query_row("SELECT COUNT(*) FROM burned", [], |r| r.get(0))
-        .expect("burns");
+    let burns: i64 =
+        weaver_ledger::persistence::one(&floor.0, "SELECT COUNT(*) FROM burned", (), |r| r.get(0))
+            .expect("burns");
     assert_eq!(
         burns, 0,
         "expected unsafe witness: labels cannot mediate a leaked socket"

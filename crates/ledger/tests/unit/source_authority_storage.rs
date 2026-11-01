@@ -24,15 +24,14 @@ fn residual_policy_schema_cannot_be_treated_as_an_empty_store_after_restart() {
     let temp = tempfile::tempdir().expect("directory");
     let path = temp.path().join("residual.db");
     let ledger = Ledger::open(&path).expect("store");
-    ledger
-        .connection
-        .execute(
-            "INSERT INTO authority_schema VALUES(1,?1)",
-            [include_str!(
-                "../../../../prod/policies/streaming/schema.json"
-            )],
-        )
-        .expect("retained schema projection");
+    weaver_ledger::persistence::exec(
+        &ledger.connection,
+        "INSERT INTO authority_schema VALUES(1,?1)",
+        weaver_ledger::persistence::params![
+            (include_str!("../../../../prod/policies/streaming/schema.json")).to_owned()
+        ],
+    )
+    .expect("retained schema projection");
     ledger.close().expect("close");
     let mut ledger = Ledger::open(&path).expect("restart");
     let mut called = false;
@@ -66,21 +65,21 @@ proptest! {
             ledger.with_authenticated_source(&identity(0), |_| Ok(())).expect("original binding");
         }
         let name = format!("{prefix}{}", suffix.into_iter().collect::<String>());
-        // SQLite quotes the independent fixture's identifier, rather than
+        // Turso quotes the independent fixture's identifier, rather than
         // repeating the production identifier-escaping implementation.
-        let quoted: String = ledger.connection.query_row("SELECT quote(?1)", [&name], |row| row.get(0)).expect("quoted fixture name");
-        ledger.connection.execute_batch(&format!("CREATE TABLE {quoted} (retained INTEGER NOT NULL)")).expect("extension table");
+        let quoted: String = weaver_ledger::persistence::one(&ledger.connection, "SELECT quote(?1)", weaver_ledger::persistence::params![name.to_owned()], |row| row.get(0)).expect("quoted fixture name");
+        weaver_ledger::persistence::script(&ledger.connection, &format!("CREATE TABLE {quoted} (retained INTEGER NOT NULL)")).expect("extension table");
         if occupied {
-            ledger.connection.execute(&format!("INSERT INTO main.{quoted} VALUES(1)"), []).expect("retained row");
+            weaver_ledger::persistence::exec(&ledger.connection, &format!("INSERT INTO main.{quoted} VALUES(1)"), ()).expect("retained row");
         }
         if restart {
             ledger.close().expect("close");
             ledger = Ledger::open(&path).expect("reopen");
         }
         if shadow {
-            ledger.connection.execute_batch(&format!("CREATE TEMP TABLE {quoted} (retained INTEGER NOT NULL)")).expect("temporary alias");
+            weaver_ledger::persistence::script(&ledger.connection, &format!("CREATE TEMP TABLE {quoted} (retained INTEGER NOT NULL)")).expect("temporary alias");
             if !occupied {
-                ledger.connection.execute(&format!("INSERT INTO temp.{quoted} VALUES(1)"), []).expect("nondurable row");
+                weaver_ledger::persistence::exec(&ledger.connection, &format!("INSERT INTO temp.{quoted} VALUES(1)"), ()).expect("nondurable row");
             }
         }
         let expected = enrolled || !occupied;
@@ -88,7 +87,7 @@ proptest! {
         let result = ledger.with_authenticated_source(&identity(0), |_| { calls += 1; Ok(()) });
         prop_assert_eq!(result.is_ok(), expected);
         prop_assert_eq!(calls, if expected { 1 } else { 0 });
-        let rows: i64 = ledger.connection.query_row(&format!("SELECT COUNT(*) FROM main.{quoted}"), [], |row| row.get(0)).expect("original rows");
+        let rows: i64 = weaver_ledger::persistence::one(&ledger.connection, &format!("SELECT COUNT(*) FROM main.{quoted}"), (), |row| row.get(0)).expect("original rows");
         prop_assert_eq!(rows, if occupied { 1 } else { 0 });
         ledger.close().expect("close after admission");
         let mut ledger = Ledger::open(&path).expect("durable outcome");
@@ -102,11 +101,10 @@ fn committed_writer_before_enrollment_cannot_be_hidden_by_an_old_empty_read() {
     let temp = tempfile::tempdir().expect("directory");
     let path = temp.path().join("writer.db");
     let mut ledger = Ledger::open(&path).expect("store");
-    let mut writer = rusqlite::Connection::open(&path).expect("other owner");
-    let tx = writer
-        .transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)
-        .expect("writer owns serialization");
-    tx.execute_batch(
+    let mut writer = weaver_ledger::persistence::Session::open(&path).expect("other owner");
+    let tx = weaver_ledger::persistence::begin(&mut writer).expect("writer owns serialization");
+    weaver_ledger::persistence::script(
+        &tx,
         "CREATE TABLE main.future_projection (retained INTEGER NOT NULL);\n\
          INSERT INTO main.future_projection VALUES(1);",
     )
@@ -169,7 +167,7 @@ fn rotation_record_failure_rolls_back_key_retirement_and_epoch_together() {
     ledger
         .with_authenticated_source(&identity(0), |_| Ok(()))
         .expect("enroll");
-    ledger.connection.execute_batch("CREATE TRIGGER handoff_failure BEFORE INSERT ON source_rotations BEGIN SELECT RAISE(ABORT,'injected handoff receipt failure'); END;").expect("fault");
+    weaver_ledger::persistence::script(&ledger.connection, "CREATE TRIGGER handoff_failure BEFORE INSERT ON source_rotations BEGIN SELECT RAISE(ABORT,'injected handoff receipt failure'); END;").expect("fault");
     assert!(
         ledger
             .rotate_source_authority(&identity(0), &command())
@@ -188,9 +186,7 @@ fn rotation_record_failure_rolls_back_key_retirement_and_epoch_together() {
     ledger
         .with_authenticated_source(&identity(0), |_| Ok(()))
         .expect("original source not prematurely retired");
-    ledger
-        .connection
-        .execute_batch("DROP TRIGGER handoff_failure")
+    weaver_ledger::persistence::script(&ledger.connection, "DROP TRIGGER handoff_failure")
         .expect("repair");
     assert_eq!(
         ledger
@@ -212,18 +208,18 @@ fn missing_key_history_or_head_cannot_rebootstrap_from_configuration() {
     ledger
         .rotate_source_authority(&identity(0), &command())
         .expect("handoff");
-    ledger
-        .connection
-        .execute("DELETE FROM source_keys WHERE epoch=0", [])
-        .expect("truncate retained history");
+    weaver_ledger::persistence::exec(
+        &ledger.connection,
+        "DELETE FROM source_keys WHERE epoch=0",
+        (),
+    )
+    .expect("truncate retained history");
     assert!(
         ledger
             .with_authenticated_source(&identity(1), |_| Ok(()))
             .is_err()
     );
-    ledger
-        .connection
-        .execute("DELETE FROM source_authority", [])
+    weaver_ledger::persistence::exec(&ledger.connection, "DELETE FROM source_authority", ())
         .expect("lose current projection");
     assert!(
         ledger
@@ -247,13 +243,13 @@ fn consistent_whole_store_rollback_remains_a_local_authority_counterexample() {
         .with_authenticated_source(&identity(0), |_| Ok(()))
         .expect("initial");
     ledger.close().expect("natural close");
-    std::fs::copy(&path, &snapshot).expect("consistent old image");
+    crate::snapshot::copy_closed(&path, &snapshot).expect("consistent old image");
     let mut ledger = Ledger::open(&path).expect("current");
     ledger
         .rotate_source_authority(&identity(0), &command())
         .expect("handoff");
     ledger.close().expect("close all handles");
-    std::fs::copy(&snapshot, &path).expect("restore all source records together");
+    crate::snapshot::copy_closed(&snapshot, &path).expect("restore all source records together");
     let mut ledger = Ledger::open(&path).expect("restored");
     ledger
         .with_authenticated_source(&identity(0), |_| Ok(()))

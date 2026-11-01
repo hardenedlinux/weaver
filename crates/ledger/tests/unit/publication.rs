@@ -21,22 +21,21 @@ fn decision_failure_retains_pending_policy_until_the_same_atomic_outcome_commits
     let mut ledger = Ledger::open(&path).expect("ledger");
     let original = change("pending", None);
     let key = ledger.stage_authority(&original).expect("durable stage");
-    ledger.connection.execute_batch("CREATE TRIGGER deny_decision BEFORE INSERT ON authority_publications BEGIN SELECT RAISE(ABORT,'injected decision failure'); END;").expect("fault");
+    weaver_ledger::persistence::script(&ledger.connection, "CREATE TRIGGER deny_decision BEFORE INSERT ON authority_publications BEGIN SELECT RAISE(ABORT,'injected decision failure'); END;").expect("fault");
     assert!(ledger.publish_authority(&original).is_err());
     assert!(ledger.publication_receipt(&key).expect("lookup").is_none());
     assert!(crate::publication_barrier::require_resolved(&ledger.connection).is_err());
-    let head: bool = ledger
-        .connection
-        .query_row("SELECT EXISTS(SELECT 1 FROM authority)", [], |row| {
-            row.get(0)
-        })
-        .expect("head");
+    let head: bool = weaver_ledger::persistence::one(
+        &ledger.connection,
+        "SELECT EXISTS(SELECT 1 FROM authority)",
+        (),
+        |row| row.get(0),
+    )
+    .expect("head");
     assert!(!head, "failed decision partially activated its Policy");
     drop(ledger);
     let mut ledger = Ledger::open(&path).expect("restart");
-    ledger
-        .connection
-        .execute_batch("DROP TRIGGER deny_decision")
+    weaver_ledger::persistence::script(&ledger.connection, "DROP TRIGGER deny_decision")
         .expect("recover storage");
     assert_eq!(ledger.stage_authority(&original).expect("same stage"), key);
     assert_eq!(
@@ -122,31 +121,33 @@ fn historical_decisions_survive_restart_and_cannot_rebase_or_replace_original_id
             .expect("absence")
             .is_none()
     );
-    let current: u64 = ledger
-        .connection
-        .query_row("SELECT revision FROM authority", [], |r| integer(r, 0))
-        .expect("head");
+    let current: u64 = weaver_ledger::persistence::one(
+        &ledger.connection,
+        "SELECT revision FROM authority",
+        (),
+        |r| integer(r, 0),
+    )
+    .expect("head");
     assert_eq!(current, 1);
 }
 #[test]
 fn outcome_insert_failure_rolls_back_policy_schema_and_result_together() {
     let temp = tempfile::tempdir().expect("directory");
     let mut ledger = Ledger::open(temp.path().join("store.db")).expect("ledger");
-    ledger.connection.execute_batch("CREATE TRIGGER fail_publication BEFORE INSERT ON authority_publications BEGIN SELECT RAISE(ABORT,'injected outcome failure'); END;").expect("fault");
+    weaver_ledger::persistence::script(&ledger.connection, "CREATE TRIGGER fail_publication BEFORE INSERT ON authority_publications BEGIN SELECT RAISE(ABORT,'injected outcome failure'); END;").expect("fault");
     let proposal = change("atomic", None);
     assert!(ledger.publish_authority(&proposal).is_err());
     for table in ["authority", "authority_schema", "authority_publications"] {
-        let count: u64 = ledger
-            .connection
-            .query_row(&format!("SELECT count(*) FROM {table}"), [], |r| {
-                integer(r, 0)
-            })
-            .expect("count");
+        let count: u64 = weaver_ledger::persistence::one(
+            &ledger.connection,
+            &format!("SELECT count(*) FROM {table}"),
+            (),
+            |r| integer(r, 0),
+        )
+        .expect("count");
         assert_eq!(count, 0);
     }
-    ledger
-        .connection
-        .execute_batch("DROP TRIGGER fail_publication")
+    weaver_ledger::persistence::script(&ledger.connection, "DROP TRIGGER fail_publication")
         .expect("repair");
     assert_eq!(
         ledger
@@ -213,12 +214,13 @@ fn concurrent_same_identity_commits_only_one_revision() {
     assert_eq!(first.outcome, Committed);
     assert_eq!(first.revision, Some(0));
     let ledger = Ledger::open(&path).expect("reopen");
-    let count: u64 = ledger
-        .connection
-        .query_row("SELECT count(*) FROM authority_publications", [], |r| {
-            integer(r, 0)
-        })
-        .expect("count");
+    let count: u64 = weaver_ledger::persistence::one(
+        &ledger.connection,
+        "SELECT count(*) FROM authority_publications",
+        (),
+        |r| integer(r, 0),
+    )
+    .expect("count");
     assert_eq!(count, 1);
 }
 #[test]
@@ -226,15 +228,10 @@ fn connection_reuse_rejects_an_unresolved_explicit_transaction() {
     let temp = tempfile::tempdir().expect("directory");
     let ledger = Ledger::open(temp.path().join("store.db")).expect("ledger");
     ledger.require_quiescent().expect("initial quiescence");
-    ledger
-        .connection
-        .execute_batch("BEGIN IMMEDIATE")
+    weaver_ledger::persistence::script(&ledger.connection, "BEGIN IMMEDIATE")
         .expect("injected unresolved transaction");
     assert!(ledger.require_quiescent().is_err());
-    ledger
-        .connection
-        .execute_batch("ROLLBACK")
-        .expect("rollback");
+    weaver_ledger::persistence::script(&ledger.connection, "ROLLBACK").expect("rollback");
     ledger.require_quiescent().expect("resolved");
 }
 proptest::proptest! {

@@ -128,7 +128,7 @@ impl StreamMessage {
     }
 }
 
-/// Small persistent commitment; SQLite immutability binds its separately stored payload BLOB.
+/// Small persistent commitment; Turso immutability binds its separately stored payload BLOB.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MessageBinding {

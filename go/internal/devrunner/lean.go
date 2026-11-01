@@ -18,6 +18,25 @@ type LeanEvidence struct {
 	SourceSHA256 string            `json:"sourceSha256"`
 	Diagnostics  []LeanDiagnostic  `json:"diagnostics"`
 	Declarations []LeanDeclaration `json:"declarations"`
+	Environment  *LeanEnvironment  `json:"environment,omitempty"`
+}
+
+// LeanEnvironment is reflected by Lean from its imported environment. Go must
+// not reconstruct these declarations from source text or SysML prose.
+type LeanEnvironment struct {
+	Schema       string         `json:"schema"`
+	Declarations []LeanContract `json:"declarations"`
+}
+type LeanContract struct {
+	Name   string      `json:"name"`
+	Type   string      `json:"type"`
+	Fields []LeanField `json:"fields"`
+	Value  string      `json:"value,omitempty"`
+}
+type LeanField struct {
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	Condition bool   `json:"condition"`
 }
 type LeanDiagnostic struct {
 	FileName string `json:"fileName"`
@@ -39,6 +58,12 @@ func leanSource(stage Stage) string {
 		stage.Args[1] == proofToolchain && stage.Args[2] == "lean" && stage.Args[3] == "--json" &&
 		filepath.IsLocal(stage.Args[4]) && strings.HasSuffix(stage.Args[4], ".lean") {
 		return stage.Args[4]
+	}
+	if stage.Binary == "elan" && len(stage.Args) == 9 && stage.Args[0] == "run" &&
+		stage.Args[1] == proofToolchain && stage.Args[2] == "lake" && stage.Args[3] == "-d" &&
+		stage.Args[4] == "dev/proofs/cedar" && stage.Args[5] == "env" && stage.Args[6] == "lean" &&
+		stage.Args[7] == "--json" && stage.Args[8] == "dev/proofs/cedar/ZeroTrustArchitecture.lean" {
+		return stage.Args[8]
 	}
 	return ""
 }
@@ -73,6 +98,19 @@ func readLeanEvidence(root, source, logPath string) (*LeanEvidence, error) {
 			return evidence, errors.New("Lean diagnostic does not bind the selected source")
 		}
 		evidence.Diagnostics = append(evidence.Diagnostics, diagnostic)
+		if strings.HasPrefix(diagnostic.Data, "{\"schema\":") || strings.HasPrefix(diagnostic.Data, "{\"declarations\":") {
+			var environment LeanEnvironment
+			if err := json.Unmarshal([]byte(diagnostic.Data), &environment); err != nil {
+				return evidence, fmt.Errorf("Lean environment JSON: %w", err)
+			}
+			if evidence.Environment != nil || diagnostic.Severity != "information" {
+				return evidence, errors.New("duplicate or non-information Lean environment")
+			}
+			if err := validateLeanEnvironment(&environment); err != nil {
+				return evidence, err
+			}
+			evidence.Environment = &environment
+		}
 		switch diagnostic.Severity {
 		case "information", "warning":
 		case "error":

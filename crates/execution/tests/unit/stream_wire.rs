@@ -91,6 +91,55 @@ fn reader(listener: TcpListener) -> thread::JoinHandle<Vec<u8>> {
 }
 
 #[test]
+fn restored_message_projection_cannot_replay_prefix_through_existing_tcp_socket() {
+    for restore_sequence in [false, true] {
+        let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
+        let destination = format!("tcp://{}", listener.local_addr().expect("address"));
+        let worker = reader(listener);
+        let (temp, mut ledger, c) = fixture(destination);
+        queue(&mut ledger, &c, "m0", "abcdefgh".into());
+        let mut session =
+            StreamSession::open_tcp(&mut ledger, open(&c, 0, 1)).expect("original connection");
+        session
+            .send_next(&mut ledger, "m0", 4)
+            .expect("original prefix");
+        let path = temp.path().join("stream.db");
+        let connection =
+            weaver_ledger::persistence::Session::open(&path).expect("recovery fault writer");
+        weaver_ledger::persistence::exec(
+            &connection,
+            "UPDATE stream_messages SET state='queued',cursor=0",
+            (),
+        )
+        .expect("restore old progress");
+        if restore_sequence {
+            weaver_ledger::persistence::exec(
+                &connection,
+                "UPDATE stream_messages SET next_sequence=0",
+                (),
+            )
+            .expect("restore old sequence");
+        }
+        assert!(session.send_next(&mut ledger, "m0", 4).is_err());
+        assert_eq!(worker.join().expect("reader completion"), b"abcd");
+        assert_eq!(ledger.held("f").expect("original hold"), 4);
+        drop(session);
+        drop(ledger);
+        let mut ledger = Ledger::open(&path).expect("restart");
+        assert!(ledger.claim_stream(open(&c, 0, 1)).is_err());
+        let ranges: i64 = weaver_ledger::persistence::one(
+            &connection,
+            "SELECT COUNT(*) FROM stream_ranges",
+            (),
+            |row| row.get(0),
+        )
+        .expect("original range");
+        assert_eq!(ranges, 1);
+        assert_eq!(ledger.held("f").expect("hold survives restart"), 4);
+    }
+}
+
+#[test]
 fn actual_tcp_ranges_preserve_one_message_and_one_hold() {
     let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
     let destination = format!("tcp://{}", listener.local_addr().expect("address"));

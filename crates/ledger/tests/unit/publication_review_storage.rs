@@ -38,20 +38,17 @@ fn staged_requirement_and_registration_failures_are_atomic() {
     ledger
         .publish_typed(None, POLICY, SCHEMA, 1)
         .expect("parent");
-    ledger.connection.execute_batch("CREATE TRIGGER stage_failure BEFORE INSERT ON authority_pending BEGIN SELECT RAISE(ABORT,'stage failure'); END;").expect("fault");
+    weaver_ledger::persistence::script(&ledger.connection, "CREATE TRIGGER stage_failure BEFORE INSERT ON authority_pending BEGIN SELECT RAISE(ABORT,'stage failure'); END;").expect("fault");
     assert!(ledger.stage_reviewed_authority(&proposal()).is_err());
-    let count: i64 = ledger
-        .connection
-        .query_row(
-            "SELECT COUNT(*) FROM authority_review_requirements",
-            [],
-            |r| r.get(0),
-        )
-        .expect("count");
+    let count: i64 = weaver_ledger::persistence::one(
+        &ledger.connection,
+        "SELECT COUNT(*) FROM authority_review_requirements",
+        (),
+        |r| r.get(0),
+    )
+    .expect("count");
     assert_eq!(count, 0, "failed stage left a detached requirement");
-    ledger
-        .connection
-        .execute_batch("DROP TRIGGER stage_failure")
+    weaver_ledger::persistence::script(&ledger.connection, "DROP TRIGGER stage_failure")
         .expect("repair");
     let key = ledger.stage_reviewed_authority(&proposal()).expect("stage");
     let review = PublicationReview {
@@ -59,7 +56,7 @@ fn staged_requirement_and_registration_failures_are_atomic() {
         publication: key.clone(),
         artifact: "approved fixture".into(),
     };
-    ledger.connection.execute_batch("CREATE TRIGGER review_failure BEFORE INSERT ON authority_reviews BEGIN SELECT RAISE(ABORT,'review failure'); END;").expect("fault");
+    weaver_ledger::persistence::script(&ledger.connection, "CREATE TRIGGER review_failure BEFORE INSERT ON authority_reviews BEGIN SELECT RAISE(ABORT,'review failure'); END;").expect("fault");
     assert!(ledger.register_approved_review(&review).is_err());
     drop(ledger);
     let mut ledger = Ledger::open(&path).expect("restart");
@@ -67,9 +64,7 @@ fn staged_requirement_and_registration_failures_are_atomic() {
     assert!(ledger.publish_authority(&proposal()).is_err());
     crate::publication_barrier::require_resolved(&ledger.connection)
         .expect_err("retained original pending");
-    ledger
-        .connection
-        .execute_batch("DROP TRIGGER review_failure")
+    weaver_ledger::persistence::script(&ledger.connection, "DROP TRIGGER review_failure")
         .expect("repair");
     ledger
         .register_approved_review(&review)
@@ -89,13 +84,14 @@ fn same_revision_parent_replacement_and_artifact_corruption_block_final_commit()
     let path = temp.path().join("corruption.db");
     let (mut ledger, review) = prepare(&path);
     ledger.register_approved_review(&review).expect("register");
-    ledger
-        .connection
-        .execute(
-            "UPDATE authority SET policy=?1",
-            [format!("{POLICY}\n//changed parent bytes")],
-        )
-        .expect("corrupt same ordinal");
+    weaver_ledger::persistence::exec(
+        &ledger.connection,
+        "UPDATE authority SET policy=?1",
+        weaver_ledger::persistence::params![
+            (format!("{POLICY}\n//changed parent bytes")).to_owned()
+        ],
+    )
+    .expect("corrupt same ordinal");
     assert!(ledger.publish_authority(&proposal()).is_err());
     assert!(
         ledger
@@ -103,17 +99,18 @@ fn same_revision_parent_replacement_and_artifact_corruption_block_final_commit()
             .expect("read")
             .is_none()
     );
-    ledger
-        .connection
-        .execute("UPDATE authority SET policy=?1", [POLICY])
-        .expect("restore exact image");
-    ledger
-        .connection
-        .execute(
-            "UPDATE authority_reviews SET artifact_digest=?1",
-            ["0".repeat(64)],
-        )
-        .expect("corrupt review projection");
+    weaver_ledger::persistence::exec(
+        &ledger.connection,
+        "UPDATE authority SET policy=?1",
+        weaver_ledger::persistence::params![(POLICY).to_owned()],
+    )
+    .expect("restore exact image");
+    weaver_ledger::persistence::exec(
+        &ledger.connection,
+        "UPDATE authority_reviews SET artifact_digest=?1",
+        weaver_ledger::persistence::params![("0".repeat(64)).to_owned()],
+    )
+    .expect("corrupt review projection");
     assert!(ledger.publication_review(&review.publication).is_err());
     assert!(ledger.publish_authority(&proposal()).is_err());
     assert!(
@@ -209,7 +206,7 @@ fn stage_review_requirement_and_legacy_final_cas_have_one_serial_order() {
 }
 
 // Expected limitation of this trusted-host local profile, not an independent
-// registry recovery guarantee. Restore only after closing all SQLite owners.
+// registry recovery guarantee. Restore only after closing all Turso owners.
 #[test]
 fn consistent_snapshot_rollback_can_replace_local_registered_artifact_counterexample() {
     let temp = tempfile::tempdir().expect("directory");
@@ -217,7 +214,7 @@ fn consistent_snapshot_rollback_can_replace_local_registered_artifact_counterexa
     let snapshot = temp.path().join("before-registration.db");
     let (mut ledger, original) = prepare(&path);
     drop(ledger);
-    std::fs::copy(&path, &snapshot).expect("closed pre-registration snapshot");
+    crate::snapshot::copy_closed(&path, &snapshot).expect("closed pre-registration snapshot");
     ledger = Ledger::open(&path).expect("original owner recovery");
     ledger
         .register_approved_review(&original)
@@ -237,7 +234,7 @@ fn consistent_snapshot_rollback_can_replace_local_registered_artifact_counterexa
         "ordinary restart must retain the original artifact"
     );
     drop(ledger);
-    std::fs::copy(&snapshot, &path).expect("restore consistent old database");
+    crate::snapshot::copy_closed(&snapshot, &path).expect("restore consistent old database");
     ledger = Ledger::open(&path).expect("snapshot recovery");
     assert!(
         ledger

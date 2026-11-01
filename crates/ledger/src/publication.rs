@@ -1,9 +1,9 @@
 //! One transaction binds original publication identity, authority/schema and immutable outcome.
+use crate::persistence::WriteScope;
 use crate::{
     Ledger,
     store::{db, integer},
 };
-use rusqlite::{Connection, OptionalExtension, Transaction, TransactionBehavior, params};
 use weaver_contracts::{
     Error, Publication, PublicationKey, PublicationOutcome, PublicationReceipt, Result,
 };
@@ -23,20 +23,19 @@ pub(crate) struct Decision {
     pub head: Option<Head>,
 }
 
-pub(crate) fn apply(tx: &Transaction<'_>, change: AuthorityChange<'_>) -> Result<Decision> {
-    let current: Option<Head> = tx
-        .query_row(
-            "SELECT revision,fence FROM authority WHERE singleton=1",
-            [],
-            |row| {
-                Ok(Head {
-                    revision: integer(row, 0)?,
-                    fence: integer(row, 1)?,
-                })
-            },
-        )
-        .optional()
-        .map_err(db)?;
+pub(crate) fn apply(tx: &WriteScope<'_>, change: AuthorityChange<'_>) -> Result<Decision> {
+    let current: Option<Head> = crate::persistence::maybe(
+        tx,
+        "SELECT revision,fence FROM authority WHERE singleton=1",
+        (),
+        |row| {
+            Ok(Head {
+                revision: integer(row, 0)?,
+                fence: integer(row, 1)?,
+            })
+        },
+    )
+    .map_err(db)?;
     let revision = match (&current, change.expected) {
         (None, None) => 0,
         (Some(head), Some(expected))
@@ -53,12 +52,11 @@ pub(crate) fn apply(tx: &Transaction<'_>, change: AuthorityChange<'_>) -> Result
             });
         }
     };
-    tx.execute("INSERT INTO authority VALUES(1,?1,?2,?3) ON CONFLICT(singleton) DO UPDATE SET revision=excluded.revision,fence=excluded.fence,policy=excluded.policy",
-        params![revision as i64,change.fence as i64,change.policy]).map_err(db)?;
+    crate::persistence::exec(tx, "INSERT INTO authority VALUES(1,?1,?2,?3) ON CONFLICT(singleton) DO UPDATE SET revision=excluded.revision,fence=excluded.fence,policy=excluded.policy", crate::persistence::params![(revision as i64).to_owned(),(change.fence as i64).to_owned(),(change.policy).to_owned()]).map_err(db)?;
     if let Some(schema) = change.schema {
-        tx.execute("INSERT INTO authority_schema VALUES(1,?1) ON CONFLICT(singleton) DO UPDATE SET schema=excluded.schema",[schema]).map_err(db)?;
+        crate::persistence::exec(tx, "INSERT INTO authority_schema VALUES(1,?1) ON CONFLICT(singleton) DO UPDATE SET schema=excluded.schema", crate::persistence::params![(schema).to_owned()]).map_err(db)?;
     } else {
-        tx.execute("DELETE FROM authority_schema", []).map_err(db)?;
+        crate::persistence::exec(tx, "DELETE FROM authority_schema", ()).map_err(db)?;
     }
     Ok(Decision {
         outcome: PublicationOutcome::Committed,
@@ -70,18 +68,17 @@ pub(crate) fn apply(tx: &Transaction<'_>, change: AuthorityChange<'_>) -> Result
 }
 
 pub(crate) fn lookup(
-    connection: &Connection,
+    connection: &crate::persistence::driver::Connection,
     operation_id: &str,
     digest: &str,
 ) -> Result<Option<PublicationReceipt>> {
-    let record: Option<(String, String)> = connection
-        .query_row(
-            "SELECT digest,receipt FROM authority_publications WHERE operation_id=?1",
-            [operation_id],
-            |r| Ok((r.get(0)?, r.get(1)?)),
-        )
-        .optional()
-        .map_err(db)?;
+    let record: Option<(String, String)> = crate::persistence::maybe(
+        connection,
+        "SELECT digest,receipt FROM authority_publications WHERE operation_id=?1",
+        crate::persistence::params![(operation_id).to_owned()],
+        |r| Ok((r.get(0)?, r.get(1)?)),
+    )
+    .map_err(db)?;
     record
         .map(|(bound, encoded)| {
             if bound != digest {
@@ -98,7 +95,7 @@ pub(crate) fn lookup(
 }
 
 fn record_decision(
-    tx: &Transaction<'_>,
+    tx: &WriteScope<'_>,
     change: &Publication,
     digest: &str,
     decision: Decision,
@@ -111,26 +108,28 @@ fn record_decision(
         fence: decision.head.as_ref().map(|h| h.fence),
     };
     receipt.validate()?;
-    tx.execute(
+    crate::persistence::exec(
+        tx,
         "INSERT INTO authority_publications VALUES(?1,?2,?3,?4)",
-        params![
-            change.operation_id,
-            digest,
-            serde_json::to_string(change)?,
-            serde_json::to_string(&receipt)?
+        crate::persistence::params![
+            (change.operation_id).to_owned(),
+            (digest).to_owned(),
+            (serde_json::to_string(change)?).to_owned(),
+            (serde_json::to_string(&receipt)?).to_owned()
         ],
     )
     .map_err(db)?;
-    tx.execute(
+    crate::persistence::exec(
+        tx,
         "DELETE FROM authority_pending WHERE operation_id=?1 AND digest=?2",
-        params![change.operation_id, digest],
+        crate::persistence::params![(change.operation_id).to_owned(), (digest).to_owned()],
     )
     .map_err(db)?;
     Ok(receipt)
 }
 
 fn decide_publication(
-    tx: &Transaction<'_>,
+    tx: &WriteScope<'_>,
     change: &Publication,
     digest: &str,
     caller: Option<&weaver_contracts::SourceIdentity>,
@@ -172,10 +171,7 @@ impl Ledger {
             return Ok(receipt);
         }
         weaver_policy::validate_typed(&change.policy, &change.schema)?;
-        let tx = self
-            .connection
-            .transaction_with_behavior(TransactionBehavior::Immediate)
-            .map_err(db)?;
+        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
         let receipt = decide_publication(&tx, change, &digest, self.source.as_ref())?;
         tx.commit().map_err(db)?;
         Ok(receipt)
@@ -206,10 +202,7 @@ impl Ledger {
         if change.fence > i64::MAX as u64 {
             return Err(Error::Invalid("fence"));
         }
-        let tx = self
-            .connection
-            .transaction_with_behavior(TransactionBehavior::Immediate)
-            .map_err(db)?;
+        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
         crate::source_authority::require(&tx, self.source.as_ref())?;
         let decision = apply(&tx, change)?;
         if decision.outcome != PublicationOutcome::Committed {

@@ -6,28 +6,31 @@ use crate::{
     Ledger,
     store::{db, integer},
 };
-use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 use weaver_contracts::{Error, Result, SourceAuthority, SourceIdentity};
 
-pub(crate) fn current(connection: &Connection) -> Result<Option<SourceAuthority>> {
-    let value: Option<(u64, String)> = connection
-        .query_row(
-            "SELECT epoch,record FROM source_authority WHERE singleton=1",
-            [],
-            |row| Ok((integer(row, 0)?, row.get(1)?)),
-        )
-        .optional()
-        .map_err(db)?;
+pub(crate) fn current(
+    connection: &crate::persistence::driver::Connection,
+) -> Result<Option<SourceAuthority>> {
+    let value: Option<(u64, String)> = crate::persistence::maybe(
+        connection,
+        "SELECT epoch,record FROM source_authority WHERE singleton=1",
+        (),
+        |row| Ok((integer(row, 0)?, row.get(1)?)),
+    )
+    .map_err(db)?;
     value.map(|(epoch,encoded)| {
         let identity:SourceIdentity=weaver_contracts::decode(encoded.as_bytes())?;
         identity.validate()?;
-        let matched:bool=connection.query_row("SELECT EXISTS(SELECT 1 FROM source_keys WHERE epoch=?1 AND public_key_sha256=?2 AND certificate_sha256=?3) AND ?1=(SELECT MAX(epoch) FROM source_keys) AND (SELECT COUNT(*) FROM source_keys)=?1+1",params![epoch as i64,identity.public_key_sha256,identity.certificate_sha256],|r|r.get(0)).map_err(db)?;
+        let matched:bool=crate::persistence::one(connection, "SELECT EXISTS(SELECT 1 FROM source_keys WHERE epoch=?1 AND public_key_sha256=?2 AND certificate_sha256=?3) AND ?1=(SELECT MAX(epoch) FROM source_keys) AND (SELECT COUNT(*) FROM source_keys)=?1+1", crate::persistence::params![(epoch as i64).to_owned(),(identity.public_key_sha256).to_owned(),(identity.certificate_sha256).to_owned()], |r|r.get(0)).map_err(db)?;
         if !matched {return Err(Error::Conflict("source authority prefix mismatch"));}
         Ok(SourceAuthority {epoch,identity})
     }).transpose()
 }
 
-pub(crate) fn require(connection: &Connection, caller: Option<&SourceIdentity>) -> Result<()> {
+pub(crate) fn require(
+    connection: &crate::persistence::driver::Connection,
+    caller: Option<&SourceIdentity>,
+) -> Result<()> {
     if let Some(caller) = caller {
         let authority = current(connection)?.ok_or(Error::Denied)?;
         if authority.identity != *caller {
@@ -37,41 +40,38 @@ pub(crate) fn require(connection: &Connection, caller: Option<&SourceIdentity>) 
     Ok(())
 }
 
-pub(crate) fn write(connection: &Connection, authority: &SourceAuthority) -> Result<()> {
-    connection
-        .execute(
-            "INSERT INTO source_keys VALUES(?1,?2,?3)",
-            params![
-                authority.identity.public_key_sha256,
-                authority.epoch as i64,
-                authority.identity.certificate_sha256
-            ],
-        )
-        .map_err(db)?;
-    connection.execute("INSERT INTO source_authority VALUES(1,?1,?2) ON CONFLICT(singleton) DO UPDATE SET epoch=excluded.epoch,record=excluded.record",params![authority.epoch as i64,serde_json::to_string(&authority.identity)?]).map_err(db)?;
+pub(crate) fn write(
+    connection: &crate::persistence::driver::Connection,
+    authority: &SourceAuthority,
+) -> Result<()> {
+    crate::persistence::exec(
+        connection,
+        "INSERT INTO source_keys VALUES(?1,?2,?3)",
+        crate::persistence::params![
+            (authority.identity.public_key_sha256).to_owned(),
+            (authority.epoch as i64).to_owned(),
+            (authority.identity.certificate_sha256).to_owned()
+        ],
+    )
+    .map_err(db)?;
+    crate::persistence::exec(connection, "INSERT INTO source_authority VALUES(1,?1,?2) ON CONFLICT(singleton) DO UPDATE SET epoch=excluded.epoch,record=excluded.record", crate::persistence::params![(authority.epoch as i64).to_owned(),(serde_json::to_string(&authority.identity)?).to_owned()]).map_err(db)?;
     Ok(())
 }
 
 // Enrollment is the only caller. Discover all durable application tables in
 // this deciding transaction, including residual projections and future schema
 // extensions. Temporary aliases cannot hide rows in the main ledger namespace.
-fn has_application_rows(connection: &Connection) -> Result<bool> {
-    let mut statement = connection
-        .prepare("SELECT name FROM main.sqlite_schema WHERE type='table' AND name NOT GLOB 'sqlite_*' ORDER BY name")
-        .map_err(db)?;
-    let tables = statement
-        .query_map([], |row| row.get::<_, String>(0))
-        .map_err(db)?;
+fn has_application_rows(connection: &crate::persistence::driver::Connection) -> Result<bool> {
+    let tables = crate::persistence::read_all(connection,"SELECT name FROM main.sqlite_schema WHERE type='table' AND name NOT GLOB 'sqlite_*' ORDER BY name",(),|r|r.get::<String>(0)).map_err(db)?;
     for table in tables {
-        let table = table.map_err(db)?;
         let identifier = table.replace('"', "\"\"");
-        let occupied: bool = connection
-            .query_row(
-                &format!("SELECT EXISTS(SELECT 1 FROM main.\"{identifier}\")"),
-                [],
-                |row| row.get(0),
-            )
-            .map_err(db)?;
+        let occupied: bool = crate::persistence::one(
+            connection,
+            &format!("SELECT EXISTS(SELECT 1 FROM main.\"{identifier}\")"),
+            (),
+            |row| row.get(0),
+        )
+        .map_err(db)?;
         if occupied {
             return Ok(true);
         }
@@ -84,10 +84,7 @@ fn ensure(ledger: &mut Ledger, caller: &SourceIdentity) -> Result<()> {
     if current(&ledger.connection)?.is_some() {
         return require(&ledger.connection, Some(caller));
     }
-    let tx = ledger
-        .connection
-        .transaction_with_behavior(TransactionBehavior::Immediate)
-        .map_err(db)?;
+    let tx = crate::persistence::begin(&mut ledger.connection).map_err(db)?;
     if current(&tx)?.is_none() {
         if has_application_rows(&tx)? {
             return Err(Error::Conflict(

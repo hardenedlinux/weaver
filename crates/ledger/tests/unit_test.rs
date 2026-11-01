@@ -20,6 +20,8 @@ mod publication_review;
 mod recovery;
 #[path = "unit/serialization.rs"]
 mod serialization;
+#[path = "unit/storage_snapshot.rs"]
+mod snapshot;
 #[path = "unit/source_authority.rs"]
 mod source_authority;
 #[path = "unit/stream_admission_pbt.rs"]

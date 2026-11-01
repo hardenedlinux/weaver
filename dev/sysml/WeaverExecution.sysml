@@ -7,6 +7,17 @@ package WeaverExecution {
        the derived-evidence adapter describe the target architecture only; their
        production delivery is gated by 59.27. Existing effect owners are reused. */
 
+    requirement def TursoAdmissionAtomicity {
+        doc /* All ledger and test IO uses MRR Data public Turso ownership. Native
+           immediate transactions retain one original claim, budget and fencing
+           image. Prepare/commit performs no provider send; unknown results keep
+           exposure and never create a replacement grant. Eager rollback and
+           poisoned-session refusal prevent old-worker reuse. A complete durable
+           image includes WAL; SHM is derived. Original finite manifest equality,
+           duplicate-key rejection, current use and final transport custody remain
+           mandatory. Atomicity and FULL durability are native refinement premises,
+           exercised by actual concurrent/failure/restart/partial-write tests. */
+    }
     requirement def OriginalTaskBinding {
         doc /* Preserve family, declared node, profile, endpoint and exact wire body commitment. */
     }
@@ -86,6 +97,10 @@ package WeaverExecution {
         out item request : CanonicalWireRequest;
     }
     part def SchemeSemanticPublisher {
+        attribute leanDeclaration : String = "CedarPooSpec.Gateway.ProfileObject.Publication";
+        attribute leanFields : String = "context,session,selected,projected";
+        attribute securityName : String = "Scheme / Original contract";
+        attribute securityResponsibility : String = "Task scope and required parents\nPublished selected profile\nConfiguration grants no send right";
         attribute displayName : String = "Scheme / Semantics";
         attribute responsibility : String = "Agentic AI Lab modules\nRoutines + original profiles\nPolicy and source projections";
         attribute glyph : String = "library";
@@ -236,6 +251,10 @@ package WeaverExecution {
            authorize transport. AWS AgentCore stays platform-specific. */
     }
     part def RustPolicy {
+        attribute leanDeclaration : String = "CedarPooSpec.Gateway.Receipt";
+        attribute leanFields : String = "preparationValid,contextMatches,sourceMatches,effectMatches,stateMatches,checksAccepted,policyCurrent,requestValid,entitiesValid,allowed";
+        attribute securityName : String = "Cedar / Actual request";
+        attribute securityResponsibility : String = "Exact effect, facts and schema\nCurrent Policy + profile checks\nError-free Allow is one premise";
         attribute displayName : String = "Cedar / Policy";
         attribute responsibility : String = "Evaluate the exact effect\nRequire error-free permission\nAllow is not a send handle";
         attribute glyph : String = "decision";
@@ -256,39 +275,37 @@ package WeaverExecution {
         enum mrrDataBackend;
     }
     part def RustLedger {
+        attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.Proposal";
+        attribute leanFields : String = "before,receipt,contextBound,authorityId,after,consumption";
+        attribute securityName : String = "Rust / Original consumption";
+        attribute securityResponsibility : String = "Original operation + grant\nCommit both ledgers with budget\nRenewed grants cannot replay work";
         attribute displayName : String = "Rust / Authority ledger";
-        attribute responsibility : String = "Join claim, budget and history\nPublish current Policy + fence\nPersist original consumption";
+        attribute responsibility : String = "MRR Data Backend / Turso\nClaim, budget and fence together\nPersist original consumption";
         attribute glyph : String = "rust";
         attribute visualRole : String = "semantic";
-        attribute targetEngine : AdmissionStorageEngine = AdmissionStorageEngine::turso;
-        attribute targetStorageOwner : AdmissionStorageOwner = AdmissionStorageOwner::mrrDataBackend;
-        doc /* Target default: the reviewed latest stable embedded Turso engine,
-           implemented behind a narrow data-layer admission persistence adapter.
-           Weaver owns original scope, authorization, fencing and final execution;
-           it does not own another general DB engine, ORM or analytics stack.
-           Reuse MRR Data PR 12's public mrr-data-backend interfaces: TursoProvider,
-           Backend/ProfilePort and transactional authority/exact-outcome recovery.
-           Hosts retaining their own schema use its public turso_driver export;
-           no parallel Weaver DB provider is required. Select only the turso
-           feature; query/Arrow/DuckDB/graph providers are not admission defaults.
-           Existing commerce reservation/consumption APIs remain domain-specific,
-           not an automatic replacement for LLM token accounting. The PR's current
-           release pin is behind the target latest stable Turso release; upgrade
-           and qualify that cohort upstream before changing production pins.
-           Physical driver reuse does not establish linearizable admission CAS,
-           retained-root independence or actual transport fencing. */
-        doc /* Existing rusqlite/SQLite code and tests are the current validation
-           baseline, not an implemented Turso adapter. This model neither changes
-           dependency pins nor qualifies a replacement engine. Release selection,
-           SQL/transaction conformance, durability, recovery and performance must
-           be verified before a later authorized production migration. */
+        attribute storageEngine : AdmissionStorageEngine = AdmissionStorageEngine::turso;
+        attribute storageOwner : AdmissionStorageOwner = AdmissionStorageOwner::mrrDataBackend;
+        doc /* Production persistence uses mrr-data-backend::turso_driver only.
+           Weaver owns its domain schema and admission rules, not another DB
+           provider or ORM. The selected feature is turso; no direct rusqlite,
+           alternative engine, automatic replay or remote replication is enabled.
+           One FULL/WAL native immediate transaction serializes original claims,
+           holds, consumption, Policy and fence. Settings are read back on open.
+           Standard future driving adds no runtime or worker pool. Final guarded
+           callbacks retain the deciding transaction through bounded transport.
+           Commit never initiates a provider send. Unknown commit poisons the
+           session; rollback is driven eagerly, and original outcomes/holds must
+           be recovered with fresh authoritative state. Complete closed-store
+           fault images include the durable WAL and discard transient SHM.
+           Physical driver reuse does not prove independent anti-rollback custody
+           or provider exactly-once delivery. MVCC scheduling is not activated. */
         doc /* One deciding store owns immutable tasks, reservations, logical keys, current revision and fence. */
         doc /* Commit-floor target: reuse publication exact-result retention,
            account/WAL owner validation and current-cut CAS. Independent authority
            records full four-prefix decisions and fences stale epochs. Local WAL
            and materialized projections may roll back; floor authority may not
            roll back with them. This boundary is a deployment/refinement premise,
-           not established by placing two SQLite files on one host. */
+           not established by placing two local database files on one host. */
         port proposals : ~ProposalPort;
         port observations : OutcomePort;
         port consumed : ConsumedPort;
@@ -298,6 +315,10 @@ package WeaverExecution {
         port policyEvaluation : PolicyEvaluationPort;
     }
     part def RustFinalBroker {
+        attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.FinalUse";
+        attribute leanFields : String = "sameView,authenticated,current,profileAuthority,committed,unknownRetained,notRevoked,mediated";
+        attribute securityName : String = "Rust / Final-use guard";
+        attribute securityResponsibility : String = "Identity, profile and current view\nDurable consume + unknown holds\nFence every actual external effect";
         attribute displayName : String = "Rust / Final broker";
         attribute responsibility : String = "Own consumed opportunities\nGuard dispatch and each range\nUnknown exposure remains held";
         attribute glyph : String = "capture";
@@ -321,6 +342,10 @@ package WeaverExecution {
         port wire : WirePort;
     }
     part def HttpsExecutor {
+        attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.CommittedPrefix";
+        attribute leanFields : String = "tail,installed";
+        attribute securityName : String = "Rust / Stream continuity";
+        attribute securityResponsibility : String = "Retain original spent prefix\nReassess each new governed use\nRecovery cannot mint permission";
         attribute displayName : String = "Bounded HTTPS executor";
         attribute responsibility : String = "Send exact authorized bytes\nDisable implicit SDK retries\nReport partial or unknown writes";
         attribute glyph : String = "capture";

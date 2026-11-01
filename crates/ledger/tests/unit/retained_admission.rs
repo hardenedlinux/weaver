@@ -1,23 +1,24 @@
 //! Retained admission/exposure profile tests over the existing Floor owner.
 use super::{Floor, SCOPE, cut};
-use rusqlite::{Connection, OptionalExtension};
 use std::{collections::BTreeSet, path::Path};
 use weaver_contracts::{ProviderReceipt, ProviderState};
 use weaver_ledger::Ledger;
 
 impl Floor {
     // Test-only refinement of this existing owner: the full typed exposure
-    // receipt and one-use burn enter its prefix in the same SQLite transaction.
+    // receipt and one-use burn enter its prefix in the same Turso transaction.
     fn send_with_retained_exposure(
         &mut self,
         projection: &Path,
         observed_epoch: i64,
         key: &str,
         receipt: &ProviderReceipt,
-        after_burn: impl FnOnce(&Connection),
+        after_burn: impl FnOnce(&weaver_ledger::persistence::driver::Connection),
         send: impl FnOnce(),
     ) -> bool {
-        let observed_cut = cut(&Connection::open(projection).expect("observed projection"));
+        let observed_cut =
+            cut(&weaver_ledger::persistence::Session::open(projection)
+                .expect("observed projection"));
         self.send_bound_record(
             (projection, observed_epoch, &observed_cut, key),
             Some(receipt),
@@ -35,28 +36,25 @@ impl Floor {
         if !self.qualified(projection, observed_epoch) {
             return false;
         }
-        let body: Option<String> = self
-            .0
-            .query_row(
-                "SELECT body FROM prefix WHERE kind=4 AND k=?1",
-                [key],
-                |row| row.get(0),
-            )
-            .optional()
-            .expect("retained admission body");
+        let body: Option<String> = weaver_ledger::persistence::maybe(
+            &self.0,
+            "SELECT body FROM prefix WHERE kind=4 AND k=?1",
+            weaver_ledger::persistence::params![(key).to_owned()],
+            |row| row.get(0),
+        )
+        .expect("retained admission body");
         let Some(body) = body else {
             return false;
         };
         let (scope, bound_key, expected): (String, String, ProviderReceipt) =
             serde_json::from_str(&body).expect("typed original exposure");
-        let burned: bool = self
-            .0
-            .query_row(
-                "SELECT EXISTS(SELECT 1 FROM burned WHERE k=?1)",
-                [key],
-                |row| row.get(0),
-            )
-            .expect("retained burn projection");
+        let burned: bool = weaver_ledger::persistence::one(
+            &self.0,
+            "SELECT EXISTS(SELECT 1 FROM burned WHERE k=?1)",
+            weaver_ledger::persistence::params![(key).to_owned()],
+            |row| row.get(0),
+        )
+        .expect("retained burn projection");
         let actual = ledger
             .provider_receipt(&expected.family, &expected.node)
             .expect("actual exposure projection");
@@ -83,7 +81,7 @@ fn retained_admission_reply_loss_and_gateway_restore_do_not_release_exposure() {
     let floor_path = temp.path().join("authority.db");
     let (ledger, plan) = super::super::fixture(&gateway);
     ledger.close().expect("closed snapshot source");
-    std::fs::copy(&gateway, &snapshot).expect("pre-reservation snapshot");
+    crate::snapshot::copy_closed(&gateway, &snapshot).expect("pre-reservation snapshot");
     let mut ledger = Ledger::open(&gateway).expect("original owner");
     ledger
         .enqueue_provider(&plan)
@@ -126,21 +124,20 @@ fn retained_admission_reply_loss_and_gateway_restore_do_not_release_exposure() {
         || calls += 1
     ));
     ledger.close().expect("closed restore target");
-    std::fs::copy(&snapshot, &gateway).expect("restore gateway only");
+    crate::snapshot::copy_closed(&snapshot, &gateway).expect("restore gateway only");
     let recovered = Ledger::open(&gateway).expect("old worker image");
     assert_eq!(recovered.held("f").expect("stale projection"), 0);
     assert!(
         !floor.qualified_exposure(&projection, 0, "f/infer", &recovered),
         "zero local hold is not a release receipt"
     );
-    let body: String = floor
-        .0
-        .query_row(
-            "SELECT body FROM prefix WHERE kind=4 AND k='f/infer'",
-            [],
-            |row| row.get(0),
-        )
-        .expect("retained original body");
+    let body: String = weaver_ledger::persistence::one(
+        &floor.0,
+        "SELECT body FROM prefix WHERE kind=4 AND k='f/infer'",
+        (),
+        |row| row.get(0),
+    )
+    .expect("retained original body");
     let (_, _, retained): (String, String, ProviderReceipt) =
         serde_json::from_str(&body).expect("typed retained exposure");
     assert_eq!(
@@ -180,7 +177,7 @@ fn retained_admission_prefix_failure_atomically_rolls_back_burn() {
     floor.stage(&command);
     assert!(floor.commit(&command).0);
     floor.repair(&projection);
-    floor.0.execute_batch("CREATE TRIGGER fail_admission BEFORE INSERT ON prefix WHEN NEW.kind=4 BEGIN SELECT RAISE(ABORT,'injected admission prefix failure'); END;").expect("fault injection");
+    weaver_ledger::persistence::script(&floor.0, "CREATE TRIGGER fail_admission BEFORE INSERT ON prefix WHEN NEW.kind=4 BEGIN SELECT RAISE(ABORT,'injected admission prefix failure'); END;").expect("fault injection");
     let mut calls = 0;
     assert!(!floor.send_with_retained_exposure(
         &projection,
@@ -192,21 +189,21 @@ fn retained_admission_prefix_failure_atomically_rolls_back_burn() {
     ));
     drop(floor);
     floor = Floor::open(&floor_path);
-    let burns: i64 = floor
-        .0
-        .query_row("SELECT COUNT(*) FROM burned", [], |row| row.get(0))
-        .expect("burn count");
-    let admissions: i64 = floor
-        .0
-        .query_row("SELECT COUNT(*) FROM prefix WHERE kind=4", [], |row| {
+    let burns: i64 =
+        weaver_ledger::persistence::one(&floor.0, "SELECT COUNT(*) FROM burned", (), |row| {
             row.get(0)
         })
-        .expect("admission count");
+        .expect("burn count");
+    let admissions: i64 = weaver_ledger::persistence::one(
+        &floor.0,
+        "SELECT COUNT(*) FROM prefix WHERE kind=4",
+        (),
+        |row| row.get(0),
+    )
+    .expect("admission count");
     assert_eq!((burns, admissions, calls), (0, 0, 0));
     assert_eq!(ledger.held("f").expect("unknown reservation retained"), 4);
-    floor
-        .0
-        .execute_batch("DROP TRIGGER fail_admission")
+    weaver_ledger::persistence::script(&floor.0, "DROP TRIGGER fail_admission")
         .expect("remove fault");
     assert!(floor.send_with_retained_exposure(
         &projection,
@@ -258,9 +255,7 @@ fn retained_prefix_without_burn_projection_cannot_repeat_admission() {
         }
     ));
     floor.repair(&projection);
-    floor
-        .0
-        .execute("DELETE FROM burned", [])
+    weaver_ledger::persistence::exec(&floor.0, "DELETE FROM burned", ())
         .expect("partial projection loss");
     assert!(
         floor.qualified(&projection, 0),
@@ -309,7 +304,7 @@ fn retained_burn_fenced_before_callback_keeps_original_unknown_exposure() {
         "f/infer",
         &receipt,
         |db| {
-            db.execute("UPDATE owner SET epoch=epoch+1", [])
+            weaver_ledger::persistence::exec(db, "UPDATE owner SET epoch=epoch+1", ())
                 .expect("fence after committed burn");
         },
         || {

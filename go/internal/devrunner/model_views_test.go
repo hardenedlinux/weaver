@@ -2,8 +2,6 @@ package devrunner
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -25,7 +23,7 @@ func TestModelViewsUseActualSDK(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if capture.ModelHash == "" || len(capture.Views) != 4 {
+	if capture.ModelHash == "" || len(capture.Views) != 8 {
 		t.Fatalf("missing native model views: %+v", capture)
 	}
 	for name, view := range capture.Views {
@@ -34,12 +32,12 @@ func TestModelViewsUseActualSDK(t *testing.T) {
 		}
 		t.Logf("%s: %s, %d nodes, %d edges", name, view.Kind, len(view.Nodes), len(view.Edges))
 	}
-	for _, name := range []string{"architecture", "zeroTrust", "execution", "assurance"} {
+	for _, name := range []string{"architecture", "zeroTrust", "execution", "assurance", "gateway", "contractRefinement", "rangeRecovery", "storage"} {
 		if _, ok := capture.Views["WeaverViews::"+name]; !ok {
 			t.Fatalf("missing declared view: %s", name)
 		}
 	}
-	security := capture.Views["WeaverViews::zeroTrust"]
+	security := capture.Views["WeaverViews::contractRefinement"]
 	names := map[string]string{}
 	for _, node := range security.Nodes {
 		names[node.ID] = strings.TrimPrefix(node.Name, "WeaverZeroTrust::refinement::")
@@ -81,7 +79,7 @@ func TestModelViewFailureCannotPublishOverPriorCapture(t *testing.T) {
 	}
 }
 
-func TestModelCapturePublishesExactSDKTransport(t *testing.T) {
+func TestModelCaptureRequiresLeanEnvironmentAndKeepsSDKTransport(t *testing.T) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -90,17 +88,16 @@ func TestModelCapturePublishesExactSDKTransport(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	digest, err := publishModelViews(t.Context(), root)
+	if _, err := publishModelViews(t.Context(), root); err == nil || !strings.Contains(err.Error(), "lacks current Lean environment") {
+		t.Fatalf("security projection admitted missing Lean data: %v", err)
+	}
+	capture, err := CaptureModelViews(t.Context(), root)
 	if err != nil {
 		t.Fatal(err)
 	}
-	raw, err := os.ReadFile(filepath.Join(root, ".cache/d2/model-views.json"))
+	raw, err := json.Marshal(capture)
 	if err != nil {
 		t.Fatal(err)
-	}
-	sum := sha256.Sum256(raw)
-	if digest != hex.EncodeToString(sum[:]) {
-		t.Fatal("published bytes differ from the Go owner receipt")
 	}
 	var saved ModelViewCapture
 	if err := json.Unmarshal(raw, &saved); err != nil {
@@ -184,4 +181,68 @@ func FuzzModelViewCaptureTracksSource(f *testing.F) {
 			t.Fatal("rendered identity did not follow the captured source")
 		}
 	})
+}
+
+func TestReadmeProductArchitectureDoesNotSubstituteEngineeringWorkflow(t *testing.T) {
+	root, err := FindRoot(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, err := os.ReadFile(filepath.Join(root, "README.org"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	architecture, _, found := strings.Cut(string(body), "* Workspace")
+	if !found {
+		t.Fatal("missing README product boundary")
+	}
+	for _, tool := range []string{"Quint explores", "SysML specifies", "PBT generates", "00c-readme-assurance.svg"} {
+		if strings.Contains(architecture, tool) {
+			t.Fatalf("engineering workflow substituted for product architecture: %s", tool)
+		}
+	}
+	for _, figure := range []string{"00a-readme-overview.svg", "00d-zero-trust-overview.svg", "00c-gateway-runtime.svg"} {
+		if !strings.Contains(architecture, "[[file:docs/architecture/diagrams/"+figure+"]]") {
+			t.Fatalf("missing product view: %s", figure)
+		}
+	}
+	capture, err := CaptureModelViews(t.Context(), root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, types := range map[string][]string{
+		"zeroTrust": {"SchemeSemanticPublisher", "RustPolicy", "RustLedger", "RustFinalBroker", "HttpsExecutor"},
+		"gateway":   {"ProtocolIngress", "RoutineProgram", "ModelCatalog", "Routing", "RustExecution", "ModelProviders", "StreamLifecycle"},
+	} {
+		view := capture.Views["WeaverViews::"+name]
+		if view == nil {
+			t.Fatalf("missing native product view: %s", name)
+		}
+		for _, node := range view.Nodes {
+			owner := "dev/sysml/GatewayArchitecture.sysml"
+			if name == "zeroTrust" {
+				owner = "dev/sysml/WeaverExecution.sysml"
+			}
+			if node.Origin == nil || node.Origin.File != owner {
+				t.Fatalf("product node has developer-workflow origin: %+v", node)
+			}
+		}
+		for _, expected := range types {
+			present := false
+			for _, node := range view.Nodes {
+				if node.Type == expected || strings.HasSuffix(node.Type, "::"+expected) {
+					present = true
+				}
+			}
+			if !present {
+				t.Fatalf("%s omits runtime component %s", name, expected)
+			}
+		}
+	}
+	for _, name := range []string{"assurance", "contractRefinement"} {
+		description := capture.Descriptions["WeaverViews::"+name]
+		if description == nil || !strings.HasPrefix(description.File, "docs/50-59-research-program/") {
+			t.Fatalf("engineering reference is not separated: %+v", description)
+		}
+	}
 }

@@ -17,7 +17,7 @@ use weaver_execution::{ProviderExecution, ProviderOutput, ProviderTransport, exe
 mod fixtures;
 #[path = "../../policy/benches/support/fixtures.rs"]
 mod policy_fixture;
-#[path = "../../ledger/benches/support/fixtures.rs"]
+#[path = "../../ledger/benches/support/provider_store.rs"]
 mod stores;
 struct Sink {
     events: usize,

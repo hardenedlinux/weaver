@@ -1,5 +1,7 @@
 use criterion::{BatchSize, BenchmarkId, Criterion, criterion_group, criterion_main};
 use std::{collections::BTreeSet, hint::black_box, time::Duration};
+#[path = "support/fixtures.rs"]
+mod exposure;
 #[path = "../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
 #[path = "../../policy/benches/support/fixtures.rs"]
@@ -10,7 +12,7 @@ mod replay_fixture;
 mod revision_fixture;
 #[path = "../../contracts/benches/support/source_authority.rs"]
 mod source_fixture;
-#[path = "support/fixtures.rs"]
+#[path = "support/provider_store.rs"]
 mod stores;
 fn durable_operations(c: &mut Criterion) {
     c.bench_function("ledger/fresh_admission", |b| {
@@ -61,7 +63,7 @@ fn shared_exposure(c: &mut Criterion) {
     for count in [1usize, 8, 64] {
         group.bench_with_input(BenchmarkId::from_parameter(count), &count, |b, &count| {
             b.iter_batched(
-                || stores::family(count),
+                || exposure::family(count),
                 |(temp, mut ledger)| {
                     let permit = ledger
                         .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
@@ -93,7 +95,7 @@ fn original_reservation_bytes(c: &mut Criterion) {
             &(count, bytes),
             |b, &(count, bytes)| {
                 b.iter_batched(
-                    || stores::family_with_body(count, bytes),
+                    || exposure::family_with_body(count, bytes),
                     |(temp, mut ledger)| {
                         let permit = ledger
                             .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
@@ -116,7 +118,7 @@ fn stream_manifest_guard(c: &mut Criterion) {
     for count in [1usize, 8, 64] {
         group.bench_with_input(BenchmarkId::from_parameter(count), &count, |b, &count| {
             b.iter_batched(
-                || stores::stream(count),
+                || exposure::stream(count),
                 |(temp, mut ledger, owner)| {
                     let permit = ledger
                         .consume_range(&owner, "m0", 4)
@@ -135,6 +137,48 @@ fn stream_manifest_guard(c: &mut Criterion) {
                 BatchSize::PerIteration,
             )
         });
+    }
+    group.finish();
+}
+fn range_tail_guard(c: &mut Criterion) {
+    let mut group = c.benchmark_group("ledger/range_tail_guard");
+    for history in [0usize, 8, 64] {
+        group.bench_with_input(
+            BenchmarkId::from_parameter(history),
+            &history,
+            |b, &history| {
+                b.iter_batched(
+                    || {
+                        let store = exposure::stream_with_payload(1, history + 1);
+                        let (temp, mut ledger, owner) = store;
+                        for _ in 0..history {
+                            let permit = ledger
+                                .consume_range(&owner, "m0", 1)
+                                .expect("prefix consumption");
+                            ledger
+                                .write_range(&owner, permit, |_| {
+                                    weaver_contracts::WriteObservation::Complete
+                                })
+                                .expect("known prefix");
+                        }
+                        (temp, ledger, owner)
+                    },
+                    |(temp, mut ledger, owner)| {
+                        let permit = ledger
+                            .consume_range(&owner, "m0", 1)
+                            .expect("indexed tail join");
+                        ledger
+                            .write_range(&owner, permit, |_| {
+                                weaver_contracts::WriteObservation::Complete
+                            })
+                            .expect("final range");
+                        assert_eq!(ledger.held("f").expect("original hold"), 4);
+                        black_box((temp, ledger, owner))
+                    },
+                    BatchSize::PerIteration,
+                )
+            },
+        );
     }
     group.finish();
 }
@@ -368,13 +412,17 @@ fn source_authority(c: &mut Criterion) {
                         let temp = tempfile::tempdir().expect("directory");
                         let path = temp.path().join("enrollment.db");
                         let ledger = weaver_ledger::Ledger::open(&path).expect("store");
-                        let mut catalog =
-                            rusqlite::Connection::open(&path).expect("fixture catalog");
-                        let tx = catalog.transaction().expect("fixture transaction");
+                        let mut catalog = weaver_ledger::persistence::Session::open(&path)
+                            .expect("fixture catalog");
+                        let tx = weaver_ledger::persistence::begin(&mut catalog)
+                            .expect("fixture transaction");
                         for table in 0..tables {
-                            tx.execute_batch(&format!(
-                                "CREATE TABLE extension_{table} (retained INTEGER NOT NULL)"
-                            ))
+                            weaver_ledger::persistence::script(
+                                &tx,
+                                &format!(
+                                    "CREATE TABLE extension_{table} (retained INTEGER NOT NULL)"
+                                ),
+                            )
                             .expect("empty extension table");
                         }
                         tx.commit().expect("fixture catalog complete");
@@ -450,5 +498,5 @@ fn source_authority(c: &mut Criterion) {
         )
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,shared_exposure,original_reservation_bytes,stream_manifest_guard,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,shared_exposure,original_reservation_bytes,stream_manifest_guard,range_tail_guard,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
 criterion_main!(benches);

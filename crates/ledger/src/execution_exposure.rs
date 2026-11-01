@@ -1,6 +1,6 @@
 //! One deciding projection for all retained execution kinds; never repairs authority.
+use crate::persistence::WriteScope;
 use crate::store::db;
-use rusqlite::{Transaction, params};
 use weaver_contracts::{Error, MessageBinding, Proposal, ProviderPlan, Result};
 
 pub(crate) enum ClaimKind {
@@ -20,20 +20,54 @@ pub(crate) struct ReservationClaim<'a> {
 
 /// Append the original member under the same transaction as its row and hold.
 /// Only distinct stream messages may extend an existing logical node claim.
-pub(crate) fn retain(tx: &Transaction<'_>, claim: ReservationClaim<'_>) -> Result<()> {
+pub(crate) fn retain(tx: &WriteScope<'_>, claim: ReservationClaim<'_>) -> Result<()> {
     let kind = match claim.kind {
         ClaimKind::Request => "request",
         ClaimKind::Stream => "stream",
         ClaimKind::Provider => "provider",
     };
-    let changed = tx.execute(
-        "INSERT INTO execution_claims(family,node,kind,reservations)
-         VALUES(?1,?2,?3,json_object(?4,json_object('digest',?5,'ceiling',?6)))
-         ON CONFLICT(family,node) DO UPDATE SET reservations=json_patch(execution_claims.reservations,excluded.reservations)
-         WHERE execution_claims.kind='stream' AND excluded.kind='stream'
-           AND NOT EXISTS(SELECT 1 FROM json_each(execution_claims.reservations) WHERE key=?4)",
-        params![claim.family, claim.node, kind, claim.member, claim.digest, claim.ceiling as i64],
-    ).map_err(db)?;
+    let previous: Option<(String, String)> = crate::persistence::maybe(
+        tx,
+        "SELECT kind,reservations FROM execution_claims WHERE family=?1 AND node=?2",
+        [claim.family, claim.node],
+        |r| Ok((r.get(0)?, r.get(1)?)),
+    )
+    .map_err(db)?;
+    let mut members = match &previous {
+        Some((previous_kind, body)) if previous_kind == "stream" && kind == "stream" => {
+            serde_json::from_str::<crate::exposure_manifest::Members>(body)?
+        }
+        Some(_) => return Err(Error::Conflict("logical reservation already claimed")),
+        None => crate::exposure_manifest::Members::new(),
+    };
+    if members
+        .insert(
+            claim.member.to_owned(),
+            crate::exposure_manifest::Member {
+                digest: claim.digest.to_owned(),
+                ceiling: claim.ceiling,
+            },
+        )
+        .is_some()
+    {
+        return Err(Error::Conflict("logical reservation already claimed"));
+    }
+    let body = serde_json::to_string(&members)?;
+    let changed = if previous.is_some() {
+        crate::persistence::exec(
+            tx,
+            "UPDATE execution_claims SET reservations=?1 WHERE family=?2 AND node=?3",
+            [body.as_str(), claim.family, claim.node],
+        )
+        .map_err(db)?
+    } else {
+        crate::persistence::exec(
+            tx,
+            "INSERT INTO execution_claims(family,node,kind,reservations) VALUES(?1,?2,?3,?4)",
+            [claim.family, claim.node, kind, body.as_str()],
+        )
+        .map_err(db)?
+    };
     if changed != 1 {
         return Err(Error::Conflict("logical reservation already claimed"));
     }
@@ -42,64 +76,25 @@ pub(crate) fn retain(tx: &Transaction<'_>, claim: ReservationClaim<'_>) -> Resul
 
 /// Read every retained family reservation and its original kind under the writer.
 /// Completion is observational: none of these execution paths authorizes refunds.
-pub(crate) fn require_family(tx: &Transaction<'_>, family: &str) -> Result<()> {
-    let retained: bool = tx
-        .query_row(
-            "WITH retained AS MATERIALIZED (
-           SELECT node,'' AS member,digest,reserved,'request' AS kind,json_extract(proposal,'$.ceiling') AS original FROM operations WHERE family=?1
-           UNION ALL SELECT node,message,digest,reserved,'stream',json_extract(proposal,'$.ceiling') FROM stream_messages WHERE family=?1
-           UNION ALL SELECT node,'',digest,reserved,'provider',json_extract(plan,'$.ceiling') FROM provider_runs WHERE family=?1
-         ), committed AS MATERIALIZED (
-           SELECT c.node,c.kind,j.key AS member,json_extract(j.value,'$.digest') AS digest,
-             json_extract(j.value,'$.ceiling') AS original
-           FROM execution_claims c,json_each(c.reservations) j WHERE c.family=?1
-         )
-         SELECT EXISTS(SELECT 1 FROM tasks t WHERE t.family=?1
-           AND t.budget=json_extract(t.record,'$.budget')
-           AND t.held<=t.budget
-           AND NOT EXISTS(SELECT 1 FROM execution_claims c WHERE c.family=?1
-             AND NOT EXISTS(SELECT 1 FROM committed m WHERE m.node=c.node AND m.kind=c.kind))
-           AND NOT EXISTS(SELECT 1 FROM committed c LEFT JOIN retained r
-             ON r.node=c.node AND r.kind=c.kind AND r.member=c.member AND r.digest=c.digest AND r.reserved=c.original
-             WHERE r.node IS NULL)
-           AND NOT EXISTS(SELECT 1 FROM retained WHERE reserved IS NOT original)
-           AND t.held=COALESCE((SELECT SUM(reserved) FROM retained),0)
-           AND NOT EXISTS(SELECT 1 FROM retained r LEFT JOIN committed c
-             ON c.node=r.node AND c.kind=r.kind AND c.member=r.member AND c.digest=r.digest AND c.original=r.reserved
-             WHERE c.node IS NULL))",
-            [family],
-            |row| row.get(0),
-        )
-        .map_err(db)?;
-    require(retained)
+pub(crate) fn require_family(tx: &WriteScope<'_>, family: &str) -> Result<()> {
+    crate::exposure_manifest::require(tx, family)
 }
 
-pub(crate) fn request(tx: &Transaction<'_>, proposal: &Proposal) -> Result<()> {
-    let matches: bool = tx
-        .query_row(
-            "SELECT EXISTS(SELECT 1 FROM operations WHERE family=?1 AND node=?2 AND reserved=?3 AND digest=?4)",
-            params![proposal.family, proposal.node, proposal.ceiling as i64, proposal.digest()?],
-            |row| row.get(0),
-        )
+pub(crate) fn request(tx: &WriteScope<'_>, proposal: &Proposal) -> Result<()> {
+    let matches: bool = crate::persistence::one(tx, "SELECT EXISTS(SELECT 1 FROM operations WHERE family=?1 AND node=?2 AND reserved=?3 AND digest=?4)", crate::persistence::params![(proposal.family).to_owned(),(proposal.node).to_owned(),(proposal.ceiling as i64).to_owned(),(proposal.digest()?).to_owned()], |row| row.get(0))
         .map_err(db)?;
     require(matches)?;
     require_family(tx, &proposal.family)
 }
 
-pub(crate) fn message(tx: &Transaction<'_>, binding: &MessageBinding) -> Result<()> {
-    let matches: bool = tx.query_row(
-        "SELECT EXISTS(SELECT 1 FROM stream_messages WHERE family=?1 AND node=?2 AND message=?3 AND reserved=?4 AND digest=?5)",
-        params![binding.family, binding.node, binding.message, binding.ceiling as i64, binding.digest()?], |row| row.get(0),
-    ).map_err(db)?;
+pub(crate) fn message(tx: &WriteScope<'_>, binding: &MessageBinding) -> Result<()> {
+    let matches: bool = crate::persistence::one(tx, "SELECT EXISTS(SELECT 1 FROM stream_messages WHERE family=?1 AND node=?2 AND message=?3 AND reserved=?4 AND digest=?5)", crate::persistence::params![(binding.family).to_owned(),(binding.node).to_owned(),(binding.message).to_owned(),(binding.ceiling as i64).to_owned(),(binding.digest()?).to_owned()], |row| row.get(0)).map_err(db)?;
     require(matches)?;
     require_family(tx, &binding.family)
 }
 
-pub(crate) fn provider(tx: &Transaction<'_>, plan: &ProviderPlan, digest: &str) -> Result<()> {
-    let matches: bool = tx.query_row(
-        "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND reserved=?3 AND digest=?4)",
-        params![plan.family, plan.node, plan.ceiling as i64, digest], |row| row.get(0),
-    ).map_err(db)?;
+pub(crate) fn provider(tx: &WriteScope<'_>, plan: &ProviderPlan, digest: &str) -> Result<()> {
+    let matches: bool = crate::persistence::one(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND reserved=?3 AND digest=?4)", crate::persistence::params![(plan.family).to_owned(),(plan.node).to_owned(),(plan.ceiling as i64).to_owned(),(digest).to_owned()], |row| row.get(0)).map_err(db)?;
     require(matches)?;
     require_family(tx, &plan.family)
 }

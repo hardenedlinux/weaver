@@ -1,4 +1,4 @@
-//! One tracked blocking owner for source-only SQLite work; no cached authority decisions.
+//! One tracked blocking owner for source-only Turso work; no cached authority decisions.
 use crate::runtime::{RuntimeOwner, ShutdownGuard};
 use std::{path::PathBuf, sync::Arc};
 use tokio::{

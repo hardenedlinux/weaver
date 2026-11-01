@@ -6,7 +6,7 @@ vars: { d2-config: { data: { figure: |json
     "engineering",
     "weaver"
   ],
-  "title": "From SPEC contract to actual use.",
+  "title": "Zero Trust at every effect.",
   "purpose": "architecture",
   "kind": "system",
   "language": "en",
@@ -15,22 +15,24 @@ vars: { d2-config: { data: { figure: |json
   "questions": [
     {
       "ref": "q1",
-      "text": "How do SPEC requirements reach final execution?",
+      "text": "What prevents a proposal from becoming an unauthorized effect?",
       "focusRefs": [
         "model"
       ]
     }
   ],
   "references": {
-    "model": "dev/sysml/ZeroTrustRefinement.sysml",
+    "model": "dev/sysml/WeaverExecution.sysml",
     "model0": "Project.sysml",
     "model1": "dev/sysml/ArchitectureViews.sysml",
     "model2": "dev/sysml/ControlActivation.sysml",
-    "model3": "dev/sysml/PolicyEvidenceDesign.sysml",
-    "model4": "dev/sysml/ProviderRpc.sysml",
-    "model5": "dev/sysml/StreamingExecution.sysml",
-    "model6": "dev/sysml/WeaverExecution.sysml",
-    "model7": "dev/sysml/ZeroTrustRefinement.sysml",
+    "model3": "dev/sysml/GatewayArchitecture.sysml",
+    "model4": "dev/sysml/PolicyEvidenceDesign.sysml",
+    "model5": "dev/sysml/ProviderRpc.sysml",
+    "model6": "dev/sysml/StoragePersistence.sysml",
+    "model7": "dev/sysml/StreamingExecution.sysml",
+    "model8": "dev/sysml/WeaverExecution.sysml",
+    "model9": "dev/sysml/ZeroTrustRefinement.sysml",
     "proof0": "dev/proofs/cedar/ZeroTrustEnrichment.lean",
     "proof1": "dev/proofs/lean/ProviderRpc.lean",
     "proof2": "dev/proofs/lean/StreamingExecution.lean",
@@ -43,8 +45,10 @@ vars: { d2-config: { data: { figure: |json
       "Project.sysml",
       "dev/sysml/ArchitectureViews.sysml",
       "dev/sysml/ControlActivation.sysml",
+      "dev/sysml/GatewayArchitecture.sysml",
       "dev/sysml/PolicyEvidenceDesign.sysml",
       "dev/sysml/ProviderRpc.sysml",
+      "dev/sysml/StoragePersistence.sysml",
       "dev/sysml/StreamingExecution.sysml",
       "dev/sysml/WeaverExecution.sysml",
       "dev/sysml/ZeroTrustRefinement.sysml"
@@ -66,22 +70,25 @@ vars: { d2-config: { data: { figure: |json
     "options": {
       "elk.algorithm": "layered",
       "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL",
       "elk.hierarchyHandling": "INCLUDE_CHILDREN",
-      "elk.layered.spacing.nodeNodeBetweenLayers": "32",
-      "elk.spacing.nodeNode": "28"
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "28",
+      "elk.spacing.nodeNode": "24"
     },
     "icons": {
-      "n0": "obligation",
+      "n0": "library",
       "n1": "decision",
-      "n2": "selection",
-      "n3": "model",
-      "n4": "rust"
+      "n2": "rust",
+      "n3": "capture",
+      "n4": "capture"
     },
     "roles": {
       "n0": "publication",
-      "n1": "selection",
+      "n1": "policy",
       "n2": "semantic",
-      "n3": "policy",
+      "n3": "execution",
       "n4": "execution"
     },
     "edgeLabels": false,
@@ -122,25 +129,28 @@ vars: { d2-config: { data: { figure: |json
       "layoutOptions": {
         "elk.algorithm": "layered",
         "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL",
         "elk.hierarchyHandling": "INCLUDE_CHILDREN",
-        "elk.layered.spacing.nodeNodeBetweenLayers": "32",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "28",
         "elk.partitioning.activate": "true",
         "elk.separateConnectedComponents": "false",
-        "elk.spacing.nodeNode": "28"
+        "elk.spacing.nodeNode": "24"
       }
     }
   },
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::zeroTrust",
-    "modelHash": "356a9bd197444e61d867ce80d84e34f991f957129f02c0b4f0508040e89d59c7",
+    "modelHash": "b15c4a7daffa4e4c32395167627384b67b2f79b48dee9435c144a036fc3332e4",
     "portProjection": "owner",
     "labels": {
-      "n0": "SPEC / Core contract\nIdentity + authorization\nCurrent facts + not revoked\nConsumption + mediation\nUnknown exposure retained",
-      "n1": "SPEC / Usage control\nInitial + ongoing checks\nConditions + witnessed obligations\nMutation of actual state\nRecovery is not authorization\nClose = terminal + accounted",
-      "n2": "SPEC / POO profiles\nRetain required parent\nConjoin selected projection\nStrengthen original scope",
-      "n3": "Weaver / Interpretation\nOriginal task + profile\nShared budget + history\nCurrent authoritative facts\nHost materialization premises",
-      "n4": "Rust / Actual use\nPersist original consumption\nCheck current Policy + fence\nMediate final external bytes\nUnknown writes keep their hold"
+      "n0": "Scheme / Original contract\nTask scope and required parents\nPublished selected profile\nConfiguration grants no send right",
+      "n1": "Cedar / Actual request\nExact effect, facts and schema\nCurrent Policy + profile checks\nError-free Allow is one premise",
+      "n2": "Rust / Original consumption\nOriginal operation + grant\nCommit both ledgers with budget\nRenewed grants cannot replay work",
+      "n3": "Rust / Final-use guard\nIdentity, profile and current view\nDurable consume + unknown holds\nFence every actual external effect",
+      "n4": "Rust / Stream continuity\nRetain original spent prefix\nReassess each new governed use\nRecovery cannot mint permission"
     }
   }
 }

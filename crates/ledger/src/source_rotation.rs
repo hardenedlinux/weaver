@@ -1,26 +1,24 @@
 //! Exact source handoff results and non-reusable public keys share the deciding store.
 use crate::{Ledger, source_authority as authority, store::db};
-use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 use weaver_contracts::{
     Error, MAX_CREDITS, Result, SourceAuthority, SourceIdentity, SourceRotation,
     SourceRotationOutcome, SourceRotationReceipt,
 };
 
 fn lookup(
-    connection: &Connection,
+    connection: &crate::persistence::driver::Connection,
     caller: &SourceIdentity,
     command: &SourceRotation,
     digest: &str,
     current: &SourceAuthority,
 ) -> Result<Option<SourceRotationReceipt>> {
-    let record: Option<(String, String, String, String)> = connection
-        .query_row(
-            "SELECT digest,proposer,command,receipt FROM source_rotations WHERE operation_id=?1",
-            [&command.operation_id],
-            |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?)),
-        )
-        .optional()
-        .map_err(db)?;
+    let record: Option<(String, String, String, String)> = crate::persistence::maybe(
+        connection,
+        "SELECT digest,proposer,command,receipt FROM source_rotations WHERE operation_id=?1",
+        crate::persistence::params![command.operation_id.to_owned()],
+        |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?)),
+    )
+    .map_err(db)?;
     record
         .map(|(bound, proposer, encoded, receipt)| {
             let original: SourceRotation = weaver_contracts::decode(encoded.as_bytes())?;
@@ -54,16 +52,13 @@ impl Ledger {
     ) -> Result<SourceRotationReceipt> {
         caller.validate()?;
         let digest = command.digest()?;
-        let tx = self
-            .connection
-            .transaction_with_behavior(TransactionBehavior::Immediate)
-            .map_err(db)?;
+        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
         let current = authority::current(&tx)?.ok_or(Error::Denied)?;
         if let Some(receipt) = lookup(&tx, caller, command, &digest, &current)? {
             return Ok(receipt);
         }
         authority::require(&tx, Some(caller))?;
-        let used:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM source_keys WHERE public_key_sha256=?1 OR certificate_sha256=?2)",params![command.next.public_key_sha256,command.next.certificate_sha256],|r|r.get(0)).map_err(db)?;
+        let used:bool=crate::persistence::one(&tx, "SELECT EXISTS(SELECT 1 FROM source_keys WHERE public_key_sha256=?1 OR certificate_sha256=?2)", crate::persistence::params![(command.next.public_key_sha256).to_owned(),(command.next.certificate_sha256).to_owned()], |r|r.get(0)).map_err(db)?;
         let (outcome, after) =
             if command.expected_epoch == current.epoch && current.epoch < MAX_CREDITS && !used {
                 let next = SourceAuthority {
@@ -81,14 +76,15 @@ impl Ledger {
             outcome,
             authority: after,
         };
-        tx.execute(
+        crate::persistence::exec(
+            &tx,
             "INSERT INTO source_rotations VALUES(?1,?2,?3,?4,?5)",
-            params![
-                command.operation_id,
-                receipt.digest,
-                serde_json::to_string(caller)?,
-                serde_json::to_string(command)?,
-                serde_json::to_string(&receipt)?
+            crate::persistence::params![
+                (command.operation_id).to_owned(),
+                (receipt.digest).to_owned(),
+                (serde_json::to_string(caller)?).to_owned(),
+                (serde_json::to_string(command)?).to_owned(),
+                (serde_json::to_string(&receipt)?).to_owned()
             ],
         )
         .map_err(db)?;

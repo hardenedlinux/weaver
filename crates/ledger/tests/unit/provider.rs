@@ -89,14 +89,14 @@ proptest! {
             ledger.dispatch_provider(&permit, || ()).expect("dispatch");
             None
         } else { None };
-        let connection = rusqlite::Connection::open(&path).expect("recovery fault connection");
+        let connection = weaver_ledger::persistence::Session::open(&path).expect("recovery fault connection");
         let mutation = match fault {
             0 => "DELETE FROM execution_claims WHERE family='f' AND node='infer'",
             1 => "UPDATE execution_claims SET kind='request' WHERE family='f' AND node='infer'",
             2 => "UPDATE provider_runs SET reserved=1 WHERE family='f' AND node='infer'",
             _ => "UPDATE tasks SET held=4 WHERE family='f'",
         };
-        connection.execute(mutation, []).expect("inject inconsistent recovered projection");
+        weaver_ledger::persistence::exec(&connection, mutation, ()).expect("inject inconsistent recovered projection");
         drop(connection);
         let result = match release {
             Some(range) => ledger.release_provider(&permit, range, "protobuf", |_| { callbacks += 1; Ok(()) }),
@@ -120,9 +120,8 @@ fn zero_trust_missing_claim_blocks_queued_consumption_after_restart() {
     let path = temp.path().join("queued-exposure.db");
     let (mut ledger, plan) = fixture(&path);
     ledger.enqueue_provider(&plan).expect("reservation");
-    let connection = rusqlite::Connection::open(&path).expect("recovery fault");
-    connection
-        .execute("DELETE FROM execution_claims", [])
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("recovery fault");
+    weaver_ledger::persistence::exec(&connection, "DELETE FROM execution_claims", ())
         .expect("missing claim");
     drop(connection);
     drop(ledger);
@@ -214,10 +213,16 @@ fn stale_registry_read_and_reopened_worker_preserve_unknown_provider_exposure() 
     };
     // Pin an actual WAL reader before registration. Its later NotFound is an
     // old projection, not evidence that the deciding registry has no record.
-    let reader = rusqlite::Connection::open(&path).expect("old read owner");
-    reader.execute_batch("BEGIN;").expect("read snapshot");
-    let registered = |connection: &rusqlite::Connection| -> i64 {
-        connection.query_row("SELECT COUNT(*) FROM authority_reviews WHERE operation_id='registry-read-recovery'", [], |row| row.get(0)).expect("registry count")
+    let reader = weaver_ledger::persistence::Session::open(&path).expect("old read owner");
+    weaver_ledger::persistence::script(&reader, "BEGIN;").expect("read snapshot");
+    let registered = |connection: &weaver_ledger::persistence::driver::Connection| -> i64 {
+        weaver_ledger::persistence::one(
+            connection,
+            "SELECT COUNT(*) FROM authority_reviews WHERE operation_id='registry-read-recovery'",
+            (),
+            |row| row.get(0),
+        )
+        .expect("registry count")
     };
     assert_eq!(registered(&reader), 0);
     let mut old_worker = Ledger::open(&path).expect("worker before registration");
@@ -263,9 +268,7 @@ fn stale_registry_read_and_reopened_worker_preserve_unknown_provider_exposure() 
         0,
         "late absence remains historical after commit"
     );
-    reader
-        .execute_batch("ROLLBACK;")
-        .expect("close old read snapshot");
+    weaver_ledger::persistence::script(&reader, "ROLLBACK;").expect("close old read snapshot");
     assert_eq!(
         registered(&reader),
         1,
@@ -303,14 +306,15 @@ fn stale_registry_read_and_reopened_worker_preserve_unknown_provider_exposure() 
         calls, 1,
         "recovery cannot release the uncertain tail or repeat dispatch"
     );
-    let inspection = rusqlite::Connection::open(&path).expect("durable range inspection");
-    let state: String = inspection
-        .query_row(
-            "SELECT state FROM provider_releases WHERE family='f' AND node='infer'",
-            [],
-            |row| row.get(0),
-        )
-        .expect("original range");
+    let inspection =
+        weaver_ledger::persistence::Session::open(&path).expect("durable range inspection");
+    let state: String = weaver_ledger::persistence::one(
+        &inspection,
+        "SELECT state FROM provider_releases WHERE family='f' AND node='infer'",
+        (),
+        |row| row.get(0),
+    )
+    .expect("original range");
     assert_eq!(state, "unknown");
 }
 #[test]
@@ -534,12 +538,15 @@ fn historical_publication_replay_cannot_reopen_original_claim_or_dispatch() {
         rebound.node = "infer".into();
         rebound.profile = "new-profile".into();
         assert!(recovered.enqueue_provider(&rebound).is_err());
-        let connection = rusqlite::Connection::open(&path).expect("inspect original task");
-        let record: String = connection
-            .query_row("SELECT record FROM tasks WHERE family='f'", [], |row| {
-                row.get(0)
-            })
-            .expect("task");
+        let connection =
+            weaver_ledger::persistence::Session::open(&path).expect("inspect original task");
+        let record: String = weaver_ledger::persistence::one(
+            &connection,
+            "SELECT record FROM tasks WHERE family='f'",
+            (),
+            |row| row.get(0),
+        )
+        .expect("task");
         let mut original: Task = serde_json::from_str(&record).expect("decode task");
         original.budget += 1;
         assert!(
@@ -575,7 +582,8 @@ fn final_release_keeps_current_guard_and_unknown_commit_in_one_transaction() {
     let release = ledger
         .prepare_provider_release(&owner, "release-digest", "arrow", 2)
         .expect("durable unknown range");
-    let inspection = rusqlite::Connection::open(&path).expect("independent observer");
+    let inspection =
+        weaver_ledger::persistence::Session::open(&path).expect("independent observer");
     inspection
         .busy_timeout(std::time::Duration::ZERO)
         .expect("no waiting in negative control");
@@ -583,37 +591,20 @@ fn final_release_keeps_current_guard_and_unknown_commit_in_one_transaction() {
     let result: weaver_contracts::Result<()> =
         ledger.release_provider(&owner, release, "arrow", |_| {
             callbacks += 1;
-            let state: String = inspection
-                .query_row(
-                    "SELECT state FROM provider_releases WHERE family='f' AND node='infer'",
-                    [],
-                    |row| row.get(0),
-                )
+            let state: String = weaver_ledger::persistence::one(&inspection, "SELECT state FROM provider_releases WHERE family='f' AND node='infer'", (), |row| row.get(0))
                 .expect("read already committed unknown range");
             assert_eq!(state, "unknown");
-            let dispatched: bool = inspection
-                .query_row(
-                    "SELECT dispatched FROM provider_runs WHERE family='f' AND node='infer'",
-                    [],
-                    |row| row.get(0),
-                )
+            let dispatched: bool = weaver_ledger::persistence::one(&inspection, "SELECT dispatched FROM provider_runs WHERE family='f' AND node='infer'", (), |row| row.get(0))
                 .expect("read already committed burn");
             assert!(dispatched);
-            let (held, reserved, state): (i64, i64, String) = inspection.query_row(
-                "SELECT t.held,r.reserved,r.state FROM provider_runs r JOIN tasks t ON t.family=r.family WHERE r.family='f' AND r.node='infer'",
-                [], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
-            ).expect("durable consumed root and original reservation");
+            let (held, reserved, state): (i64, i64, String) = weaver_ledger::persistence::one(&inspection, "SELECT t.held,r.reserved,r.state FROM provider_runs r JOIN tasks t ON t.family=r.family WHERE r.family='f' AND r.node='infer'", (), |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?))).expect("durable consumed root and original reservation");
             assert_eq!((held, reserved, state.as_str()), (4, 4, "unknown"));
-            let claim: String = inspection.query_row(
-                "SELECT kind FROM execution_claims WHERE family='f' AND node='infer'",
-                [], |row| row.get(0),
-            ).expect("canonical original claim");
+            let claim: String = weaver_ledger::persistence::one(&inspection, "SELECT kind FROM execution_claims WHERE family='f' AND node='infer'", (), |row| row.get(0)).expect("canonical original claim");
             assert_eq!(claim, "provider");
             let blocked =
-                inspection.execute("UPDATE authority SET fence=fence+1 WHERE singleton=1", []);
+                weaver_ledger::persistence::exec(&inspection, "UPDATE authority SET fence=fence+1 WHERE singleton=1", ());
             assert!(
-                matches!(blocked, Err(rusqlite::Error::SqliteFailure(ref error, _))
-            if error.code == rusqlite::ErrorCode::DatabaseBusy)
+                matches!(blocked, Err(weaver_ledger::persistence::Error::Busy(_) | weaver_ledger::persistence::Error::BusySnapshot(_)))
             );
             // The send callback may have exposed bytes; loss of its completion
             // observation must roll back only the release marker, never the hold.
@@ -653,12 +644,15 @@ fn typed_publication_does_not_yet_require_delta_evidence() {
     let temp = tempfile::tempdir().expect("temp");
     let path = temp.path().join("delta-publication-gap.db");
     let (mut ledger, plan) = fixture(&path);
-    let inspection = rusqlite::Connection::open(&path).expect("inspect original task");
-    let record: String = inspection
-        .query_row("SELECT record FROM tasks WHERE family='f'", [], |row| {
-            row.get(0)
-        })
-        .expect("original task record");
+    let inspection =
+        weaver_ledger::persistence::Session::open(&path).expect("inspect original task");
+    let record: String = weaver_ledger::persistence::one(
+        &inspection,
+        "SELECT record FROM tasks WHERE family='f'",
+        (),
+        |row| row.get(0),
+    )
+    .expect("original task record");
     let task: Task = serde_json::from_str(&record).expect("typed original task");
     let binding =
         weaver_policy::bind_provider(&task, &plan, &plan.routes[0]).expect("actual binding");
@@ -725,12 +719,13 @@ fn whole_database_rollback_requires_an_independent_recovery_floor() {
     ledger
         .close()
         .expect("checkpoint and close before snapshot");
-    std::fs::copy(&path, &snapshot).expect("copy closed database");
+    crate::snapshot::copy_closed(&path, &snapshot).expect("copy closed database");
     let targets = BTreeSet::from(["primary".into()]);
     let mut external_calls = 0_u64;
     for restore in [false, true, true] {
         if restore {
-            std::fs::copy(&snapshot, &path).expect("restore closed database snapshot");
+            crate::snapshot::copy_closed(&snapshot, &path)
+                .expect("restore closed database snapshot");
         }
         let mut owner = Ledger::open(&path).expect("new owner session");
         let permit = owner
@@ -745,12 +740,15 @@ fn whole_database_rollback_requires_an_independent_recovery_floor() {
     // This is an unqualified threat boundary, not an accepted production result.
     // Fresh process/session identity alone cannot detect a whole-store rollback.
     assert_eq!(external_calls, 3);
-    let inspection = rusqlite::Connection::open(&path).expect("inspect restored budget");
-    let budget: i64 = inspection
-        .query_row("SELECT budget FROM tasks WHERE family='f'", [], |row| {
-            row.get(0)
-        })
-        .expect("original budget");
+    let inspection =
+        weaver_ledger::persistence::Session::open(&path).expect("inspect restored budget");
+    let budget: i64 = weaver_ledger::persistence::one(
+        &inspection,
+        "SELECT budget FROM tasks WHERE family='f'",
+        (),
+        |row| row.get(0),
+    )
+    .expect("original budget");
     assert!(
         external_calls * plan.ceiling > u64::try_from(budget).expect("nonnegative account budget"),
         "possible external exposure exceeds the original account ceiling"
@@ -826,8 +824,8 @@ proptest! {
         ledger.enqueue_provider(&plan).expect("original hold");
         let permit=ledger.consume_provider("f","infer",&BTreeSet::from(["primary".into()])).expect("unknown original");
         drop(permit);
-        let connection=rusqlite::Connection::open(&path).expect("fault writer");
-        connection.execute_batch("BEGIN IMMEDIATE; UPDATE provider_runs SET reserved=1 WHERE node='infer'; UPDATE tasks SET held=1; COMMIT;").expect("balanced incomplete recovery");
+        let connection=weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+        weaver_ledger::persistence::script(&connection, "BEGIN IMMEDIATE; UPDATE provider_runs SET reserved=1 WHERE node='infer'; UPDATE tasks SET held=1; COMMIT;").expect("balanced incomplete recovery");
         drop(connection);
         if restart {drop(ledger);ledger=Ledger::open(&path).expect("restart");}
         let mut second=plan.clone();second.node="second".into();
@@ -845,8 +843,8 @@ proptest! {
         let (mut ledger,plan)=fixture_with_ceiling(&path,&["infer","second"],original);
         ledger.enqueue_provider(&plan).expect("original hold");
         drop(ledger.consume_provider("f","infer",&BTreeSet::from(["primary".into()])).expect("unknown original"));
-        let connection=rusqlite::Connection::open(&path).expect("fault writer");
-        connection.execute_batch("BEGIN IMMEDIATE; DELETE FROM provider_runs; UPDATE tasks SET held=0; COMMIT;").expect("lost reservation and aggregate");drop(connection);
+        let connection=weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+        weaver_ledger::persistence::script(&connection, "BEGIN IMMEDIATE; DELETE FROM provider_runs; UPDATE tasks SET held=0; COMMIT;").expect("lost reservation and aggregate");drop(connection);
         if restart {drop(ledger);ledger=Ledger::open(&path).expect("restart");}
         let mut second=plan.clone();second.node="second".into();
         prop_assert!(ledger.enqueue_provider(&second).is_err());

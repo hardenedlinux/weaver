@@ -1,18 +1,28 @@
-//! One deciding SQLite store: immutable logical keys, holds, queue, policy and fence.
-//! Snapshot rollback and multi-host SQLite filesystems are outside this profile.
+//! One deciding MRR Data/Turso store: immutable logical keys, holds, queue, policy and fence.
+//! Whole-image rollback and network filesystems remain outside this profile.
+/// Trusted host persistence utilities backed only by MRR Data's Turso driver.
+/// This is not a Gateway request surface or an authorization capability.
+pub mod persistence;
+#[cfg(test)]
+extern crate self as weaver_ledger;
 mod execution_exposure;
+mod exposure_manifest;
 mod provider;
 mod provider_profiles;
 mod publication;
 mod publication_barrier;
 mod publication_review;
 mod schema;
+#[cfg(test)]
+#[path = "../tests/unit/storage_snapshot.rs"]
+mod snapshot;
 mod source_authority;
 mod source_rotation;
 pub use provider::{ProviderDispatch, ProviderRelease};
 mod store;
 mod stream_catalog;
 mod stream_custody;
+mod stream_progress;
 mod stream_ranges;
 mod stream_state;
 mod task_publication;

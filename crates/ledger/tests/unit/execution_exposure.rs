@@ -6,6 +6,81 @@ use weaver_ledger::{Ledger, StreamClaim};
 proptest! {
     #![proptest_config(Config::with_cases(32))]
     #[test]
+    fn duplicate_claim_members_cannot_be_normalized_out_of_recovery(original_last in proptest::bool::ANY) {
+        let temp=tempfile::tempdir().expect("directory");let path=temp.path().join("duplicate-claim.db");
+        let (mut ledger,contract)=stream_properties::fixture(&path);
+        let receipt=ledger.enqueue_message(&stream_properties::message(&contract,0,0,1)).expect("original member");
+        let owner=ledger.claim_stream(StreamClaim{family:"f",node:"emit",destination:&contract.destination,revision:0,fence:1}).expect("original owner");
+        let original=format!(r#""m0":{{"digest":"{}","ceiling":4}}"#,receipt.digest);
+        let changed=r#""m0":{"digest":"replaced-original","ceiling":4}"#;
+        let body=if original_last {format!("{{{changed},{original}}}")}else{format!("{{{original},{changed}}}")};
+        let connection=weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+        weaver_ledger::persistence::exec(&connection,"UPDATE execution_claims SET reservations=?1",[body]).expect("syntactically valid duplicate JSON keys");
+        prop_assert!(ledger.consume_range(&owner,"m0",4).is_err());
+        prop_assert!(ledger.claim_stream(StreamClaim{family:"f",node:"emit",destination:&contract.destination,revision:0,fence:1}).is_err(),"duplicate members must block custody");
+        prop_assert_eq!(ledger.held("f").expect("original hold"),4);
+        let ranges:i64=weaver_ledger::persistence::one(&connection,"SELECT COUNT(*) FROM stream_ranges",(),|r|r.get(0)).expect("range count");
+        prop_assert_eq!(ranges,0);
+    }
+    #[test]
+    fn restored_message_cursor_cannot_hide_consumed_range(
+        length in 1usize..=8,
+        observation in 0u8..4,
+        restore_sequence in proptest::bool::ANY,
+    ) {
+        let temp = tempfile::tempdir().expect("directory");
+        let path = temp.path().join("range-progress.db");
+        let (mut ledger, contract) = stream_properties::fixture(&path);
+        ledger.enqueue_message(&stream_properties::message(&contract, 0, 0, 1)).expect("message");
+        let claim = || StreamClaim { family: "f", node: "emit", destination: &contract.destination, revision: 0, fence: 1 };
+        let owner = ledger.claim_stream(claim()).expect("owner");
+        let permit = ledger.consume_range(&owner, "m0", length).expect("burn");
+        if observation == 0 { drop(permit); } else {
+            ledger.write_range(&owner, permit, |_| if observation == 1 {
+                WriteObservation::Complete
+            } else if observation == 2 { WriteObservation::Partial(0) }
+            else { WriteObservation::Unknown }).expect("original observation");
+        }
+        let connection = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+        weaver_ledger::persistence::exec(&connection, "UPDATE stream_messages SET state='queued',cursor=0", ()).expect("stale message projection");
+        if restore_sequence { weaver_ledger::persistence::exec(&connection, "UPDATE stream_messages SET next_sequence=0", ()).expect("stale sequence projection"); }
+        prop_assert!(ledger.consume_range(&owner, "m0", length).is_err());
+        prop_assert!(ledger.claim_stream(claim()).is_err());
+        drop(ledger);
+        let mut ledger = Ledger::open(&path).expect("restart for observation");
+        prop_assert!(ledger.claim_stream(claim()).is_err());
+        prop_assert_eq!(ledger.held("f").expect("original hold"), 4);
+        let count: i64 = weaver_ledger::persistence::one(&connection, "SELECT COUNT(*) FROM stream_ranges", (), |row| row.get(0)).expect("original consumption");
+        prop_assert_eq!(count, 1);
+    }
+
+    #[test]
+    fn restored_progress_cannot_release_old_writer_or_connection(
+        length in 1usize..=8,
+        restore_sequence in proptest::bool::ANY,
+    ) {
+        let temp=tempfile::tempdir().expect("directory");
+        let path=temp.path().join("old-custody.db");
+        let (mut ledger,contract)=stream_properties::fixture(&path);
+        ledger.enqueue_message(&stream_properties::message(&contract,0,0,1)).expect("message");
+        let mut owner=ledger.claim_stream(StreamClaim{family:"f",node:"emit",destination:&contract.destination,revision:0,fence:1}).expect("owner");
+        let permit=ledger.consume_range(&owner,"m0",length).expect("original consumption");
+        let connection=weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+        weaver_ledger::persistence::exec(&connection, "UPDATE stream_messages SET state='queued',cursor=0", ()).expect("stale progress");
+        if restore_sequence { weaver_ledger::persistence::exec(&connection, "UPDATE stream_messages SET next_sequence=0", ()).expect("stale sequence"); }
+        let mut connections=0;
+        let connect=ledger.connect_stream(&mut owner,|_|{connections+=1;Ok(())});
+        prop_assert!(connect.is_err());prop_assert_eq!(connections,0);
+        prop_assert!(ledger.resume_message(&owner,"m0",0,1).is_err());
+        let mut writes=0;
+        let write=ledger.write_range(&owner,permit,|_|{writes+=1;WriteObservation::Complete});
+        prop_assert!(write.is_err());prop_assert_eq!(writes,0);
+        prop_assert_eq!(ledger.held("f").expect("original hold"),4);
+        let range:(String,Option<i64>)=weaver_ledger::persistence::one(&connection, "SELECT state,written FROM stream_ranges", (), |r|Ok((r.get(0)?,r.get(1)?))).expect("unknown consumption");
+        prop_assert_eq!(range,("unknown".into(),None));
+    }
+
+    #[test]
     fn final_write_requires_exact_durable_range(
         length in 1usize..=8,
         fault in 0u8..4,
@@ -18,14 +93,14 @@ proptest! {
             family: "f", node: "emit", destination: &contract.destination, revision: 0, fence: 1,
         }).expect("owner");
         let permit = ledger.consume_range(&owner, "m0", length).expect("durable burn");
-        let connection = rusqlite::Connection::open(&path).expect("fault writer");
+        let connection = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
         let sql = match fault {
             0 => "UPDATE stream_ranges SET offset=offset+1",
             1 => "UPDATE stream_ranges SET length=length+1",
             2 => "UPDATE stream_messages SET next_sequence=next_sequence+1",
             _ => "UPDATE stream_ranges SET written=1",
         };
-        connection.execute(sql, []).expect("inconsistent recovery projection");
+        weaver_ledger::persistence::exec(&connection, sql, ()).expect("inconsistent recovery projection");
         let mut calls = 0;
         let result = ledger.write_range(&owner, permit, |_| {
             calls += 1;
@@ -34,13 +109,13 @@ proptest! {
         prop_assert!(matches!(result, Err(weaver_contracts::Error::Conflict("range consumption changed"))));
         prop_assert_eq!(calls, 0);
         prop_assert_eq!(ledger.held("f").expect("retained exposure"), 4);
-        let state: String = connection.query_row("SELECT state FROM stream_ranges", [], |row| row.get(0)).expect("unknown range");
+        let state: String = weaver_ledger::persistence::one(&connection, "SELECT state FROM stream_ranges", (), |row| row.get(0)).expect("unknown range");
         prop_assert_eq!(state, "unknown");
     }
 }
 
 fn corrupt(path: &std::path::Path, stream: bool, fault: u8) {
-    let connection = rusqlite::Connection::open(path).expect("fault writer");
+    let connection = weaver_ledger::persistence::Session::open(path).expect("fault writer");
     let sql = match (stream, fault) {
         (_, 0) => "DELETE FROM execution_claims",
         (false, 1) => "UPDATE execution_claims SET kind='stream'",
@@ -52,9 +127,7 @@ fn corrupt(path: &std::path::Path, stream: bool, fault: u8) {
         (true, 5) => "DELETE FROM stream_messages WHERE message='m1'",
         _ => "UPDATE tasks SET budget=budget+1",
     };
-    connection
-        .execute(sql, [])
-        .expect("inconsistent recovery image");
+    weaver_ledger::persistence::exec(&connection, sql, ()).expect("inconsistent recovery image");
 }
 
 #[test]
@@ -68,12 +141,14 @@ fn restart_never_backfills_request_claims_from_operations() {
     corrupt(&path, false, 0);
     drop(ledger);
     let mut ledger = Ledger::open(&path).expect("restart");
-    let connection = rusqlite::Connection::open(&path).expect("observe");
-    let claims: i64 = connection
-        .query_row("SELECT COUNT(*) FROM execution_claims", [], |row| {
-            row.get(0)
-        })
-        .expect("claims");
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("observe");
+    let claims: i64 = weaver_ledger::persistence::one(
+        &connection,
+        "SELECT COUNT(*) FROM execution_claims",
+        (),
+        |row| row.get(0),
+    )
+    .expect("claims");
     assert_eq!(claims, 0);
     assert!(ledger.consume("family", "n0").is_err());
     assert_eq!(ledger.held("family").expect("hold"), 4);
@@ -96,9 +171,8 @@ fn orphaned_request_claim_cannot_admit_a_replacement_operation() {
         .consume("family", "n0")
         .expect("original consumption");
     drop(permit);
-    let connection = rusqlite::Connection::open(&path).expect("fault writer");
-    connection
-        .execute("DELETE FROM operations", [])
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+    weaver_ledger::persistence::exec(&connection, "DELETE FROM operations", ())
         .expect("lost projection");
     drop(connection);
     drop(ledger);
@@ -151,12 +225,10 @@ fn lost_message_projection_cannot_recycle_original_unknown_hold() {
     let range = ledger
         .consume_range(&owner, "m0", 4)
         .expect("unknown consumed range");
-    let connection = rusqlite::Connection::open(&path).expect("fault writer");
-    connection
-        .execute("DELETE FROM stream_ranges", [])
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+    weaver_ledger::persistence::exec(&connection, "DELETE FROM stream_ranges", ())
         .expect("lost range projection");
-    connection
-        .execute("DELETE FROM stream_messages", [])
+    weaver_ledger::persistence::exec(&connection, "DELETE FROM stream_messages", ())
         .expect("lost message projection");
     drop(connection);
     let mut calls = 0;
@@ -204,8 +276,8 @@ proptest! {
         let request = ledger.consume("family", "n0").expect("request consumption");
         let owner = ledger.claim_stream(StreamClaim { family: "family", node: "n1", destination: &contract.destination, revision: 0, fence: 1 }).expect("stream owner");
         let range = ledger.consume_range(&owner, "m0", 4).expect("range");
-        let connection = rusqlite::Connection::open(&path).expect("fault writer");
-        connection.execute("UPDATE tasks SET held=?1", [held as i64]).expect("inconsistent shared hold");
+        let connection = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+        weaver_ledger::persistence::exec(&connection, "UPDATE tasks SET held=?1", weaver_ledger::persistence::params![(held as i64).to_owned()]).expect("inconsistent shared hold");
         drop(connection);
         let mut calls = 0;
         let dispatched = ledger.dispatch(request, |_| { calls += 1; });
@@ -238,8 +310,8 @@ proptest! {
         } else { ledger.consume("family", "n0").map(|_| ()) };
         prop_assert!(outcome.is_err(), "unretained request reached consumption or send");
         prop_assert_eq!(calls, 0);
-        let connection = rusqlite::Connection::open(&path).expect("observe");
-        let claims: i64 = connection.query_row("SELECT COUNT(*) FROM execution_claims", [], |row| row.get(0)).expect("claims");
+        let connection = weaver_ledger::persistence::Session::open(&path).expect("observe");
+        let claims: i64 = weaver_ledger::persistence::one(&connection, "SELECT COUNT(*) FROM execution_claims", (), |row| row.get(0)).expect("claims");
         if fault == 0 { prop_assert_eq!(claims, 0, "open must not remint claims"); }
         prop_assert_eq!(ledger.held("family").expect("hold"), if fault == 3 { 4 } else if fault == 5 { 9 } else { 8 });
     }
@@ -287,8 +359,8 @@ fn balanced_projection_cannot_shrink_another_original_reservation() {
     let permit = ledger.consume("family", "n0").expect("unknown original");
     drop(permit);
     drop(ledger);
-    let connection = rusqlite::Connection::open(&path).expect("fault writer");
-    connection.execute_batch("BEGIN IMMEDIATE; UPDATE operations SET reserved=1 WHERE node='n0'; UPDATE tasks SET held=1; COMMIT;").expect("balanced incomplete recovery");
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+    weaver_ledger::persistence::script(&connection, "BEGIN IMMEDIATE; UPDATE operations SET reserved=1 WHERE node='n0'; UPDATE tasks SET held=1; COMMIT;").expect("balanced incomplete recovery");
     drop(connection);
     let mut recovered = Ledger::open(&path).expect("restart");
     assert!(recovered.enqueue(&fixtures::proposal(1, 4)).is_err());
@@ -310,9 +382,9 @@ proptest! {
         ledger.enqueue(&fixtures::proposal(0,original)).expect("original hold");
         let permit=ledger.consume("family","n0").expect("consumption");
         drop(permit);
-        let connection=rusqlite::Connection::open(&path).expect("fault writer");
-        connection.execute("UPDATE operations SET reserved=?1 WHERE node='n0'",[projected as i64]).expect("row projection");
-        connection.execute("UPDATE tasks SET held=?1",[projected as i64]).expect("balanced aggregate");
+        let connection=weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+        weaver_ledger::persistence::exec(&connection, "UPDATE operations SET reserved=?1 WHERE node='n0'", weaver_ledger::persistence::params![(projected as i64).to_owned()]).expect("row projection");
+        weaver_ledger::persistence::exec(&connection, "UPDATE tasks SET held=?1", weaver_ledger::persistence::params![(projected as i64).to_owned()]).expect("balanced aggregate");
         drop(connection);
         if restart { drop(ledger);ledger=Ledger::open(&path).expect("restart"); }
         prop_assert!(ledger.enqueue(&fixtures::proposal(1,4)).is_err());
@@ -335,8 +407,8 @@ proptest! {
         let owner=ledger.claim_stream(StreamClaim{family:"f",node:"emit",destination:&contract.destination,revision:0,fence:1}).expect("custody");
         let permit=ledger.consume_range(&owner,"m0",4).expect("unknown original range");
         drop(permit);drop(owner);
-        let connection=rusqlite::Connection::open(&path).expect("fault writer");
-        connection.execute_batch("BEGIN IMMEDIATE; UPDATE stream_messages SET reserved=1 WHERE message='m0'; UPDATE tasks SET held=1; COMMIT;").expect("balanced incomplete recovery");
+        let connection=weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+        weaver_ledger::persistence::script(&connection, "BEGIN IMMEDIATE; UPDATE stream_messages SET reserved=1 WHERE message='m0'; UPDATE tasks SET held=1; COMMIT;").expect("balanced incomplete recovery");
         drop(connection);
         if restart {drop(ledger);ledger=Ledger::open(&path).expect("restart");}
         prop_assert!(ledger.enqueue_message(&stream_properties::message(&contract,1,0,1)).is_err());
@@ -359,10 +431,12 @@ fn lost_reservation_row_cannot_fund_a_different_request() {
         .expect("original hold");
     drop(ledger.consume("family", "n0").expect("unknown original"));
     drop(ledger);
-    let connection = rusqlite::Connection::open(&path).expect("fault writer");
-    connection
-        .execute_batch("BEGIN IMMEDIATE; DELETE FROM operations; UPDATE tasks SET held=0; COMMIT;")
-        .expect("missing row and aggregate");
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+    weaver_ledger::persistence::script(
+        &connection,
+        "BEGIN IMMEDIATE; DELETE FROM operations; UPDATE tasks SET held=0; COMMIT;",
+    )
+    .expect("missing row and aggregate");
     drop(connection);
     let mut recovered = Ledger::open(&path).expect("restart");
     assert!(recovered.enqueue(&fixtures::proposal(1, 4)).is_err());
@@ -385,8 +459,8 @@ proptest! {
         ledger.enqueue_message(&first).expect("original hold");
         let owner=ledger.claim_stream(StreamClaim{family:"f",node:"emit",destination:&contract.destination,revision:0,fence:1}).expect("custody");
         drop(ledger.consume_range(&owner,"m0",4).expect("unknown original range"));drop(owner);
-        let connection=rusqlite::Connection::open(&path).expect("fault writer");
-        connection.execute_batch("BEGIN IMMEDIATE; DELETE FROM stream_ranges; DELETE FROM stream_messages; UPDATE tasks SET held=0; COMMIT;").expect("lost reservation and aggregate");drop(connection);
+        let connection=weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+        weaver_ledger::persistence::script(&connection, "BEGIN IMMEDIATE; DELETE FROM stream_ranges; DELETE FROM stream_messages; UPDATE tasks SET held=0; COMMIT;").expect("lost reservation and aggregate");drop(connection);
         if restart {drop(ledger);ledger=Ledger::open(&path).expect("restart");}
         prop_assert!(ledger.enqueue_message(&stream_properties::message(&contract,1,0,1)).is_err());
         prop_assert!(ledger.message_receipt("f","emit","m1").expect("observe").is_none());
@@ -419,8 +493,8 @@ fn surviving_stream_message_cannot_hide_a_lost_unknown_reservation() {
             .expect("unknown consumed range"),
     );
     drop(owner);
-    let connection = rusqlite::Connection::open(&path).expect("fault writer");
-    connection.execute_batch("BEGIN IMMEDIATE; DELETE FROM stream_ranges WHERE message='m0'; DELETE FROM stream_messages WHERE message='m0'; UPDATE tasks SET held=4; COMMIT;").expect("partial loss with balanced aggregate");
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+    weaver_ledger::persistence::script(&connection, "BEGIN IMMEDIATE; DELETE FROM stream_ranges WHERE message='m0'; DELETE FROM stream_messages WHERE message='m0'; UPDATE tasks SET held=4; COMMIT;").expect("partial loss with balanced aggregate");
     drop(connection);
     drop(ledger);
     let mut ledger = Ledger::open(&path).expect("restart");
@@ -441,15 +515,15 @@ proptest! {
         ledger.enqueue_message(&stream_properties::message(&contract,1,0,1)).expect("second hold");
         let owner=ledger.claim_stream(StreamClaim{family:"f",node:"emit",destination:&contract.destination,revision:0,fence:1}).expect("custody");
         let permit=ledger.consume_range(&owner,"m0",4).expect("original pending write");
-        let connection=rusqlite::Connection::open(&path).expect("fault writer");
-        let original:String=connection.query_row("SELECT reservations FROM execution_claims",[],|row|row.get(0)).expect("retained manifest");
+        let connection=weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+        let original:String=weaver_ledger::persistence::one(&connection, "SELECT reservations FROM execution_claims", (), |row|row.get(0)).expect("retained manifest");
         let sql=match fault {
             0=>"DELETE FROM stream_messages WHERE message='m1'; UPDATE tasks SET held=4;",
             1=>"UPDATE stream_messages SET message='shadow',proposal=json_set(proposal,'$.message','shadow') WHERE message='m1';",
             2=>"UPDATE stream_messages SET digest='substituted' WHERE message='m1';",
             _=>"UPDATE stream_messages SET reserved=3,proposal=json_set(proposal,'$.ceiling',3) WHERE message='m1'; UPDATE tasks SET held=7;",
         };
-        connection.execute_batch(sql).expect("inconsistent recovered projection");
+        weaver_ledger::persistence::script(&connection, sql).expect("inconsistent recovered projection");
         let expected=ledger.held("f").expect("damaged aggregate");
         let mut calls=0;
         let result=ledger.write_range(&owner,permit,|_|{calls+=1;WriteObservation::Complete});
@@ -459,7 +533,7 @@ proptest! {
         if restart {drop(ledger);ledger=Ledger::open(&path).expect("restart");}
         let custody=ledger.claim_stream(StreamClaim{family:"f",node:"emit",destination:&contract.destination,revision:0,fence:1});
         prop_assert!(custody.is_err());
-        let after:String=connection.query_row("SELECT reservations FROM execution_claims",[],|row|row.get(0)).expect("unchanged manifest");
+        let after:String=weaver_ledger::persistence::one(&connection, "SELECT reservations FROM execution_claims", (), |row|row.get(0)).expect("unchanged manifest");
         prop_assert_eq!(after,original);
         prop_assert_eq!(ledger.held("f").expect("unrepaired projection"),expected);
     }
@@ -533,22 +607,27 @@ fn check_missing_finite_member(
     let permit = ledger
         .consume_range(&owner, "m0", 4)
         .expect("burn before projection loss");
-    let connection = rusqlite::Connection::open(&path).expect("fault writer");
-    let original: String = connection
-        .query_row("SELECT reservations FROM execution_claims", [], |row| {
-            row.get(0)
-        })
-        .expect("original manifest");
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+    let original: String = weaver_ledger::persistence::one(
+        &connection,
+        "SELECT reservations FROM execution_claims",
+        (),
+        |row| row.get(0),
+    )
+    .expect("original manifest");
     let damaged_hold = u64::from(count - 2) * 4;
-    connection
-        .execute(
-            "DELETE FROM stream_messages WHERE message=?1",
-            [format!("m{lost}")],
-        )
-        .expect("lost sibling projection");
-    connection
-        .execute("UPDATE tasks SET held=?1", [damaged_hold as i64])
-        .expect("matching surviving row sum");
+    weaver_ledger::persistence::exec(
+        &connection,
+        "DELETE FROM stream_messages WHERE message=?1",
+        weaver_ledger::persistence::params![(format!("m{lost}")).to_owned()],
+    )
+    .expect("lost sibling projection");
+    weaver_ledger::persistence::exec(
+        &connection,
+        "UPDATE tasks SET held=?1",
+        weaver_ledger::persistence::params![(damaged_hold as i64).to_owned()],
+    )
+    .expect("matching surviving row sum");
     let mut sends = 0;
     let result = ledger.write_range(&owner, permit, |_| {
         sends += 1;
@@ -601,11 +680,13 @@ fn check_missing_finite_member(
             .is_err(),
         "a new authority cannot replace an unretained original member"
     );
-    let retained: String = connection
-        .query_row("SELECT reservations FROM execution_claims", [], |row| {
-            row.get(0)
-        })
-        .expect("retained original manifest");
+    let retained: String = weaver_ledger::persistence::one(
+        &connection,
+        "SELECT reservations FROM execution_claims",
+        (),
+        |row| row.get(0),
+    )
+    .expect("retained original manifest");
     prop_assert_eq!(retained, original);
     prop_assert_eq!(ledger.held("f").expect("unrepaired hold"), damaged_hold);
     Ok(())
@@ -620,16 +701,16 @@ fn maximum_manifest_cannot_replace_a_lost_sibling_after_restart() {
 fn old_claim_schema_is_not_backfilled_from_surviving_rows() {
     let temp = tempfile::tempdir().expect("directory");
     let path = temp.path().join("unqualified-claim-schema.db");
-    let connection = rusqlite::Connection::open(&path).expect("old image");
-    connection.execute_batch("CREATE TABLE execution_claims(family TEXT,node TEXT,kind TEXT,PRIMARY KEY(family,node)); INSERT INTO execution_claims VALUES('f','emit','stream');").expect("old retained claim");
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("old image");
+    weaver_ledger::persistence::script(&connection, "CREATE TABLE execution_claims(family TEXT,node TEXT,kind TEXT,PRIMARY KEY(family,node)); INSERT INTO execution_claims VALUES('f','emit','stream');").expect("old retained claim");
     assert!(Ledger::open(&path).is_err());
-    let columns: i64 = connection
-        .query_row(
-            "SELECT COUNT(*) FROM pragma_table_info('execution_claims') WHERE name='reservations'",
-            [],
-            |row| row.get(0),
-        )
-        .expect("schema observation");
+    let columns: i64 = weaver_ledger::persistence::one(
+        &connection,
+        "SELECT COUNT(*) FROM pragma_table_info('execution_claims') WHERE name='reservations'",
+        (),
+        |row| row.get(0),
+    )
+    .expect("schema observation");
     assert_eq!(columns, 0);
 }
 
@@ -658,14 +739,15 @@ fn concurrent_message_admission_preserves_both_manifest_members() {
     });
     let mut ledger = Ledger::open(&path).expect("recovery");
     assert_eq!(ledger.held("f").expect("both holds"), 8);
-    let connection = rusqlite::Connection::open(&path).expect("manifest observation");
-    let members: i64 = connection
-        .query_row(
-            "SELECT COUNT(*) FROM execution_claims,json_each(reservations)",
-            [],
-            |row| row.get(0),
-        )
-        .expect("member count");
+    let connection =
+        weaver_ledger::persistence::Session::open(&path).expect("manifest observation");
+    let members: i64 = weaver_ledger::persistence::one(
+        &connection,
+        "SELECT COUNT(*) FROM execution_claims,json_each(reservations)",
+        (),
+        |row| row.get(0),
+    )
+    .expect("member count");
     assert_eq!(members, 2);
     let owner = ledger
         .claim_stream(StreamClaim {
@@ -700,14 +782,14 @@ fn exhausted_budget_cannot_publish_a_manifest_member_without_its_row() {
             .enqueue_message(&stream_properties::message(&contract, 1, 0, 1))
             .is_err()
     );
-    let connection = rusqlite::Connection::open(&path).expect("observation");
-    let members: i64 = connection
-        .query_row(
-            "SELECT COUNT(*) FROM execution_claims,json_each(reservations) WHERE key='m1'",
-            [],
-            |row| row.get(0),
-        )
-        .expect("rollback evidence");
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("observation");
+    let members: i64 = weaver_ledger::persistence::one(
+        &connection,
+        "SELECT COUNT(*) FROM execution_claims,json_each(reservations) WHERE key='m1'",
+        (),
+        |row| row.get(0),
+    )
+    .expect("rollback evidence");
     assert_eq!(members, 0);
     assert_eq!(ledger.held("f").expect("original hold"), 5);
     assert!(
@@ -738,13 +820,15 @@ fn selected_message_binding_must_match_its_committed_digest_at_final_write() {
     let permit = ledger
         .consume_range(&owner, "m0", 4)
         .expect("pending range");
-    let connection = rusqlite::Connection::open(&path).expect("fault writer");
-    connection
-        .execute(
-            "UPDATE stream_messages SET proposal=json_set(proposal,'$.payload_digest',?1)",
-            [weaver_contracts::body_digest("substituted")],
-        )
-        .expect("substituted selected facts");
+    let connection = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+    weaver_ledger::persistence::exec(
+        &connection,
+        "UPDATE stream_messages SET proposal=json_set(proposal,'$.payload_digest',?1)",
+        weaver_ledger::persistence::params![
+            (weaver_contracts::body_digest("substituted")).to_owned()
+        ],
+    )
+    .expect("substituted selected facts");
     let mut calls = 0;
     assert!(
         ledger
