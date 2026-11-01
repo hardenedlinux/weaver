@@ -1,3 +1,4 @@
+import {closeCompiler} from './compiler-lifecycle';
 import { fork, type ChildProcess } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import type { Scene, SourceCatalog } from './source/types';
@@ -6,11 +7,13 @@ import type { Scene, SourceCatalog } from './source/types';
 export class CompilationOwner {
   private worker?: ChildProcess;
   private jobs = 0;
+  private closing?:Promise<void>;
   rssBytes = 0;
   observedPeakRSSBytes = 0;
   private queue: Promise<void> = Promise.resolve();
   constructor(private readonly catalog: SourceCatalog) {}
   compile(index: number): Promise<Scene> {
+    if(this.closing)return Promise.reject(new Error("Compiler owner is closing"));
     const view=this.catalog.views[index];
     if(!view) return Promise.reject(new Error('Unknown source index'));
     const result = this.queue.then(async () => {
@@ -44,17 +47,15 @@ export class CompilationOwner {
     this.queue = result.then(() => undefined, () => undefined);
     return result;
   }
-  private async release(worker: ChildProcess): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
-      worker.once('error', reject);
-      worker.once('exit', (code, signal) => code === 0 ? resolve() : reject(new Error('Compiler process exit: ' + code + '/' + signal)));
-      worker.send({ close: true });
-    });
+  private release(worker:ChildProcess):Promise<void>{return closeCompiler(worker);}
+  close():Promise<void>{
+    return this.closing??=this.drain();
   }
-  async close(): Promise<void> {
+  private async drain():Promise<void>{
     await this.queue;
-    if (this.worker) await this.release(this.worker);
-    this.worker = undefined;
-    this.rssBytes = 0;
+    const worker=this.worker;
+    this.worker=undefined;
+    this.rssBytes=0;
+    if(worker)await this.release(worker);
   }
 }

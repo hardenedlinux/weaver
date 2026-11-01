@@ -53,3 +53,22 @@ test('theme variants preserve captured technology logos alongside library icon p
  }
 });
 });
+
+test('closing fences new requests while draining both original D2 captures',async()=>{
+ const catalog=collectCatalog(fileURLToPath(new URL('../../../',import.meta.url)));
+ const owner=new CompilationOwner(catalog);
+ const index=catalog.views.findIndex(view=>view.source.endsWith('/12-execution-correspondence.d2'));
+ const pending=owner.compile(index);
+ const gatewayIndex=catalog.views.findIndex(view=>view.source.endsWith('/01-system-boundaries.d2'));
+ const gatewayPending=owner.compile(gatewayIndex);
+ const terminal=owner.close();
+ await expect(owner.compile(index)).rejects.toThrow('closing');
+ const accepted=await pending;
+ const gatewayAccepted=await gatewayPending;
+ expect(accepted.svg).toContain(accepted.view.sha256);
+ expect(accepted.nodes.length).toBeGreaterThan(0);
+ expect(gatewayAccepted.svg).toContain(gatewayAccepted.view.sha256);
+ expect(gatewayAccepted.nodes.length).toBeGreaterThan(0);
+ await terminal;
+ expect(owner.close()).toBe(terminal);
+});

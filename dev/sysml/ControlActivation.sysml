@@ -173,8 +173,22 @@ package ControlActivation {
            A display filter does not change the raw-input idle or wall deadline.
            Removing diagnostic work never removes source modules, changes O2/ABI,
            invents progress or extends limits. A silent compiler still fails closed. */
+        doc /* Complete-entry diagnosis retains the original workload and deadlines.
+           The diagram hook includes both declared D2 captures, compiled topology,
+           SVG generation and natural compiler cleanup. Moving work outside the hook,
+           prewarming, splitting its bound or replacing source captures with fixtures
+           cannot qualify the original five-second contract. Phase measurements are
+           observations only and are removed before final uninstrumented acceptance.
+           Linker diagnosis separates bytes emitted by the compiler, Cargo line
+           framing and receiver delivery. Upstream patches and unchanged pinned
+           consumers have distinct evidence; source-cache edits are prohibited.
+           Frozen upstream package identities are not local rename targets.
+           Compiler close fences new work, drains accepted captures and preserves
+           failure across repeated close; IPC disconnect alone is not exit. */
         doc /* Hosted dynamic-library discovery uses the package manager's
-           current prefix as an explicit native linker search path. Gerbil build-host
+           declared PackageSpec pkg-config dependencies as producer-owned link inputs.
+           CI must not inject linker selection or library paths through RUSTFLAGS.
+           Gerbil build-host
            Cellar paths are not deployment authority. Preserve ABI, existing
            compiler flags and pinned Gerbil identity; successful archive compilation
            alone does not qualify final linking or source recovery. */
