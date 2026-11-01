@@ -126,16 +126,29 @@ separate unresolved compiler obligations.
 
 * Acceptance boundaries
 
-The complete diagram gate passes 19 tests and exports 110 source-bound views
+The pre-integration complete diagram gate passes 19 tests and exports 110 source-bound views
 on 12 host lanes. Both new SVGs are embedded above. Visual review corrected
 overlapping edge captions and moved the Rust mark clear of its node text;
 the complete image export passes again. Original failed hooks, intermediate
 diagram validation failures and the sandbox Chromium IPC refusal remain local
 evidence, outside Git. None is counted as a passing sample.
 
+Those paired and local receipts belong to the original =5b539944= source cohort.
+Concurrent Weaver work changes the shared Library composition contract and keeps
+gateway composition in a separate hook. That split is not evidence for the
+original combined five-second obligation. Integration preserves a dedicated
+test that creates a fresh compiler owner, queues both original real views before
+close, checks their bound SVGs and waits for natural exit in one unchanged
+five-second test. The two new views use the existing model-map composition,
+with complete captured-word and relationship coverage; no legacy fallback or
+second diagram engine is introduced. New integration receipts must be recorded
+separately from the frozen paired experiment.
+
 MRR commit =62ab925= removes the CI linker overrides and supplies the package
 declaration and Cargo adapter. Bridge commit =d7bc448= changes only protocol-test
 worker admission. Their new remote CI runs remain distinct from local acceptance.
 The preceding MRR Darwin run also refused its standard Scheme test on the
-unchanged five-second no-output gate before Rust linking; the package-link fix
-does not by itself close that independent failure.
+unchanged five-second no-output gate before Rust linking. It emitted =HARNESS-OK=
+and final =OK= but remained running; diagnostic markers do not prove natural
+exit. Cleanup then reported a process-group permission error. The package-link
+fix does not by itself close either independent failure.
