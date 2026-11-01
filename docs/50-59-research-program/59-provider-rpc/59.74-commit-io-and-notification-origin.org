@@ -91,10 +91,61 @@ that interference. Off/on ratios change direction. All samples remain diagnostic
 The combined-helper ASP responsibility failure is retained; modular clock,
 IO-scope, forwarding and validation owners fix it without a waiver. Real standard
 integration cancellation/restart/exposure tests remain independent production-path
-gates, not misreported decorator-specific coverage. Still missing: exact syscall
-versus callback/device time, group tickets, kernel scheduling timing, matched Linux
+gates, not misreported decorator-specific coverage. Still missing: original-operation
+kernel-clock binding, pure device/callback separation, group tickets, matched Linux
 evidence and controlled replication. No runtime candidate or weakened FULL mode
 is promoted, and SPEC/Quint responsibilities remain unchanged.
+
+* Independent kernel scope
+
+A separate five-second System Trace attaches to the owned Rust benchmark PID.
+That benchmark naturally completes all 18 cases and 13824 commits/exact recoveries.
+No profiled throughput is pooled into the main pairs. Raw trace and exports remain
+outside Git; sandbox initialization and initial presentation-conversion failures
+are retained rather than called accepted evidence.
+
+All 102150 syscall rows resolve to that PID. The thread-state export includes
+130348 owned, 2614 foreign and 5785 unresolved rows. Only owned PID/TID intervals
+on the shared trace clock participate; censored zero-time prefixes are excluded.
+For 1047 fsync calls with recognized COMMIT-function stacks, syscall time totals
+91.428163 ms, mean 87.324 us, P95 178.500 us, maximum 5.880 ms. Matched kernel
+states cover the total exactly, with no overcoverage: Running 43.490666 ms,
+Blocked 29.548792 ms, Preempted 13.058208 ms, Runnable 4.578048 ms and Interrupted
+0.752449 ms. Scheduling residence therefore appears within fsync wall time too:
+Preempted/Runnable is about 19.3%, Blocked about 32.3%.
+
+Blocked does not prove pure device service; filesystem/locking wait remains.
+Function-stack recognition is not a timed original-operation identifier, and
+block_on ancestry is not enough to call a sample COMMIT or setup. The native
+benchmark has no exported kernel-TID/cross-clock anchor, so these trace intervals
+cannot be assigned directly to the main campaign's slow request or notification.
+They refine Host evidence without weakening currentAtUse, commit-floor, unknown
+exposure, final admission or SPEC/Quint responsibilities.
+
+* CI observation repair
+
+At 30856fb1, 13 of 14 remote checks pass; macOS source qualification hits the
+unchanged 1200-second build wall. At 3a552e2e, macOS repeats that wall failure
+and Ubuntu hits 30 seconds without output after the graphar-rs artifact.
+Generic property tests/lint pass. The macOS log is about 80 MB of ongoing
+compiler work; these are build-observation failures, not recovery assertions.
+
+The repair removes global per-inference/coercion and inline-decision diagnostics.
+Normal compiler observations use coarse phase/function boundaries and owned
+artifacts; detailed LLVM ordinals are selected for actual application tails,
+mrr_data_datafusion and mrr_data_graphar. Explicit Host logging remains authoritative.
+No heartbeat, test omission, timeout extension or pin change is introduced.
+The revised local observer controls pass 13 focused cases. The full local Python
+receipt retains two five-second native cold-launch failures, including unchanged
+C++ and unwrapped Rust controls; it is not a full pass. The separate local source
+build fails on missing :asp-gerbil-scheme/building-api in its Gerbil cohort;
+it does not qualify the hosted immutable source environment. Complete remote
+gates remain required independently of focused checks and benchmark success.
+
+The generic application build subsequently completes in 5m44s under the same
+1200/30 policy, with Cargo's successful build-finished receipt and both test
+executables. It uses the existing cache and different generic features: it is
+neither a cold-build result nor acceptance of the missing local source cohort.
 
 * Core execution design
 
