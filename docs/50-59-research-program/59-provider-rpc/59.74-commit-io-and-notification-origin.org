@@ -190,3 +190,15 @@ observation stays enabled. O2, ABI, original source graph, feature/test/resource
 matrix and 1200/30 limits remain unchanged. Silence still fails at the original
 bound. Detailed compiler tracing is an opt-in diagnostic workload, not a source
 of invented progress or a substitute for complete recovery acceptance.
+
+Focused native-observer validation retains the inspection precondition explicitly.
+The first restricted PATH run yields 17 passes, four failures and one deselection;
+restoring the Host's getconf PATH yields 20 passes, one failure and the same
+deselection. A separate owned-child probe confirms pgrep exit 3, no child list,
+and an unavailable sysmond service in the restricted process context. With native
+inspection authorized, the unchanged focused suite passes 21 cases, with the
+compiler-output cold-build case still explicitly outside that focused scope.
+These are separate environment receipts, not an erased failure or a complete
+local Python pass. The existing local cold-launch failures remain retained;
+remote Python on 6a2fb69d passes all 71 cases. No timeout, assertion or inspection
+fallback is changed, and absence of inspection never becomes progress.
