@@ -40,12 +40,167 @@ evidence. No unsupported capability silently falls back to spawning =gxi=.
 The existing private image builder has a Darwin qualification boundary; portability
 to Linux must be demonstrated, not inferred from the C ABI shape.
 
-The upstream =docs/embedded-tooling-c-abi.org= records this gap and the required
-session/ABI contract. The C ABI tooling operations are not implemented by the
-Tokio subprocess refactor. A frozen MRR dependency cannot be described as
-consuming an unpublished or newer upstream capability. No pin is changed here.
+The upstream =docs/embedded-tooling-c-abi.org= records the session/ABI contract.
+The new opt-in tooling implementation uses the existing affine =GerbilRuntime=
+and linked strong-root exports. The separate Tokio subprocess refactor alone
+does not implement it. A frozen Gerbil bridge consumer cannot be described as
+consuming an unpublished or newer capability.
+
+* Embedded tooling implementation and admission
+
+The =embedded-tooling= feature in upstream =gerbil-scheme-build= builds a full
+compiler/expander/test graph through the existing compiler-owned manifest.
+=ToolingSession= invokes distinct build/test C exports. A fresh top-level context
+and scoped default Gerbil prelude evaluate the package's actual =build.ss=.
+The test adapter reuses gxtest's collector and harness and the standard test
+runner, while rejecting a successful harness with no executed cases. It omits
+the CLI-only process-environment mutation. No generic eval endpoint is exposed.
+
+Build requests require explicit package-relative output expectations. Zero status
+without those actual files cannot qualify completion. Paths are canonicalized;
+checks reject parent paths and observed canonical symlink escapes. Callers must
+freeze the source and dependency filesystem: canonical paths alone do not
+exclude concurrent replacement or ABA. This is trusted build-host tooling, not an in-process sandbox for
+arbitrary Scheme programs. Package code that mutates process-global state needs
+its own audited contract; per-session serialization does not isolate other host
+threads from such changes.
+
+Actual embedding exposed two CLI assumptions: Gambit's generic evaluator does
+not establish Gerbil syntax, and backend compiler invocations need the paired
+installation mapping. The implementation uses the actual Gerbil expander and
+binds the VM's installation directories. A source-owned compiler backend callback
+copies call-scoped UTF-8 argv, admits the paired compiler/builder, captures output
+through private pipes and lets the existing upstream Tokio owner reap the child.
+The public build/test operation remains a direct Scheme C ABI call. Native
+backend processes and one-time image bootstrap are explicit implementation work.
+
+The paired compiler uses block-optimized calls to its keyword invoke leaf, so
+rebinding its public procedure is insufficient. Upstream stages a derivative of
+the compiler-owned carrier, checks the unique expected invoke shape and lowers
+that leaf to the backend callback. The installed toolchain is unchanged. Unknown
+or ambiguous compiler shapes refuse image construction. MRR and Weaver do not
+own a copy of this version adapter.
+
+Backend start returns an owned job and Scheme polling yields to other green
+threads. Tokio drains I/O and actual child exit without receiving VM objects.
+An observed concurrent backend population checks overlapping admitted jobs.
+It does not measure simultaneous compiler CPU execution or prove a speedup.
+The accepted real fixture has two independent modules and requires overlapping
+backend jobs while unrelated host Tokio children also complete.
+
+Cancellation is monotonic. Before admission it refuses the operation without
+entering Scheme. After entry it waits for actual foreign return and backend
+drain, retains the Scheme status and reports cancelled-after-drain. This does
+not promise prompt preemption or artifact rollback. Dropping an outer waiter
+cannot publish a cancellation-complete receipt or release the live owner.
+
+The real test entry checks package compilation, output artifacts, a passing and
+failing suite, an empty harness, cancellation before entry and after an entered
+case, recovery of the same owner, root release and terminal close. Host descriptor
+and environment checks remain distinct from broad claims about every package's
+side effects. Failed intermediate runs are retained in temporary evidence;
+neither a watchdog-terminated call nor an unfinished CI job is acceptance.
+
+The accepted scoped-owner fixture loads its freshly built module and rejects a
+stale backend operation epoch before process admission. A later extension adds
+standard pkg-config and Gambit-only build targets. Its first run stalls and is
+refused at the unchanged idle gate; the staged standard-make adapter's next
+build fails in Apple's linker with a bus error before test entry. That extension
+is not qualified by the earlier passing fixture. Complete current-source
+build/test, strict lint, benchmark and cleanup receipts remain separate gates.
+
+* Authorized Agentic AI Lab source migration
+
+The explicit follow-up authorizes MRR's former POO Flow source pin to move to
+=tao3k/agentic-ai-lab= PR 34 at
+=921e75f830a60c2ec42c384139846b05ba5d3317=. Gerbil and Lean manifests use the
+same revision and the producer's =AgenticAILabCompositionProofs= package identity.
+LeanPoo's revision and the Gerbil bridge revision remain unchanged. The existing
+consumer SearchComposition build completes all 63 jobs against that producer;
+this does not qualify a native Scheme build or the new tooling API.
+
+Generic role syntax, functional utilities and Flow graph interfaces move to
+the producer-owned Yuanxu Core APIs. Application Query/Search/temporal imports,
+wire schema names and semantic C symbols use Agentic AI Lab's actual exported
+names. MRR does not introduce a parallel Yuanxu pin. The source owner's native
+dependency and build entrypoints own the transitive bootstrap and compiler
+strategy; Python remains acquisition/process glue. The earlier local complete
+MRR entry fails on the obsolete Core import and remains failure evidence.
+
+MRR's standard Scheme suites and CI producer resolver also consume the renamed
+APIs. Its =build.ss= uses Gerbil's own build-script and pkg-config APIs rather
+than an undeclared ASP build helper. A fresh-prefix Agentic AI Lab bootstrap
+completes naturally. The complete MRR Cargo entry then completes the package
+build and staging but fails when the system kills the large POO table C
+compilation with signal 9. The standard eight-module Scheme suite separately
+exceeds its original 45-second batch limit during dependency loading. Neither
+failure is native execution acceptance; all original limits remain unchanged.
+Producer/consumer Lake builds share an output tree and are serialized. Explicit
+root-directory checks use the subproject's declared Lean toolchain.
+The consumer's pinned-toolchain build, Composition/Protocol/Reflection checks
+and 1,726-declaration axiom audit pass. The first Ubuntu CI bootstrap exposes
+the producer's case-sensitive =justfile= spelling; the acquisition entry is
+corrected to that tracked filename. Corrective CI is pending, not acceptance.
 
 * Darwin failure attribution
+
+The large archive failure has a separate, source-grounded cause: POO's producer
+=build.ss= bounds table host functions, while generic archive recompilation
+does not inherit that gxc command-line option. Its retained C has 20,116 labels.
+The approved upstream build-owner repair uses the paired Gambit header's own
+optimized-module threshold to select multiple host functions for large GCC
+modules, keeping O2 and the complete module graph. The exact failed C then
+compiles naturally in 66.36 seconds with maximum RSS 1,756,725,248 bytes.
+This is a focused compiler observation, not full concurrent-build or runtime
+acceptance. MRR explicitly adopts only the repaired AOT build dependency;
+its runtime Gerbil source and other dependency pins remain unchanged.
+
+The unchanged eight-module Scheme inventory imports the Query core APIs it
+actually tests instead of the Orgize-bearing facade. Provider class/lifecycle
+imports also identify their existing owners. No assertion or rejection condition
+is dropped. The original 45-second wall and five-second idle gate remain.
+Package registration, compiler environment selection and natural child cleanup
+are required independently of successful source acquisition or marker output.
+
+The complete Scheme inventory now passes with eight module receipts, 147 case
+receipts, =HARNESS-OK=, final =OK= and natural process exit within the original
+wall/idle gates. Parser's existing stage trace reports real decompression,
+verification and IR admission; it is not a timer heartbeat or evidence of
+semantic success by itself. The earlier silent IR admission failure remains.
+
+The first complete archive attempt after host splitting exposes a separate
+upstream link-kind defect. The owner now accepts the shared dependency declared
+by an ordinary linker input while continuing to reject a shared-only package
+for an explicit static request. Its clean isolated Darwin unit suite passes 27 tests with
+seven opt-in tests unchanged, and strict Clippy passes. CI uses that same build
+owner's setup action: the previous separate action selected a Darwin release
+without Ascent's required compile-output admission API. Runtime dependency pins
+and the source-owned Ascent implementation are unchanged.
+
+MRR's full linked workspace compile now returns zero naturally in 4 minutes
+37 seconds. It stages 479 carriers and compiles 279 native objects using 12
+workers; the native batch takes 135,581 milliseconds. Existing Rust dependency
+artifacts and the admitted dependency prefix remain available, so this is not
+a fully cold dependency-bootstrap benchmark. The following test entry reuses
+the archive and exposes a missing declared Lean 4.31.0 installation; its real
+kernel discovery budget remains unchanged. Execution acceptance requires the
+complete test entry after that standard environment prerequisite is installed.
+
+The following full confirmation returns zero naturally in 60.47 seconds with
+291 Rust tests passing and all doctest phases retained. All three existing
+opt-in resource controls pass separately, including the 12-worker Cargo
+backpressure pair and complete 1,508,947-byte output comparison. The missing
+kernel refusal and an intervening rustdoc I/O idle refusal are both retained;
+one successful confirmation does not establish a latency distribution or erase
+those observations. Watchdog tests and false-success controls retain their
+original rejection thresholds. Upstream's later thread-receipt correction only
+observes exact kernel baseline within that existing operation gate; it does not
+alter the production API adopted by MRR.
+
+The model-bound render produces the changed tooling SVG and updated model views.
+The full render still refuses four pre-existing =d2-reference= sequence views
+under the concurrently adopted renderer's =model-view= requirement. Its partial
+107-view receipt is retained outside Git and is not a full rendering pass.
 
 The original CI diagnostic is Cargo's bare =os error 35=. That message alone
 does not identify a failed process spawn, thread creation or write. Source audit

@@ -151,6 +151,15 @@ package ControlActivation {
            embedded-runtime; this dependency feature is not a consumer-owned VM.
            Feature isolation requires explicit upstream review, never silently
            disabling existing semantics to turn an acceptance gate green. */
+        doc /* Large generated-module diagnosis preserves actual host parallelism,
+           the complete module closure, O2 and the paired Gambit runtime ABI.
+           gerbil-scheme-rust owns GCC host-function layout: use Gambit's declared
+           optimized-module label threshold to select multiple host functions
+           rather than one unbounded function. Retained generated-C compilation,
+           resource observations and full runtime acceptance are distinct gates.
+           Unchanged pinned consumers do not silently acquire an upstream patch.
+           Standard Scheme suites import the exercised owner APIs without an
+           unrelated Orgize facade; all modules and assertions remain required. */
         doc /* Build observations and detailed compiler diagnostics have separate
            controls. Package entry/return, phase transitions and bytes actually
            received from compiler pipes are observations, never completion proof.
@@ -217,6 +226,24 @@ package ControlActivation {
            remain package-owned implementation details. An unqualified image or
            unsupported ABI refuses; it never silently falls back to gxi commands.
            Current pin consumers and new upstream capability have separate evidence. */
+        doc /* Embedded tooling uses the existing affine GerbilRuntime and its
+           strong-root C ABI. Build admission requires explicit package-relative
+           artifact expectations; test admission must reject an empty successful
+           harness. Scheme retains compiler, PackageSpec and gxtest semantics.
+           A compiler-owned backend callback copies foreign argv before borrowing
+           ends and delegates only native compiler work to the upstream Tokio
+           process owner. It never launches a Scheme frontend as a fallback.
+           Queued cancellation refuses entry; entered cancellation returns only
+           after actual foreign completion and child drain. It does not undo
+           generated artifacts or admit premature VM cleanup. Final close consumes
+           the one-shot owner; a finalized VM cannot be resurrected. */
+        doc /* MRR's explicitly authorized source migration consumes the renamed
+           Agentic AI Lab package and its owned Yuanxu Core gitlink. Generic Core
+           role and Flow interfaces belong to Yuanxu; application Query, Search
+           and temporal semantics belong to Agentic AI Lab. Lean composition uses
+           the producer's actual package identity; no copied proof or old namespace
+           compatibility layer establishes conformance. Other dependency pins
+           retain their independently declared owners. */
         doc /* Native archive diagnosis tracks Cargo build-script lifetime,
            rather than inferring its owner from the last Rust artifact. Compiler
            flags and replay are gerbil-scheme-rust-owned. Consumer CI must not reconstruct a
