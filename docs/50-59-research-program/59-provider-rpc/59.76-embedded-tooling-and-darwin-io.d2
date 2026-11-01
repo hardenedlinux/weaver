@@ -1,0 +1,150 @@
+...@../../../dev/d2/themes/flow
+direction: down
+caller: Weaver / MRR\nTyped build and test requests {class: card}
+facade: gerbil-scheme-build\nEmbedded tooling session {class: card}
+bridge: Gerbil C ABI\nChecked values / rooted ownership {class: card}
+owner: Existing VM owner\nThread affinity / session generation {class: card}
+scheme: Scheme build.ss / gxtest\nPackageSpec / existing test semantics {class: card}
+image: Admitted tooling image\nCompiler / expander / package closure {class: card}
+tokio: Tokio coordination\nReadiness / backpressure / cancellation {class: card}
+complete: Build and test receipts\nComplete artifacts / actual completion {class: card}
+refused: Refused or unresolved operation\nRetain owner / await cleanup {class: card}
+caller -> facade: typed operation
+facade -> bridge: direct foreign call
+bridge -> owner: owner-checked entry
+image -> owner: admitted module closure
+owner -> scheme: existing Scheme semantics
+tokio -> owner: coordinated admission
+scheme -> complete: artifact and test evidence
+scheme -> refused: exception or unresolved outcome
+complete -> caller: checked result
+refused -> tokio: cleanup observation
+
+vars: {d2-config: {data: {figure: |json
+{
+  "title": "Embedded Gerbil tooling ownership",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Who owns direct Gerbil build and test invocation?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The upstream C ABI owns tooling calls; Scheme keeps package semantics and Tokio coordinates the outer lifecycle."
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.76-embedded-tooling-and-darwin-io.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "caller"
+        },
+        {
+          "id": "facade"
+        },
+        {
+          "id": "bridge"
+        },
+        {
+          "id": "owner"
+        },
+        {
+          "id": "scheme"
+        },
+        {
+          "id": "image"
+        },
+        {
+          "id": "tokio"
+        },
+        {
+          "id": "complete"
+        },
+        {
+          "id": "refused"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "caller": "capture",
+      "facade": "rust",
+      "bridge": "capture",
+      "owner": "capture",
+      "scheme": "capture",
+      "image": "capture",
+      "tokio": "capture",
+      "complete": "capture",
+      "refused": "capture"
+    },
+    "roles": {
+      "caller": "default",
+      "facade": "default",
+      "bridge": "default",
+      "owner": "execution",
+      "scheme": "semantic",
+      "image": "default",
+      "tokio": "default",
+      "complete": "default",
+      "refused": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+}}}

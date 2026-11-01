@@ -173,11 +173,50 @@ package ControlActivation {
            A display filter does not change the raw-input idle or wall deadline.
            Removing diagnostic work never removes source modules, changes O2/ABI,
            invents progress or extends limits. A silent compiler still fails closed. */
+        doc /* Complete-entry diagnosis retains the original workload and deadlines.
+           The diagram hook includes both declared D2 captures, compiled topology,
+           SVG generation and natural compiler cleanup. Moving work outside the hook,
+           prewarming, splitting its bound or replacing source captures with fixtures
+           cannot qualify the original five-second contract. Phase measurements are
+           observations only and are removed before final uninstrumented acceptance.
+           Linker diagnosis separates bytes emitted by the compiler, Cargo line
+           framing and receiver delivery. Upstream patches and unchanged pinned
+           consumers have distinct evidence; source-cache edits are prohibited.
+           Frozen upstream package identities are not local rename targets.
+           Compiler close fences new work, drains accepted captures and preserves
+           failure across repeated close; IPC disconnect alone is not exit. */
         doc /* Hosted dynamic-library discovery uses the package manager's
-           current prefix as an explicit native linker search path. Gerbil build-host
+           declared PackageSpec pkg-config dependencies as producer-owned link inputs.
+           CI must not inject linker selection or library paths through RUSTFLAGS.
+           Gerbil build-host
            Cellar paths are not deployment authority. Preserve ABI, existing
            compiler flags and pinned Gerbil identity; successful archive compilation
            alone does not qualify final linking or source recovery. */
+        doc /* Cargo is a native root; gerbil-scheme-rust drives Gerbil build.ss
+           through its process API and private child pipes, never the reverse.
+           Scheme owns the PackageSpec and pkg-config declaration, not an outer
+           Cargo driver or another byte-forwarding loop. The upstream Rust driver
+           uses Tokio for process I/O and cancellation. Gambit owns its nonblocking
+           ports; inherited open-file-description flags must not leak into Cargo
+           or sibling writers. Package-owned process forwarding retains
+           actual bytes, exit status and natural parent/child cleanup. Evidence
+           distinguishes write WouldBlock, process spawn and thread spawn failures;
+           a bare resource error does not prove process exhaustion. Keep actual
+           host parallelism and original output/wall budgets. Neither descriptor
+           flag resets on shared handles nor lower job counts qualify a repair. */
+        doc /* The required public build/test boundary is embedded Gerbil C ABI,
+           maintained in gerbil-scheme-rust. gerbil-scheme-build owns the typed
+           tooling session, gerbil-scheme and gerbil-scheme-sys own VM/root/C ABI
+           lifetime, and gerbil-scheme-aot-build owns bootstrap and compiler-owned
+           artifacts. A command-process wrapper is not this public API. The
+           tooling image must admit the complete compiler, PackageSpec and gxtest
+           module closure; the minimal value-conversion image is insufficient.
+           Tokio coordinates admission, I/O and cancellation without migrating
+           a live thread-affine VM. Reuse the existing VM owner and rooted values.
+           build.ss stays declarative. C/Gambit backend compiler processes may
+           remain package-owned implementation details. An unqualified image or
+           unsupported ABI refuses; it never silently falls back to gxi commands.
+           Current pin consumers and new upstream capability have separate evidence. */
         doc /* Native archive diagnosis tracks Cargo build-script lifetime,
            rather than inferring its owner from the last Rust artifact. Compiler
            flags and replay are gerbil-scheme-rust-owned. Consumer CI must not reconstruct a

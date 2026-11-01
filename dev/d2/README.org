@@ -99,11 +99,19 @@ runtime latency or throughput benchmark. The fix is maintained in
 [[https://github.com/hardenedlinux/deterministic-engineering/pull/5][the upstream Library PR]];
 Weaver consumes its exact Git commit rather than copying its implementation.
 
-104 declarations now select the public model-view composition. Four historical
+107 declarations now select the public model-view composition. Four historical
 sequence sources still require an upstream notation adapter for SDK-generated
-lifeline endpoints: W02, W04, W09 and W10. Their source messages and existing
+lifeline endpoints: W02, W04, W09 and W10; tracked in
+[[https://github.com/hardenedlinux/deterministic-engineering/issues/6][the upstream sequence-projection issue]]. Their source messages and existing
 artifacts are retained. They are not silently flattened, filtered or counted as
 newly accepted exports. A complete catalog gate must remain FAIL until those
 sources have a supported, reviewed representation. There is no old renderer
 fallback. Focused README checks and complete-catalog acceptance are reported
 separately.
+
+The concurrent PR1 complete-entry obligation is retained as one standard
+five-second integration test over the two original real sources. Source
+compilation and both measured SVG exports occur inside that test, followed by
+natural compiler completion and browser closure. Its local uninstrumented run
+passed in 4.43 seconds; this is one complete-entry receipt, not a latency bound
+or a claim that the historical failure never occurred.

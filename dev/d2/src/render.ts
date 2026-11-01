@@ -18,11 +18,11 @@ const {values}=parseArgs({args:process.argv.slice(2),options:{view:{type:'string
 const selected=catalog.views.filter(view=>!values.view||values.view.includes(view.source));
 if(!selected.length||values.view&&selected.length!==new Set(values.view).size)throw new Error('Unknown requested view');
 const hash=(bytes:string|Uint8Array)=>createHash('sha256').update(bytes).digest('hex');
-const browser=await chromium.launch();
 const count=Math.min(cpus().length,selected.length);
 const images:{source:string;theme:string;layout:string;sourceSHA256:string;svgSHA256:string;pngSHA256:string;nodes:number;edges:number;libraryInputSHA256:string}[]=[];
 const errors:string[]=[];
 const resources={themeLayers:themes,sysmlViews:capturedViews(catalog.modelCapture),iconPacks:{...iconPacks,weaver:Object.fromEntries(['go','rust','kubernetes'].map(name=>[name,{svg:catalog.fs['docs/architecture/diagrams/assets/'+name+'.svg']!,label:name}]))}};
+const browser=await chromium.launch();
 let cursor=0,cancelled=false;
 const stop=()=>{cancelled=true;};process.on('SIGINT',stop);process.on('SIGTERM',stop);
 try{

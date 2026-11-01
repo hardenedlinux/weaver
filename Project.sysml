@@ -390,6 +390,14 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.72-turso-read-stage-attribution.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.73-bridge-commit-cpu-and-ci.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.74-commit-io-and-notification-origin.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.75-complete-entry-and-output-contract.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.75-package-linkage.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.75-package-linkage.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.76-embedded-tooling-and-darwin-io.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.76-embedded-tooling-and-darwin-io.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.76-embedded-tooling-and-darwin-io.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.75-complete-entry-and-output-contract.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.75-complete-entry-and-output-contract.svg' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.svg' : File;

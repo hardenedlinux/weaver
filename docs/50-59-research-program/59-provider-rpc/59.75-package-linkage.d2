@@ -1,0 +1,129 @@
+...@../../../dev/d2/themes/flow
+vars: {d2-config: {layout-engine: elk; pad: 50}}
+direction: right
+classes: {card: {width: 360; height: 160; label.near: center-center; style.font-size: 20; style.border-radius: 12}}
+spec: Scheme build.ss\nPackageSpec dependency declaration {class: card}
+profile: Existing host profile\npkg-config library resolution {class: card}
+scheme: std/make\nDeclared Scheme compiler options {class: card}
+receipt: Atomic package link receipt\nStandard Cargo directives {class: card}
+adapter: Rust package build adapter\nTyped validation / bounded read {class: card; icon: ../../architecture/diagrams/assets/rust.svg; icon.near: outside-top-center}
+cargo_linker: Cargo-managed linking\nDeclared libraries and search inputs {class: card}
+spec -> profile: pkg-config-libs
+profile -> scheme: options resolver
+profile -> receipt: resolved package inputs
+receipt -> adapter: completed receipt
+adapter -> cargo_linker: CargoDirective
+
+vars: {d2-config: {data: {figure: |json
+{
+  "title": "Package-managed Scheme and Rust linkage",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How do declared Scheme dependencies reach Rust package linking?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The package declares its libraries; native package mechanisms own discovery and linking."
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.75-package-linkage.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "spec"
+        },
+        {
+          "id": "profile"
+        },
+        {
+          "id": "scheme"
+        },
+        {
+          "id": "receipt"
+        },
+        {
+          "id": "adapter"
+        },
+        {
+          "id": "cargo_linker"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "spec": "capture",
+      "profile": "capture",
+      "scheme": "capture",
+      "receipt": "capture",
+      "adapter": "rust",
+      "cargo_linker": "capture"
+    },
+    "roles": {
+      "spec": "default",
+      "profile": "default",
+      "scheme": "default",
+      "receipt": "default",
+      "adapter": "execution",
+      "cargo_linker": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+}}}

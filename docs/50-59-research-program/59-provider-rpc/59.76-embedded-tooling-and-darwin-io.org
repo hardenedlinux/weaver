@@ -1,0 +1,119 @@
+#+TITLE: Embedded Gerbil Tooling and Darwin I/O Ownership
+#+LANGUAGE: en
+
+* Required architecture
+
+The public build/test boundary belongs to =gerbil-scheme-rust= and uses the
+Gerbil/Gambit C ABI. =gerbil-scheme-build= owns the typed tooling session;
+=gerbil-scheme= and =gerbil-scheme-sys= own rooted values, foreign calls and VM
+lifetime. =gerbil-scheme-aot-build= owns bootstrap and canonical native artifacts.
+Weaver and MRR consume that library. They must not implement another compiler
+driver, generic eval endpoint or command configuration language.
+
+This tooling capability belongs to build/test hosts. It does not place a
+compiler or test runner in the gateway request path. Runtime Scheme governance
+uses the separately admitted production image and artifacts; production code
+cannot import this repository's development models or evidence.
+
+=build.ss= retains its PackageSpec, module and pkg-config declarations. Tokio
+coordinates outer asynchronous work and I/O. Existing affine VM owners execute
+foreign calls; a live VM does not migrate among arbitrary Tokio workers. One
+serialized VM session does not lower the host's native compiler parallelism.
+
+#+CAPTION: Required embedded tooling ownership; command-based bootstrap is not the public API.
+[[file:59.76-embedded-tooling-and-darwin-io.svg]]
+
+* Source audit
+
+The audited upstream =GerbilCompiler::compile_to_gambit= and package AOT helper
+still launch command processes. Existing rooted exports, linked-program APIs
+and instance export tables are useful mechanisms, but are not a completed
+embedded build/test API. The minimal =scheme/runtime.ss= image explicitly omits
+the complete compiler and standard module graph. A successful value-conversion
+C ABI test cannot establish std/make, PackageSpec or gxtest availability.
+
+The required tooling image must admit those actual module closures and bind the
+existing package build and test procedures. The selected gxtest =main= returns
+success/failure rather than requiring process exit. Calls need scoped context,
+exception containment, immutable source identity and complete artifact/test
+evidence. No unsupported capability silently falls back to spawning =gxi=.
+The existing private image builder has a Darwin qualification boundary; portability
+to Linux must be demonstrated, not inferred from the C ABI shape.
+
+The upstream =docs/embedded-tooling-c-abi.org= records this gap and the required
+session/ABI contract. The C ABI tooling operations are not implemented by the
+Tokio subprocess refactor. A frozen MRR dependency cannot be described as
+consuming an unpublished or newer upstream capability. No pin is changed here.
+
+* Darwin failure attribution
+
+The original CI diagnostic is Cargo's bare =os error 35=. That message alone
+does not identify a failed process spawn, thread creation or write. Source audit
+shows =gxpkg= invokes its child with inherited stdin/stdout/stderr. Actual local
+probes observe blocking native output descriptors and nonblocking descriptors
+after =gerbil env=. Private output pipes through the standard process API retain
+blocking child writer descriptors. No shared =F_SETFL= repair is required.
+
+The native paired fixture uses actual Cargo, an actual slow pipe reader and the
+host's 12 workers. The original inherited path truncates metadata to 65,536 bytes
+despite returning zero; the direct native reference contains 1,508,947 bytes.
+All 12 native instances match that complete reference byte for byte and leave
+no owned process groups. A separate actual verbose-build pair refuses on the
+inherited path with status 70 and a partial 69,613-byte output; native execution
+before and after the refusal completes. The original 45-second total and
+five-second idle policy remain unchanged. This establishes the unsafe I/O
+boundary; it does not prove every historical error 35 had the same syscall.
+
+The local resource snapshot observes 12 logical CPUs, 707 processes, no zombies,
+and a per-user process limit of 5,333. These are local observations, not historical
+CI measurements. They cannot establish CI process exhaustion or a performance
+claim. Reducing worker count, raising process limits or extending timeouts is
+not an admitted substitute for identifying the failed operation.
+
+* Transitional hardening and actual evidence
+
+Native Cargo stays outside a Gerbil parent. The existing upstream process API
+owns its Gerbil compiler environment. Isolated Rust probes exercise standard
+package-manager/build actions through this API without changing =build.ss= or
+copying its environment policy. Those probes remain temporary investigation
+evidence, not a new MRR command driver. Existing bootstrap commands are not
+silently relabeled C ABI calls. No Python compiler policy is added. This is a
+bootstrap boundary, not the future embedded tooling API.
+
+The upstream process layer now uses Tokio process I/O, real artifact observation
+and a scoped, host-sized runtime owner. Concurrent synchronous bootstrap callers
+share a live runtime lease; the weak registry does not keep it alive after the
+last lease. Forwarding failure kills and reaps the owned child before returning
+refusal. The existing outer supervisor still owns the complete process group
+on fatal termination; dropping a waiter is not a proof that all descendants
+have stopped. Native process and complete workspace checks remain separate.
+
+Partial dependency bootstrap exposed additional failures: missing local package
+tag metadata, mixed compiler environments and incomplete generated module outputs.
+The final dependency attempt runs for about 900.35 seconds and is refused at its
+unchanged 900-second wall budget. The supervisor incorrectly labels a forwarding
+refusal at that expired deadline as five-second backpressure. The diagnostic
+repair distinguishes these causes without changing any admission threshold.
+The standard dependency entry
+and safe package clean/build actions retain their original pins. Failed logs
+remain outside Git. A refused dependency entry cannot qualify a complete MRR
+workspace or an embedded C ABI call.
+
+* Embedded API acceptance obligations
+
+| Obligation | Required evidence |
+|------------+-------------------|
+| Complete tooling image | Compiler, expander, package metadata and gxtest closure admitted before calls |
+| Direct foreign invocation | Actual build plus passing/failing tests through bound C exports; no frontend command fallback |
+| Root and owner identity | Repeated same-session calls; stale root, wrong owner, reentry and post-close rejection |
+| Host-state safety | Descriptor, signal, directory/environment and unrelated-writer checks throughout setup/call/cleanup |
+| Backend child notification | Gambit process-status and Tokio SIGCHLD observation coexist; compiler and unrelated host children are both reaped |
+| Cancellation | Queued versus entered call; real foreign return, backend drain and unresolved-owner retention |
+| Completion | Complete artifacts/test inventory plus drain; no success inferred from a marker or zero alone |
+| Resource recovery | Actual host workers and kernel process/thread/fd observations; no orphaned work on acknowledged cleanup |
+| Performance | Paired cold bootstrap and warm calls measured separately; native backend work and complete shutdown included |
+
+These obligations refine the existing SysML owner contract. Lean keeps semantic
+composition ownership; Quint keeps lifecycle/time ordering. Neither is duplicated
+to claim that the missing compiler image or C ABI integration is already proved.
+The gateway's claim, reservation, history and final-send contracts are unchanged.
