@@ -162,3 +162,9 @@ rule: "Lost replies do not undo authoritative state. A claim does not prove subm
   class: note
   near: bottom-center
 }
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{"title":"Execution and proof correspondence","purpose":"architecture","kind":"assurance","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"How do concrete execution events correspond to Quint actions and Lean obligations?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"Every execution boundary needs a corresponding model transition and a checked preservation obligation."},"basis":{"captureRef":"docs/architecture/diagrams/12-execution-correspondence.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["sketchbook","compact"],"layout":"execution-proof-correspondence","presentation":{"columns":["runtime","model","proof"],"icons":["capture","model","evidence"]},"variants":[{"name":"node-editor","themes":["graphite","node-editor","compact"]}]}
+|
+} } }

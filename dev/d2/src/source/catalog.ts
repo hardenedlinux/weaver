@@ -23,12 +23,15 @@ export function collectCatalog(root: string): SourceCatalog {
     const title = text.match(/^title:\s*([^\n{]+)/m)?.[1]?.trim() ?? path.basename(file, '.d2').replace(/^\d+[.-]/, '').replaceAll('-', ' ');
     views.push({ id: source, source, title, kind: profile, sha256: createHash('sha256').update(text).digest('hex') });
   }
-  const brands: Record<string, string> = {};
+  for (const file of files(path.join(root, "dev/d2/node_modules/@deterministic-engineering/render/themes"))) {
+    if (file.endsWith(".d2")) fs[path.relative(root,file).split(path.sep).join("/")] = readFileSync(file,"utf8");
+  }
+  const documents=Object.fromEntries(["Project.sysml","docs/architecture/08-diagram-catalog.org"].map(name=>[name,readFileSync(path.join(root,name),"utf8")]));
   for (const name of ['go', 'rust', 'kubernetes']) {
     const source = `docs/architecture/diagrams/assets/${name}.svg`;
     fs[source] = readFileSync(path.join(root, source), 'utf8');
-    brands[name] = `data:image/svg+xml;base64,${Buffer.from(fs[source]).toString('base64')}`;
+
   }
   views.sort((a, b) => a.source.localeCompare(b.source));
-  return { views, fs, brands };
+  return { views, fs, documents };
 }

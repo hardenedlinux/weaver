@@ -6,7 +6,7 @@ package WeaverProject {
 
     part def Directory;
     requirement def ArchitectureViewGrammar {
-        doc /* Development-only D2 profiles live under dev/d2/themes. System,
+        doc /* Development-only D2 extension profiles live under dev/d2/themes. The shared render Library owns the engine, themes and export; Weaver supplies Question-driven domain compositions and source checks. System,
            routing, flow, sequence, state, data and assurance views select
            subject-appropriate visual grammars rather than one global template.
            The Go development owner renders local bundled assets with the actual

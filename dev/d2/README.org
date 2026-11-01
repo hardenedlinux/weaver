@@ -1,105 +1,94 @@
-#+TITLE: Offline Architecture Image Rendering
+#+TITLE: Library-Driven Weaver Architecture Views
 #+LANGUAGE: en
 
-* Ownership and entrypoints
+* Engine and project extensions
 
-D2 remains the canonical architecture source. This development-only TypeScript
-package produces standalone SVG and PNG images without an HTTP service or browser.
-Go owns source discovery, currentness and output verification. Rendering has no
-role in gateway authorization.
+=@deterministic-engineering/render= owns the rendering engine, D2 declaration
+reader, composable visual themes, font resources, drawing utilities and image
+export. Weaver supplies captured Org/SysML/D2 inputs, domain-specific compositions,
+local assets, output publication and graph-binding verification. It does not
+maintain a second layout engine, font-outline implementation or generic card
+renderer.
 
-Install dependencies from =dev/d2= using =bun install --frozen-lockfile=.
-Run from the repository root:
+Project composers answer different questions: the gateway responsibility map
+focuses on Scheme/Go/Rust allocation; its relationship matrix aggregates declared
+owner relationships; execution/proof correspondence compares three obligation
+lanes. Other views use the library's standard D2 model rendering. Domain
+composition and visual theme are independent choices.
+
+Each D2 view declares its presentation Question, copy, purpose, layout, ordered
+theme layers and variants through the library's existing =data.figure= contract.
+These are design-view questions, not issued governance Questions or accepted
+review/authorization evidence. =Project.sysml= and the existing Go OpenSysML
+checks retain their model-ownership role.
+
+* Local library consumption
+
+GitHub publication is unnecessary. The development dependency is a local package
+archive at =.data/render-library/deterministic-engineering-render-1.0.0.tgz=.
+The archive is ignored; its dependency integrity is recorded in =bun.lock=.
+From the library package directory, use its standard package command:
+
+#+begin_src text
+bun pm pack --destination <weaver>/.data/render-library
+#+end_src
+
+From =dev/d2=, install the captured development dependencies and browser:
+
+#+begin_src text
+bun install --frozen-lockfile
+bunx playwright install chromium
+#+end_src
+
+A frozen installation requires the captured package bytes. An updated local
+library requires an intentional development lockfile update. Existing Rust, Go,
+Scheme and proof dependency pins are independent and remain unchanged.
+
+* Rendering and artifacts
+
+From the repository root:
 
 #+begin_src text
 go -C go run ./cmd/weaver-dev check-diagrams
 go -C go run ./cmd/weaver-dev render-diagrams
 #+end_src
 
-The first command includes strict TypeScript checks and property tests. To render
-one image, run from =dev/d2=:
+A focused selection can be rendered from =dev/d2=:
 
 #+begin_src text
 bun run render --view docs/architecture/diagrams/01-system-boundaries.d2
 #+end_src
 
-SVGs accompany their D2 sources. PNGs and digest receipts live under =.cache/d2=;
-existing adjacent PNG previews are refreshed too. Workers use the host CPU count,
-limited by selected image count. One shared D2/WASM compiler subprocess replaces per-image-worker compiler instances. Its
-scope is recycled after four compilations; CPU-parallel image workers remain
-independent. Parent RSS plus sampled compiler-process RSS is observed; crossing a 4 GiB admission budget stops new
-scheduling and drains owned jobs as a failed run. This is a scheduling guard,
-not an operating-system hard memory limit. Completed workers release resources.
+The default entrypoint uses the library for every selected view. The host owns
+one reusable browser and a separately recoverable D2 compilation scope. Image
+jobs use the host CPU count; active contexts drain before browser shutdown.
+There is no HTTP service. Browser subprocess memory is outside the earlier
+Bun-only RSS measurement; do not reuse that measurement as a process-tree bound.
 
-* View-specific visual grammar
+The library produces Question-led HTML and PNG. Full D2 SVG remains a technical
+model reference. Selected project compositions publish adjacent PNG previews and
+declared theme variants. Cached HTML, image receipts and raw diagnostics belong
+under =.cache/d2= or temporary storage.
 
-Each source imports one profile from =dev/d2/themes=. Profiles own D2 conventions;
-=presentation.ts= owns matching SVG palettes. The shared base supplies semantic
-status colors and typography rather than one universal page layout.
+* Reading and fidelity contract
 
-| Profile | Visual grammar |
-|---------+----------------|
-| system | Responsibility zones, original board ranks and technology headers |
-| routing | Advisory candidates, route selection and one actual provider |
-| flow | Progression, decisions and explicit failure exits |
-| sequence | Actor lifelines and ordered messages |
-| state | Distinct state pills and irreversible transitions |
-| data | Persistent record fields, joins and conserved account domains |
-| assurance | Assumptions and independent proof/runtime obligations |
+Main figures use readable labels, meaningful icons and deliberate grouping.
+Necessary explanations belong beside their subjects or constraints. Detailed
+premises, source references and qualification notes stay in Org rather than tiny
+footer text. A responsibility view, relationship matrix, message sequence and
+proof view need different spatial organizations; a theme alone does not choose
+that organization.
 
-Source node and edge identities survive compilation, layout and export. Explicit
-boards retain row/column order. Explicit sibling proof columns remain parallel
-rather than becoming one vertical causal chain. Compound scopes pack children in local coordinates
-before composing containers. Labels use actual font metrics and cannot cover
-nodes, group headers or each other. Failed inline placement becomes a side callout.
-Versions and validation receipts stay in Org, outside core architecture images.
+The responsibility map aligns the three owner headings and content rows. Its
+contract strip derives the admitted closure, admitted publication and source
+guards from actual D2 edges, including direction. These are semantic handoffs,
+not a claim that every edge is a network connection. The full relationship
+matrix and technical SVG retain the more detailed model. The bottom Zero Trust
+band states shared constraints at a readable size rather than carrying hidden
+explanatory footnotes.
 
-* Resources and validation
-
-The official [[https://github.com/d2lang/d2/tree/master/d2js/js][D2 SDK]] compiles sources. ELK lays out scopes, React serializes pure
-SVG, and resvg exports PNGs. Local Inter glyph outlines preserve typography without
-font fetching. Lucide provides semantic symbols; local Go, Rust and Kubernetes
-marks identify actual technologies. Attribution remains in the
-[[file:../../docs/architecture/diagrams/assets/icon-sources.org][asset source register]]. See the [[https://d2lang.com/tour/themes/][D2 theme documentation]] for source palette conventions.
-
-Fast-check properties cover measured wrapping, nested geometry, source identity
-and portable SVG output. Regressions cover coordinate composition, SDK values and
-explicit board order. Go compares source digests, graph identities and output
-hashes, and decodes PNGs. Logs and receipts belong in cache or temporary storage.
-
-Geometry checks do not establish a good composition. Inspect all view genres at
-readable scale for hierarchy, crossings, whitespace and label association after
-renderer changes. Presentation checks do not replace Quint or Lean security work.
-
-* Shared rendering library convergence
-
-The independently developed =@deterministic-engineering/render= package in
-Deterministic Engineering's =packages/render= owns composable presentation
-styles, Figure composition, font resources, mature drawing utilities and static
-image export. Weaver should consume those public APIs rather than maintain a
-parallel generic visual framework. Project-specific mapping from Org/SysML/D2,
-source discovery, graph coverage and publication verification remain Weaver-owned.
-The Go OpenSysML model checks remain distinct from this presentation library.
-
-An independent installed-package probe used actual W12 source nodes and relations
-and exported a local image through the public composition/theme/export APIs.
-It exercised 18 model nodes and 14 relations with a project-owned three-column
-composition. Chromium was used only for local export; no HTTP service was started.
-The package's clipping/export checks do not establish aesthetic acceptance or
-replace Weaver's graph-coverage verification.
-
-The inspected upstream worktree is still being developed. Its existing packed
-consumer artifact was used for this probe; no moving external worktree path was
-added to the repository dependency manifest. Before replacing the default path,
-qualify an immutable distributable, preserve the source identities and authority
-boundary, verify process-tree memory accounting, and exercise architecture and
-workflow styles against Weaver's corpus. Probe HTML/PNG and receipts belong in
-=.cache/d2/library-probe=, not in runtime packages or committed logs.
-
-The host graph gate requires one graph declaration, unique nonempty declared and
-rendered identities, complete node/edge sets, and endpoint bindings for every
-rendered edge. Duplicate inventory entries cannot stand in for omitted nodes;
-source/target reversal cannot stand in for the declared relationship. The source
-compiler and capture adapter remain trusted refinement premises. This check does
-not prove that a path's pixels, arrowheads or layout communicate the relationship
-correctly; geometry and visual inspection retain their independent roles.
+The host graph gate checks one declaration, unique nonempty identities, node/edge
+coverage and bound endpoints in the full model SVG. Question-led projections may
+aggregate those relationships explicitly, as the owner matrix does. Compilation
+and project mapping remain trust premises. Export checks do not prove runtime
+Policy enforcement or replace Quint/Lean, geometry review and human inspection.
