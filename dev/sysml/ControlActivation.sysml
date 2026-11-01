@@ -140,6 +140,17 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Acceptance retains real compiler/operation observations. The
+           pinned MRR adapter couples its CargoObserver to numeric Gerbil
+           verbosity; SDK callbacks alone do not prove emitted progress. Keep
+           native verbosity enabled, suppress optional GCC optimizer notes via
+           its documented diagnostic sink, and leave LLVM pass ordinals opt-in.
+           Allocation dumps remain coupled to the pinned native implementation;
+           independent native diagnostics remain an upstream API gap.
+           Removing diagnostic work never removes
+           source modules or tests, changes O2/ABI, invents progress or extends
+           the unchanged wall/idle limits. A genuinely silent compiler still
+           fails closed at the original idle bound. */
         doc /* Hosted dynamic-library discovery uses the package manager's
            current prefix as an explicit native linker search path. SDK build-host
            Cellar paths are not deployment authority. Preserve ABI, existing

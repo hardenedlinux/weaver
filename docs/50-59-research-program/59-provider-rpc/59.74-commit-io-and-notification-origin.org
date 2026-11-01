@@ -172,3 +172,46 @@ path is absent. The next host-only correction retains existing RUSTFLAGS and
 adds a native search directory from brew --prefix openssl. It does not replace
 the SDK, alter ABI flags or weaken any recovery test. Reaching this new failure
 is not a controlled compiler-speedup measurement or full source acceptance.
+
+* Acceptance versus diagnostic workload
+
+At 6a2fb69d Ubuntu passes the complete original-source property, physical-query,
+recovery and resource gate. Darwin again reaches the original 1200-second wall:
+the native archive completes about 82 seconds before expiry and Rust application
+compilation starts with almost no budget remaining. Its completed linker C
+preprocessing reports 16 MB GGC; this is not a controlled compiler speedup or
+Darwin link acceptance. That failure remains preserved.
+
+The 7c79d914 quiet-mode experiment disables native verbosity and explicit LLVM
+pass diagnostics, but fails Ubuntu's original idle bound. The SDK invokes its
+observer; the pinned MRR adapter suppresses the callbacks at level zero. Runtime
+MRR_NATIVE_PROGRESS does not enable build observations. This corrects the earlier
+incomplete claim that SDK callbacks alone preserve Cargo-visible progress.
+O2, ABI, original source graph, feature/test/resource
+matrix and 1200/30 limits remain unchanged. Silence still fails at the original
+bound. Detailed compiler tracing is an opt-in diagnostic workload, not a source
+of invented progress or a substitute for complete recovery acceptance.
+
+The correction keeps numeric native verbosity 1, leaves LLVM pass/assembly
+diagnostics opt-in and uses the supported GCC diagnostic destination solely to
+suppress optional optimizer notes. Real native events, collector output, errors
+and compiler-written artifacts remain enabled. A real paired compiler control
+produces identical objects with and without note suppression and preserves a
+syntax-error negative control; ten focused option controls pass. Initial SDK
+home-mapping and runtime-option control failures remain retained separately.
+No controlled speedup or full hosted source pass is inferred. Native allocation
+dumps remain coupled in the pinned implementation; a fully independent native
+diagnostic control remains an upstream API gap. See
+[[https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html][GCC diagnostic output options]].
+
+Focused native-observer validation retains the inspection precondition explicitly.
+The first restricted PATH run yields 17 passes, four failures and one deselection;
+restoring the Host's getconf PATH yields 20 passes, one failure and the same
+deselection. A separate owned-child probe confirms pgrep exit 3, no child list,
+and an unavailable sysmond service in the restricted process context. With native
+inspection authorized, the unchanged focused suite passes 21 cases, with the
+compiler-output cold-build case still explicitly outside that focused scope.
+These are separate environment receipts, not an erased failure or a complete
+local Python pass. The existing local cold-launch failures remain retained;
+remote Python on 6a2fb69d passes all 71 cases. No timeout, assertion or inspection
+fallback is changed, and absence of inspection never becomes progress.
