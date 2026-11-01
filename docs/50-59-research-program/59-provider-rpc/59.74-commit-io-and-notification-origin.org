@@ -266,3 +266,25 @@ remain unchanged. The added diagnostic glue passes the complete 81-case Python
 suite and a real selected-SDK tiny-input plumbing control. The exact Linux
 compiler/forwarding attribution is still unresolved pending failed-input replay.
 The four-leg Rust benchmark and its clock/kernel-join limitations are unchanged.
+
+* Consumer versus compiler ownership
+
+Consumer Python compiler policy was an architectural mistake. The MRR Data
+Gambit flag/replay modules, their compiler-policy tests and CI hooks are removed.
+MRR owns the Scheme module graph in build.ss; gerbil-scheme-rust owns generic
+GSC/C compilation, optimization, ABI, linking, source-side observations and
+compiler replay. MRR's build.rs is the adapter. MRR Data's Python retains only
+process/artifact orchestration, with correctness and performance in Rust.
+
+Base MRR Data storage has no Scheme application. Its optional source-handoff
+path nevertheless pulls embedded Scheme transitively through mrr-property-source
+and mrr-frontends' pinned default embedded-runtime to mrr-gerbil. This is an MRR
+runtime dependency, not a separate MRR Data Scheme package. Feature isolation is
+an explicit architecture obligation; existing semantics are not disabled here.
+The duplicate consumer gerbil build is removed because MRR's build adapter
+already invokes its canonical build.ss into isolated Cargo output. Dependencies
+are still prepared, and all original Cargo source/recovery checks remain.
+Source pins, benchmark samples and failure evidence remain unchanged. Compiler
+progress failures are still open at their actual SDK/MRR owner. No consumer
+workaround or diagnostic result is treated as a completed CI fix. The embedded
+core diagram remains free of compiler options, versions and acceptance metrics.

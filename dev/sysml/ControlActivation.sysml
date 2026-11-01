@@ -140,12 +140,17 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
-        doc /* Rejected compiler gates retain immutable generated input, exact
-           declared compiler/ABI flags, and original failure. A diagnostic replay
-           may bypass Cargo only to observe actual output chunks/newlines under
-           the same wall/idle limits; it never replaces standard acceptance.
-           Hash input before and after, refuse ambiguity or escaped aliases, and
-           keep replay outcomes distinct from publication/execution authority. */
+        doc /* MRR owns its Scheme PackageSpec and module graph in build.ss.
+           gerbil-scheme-rust owns generic GSC/C compilation, ABI, optimization,
+           linking, compiler replay and source-side progress framing. MRR's Rust
+           build adapter delegates those responsibilities. MRR Data consumes
+           typed MRR APIs and must not implement compiler policy in Python.
+           Consumer Python is limited to process/artifact orchestration.
+           Base storage does not own a Scheme application. The pinned optional
+           source-handoff path transitively enables mrr-frontends' default
+           embedded-runtime; this dependency feature is not a consumer-owned VM.
+           Feature isolation requires explicit upstream review, never silently
+           disabling existing semantics to turn an acceptance gate green. */
         doc /* Acceptance retains real compiler/operation observations. The
            pinned MRR adapter couples its CargoObserver to numeric Gerbil
            verbosity; SDK callbacks alone do not prove emitted progress. Keep
@@ -166,14 +171,12 @@ package ControlActivation {
            Cellar paths are not deployment authority. Preserve ABI, existing
            compiler flags and pinned SDK identity; successful archive compilation
            alone does not qualify final linking or source recovery. */
-        doc /* Native archive diagnosis must track Cargo build-script lifetime,
-           not infer a quiet owner from the last Rust artifact. SDK-selected GCC
-           may use Gambit's declared CORCXXFLAGS_GAMBUILD override to disable
-           macro-expansion diagnostic tracking while retaining every literal SDK
-           default, ABI flag and optimization level. Reject ambiguous/unsupported
-           declarations or conflicting explicit options; never substitute ambient
-           CC, mutate the release, patch a dependency or relax watchdogs. Full
-           original-source recovery remains the acceptance gate for this change. */
+        doc /* Native archive diagnosis tracks Cargo build-script lifetime,
+           rather than inferring its owner from the last Rust artifact. Compiler
+           flags and replay are SDK-owned. Consumer CI must not reconstruct a
+           GCC command or override SDK compilation policy. Invoke MRR's canonical
+           Cargo/build.ss path once; keep SDK identity, source pins and watchdogs
+           unchanged until an upstream fix has separate qualification evidence. */
         doc /* A separate bounded owned-process kernel trace refines syscall and
            runnable/blocked/preempted intervals only after PID/TID and trace-clock
            joins pass coverage checks. Foreign/unresolved rows and censored
