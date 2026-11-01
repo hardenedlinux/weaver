@@ -8,6 +8,8 @@ The root [[file:../../../Project.sysml][Project.sysml]] controls package and ass
 Maintained native and formal checks follow [[file:59.21-verification-ownership.org][the verification ownership contract]].
 [[file:59.71-host-envelope-and-retest.org][Host envelope and direct retest]] predeclares evidence grades and acceptance
 standards, separates admission and conditional-validator effects, and retains all samples.
+[[file:59.72-native-read-stage-attribution.org][Native-read stage attribution]] separates preparation, binding, VM/row
+construction, owned-value copying and driver/scheduler waits in original transactions.
 [[file:59.70-borrowed-validation-dispatch.org][Borrowed validation and dispatch review]] retains both existing runtime paths
 and records rejected optimization experiments alongside native guard acceptance.
 [[file:59.69-hot-path-cost-boundaries.org][Hot-path cost attribution]] separates canonical-home wait, borrowed-validator

@@ -140,6 +140,23 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Native-read attribution first retains an uninstrumented A/AV/AV/A
+           contrast, then separately measures test-only direct-query and split
+           prepare/bind/next/value-copy paths inside the original transactions.
+           A future's poll wall time is not thread CPU; Pending-to-repoll gaps
+           include driver completion and Host scheduling. Rows.next couples VM
+           stepping with SDK row construction; get_value measures a subsequent
+           owned-value copy, not all result materialization. Never subtract
+           overlapping stage clocks or claim kernel I/O from public API clocks.
+           Record all per-read samples, observer cost and exact case boundaries.
+           Test instrumentation cannot alter production reads, borrowed guard
+           ownership, cancellation, recovery or retained unknown exposure.
+           Preallocate per-worker observation slots before timing; append on the
+           original OS thread without a cross-worker collector lock. Merge only
+           after accepted jobs drain and check unique contiguous sample sequence,
+           original read count and clock nesting. Observer generation is scratch
+           bookkeeping, never an authority epoch. Retain shared-lock interference
+           and invalid overlapping pilot runs separately from serialized evidence. */
         doc /* Benchmark evidence has two grades independent of runtime authority.
            Diagnostic runs may proceed on the shared Host when explicitly
            requested; load, battery, missing reservation or unknown thermal
