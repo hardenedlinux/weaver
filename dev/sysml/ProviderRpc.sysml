@@ -45,6 +45,13 @@ package ProviderRpc {
            are insufficient; batching never increases semantic or monetary budget. */
     }
     requirement def ProviderUnknownRetention {
+        doc /* At consumption and each final use, Rust joins the original stream
+           claim and exact plan reservation, and requires the shared held amount
+           to cover every retained provider reservation in that family. A missing
+           or contradictory recovery projection denies use; it never recreates
+           the claim, repairs the hold from a caller value or authorizes refund.
+           This concretizes SPEC ZeroTrust consumptionCommitted/unknownRetained;
+           external identity and rollback-resistant recovery remain separate duties. */
         doc /* Partial request or SSE delivery, lost response and interrupted completion retain the original reservation and canonical identity. Provider usage is observational, not settlement authority. */
         doc /* Queue insertion may occur before its ledger transaction commits.
            A frame can be observed despite a lost/failed release commit; preserve

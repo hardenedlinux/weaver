@@ -105,6 +105,7 @@ impl Ledger {
             &record.ok_or(Error::Conflict("provider not queued or already consumed"))?,
         )?;
         let route = any_authorized(&tx, &plan, "invokeProvider", Some(eligible))?;
+        require_exposure(&tx, &plan)?;
         let task_record: String = tx
             .query_row(
                 "SELECT record FROM tasks WHERE family=?1",
@@ -287,9 +288,30 @@ impl Ledger {
 fn active(tx: &Transaction<'_>, p: &ProviderDispatch) -> Result<()> {
     let same:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND digest=?3 AND target=?4 AND state='unknown')",params![p.plan.family,p.plan.node,p.digest,p.route.target],|r|r.get(0)).map_err(db)?;
     if same {
-        Ok(())
+        require_exposure(tx, &p.plan)
     } else {
         Err(Error::Conflict("provider consumption changed"))
+    }
+}
+/// Refinement of ZeroTrust.consumptionCommitted / unknownRetained at actual use.
+/// Never reconstruct a missing claim or refund a contradictory recovery image.
+fn require_exposure(tx: &Transaction<'_>, plan: &ProviderPlan) -> Result<()> {
+    let retained: bool = tx.query_row(
+        "SELECT EXISTS(SELECT 1 FROM provider_runs r
+         JOIN execution_claims c ON c.family=r.family AND c.node=r.node AND c.kind='stream'
+         JOIN tasks t ON t.family=r.family
+         WHERE r.family=?1 AND r.node=?2 AND r.reserved=?3
+         AND t.held >= (SELECT SUM(all_runs.reserved) FROM provider_runs all_runs WHERE all_runs.family=r.family)
+         AND t.held <= t.budget)",
+        params![plan.family, plan.node, plan.ceiling as i64],
+        |row| row.get(0),
+    ).map_err(db)?;
+    if retained {
+        Ok(())
+    } else {
+        Err(Error::Conflict(
+            "provider claim or shared exposure not retained",
+        ))
     }
 }
 fn started(tx: &Transaction<'_>, p: &ProviderDispatch) -> Result<()> {

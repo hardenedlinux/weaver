@@ -59,6 +59,82 @@ fn fixture_nodes(path: &std::path::Path, nodes: &[&str]) -> (Ledger, ProviderPla
         .expect("task");
     (ledger, plan)
 }
+
+proptest! {
+    #![proptest_config(Config::with_cases(64))]
+    #[test]
+    fn zero_trust_final_use_requires_durable_claim_and_shared_exposure(
+        fault in 0u8..4, phase in 0u8..3
+    ) {
+        let temp = tempfile::tempdir().expect("directory");
+        let path = temp.path().join("zero-trust.db");
+        let (mut ledger, plan) = fixture_nodes(&path, &["infer", "second"]);
+        ledger.enqueue_provider(&plan).expect("original hold");
+        let mut second = plan.clone();
+        second.node = "second".into();
+        ledger.enqueue_provider(&second).expect("shared hold");
+        let permit = ledger.consume_provider("f", "infer", &BTreeSet::from(["primary".into()])).expect("consume");
+        let mut callbacks = 0;
+        let release = if phase == 1 {
+            ledger.dispatch_provider(&permit, || ()).expect("dispatch");
+            Some(ledger.prepare_provider_release(&permit, "tail", "protobuf", 1).expect("release"))
+        } else if phase == 2 {
+            ledger.dispatch_provider(&permit, || ()).expect("dispatch");
+            None
+        } else { None };
+        let connection = rusqlite::Connection::open(&path).expect("recovery fault connection");
+        let mutation = match fault {
+            0 => "DELETE FROM execution_claims WHERE family='f' AND node='infer'",
+            1 => "UPDATE execution_claims SET kind='request' WHERE family='f' AND node='infer'",
+            2 => "UPDATE provider_runs SET reserved=1 WHERE family='f' AND node='infer'",
+            _ => "UPDATE tasks SET held=4 WHERE family='f'",
+        };
+        connection.execute(mutation, []).expect("inject inconsistent recovered projection");
+        drop(connection);
+        let result = match release {
+            Some(range) => ledger.release_provider(&permit, range, "protobuf", |_| { callbacks += 1; Ok(()) }),
+            None if phase == 2 => ledger.complete_provider(&permit, "protobuf"),
+            None => ledger.dispatch_provider(&permit, || { callbacks += 1; }),
+        };
+        prop_assert!(result.is_err(), "inconsistent durable evidence reached final use");
+        prop_assert_eq!(callbacks, 0);
+        prop_assert_eq!(ledger.provider_receipt("f", "infer").expect("receipt").expect("claim").state,
+            weaver_contracts::ProviderState::Unknown);
+        drop(ledger);
+        let mut restarted = Ledger::open(&path).expect("restart");
+        prop_assert!(restarted.consume_provider("f", "infer", &BTreeSet::from(["primary".into()])).is_err());
+        prop_assert_eq!(restarted.held("f").expect("retained corrupted projection"), if fault == 3 { 4 } else { 8 });
+    }
+}
+
+#[test]
+fn zero_trust_missing_claim_blocks_queued_consumption_after_restart() {
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("queued-exposure.db");
+    let (mut ledger, plan) = fixture(&path);
+    ledger.enqueue_provider(&plan).expect("reservation");
+    let connection = rusqlite::Connection::open(&path).expect("recovery fault");
+    connection
+        .execute("DELETE FROM execution_claims", [])
+        .expect("missing claim");
+    drop(connection);
+    drop(ledger);
+    let mut restarted = Ledger::open(&path).expect("restart");
+    assert!(
+        restarted
+            .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+            .is_err()
+    );
+    assert_eq!(restarted.held("f").expect("hold"), 4);
+    assert_eq!(
+        restarted
+            .provider_receipt("f", "infer")
+            .expect("receipt")
+            .expect("run")
+            .state,
+        weaver_contracts::ProviderState::Queued
+    );
+}
 #[test]
 fn rejected_competing_caps_leave_no_claim_or_hold_after_restart() {
     let temp = tempfile::tempdir().expect("temp");

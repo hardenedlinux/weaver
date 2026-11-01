@@ -2,6 +2,7 @@ import CedarPooSpec.Gateway.ZeroTrust
 import CedarPooSpec.Gateway.PublicationReview
 import PublicationRecovery
 import WeaverPolicyBridge
+import ProviderRpc
 
 /-! Candidate-library consumer, checked in isolation against the upstream PR.
 The normal WeaverPolicyBridge target retains its unchanged dependency pin.
@@ -157,6 +158,19 @@ theorem usage_control_keeps_current_consumption
     required.2.2.2.2.1⟩
 
 #print axioms usage_control_keeps_current_consumption
+
+-- The native deciding writer must materialize every input from the same
+-- authoritative image. An arbitrary caller assertion cannot instantiate this
+-- premise. Strengthen the upstream continuing contract, never replace it.
+theorem provider_exposure_strengthens_continuing_zero_trust
+    (accepted : ((Gateway.ZeroTrust.continuing proposal assessment).withRequirement
+      (fun _ _ => Weaver.ProviderRpc.ProviderExposure claim reserved originalCost held budget reservations)).required
+      requested actual) :
+    (Gateway.ZeroTrust.continuing proposal assessment).required requested actual ∧
+    Weaver.ProviderRpc.ProviderExposure claim reserved originalCost held budget reservations := by
+  exact ⟨ZeroTrust.with_requirement_preserves_framework _ _ _ _ accepted, accepted.2.1.2⟩
+
+#print axioms provider_exposure_strengthens_continuing_zero_trust
 
 -- Pure specialization preserves the actual POO publication's original Contract
 -- and all generic framework conditions. It grants no native IO capability.
