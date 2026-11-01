@@ -7,15 +7,13 @@
     "render": "bun src/render.ts",
     "test": "bun test"
   },
-  "dependencies": {
-    "@terrastruct/d2": "0.1.33"
-  },
   "devDependencies": {
     "@types/bun": "1.4.4",
     "fast-check": "4.10.2",
     "typescript": "7.0.2",
-    "@deterministic-engineering/render": "file:../../.data/render-library/deterministic-engineering-render-1.0.0-18da4bc86969.tgz",
+    "@deterministic-engineering/render": "git+ssh://git@github.com/hardenedlinux/deterministic-engineering.git#1b950df63a542c478bea3127fc9bd4472c07cbd9&path:/packages/render",
     "playwright": "1.64.1",
     "@openmbee/opensysml": "0.11.0"
-  }
+  },
+  "packageManager": "pnpm@11.25.0"
 }

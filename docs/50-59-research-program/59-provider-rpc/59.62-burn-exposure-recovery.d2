@@ -76,6 +76,126 @@ footer: "Storage reuse preserves the domain contract · A database receipt is no
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"62 burn exposure recovery","purpose":"workflow","kind":"flow","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"How does recovery preserve the burn and its exposure?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"How does recovery preserve the burn and its exposure?"},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.62-burn-exposure-recovery.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["node-editor","reading"],"layout":"model-map","variants":[],"presentation":{"captions":{"title":{"title":[5],"detail":[]},"semantic":{"title":[2,3],"detail":[5,7,10,11]},"storage":{"title":[3],"detail":[3,6,7]},"retained":{"title":[2,3],"detail":[4,5,9,10]},"pending":{"title":[3,5],"detail":[3,4,9,10]},"projection":{"title":[3,5],"detail":[5,6,11,12]},"execution":{"title":[3,4],"detail":[5,6,11,12]},"footer":{"title":[9,15],"detail":[9]}},"annotations":{"title":"heading","footer":"constraint"},"icons":{"title":"capture","semantic":"capture","storage":"capture","retained":"capture","pending":"capture","projection":"selection","execution":"rust","footer":"capture"},"roles":{"semantic":"default","retained":"default","pending":"default","execution":"execution","footer":"default","title":"default","storage":"default","projection":"default"},"relations":{"(semantic -> storage)[0]":{"binding":[5,7],"detail":[3]},"(storage -> retained)[0]":{"binding":[5,7],"detail":[4]},"(storage -> projection)[0]":{"binding":[5,9],"detail":[3]},"(pending -> projection)[0]":{"binding":[5,10,11],"detail":[3]},"(projection -> execution)[0]":{"binding":[4,8,10],"detail":[3]},"(retained -> execution)[0]":{"binding":[4,8],"detail":[3]}},"options":{"elk.direction":"DOWN","elk.hierarchyHandling":"INCLUDE_CHILDREN","elk.layered.layering.strategy":"COFFMAN_GRAHAM","elk.layered.layering.coffmanGraham.layerBound":"1","elk.spacing.nodeNode":"24","elk.layered.spacing.nodeNodeBetweenLayers":"36","elk.layered.cycleBreaking.strategy":"MODEL_ORDER","elk.layered.considerModelOrder.strategy":"NODES_AND_EDGES","elk.separateConnectedComponents":"false","elk.aspectRatio":"0.55","elk.spacing.componentComponent":"24"},"lineGap":36}}
+{
+  "title": "62 burn exposure recovery",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How does recovery preserve the burn and its exposure?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "How does recovery preserve the burn and its exposure?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.62-burn-exposure-recovery.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "node-editor",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantic"
+        },
+        {
+          "id": "storage"
+        },
+        {
+          "id": "retained"
+        },
+        {
+          "id": "pending"
+        },
+        {
+          "id": "projection"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "semantic": "capture",
+      "storage": "capture",
+      "retained": "capture",
+      "pending": "capture",
+      "projection": "selection",
+      "execution": "rust",
+      "footer": "capture"
+    },
+    "roles": {
+      "semantic": "default",
+      "retained": "default",
+      "pending": "default",
+      "execution": "execution",
+      "footer": "default",
+      "title": "default",
+      "storage": "default",
+      "projection": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

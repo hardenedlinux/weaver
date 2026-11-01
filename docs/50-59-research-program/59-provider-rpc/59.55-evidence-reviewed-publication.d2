@@ -33,6 +33,126 @@ footer: "Registration is not publication · Publication never sends · Historica
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"55 native reviewed publication","purpose":"workflow","kind":"flow","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"How does reviewed source authority reach final execution?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"How does reviewed source authority reach final execution?"},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.55-evidence-reviewed-publication.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["node-editor","reading"],"layout":"model-map","variants":[],"presentation":{"captions":{"title":{"title":[6],"detail":[]},"source":{"title":[4],"detail":[3,7,8,10]},"host":{"title":[3],"detail":[3,6,7,11,12]},"pending":{"title":[3],"detail":[3,8,9,13]},"evidence":{"title":[2,3],"detail":[4,5,8,9,14]},"cas":{"title":[3,4],"detail":[5,9,10,15]},"execution":{"title":[3],"detail":[4,5,11,12,16]},"footer":{"title":[9,15],"detail":[]}},"annotations":{"title":"heading","footer":"constraint"},"icons":{"title":"document","source":"library","host":"capture","pending":"rust","evidence":"capture","cas":"rust","execution":"rust","footer":"capture"},"roles":{"source":"semantic","pending":"execution","cas":"execution","execution":"execution","title":"default","host":"default","evidence":"default","footer":"default"},"relations":{"(source -> host)[0]":{"binding":[6,8],"detail":[2]},"(host -> pending)[0]":{"binding":[5,7],"detail":[3]},"(host -> evidence)[0]":{"binding":[5,7],"detail":[3]},"(evidence -> cas)[0]":{"binding":[4,8],"detail":[3]},"(pending -> cas)[0]":{"binding":[6,8],"detail":[4]},"(cas -> execution)[0]":{"binding":[5,8],"detail":[2]}},"options":{"elk.direction":"DOWN","elk.hierarchyHandling":"INCLUDE_CHILDREN","elk.layered.layering.strategy":"COFFMAN_GRAHAM","elk.layered.layering.coffmanGraham.layerBound":"1","elk.spacing.nodeNode":"24","elk.layered.spacing.nodeNodeBetweenLayers":"36","elk.layered.cycleBreaking.strategy":"MODEL_ORDER","elk.layered.considerModelOrder.strategy":"NODES_AND_EDGES","elk.separateConnectedComponents":"false","elk.aspectRatio":"0.55","elk.spacing.componentComponent":"24"},"lineGap":36}}
+{
+  "title": "55 native reviewed publication",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How does reviewed source authority reach final execution?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "How does reviewed source authority reach final execution?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.55-evidence-reviewed-publication.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "node-editor",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "source"
+        },
+        {
+          "id": "host"
+        },
+        {
+          "id": "pending"
+        },
+        {
+          "id": "evidence"
+        },
+        {
+          "id": "cas"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "document",
+      "source": "library",
+      "host": "capture",
+      "pending": "rust",
+      "evidence": "capture",
+      "cas": "rust",
+      "execution": "rust",
+      "footer": "capture"
+    },
+    "roles": {
+      "source": "semantic",
+      "pending": "execution",
+      "cas": "execution",
+      "execution": "execution",
+      "title": "default",
+      "host": "default",
+      "evidence": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

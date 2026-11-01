@@ -1,4 +1,5 @@
 package WeaverExecution {
+    private import ScalarValues::*;
     doc /* Zero Trust is the mandatory runtime model for all effects and semantic
        extensions: authenticate original scope, authorize actual use against
        current authority, consume once and preserve uncertain exposure. Runtime
@@ -85,6 +86,10 @@ package WeaverExecution {
         out item request : CanonicalWireRequest;
     }
     part def SchemeSemanticPublisher {
+        attribute displayName : String = "Scheme / Semantics";
+        attribute responsibility : String = "Agentic AI Lab modules\nRoutines + original profiles\nPolicy and source projections";
+        attribute glyph : String = "library";
+        attribute visualRole : String = "publication";
         doc /* Scheme is the programmable semantic owner of reusable routines,
            strategies, semantic profiles and task assignments through Agentic AI
            Lab and admitted Yuanxu scopes. It proposes effects, never consumes
@@ -106,6 +111,10 @@ package WeaverExecution {
         port effectObservations : ~PolicyEvidenceDesign::EffectObservationPort;
     }
     part def GoControlAdapter {
+        attribute displayName : String = "Go / Control + routing";
+        attribute responsibility : String = "Cloud and protocol integration\nPublish authenticated proposals\nChoose eligible providers";
+        attribute glyph : String = "go";
+        attribute visualRole : String = "selection";
         doc /* BootstrapProducer receives the server's typed CompileSource
            artifact over authenticated gRPC and reobserves source authority.
            Its typed independent copy does not JSON-roundtrip the source. Source
@@ -227,6 +236,10 @@ package WeaverExecution {
            authorize transport. AWS AgentCore stays platform-specific. */
     }
     part def RustPolicy {
+        attribute displayName : String = "Cedar / Policy";
+        attribute responsibility : String = "Evaluate the exact effect\nRequire error-free permission\nAllow is not a send handle";
+        attribute glyph : String = "decision";
+        attribute visualRole : String = "policy";
         doc /* Evaluate Cedar against actual operation and authoritative deciding
            state; reject evaluation errors. Local CFFI preflight is inert. The
            target capture adapter validates canonical Rust-owned data before async
@@ -243,6 +256,10 @@ package WeaverExecution {
         enum mrrDataBackend;
     }
     part def RustLedger {
+        attribute displayName : String = "Rust / Authority ledger";
+        attribute responsibility : String = "Join claim, budget and history\nPublish current Policy + fence\nPersist original consumption";
+        attribute glyph : String = "rust";
+        attribute visualRole : String = "semantic";
         attribute targetEngine : AdmissionStorageEngine = AdmissionStorageEngine::turso;
         attribute targetStorageOwner : AdmissionStorageOwner = AdmissionStorageOwner::mrrDataBackend;
         doc /* Target default: the reviewed latest stable embedded Turso engine,
@@ -281,6 +298,10 @@ package WeaverExecution {
         port policyEvaluation : PolicyEvaluationPort;
     }
     part def RustFinalBroker {
+        attribute displayName : String = "Rust / Final broker";
+        attribute responsibility : String = "Own consumed opportunities\nGuard dispatch and each range\nUnknown exposure remains held";
+        attribute glyph : String = "capture";
+        attribute visualRole : String = "execution";
         doc /* Use the consuming ledger handle; serialize the final guard through the bounded transport call. */
         doc /* Target rollback-safe mode requires the sole transport owner and
            provider credentials outside the restored worker domain. Its current
@@ -300,11 +321,19 @@ package WeaverExecution {
         port wire : WirePort;
     }
     part def HttpsExecutor {
+        attribute displayName : String = "Bounded HTTPS executor";
+        attribute responsibility : String = "Send exact authorized bytes\nDisable implicit SDK retries\nReport partial or unknown writes";
+        attribute glyph : String = "capture";
+        attribute visualRole : String = "execution";
         doc /* Exact committed target and body, no inherited proxy, redirect or automatic retry. */
         port wire : ~WirePort;
         port provider : WirePort;
     }
     part def LlmProviderEndpoint {
+        attribute displayName : String = "LLM / Tool endpoint";
+        attribute responsibility : String = "Bound route and request\nExternal effects and responses\nNo inferred exactly-once\ndelivery";
+        attribute glyph : String = "model";
+        attribute visualRole : String = "capture";
         doc /* External model provider boundary. Its response does not authorize
            further sends, settle usage or release unknown reservations. */
         port request : ~WirePort;
@@ -347,6 +376,10 @@ package WeaverExecution {
            hide the present bounded-call contention cost. */
     }
     part def TelemetryService {
+        attribute displayName : String = "Telemetry";
+        attribute responsibility : String = "Local operational\nobservations\nExplicitly governed export\nEvents grant no\nexecution rights";
+        attribute glyph : String = "evidence";
+        attribute visualRole : String = "capture";
         doc /* Current Go source/startup producers emit fixed-label local slog
            metadata; native integration fixtures supply clocked phase records.
            These ordinary stderr diagnostics are not the target bounded event
@@ -358,6 +391,10 @@ package WeaverExecution {
            authority/history/accounting from a telemetry callback. */
     }
     part def DerivedEvidenceAdapter {
+        attribute displayName : String = "Derived evidence";
+        attribute responsibility : String = "Provenance-bound candidates\nGoverned semantic observations\nDerivation is not authority";
+        attribute glyph : String = "document";
+        attribute visualRole : String = "selection";
         doc /* Optional derived-evidence target. Prefer Agentic AI Lab's inherited
            Gerbil Ascent sessions, rules and context invalidation; MRR is selected
            only for a demonstrated semantic-query/lineage requirement or measured
@@ -381,7 +418,11 @@ package WeaverExecution {
            Rust Policy, fence, original claim, history or budget checks. */
     }
 
-    part gateway {
+    part def Gateway {
+        attribute displayName : String = "Agent Gateway / logical execution boundary";
+        attribute glyph : String = "model";
+    }
+    part gateway : Gateway {
         part semanticPublisher : SchemeSemanticPublisher;
         part controlAdapter : GoControlAdapter;
         part policy : RustPolicy;
@@ -391,19 +432,19 @@ package WeaverExecution {
         part provider : LlmProviderEndpoint;
         part telemetry : TelemetryService;
         part derivedEvidence : DerivedEvidenceAdapter[0..1];
-        connect semanticPublisher.sourceCandidates to controlAdapter.sourceCandidates;
-        connect controlAdapter.sourceCommands to ledger.sourceCommands;
-        connect ledger.sourceOutcomes to controlAdapter.sourceOutcomes;
-        connect controlAdapter.semanticObservations to semanticPublisher.sourceObservations;
-        connect ledger.effectOutcomes to controlAdapter.effectObservations;
-        connect controlAdapter.semanticEffectObservations to semanticPublisher.effectObservations;
-        connect derivedEvidence.candidates to semanticPublisher.derivedFacts;
-        connect controlAdapter.proposals to ledger.proposals;
-        connect ledger.policyEvaluation to policy.evaluation;
-        connect ledger.observations to controlAdapter.observations;
-        connect ledger.consumed to broker.consumed;
-        connect broker.wire to executor.wire;
-        connect executor.provider to provider.request;
+        connection semanticPublisher_sourceCandidates_to_controlAdapter_sourceCandidates connect semanticPublisher.sourceCandidates to controlAdapter.sourceCandidates;
+        connection controlAdapter_sourceCommands_to_ledger_sourceCommands connect controlAdapter.sourceCommands to ledger.sourceCommands;
+        connection ledger_sourceOutcomes_to_controlAdapter_sourceOutcomes connect ledger.sourceOutcomes to controlAdapter.sourceOutcomes;
+        connection controlAdapter_semanticObservations_to_semanticPublisher_sourceObservations connect controlAdapter.semanticObservations to semanticPublisher.sourceObservations;
+        connection ledger_effectOutcomes_to_controlAdapter_effectObservations connect ledger.effectOutcomes to controlAdapter.effectObservations;
+        connection controlAdapter_semanticEffectObservations_to_semanticPublisher_effectObservations connect controlAdapter.semanticEffectObservations to semanticPublisher.effectObservations;
+        connection derivedEvidence_candidates_to_semanticPublisher_derivedFacts connect derivedEvidence.candidates to semanticPublisher.derivedFacts;
+        connection controlAdapter_proposals_to_ledger_proposals connect controlAdapter.proposals to ledger.proposals;
+        connection ledger_policyEvaluation_to_policy_evaluation connect ledger.policyEvaluation to policy.evaluation;
+        connection ledger_observations_to_controlAdapter_observations connect ledger.observations to controlAdapter.observations;
+        connection ledger_consumed_to_broker_consumed connect ledger.consumed to broker.consumed;
+        connection broker_wire_to_executor_wire connect broker.wire to executor.wire;
+        connection executor_provider_to_provider_request connect executor.provider to provider.request;
     }
     part targetDeployment : ExecutionAuthorityDeployment;
 }

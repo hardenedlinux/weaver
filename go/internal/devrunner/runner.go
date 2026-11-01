@@ -40,6 +40,7 @@ type Result struct {
 	UserCPU        string        `json:"userCpu,omitempty"`
 	SystemCPU      string        `json:"systemCpu,omitempty"`
 	GoBenchmarks   []GoBenchmark `json:"goBenchmarks,omitempty"`
+	Lean           *LeanEvidence `json:"lean,omitempty"`
 }
 type Receipt struct {
 	Revision           string            `json:"revision,omitempty"`
@@ -51,6 +52,7 @@ type Receipt struct {
 	Inputs             map[string]string `json:"inputs"`
 	LinkedSourceHeads  map[string]string `json:"linkedSourceHeads,omitempty"`
 	LinkedSourceSHA256 string            `json:"linkedSourceSha256,omitempty"`
+	ProofReferences    []ProofReference  `json:"proofReferences,omitempty"`
 }
 
 func FindRoot(start string) (string, error) {
@@ -196,6 +198,12 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		failed = true
 	}
 	if receipt.Status != "CANCELLED" {
+		if refs, err := proofReferences(root, receipt.Stages); err != nil {
+			receipt.Stages = append(receipt.Stages, Result{Name: "proof-references", Status: "FAIL", Error: err.Error()})
+			failed = true
+		} else {
+			receipt.ProofReferences = refs
+		}
 		receipt.Status = "PASS"
 		if failed {
 			receipt.Status = "FAIL"
@@ -260,6 +268,11 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		result.SchemeTiming = observation.timing(finished)
 	}
 	closeErr := log.Close()
+	if source := leanSource(stage); source != "" && closeErr == nil {
+		var proofErr error
+		result.Lean, proofErr = readLeanEvidence(root, source, filepath.Join(directory, result.Log))
+		err = errors.Join(err, proofErr)
+	}
 	if stage.Name == "grpc-benchmark" && err == nil && closeErr == nil {
 		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
 	}

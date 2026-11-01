@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -16,9 +17,13 @@ import (
 )
 
 type ModelViewCapture struct {
-	ModelHash string                             `json:"modelHash"`
-	Sources   map[string]string                  `json:"sources"`
-	Views     map[string]*opensysml.RenderedView `json:"views"`
+	ModelHash       string                             `json:"modelHash"`
+	Sources         map[string]string                  `json:"sources"`
+	Views           map[string]*opensysml.RenderedView `json:"views"`
+	Descriptions    map[string]*ModelDescription       `json:"descriptions,omitempty"`
+	Mapped          map[string]string                  `json:"mapped,omitempty"`
+	ProofReferences []ProofReference                   `json:"proofReferences,omitempty"`
+	ProofSources    map[string]string                  `json:"proofSources,omitempty"`
 }
 
 // MarshalJSON uses the official SDK's lower-camel-case transport field names.
@@ -37,10 +42,14 @@ func (capture ModelViewCapture) MarshalJSON() ([]byte, error) {
 		views[name] = encoded
 	}
 	return json.Marshal(struct {
-		ModelHash string                     `json:"modelHash"`
-		Sources   map[string]string          `json:"sources"`
-		Views     map[string]json.RawMessage `json:"views"`
-	}{capture.ModelHash, capture.Sources, views})
+		ModelHash       string                       `json:"modelHash"`
+		Sources         map[string]string            `json:"sources"`
+		Views           map[string]json.RawMessage   `json:"views"`
+		Descriptions    map[string]*ModelDescription `json:"descriptions,omitempty"`
+		Mapped          map[string]string            `json:"mapped,omitempty"`
+		ProofReferences []ProofReference             `json:"proofReferences,omitempty"`
+		ProofSources    map[string]string            `json:"proofSources,omitempty"`
+	}{capture.ModelHash, capture.Sources, views, capture.Descriptions, capture.Mapped, capture.ProofReferences, capture.ProofSources})
 }
 
 func sdkJSONFields(raw json.RawMessage) (json.RawMessage, error) {
@@ -99,7 +108,7 @@ func CaptureModelViews(ctx context.Context, root string) (*ModelViewCapture, err
 	}
 	paths = append(paths, filepath.Join(root, "Project.sysml"))
 	slices.Sort(paths)
-	capture := &ModelViewCapture{Sources: map[string]string{}, Views: map[string]*opensysml.RenderedView{}}
+	capture := &ModelViewCapture{Sources: map[string]string{}, Views: map[string]*opensysml.RenderedView{}, Descriptions: map[string]*ModelDescription{}}
 	documents := make([]opensysml.Document, 0, len(paths))
 	for _, path := range paths {
 		info, err := os.Lstat(path)
@@ -144,14 +153,40 @@ func CaptureModelViews(ctx context.Context, root string) (*ModelViewCapture, err
 			return nil, fmt.Errorf("render SysML view %s: %w", view.ID, err)
 		}
 		capture.Views[view.ID] = rendered
+		description, err := describeModelView(ctx, client, model, view.ID, rendered)
+		if err != nil {
+			return nil, err
+		}
+		if description != nil {
+			capture.Descriptions[view.ID] = description
+		}
 	}
 	return capture, nil
 }
 
 func publishModelViews(ctx context.Context, root string) (string, error) {
+	before, err := SourceInputs(root)
+	if err != nil {
+		return "", err
+	}
 	capture, err := CaptureModelViews(ctx, root)
 	if err != nil {
 		return "", err
+	}
+	if err := mapModelDeclarations(root, capture); err != nil {
+		return "", err
+	}
+	after, err := SourceInputs(root)
+	if err != nil {
+		return "", err
+	}
+	if !maps.Equal(before, after) {
+		return "", fmt.Errorf("source changed during model/proof capture")
+	}
+	for path, hash := range capture.Sources {
+		if before[path] != hash {
+			return "", fmt.Errorf("SDK source differs from the deciding capture: %s", path)
+		}
 	}
 	bytes, err := json.Marshal(capture)
 	if err != nil {

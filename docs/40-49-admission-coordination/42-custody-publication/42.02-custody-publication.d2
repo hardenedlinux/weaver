@@ -193,6 +193,146 @@ broker.hold -> broker.cas: Read current prefix { style.stroke-dash: 4 }
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"02 custody publication","purpose":"architecture","kind":"data","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which records and binding relationships govern 02 custody publication?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/40-49-admission-coordination/42-custody-publication/42.02-custody-publication.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "02 custody publication",
+  "purpose": "architecture",
+  "kind": "data",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which records and binding relationships govern 02 custody publication?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/40-49-admission-coordination/42-custody-publication/42.02-custody-publication.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "protocols",
+          "children": [
+            {
+              "id": "protocols.mcp"
+            },
+            {
+              "id": "protocols.a2a"
+            },
+            {
+              "id": "protocols.acp"
+            },
+            {
+              "id": "protocols.goBrand"
+            },
+            {
+              "id": "protocols.kubernetesBrand"
+            }
+          ]
+        },
+        {
+          "id": "registry",
+          "children": [
+            {
+              "id": "registry.origin"
+            },
+            {
+              "id": "registry.alias"
+            },
+            {
+              "id": "registry.query"
+            }
+          ]
+        },
+        {
+          "id": "recovery",
+          "children": [
+            {
+              "id": "recovery.projection"
+            },
+            {
+              "id": "recovery.join"
+            },
+            {
+              "id": "recovery.fence"
+            }
+          ]
+        },
+        {
+          "id": "broker",
+          "children": [
+            {
+              "id": "broker.cas"
+            },
+            {
+              "id": "broker.alias"
+            },
+            {
+              "id": "broker.hold"
+            },
+            {
+              "id": "broker.rustBrand"
+            }
+          ]
+        },
+        {
+          "id": "quint"
+        },
+        {
+          "id": "lean"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {
+      "protocols.goBrand": "go",
+      "protocols.kubernetesBrand": "kubernetes",
+      "broker.rustBrand": "rust"
+    },
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

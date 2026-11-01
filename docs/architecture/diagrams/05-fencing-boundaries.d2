@@ -50,6 +50,130 @@ note.class: note
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"fencing boundaries","purpose":"architecture","kind":"system","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"Which execution boundaries reject a stale owner?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"Which execution boundaries reject a stale owner?"},"basis":{"captureRef":"docs/architecture/diagrams/05-fencing-boundaries.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["sketchbook","reading"],"layout":"model-map","variants":[],"presentation":{"captions":{"old_coord":{"title":[2],"detail":[4]},"new_coord":{"title":[2],"detail":[3]},"store":{"title":[2],"detail":[6,9]},"gate":{"title":[3],"detail":[4]},"old_broker":{"title":[3],"detail":[5]},"barrier":{"title":[3,5],"detail":[3]},"quiesce":{"title":[2],"detail":[4,6,7]},"upstream":{"title":[3],"detail":[]},"note":{"title":[10],"detail":[11,12]}},"annotations":{"note":"constraint"},"icons":{"old_coord":"capture","new_coord":"capture","store":"capture","gate":"capture","old_broker":"capture","barrier":"capture","quiesce":"capture","upstream":"capture","note":"capture"},"roles":{"new_coord":"default","old_coord":"default","store":"default","gate":"default","old_broker":"default","barrier":"default","quiesce":"default","upstream":"default","note":"default"},"relations":{"(old_coord -> store)[0]":{"binding":[4,5],"detail":[4,5]},"(new_coord -> store)[0]":{"binding":[4,5],"detail":[4]},"(old_coord -> gate)[0]":{"binding":[5,6],"detail":[4]},"(store -> old_broker)[0]":{"binding":[4,6],"detail":[4,6]},"(old_broker -> upstream)[0]":{"binding":[6,7],"detail":[4,6]},"(new_coord -> quiesce)[0]":{"binding":[4,5],"detail":[4,5]},"(barrier -> quiesce)[0]":{"binding":[5,8],"detail":[3,5]},"(gate -> barrier)[0]":{"binding":[5,9],"detail":[3,4]}},"options":{"elk.direction":"DOWN","elk.hierarchyHandling":"INCLUDE_CHILDREN","elk.layered.layering.strategy":"COFFMAN_GRAHAM","elk.layered.layering.coffmanGraham.layerBound":"1","elk.spacing.nodeNode":"24","elk.layered.spacing.nodeNodeBetweenLayers":"36","elk.layered.cycleBreaking.strategy":"MODEL_ORDER","elk.layered.considerModelOrder.strategy":"NODES_AND_EDGES","elk.separateConnectedComponents":"false","elk.aspectRatio":"0.55","elk.spacing.componentComponent":"24"},"lineGap":48}}
+{
+  "title": "fencing boundaries",
+  "purpose": "architecture",
+  "kind": "system",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which execution boundaries reject a stale owner?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Which execution boundaries reject a stale owner?"
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/05-fencing-boundaries.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "old_coord"
+        },
+        {
+          "id": "new_coord"
+        },
+        {
+          "id": "store"
+        },
+        {
+          "id": "gate"
+        },
+        {
+          "id": "old_broker"
+        },
+        {
+          "id": "barrier"
+        },
+        {
+          "id": "quiesce"
+        },
+        {
+          "id": "upstream"
+        },
+        {
+          "id": "note"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "old_coord": "capture",
+      "new_coord": "capture",
+      "store": "capture",
+      "gate": "capture",
+      "old_broker": "capture",
+      "barrier": "capture",
+      "quiesce": "capture",
+      "upstream": "capture",
+      "note": "capture"
+    },
+    "roles": {
+      "new_coord": "default",
+      "old_coord": "default",
+      "store": "default",
+      "gate": "default",
+      "old_broker": "default",
+      "barrier": "default",
+      "quiesce": "default",
+      "upstream": "default",
+      "note": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

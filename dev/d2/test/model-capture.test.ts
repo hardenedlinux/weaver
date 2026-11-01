@@ -21,3 +21,11 @@ test('malformed capture metadata cannot stand in for an SDK result',()=>{
   expect(()=>readModelCapture(raw,hash(raw),{})).toThrow('Invalid SDK capture envelope');
  }
 });
+
+test('derived D2 and Lean references cannot become independent design inputs',()=>{
+ const documents={'Project.sysml':'package Example {}','docs/view.d2':'derived declaration','dev/proofs/lean/Proof.lean':'theorem retained : True := True.intro'};
+ const raw=JSON.stringify({modelHash:'sdk-model',sources:{'Project.sysml':hash(documents['Project.sysml'])},views:{view:{}},mapped:{'docs/view.d2':documents['docs/view.d2']},proofSources:{'dev/proofs/lean/Proof.lean':documents['dev/proofs/lean/Proof.lean']}});
+ expect(readModelCapture(raw,hash(raw),documents).proofSources['dev/proofs/lean/Proof.lean']).toBe(documents['dev/proofs/lean/Proof.lean']);
+ expect(()=>readModelCapture(raw,hash(raw),{...documents,'docs/view.d2':'manual semantic replacement'})).toThrow('Derived D2 differs');
+ expect(()=>readModelCapture(raw,hash(raw),{...documents,'dev/proofs/lean/Proof.lean':'changed theorem'})).toThrow('Lean source changed');
+});

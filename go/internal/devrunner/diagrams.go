@@ -134,12 +134,16 @@ func diagramEvidence(data []byte, image diagramImage) error {
 	metadataCount := 0
 	var metadata struct {
 		Layout string `json:"layout"`
-		Source string `json:"source"`
-		Digest string `json:"sourceDigest"`
-		Nodes  []struct {
-			ID string `json:"id"`
-		} `json:"nodes"`
-		Edges []struct{ ID, Source, Target string } `json:"edges"`
+		View   struct {
+			Source string `json:"source"`
+		} `json:"view"`
+		SourceSHA256 map[string]string `json:"sourceSHA256"`
+		Model        struct {
+			Subjects []struct {
+				ID string `json:"id"`
+			} `json:"subjects"`
+			Relations []struct{ ID, Src, Dst string } `json:"relations"`
+		} `json:"model"`
 	}
 	for {
 		token, err := decoder.Token()
@@ -154,6 +158,9 @@ func diagramEvidence(data []byte, image diagramImage) error {
 			continue
 		}
 		if element.Name.Local == "metadata" {
+			if slices.ContainsFunc(element.Attr, func(a xml.Attr) bool { return a.Name.Local == "data-scene-input" }) {
+				continue
+			}
 			metadataCount++
 			if metadataCount != 1 {
 				return errors.New("duplicate graph metadata")
@@ -169,18 +176,18 @@ func diagramEvidence(data []byte, image diagramImage) error {
 		var edgeID, from, to string
 		for _, attr := range element.Attr {
 			switch attr.Name.Local {
-			case "data-source-edge":
+			case "data-scene-edge":
 				edgeID = attr.Value
-			case "data-source-from":
+			case "data-source-id":
 				from = attr.Value
-			case "data-source-to":
+			case "data-target-id":
 				to = attr.Value
 			}
 			var target map[string]bool
 			switch attr.Name.Local {
-			case "data-source-node":
+			case "data-scene-node":
 				target = nodes
-			case "data-source-edge":
+			case "data-scene-edge":
 				target = edges
 			default:
 				continue
@@ -206,11 +213,11 @@ func diagramEvidence(data []byte, image diagramImage) error {
 	if image.Layout != "" && image.Layout != metadata.Layout {
 		return errors.New("SVG composition differs from its declared source layout")
 	}
-	if metadata.Source != image.Source || metadata.Digest != image.SourceSHA256 || len(nodes) != image.Nodes || len(edges) != image.Edges || len(metadata.Nodes) != len(nodes) || len(metadata.Edges) != len(edges) {
+	if metadata.View.Source != image.Source || metadata.SourceSHA256[image.Source] != image.SourceSHA256 || len(nodes) != image.Nodes || len(edges) != image.Edges || len(metadata.Model.Subjects) != len(nodes) || len(metadata.Model.Relations) != len(edges) {
 		return fmt.Errorf("SVG source binding or graph coverage differs: %s", image.Source)
 	}
 	seenNodes, seenEdges := map[string]bool{}, map[string]bool{}
-	for _, node := range metadata.Nodes {
+	for _, node := range metadata.Model.Subjects {
 		if node.ID == "" || seenNodes[node.ID] {
 			return errors.New("duplicate or empty declared node identity")
 		}
@@ -219,15 +226,15 @@ func diagramEvidence(data []byte, image diagramImage) error {
 			return fmt.Errorf("source node omitted: %s", node.ID)
 		}
 	}
-	for _, edge := range metadata.Edges {
+	for _, edge := range metadata.Model.Relations {
 		if edge.ID == "" || seenEdges[edge.ID] {
 			return errors.New("duplicate or empty declared relationship identity")
 		}
 		seenEdges[edge.ID] = true
-		if connections[edge.ID] != [2]string{edge.Source, edge.Target} {
+		if connections[edge.ID] != [2]string{edge.Src, edge.Dst} {
 			return errors.New("visual relationship endpoints differ from declaration")
 		}
-		if !edges[edge.ID] || !nodes[edge.Source] || !nodes[edge.Target] {
+		if !edges[edge.ID] || !nodes[edge.Src] || !nodes[edge.Dst] {
 			return fmt.Errorf("source relationship omitted: %s", edge.ID)
 		}
 	}
@@ -238,6 +245,9 @@ func diagramEvidence(data []byte, image diagramImage) error {
 func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
 	modelDigest, err := publishModelViews(ctx, root)
 	if err != nil {
+		return err
+	}
+	if err := writeMappedDeclarations(root); err != nil {
 		return err
 	}
 	binary, err := exec.LookPath("bun")
@@ -267,6 +277,9 @@ func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
 func RenderDiagrams(ctx context.Context, root string, out io.Writer) error {
 	modelDigest, err := publishModelViews(ctx, root)
 	if err != nil {
+		return err
+	}
+	if err := writeMappedDeclarations(root); err != nil {
 		return err
 	}
 	return renderDiagrams(ctx, root, modelDigest, out)

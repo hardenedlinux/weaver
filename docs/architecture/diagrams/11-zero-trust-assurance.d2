@@ -59,6 +59,122 @@ rule: "Quint exposes schedules. Lean preserves declared invariants. Runtime chec
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"zero trust assurance","purpose":"architecture","kind":"assurance","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which premises and proof obligations govern zero trust assurance?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/architecture/diagrams/11-zero-trust-assurance.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "zero trust assurance",
+  "purpose": "architecture",
+  "kind": "assurance",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which premises and proof obligations govern zero trust assurance?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/11-zero-trust-assurance.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "foundation"
+        },
+        {
+          "id": "model",
+          "children": [
+            {
+              "id": "model.state"
+            },
+            {
+              "id": "model.faults"
+            },
+            {
+              "id": "model.receipt"
+            }
+          ]
+        },
+        {
+          "id": "proof",
+          "children": [
+            {
+              "id": "proof.meaning"
+            },
+            {
+              "id": "proof.relation"
+            },
+            {
+              "id": "proof.receipt"
+            }
+          ]
+        },
+        {
+          "id": "execution",
+          "children": [
+            {
+              "id": "execution.adapters"
+            },
+            {
+              "id": "execution.faults"
+            },
+            {
+              "id": "execution.receipt"
+            }
+          ]
+        },
+        {
+          "id": "admit"
+        },
+        {
+          "id": "rule"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {},
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

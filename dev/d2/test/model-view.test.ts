@@ -1,48 +1,35 @@
 import {test,expect} from 'bun:test';
-import fc from 'fast-check';
 import {fileURLToPath} from 'node:url';
-import {compileFigureSource} from '@deterministic-engineering/render';
-import {renderedViewFromJson} from '@openmbee/opensysml';
+import {compileFigureSource,composeFigure,composeModelView} from '@deterministic-engineering/render';
 import {collectCatalog} from '../src/source/catalog';
-import {bindModelView} from '../src/source/model-view';
-import {compileLibraryView} from '../src/source/library-view';
-import {composeProjectFigure} from '../src/figures';
+import {capturedViews} from '../src/source/models';
+import {iconPacks} from '@deterministic-engineering/render/icons';
 import {themes} from '../themes';
 const catalog=collectCatalog(fileURLToPath(new URL('../../../',import.meta.url)));
 const source='docs/architecture/diagrams/00a-readme-overview.d2';
-const entry=catalog.views.find(view=>view.source===source)!;
-const input=await compileFigureSource({...catalog.fs,...catalog.documents},source,{themeLayers:themes});
-const captured=catalog.modelCapture;
-if(!captured)throw new Error('Run model-view tests through the Go-owned SDK capture entrypoint');
+const sources={...catalog.fs,...catalog.documents};
+const views=capturedViews(catalog.modelCapture);
+const resources={themeLayers:themes,sysmlViews:views,iconPacks:{...iconPacks,weaver:Object.fromEntries(['go','rust','kubernetes'].map(name=>[name,{svg:catalog.fs['docs/architecture/diagrams/assets/'+name+'.svg']!,label:name}]))}};
+const input=await compileFigureSource(sources,source,resources);
+const native=views['WeaverViews::architecture']!;
 
-test('published Library projects the actual SDK model without a D2 topology copy',async()=>{
- const scene=await compileLibraryView(catalog,entry),native=renderedViewFromJson(captured.views['WeaverViews::architecture']);
- expect(scene.nodes.map(node=>node.id)).toEqual(native.nodes.map(node=>node.id));
- expect(scene.edges.map(edge=>[edge.source,edge.target])).toEqual(native.edges.map(edge=>[edge.from,edge.to]));
- const html=composeProjectFigure(scene).html;
- expect(html).toContain('data-scene');expect(html).not.toContain('data-d2-version');
- expect(scene.figure.modelTrace?.modelHash).toBe(captured.modelHash);
- expect(scene.figure.sources[scene.figure.references.sdkCapture!]).toBe(scene.figure.modelTrace?.capturedRenderingJSON);
+test('public Library binds native SysML identity, ownership and ordered endpoints',()=>{
+ expect(input.model!.subjects.map(node=>node.id)).toEqual(native.rendering.nodes.map(node=>node.id));
+ expect(input.model!.relations.map(edge=>[edge.src,edge.dst])).toEqual(native.rendering.edges.map(edge=>[edge.from,edge.to]));
+ expect(input.modelSource?.modelHash).toBe(native.modelHash);
+ expect(input.sources[input.references.sdkCapture!]).toBe(input.modelTrace?.capturedRenderingJSON);
+ expect(composeFigure(input,composeModelView).drawing.mode).toBe('sketch');
 });
 
-test('missing, duplicate or renamed native subjects cannot silently rebind captions',()=>{
- fc.assert(fc.property(fc.integer({min:0,max:9}),index=>{
-  const changed=structuredClone(captured),native=changed.views['WeaverViews::architecture'] as {nodes:{name:string}[]};
-  native.nodes[index]!.name+=' changed';
-  expect(()=>bindModelView(input,changed)).toThrow('caption selector');
- }),{numRuns:100,seed:293});
- expect(()=>bindModelView(input,undefined)).toThrow('Go-owned SDK');
+test('altered capture bytes cannot bind to the Go source commitment',async()=>{
+ const changed=structuredClone(views);changed['WeaverViews::architecture']!.rendering.nodes[0]!.name+=' replacement';
+ await expect(compileFigureSource(sources,source,{...resources,sysmlViews:changed})).rejects.toThrow('source bytes');
 });
 
-test('undeclared port ownership is refused by the public projection',()=>{
- const changed=structuredClone(captured),native=changed.views['WeaverViews::architecture'] as {edges:{fromPort:string}[]};
- native.edges[0]!.fromPort='unknown-port';
- expect(()=>bindModelView(input,changed)).toThrow('port does not belong');
-});
-
-test('container display projection cannot hide a model relationship',async()=>{
- const scene=await compileLibraryView(catalog,entry),model=scene.figure.model!;
- const root=model.subjects.find(node=>!node.parent)!,leaf=model.subjects.find(node=>node.parent===root.id)!;
- const figure={...scene.figure,model:{...model,relations:[...model.relations,{id:'incident-root',src:root.id,dst:leaf.id,label:'bound',srcArrow:'none' as const,dstArrow:'none' as const}]}};
- expect(()=>composeProjectFigure({...scene,figure,edges:[...scene.edges,{id:'incident-root',source:root.id,target:leaf.id,label:'bound'}]})).toThrow('incident relation');
+test('missing captured views and unsupported source ports refuse instead of switching engines',async()=>{
+ await expect(compileFigureSource(sources,source,{...resources,sysmlViews:undefined})).rejects.toThrow('binding mismatch');
+ const changed=structuredClone(views),selected=changed['WeaverViews::architecture']!;
+ selected.rendering.edges[0]!.fromPort='unowned-port';
+ const documents={...sources,[input.references.sdkCapture!]:JSON.stringify(selected)};
+ await expect(compileFigureSource(documents,source,{...resources,sysmlViews:changed})).rejects.toThrow('port does not belong');
 });

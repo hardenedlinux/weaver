@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { isViewKind, type SourceCatalog, type ViewEntry } from './types';
-import {readModelCapture} from './models';
+import {readModelCapture,capturedViews} from './models';
 
 function files(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
@@ -27,7 +27,18 @@ export function collectCatalog(root: string): SourceCatalog {
   const modelFiles=files(path.join(root,'dev/sysml')).filter(file=>file.endsWith('.sysml')).map(file=>path.relative(root,file).split(path.sep).join('/'));
   const documents=Object.fromEntries(["Project.sysml","docs/architecture/08-diagram-catalog.org",...modelFiles].map(name=>[name,readFileSync(path.join(root,name),"utf8")]));
   const expected=process.env.WEAVER_DIAGRAM_MODEL_SHA256;
-  const modelCapture=expected?readModelCapture(readFileSync(path.join(root,'.cache/d2/model-views.json'),'utf8'),expected,documents):undefined;
+  const rawCapture=expected?readFileSync(path.join(root,'.cache/d2/model-views.json'),'utf8'):undefined;
+  if(rawCapture){
+    const metadata:unknown=JSON.parse(rawCapture);
+    if(metadata&&typeof metadata==='object'&&'proofSources' in metadata&&metadata.proofSources&&typeof metadata.proofSources==='object'){
+      for(const name of Object.keys(metadata.proofSources)){
+        if(!name.startsWith('dev/proofs/')||!name.endsWith('.lean')||name.split('/').includes('..'))throw new Error('Nonlocal captured Lean source');
+        documents[name]=readFileSync(path.join(root,name),'utf8');
+      }
+    }
+  }
+  const modelCapture=expected?readModelCapture(rawCapture!,expected,{...fs,...documents}):undefined;
+  for(const[view,capture]of Object.entries(capturedViews(modelCapture)))documents['dev/sysml/captures/'+view.replaceAll('::','-')+'.json']=JSON.stringify(capture);
   for (const name of ['go', 'rust', 'kubernetes']) {
     const source = `docs/architecture/diagrams/assets/${name}.svg`;
     fs[source] = readFileSync(path.join(root, source), 'utf8');

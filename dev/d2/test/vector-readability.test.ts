@@ -15,7 +15,7 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
  if(!modelDigest)throw new Error('Standalone vector admission requires the Go-owned SDK capture');
  expect(receipt.status).toBe('PASS');
  expect(receipt.report.modelCaptureSHA256).toBe(modelDigest);
- const images=receipt.report.images.filter(image=>['question-map','model-map'].includes(image.layout));
+ const images=receipt.report.images.filter(image=>image.layout==='model-view');
  expect(images.length).toBeGreaterThan(3);
  const browser=await chromium.launch();
  const failures:string[]=[];
@@ -79,7 +79,7 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
      return problems;
     });
     failures.push(...issues.map(issue=>image.source+': '+issue));
-    expect(body).not.toContain('<foreignObject');expect(body).toContain('data-source-node=');
+    expect(body).not.toContain('<foreignObject');expect(body).toContain('data-scene-node=');
     await page.screenshot({path:root+'.cache/d2/'+name+'-830.png',fullPage:true});
     await page.setContent('<style>body{margin:0;background:#0d1117}</style><img width="830" src="data:image/svg+xml;base64,'+Buffer.from(body).toString('base64')+'">');
     expect(await page.locator('img').evaluate(async image=>{if(!(image instanceof HTMLImageElement))throw new Error("Not an image");await image.decode();return image.naturalWidth>0;})).toBe(true);

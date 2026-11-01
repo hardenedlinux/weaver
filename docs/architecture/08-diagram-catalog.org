@@ -181,13 +181,17 @@ A full-resolution [[file:diagrams/01-system-boundaries.svg][PNG overview]] accom
 
 * Authoring and reproducible rendering
 
-Keep one canonical D2 source per view. Org embeds the generated SVG and links
-the source; do not maintain an independent Mermaid copy of the same view.
+Keep one D2 artifact per view. README D2 is generated from the SDK's SysML
+interpretation and Lean references through Go; edit the source contracts rather
+than its generated semantic copy. Other corpus views retain their declared
+source ownership until migrated. Org embeds the generated SVG and links the D2;
+do not maintain an independent Mermaid copy of the same view.
 Change semantic prose, source labels, state guards, and acceptance references
 in the same revision. Generated previews must be refreshed after source changes.
 
 The default TypeScript entrypoint consumes the local shared render Library.
-D2 owns Questions and model relationships. Public library APIs own declaration
+D2 retains visual choices; the README projection's questions, responsibilities
+and relationships come from SysML and the source-bound proof mapping. Public library APIs own declaration
 reading, standard D2 rendering, composed styles and HTML/PNG export. Weaver adds
 question-specific responsibility, relationship-matrix and proof compositions,
 captured local assets and graph-binding verification. Generic layout, font
@@ -424,16 +428,12 @@ corridor uses ELK wrapping rather than shrinking its text into a wide row.
 
 * Embedded architecture views
 
-The measured Library path also covers 27 D2 model maps. Their compact graph,
-numbered handoff cards and full responsibility descriptions preserve the
-captured subject and relationship inventory. Source-authored integer word
-partitions preserve wording and paragraph boundaries without a second text
-model. The Go gate checks the generated standalone SVGs after rendering.
-
-The remaining 75 =d2-reference= declarations and three specialized project
-compositions are explicit migration work. Nested parents, sequence lifelines
-and typed member endpoints need supported projections before those paths can
-be removed. A measured-view failure never selects the reference renderer.
+The public Library model-view compositor consumes native SDK models and explicit
+source-owned graph projections. Weaver has no alternate raw SVG path, custom
+caption-partition engine or compiler-process pool. Go validates Library provenance
+and visible model coverage directly; unsupported notation refuses instead of
+being silently converted. Rendering capability and standalone readability remain
+separate admission checks.
 
 ** 01-system-boundaries.svg
 

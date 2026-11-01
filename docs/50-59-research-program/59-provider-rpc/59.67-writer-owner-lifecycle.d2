@@ -76,6 +76,126 @@ footer: "Resource closure is not authority revocation · A free slot is not refu
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"67 writer owner lifecycle","purpose":"workflow","kind":"state","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"How do writer ownership and recovery remain fenced?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"How do writer ownership and recovery remain fenced?"},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.67-writer-owner-lifecycle.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["graphite","reading"],"layout":"model-map","variants":[],"presentation":{"captions":{"title":{"title":[6],"detail":[]},"original":{"title":[4,5],"detail":[4,5,9,11]},"active":{"title":[2,4],"detail":[4,5,9,10]},"unknown":{"title":[2,3],"detail":[3,4,9,11]},"stopped":{"title":[3],"detail":[4,6,11,12]},"recovery":{"title":[3,5],"detail":[4,5,9]},"executor":{"title":[3,4],"detail":[5,7,11,12]},"footer":{"title":[10,14],"detail":[8]}},"annotations":{"title":"heading","footer":"constraint"},"icons":{"title":"document","original":"library","active":"capture","unknown":"capture","stopped":"capture","recovery":"document","executor":"rust","footer":"document"},"roles":{"original":"semantic","unknown":"default","recovery":"default","executor":"execution","title":"default","active":"default","stopped":"default","footer":"default"},"relations":{"(original -> active)[0]":{"binding":[6,9,10],"detail":[3]},"(active -> unknown)[0]":{"binding":[3,7,8],"detail":[3]},"(active -> stopped)[0]":{"binding":[3,8],"detail":[5,6]},"(stopped -> recovery)[0]":{"binding":[5,9],"detail":[3]},"(unknown -> recovery)[0]":{"binding":[4,8,9],"detail":[3]},"(recovery -> executor)[0]":{"binding":[4,9,10],"detail":[2,3]}},"options":{"elk.direction":"DOWN","elk.hierarchyHandling":"INCLUDE_CHILDREN","elk.layered.layering.strategy":"COFFMAN_GRAHAM","elk.layered.layering.coffmanGraham.layerBound":"1","elk.spacing.nodeNode":"24","elk.layered.spacing.nodeNodeBetweenLayers":"36","elk.layered.cycleBreaking.strategy":"MODEL_ORDER","elk.layered.considerModelOrder.strategy":"NODES_AND_EDGES","elk.separateConnectedComponents":"false","elk.aspectRatio":"0.55","elk.spacing.componentComponent":"24"},"lineGap":36}}
+{
+  "title": "67 writer owner lifecycle",
+  "purpose": "workflow",
+  "kind": "state",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How do writer ownership and recovery remain fenced?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "How do writer ownership and recovery remain fenced?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.67-writer-owner-lifecycle.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "graphite",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "original"
+        },
+        {
+          "id": "active"
+        },
+        {
+          "id": "unknown"
+        },
+        {
+          "id": "stopped"
+        },
+        {
+          "id": "recovery"
+        },
+        {
+          "id": "executor"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "document",
+      "original": "library",
+      "active": "capture",
+      "unknown": "capture",
+      "stopped": "capture",
+      "recovery": "document",
+      "executor": "rust",
+      "footer": "document"
+    },
+    "roles": {
+      "original": "semantic",
+      "unknown": "default",
+      "recovery": "default",
+      "executor": "execution",
+      "title": "default",
+      "active": "default",
+      "stopped": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

@@ -23,6 +23,40 @@ provider final-use boundary; dependency pins remain unchanged.
 
 * Zero Trust authorization at actual use
 
+** Reader model and checked correspondence
+
+[[file:../../../dev/sysml/ZeroTrustRefinement.sysml][ZeroTrustRefinement.sysml]]
+defines a semantic contract view over existing owners, not another runtime
+topology. Its arrows mean requirements carried into an interpretation. The
+README view is generated from that exact SDK model through the shared Library.
+
+[[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]
+
+| Model subject | SPEC source meaning | Weaver proof consumer / actual owner |
+|---------------+---------------------+--------------------------------------|
+| CoreContract | ZeroTrust.Model Framework and Continuous.required: authenticated, authorized, current at use, committed consumption, unknown retention, not revoked, mediated | gateway_specialization_retains_generic_framework; Rust policy/ledger/broker interpretation |
+| UsageContract | UsageControl.step joins initial/ongoing authorization, conditions, witnessed obligation and mutation; resume is recovery; close is terminal AND accounted | usage_control_keeps_current_consumption; current final-use checks and explicit external-fact/obligation premises |
+| ParentContract | ProfileObject.composeSessions retains the independently required parent and selected object projections | retained_parent_and_selected_object_reach_gateway; Scheme source/profile publication and Rust commitment checks |
+| ApplicationInterpretation | Gateway.ZeroTrust specializes the generic framework with publication-indexed effects and a committed prefix | ZeroTrustEnrichment.RuntimeView; original claim, profile, budget/history, pending publication and owner joins |
+| FinalEnforcement | Application responsibility, not a library-provided daemon | Existing Rust final transaction and transport custody; Go proposes and Scheme defines semantics |
+
+The =ZeroTrustContractRefinement= requirement names the existing Lean theorems,
+Quint counterexample and real runtime tests in =runtime-trace.json=. Go checks
+model/source trace coverage and accepts structured Lean diagnostics separately.
+For selected standalone proof runs, an exact =declaration= must appear in the
+compiler's axiom audit. This prevents source-name coverage from masquerading as
+a checked run. It does not prove that a SysML connection semantically refines a
+Lean predicate or that Rust faithfully materializes Host state. Those are explicit
+review/refinement obligations, not edges inferred from a picture.
+
+The SPEC consumer remains isolated candidate qualification, as described below;
+the default Lake pin has not been promoted. Generic UsageControl conditions,
+external credential/fact freshness, mandatory review admission and rollback
+protection must not be presented as fully deployed merely because these symbols
+exist. Current tests establish the selected concrete local boundaries.
+
+** Authorization contract
+
 The source-reviewed upstream contract is
 [[https://github.com/hardenedlinux/cedar-poo-spec/pull/8][SPEC ZeroTrust and Gateway composition]]. The generic framework is the
 authorization contract: authenticated, authorized, current at use, consumption
