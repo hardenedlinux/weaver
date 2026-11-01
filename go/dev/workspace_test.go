@@ -216,8 +216,23 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 }
 func TestSysMLSDKIsAbsentFromProductionBuild(t *testing.T) {
 	goBinary := filepath.Join(runtime.GOROOT(), "bin/go")
-	deps := tool(t, goBinary, "-C", "go", "list", "-deps", "./cmd/...")
-	if strings.Contains(string(deps), "github.com/Open-MBEE/OpenSysML") {
-		t.Fatal("development SDK leaked into production command graph")
+	commands := strings.Fields(string(tool(t, goBinary, "-C", "go", "list", "./cmd/...")))
+	production := 0
+	for _, command := range commands {
+		// The development owner intentionally captures SDK views in-process.
+		// Every other command, including future commands, remains covered.
+		if strings.HasSuffix(command, "/cmd/weaver-dev") {
+			continue
+		}
+		production++
+		t.Run(command, func(t *testing.T) {
+			deps := tool(t, goBinary, "-C", "go", "list", "-deps", command)
+			if strings.Contains(string(deps), "github.com/Open-MBEE/OpenSysML") {
+				t.Fatal("development SDK leaked into production command graph")
+			}
+		})
+	}
+	if production == 0 {
+		t.Fatal("no production commands were checked")
 	}
 }

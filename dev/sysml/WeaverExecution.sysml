@@ -48,6 +48,14 @@ package WeaverExecution {
     item def DurableOutcome;
     item def ConsumedPermit;
     item def CanonicalWireRequest;
+    item def PolicyDecision {
+        doc /* Current Cedar permission plus error-free evaluation. A decision
+           value alone is not a consumed permit or a reusable send handle. */
+    }
+    port def PolicyEvaluationPort {
+        out item request : CanonicalProposal;
+        in item decision : PolicyDecision;
+    }
     port def ProposalPort {
         doc /* Default Go/Rust process boundary is authenticated gRPC with typed
            Protobuf messages. External provider body/schema documents can contain
@@ -213,6 +221,7 @@ package WeaverExecution {
            custody, durable publication and current final execution guards. */
         doc /* Consume the upstream core library's semantic/runtime contracts;
            do not duplicate Cedar or Delta evaluation inside Weaver. */
+        port evaluation : ~PolicyEvaluationPort;
     }
     enum def AdmissionStorageEngine {
         enum turso;
@@ -256,6 +265,7 @@ package WeaverExecution {
         port sourceCommands : ~PolicyEvidenceDesign::CandidatePort;
         port sourceOutcomes : PolicyEvidenceDesign::ObservationPort;
         port effectOutcomes : PolicyEvidenceDesign::EffectObservationPort;
+        port policyEvaluation : PolicyEvaluationPort;
     }
     part def RustFinalBroker {
         doc /* Use the consuming ledger handle; serialize the final guard through the bounded transport call. */
@@ -279,6 +289,12 @@ package WeaverExecution {
     part def HttpsExecutor {
         doc /* Exact committed target and body, no inherited proxy, redirect or automatic retry. */
         port wire : ~WirePort;
+        port provider : WirePort;
+    }
+    part def LlmProviderEndpoint {
+        doc /* External model provider boundary. Its response does not authorize
+           further sends, settle usage or release unknown reservations. */
+        port request : ~WirePort;
     }
     part def ExecutionAuthorityDeployment {
         doc /* Target allocation of the existing gateway parts, not a second
@@ -359,6 +375,7 @@ package WeaverExecution {
         part ledger : RustLedger;
         part broker : RustFinalBroker;
         part executor : HttpsExecutor;
+        part provider : LlmProviderEndpoint;
         part telemetry : TelemetryService;
         part derivedEvidence : DerivedEvidenceAdapter[0..1];
         connect semanticPublisher.sourceCandidates to controlAdapter.sourceCandidates;
@@ -369,9 +386,11 @@ package WeaverExecution {
         connect controlAdapter.semanticEffectObservations to semanticPublisher.effectObservations;
         connect derivedEvidence.candidates to semanticPublisher.derivedFacts;
         connect controlAdapter.proposals to ledger.proposals;
+        connect ledger.policyEvaluation to policy.evaluation;
         connect ledger.observations to controlAdapter.observations;
         connect ledger.consumed to broker.consumed;
         connect broker.wire to executor.wire;
+        connect executor.provider to provider.request;
     }
     part targetDeployment : ExecutionAuthorityDeployment;
 }

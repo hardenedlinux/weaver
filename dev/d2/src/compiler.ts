@@ -1,3 +1,4 @@
+import {compileLibraryView} from './source/library-view';
 import { fork, type ChildProcess } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import type { Scene, SourceCatalog } from './source/types';
@@ -10,6 +11,9 @@ export class CompilationOwner {
   private queue: Promise<void> = Promise.resolve();
   constructor(private readonly catalog: SourceCatalog) {}
   compile(index: number): Promise<Scene> {
+    const view=this.catalog.views[index];
+    if(!view) return Promise.reject(new Error('Unknown source index'));
+    if(this.catalog.fs[view.source]?.includes('"modelView"'))return compileLibraryView(this.catalog,view);
     const result = this.queue.then(async () => {
       if (!this.worker || this.jobs >= 4) {
         if (this.worker) await this.release(this.worker);

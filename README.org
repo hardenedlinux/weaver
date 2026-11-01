@@ -23,14 +23,14 @@ Go and Rust communicate through mutually authenticated gRPC. Protobuf is the
 default stream encoding; Arrow IPC is optional. Scheme uses Gambit C FFI for
 inert Cedar validation. Configuration validation does not grant execution rights.
 
-** Authorization at the final send
+** Zero Trust architecture
 
 Routing proposes an operation; it does not authorize external bytes. Rust joins
 current Policy, the original claim, shared budget and owner fence at actual use.
 Each stream message or range retains its own bound authorization and exposure.
 
-#+CAPTION: Durable consumption precedes external bytes; uncertain execution never creates free budget or retry permission.
-[[file:docs/architecture/diagrams/00b-readme-send.svg]]
+#+CAPTION: Original scope, current Policy and retained exposure constrain every send, retry and stream release.
+[[file:docs/architecture/diagrams/00d-zero-trust-overview.svg]]
 
 ** Architecture and verification
 

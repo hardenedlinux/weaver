@@ -1,15 +1,117 @@
 ...@../../../dev/d2/themes/assurance
-direction: down
-design: SysML + Org\nOwnership + contracts
-quint: Quint\nSchedules + counterexamples
-lean: Lean + cedar-poo-spec\nMeaning + preservation
-tests: Rust + Go + Scheme\nIntegration tests + PBT
-design -> quint
-design -> lean
-quint -> tests
-lean -> tests
-
+# Existing SysML responsibility owners; no invented proof-to-test flow.
 vars: { d2-config: { data: { figure: |json
-{"title":"One design / distinct verification roles","purpose":"architecture","kind":"assurance","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"How is the architecture connected to executable verification?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"How is the architecture connected to executable verification?"},"basis":{"captureRef":"docs/architecture/diagrams/00c-readme-assurance.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["field-notes","compact"],"layout":"readme-assurance","variants":[],"presentation":{"heading":"Different questions. Distinct checks.","subtitle":"Model the protocol · prove properties · exercise real effects","icons":{"design":"model","quint":"decision","lean":"obligation","tests":"evidence"}}}
+{
+  "title": "Architecture assurance",
+  "purpose": "architecture",
+  "kind": "assurance",
+  "language": "en",
+  "width": 960,
+  "primary": "q1",
+  "questions": [
+    {
+      "ref": "q1",
+      "text": "Which question does each verification owner answer?",
+      "focusRefs": [
+        "model"
+      ]
+    },
+    {
+      "ref": "q2",
+      "text": "How do checks connect to real execution?",
+      "focusRefs": [
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "model": "dev/sysml/ArchitectureViews.sysml",
+    "execution": "dev/sysml/WeaverExecution.sysml",
+    "project": "Project.sysml"
+  },
+  "copy": {},
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/00c-readme-assurance.d2#design-view",
+    "modelRefs": [
+      "Project.sysml",
+      "dev/sysml/ArchitectureViews.sysml",
+      "dev/sysml/WeaverExecution.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "field-notes",
+    "reading"
+  ],
+  "layout": "question-map",
+  "variants": [],
+  "presentation": {
+    "modelView": "WeaverViews::assurance",
+    "eyebrow": "WEAVER / ARCHITECTURE ASSURANCE",
+    "heading": "Distinct questions. Connected checks.",
+    "subtitle": "SysML specifies. Quint explores. Lean proves. Tests exercise.",
+    "captions": [
+      {
+        "name": "WeaverProject::AssuranceResponsibilities::specification",
+        "type": "VerificationResponsibility",
+        "label": "SysML + Org\nStructure + contracts",
+        "icon": "model"
+      },
+      {
+        "name": "WeaverProject::AssuranceResponsibilities::schedules",
+        "type": "VerificationResponsibility",
+        "label": "Quint\nSchedules + counterexamples",
+        "icon": "decision"
+      },
+      {
+        "name": "WeaverProject::AssuranceResponsibilities::semantics",
+        "type": "VerificationResponsibility",
+        "label": "Lean + cedar-poo-spec\nSemantic preservation",
+        "icon": "obligation"
+      },
+      {
+        "name": "WeaverProject::AssuranceResponsibilities::implementation",
+        "type": "VerificationResponsibility",
+        "label": "Rust + Go + Scheme\nIntegration + PBT",
+        "icon": "evidence"
+      }
+    ],
+    "sections": [
+      {
+        "question": "q1",
+        "model": true
+      },
+      {
+        "question": "q2",
+        "cards": [
+          {
+            "icon": "decision",
+            "title": "Explore and prove",
+            "lines": [
+              "Quint exercises failure schedules",
+              "Lean proves stated invariants",
+              "Premises remain explicit"
+            ]
+          },
+          {
+            "icon": "evidence",
+            "title": "Exercise actual boundaries",
+            "lines": [
+              "PBT generates adversarial inputs",
+              "Integration tests use real gRPC",
+              "Validate revocation and recovery"
+            ]
+          }
+        ]
+      }
+    ],
+    "options": {
+      "elk.algorithm": "box",
+      "elk.aspectRatio": "1.2",
+      "elk.spacing.nodeNode": "28"
+    }
+  }
+}
 |
 } } }

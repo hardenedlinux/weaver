@@ -30,6 +30,7 @@ func Plan(goBinary string) []Stage {
 		{"rust-clippy", "cargo", []string{"clippy", "--workspace", "--features", rustRuntimeFeatures, "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
 		{"go-fuzz-control-build", goBinary, []string{"-C", "go", "test", "-c", "./internal/devrunner/testdata/fuzzcontrol", "-o", "../.cache/fuzz-control.test"}},
 		{"go-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "./..."}},
+		{"go-model-view-source-pbt", goBinary, []string{"-C", "go", "test", "./internal/devrunner", "-run", "^$", "-fuzz", "^FuzzModelViewCaptureTracksSource$", "-fuzztime=3s"}},
 		{"go-failure-evidence-pbt", goBinary, []string{"-C", "go", "test", "./internal/devrunner", "-run", "^$", "-fuzz", "^FuzzFailureExcerptRetainsPrecedingDiagnostic$", "-fuzztime=3s"}},
 		{"go-benchmark-evidence-pbt", goBinary, []string{"-C", "go", "test", "./internal/devrunner", "-run", "^$", "-fuzz", "^FuzzBenchmarkGoRowsPreserveMeasurements$", "-fuzztime=3s"}},
 		{"go-arrow-allocation-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "^FuzzArrowAllocationBudget$", "-fuzztime=3s"}},

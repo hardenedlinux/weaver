@@ -399,16 +399,18 @@ technical model references during the broader corpus review.
 The repository README directly embeds three readable SVG views. They consume
 the Library's measured scenes and vector export, independently of the older
 technical D2 SVG references. The overview uses the Library's hand-drawn engine;
-the execution flow groups steps by responsibility; the assurance view keeps
-Quint exploration, Lean proofs and concrete tests distinct.
+the Zero Trust view uses an execution corridor with explicit retry, stream and
+unknown-outcome constraints; the assurance view keeps Quint exploration, Lean
+proofs and concrete tests distinct. Native OpenSysML views supply the subjects
+and relationships. D2 supplies the numbered Questions, captions and theme choices.
 
 [[file:diagrams/00a-readme-overview.d2][Overview source]]
 
 [[file:diagrams/00a-readme-overview.svg]]
 
-[[file:diagrams/00b-readme-send.d2][Execution responsibility source]]
+[[file:diagrams/00d-zero-trust-overview.d2][Zero Trust source]]
 
-[[file:diagrams/00b-readme-send.svg]]
+[[file:diagrams/00d-zero-trust-overview.svg]]
 
 [[file:diagrams/00c-readme-assurance.d2][Assurance source]]
 

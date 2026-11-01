@@ -28,7 +28,7 @@ try{
    try{
     const scene=await compiler.compile(index),figure=composeProjectFigure(scene);
     const result=await exportFigure(figure,browser);
-    const svg=scene.figure.layout?.startsWith('readme-')?bindSceneSVG(scene,result.svg[0]??''):scene.svg;
+    const svg=scene.figure.layout==='question-map'?bindSceneSVG(scene,(result.svg[0]??'').replace(/\n[ \t]+\n/g,'\n\n')):scene.svg;
     const stem=path.join(root,scene.view.source.slice(0,-3)),cache=path.join(root,'.cache/d2/images',scene.view.source.slice(0,-3));
     await mkdir(path.dirname(cache),{recursive:true});
     await writeFile(stem+'.svg',svg);await writeFile(cache+'.png',result.png);await writeFile(cache+'.html',result.html);await writeFile(cache+'.json',JSON.stringify(result.receipt,null,2));
@@ -49,6 +49,6 @@ if(JSON.stringify(collectCatalog(root))!==JSON.stringify(catalog))errors.push('C
 if(images.length!==indexes.length)errors.push('Incomplete library export');
 images.sort((a,b)=>a.source.localeCompare(b.source));
 await mkdir(path.join(root,'.cache/d2'),{recursive:true});
-await writeFile(path.join(root,'.cache/d2/typescript-render.json'),JSON.stringify({status:errors.length?'FAIL':'PASS',hostCPUs:cpus().length,workers:count,engine:'@deterministic-engineering/render',images,errors},null,2));
+await writeFile(path.join(root,'.cache/d2/typescript-render.json'),JSON.stringify({status:errors.length?'FAIL':'PASS',modelCaptureSHA256:catalog.modelCapture?.sha256,hostCPUs:cpus().length,workers:count,engine:'@deterministic-engineering/render',images,errors},null,2));
 if(errors.length)throw new Error('Library rendering failed; see cache receipt');
 console.log(`PASS: ${images.length} library-driven images, ${count} host lanes, no HTTP service`);

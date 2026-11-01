@@ -9,6 +9,12 @@ package WeaverProject {
         doc /* Development-only D2 extension profiles live under dev/d2/themes. The shared render Library owns the engine, themes and export; Weaver supplies Question-driven domain compositions and source checks. System,
            routing, flow, sequence, state, data and assurance views select
            subject-appropriate visual grammars rather than one global template.
+           Named SysML views are rendered by the existing OpenSysML SDK from
+           captured source bytes. D2 declares Questions and presentation; the
+           upstream functional Library owns model projection and image generation.
+           README embeds the resulting architecture and Zero Trust SVGs directly.
+           Missing SDK capabilities, stale captures or unresolved model selections
+           must refuse generation rather than using a separate legacy renderer.
            The Go development owner renders local bundled assets with the actual
            host CPU count, records source identities and rejects changed inputs.
            Presentation cannot change runtime Policy, claims or proof premises. */

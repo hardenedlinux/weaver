@@ -1,5 +1,9 @@
 [
   {"id":"ArchitectureViewGrammar","witnesses":[
+    {"file":"dev/sysml/ArchitectureViews.sysml","pattern":"view zeroTrust"},
+    {"file":"go/internal/devrunner/model_views.go","pattern":"func CaptureModelViews"},
+    {"file":"go/internal/devrunner/model_views_test.go","pattern":"func TestModelViewsUseActualSDK"},
+    {"file":"go/internal/devrunner/model_views_test.go","pattern":"func FuzzModelViewCaptureTracksSource"},
     {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestArchitectureDiagramsUseDifferentViewProfiles"},
     {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestDiagramProfilesAreExplicitAndLocal"},
     {"file":"go/internal/devrunner/diagrams.go","pattern":"func RenderDiagrams"}]},
