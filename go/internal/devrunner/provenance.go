@@ -59,12 +59,14 @@ func SourceInputs(root string) (map[string]string, error) {
 			if entry.Type()&os.ModeSymlink != 0 {
 				return fmt.Errorf("verification source alias is unsupported: %s", path)
 			}
-			if entry.Name() == "lean-toolchain" || (directory == "dev/d2" && entry.Name() == "bun.lock") {
+			if entry.Name() == "lean-toolchain" || (directory == "dev/d2" && entry.Name() == "pnpm-lock.yaml") {
 				return add(path)
 			}
 			switch filepath.Ext(path) {
 			case ".ts", ".tsx", ".css", ".html":
-				if directory == "dev/d2" { return add(path) }
+				if directory == "dev/d2" {
+					return add(path)
+				}
 			case ".go", ".rs", ".h", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar", ".lean", ".qnt", ".org", ".d2":
 				return add(path)
 			case ".svg":

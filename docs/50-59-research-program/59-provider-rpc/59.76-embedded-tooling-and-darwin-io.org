@@ -137,6 +137,10 @@ exceeds its original 45-second batch limit during dependency loading. Neither
 failure is native execution acceptance; all original limits remain unchanged.
 Producer/consumer Lake builds share an output tree and are serialized. Explicit
 root-directory checks use the subproject's declared Lean toolchain.
+The consumer's pinned-toolchain build, Composition/Protocol/Reflection checks
+and 1,726-declaration axiom audit pass. The first Ubuntu CI bootstrap exposes
+the producer's case-sensitive =justfile= spelling; the acquisition entry is
+corrected to that tracked filename. Corrective CI is pending, not acceptance.
 
 * Darwin failure attribution
 

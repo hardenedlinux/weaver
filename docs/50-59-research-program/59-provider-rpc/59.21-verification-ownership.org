@@ -18,6 +18,50 @@ The single responsibility registry is
 The AuthorityPublication composition imports existing publication and execution
 owners. New evidence work must extend its missing schedules or reuse an existing
 semantic theorem, rather than create another control-gate model in both languages.
+** Go-owned Lean JSON evidence
+
+The existing Go stage runner invokes the pinned Lean toolchain with =--json= for
+the maintained standalone proof stages. It records source digest, typed compiler
+diagnostics and =#print axioms= declaration audits in the existing result receipt.
+It rejects malformed/non-JSON output, another source, error diagnostics, =sorry=
+warnings, missing/duplicate declaration audits and axioms outside =propext=,
+=Classical.choice= and =Quot.sound=. A normal process exit is insufficient:
+the real compiler's zero-exit =sorry= case is a mandatory negative control in
+=check-policy=. The default Go-only lane does not acquire a Lean dependency.
+
+=runtime-trace.json= may name an exact =declaration= alongside its existing source
+selector. SysML views carry typed requirement usages; Go resolves their target
+definitions through the SDK and retains their fully qualified identities. The
+existing trace joins those unambiguous requirements to Lean declaration names.
+It does not infer a proof relationship from diagram wording or matching labels.
+For each selected proof, Go requires the declaration audit described below.
+
+The trace's declaration is checked separately from a plain source
+selector. For a selected compiled proof, Go requires that declaration's audit in
+the compiler output. An unexecuted file is not promoted to checked evidence just
+because its symbol exists. SysML SDK checks still establish structural inventory
+and named source coverage; JSON acceptance establishes a selected compiler run,
+not a semantic proof of the trace mapping, the compiler or generated Rust.
+Reviewed source and a qualified compiler are still required; diagnostic text is
+not a signed proof certificate. The source-currentness gate remains independent.
+
+The receipt's =proofReferences= reports =CHECKED=, =NOT_EXECUTED=, =FAILED= or
+=STALE_SOURCE= for each exact declaration reference. README D2 generation is
+Go-owned: SDK attributes supply the questions, responsibilities and caption
+selectors, while current proof receipts supply the checked-reference projection.
+The captured proof source closure and derived D2 must match at rendering time.
+Neither a handwritten D2 label nor a stale successful proof receipt may replace
+that mapping. Diagram generation reuses the existing latest =check-policy=
+receipt only when its root and complete captured source-input map still match.
+
+In particular, =ZeroTrustEnrichment.lean= consumes the newer SPEC candidate API
+and is qualified separately from the unchanged default Lake pin. Naming its
+declarations in the Zero Trust refinement requirement does not make the default
+proof gate execute that candidate. The source integration review retains this
+gap; no automatic dependency promotion or success fallback is permitted.
+
+[[file:../../architecture/diagrams/00c-readme-assurance.svg]]
+
 Concrete implementation evidence and structural/model results remain distinct
 receipts. Do not introduce another state machine merely to mirror the same
 invariant in a second verification language.

@@ -113,6 +113,163 @@ rule.near: bottom-center
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"post claim outcomes","purpose":"workflow","kind":"state","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"Which outcomes retain claims after consumption?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"Which outcomes retain claims after consumption?"},"basis":{"captureRef":"docs/architecture/diagrams/07-post-claim-outcomes.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["graphite","reading"],"layout":"model-map","variants":[],"presentation":{"captions":{"claimed":{"title":[1],"detail":[3]},"final_gate":{"title":[3],"detail":[6,7]},"retire":{"title":[2],"detail":[4]},"invoke":{"title":[3,4],"detail":[3]},"emitter":{"title":[3],"detail":[]},"closed":{"title":[1],"detail":[3]},"no_submit":{"title":[1],"detail":[3]},"unknown":{"title":[3],"detail":[]},"result":{"title":[3],"detail":[3]},"exposure":{"title":[3],"detail":[3]},"settle":{"title":[3],"detail":[3]},"conflict":{"title":[3],"detail":[4,5]},"rule":{"title":[10],"detail":[8,17,19]}},"annotations":{"rule":"constraint"},"icons":{"claimed":"capture","final_gate":"capture","retire":"capture","invoke":"capture","emitter":"capture","closed":"capture","no_submit":"capture","unknown":"pending","result":"capture","exposure":"pending","settle":"capture","conflict":"capture","rule":"capture"},"roles":{"invoke":"default","unknown":"pending","exposure":"pending","settle":"default","claimed":"default","final_gate":"default","retire":"default","emitter":"default","closed":"default","no_submit":"default","result":"default","conflict":"default","rule":"default"},"relations":{"(claimed -> final_gate)[0]":{"binding":[4,5],"detail":[2]},"(claimed -> exposure)[0]":{"binding":[4,5],"detail":[6,8]},"(final_gate -> retire)[0]":{"binding":[4,6],"detail":[4]},"(retire -> no_submit)[0]":{"binding":[3,4],"detail":[2]},"(final_gate -> invoke)[0]":{"binding":[5,8],"detail":[2]},"(invoke -> emitter)[0]":{"binding":[5,8],"detail":[2]},"(invoke -> unknown)[0]":{"binding":[5,8],"detail":[3]},"(emitter -> closed)[0]":{"binding":[4,5],"detail":[2]},"(emitter -> result)[0]":{"binding":[4,7],"detail":[4,5]},"(closed -> conflict)[0]":{"binding":[3,5],"detail":[4]},"(closed -> exposure)[0]":{"binding":[4,5],"detail":[4]},"(no_submit -> conflict)[0]":{"binding":[3,5],"detail":[3]},"(no_submit -> settle)[0]":{"binding":[4,5],"detail":[4,7]},"(result -> settle)[0]":{"binding":[5,7],"detail":[3]},"(unknown -> exposure)[0]":{"binding":[5,7],"detail":[3]},"(exposure -> settle)[0]":{"binding":[5,7],"detail":[3,4]}},"options":{"elk.direction":"DOWN","elk.hierarchyHandling":"INCLUDE_CHILDREN","elk.layered.layering.strategy":"COFFMAN_GRAHAM","elk.layered.layering.coffmanGraham.layerBound":"1","elk.spacing.nodeNode":"24","elk.layered.spacing.nodeNodeBetweenLayers":"36","elk.layered.cycleBreaking.strategy":"MODEL_ORDER","elk.layered.considerModelOrder.strategy":"NODES_AND_EDGES","elk.separateConnectedComponents":"false","elk.aspectRatio":"0.55","elk.spacing.componentComponent":"24","elk.partitioning.activate":"true","elk.layered.nodePlacement.strategy":"SIMPLE","elk.spacing.edgeEdge":"6","elk.spacing.edgeNode":"12","elk.layered.spacing.edgeEdgeBetweenLayers":"6","elk.layered.spacing.edgeNodeBetweenLayers":"12"},"lineGap":36,"nodeOptions":{"claimed":{"elk.partitioning.partition":"0"},"final_gate":{"elk.partitioning.partition":"1"},"retire":{"elk.partitioning.partition":"2"},"invoke":{"elk.partitioning.partition":"3"},"emitter":{"elk.partitioning.partition":"4"},"closed":{"elk.partitioning.partition":"5"},"no_submit":{"elk.partitioning.partition":"6"},"unknown":{"elk.partitioning.partition":"7"},"result":{"elk.partitioning.partition":"8"},"exposure":{"elk.partitioning.partition":"9"},"settle":{"elk.partitioning.partition":"10"},"conflict":{"elk.partitioning.partition":"11"}}}}
+{
+  "title": "post claim outcomes",
+  "purpose": "workflow",
+  "kind": "state",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which outcomes retain claims after consumption?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Which outcomes retain claims after consumption?"
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/07-post-claim-outcomes.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "graphite",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "claimed"
+        },
+        {
+          "id": "final_gate"
+        },
+        {
+          "id": "retire"
+        },
+        {
+          "id": "invoke"
+        },
+        {
+          "id": "emitter"
+        },
+        {
+          "id": "closed"
+        },
+        {
+          "id": "no_submit"
+        },
+        {
+          "id": "unknown"
+        },
+        {
+          "id": "result"
+        },
+        {
+          "id": "exposure"
+        },
+        {
+          "id": "settle"
+        },
+        {
+          "id": "conflict"
+        },
+        {
+          "id": "rule"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24",
+        "elk.partitioning.activate": "true",
+        "elk.layered.nodePlacement.strategy": "SIMPLE",
+        "elk.spacing.edgeEdge": "6",
+        "elk.spacing.edgeNode": "12",
+        "elk.layered.spacing.edgeEdgeBetweenLayers": "6",
+        "elk.layered.spacing.edgeNodeBetweenLayers": "12"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24",
+      "elk.partitioning.activate": "true",
+      "elk.layered.nodePlacement.strategy": "SIMPLE",
+      "elk.spacing.edgeEdge": "6",
+      "elk.spacing.edgeNode": "12",
+      "elk.layered.spacing.edgeEdgeBetweenLayers": "6",
+      "elk.layered.spacing.edgeNodeBetweenLayers": "12"
+    },
+    "icons": {
+      "claimed": "capture",
+      "final_gate": "capture",
+      "retire": "capture",
+      "invoke": "capture",
+      "emitter": "capture",
+      "closed": "capture",
+      "no_submit": "capture",
+      "unknown": "pending",
+      "result": "capture",
+      "exposure": "pending",
+      "settle": "capture",
+      "conflict": "capture",
+      "rule": "capture"
+    },
+    "roles": {
+      "invoke": "default",
+      "unknown": "pending",
+      "exposure": "pending",
+      "settle": "default",
+      "claimed": "default",
+      "final_gate": "default",
+      "retire": "default",
+      "emitter": "default",
+      "closed": "default",
+      "no_submit": "default",
+      "result": "default",
+      "conflict": "default",
+      "rule": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

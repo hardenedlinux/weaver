@@ -1,229 +1,100 @@
 [
   {"id":"ArchitectureViewGrammar","witnesses":[
-    {"file":"dev/d2/src/compositions/model-map.ts","pattern":"export function partitionWords"},
-    {"file":"dev/d2/test/model-map.test.ts","pattern":"source-authored breaks preserve every captured word exactly once"},
     {"file":"dev/sysml/ArchitectureViews.sysml","pattern":"view zeroTrust"},
     {"file":"go/internal/devrunner/model_views.go","pattern":"func CaptureModelViews"},
     {"file":"go/internal/devrunner/model_views_test.go","pattern":"func TestModelViewsUseActualSDK"},
     {"file":"go/internal/devrunner/model_views_test.go","pattern":"func FuzzModelViewCaptureTracksSource"},
     {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestArchitectureDiagramsUseDifferentViewProfiles"},
     {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestDiagramProfilesAreExplicitAndLocal"},
-    {"file":"go/internal/devrunner/diagrams.go","pattern":"func RenderDiagrams"}]},
+    {"file":"go/internal/devrunner/diagrams.go","pattern":"func RenderDiagrams"},
+    {"file":"dev/d2/src/render.ts","pattern":"composeFigure\\(input,composeModelView\\)"},
+    {"file":"dev/d2/test/model-view.test.ts","pattern":"public Library binds native SysML identity"},
+    {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestDiagramEvidenceRejectsLostNodesAndRelationships"}]},
   {"id":"ProductionAssetBoundary","witnesses":[
     {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRuntimeAssetBoundary"},
     {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRejectsRuntimeDevReferences"}]},
-  {
-    "id": "OriginalTaskBinding",
-    "witnesses": [
-      {
-        "file": "crates/ledger/tests/unit/recovery.rs",
-        "pattern": "fn original_task_body_and_profile_cannot_be_replaced"
-      },
-      {
-        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
-        "pattern": "run originalBindingTest"
-      }
-    ]
-  },
-  {
-    "id": "SharedBudget",
-    "witnesses": [
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn finite_manifest_siblings_cannot_mask_a_missing_original_member"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn maximum_manifest_cannot_replace_a_lost_sibling_after_restart"},
-      {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run partialLossFreshAuthorityRecoveryGuardTest"},
-      {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run partialLossFreshAuthorityFinalUseGuardTest"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn selected_message_binding_must_match_its_committed_digest_at_final_write"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn concurrent_message_admission_preserves_both_manifest_members"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn exhausted_budget_cannot_publish_a_manifest_member_without_its_row"},
-      {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem manifest_bound_runtime_step"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn surviving_stream_message_cannot_hide_a_lost_unknown_reservation"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn exact_message_manifest_guards_recovery_and_existing_write_handles"},
-      {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run partialMessageLossCounterexampleTest"},
-      {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run digestSubstitutionFinalUseGuardTest"},
-      {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem exact_manifest_admission_covers_original_exposure"},
-      {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn balanced_provider_projection_never_funds_a_different_original_plan"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn balanced_stream_projection_never_funds_the_next_logical_message"},
-      {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem admission_covers_original_exposure"},
-      {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run balancedProjectionCounterexampleTest"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn balanced_shrink_never_admits_a_different_node"},
-      {"file":"crates/ledger/src/execution_exposure.rs","pattern":"fn require_family"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn mixed_request_and_stream_exposure_cannot_be_checked_in_separate_domains"},
-      {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_exposure_keeps_original_budget"},
-      {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem orphaned_hold_blocks_new_admission"},
-      {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run separateEffectDomainsCounterexampleTest"},
-      {
-        "file": "crates/ledger/tests/unit/properties.rs",
-        "pattern": "fn arbitrary_replays_restarts_and_consumption_preserve_claims"
-      },
-      {
-        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
-        "pattern": "run sharedBudgetTest"
-      },
-      {
-        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
-        "pattern": "run originalCostBoundTest"
-      },
-      {
-        "file": "crates/ledger/tests/unit/recovery.rs",
-        "pattern": "fn authored_ceiling_cannot_underreserve_the_original_wire_cost"
-      }
-    ]
-  },
-  {
-    "id": "ConsumeBeforeSend",
-    "witnesses": [
-      {
-        "file": "crates/ledger/tests/unit/recovery.rs",
-        "pattern": "fn crash_after_consumption_never_reopens_or_refunds"
-      },
-      {
-        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
-        "pattern": "run consumeBeforeSendTest"
-      }
-    ]
-  },
-  {
-    "id": "CurrentFinalGuard",
-    "witnesses": [
-      {
-        "file": "crates/ledger/tests/unit/serialization.rs",
-        "pattern": "fn effective_publication_cannot_overtake_the_locked_send_boundary"
-      },
-      {
-        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
-        "pattern": "run stalePermitTest"
-      }
-    ]
-  },
-  {
-    "id": "UnknownRetainsHold",
-    "witnesses": [
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn restart_never_backfills_request_claims_from_operations"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn orphaned_request_claim_cannot_admit_a_replacement_operation"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn next_stream_message_cannot_recreate_a_lost_node_claim"},
-      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn lost_message_projection_cannot_recycle_original_unknown_hold"},
-      {
-        "file": "crates/execution/tests/unit/https_transport.rs",
-        "pattern": "fn partial_transport_failure_is_unknown_and_never_retried"
-      },
-      {
-        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
-        "pattern": "run unknownRefundCounterexampleTest"
-      }
-    ]
-  },
-  {
-    "id": "NoImplicitRetry",
-    "witnesses": [
-      {
-        "file": "crates/ledger/tests/unit/concurrency.rs",
-        "pattern": "fn concurrent_consumers_invoke_once"
-      },
-      {
-        "file": "dev/proofs/quint/RuntimeAdmission.qnt",
-        "pattern": "run duplicateRetryCounterexampleTest"
-      }
-    ]
-  },
-  {
-    "id": "DevelopmentPolicy",
-    "witnesses": [
-      {
-        "file": "crates/contracts/src/lib.rs",
-        "pattern": "mode = deny"
-      }
-    ]
-  },
-  {
-    "id": "MessageScopedAuthority",
-    "witnesses": [
-      {
-        "file": "crates/ledger/tests/unit/stream_properties.rs",
-        "pattern": "fn unknown_range_after_restart_blocks_new_nonce_and_authority"
-      },
-      {
-        "file": "crates/policy/tests/unit/stream_policy.rs",
-        "pattern": "fn specification_derived_policy_is_typed_and_constrains_actual_range_facts"
-      }
-    ]
-  },
-  {
-    "id": "RangeFinalGuard",
-    "witnesses": [
-      {
-        "file": "crates/execution/tests/unit/stream_wire.rs",
-        "pattern": "fn effective_revocation_stops_actual_next_range_and_prefix_reconnect"
-      },
-      {
-        "file": "dev/proofs/quint/StreamingExecution.qnt",
-        "pattern": "run revokedBetweenBurnAndWriteTest"
-      }
-    ]
-  },
-  {
-    "id": "UnknownPrefixRecovery",
-    "witnesses": [
-      {
-        "file": "crates/execution/tests/unit/stream_wire.rs",
-        "pattern": "fn rust_partial_write_freezes_tail_and_never_refunds"
-      },
-      {
-        "file": "dev/proofs/lean/StreamingExecution.lean",
-        "pattern": "theorem unknown_cannot_resume"
-      }
-    ]
-  },
-  {
-    "id": "PrivateBufferCustody",
-    "witnesses": [
-      {
-        "file": "crates/execution/tests/unit/stream_wire.rs",
-        "pattern": "fn tls_flush_cannot_release_a_tail_after_effective_revocation"
-      },
-      {
-        "file": "crates/execution/tests/unit/stream_wire.rs",
-        "pattern": "fn recovered_old_worker_socket_cannot_use_new_custody"
-      }
-    ]
-  },
-  {
-    "id": "BoundedPerformanceWork",
-    "witnesses": [
-      {
-        "file": "crates/policy/tests/unit/cache_storage.rs",
-        "pattern": "fn compiled_storage_caps_slots_and_exact_hits_do_not_allocate_new_entries"
-      },
-      {
-        "file": "dev/proofs/lean/StreamingExecution.lean",
-        "pattern": "theorem bounded_range_copy_work"
-      }
-    ]
-  },
-  {
-    "id": "TrackedWriterDrain",
-    "witnesses": [
-      {
-        "file": "crates/server/tests/unit/runtime_lifecycle.rs",
-        "pattern": "async fn detached_executor_writer_keeps_slot_until_drain_acknowledges_completion"
-      },
-      {
-        "file": "crates/server/tests/unit/runtime_lifecycle.rs",
-        "pattern": "fn arbitrary_disconnect_shutdown_and_drain_schedules_keep_executor_custody"
-      },
-      {
-        "file": "go/dev/provider_grpc_test.go",
-        "pattern": "func TestProviderClientCancellationCannotReplay"
-      },
-      {
-        "file": "dev/proofs/quint/RuntimeLifecycle.qnt",
-        "pattern": "run prematureAckCounterexampleTest"
-      },
-      {
-        "file": "dev/proofs/lean/StreamingExecution.lean",
-        "pattern": "theorem execution_and_drain_composition"
-      }
-    ]
-  },
+  {"id":"OriginalTaskBinding","witnesses":[
+    {"file":"crates/ledger/tests/unit/recovery.rs","pattern":"fn original_task_body_and_profile_cannot_be_replaced"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run originalBindingTest"}]},
+  {"id":"SharedBudget","witnesses":[
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn finite_manifest_siblings_cannot_mask_a_missing_original_member"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn maximum_manifest_cannot_replace_a_lost_sibling_after_restart"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run partialLossFreshAuthorityRecoveryGuardTest"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run partialLossFreshAuthorityFinalUseGuardTest"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn selected_message_binding_must_match_its_committed_digest_at_final_write"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn concurrent_message_admission_preserves_both_manifest_members"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn exhausted_budget_cannot_publish_a_manifest_member_without_its_row"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem manifest_bound_runtime_step"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn surviving_stream_message_cannot_hide_a_lost_unknown_reservation"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn exact_message_manifest_guards_recovery_and_existing_write_handles"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run partialMessageLossCounterexampleTest"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run digestSubstitutionFinalUseGuardTest"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem exact_manifest_admission_covers_original_exposure"},
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn balanced_provider_projection_never_funds_a_different_original_plan"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn balanced_stream_projection_never_funds_the_next_logical_message"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem admission_covers_original_exposure"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run balancedProjectionCounterexampleTest"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn balanced_shrink_never_admits_a_different_node"},
+    {"file":"crates/ledger/src/execution_exposure.rs","pattern":"fn require_family"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn mixed_request_and_stream_exposure_cannot_be_checked_in_separate_domains"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_exposure_keeps_original_budget"},
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem orphaned_hold_blocks_new_admission"},
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run separateEffectDomainsCounterexampleTest"},
+    {"file":"crates/ledger/tests/unit/properties.rs","pattern":"fn arbitrary_replays_restarts_and_consumption_preserve_claims"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run sharedBudgetTest"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run originalCostBoundTest"},
+    {"file":"crates/ledger/tests/unit/recovery.rs","pattern":"fn authored_ceiling_cannot_underreserve_the_original_wire_cost"}]},
+  {"id":"ZeroTrustContractRefinement","witnesses":[
+    {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_exposure_keeps_original_budget","declaration":"Weaver.ProviderRpc.shared_exposure_keeps_original_budget"},
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem gateway_specialization_retains_generic_framework","declaration":"Weaver.ZeroTrustEnrichment.gateway_specialization_retains_generic_framework"},
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem retained_parent_and_selected_object_reach_gateway","declaration":"Weaver.ZeroTrustEnrichment.retained_parent_and_selected_object_reach_gateway"},
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem usage_control_keeps_current_consumption","declaration":"Weaver.ZeroTrustEnrichment.usage_control_keeps_current_consumption"},
+    {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem pending_policy_blocks_ongoing_use","declaration":"Weaver.ZeroTrustEnrichment.pending_policy_blocks_ongoing_use"},
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn zero_trust_final_use_requires_durable_claim_and_shared_exposure"},
+    {"file":"go/dev/provider_backpressure_test.go","pattern":"func TestProviderSlowConsumerRevocationRestartAndRestoredPolicyCannotReopen"},
+    {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run allowWithoutCurrentUsageEvidenceCounterexampleTest"}]},
+  {"id":"ConsumeBeforeSend","witnesses":[
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn final_write_requires_exact_durable_range"},
+    {"file":"dev/proofs/quint/StreamingExecution.qnt","pattern":"run stateOnlyRangeCounterexampleTest"},
+    {"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem inexact_cannot_refine_execution","declaration":"Weaver.StreamingExecution.RangeReceipt.inexact_cannot_refine_execution"},
+    {"file":"crates/ledger/tests/unit/recovery.rs","pattern":"fn crash_after_consumption_never_reopens_or_refunds"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run consumeBeforeSendTest"}]},
+  {"id":"CurrentFinalGuard","witnesses":[
+    {"file":"crates/ledger/tests/unit/serialization.rs","pattern":"fn effective_publication_cannot_overtake_the_locked_send_boundary"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run stalePermitTest"}]},
+  {"id":"UnknownRetainsHold","witnesses":[
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn restart_never_backfills_request_claims_from_operations"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn orphaned_request_claim_cannot_admit_a_replacement_operation"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn next_stream_message_cannot_recreate_a_lost_node_claim"},
+    {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn lost_message_projection_cannot_recycle_original_unknown_hold"},
+    {"file":"crates/execution/tests/unit/https_transport.rs","pattern":"fn partial_transport_failure_is_unknown_and_never_retried"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run unknownRefundCounterexampleTest"}]},
+  {"id":"NoImplicitRetry","witnesses":[
+    {"file":"crates/ledger/tests/unit/concurrency.rs","pattern":"fn concurrent_consumers_invoke_once"},
+    {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run duplicateRetryCounterexampleTest"}]},
+  {"id":"DevelopmentPolicy","witnesses":[
+    {"file":"crates/contracts/src/lib.rs","pattern":"mode = deny"}]},
+  {"id":"MessageScopedAuthority","witnesses":[
+    {"file":"crates/ledger/tests/unit/stream_properties.rs","pattern":"fn unknown_range_after_restart_blocks_new_nonce_and_authority"},
+    {"file":"crates/policy/tests/unit/stream_policy.rs","pattern":"fn specification_derived_policy_is_typed_and_constrains_actual_range_facts"}]},
+  {"id":"RangeFinalGuard","witnesses":[
+    {"file":"crates/execution/tests/unit/stream_wire.rs","pattern":"fn effective_revocation_stops_actual_next_range_and_prefix_reconnect"},
+    {"file":"dev/proofs/quint/StreamingExecution.qnt","pattern":"run revokedBetweenBurnAndWriteTest"}]},
+  {"id":"UnknownPrefixRecovery","witnesses":[
+    {"file":"crates/execution/tests/unit/stream_wire.rs","pattern":"fn rust_partial_write_freezes_tail_and_never_refunds"},
+    {"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem unknown_cannot_resume"}]},
+  {"id":"PrivateBufferCustody","witnesses":[
+    {"file":"crates/execution/tests/unit/stream_wire.rs","pattern":"fn tls_flush_cannot_release_a_tail_after_effective_revocation"},
+    {"file":"crates/execution/tests/unit/stream_wire.rs","pattern":"fn recovered_old_worker_socket_cannot_use_new_custody"}]},
+  {"id":"BoundedPerformanceWork","witnesses":[
+    {"file":"crates/policy/tests/unit/cache_storage.rs","pattern":"fn compiled_storage_caps_slots_and_exact_hits_do_not_allocate_new_entries"},
+    {"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem bounded_range_copy_work"}]},
+  {"id":"TrackedWriterDrain","witnesses":[
+    {"file":"crates/server/tests/unit/runtime_lifecycle.rs","pattern":"async fn detached_executor_writer_keeps_slot_until_drain_acknowledges_completion"},
+    {"file":"crates/server/tests/unit/runtime_lifecycle.rs","pattern":"fn arbitrary_disconnect_shutdown_and_drain_schedules_keep_executor_custody"},
+    {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderClientCancellationCannotReplay"},
+    {"file":"dev/proofs/quint/RuntimeLifecycle.qnt","pattern":"run prematureAckCounterexampleTest"},
+    {"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem execution_and_drain_composition"}]},
   {"id":"GrpcCallerBinding","witnesses":[
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderRPCIdentityAndCancellation"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_name_is_not_key_authority"}]},

@@ -192,6 +192,146 @@ obligation.application -> obligation.receipt
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"quorum durable promises","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern quorum durable promises?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/architecture/diagrams/29-quorum-durable-promises.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "quorum durable promises",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which progression and failure boundaries govern quorum durable promises?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/29-quorum-durable-promises.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantic",
+          "children": [
+            {
+              "id": "semantic.identity"
+            },
+            {
+              "id": "semantic.lifecycle"
+            },
+            {
+              "id": "semantic.unknown"
+            },
+            {
+              "id": "semantic.goBrand"
+            },
+            {
+              "id": "semantic.kubernetesBrand"
+            }
+          ]
+        },
+        {
+          "id": "witness",
+          "children": [
+            {
+              "id": "witness.promise"
+            },
+            {
+              "id": "witness.signer"
+            },
+            {
+              "id": "witness.restore"
+            }
+          ]
+        },
+        {
+          "id": "root",
+          "children": [
+            {
+              "id": "root.joint"
+            },
+            {
+              "id": "root.barrier"
+            },
+            {
+              "id": "root.send"
+            },
+            {
+              "id": "root.rustBrand"
+            }
+          ]
+        },
+        {
+          "id": "obligation",
+          "children": [
+            {
+              "id": "obligation.prefix"
+            },
+            {
+              "id": "obligation.application"
+            },
+            {
+              "id": "obligation.receipt"
+            }
+          ]
+        },
+        {
+          "id": "quint"
+        },
+        {
+          "id": "lean"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {
+      "semantic.goBrand": "go",
+      "semantic.kubernetesBrand": "kubernetes",
+      "root.rustBrand": "rust"
+    },
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

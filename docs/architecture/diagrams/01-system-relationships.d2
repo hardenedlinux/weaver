@@ -2,6 +2,170 @@
 ...@01-system-boundaries
 
 vars: { d2-config: { data: { figure: |json
-{"title":"Weaver / declared owner relationship matrix","purpose":"architecture","kind":"data","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"How are governance, cloud integration, execution and assurance connected?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"One gateway, distinct owners: Scheme defines meaning; Go integrates cloud state; Rust mediates effects.","runtime-title":"RUST / FINAL EXECUTION AUTHORITY","matrix-legend":"Cells show declared relationships between owners. Bidirectional relations appear in both directions. Zero Trust requirements are shown separately because they constrain the whole gateway; assurance links describe design contracts, not request traffic.","matrix.semantic":"Scheme governance","matrix.cloud":"Go cloud integration","matrix.runtime":"Rust execution","matrix.assurance":"Quint / Lean contracts","matrix.upstream":"Upstream service"},"basis":{"captureRef":"docs/architecture/diagrams/01-system-relationships.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["field-notes","compact"],"layout":"gateway-relationship-matrix","variants":[]}
+{
+  "title": "Weaver / declared owner relationship matrix",
+  "purpose": "architecture",
+  "kind": "data",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How are governance, cloud integration, execution and assurance connected?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "One gateway, distinct owners: Scheme defines meaning; Go integrates cloud state; Rust mediates effects.",
+    "runtime-title": "RUST / FINAL EXECUTION AUTHORITY",
+    "matrix-legend": "Cells show declared relationships between owners. Bidirectional relations appear in both directions. Zero Trust requirements are shown separately because they constrain the whole gateway; assurance links describe design contracts, not request traffic.",
+    "matrix.semantic": "Scheme governance",
+    "matrix.cloud": "Go cloud integration",
+    "matrix.runtime": "Rust execution",
+    "matrix.assurance": "Quint / Lean contracts",
+    "matrix.upstream": "Upstream service"
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/01-system-relationships.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "field-notes",
+    "compact",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantic",
+          "children": [
+            {
+              "id": "semantic.evidence"
+            },
+            {
+              "id": "semantic.composition"
+            },
+            {
+              "id": "semantic.source"
+            }
+          ]
+        },
+        {
+          "id": "cloud",
+          "children": [
+            {
+              "id": "cloud.brand"
+            },
+            {
+              "id": "cloud.kube"
+            },
+            {
+              "id": "cloud.discovery"
+            },
+            {
+              "id": "cloud.identity"
+            },
+            {
+              "id": "cloud.distribution"
+            }
+          ]
+        },
+        {
+          "id": "runtime",
+          "children": [
+            {
+              "id": "runtime.brand"
+            },
+            {
+              "id": "runtime.adapter"
+            },
+            {
+              "id": "runtime.coordinator"
+            },
+            {
+              "id": "runtime.broker"
+            },
+            {
+              "id": "runtime.authority"
+            },
+            {
+              "id": "runtime.ledger"
+            },
+            {
+              "id": "runtime.heading"
+            }
+          ]
+        },
+        {
+          "id": "upstream"
+        },
+        {
+          "id": "note"
+        },
+        {
+          "id": "baseline",
+          "children": [
+            {
+              "id": "baseline.policy"
+            },
+            {
+              "id": "baseline.identity"
+            },
+            {
+              "id": "baseline.recovery"
+            }
+          ]
+        },
+        {
+          "id": "assurance",
+          "children": [
+            {
+              "id": "assurance.quint"
+            },
+            {
+              "id": "assurance.lean"
+            }
+          ]
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {},
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

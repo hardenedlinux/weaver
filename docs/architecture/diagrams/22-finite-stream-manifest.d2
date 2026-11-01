@@ -163,6 +163,133 @@ lean -> driver.frontier: preserve affine ownership {
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"finite stream manifest","purpose":"architecture","kind":"data","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which records and binding relationships govern finite stream manifest?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/architecture/diagrams/22-finite-stream-manifest.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "finite stream manifest",
+  "purpose": "architecture",
+  "kind": "data",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which records and binding relationships govern finite stream manifest?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/22-finite-stream-manifest.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantic",
+          "children": [
+            {
+              "id": "semantic.message"
+            },
+            {
+              "id": "semantic.policy"
+            },
+            {
+              "id": "semantic.adapter"
+            }
+          ]
+        },
+        {
+          "id": "ledger",
+          "children": [
+            {
+              "id": "ledger.manifest"
+            },
+            {
+              "id": "ledger.account"
+            },
+            {
+              "id": "ledger.recovery"
+            }
+          ]
+        },
+        {
+          "id": "owner",
+          "children": [
+            {
+              "id": "owner.admission"
+            },
+            {
+              "id": "owner.record"
+            },
+            {
+              "id": "owner.quarantine"
+            }
+          ]
+        },
+        {
+          "id": "driver",
+          "children": [
+            {
+              "id": "driver.capability"
+            },
+            {
+              "id": "driver.frontier"
+            },
+            {
+              "id": "driver.exposure"
+            }
+          ]
+        },
+        {
+          "id": "quint"
+        },
+        {
+          "id": "lean"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {},
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

@@ -105,6 +105,140 @@ footer: "One identity meaning · Qualified references cross the boundary\nRole a
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"54 source incarnation authority","purpose":"architecture","kind":"system","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"Who may establish and rotate source authority?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"Who may establish and rotate source authority?"},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.54-source-incarnation-authority.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["sketchbook","reading"],"layout":"model-map","variants":[],"presentation":{"captions":{"title":{"title":[6],"detail":[]},"source":{"title":[4],"detail":[3,4,7,8]},"binding":{"title":[2,3],"detail":[5,11,12]},"journal":{"title":[2,3],"detail":[4,5,9,10]},"evidence":{"title":[2,3],"detail":[4,5,10,11]},"use":{"title":[3,5],"detail":[4,5,8,9]},"cas":{"title":[2,4],"detail":[5,7,10,12]},"pending":{"title":[2,3],"detail":[4,5,8,9]},"recovery":{"title":[3,4],"detail":[3,6,7]},"execution":{"title":[3,4],"detail":[4,5,9,11]},"footer":{"title":[8,9],"detail":[7,10]}},"annotations":{"title":"heading","footer":"constraint"},"icons":{"title":"document","source":"document","binding":"capture","journal":"capture","evidence":"document","use":"capture","cas":"rust","pending":"document","recovery":"capture","execution":"rust","footer":"capture"},"roles":{"cas":"execution","execution":"execution","title":"default","source":"default","binding":"default","journal":"default","evidence":"default","use":"default","pending":"default","recovery":"default","footer":"default"},"relations":{"(source -> binding)[0]":{"binding":[5,8],"detail":[2]},"(journal -> binding)[0]":{"binding":[4,7],"detail":[3]},"(binding -> use)[0]":{"binding":[4,9],"detail":[3]},"(evidence -> use)[0]":{"binding":[4,9],"detail":[2]},"(use -> cas)[0]":{"binding":[6,9,10],"detail":[3]},"(journal -> cas)[0]":{"binding":[5,8],"detail":[3]},"(pending -> recovery)[0]":{"binding":[4,8],"detail":[3]},"(recovery -> use)[0]":{"binding":[5,10],"detail":[3]},"(cas -> execution)[0]":{"binding":[3,9],"detail":[2]}},"options":{"elk.direction":"DOWN","elk.hierarchyHandling":"INCLUDE_CHILDREN","elk.layered.layering.strategy":"COFFMAN_GRAHAM","elk.layered.layering.coffmanGraham.layerBound":"1","elk.spacing.nodeNode":"24","elk.layered.spacing.nodeNodeBetweenLayers":"36","elk.layered.cycleBreaking.strategy":"MODEL_ORDER","elk.layered.considerModelOrder.strategy":"NODES_AND_EDGES","elk.separateConnectedComponents":"false","elk.aspectRatio":"0.55","elk.spacing.componentComponent":"24"},"lineGap":48}}
+{
+  "title": "54 source incarnation authority",
+  "purpose": "architecture",
+  "kind": "system",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Who may establish and rotate source authority?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Who may establish and rotate source authority?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.54-source-incarnation-authority.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "source"
+        },
+        {
+          "id": "binding"
+        },
+        {
+          "id": "journal"
+        },
+        {
+          "id": "evidence"
+        },
+        {
+          "id": "use"
+        },
+        {
+          "id": "cas"
+        },
+        {
+          "id": "pending"
+        },
+        {
+          "id": "recovery"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "document",
+      "source": "document",
+      "binding": "capture",
+      "journal": "capture",
+      "evidence": "document",
+      "use": "capture",
+      "cas": "rust",
+      "pending": "document",
+      "recovery": "capture",
+      "execution": "rust",
+      "footer": "capture"
+    },
+    "roles": {
+      "cas": "execution",
+      "execution": "execution",
+      "title": "default",
+      "source": "default",
+      "binding": "default",
+      "journal": "default",
+      "evidence": "default",
+      "use": "default",
+      "pending": "default",
+      "recovery": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

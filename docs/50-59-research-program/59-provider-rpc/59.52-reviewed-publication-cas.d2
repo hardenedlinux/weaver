@@ -93,6 +93,136 @@ footer: "Evidence is not an execution permit · Publication is not a provider se
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"52 reviewed publication cas","purpose":"workflow","kind":"flow","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"What must be joined before reviewed publication commits?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"What must be joined before reviewed publication commits?"},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.52-reviewed-publication-cas.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["node-editor","reading"],"layout":"model-map","variants":[],"presentation":{"captions":{"title":{"title":[5],"detail":[]},"parent":{"title":[2,3],"detail":[5,6,9,10]},"review":{"title":[3],"detail":[5,6,10,11]},"pending":{"title":[3],"detail":[4,5,9,10]},"binding":{"title":[2,3],"detail":[3,4,7,8]},"cas":{"title":[2,4],"detail":[5,8,12,14]},"outcome":{"title":[3],"detail":[5,6,10,12]},"use":{"title":[3,4],"detail":[4,5,8,10]},"recovery":{"title":[3,4],"detail":[5,6,10,12]},"footer":{"title":[11,13],"detail":[9,12]}},"annotations":{"title":"heading","footer":"constraint"},"icons":{"title":"capture","parent":"capture","review":"capture","pending":"document","binding":"obligation","cas":"rust","outcome":"document","use":"rust","recovery":"capture","footer":"model"},"roles":{"pending":"default","cas":"execution","use":"execution","title":"default","parent":"default","review":"default","binding":"default","outcome":"default","recovery":"default","footer":"default"},"relations":{"(parent -> binding)[0]":{"binding":[4,7],"detail":[2]},"(review -> binding)[0]":{"binding":[4,7],"detail":[2]},"(binding -> cas)[0]":{"binding":[3,7,8],"detail":[3]},"(pending -> cas)[0]":{"binding":[5,8],"detail":[3]},"(cas -> outcome)[0]":{"binding":[3,8],"detail":[2]},"(cas -> use)[0]":{"binding":[3,9],"detail":[2]},"(outcome -> recovery)[0]":{"binding":[5,8],"detail":[4]}},"options":{"elk.direction":"DOWN","elk.hierarchyHandling":"INCLUDE_CHILDREN","elk.layered.layering.strategy":"COFFMAN_GRAHAM","elk.layered.layering.coffmanGraham.layerBound":"1","elk.spacing.nodeNode":"24","elk.layered.spacing.nodeNodeBetweenLayers":"36","elk.layered.cycleBreaking.strategy":"MODEL_ORDER","elk.layered.considerModelOrder.strategy":"NODES_AND_EDGES","elk.separateConnectedComponents":"false","elk.aspectRatio":"0.55","elk.spacing.componentComponent":"24"},"lineGap":36}}
+{
+  "title": "52 reviewed publication cas",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "What must be joined before reviewed publication commits?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "What must be joined before reviewed publication commits?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.52-reviewed-publication-cas.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "node-editor",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "parent"
+        },
+        {
+          "id": "review"
+        },
+        {
+          "id": "pending"
+        },
+        {
+          "id": "binding"
+        },
+        {
+          "id": "cas"
+        },
+        {
+          "id": "outcome"
+        },
+        {
+          "id": "use"
+        },
+        {
+          "id": "recovery"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "parent": "capture",
+      "review": "capture",
+      "pending": "document",
+      "binding": "obligation",
+      "cas": "rust",
+      "outcome": "document",
+      "use": "rust",
+      "recovery": "capture",
+      "footer": "model"
+    },
+    "roles": {
+      "pending": "default",
+      "cas": "execution",
+      "use": "execution",
+      "title": "default",
+      "parent": "default",
+      "review": "default",
+      "binding": "default",
+      "outcome": "default",
+      "recovery": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

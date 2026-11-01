@@ -124,6 +124,136 @@ rust -> scheme: Bound observations {
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"26 semantic execution ecosystem","purpose":"architecture","kind":"assurance","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"How do semantic modules govern real agent effects?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"How do semantic modules govern real agent effects?"},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.26-semantic-execution-ecosystem.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["field-notes","reading"],"layout":"model-map","variants":[],"presentation":{"captions":{"title":{"title":[6],"detail":[]},"ecosystem":{"title":[3],"detail":[3,8,11]},"scheme":{"title":[3],"detail":[3,4,6,7,11,12]},"go":{"title":[3],"detail":[4,8,9,11]},"cedar":{"title":[3],"detail":[4,5,8,9,12]},"rust":{"title":[3],"detail":[5,6,12,13,18,19]},"effects":{"title":[3],"detail":[5,9,12]},"derived":{"title":[4,5],"detail":[5,9,12,13]},"continuity":{"title":[2],"detail":[3,7,8,11,12]},"binding":{"title":[9],"detail":[10,11,22,28]}},"annotations":{"title":"heading","binding":"constraint"},"icons":{"title":"capture","ecosystem":"capture","scheme":"library","go":"go","cedar":"decision","rust":"rust","effects":"capture","derived":"capture","continuity":"capture","binding":"document"},"roles":{"ecosystem":"default","scheme":"semantic","go":"default","cedar":"policy","rust":"execution","binding":"default","title":"default","effects":"default","derived":"default","continuity":"default"},"relations":{"(ecosystem -> scheme)[0]":{"binding":[5,7],"detail":[2]},"(derived -> scheme)[0]":{"binding":[6,9],"detail":[2]},"(scheme -> go)[0]":{"binding":[5,7],"detail":[1]},"(go -> rust)[0]":{"binding":[6,7],"detail":[2]},"(cedar -> rust)[0]":{"binding":[5,7],"detail":[2]},"(continuity -> rust)[0]":{"binding":[4,6],"detail":[4,5]},"(rust -> effects)[0]":{"binding":[5,7],"detail":[1]},"(rust -> scheme)[0]":{"binding":[5,7],"detail":[2]}},"options":{"elk.direction":"DOWN","elk.hierarchyHandling":"INCLUDE_CHILDREN","elk.layered.layering.strategy":"COFFMAN_GRAHAM","elk.layered.layering.coffmanGraham.layerBound":"1","elk.spacing.nodeNode":"24","elk.layered.spacing.nodeNodeBetweenLayers":"36","elk.layered.cycleBreaking.strategy":"MODEL_ORDER","elk.layered.considerModelOrder.strategy":"NODES_AND_EDGES","elk.separateConnectedComponents":"false","elk.aspectRatio":"0.55","elk.spacing.componentComponent":"24"},"lineGap":36}}
+{
+  "title": "26 semantic execution ecosystem",
+  "purpose": "architecture",
+  "kind": "assurance",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How do semantic modules govern real agent effects?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "How do semantic modules govern real agent effects?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.26-semantic-execution-ecosystem.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "field-notes",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "ecosystem"
+        },
+        {
+          "id": "scheme"
+        },
+        {
+          "id": "go"
+        },
+        {
+          "id": "cedar"
+        },
+        {
+          "id": "rust"
+        },
+        {
+          "id": "effects"
+        },
+        {
+          "id": "derived"
+        },
+        {
+          "id": "continuity"
+        },
+        {
+          "id": "binding"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "ecosystem": "capture",
+      "scheme": "library",
+      "go": "go",
+      "cedar": "decision",
+      "rust": "rust",
+      "effects": "capture",
+      "derived": "capture",
+      "continuity": "capture",
+      "binding": "document"
+    },
+    "roles": {
+      "ecosystem": "default",
+      "scheme": "semantic",
+      "go": "default",
+      "cedar": "policy",
+      "rust": "execution",
+      "binding": "default",
+      "title": "default",
+      "effects": "default",
+      "derived": "default",
+      "continuity": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

@@ -191,6 +191,146 @@ key.revoke -> outcome.recovery
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"02 key boundary","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern 02 key boundary?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/30-39-assurance/32-key-boundary/32.02-key-boundary.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "02 key boundary",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which progression and failure boundaries govern 02 key boundary?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/30-39-assurance/32-key-boundary/32.02-key-boundary.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantic",
+          "children": [
+            {
+              "id": "semantic.identity"
+            },
+            {
+              "id": "semantic.lifecycle"
+            },
+            {
+              "id": "semantic.unknown"
+            },
+            {
+              "id": "semantic.goBrand"
+            },
+            {
+              "id": "semantic.kubernetesBrand"
+            }
+          ]
+        },
+        {
+          "id": "admission",
+          "children": [
+            {
+              "id": "admission.commit"
+            },
+            {
+              "id": "admission.ticket"
+            },
+            {
+              "id": "admission.handle"
+            }
+          ]
+        },
+        {
+          "id": "key",
+          "children": [
+            {
+              "id": "key.emit"
+            },
+            {
+              "id": "key.compute"
+            },
+            {
+              "id": "key.revoke"
+            },
+            {
+              "id": "key.rustBrand"
+            }
+          ]
+        },
+        {
+          "id": "outcome",
+          "children": [
+            {
+              "id": "outcome.delivery"
+            },
+            {
+              "id": "outcome.root"
+            },
+            {
+              "id": "outcome.recovery"
+            }
+          ]
+        },
+        {
+          "id": "quint"
+        },
+        {
+          "id": "lean"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {
+      "semantic.goBrand": "go",
+      "semantic.kubernetesBrand": "kubernetes",
+      "key.rustBrand": "rust"
+    },
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

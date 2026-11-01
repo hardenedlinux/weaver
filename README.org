@@ -16,29 +16,65 @@ revocation and recovery.
 | Component | Responsibility |
 |-----------+----------------|
 | Scheme | Reuse Agentic AI Lab Governor and Governance; compose typed modules and project policies/source-assets into Cedar |
-| Go | Load Scheme/JSON/YAML configuration, coordinate authenticated authority publication, and provide routing and protocol integration |
+| Go | Accept JSON/YAML data or a Rust-compiled Scheme artifact, coordinate authenticated authority publication, and provide routing and protocol integration |
 | Rust | Own authoritative state, evaluate current Cedar Policy, reserve and consume budgets, and control final provider dispatch and stream release |
 
 Go and Rust communicate through mutually authenticated gRPC. Protobuf is the
-default stream encoding; Arrow IPC is optional. Scheme uses Gambit C FFI for
-inert Cedar validation. Configuration validation does not grant execution rights.
+default stream encoding; Arrow IPC is optional. Rust hosts the approved Gerbil
+runtime; typed Scheme objects cross the Gambit C ABI through =gerbil-scheme-rust=.
+Go neither evaluates Scheme nor owns VM objects. Configuration validation does
+not grant execution rights.
 
 ** Zero Trust architecture
 
-Routing proposes an operation; it does not authorize external bytes. Rust joins
-current Policy, the original claim, shared budget and owner fence at actual use.
-Each stream message or range retains its own bound authorization and exposure.
+Weaver applies the security contracts from =cedar-poo-spec= to agent execution.
+Cedar evaluates permissions; SPEC defines how those decisions compose with
+identity, original semantic scope, current facts, consumption and recovery.
+An Allow decision alone grants no send capability.
 
-#+CAPTION: Original scope, current Policy and retained exposure constrain every send, retry and stream release.
+The model has three responsibilities. SPEC provides reusable functional Zero
+Trust and usage-control contracts, plus POO composition that retains required
+parent constraints. Weaver interprets those contracts for an agent's task,
+profile, route, budget and history. Rust enforces the interpretation where an
+effect can actually occur; Go routing and Scheme configuration propose work.
+
+#+CAPTION: SPEC requirements flow into Weaver's application interpretation and Rust's final execution boundary; arrows are contract dependencies, not network calls.
 [[file:docs/architecture/diagrams/00d-zero-trust-overview.svg]]
 
-** Architecture and verification
+| Agent behavior | Required enforcement |
+|----------------+----------------------|
+| Change model, provider or tool | Reauthorize the exact effect within the original task/profile and required parent constraints |
+| Wait for capacity or stream another range | Recheck current Policy, authoritative facts and owner fence at actual use |
+| Retry, reconnect or restart | Preserve original consumption, shared reservations and unresolved history |
+| Lose a reply or write only a prefix | Retain unknown exposure; no automatic replay or refund |
+| Finish a stream | Completion alone cannot establish usage settlement or release unknown budget |
 
-The models have distinct responsibilities and connect to implementation tests.
-Proofs remain conditional on their stated storage, identity and execution premises.
+UsageControl also requires conditions and witnessed obligation actions across
+the actual transition, and distinguishes recovery from authorization. These are
+application contracts: SPEC does not supply a credential authority, durable
+storage or socket enforcement. The
+[[file:docs/50-59-research-program/59-provider-rpc/59.51-zero-trust-architecture.org][Zero Trust integration review]] identifies current enforcement, conditional
+SPEC proof integration and remaining deployment obligations, including external
+fact authority and independent rollback protection.
 
-#+CAPTION: SysML and Org define the contracts; Quint explores schedules, Lean proves properties, and implementation tests check concrete boundaries.
+** How the execution contract is checked
+
+The engineering layers answer different questions about that same contract:
+who owns final effects, which failure orderings are unsafe, which semantic
+requirements survive composition, and whether real execution follows them.
+
+#+CAPTION: Each model-derived responsibility names its concrete obligation, from final-send ownership to conditional semantic preservation and observed transport effects.
 [[file:docs/architecture/diagrams/00c-readme-assurance.svg]]
+
+Go drives the checks and records source-bound Lean JSON diagnostics and audited
+declarations alongside process outcomes. A SysML trace names the expected proof;
+it does not establish that the proof ran. A checked conditional theorem does not
+establish its Rust/SQL/IO premises. See the
+[[file:docs/50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification responsibilities]] for the evidence boundary.
+
+The README diagrams are generated from SysML responsibilities and Lean references
+by that same Go driver. D2 selects visual layout and theme; it is not another
+independently authored security or responsibility model.
 
 * Workspace
 

@@ -39,8 +39,23 @@ func TestModelViewsUseActualSDK(t *testing.T) {
 			t.Fatalf("missing declared view: %s", name)
 		}
 	}
-	if len(capture.Views["WeaverViews::zeroTrust"].Edges) == 0 {
-		t.Fatal("security view lost the actual Gateway connections")
+	security := capture.Views["WeaverViews::zeroTrust"]
+	names := map[string]string{}
+	for _, node := range security.Nodes {
+		names[node.ID] = strings.TrimPrefix(node.Name, "WeaverZeroTrust::refinement::")
+	}
+	contracts := map[string]bool{"core->usage": false, "usage->application": false, "parents->application": false, "application->enforcement": false}
+	for _, edge := range security.Edges {
+		key := names[edge.From] + "->" + names[edge.To]
+		if _, known := contracts[key]; !known || contracts[key] {
+			t.Fatalf("unexpected or duplicate contract refinement: %s", key)
+		}
+		contracts[key] = true
+	}
+	for key, retained := range contracts {
+		if !retained {
+			t.Fatalf("SPEC-to-execution refinement omitted: %s", key)
+		}
 	}
 }
 
@@ -92,7 +107,7 @@ func TestModelCapturePublishesExactSDKTransport(t *testing.T) {
 		t.Fatal(err)
 	}
 	if saved.ModelHash == "" || len(saved.Views["WeaverViews::zeroTrust"].Edges) == 0 {
-		t.Fatal("transport lost the actual SDK security model")
+		t.Fatal("transport lost the actual SDK contract refinement model")
 	}
 	var transport struct {
 		Views map[string]map[string]json.RawMessage `json:"views"`

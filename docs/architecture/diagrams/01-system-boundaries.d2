@@ -244,6 +244,455 @@ assurance.lean -> runtime.authority: Meaning / projection contract {
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"Weaver / execution authority and responsibility boundaries","purpose":"architecture","kind":"system","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Who defines meaning, integrates cloud state and controls the final send?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"Scheme defines meaning. Go integrates cloud state. Rust owns final admission and send.","runtime-title":"RUST / FINAL EXECUTION AUTHORITY","matrix-legend":"Cells show declared relationships between owners. Bidirectional relations appear in both directions. Zero Trust requirements are shown separately because they constrain the whole gateway; assurance links describe design contracts, not request traffic.","matrix.semantic":"Scheme governance","matrix.cloud":"Go cloud integration","matrix.runtime":"Rust execution","matrix.assurance":"Quint / Lean contracts","matrix.upstream":"Upstream service","role.semantic.title":"Scheme","role.semantic.subtitle":"Governance semantics","role.cloud.title":"Go","role.cloud.subtitle":"Cloud-native integration","role.runtime.title":"Rust","role.runtime.subtitle":"Final execution authority","short.semantic.evidence":"Reusable contracts","detail.semantic.evidence":"Agentic AI Lab and Cedar","short.semantic.composition":"Governed composition","detail.semantic.composition":"Select an admitted policy closure","short.semantic.source":"Source constraints","detail.semantic.source":"Bind the operation and current facts","short.cloud.discovery":"Endpoint discovery","detail.cloud.discovery":"Propose scoped endpoints and routes","short.cloud.identity":"Workload identity","detail.cloud.identity":"Supply authenticated, scoped facts","short.cloud.distribution":"Publication distribution","detail.cloud.distribution":"Report the observed generation","short.runtime.authority":"Current Policy gate","detail.runtime.authority":"Require Allow and error-free checks","short.runtime.ledger":"Durable execution state","detail.runtime.ledger":"Retain history, budget and claims","short.runtime.broker":"Final send broker","detail.runtime.broker":"Bind bytes, peer and credentials","trust-title":"ZERO TRUST","short.baseline.policy":"Code as Policy","short.baseline.identity":"No ambient authority","short.baseline.recovery":"Unknown is not retry permission","scope-note":"Responsibility view only. Message order, detailed relationships and proof premises have separate views."},"basis":{"captureRef":"docs/architecture/diagrams/01-system-boundaries.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint","compact"],"layout":"gateway-responsibility-map","variants":[{"name":"sketchbook","themes":["sketchbook","compact"]},{"name":"node-editor","themes":["blueprint","node-editor","compact"]}]}
+{
+  "title": "Weaver / execution authority and responsibility boundaries",
+  "purpose": "architecture",
+  "kind": "system",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Who defines meaning, integrates cloud state and controls the final send?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Scheme defines meaning. Go integrates cloud state. Rust owns final admission and send.",
+    "runtime-title": "RUST / FINAL EXECUTION AUTHORITY",
+    "matrix-legend": "Cells show declared relationships between owners. Bidirectional relations appear in both directions. Zero Trust requirements are shown separately because they constrain the whole gateway; assurance links describe design contracts, not request traffic.",
+    "matrix.semantic": "Scheme governance",
+    "matrix.cloud": "Go cloud integration",
+    "matrix.runtime": "Rust execution",
+    "matrix.assurance": "Quint / Lean contracts",
+    "matrix.upstream": "Upstream service",
+    "role.semantic.title": "Scheme",
+    "role.semantic.subtitle": "Governance semantics",
+    "role.cloud.title": "Go",
+    "role.cloud.subtitle": "Cloud-native integration",
+    "role.runtime.title": "Rust",
+    "role.runtime.subtitle": "Final execution authority",
+    "short.semantic.evidence": "Reusable contracts",
+    "detail.semantic.evidence": "Agentic AI Lab and Cedar",
+    "short.semantic.composition": "Governed composition",
+    "detail.semantic.composition": "Select an admitted policy closure",
+    "short.semantic.source": "Source constraints",
+    "detail.semantic.source": "Bind the operation and current facts",
+    "short.cloud.discovery": "Endpoint discovery",
+    "detail.cloud.discovery": "Propose scoped endpoints and routes",
+    "short.cloud.identity": "Workload identity",
+    "detail.cloud.identity": "Supply authenticated, scoped facts",
+    "short.cloud.distribution": "Publication distribution",
+    "detail.cloud.distribution": "Report the observed generation",
+    "short.runtime.authority": "Current Policy gate",
+    "detail.runtime.authority": "Require Allow and error-free checks",
+    "short.runtime.ledger": "Durable execution state",
+    "detail.runtime.ledger": "Retain history, budget and claims",
+    "short.runtime.broker": "Final send broker",
+    "detail.runtime.broker": "Bind bytes, peer and credentials",
+    "trust-title": "ZERO TRUST",
+    "short.baseline.policy": "Code as Policy",
+    "short.baseline.identity": "No ambient authority",
+    "short.baseline.recovery": "Unknown is not retry permission",
+    "scope-note": "Responsibility view only. Message order, detailed relationships and proof premises have separate views."
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/01-system-boundaries.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "compact",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [
+    {
+      "name": "sketchbook",
+      "themes": [
+        "sketchbook",
+        "compact"
+      ],
+      "layout": "model-view",
+      "presentation": {
+        "graph": {
+          "id": "weaver-source-view",
+          "children": [
+            {
+              "id": "title"
+            },
+            {
+              "id": "semantic",
+              "children": [
+                {
+                  "id": "semantic.evidence"
+                },
+                {
+                  "id": "semantic.composition"
+                },
+                {
+                  "id": "semantic.source"
+                }
+              ]
+            },
+            {
+              "id": "cloud",
+              "children": [
+                {
+                  "id": "cloud.brand"
+                },
+                {
+                  "id": "cloud.kube"
+                },
+                {
+                  "id": "cloud.discovery"
+                },
+                {
+                  "id": "cloud.identity"
+                },
+                {
+                  "id": "cloud.distribution"
+                }
+              ]
+            },
+            {
+              "id": "runtime",
+              "children": [
+                {
+                  "id": "runtime.brand"
+                },
+                {
+                  "id": "runtime.adapter"
+                },
+                {
+                  "id": "runtime.coordinator"
+                },
+                {
+                  "id": "runtime.broker"
+                },
+                {
+                  "id": "runtime.authority"
+                },
+                {
+                  "id": "runtime.ledger"
+                },
+                {
+                  "id": "runtime.heading"
+                }
+              ]
+            },
+            {
+              "id": "upstream"
+            },
+            {
+              "id": "note"
+            },
+            {
+              "id": "baseline",
+              "children": [
+                {
+                  "id": "baseline.policy"
+                },
+                {
+                  "id": "baseline.identity"
+                },
+                {
+                  "id": "baseline.recovery"
+                }
+              ]
+            },
+            {
+              "id": "assurance",
+              "children": [
+                {
+                  "id": "assurance.quint"
+                },
+                {
+                  "id": "assurance.lean"
+                }
+              ]
+            }
+          ],
+          "layoutOptions": {
+            "elk.algorithm": "layered",
+            "elk.direction": "DOWN",
+            "elk.edgeRouting": "ORTHOGONAL"
+          }
+        },
+        "options": {
+          "elk.algorithm": "layered",
+          "elk.direction": "DOWN",
+          "elk.edgeRouting": "ORTHOGONAL"
+        },
+        "icons": {
+          "cloud.brand": "go",
+          "cloud.kube": "kubernetes",
+          "runtime.brand": "rust"
+        },
+        "roles": {}
+      }
+    },
+    {
+      "name": "node-editor",
+      "themes": [
+        "blueprint",
+        "node-editor",
+        "compact"
+      ],
+      "layout": "model-view",
+      "presentation": {
+        "graph": {
+          "id": "weaver-source-view",
+          "children": [
+            {
+              "id": "title"
+            },
+            {
+              "id": "semantic",
+              "children": [
+                {
+                  "id": "semantic.evidence"
+                },
+                {
+                  "id": "semantic.composition"
+                },
+                {
+                  "id": "semantic.source"
+                }
+              ]
+            },
+            {
+              "id": "cloud",
+              "children": [
+                {
+                  "id": "cloud.brand"
+                },
+                {
+                  "id": "cloud.kube"
+                },
+                {
+                  "id": "cloud.discovery"
+                },
+                {
+                  "id": "cloud.identity"
+                },
+                {
+                  "id": "cloud.distribution"
+                }
+              ]
+            },
+            {
+              "id": "runtime",
+              "children": [
+                {
+                  "id": "runtime.brand"
+                },
+                {
+                  "id": "runtime.adapter"
+                },
+                {
+                  "id": "runtime.coordinator"
+                },
+                {
+                  "id": "runtime.broker"
+                },
+                {
+                  "id": "runtime.authority"
+                },
+                {
+                  "id": "runtime.ledger"
+                },
+                {
+                  "id": "runtime.heading"
+                }
+              ]
+            },
+            {
+              "id": "upstream"
+            },
+            {
+              "id": "note"
+            },
+            {
+              "id": "baseline",
+              "children": [
+                {
+                  "id": "baseline.policy"
+                },
+                {
+                  "id": "baseline.identity"
+                },
+                {
+                  "id": "baseline.recovery"
+                }
+              ]
+            },
+            {
+              "id": "assurance",
+              "children": [
+                {
+                  "id": "assurance.quint"
+                },
+                {
+                  "id": "assurance.lean"
+                }
+              ]
+            }
+          ],
+          "layoutOptions": {
+            "elk.algorithm": "layered",
+            "elk.direction": "DOWN",
+            "elk.edgeRouting": "ORTHOGONAL"
+          }
+        },
+        "options": {
+          "elk.algorithm": "layered",
+          "elk.direction": "DOWN",
+          "elk.edgeRouting": "ORTHOGONAL"
+        },
+        "icons": {
+          "cloud.brand": "go",
+          "cloud.kube": "kubernetes",
+          "runtime.brand": "rust"
+        },
+        "roles": {}
+      }
+    }
+  ],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantic",
+          "children": [
+            {
+              "id": "semantic.evidence"
+            },
+            {
+              "id": "semantic.composition"
+            },
+            {
+              "id": "semantic.source"
+            }
+          ]
+        },
+        {
+          "id": "cloud",
+          "children": [
+            {
+              "id": "cloud.brand"
+            },
+            {
+              "id": "cloud.kube"
+            },
+            {
+              "id": "cloud.discovery"
+            },
+            {
+              "id": "cloud.identity"
+            },
+            {
+              "id": "cloud.distribution"
+            }
+          ]
+        },
+        {
+          "id": "runtime",
+          "children": [
+            {
+              "id": "runtime.brand"
+            },
+            {
+              "id": "runtime.adapter"
+            },
+            {
+              "id": "runtime.coordinator"
+            },
+            {
+              "id": "runtime.broker"
+            },
+            {
+              "id": "runtime.authority"
+            },
+            {
+              "id": "runtime.ledger"
+            },
+            {
+              "id": "runtime.heading"
+            }
+          ]
+        },
+        {
+          "id": "upstream"
+        },
+        {
+          "id": "note"
+        },
+        {
+          "id": "baseline",
+          "children": [
+            {
+              "id": "baseline.policy"
+            },
+            {
+              "id": "baseline.identity"
+            },
+            {
+              "id": "baseline.recovery"
+            }
+          ]
+        },
+        {
+          "id": "assurance",
+          "children": [
+            {
+              "id": "assurance.quint"
+            },
+            {
+              "id": "assurance.lean"
+            }
+          ]
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {
+      "cloud.brand": "go",
+      "cloud.kube": "kubernetes",
+      "runtime.brand": "rust"
+    },
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

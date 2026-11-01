@@ -162,6 +162,133 @@ lean -> owner.buffer: preserve cut semantics {
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"anchor recovery and egress","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern anchor recovery and egress?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/architecture/diagrams/20-anchor-recovery-and-egress.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "anchor recovery and egress",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which progression and failure boundaries govern anchor recovery and egress?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/20-anchor-recovery-and-egress.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "host",
+          "children": [
+            {
+              "id": "host.proposal"
+            },
+            {
+              "id": "host.status"
+            },
+            {
+              "id": "host.handle"
+            }
+          ]
+        },
+        {
+          "id": "journal",
+          "children": [
+            {
+              "id": "journal.commit"
+            },
+            {
+              "id": "journal.lookup"
+            },
+            {
+              "id": "journal.recovery"
+            }
+          ]
+        },
+        {
+          "id": "owner",
+          "children": [
+            {
+              "id": "owner.seal"
+            },
+            {
+              "id": "owner.gate"
+            },
+            {
+              "id": "owner.buffer"
+            }
+          ]
+        },
+        {
+          "id": "receiver",
+          "children": [
+            {
+              "id": "receiver.barrier"
+            },
+            {
+              "id": "receiver.wire"
+            },
+            {
+              "id": "receiver.application"
+            }
+          ]
+        },
+        {
+          "id": "quint"
+        },
+        {
+          "id": "lean"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {},
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

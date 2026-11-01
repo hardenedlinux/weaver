@@ -62,6 +62,136 @@ proof: "Quint: wrong target / stale route / unknown retry / mixed response sourc
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"02 llm routing","purpose":"workflow","kind":"routing","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"How does 02 llm routing constrain selection and actual execution?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/10-19-llm-gateway/10-routing-and-inference/10.02-llm-routing.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "02 llm routing",
+  "purpose": "workflow",
+  "kind": "routing",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How does 02 llm routing constrain selection and actual execution?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/10-19-llm-gateway/10-routing-and-inference/10.02-llm-routing.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "control",
+          "children": [
+            {
+              "id": "control.intent"
+            },
+            {
+              "id": "control.catalog"
+            },
+            {
+              "id": "control.policy"
+            }
+          ]
+        },
+        {
+          "id": "candidates",
+          "children": [
+            {
+              "id": "candidates.hosted"
+            },
+            {
+              "id": "candidates.private"
+            },
+            {
+              "id": "candidates.specialist"
+            }
+          ]
+        },
+        {
+          "id": "router",
+          "children": [
+            {
+              "id": "router.normalize"
+            },
+            {
+              "id": "router.choose"
+            },
+            {
+              "id": "router.plan"
+            }
+          ]
+        },
+        {
+          "id": "broker",
+          "children": [
+            {
+              "id": "broker.encode"
+            },
+            {
+              "id": "broker.send"
+            },
+            {
+              "id": "broker.selected"
+            },
+            {
+              "id": "broker.stream"
+            }
+          ]
+        },
+        {
+          "id": "deny"
+        },
+        {
+          "id": "proof"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {},
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

@@ -152,3 +152,20 @@ unchanged five-second no-output gate before Rust linking. It emitted =HARNESS-OK
 and final =OK= but remained running; diagnostic markers do not prove natural
 exit. Cleanup then reported a process-group permission error. The package-link
 fix does not by itself close either independent failure.
+
+* Public Library consumer integration
+
+The compiler-pool implementation and its close-command helper are superseded
+by the upstream Library allocation-domain contract. Each public compiler call
+returns only after its owned process exits naturally. Weaver retains no pool,
+close-command protocol, raw SVG fallback or copied compiler lifecycle engine.
+Consumer interruption stops new scheduling and drains accepted exports before
+closing the browser. Capture/resource decoding precedes browser acquisition.
+
+The original complete two-source obligation remains in
+=dev/d2/test/library-composition.test.ts=. Both real D2 captures, native model
+compilation, measured SVG export and browser cleanup execute within one
+unchanged standard five-second test. There is no prewarming or source capture
+outside that test. All accepted tasks settle before browser cleanup, including
+failure outcomes. Historical failed hooks above remain historical evidence;
+upstream compiler lifetime tests and focused image checks are separate receipts.

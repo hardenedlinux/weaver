@@ -196,6 +196,150 @@ lean -> transport.tail: preserve original binding {
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"driver completion recovery","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern driver completion recovery?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/architecture/diagrams/23-driver-completion-recovery.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "driver completion recovery",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which progression and failure boundaries govern driver completion recovery?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/23-driver-completion-recovery.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantics",
+          "children": [
+            {
+              "id": "semantics.scheme"
+            },
+            {
+              "id": "semantics.cedar"
+            },
+            {
+              "id": "semantics.goBrand"
+            },
+            {
+              "id": "semantics.kubeBrand"
+            },
+            {
+              "id": "semantics.adapter"
+            }
+          ]
+        },
+        {
+          "id": "authority",
+          "children": [
+            {
+              "id": "authority.brand"
+            },
+            {
+              "id": "authority.original"
+            },
+            {
+              "id": "authority.finish"
+            },
+            {
+              "id": "authority.recovery"
+            }
+          ]
+        },
+        {
+          "id": "transport",
+          "children": [
+            {
+              "id": "transport.brand"
+            },
+            {
+              "id": "transport.tail"
+            },
+            {
+              "id": "transport.quiet"
+            },
+            {
+              "id": "transport.restart"
+            }
+          ]
+        },
+        {
+          "id": "closure",
+          "children": [
+            {
+              "id": "closure.gate"
+            },
+            {
+              "id": "closure.isolate"
+            },
+            {
+              "id": "closure.usage"
+            }
+          ]
+        },
+        {
+          "id": "quint"
+        },
+        {
+          "id": "lean"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {
+      "semantics.goBrand": "go",
+      "semantics.kubeBrand": "kubernetes",
+      "authority.brand": "rust",
+      "transport.brand": "rust"
+    },
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

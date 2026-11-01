@@ -6,11 +6,15 @@ package WeaverProject {
 
     part def Directory;
     requirement def ArchitectureViewGrammar {
-        doc /* Development-only D2 extension profiles live under dev/d2/themes. The shared render Library owns the engine, themes and export; Weaver supplies Question-driven domain compositions and source checks. System,
+        doc /* Development-only D2 extension profiles live under dev/d2/themes. The shared render Library owns the engine, themes and export; Weaver supplies source-owned declarations and source checks. System,
            routing, flow, sequence, state, data and assurance views select
            subject-appropriate visual grammars rather than one global template.
            Named SysML views are rendered by the existing OpenSysML SDK from
-           captured source bytes. D2 declares Questions and presentation; the
+           captured source bytes. Go derives README D2 from typed SysML view and
+           inherited responsibility attributes plus current Lean JSON references;
+           D2 retains visual configuration, not independently authored Questions,
+           responsibilities or proof claims. Missing or stale proof evidence is
+           explicitly unexecuted. Source changes invalidate the mapped declaration. The
            upstream functional Library owns model projection and image generation.
            README embeds the resulting architecture and Zero Trust SVGs directly.
            README figures share the Library sketchbook visual language: paper
@@ -27,8 +31,8 @@ package WeaverProject {
            the consumed standalone image. Background loss must fail qualification.
            Consume these semantic primitives through a qualified upstream package;
            downstream glyph swaps or baseline corrections do not satisfy them.
-           Model-map presentation retains native identities, arrowheads and every
-           source word; D2 selects only explicit word breaks and visual roles.
+           Public model-view composition retains native identities, arrowheads and
+           captured wording; D2 declares graph preferences and visual roles.
            Disconnected text annotations cannot absorb connected subjects, and
            unsupported member notation cannot silently drop fields or endpoints.
            WASM capture uses a reclaimable compiler process scope; image export
@@ -133,20 +137,33 @@ package WeaverProject {
     }
 
     package AssuranceResponsibilities {
+        private import ScalarValues::*;
         doc /* Sole responsibility registry. Documents and diagrams reference
            these owners; they do not create parallel verification designs. */
-        part specification : VerificationResponsibility {
+        part def Specification :> VerificationResponsibility {
+            attribute displayName : String = "Specify effects";
+            attribute responsibility : String = "SysML + Org\nAllocate final-send ownership\nName the required contracts";
+            attribute glyph : String = "model";
+            attribute visualRole : String = "publication";
             doc /* SysML owns component allocation, typed boundaries and named
                requirements. SDK structural analysis is not behavioral proof. */
         }
-        part schedules : VerificationResponsibility {
+        part def Schedules :> VerificationResponsibility {
+            attribute displayName : String = "Explore failures";
+            attribute responsibility : String = "Quint\nRace revoke, wait and release\nFind unsafe recovery schedules";
+            attribute glyph : String = "decision";
+            attribute visualRole : String = "selection";
             doc /* Quint owns concurrent/fault schedules and unsafe counterexamples.
                Extend existing publication/execution models rather than duplicate
                their ledgers. It does not reimplement Cedar evaluation or prove
                arbitrary Scheme/Rust programs. Credential semantics enter as
                qualified opaque references; only read/use ordering is modeled. */
         }
-        part semantics : VerificationResponsibility {
+        part def Semantics :> VerificationResponsibility {
+            attribute displayName : String = "Preserve contracts";
+            attribute responsibility : String = "Lean + cedar-poo-spec\nRetain required parent scope\nProve conditional preservation";
+            attribute glyph : String = "obligation";
+            attribute visualRole : String = "semantic";
             doc /* Lean reuses cedar-poo-spec and Cedar semantic/refinement
                theorems with explicit authenticity/materialization premises.
                No second control/activation/CAS state machine is introduced.
@@ -154,7 +171,11 @@ package WeaverProject {
                definition; downstream Lean only applies its composition laws.
                Solver reports and finite replay records are not kernel proofs. */
         }
-        part implementation : VerificationResponsibility {
+        part def Implementation :> VerificationResponsibility {
+            attribute displayName : String = "Test actual effects";
+            attribute responsibility : String = "PBT + integration\nExercise SQL, FFI and gRPC\nObserve denied and sent bytes";
+            attribute glyph : String = "evidence";
+            attribute visualRole : String = "execution";
             doc /* Scheme/Rust/Go PBT and integration suites establish
                concrete composition, FFI, parsing, SQL and transport behavior.
                Inherited POO property testing, Proptest and Go testing.F own generation, shrinking, corpora and
@@ -162,6 +183,10 @@ package WeaverProject {
                models precede Runtime changes; command runners only launch suites.
                They do not turn finite cases into universal theorems. */
         }
+        part specification : Specification;
+        part schedules : Schedules;
+        part semantics : Semantics;
+        part implementation : Implementation;
     }
 
     package DesignProcess {
@@ -513,6 +538,7 @@ package WeaverProject {
         part 'dev/proofs/cedar' : Directory;
         part 'dev/sysml' : Directory;
         part 'dev/sysml/WeaverExecution.sysml' : File;
+        part 'dev/sysml/ZeroTrustRefinement.sysml' : File;
         part 'dev/sysml/StreamingExecution.sysml' : File;
         part 'dev/sysml/ProviderRpc.sysml' : File;
         part 'dev/sysml/ControlActivation.sysml' : File;

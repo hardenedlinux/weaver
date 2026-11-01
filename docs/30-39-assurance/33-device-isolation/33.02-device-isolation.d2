@@ -191,6 +191,146 @@ recovery.activate -> owner.emit
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"02 device isolation","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern 02 device isolation?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/30-39-assurance/33-device-isolation/33.02-device-isolation.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "02 device isolation",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which progression and failure boundaries govern 02 device isolation?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/30-39-assurance/33-device-isolation/33.02-device-isolation.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantic",
+          "children": [
+            {
+              "id": "semantic.identity"
+            },
+            {
+              "id": "semantic.cloud"
+            },
+            {
+              "id": "semantic.unknown"
+            },
+            {
+              "id": "semantic.goBrand"
+            },
+            {
+              "id": "semantic.kubernetesBrand"
+            }
+          ]
+        },
+        {
+          "id": "driver_boundary",
+          "children": [
+            {
+              "id": "driver_boundary.manifest"
+            },
+            {
+              "id": "driver_boundary.isolation"
+            },
+            {
+              "id": "driver_boundary.callback"
+            }
+          ]
+        },
+        {
+          "id": "owner",
+          "children": [
+            {
+              "id": "owner.certificate"
+            },
+            {
+              "id": "owner.emit"
+            },
+            {
+              "id": "owner.reset"
+            },
+            {
+              "id": "owner.rustBrand"
+            }
+          ]
+        },
+        {
+          "id": "recovery",
+          "children": [
+            {
+              "id": "recovery.journal"
+            },
+            {
+              "id": "recovery.history"
+            },
+            {
+              "id": "recovery.activate"
+            }
+          ]
+        },
+        {
+          "id": "quint"
+        },
+        {
+          "id": "lean"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {
+      "semantic.goBrand": "go",
+      "semantic.kubernetesBrand": "kubernetes",
+      "owner.rustBrand": "rust"
+    },
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

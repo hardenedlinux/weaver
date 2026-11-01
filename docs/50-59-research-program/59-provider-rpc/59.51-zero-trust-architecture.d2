@@ -103,6 +103,140 @@ footer: "Identity is not authority · Recovery is not reauthorization\nEvery new
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"51 zero trust architecture","purpose":"architecture","kind":"system","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"Where does Zero Trust govern each external effect?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"Where does Zero Trust govern each external effect?"},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.51-zero-trust-architecture.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["sketchbook","reading"],"layout":"model-map","variants":[],"presentation":{"captions":{"title":{"title":[6],"detail":[]},"identity":{"title":[3,4],"detail":[4,5,10,11]},"scheme":{"title":[2,3],"detail":[5,6,10,11]},"spec":{"title":[2,3],"detail":[5,10,11]},"go":{"title":[4,5],"detail":[4,7,8]},"decision":{"title":[2,3],"detail":[4,5,9,10]},"execution":{"title":[3,4],"detail":[4,9,11]},"observations":{"title":[2,3],"detail":[5,6,9,10]},"recovery":{"title":[3,4],"detail":[5,6,10]},"resource":{"title":[2,3],"detail":[6,9,10]},"footer":{"title":[9],"detail":[9,10]}},"annotations":{"title":"heading","footer":"constraint"},"icons":{"title":"document","identity":"capture","scheme":"library","spec":"capture","go":"go","decision":"rust","execution":"rust","observations":"capture","recovery":"capture","resource":"capture","footer":"decision"},"roles":{"scheme":"semantic","spec":"default","go":"default","decision":"execution","execution":"execution","observations":"default","recovery":"default","title":"default","identity":"default","resource":"default","footer":"policy"},"relations":{"(identity -> go)[0]":{"binding":[5,9,10],"detail":[2]},"(scheme -> decision)[0]":{"binding":[4,7],"detail":[2]},"(spec -> decision)[0]":{"binding":[4,7],"detail":[2]},"(go -> decision)[0]":{"binding":[4,8,9],"detail":[2]},"(decision -> execution)[0]":{"binding":[4,8],"detail":[2,3]},"(execution -> resource)[0]":{"binding":[5,8],"detail":[3]},"(execution -> recovery)[0]":{"binding":[5,9],"detail":[2]},"(recovery -> observations)[0]":{"binding":[5,8],"detail":[2]},"(observations -> go)[0]":{"binding":[4,8,9],"detail":[2]}},"options":{"elk.direction":"DOWN","elk.hierarchyHandling":"INCLUDE_CHILDREN","elk.layered.layering.strategy":"COFFMAN_GRAHAM","elk.layered.layering.coffmanGraham.layerBound":"1","elk.spacing.nodeNode":"24","elk.layered.spacing.nodeNodeBetweenLayers":"36","elk.layered.cycleBreaking.strategy":"MODEL_ORDER","elk.layered.considerModelOrder.strategy":"NODES_AND_EDGES","elk.separateConnectedComponents":"false","elk.aspectRatio":"0.55","elk.spacing.componentComponent":"24"},"lineGap":48}}
+{
+  "title": "51 zero trust architecture",
+  "purpose": "architecture",
+  "kind": "system",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Where does Zero Trust govern each external effect?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Where does Zero Trust govern each external effect?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.51-zero-trust-architecture.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "identity"
+        },
+        {
+          "id": "scheme"
+        },
+        {
+          "id": "spec"
+        },
+        {
+          "id": "go"
+        },
+        {
+          "id": "decision"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "observations"
+        },
+        {
+          "id": "recovery"
+        },
+        {
+          "id": "resource"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "document",
+      "identity": "capture",
+      "scheme": "library",
+      "spec": "capture",
+      "go": "go",
+      "decision": "rust",
+      "execution": "rust",
+      "observations": "capture",
+      "recovery": "capture",
+      "resource": "capture",
+      "footer": "decision"
+    },
+    "roles": {
+      "scheme": "semantic",
+      "spec": "default",
+      "go": "default",
+      "decision": "execution",
+      "execution": "execution",
+      "observations": "default",
+      "recovery": "default",
+      "title": "default",
+      "identity": "default",
+      "resource": "default",
+      "footer": "policy"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 } } }

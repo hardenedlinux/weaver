@@ -1,74 +1,29 @@
-import {test,expect,beforeAll,afterAll,describe} from 'bun:test';
+import {test,expect} from 'bun:test';
 import {fileURLToPath} from 'node:url';
+import {chromium} from 'playwright';
+import {compileFigureSource,composeFigure,composeModelView} from '@deterministic-engineering/render';
+import {exportFigure} from '@deterministic-engineering/render/export';
+import {iconPacks} from '@deterministic-engineering/render/icons';
 import {collectCatalog} from '../src/source/catalog';
-import {CompilationOwner} from '../src/compiler';
-import {composeProjectFigure} from '../src/figures';
-import type {Scene} from '../src/source/types';
-let owner:CompilationOwner|undefined,scene:Scene|undefined,gateway:Scene|undefined;
-function captured():Scene{if(!scene)throw new Error('Missing captured source');return scene;}
-beforeAll(async()=>{
- const catalog=collectCatalog(fileURLToPath(new URL('../../../',import.meta.url)));
- owner=new CompilationOwner(catalog);
- scene=await owner.compile(catalog.views.findIndex(v=>v.source.endsWith('/12-execution-correspondence.d2')));
-});
-afterAll(async()=>{await owner?.close();});
-test('actual D2 Question and declared hand-drawn style drive the library',()=>{
- const input=captured(),figure=composeProjectFigure(input);
- expect(figure.html).toContain(input.figure.view.question.text);
- expect(figure.drawing.mode).toBe('sketch');
- expect(figure.fonts.some(font=>font.family==='Kalam')).toBe(true);
- expect(figure.html).not.toContain('<footer>');
-});
-test('domain extension rejects lost nodes and relationships',()=>{
- const input=captured();
- expect(()=>composeProjectFigure({...input,nodes:input.nodes.slice(1)})).toThrow('node inventory');
- expect(()=>composeProjectFigure({...input,edges:input.edges.slice(1)})).toThrow('relationship inventory');
-});
-test('declared node-editor variant reuses the library theme',()=>{
- const input=captured(),variant=input.figure.variants?.find(v=>v.name==='node-editor');
- if(!variant)throw new Error('Source has no declared node-editor variant');
- const figure=composeProjectFigure(input,variant);
- expect(figure.drawing.mode).toBe('precise');
- expect(figure.html).toContain('[data-node]:before');
-});
-describe('gateway responsibility composition',()=>{
- beforeAll(async()=>{
-  const catalog=collectCatalog(fileURLToPath(new URL('../../../',import.meta.url)));
-  gateway=await owner!.compile(catalog.views.findIndex(v=>v.source.endsWith('/01-system-boundaries.d2')));
- });
-test('responsibility view shows source-bound handoffs and rejects reversed contracts',()=>{
- if(!gateway)throw new Error('Missing captured gateway');
- const figure=composeProjectFigure(gateway);
- for(const label of ['Admitted closure','Admitted publication','Source guards'])expect(figure.html).toContain(label);
- expect(figure.html).toContain('min-height:104px');
- const changed={...gateway,edges:gateway.edges.map(edge=>edge.source==='semantic.composition'&&edge.target==='cloud.distribution'?{...edge,targetArrow:false}:edge)};
- expect(()=>composeProjectFigure(changed)).toThrow('Missing declared handoff');
-});
-test('theme variants preserve captured technology logos alongside library icon packs',()=>{
- if(!gateway)throw new Error('Missing gateway capture');
- for(const variant of gateway.figure.variants??[]){
-  const figure=composeProjectFigure(gateway,variant);
-  expect(figure.html).toContain('cloud.brand');
-  expect(figure.html).toContain('runtime.brand');
- }
-});
-});
+import {capturedViews} from '../src/source/models';
+import {themes} from '../themes';
 
-test('closing fences new requests while draining both original D2 captures',async()=>{
+// Preserve the complete original two-source acceptance boundary inside one
+// standard five-second test; no prewarming or outside-hook compilation.
+test('two real source captures export and release all owned compiler/browser resources',async()=>{
  const catalog=collectCatalog(fileURLToPath(new URL('../../../',import.meta.url)));
- const owner=new CompilationOwner(catalog);
- const index=catalog.views.findIndex(view=>view.source.endsWith('/12-execution-correspondence.d2'));
- const pending=owner.compile(index);
- const gatewayIndex=catalog.views.findIndex(view=>view.source.endsWith('/01-system-boundaries.d2'));
- const gatewayPending=owner.compile(gatewayIndex);
- const terminal=owner.close();
- await expect(owner.compile(index)).rejects.toThrow('closing');
- const accepted=await pending;
- const gatewayAccepted=await gatewayPending;
- expect(accepted.svg).toContain(accepted.view.sha256);
- expect(accepted.nodes.length).toBeGreaterThan(0);
- expect(gatewayAccepted.svg).toContain(gatewayAccepted.view.sha256);
- expect(gatewayAccepted.nodes.length).toBeGreaterThan(0);
- await terminal;
- expect(owner.close()).toBe(terminal);
+ const resources={themeLayers:themes,sysmlViews:capturedViews(catalog.modelCapture),iconPacks:{...iconPacks,weaver:Object.fromEntries(['go','rust','kubernetes'].map(name=>[name,{svg:catalog.fs['docs/architecture/diagrams/assets/'+name+'.svg']!,label:name}]))}};
+ const browser=await chromium.launch();
+ try{
+  const outcomes=await Promise.allSettled(['12-execution-correspondence.d2','01-system-boundaries.d2'].map(async suffix=>{
+   const view=catalog.views.find(view=>view.source.endsWith('/'+suffix));if(!view)throw new Error('Missing original source capture');
+   const input=await compileFigureSource({...catalog.fs,...catalog.documents},view.source,resources,{layout:'elk'});
+   const image=await exportFigure(composeFigure(input,composeModelView),browser);
+   expect(image.svg[0]).toContain(view.source);
+   expect(image.svg[0]).toContain('data-scene-node=');
+   expect(image.receipt.observation.subjects.length).toBe(input.model!.subjects.length);
+   expect(image.receipt.observation.relations.length).toBe(input.model!.relations.length);
+  }));
+  for(const outcome of outcomes)if(outcome.status==='rejected')throw outcome.reason;
+ }finally{await browser.close();}
 });

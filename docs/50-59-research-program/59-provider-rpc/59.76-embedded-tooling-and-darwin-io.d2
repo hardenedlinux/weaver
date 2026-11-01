@@ -26,6 +26,141 @@ tokio -> backend: spawn and reap
 backend -> scheme: complete diagnostics
 
 vars: {d2-config: {data: {figure: |json
-{"title":"Embedded Gerbil tooling ownership","purpose":"workflow","kind":"flow","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"Who owns direct Gerbil build and test invocation?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"Scheme owns build and test semantics; the C ABI keeps VM affinity and Tokio drains backend work."},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.76-embedded-tooling-and-darwin-io.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["node-editor","reading"],"layout":"model-map","variants":[],"presentation":{"captions":{"caller":{"title":[3],"detail":[4,5]},"facade":{"title":[1],"detail":[3]},"bridge":{"title":[3],"detail":[4,5]},"owner":{"title":[3],"detail":[4,6]},"scheme":{"title":[4],"detail":[4,5]},"image":{"title":[3],"detail":[4,6]},"tokio":{"title":[2],"detail":[4,5]},"complete":{"title":[4],"detail":[4,5]},"refused":{"title":[4],"detail":[4,5]},"backend":{"title":[2],"detail":[4,6]}},"relations":{"(caller -> facade)[0]":{"binding":[4,5],"detail":[2]},"(facade -> bridge)[0]":{"binding":[4,5],"detail":[3]},"(bridge -> owner)[0]":{"binding":[4,7],"detail":[2]},"(image -> owner)[0]":{"binding":[4,7],"detail":[3]},"(owner -> scheme)[0]":{"binding":[4,8],"detail":[3]},"(tokio -> owner)[0]":{"binding":[4,6],"detail":[2]},"(scheme -> complete)[0]":{"binding":[4,8,9],"detail":[4]},"(scheme -> refused)[0]":{"binding":[4,8,9],"detail":[4]},"(complete -> caller)[0]":{"binding":[4,8],"detail":[2]},"(refused -> tokio)[0]":{"binding":[4,7],"detail":[2]},"(scheme -> tokio)[0]":{"binding":[4,7],"detail":[2]},"(tokio -> backend)[0]":{"binding":[4,5],"detail":[3]},"(backend -> scheme)[0]":{"binding":[4,7],"detail":[2]}},"annotations":{},"icons":{"caller":"capture","facade":"rust","bridge":"capture","owner":"capture","scheme":"capture","image":"capture","tokio":"capture","complete":"capture","refused":"capture","backend":"capture"},"roles":{"caller":"default","facade":"default","bridge":"default","owner":"execution","scheme":"semantic","image":"default","tokio":"default","complete":"default","refused":"default","backend":"execution"},"options":{"elk.direction":"DOWN","elk.hierarchyHandling":"INCLUDE_CHILDREN","elk.layered.layering.strategy":"COFFMAN_GRAHAM","elk.layered.layering.coffmanGraham.layerBound":"1","elk.spacing.nodeNode":"24","elk.layered.spacing.nodeNodeBetweenLayers":"36","elk.layered.cycleBreaking.strategy":"MODEL_ORDER","elk.layered.considerModelOrder.strategy":"NODES_AND_EDGES","elk.separateConnectedComponents":"false","elk.aspectRatio":"0.55","elk.spacing.componentComponent":"24"},"lineGap":36}}
+{
+  "title": "Embedded Gerbil tooling ownership",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Who owns direct Gerbil build and test invocation?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The upstream C ABI owns tooling calls; Scheme keeps package semantics and Tokio coordinates the outer lifecycle."
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.76-embedded-tooling-and-darwin-io.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [
+
+    ],
+    "evidenceRefs": [
+
+    ]
+  },
+  "themes": [
+    "sketchbook",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [
+
+  ],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "caller"
+        },
+        {
+          "id": "facade"
+        },
+        {
+          "id": "bridge"
+        },
+        {
+          "id": "owner"
+        },
+        {
+          "id": "scheme"
+        },
+        {
+          "id": "image"
+        },
+        {
+          "id": "tokio"
+        },
+        {
+          "id": "complete"
+        },
+        {
+          "id": "refused"
+        },
+        {
+          "id": "backend"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "caller": "capture",
+      "facade": "rust",
+      "bridge": "capture",
+      "owner": "capture",
+      "scheme": "capture",
+      "image": "capture",
+      "tokio": "capture",
+      "complete": "capture",
+      "refused": "capture",
+      "backend": "rust"
+    },
+    "roles": {
+      "caller": "default",
+      "facade": "default",
+      "bridge": "default",
+      "owner": "execution",
+      "scheme": "semantic",
+      "image": "default",
+      "tokio": "default",
+      "complete": "default",
+      "refused": "default",
+      "backend": "execution"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
 |
 }}}
