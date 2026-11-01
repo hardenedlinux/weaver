@@ -64,7 +64,7 @@ claims -> check: Exact member and kind coverage
 check -> gate: All constraints hold
 check -> quarantine: Missing / changed / orphaned
 gate -> effect: Actual use
-note: "Restart never reconstructs claims from outcomes. Completion and usage observations do not authorize refunds.\nCoherent correlated rollback requires an independent authority beyond this local profile." {
+note: "Restart never reconstructs claims from outcomes. A fresh fence cannot recreate missing members.\nCompletion and usage observations do not authorize refunds. Correlated rollback requires an independent authority beyond this local profile." {
   class: note
   shape: text
   near: bottom-center

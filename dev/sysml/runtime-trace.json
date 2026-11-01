@@ -28,6 +28,10 @@
   {
     "id": "SharedBudget",
     "witnesses": [
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn finite_manifest_siblings_cannot_mask_a_missing_original_member"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn maximum_manifest_cannot_replace_a_lost_sibling_after_restart"},
+      {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run partialLossFreshAuthorityRecoveryGuardTest"},
+      {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run partialLossFreshAuthorityFinalUseGuardTest"},
       {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn selected_message_binding_must_match_its_committed_digest_at_final_write"},
       {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn concurrent_message_admission_preserves_both_manifest_members"},
       {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn exhausted_budget_cannot_publish_a_manifest_member_without_its_row"},

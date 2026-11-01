@@ -559,12 +559,41 @@ The test exercises the actual final write callback and subsequent custody.
 focused native negative-control scenario. Raw diagnostics remain in temporary
 storage; regression seeds stay in the property framework's normal source file.
 
+=finite_manifest_siblings_cannot_mask_a_missing_original_member= extends the
+actual Rust protocol to generated source manifests of 3--64 messages. A separate
+64-message boundary case removes the last admitted sibling and restarts the
+owner. One source-declared message remains unadmitted with capacity available;
+an independent intact-ledger control proves its admission is authorized. The
+fault deletes another member and balances =held= to the surviving row sum.
+An already consumed write still invokes no callback, and neither lost-member
+recreation nor fresh-message admission may repair the image implicitly. Publishing
+the same explicit finite Policy under a new revision/fence does not repair the
+manifest; fresh admission fails at the original-exposure guard. The original
+manifest bytes and damaged aggregate remain unchanged rather than being rebuilt
+or further released by these refused effects.
+
+The production example Policy deliberately allows only =m0= and =m1=. The first
+wider fixture therefore failed before reaching the recovery boundary. Preserve
+that failed run. The generalized test fixture publishes the same Policy rules
+with an explicit source-sized member allowlist; production Policy and dependency
+pins are unchanged. A wildcard or a Policy-denied spare would make the intended
+recovery check invalid. Host linker/SDK setup failures are also distinct from a
+native execution result; the standard compiler and SDK are selected from their
+environment overrides or =xcrun= discovery, without a hardcoded SDK path.
+
 The Quint model deliberately maps two logical members to the same stream owner.
 Its partial-loss witness satisfies node coverage and row-local amount equality
 while violating exact member coverage. Separate digest-substitution witnesses
 show why set cardinality alone is insufficient. Recovery and final-use actions
 require exact member and digest binding. This is a bounded schedule model, not
 an arbitrary-size theorem or a compiled-code proof.
+
+Two additional fault traces refresh caller-observed authority after member loss.
+One surviving unspent member is tested after restart; an existing final-use
+ticket is tested without restart. Both traces have current observed revision and
+fence, so stale-authority refusal cannot mask a missing membership check. The
+refresh action is an adversarial observation update excluded from the safe
+transition relation; it is not an authenticated reauthorization implementation.
 
 Lean models arbitrary finite commitment lists with node, execution kind, member,
 digest and original ceiling. Permutation expresses complete multiplicity-aware
@@ -574,6 +603,21 @@ capacity premises bounds original exposure. SQL key uniqueness, authentic roots,
 transaction atomicity and real transport fencing remain refinement premises.
 The Cedar evaluator and cedar-poo-spec semantic proofs remain the Policy owner;
 this manifest guard supplies execution evidence, never a substitute Policy DSL.
+The existing missing-member theorem applies to every finite commitment list;
+it is reused for the wider native fixture rather than duplicated as another
+theorem with a different name. Quint supplies bounded schedules, Proptest tests
+the Rust refinement through the contract's bound, and Lean proves the finite-list
+implication under the stated authentic-root and exact-coverage premises.
+
+The completed local check includes 22 ledger library/deny tests and 90 integration
+tests, including the generated and maximum-width manifest cases and real loopback
+socket controls. Strict Clippy passes for all ledger targets. The 27 Quint tests
+and 1000 bounded safe traces pass with seed 293, and the existing Lean file checks
+with its reported standard axioms. Go architecture/development tests and the
+updated core diagram's exact source/graph binding check pass. The earlier sandbox
+run denied three TCP listeners; it is not counted as successful transport
+validation. These results do not qualify correlated rollback, the full Gateway
+integration suite or the separately pending Library dependency adoption.
 
 The per-crate =ledger/stream_manifest_guard/{1,8,64}= benchmark measures range
 consumption and current final-write admission with that many messages under one

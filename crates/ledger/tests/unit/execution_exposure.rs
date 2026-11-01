@@ -427,6 +427,157 @@ proptest! {
         prop_assert_eq!(after,original);
         prop_assert_eq!(ledger.held("f").expect("unrepaired projection"),expected);
     }
+
+    #[test]
+    fn finite_manifest_siblings_cannot_mask_a_missing_original_member(
+        count in 3u8..=64, loss_seed in proptest::num::u8::ANY, restart in proptest::bool::ANY
+    ) {
+        check_missing_finite_member(count, 1 + loss_seed % (count - 2), restart)?;
+    }
+}
+
+fn check_missing_finite_member(
+    count: u8,
+    lost: u8,
+    restart: bool,
+) -> proptest::test_runner::TestCaseResult {
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("finite-manifest.db");
+    let rules: Vec<MessageRule> = (0..count)
+        .map(|id| MessageRule {
+            id: format!("m{id}"),
+            max_bytes: 8,
+            cost_bound: 4,
+        })
+        .collect();
+    let policy_source = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../prod/policies/streaming/stream.cedar"
+    ));
+    let names: Vec<&str> = rules.iter().map(|rule| rule.id.as_str()).collect();
+    // The production example intentionally admits only m0/m1. This test uses
+    // the same rules with an explicit finite allowlist for its source manifest;
+    // it neither modifies production Policy nor adds a wildcard permission.
+    prop_assert!(policy_source.contains("[\"m0\", \"m1\"]"));
+    let policy = policy_source.replace(
+        "[\"m0\", \"m1\"]",
+        &serde_json::to_string(&names).expect("finite Policy set"),
+    );
+    let (mut control, control_contract) = stream_properties::fixture_with_manifest(
+        &temp.path().join("control.db"),
+        rules.clone(),
+        &policy,
+    );
+    control
+        .enqueue_message(&stream_properties::message(
+            &control_contract,
+            count - 1,
+            0,
+            1,
+        ))
+        .expect("spare member is authorized without a lost projection");
+    drop(control);
+    let (mut ledger, contract) = stream_properties::fixture_with_manifest(&path, rules, &policy);
+    // Keep one source-declared message unadmitted: it has budget capacity even
+    // after the fault, so refusal cannot be explained by an exhausted budget.
+    for id in 0..count - 1 {
+        ledger
+            .enqueue_message(&stream_properties::message(&contract, id, 0, 1))
+            .expect("original member");
+    }
+    let owner = ledger
+        .claim_stream(StreamClaim {
+            family: "f",
+            node: "emit",
+            destination: &contract.destination,
+            revision: 0,
+            fence: 1,
+        })
+        .expect("custody before projection loss");
+    let permit = ledger
+        .consume_range(&owner, "m0", 4)
+        .expect("burn before projection loss");
+    let connection = rusqlite::Connection::open(&path).expect("fault writer");
+    let original: String = connection
+        .query_row("SELECT reservations FROM execution_claims", [], |row| {
+            row.get(0)
+        })
+        .expect("original manifest");
+    let damaged_hold = u64::from(count - 2) * 4;
+    connection
+        .execute(
+            "DELETE FROM stream_messages WHERE message=?1",
+            [format!("m{lost}")],
+        )
+        .expect("lost sibling projection");
+    connection
+        .execute("UPDATE tasks SET held=?1", [damaged_hold as i64])
+        .expect("matching surviving row sum");
+    let mut sends = 0;
+    let result = ledger.write_range(&owner, permit, |_| {
+        sends += 1;
+        WriteObservation::Complete
+    });
+    prop_assert!(matches!(
+        result,
+        Err(weaver_contracts::Error::Conflict(
+            "original claims or shared execution exposure not retained"
+        ))
+    ));
+    prop_assert_eq!(sends, 0);
+    drop(owner);
+    if restart {
+        drop(ledger);
+        ledger = Ledger::open(&path).expect("restart");
+    }
+    prop_assert!(
+        ledger
+            .enqueue_message(&stream_properties::message(&contract, lost, 0, 1))
+            .is_err()
+    );
+    prop_assert!(
+        ledger
+            .enqueue_message(&stream_properties::message(&contract, count - 1, 0, 1))
+            .is_err()
+    );
+    let revision = ledger.publish(Some(0), &policy, 2).expect("new authority");
+    let fresh_admission = ledger.enqueue_message(&stream_properties::message(
+        &contract,
+        count - 1,
+        revision,
+        2,
+    ));
+    prop_assert!(matches!(
+        fresh_admission,
+        Err(weaver_contracts::Error::Conflict(
+            "original claims or shared execution exposure not retained"
+        ))
+    ));
+    prop_assert!(
+        ledger
+            .claim_stream(StreamClaim {
+                family: "f",
+                node: "emit",
+                destination: &contract.destination,
+                revision,
+                fence: 2
+            })
+            .is_err(),
+        "a new authority cannot replace an unretained original member"
+    );
+    let retained: String = connection
+        .query_row("SELECT reservations FROM execution_claims", [], |row| {
+            row.get(0)
+        })
+        .expect("retained original manifest");
+    prop_assert_eq!(retained, original);
+    prop_assert_eq!(ledger.held("f").expect("unrepaired hold"), damaged_hold);
+    Ok(())
+}
+
+#[test]
+fn maximum_manifest_cannot_replace_a_lost_sibling_after_restart() {
+    check_missing_finite_member(64, 62, true).expect("maximum source manifest");
 }
 
 #[test]

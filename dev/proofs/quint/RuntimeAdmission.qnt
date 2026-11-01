@@ -53,6 +53,10 @@ module RuntimeAdmission {
     action unsafeBalancedShrink(k:int):bool=s'=s.with("holds",s.holds.set(k,1))
     action unsafeDropRow(k:int):bool=s'=s.with("retained",s.retained.exclude(Set(k))).with("holds",s.holds.set(k,0))
     action unsafeSubstituteDigest(k:int):bool=s'=s.with("digests",s.digests.set(k,k+2))
+    // Fault model for a caller presenting newly observed authority. This is not
+    // a recovery capability and is deliberately excluded from the safe step.
+    action unsafeFreshAuthorityObservation(k:int):bool=s'=s.with("qRevision",s.qRevision.set(k,s.revision))
+        .with("qFence",s.qFence.set(k,s.fence))
     action unsafeAggregateQueue(k:int,n:int):bool=all {
         not(s.queued.contains(k)),held+n<=10,
         s'=s.with("queued",s.queued.union(Set(k))).with("retained",s.retained.union(Set(k))).with("holds",s.holds.set(k,n)).with("originals",s.originals.set(k,n))
@@ -74,6 +78,14 @@ module RuntimeAdmission {
         .expect(nodeCoverage and not(claimCoverage)).then(consume(1).fail())
     run partialMessageFinalUseGuardTest=sameStream.then(finalGuard(0)).then(unsafeDropRow(1))
         .expect(nodeCoverage and originalBindings).then(send(0).fail())
+    run partialLossFreshAuthorityRecoveryGuardTest=sameStream.then(unsafeDropRow(0)).then(crash)
+        .then(publish).then(unsafeFreshAuthorityObservation(1))
+        .expect(s.retained.contains(1) and not(s.spent.contains(1)) and s.qFence.get(1)==s.fence and not(claimCoverage))
+        .then(consume(1).fail())
+    run partialLossFreshAuthorityFinalUseGuardTest=sameStream.then(unsafeDropRow(1))
+        .then(publish).then(unsafeFreshAuthorityObservation(0))
+        .expect(s.tickets.contains(0) and s.qFence.get(0)==s.fence and not(claimCoverage))
+        .then(finalGuard(0).fail())
     run digestSubstitutionCounterexampleTest=sameStream.then(unsafeSubstituteDigest(1))
         .expect(nodeCoverage and claimCoverage and originalBindings and not(memberBindings))
     run digestSubstitutionFinalUseGuardTest=sameStream.then(finalGuard(0)).then(unsafeSubstituteDigest(1))

@@ -6,40 +6,9 @@ use weaver_contracts::{
 use weaver_ledger::{Ledger, RangePermit, StreamOwner};
 
 pub(super) fn fixture(path: &std::path::Path) -> (Ledger, StreamContract) {
-    let mut ledger = Ledger::open(path).expect("open");
-    ledger
-        .publish(
-            None,
-            include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/../../prod/policies/streaming/stream.cedar"
-            )),
-            1,
-        )
-        .expect("publish");
-    let input = body_digest("original");
-    let mut task = Task {
-        provider_profile: None,
-        family: "f".into(),
-        principal: "alice".into(),
-        profile: "p".into(),
-        nodes: vec!["emit".into()],
-        targets: vec!["t".into()],
-        endpoints: [("t".into(), "https://provider.invalid/".into())].into(),
-        body_digests: [("emit".into(), input.clone())].into(),
-        stream_contracts: Default::default(),
-        node_cost_bounds: [("emit".into(), 8)].into(),
-        models: vec!["m".into()],
-        budget: 8,
-    };
-    let contract = StreamContract {
-        family: "f".into(),
-        node: "emit".into(),
-        profile: "p".into(),
-        target: "t".into(),
-        input_digest: input,
-        destination: "tcp://127.0.0.1:9000".into(),
-        messages: vec![
+    fixture_with_manifest(
+        path,
+        vec![
             MessageRule {
                 id: "m0".into(),
                 max_bytes: 8,
@@ -51,6 +20,43 @@ pub(super) fn fixture(path: &std::path::Path) -> (Ledger, StreamContract) {
                 cost_bound: 4,
             },
         ],
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../prod/policies/streaming/stream.cedar"
+        )),
+    )
+}
+pub(super) fn fixture_with_manifest(
+    path: &std::path::Path,
+    messages: Vec<MessageRule>,
+    policy: &str,
+) -> (Ledger, StreamContract) {
+    let mut ledger = Ledger::open(path).expect("open");
+    ledger.publish(None, policy, 1).expect("publish");
+    let input = body_digest("original");
+    let budget = messages.iter().map(|rule| rule.cost_bound).sum();
+    let mut task = Task {
+        provider_profile: None,
+        family: "f".into(),
+        principal: "alice".into(),
+        profile: "p".into(),
+        nodes: vec!["emit".into()],
+        targets: vec!["t".into()],
+        endpoints: [("t".into(), "https://provider.invalid/".into())].into(),
+        body_digests: [("emit".into(), input.clone())].into(),
+        stream_contracts: Default::default(),
+        node_cost_bounds: [("emit".into(), budget)].into(),
+        models: vec!["m".into()],
+        budget,
+    };
+    let contract = StreamContract {
+        family: "f".into(),
+        node: "emit".into(),
+        profile: "p".into(),
+        target: "t".into(),
+        input_digest: input,
+        destination: "tcp://127.0.0.1:9000".into(),
+        messages,
     };
     task.stream_contracts.insert(
         "emit".into(),

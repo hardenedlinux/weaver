@@ -16,7 +16,11 @@ package WeaverExecution {
            retained execution-kind claims and an exact bijection between each
            claim's member manifest and the request/message/provider rows. A
            member binds its logical key, original digest and ceiling; surviving
-           messages cannot mask a missing sibling. Equality of every retained reservation with its
+           messages cannot mask a missing sibling. Check finite manifests up to
+           the source contract bound, including the maximum size, rather than
+           assuming a two-member test proves that boundary. A fresh Policy
+           revision/fence cannot repair missing original members or fund a
+           previously unadmitted source-declared message. Equality of every retained reservation with its
            original proposal or plan ceiling, exact shared exposure conservation and equality
            between the budget projection and the original task budget. Local
            checks of each effect kind cannot substitute for the shared sum. */
