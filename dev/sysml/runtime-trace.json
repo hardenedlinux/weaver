@@ -1,4 +1,8 @@
 [
+  {"id":"ArchitectureViewGrammar","witnesses":[
+    {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestArchitectureDiagramsUseDifferentViewProfiles"},
+    {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestDiagramProfilesAreExplicitAndLocal"},
+    {"file":"go/internal/devrunner/diagrams.go","pattern":"func RenderDiagrams"}]},
   {"id":"ProductionAssetBoundary","witnesses":[
     {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRuntimeAssetBoundary"},
     {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRejectsRuntimeDevReferences"}]},

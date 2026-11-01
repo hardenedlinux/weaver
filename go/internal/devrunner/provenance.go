@@ -45,13 +45,13 @@ func SourceInputs(root string) (map[string]string, error) {
 	// Include Lake manifests/pins, but do not traverse its dependency/build cache.
 	// Cache/toolchain integrity remains a separate qualification prerequisite.
 	// Historical evidence and generated diagrams are not source inputs.
-	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", ".github", "docs", "dev/proofs/lean", "dev/proofs/quint", "dev/proofs/cedar"} {
+	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", "dev/d2", ".github", "docs", "dev/proofs/lean", "dev/proofs/quint", "dev/proofs/cedar"} {
 		err := filepath.WalkDir(filepath.Join(root, directory), func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
 			if entry.IsDir() {
-				if entry.Name() == ".lake" {
+				if entry.Name() == ".lake" || entry.Name() == "node_modules" {
 					return fs.SkipDir
 				}
 				return nil
@@ -59,12 +59,18 @@ func SourceInputs(root string) (map[string]string, error) {
 			if entry.Type()&os.ModeSymlink != 0 {
 				return fmt.Errorf("verification source alias is unsupported: %s", path)
 			}
-			if entry.Name() == "lean-toolchain" {
+			if entry.Name() == "lean-toolchain" || (directory == "dev/d2" && entry.Name() == "bun.lock") {
 				return add(path)
 			}
 			switch filepath.Ext(path) {
+			case ".ts", ".tsx", ".css", ".html":
+				if directory == "dev/d2" { return add(path) }
 			case ".go", ".rs", ".h", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar", ".lean", ".qnt", ".org", ".d2":
 				return add(path)
+			case ".svg":
+				if directory == "dev/d2" || strings.Contains(filepath.ToSlash(path), "/diagrams/assets/") {
+					return add(path)
+				}
 			}
 			return nil
 		})

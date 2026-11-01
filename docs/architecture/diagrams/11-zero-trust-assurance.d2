@@ -1,132 +1,58 @@
-# W11: evidence obligations, not an implemented verification pipeline.
-...@lib/theme
-foundation: Scheme Governance + Cedar permission semantics\nGo observations / Rust execution / shared operation contracts {
-  top: 0
-  left: 345
-  width: 540
-  height: 80
+...@../../../dev/d2/themes/assurance
+# Independent evidence obligations; no implied implemented proof pipeline.
+direction: down
+title: ZERO TRUST / COMPOSING INDEPENDENT EVIDENCE {
+  class: title
+  near: top-center
+}
+foundation: ORIGINAL SEMANTIC CONTRACT\nScheme Governance / Cedar permission meaning\nGo observations / Rust execution / shared operation {
+  shape: hexagon
   class: policy
 }
-model: QUINT / CONCURRENT MODEL {
-  top: 200
-  left: 0
-  width: 350
-  height: 460
-  label.near: top-center
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  style.font-size: 18
-  state: Explicit states and actions\nConsume / commit / claim / send {
-    top: 65
-    left: 30
-    width: 290
-    height: 80
-    class: semantic
-  }
-  faults: Concurrent faults and mutations\nLate replies / restore / old workers {
-    top: 190
-    left: 30
-    width: 290
-    height: 80
-    class: semantic
-  }
-  receipt: Counterexamples and reachable paths\nBounded interleaving exploration {
-    top: 315
-    left: 30
-    width: 290
-    height: 80
-    class: semantic
-  }
+model: QUINT / CONCURRENT BEHAVIOR {
+  direction: down
+  style.fill: "#F2EBF9"
+  style.stroke: "#B7A4CC"
+  state: Explicit states and actions\nConsume / commit / claim / send { class: runtime }
+  faults: Concurrent fault schedules\nLate replies / restore / old workers { class: unknown }
+  receipt: Reachable paths / counterexamples\nBounded interleaving evidence { class: semantic; shape: page }
 }
-proof: LEAN / SEMANTIC PRESERVATION {
-  top: 200
-  left: 440
-  width: 350
-  height: 460
-  label.near: top-center
-  style.fill: "#f8f9fc"
-  style.stroke: "#a3abc0"
-  style.font-size: 18
-  meaning: Preserve policy meaning\nExact projection / authenticated inputs {
-    top: 65
-    left: 30
-    width: 290
-    height: 80
-    label.near: center-center
-    class: runtime
-  }
-  relation: Prove guarded transitions\nState / step / safety invariants {
-    top: 190
-    left: 30
-    width: 290
-    height: 80
-    label.near: center-center
-    class: runtime
-  }
-  receipt: Safety under explicit premises\nProjection / preservation / refinement {
-    top: 315
-    left: 30
-    width: 290
-    height: 80
-    label.near: center-center
-    class: runtime
-  }
+proof: LEAN / PRESERVED MEANING {
+  direction: down
+  style.fill: "#EAF2FC"
+  style.stroke: "#9AB3D4"
+  meaning: Exact policy projection\nAuthenticated original inputs { class: cloud }
+  relation: Guarded transition relation\nState / step / safety invariants { class: cloud }
+  receipt: Conditional preservation\nProjection / refinement / original scope { class: cloud; shape: page }
 }
-execution: RUNTIME / EXECUTION GUARDS {
-  top: 200
-  left: 880
-  width: 350
-  height: 460
-  label.near: top-center
-  style.fill: "#f7f9fc"
-  style.stroke: "#9cacc2"
-  style.font-size: 18
-  adapters: Scheme sources / Go integrations\nRust coordinator / ledger / broker {
-    top: 65
-    left: 30
-    width: 290
-    height: 80
-    class: ledger
-  }
-  faults: Ledger atomicity / broker isolation\nStop / drain / receiver fencing {
-    top: 190
-    left: 30
-    width: 290
-    height: 80
-    class: ledger
-  }
-  receipt: Logical execution boundary\nIdentity / custody / release / fencing {
-    top: 315
-    left: 30
-    width: 290
-    height: 80
-    class: ledger
-  }
+execution: RUNTIME / ENFORCED PREMISES {
+  direction: down
+  style.fill: "#F8F2E7"
+  style.stroke: "#CBBB9D"
+  adapters: Scheme source / Go integration\nRust coordinator / ledger / broker { class: ledger }
+  faults: Atomicity / logical broker custody\nStop / drain / receiver fencing { class: ledger }
+  receipt: Actual execution boundary\nIdentity / custody / release / fencing { class: ledger; shape: page }
 }
-
-admit: Protected execution contract\nLive source / policy / budget / unique claim / final-send guards {
-  top: 800
-  left: 335
-  width: 560
-  height: 90
+admit: PROTECTED EXECUTION CONTRACT\nLive source / current Policy / budget\nUnique original claim / final-send guards {
+  shape: hexagon
   class: verified
 }
-foundation -> model: Model exact owner contracts
-foundation -> proof: Reuse / extend existing owners
-foundation -> execution: Bind runtime premises
+foundation -> model.state: Behavioral obligations
+foundation -> proof.meaning: Semantic obligations
+foundation -> execution.adapters: Native refinement duties
 model.state -> model.faults
 model.faults -> model.receipt
 proof.meaning -> proof.relation
 proof.relation -> proof.receipt
 execution.adapters -> execution.faults
 execution.faults -> execution.receipt
-model.faults -> proof.relation: Step relation
-proof.relation -> execution.faults: Trace mapping
-model.receipt -> admit: Concurrent safety contract
-proof.receipt -> admit: Preservation contract
-execution.receipt -> admit: Enforced execution premises
-rule: "Models expose fault schedules. Proofs preserve declared invariants. Runtime enforcement establishes execution premises.\nEvery operation still needs live source, policy, budget, claim and final-send guards." {
-  shape: text
+model.faults -> proof.relation: Step relation { style.stroke-dash: 4 }
+proof.relation -> execution.faults: Trace mapping { style.stroke-dash: 4 }
+model.receipt -> admit: Concurrent safety
+proof.receipt -> admit: Preservation
+execution.receipt -> admit: Established premises
+rule: "Quint exposes schedules. Lean preserves declared invariants. Runtime checks establish execution premises.\nNo evidence artifact replaces live authorization at the actual effect." {
   class: note
+  shape: text
   near: bottom-center
 }

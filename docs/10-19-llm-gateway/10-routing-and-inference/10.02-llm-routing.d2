@@ -1,201 +1,61 @@
-# LLM inference is the product core. Versions and acceptance stay in Org receipts.
-...@../../architecture/diagrams/lib/theme
-title: WEAVER / TASK-AWARE LLM ROUTING / GOVERNED INFERENCE {
+...@../../../dev/d2/themes/routing
+# Candidate discovery is advisory. Exactly one selected target receives the request.
+direction: down
+title: LLM ROUTING / ORIGINAL INTENT TO ONE PROVIDER {
   class: title
   near: top-center
 }
-scheme: FLOW AND MODEL CONTROL PLANE {
-  top: 0
-  left: 0
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  intent: Agent request / POO Flow task\nMessages / tools / model intent\nCanonical root and response contract {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  catalog: Go / Model catalog and discovery\nKubernetes model pools / identity\nCapabilities / prices / soft metrics {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  policy: Scheme / Cedar route contracts\nCapabilities / region / history / budget\nTask objectives and current publication {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-  goBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/go.svg
-    top: 247
-    left: 24
-    width: 42
-    height: 22
-  }
-  kubernetesBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/kubernetes.svg
-    top: 247
-    left: 82
-    width: 28
-    height: 28
-  }
+control: ORIGINAL INTENT AND CONSTRAINTS {
+  class: [semantic; column]
+  direction: down
+  style.fill: "#FFF7EA"
+  style.stroke: "#CDBA95"
+  intent: Scheme / original task\nMessages / tools / model intent\nCanonical root / response contract { class: semantic }
+  catalog: Go / model discovery\nKubernetes pools / workload identity\nCapabilities / prices / soft metrics { class: cloud }
+  policy: Scheme / Cedar contracts\nRegion / history / shared budget\nCurrent source publication { class: policy }
 }
-router: RUST / LLM MODEL ROUTER {
-  top: 0
-  left: 440
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8f9fc"
-  style.stroke: "#a3abc0"
-  normalize: Normalize inference / resolve alias\nTools / context / modalities\nRequested model stays in provenance {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  choose: Filter eligible models, then rank\nQuality / cost / latency / priority\nWeighted or advisory choice stays bound {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  plan: Freeze the selected RoutePlan\nModel / endpoint / wire manifest\nCurrent Policy and original allowance {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: ledger
-  }
-  rustBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/rust.svg
-    top: 40
-    left: 156
-    width: 34
-    height: 34
-  }
+candidates: AVAILABLE DEPLOYMENT METADATA {
+  class: [cloud; column]
+  direction: down
+  style.fill: "#F0F5FB"
+  style.stroke: "#B2C3D8"
+  hosted: Hosted deployments\nApproved provider / region { class: cloud }
+  private: Private inference pools\nKubernetes / self-hosted models { class: cloud }
+  specialist: Specialist deployments\nDeclared capability / output contract { class: cloud }
 }
-broker: RUST / INFERENCE AND STREAMS {
-  top: 0
-  left: 880
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#faf9fd"
-  style.stroke: "#b0a7c8"
-  encode: Encode the selected provider request\nExact protocol / tools / wire manifest\nOwned buffers and credential scope {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  send: Final inference admission\nCurrent route / Policy / original claim\nNo hidden SDK retry or route change {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  stream: Normalize stream and usage\nOne response source / backpressure\nUnknown charges retain original hold {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: unknown
-  }
-  rustBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/rust.svg
-    top: 40
-    left: 156
-    width: 34
-    height: 34
-  }
+router: RUST / BOUND ROUTE DECISION {
+  class: runtime
+  direction: right
+  style.fill: "#FFF2DC"
+  style.stroke: "#D1AD75"
+  normalize: Resolve requested model / alias\nRetain original request provenance { class: runtime }
+  choose: Filter eligible models, then rank\nQuality / cost / latency / priority\nAdvisory ranking stays constrained { shape: hexagon; class: policy }
+  plan: Freeze selected RoutePlan\nModel / endpoint / wire manifest\nOriginal allowance / current Policy { shape: page; class: ledger }
 }
-providers: MODEL PROVIDERS AND DEPLOYMENTS {
-  top: 0
-  left: 1320
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#a3b4c0"
-  hosted: Hosted LLM deployments\nChat / responses / tool proposals\nApproved providers and regions {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  private: Private LLM inference pools\nKubernetes / self-hosted models\nPrivate and region-bound task data {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  specialist: Specialist model deployments\nEmbeddings / rerank / multimodal\nExact capability and output contracts {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
+broker: RUST / FINAL EXECUTION {
+  class: runtime
+  direction: right
+  style.fill: "#F1EEF8"
+  style.stroke: "#B7A8CC"
+  encode: Encode exact provider request\nProtocol / tools / owned buffers\nBound credentials / wire manifest { class: runtime }
+  send: Recheck at actual invocation\nCurrent route / Policy / original claim\nNo hidden retry or route mutation { shape: hexagon; class: runtime }
+  selected: One selected provider\nOriginal target / exact request { class: cloud }
+  stream: One response source\nNormalized stream / backpressure\nUnknown usage retains the hold { class: unknown }
 }
-quint: QUINT\nWrong target / stale route / budget escape\nUnknown retry / mixed response sources {
-  top: 810
-  left: 220
-  width: 610
-  height: 100
-  class: policy
-}
-lean: LEAN\nEligible target / current route / original escrow\nOne admitted provider and response source {
-  top: 810
-  left: 960
-  width: 610
-  height: 100
-  class: semantic
-}
-scheme.intent -> router.normalize
-scheme.catalog -> router.choose: publish {
-  style.stroke-dash: 4
-}
-scheme.policy -> router.plan: constrain {
-  style.stroke-dash: 4
-}
+deny: No permitted route\nNo consume / no send { class: deny }
+control.intent -> router.normalize
+control.catalog -> router.choose: Discovery proposal { style.stroke-dash: 4 }
+control.policy -> router.choose: Semantic constraints { style.stroke-dash: 4 }
+candidates -> router.choose: Candidate facts only { style.stroke-dash: 4 }
 router.normalize -> router.choose
-router.choose -> router.plan
-router.plan -> broker.encode
+router.choose -> router.plan: One eligible selection
+router.choose -> deny: None permitted
+router.plan -> broker.encode: Exact selected plan
 broker.encode -> broker.send
-broker.send -> providers
-providers -> broker.stream
+broker.send -> broker.selected: One admitted invocation
+broker.selected -> broker.stream: Bound response
+proof: "Quint: wrong target / stale route / unknown retry / mixed response sources.\nLean: target eligibility / current-route preservation / original escrow and response-source binding.\nAfter consumption, fallback and reconnect cannot create a replacement attempt or refund unknown usage." {
+  class: note
+  shape: text
+  near: bottom-center
+}

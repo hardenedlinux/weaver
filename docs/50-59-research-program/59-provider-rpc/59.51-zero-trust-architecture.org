@@ -150,6 +150,12 @@ evidence and the replayable property seed are committed.
 
 ** Cross-effect recovery and conservation follow-up
 
+#+CAPTION: A data view shows the shared records and deciding join separately from the system overview.
+#+ATTR_ORG: :width 1600
+[[file:../../architecture/diagrams/39-shared-execution-exposure.svg]]
+
+[[file:../../architecture/diagrams/39-shared-execution-exposure.d2][Editable data view]].
+
 The previous provider-only check left the ordinary request and original stream
 owners outside the refinement. Real SQLite properties reproduced consumption
 and custody with missing claims. The request startup schema also rebuilt claims

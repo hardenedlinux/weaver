@@ -12,7 +12,7 @@ format; =.d2= sources and generated =.svg= previews are diagram assets. Diagrams
 make guards and ownership reviewable. They do not implement or prove the
 protocol, establish process isolation, or qualify the physical data path.
 
-All twenty-eight views describe the proposed Weaver design. Existing mechanisms and
+The architecture views describe Weaver's design. Existing mechanisms and
 required extensions are distinguished by the source register and X1-X10 map
 in [[file:07-source-admission-ledger-fencing.org][Source admission, durable ledger, and fencing]].
 The root, Core, and Lambda Aitia revisions in
@@ -153,22 +153,25 @@ actual effect. A test receipt is not a component of the target architecture.
 
 The visual references are D2/Terrastruct's [[https://terrastruct.com/examples/1/][architecture example library]] and
 [[https://d2lang.com/examples/tala/][official TALA gallery]]. This is Weaver's own presentation system, not a claim
-to use a vendor-certified Enterprise template or a paid feature. The installed
-D2 v0.9.0 bundles the [[https://d2lang.com/tour/tala/][TALA architecture layout engine]].
+to use a vendor-certified Enterprise template or a paid feature.
 
-Use compact responsibility panels, aligned nodes, readable labels, white
-component surfaces, thin borders, restrained role accents and orthogonal
-connectors. Keep the success route readable and distinguish refusal/unknown
-outcomes by both labels and colors. W01, W03, W06, W07, W08, W11, W12, W13, W14, W15 and W16 explicitly place
-nodes to preserve reading order. Coordinates have no protocol meaning.
+Choose a visual grammar for the subject. Responsibility maps use ownership
+zones; routing shows candidates and one selected provider; state views emphasize
+irreversible transitions; sequence views use native actors and messages; data
+views show records and joins; assurance views separate independent obligations.
+Readable type, deliberate spacing, semantic status accents and local technology
+marks provide continuity without forcing every view into identical panels.
+Keep refusal/unknown outcomes recognizable by labels as well as colors.
+Coordinates have no protocol meaning.
 
 Use brand marks only to identify the actual technology in architecture headers.
 The Go wordmark replaces the rejected mascot treatment. Go, Rust and Kubernetes
 assets are bundled locally with [[file:diagrams/assets/icon-sources.org][sources and byte digests]]. Native D2 geometry,
 including ledger cylinders, identifies generic components. Do not mix flat
 illustration packs, mascots and oversized status icons into the same view.
-Shared classes live in [[file:diagrams/lib/theme.d2][the presentation theme]]. That file is an imported
-style library, not an independent diagram or policy implementation.
+Presentation ownership lives under [[file:../../dev/d2/README.org][dev/d2]], with distinct imported
+profiles in =dev/d2/themes=. The shared base only supplies typography and semantic
+status conventions; each view chooses its own profile and layout grammar.
 
 W02 and W10 split one long sequence at its positive consumption observation.
 They are the same original attempt, source lease and synchronous callback.
@@ -183,34 +186,26 @@ the source; do not maintain an independent Mermaid copy of the same view.
 Change semantic prose, source labels, state guards, and acceptance references
 in the same revision. Generated previews must be refreshed after source changes.
 
-The current rendering profile uses D2 =v0.9.0=, bundled =tala= layout with seeds
-=1,2,3=, theme =3=, padding =40=, bundling and a stable per-file salt. All icons
-are local assets; rendering and viewing require no remote icon request.
-The commands below require an installed D2 CLI; they add no gateway runtime
-dependency. D2's [[https://d2lang.com/tour/install/][installation documentation]],
-[[https://d2lang.com/tour/sequence-diagrams/][sequence diagram syntax]], and
-[[https://d2lang.com/tour/containers/][container syntax]] are the language references.
+The offline TypeScript renderer compiles canonical D2 through the official D2
+SDK, preserves source identities and lays out measured SVG geometry with ELK.
+Explicit board positions retain their row and column order. Inter glyph outlines,
+local technology marks and semantic icons require no font or image requests.
+Profiles and presentation resources belong to =dev/d2/themes=.
 
 Run from the Weaver repository root:
 
-#+begin_src sh
-d2 version
-d2 fmt --check docs/architecture/diagrams/*.d2 docs/architecture/diagrams/lib/*.d2
-for source in docs/architecture/diagrams/*.d2; do
-  d2 validate "$source" || exit 1
-  stem="$(basename "$source" .d2)"
-  d2 --layout tala --tala-seeds 1,2,3 --theme 3 --pad 40 --bundle \
-    --salt "weaver-$stem" \
-    "$source" "${source%.d2}.svg" || exit 1
-done
-# Optional PNG convenience preview; requires librsvg's rsvg-convert.
-rsvg-convert --width 1800 --keep-aspect-ratio \
-  docs/architecture/diagrams/01-system-boundaries.svg \
-  -o docs/architecture/diagrams/01-system-boundaries.png
+#+begin_src text
+go -C go run ./cmd/weaver-dev render-diagrams
 #+end_src
 
+The Go owner uses the current host CPU count, validates source-selected profiles,
+writes standalone SVGs and PNGs through resvg and retains
+source/output identities in =.cache/d2=. A changed source image or failed render
+cannot produce a passing receipt. No Python, Bash or extra runtime service is used.
+
 When changing the renderer version, record the version and inspect all regenerated
-views. Rendering success establishes syntax and layout availability only.
+views. Geometry checks reject overlapping nodes and labels. Visual inspection remains
+necessary for hierarchy, reading order and readable image size.
 
 * Review and validation obligations
 

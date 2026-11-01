@@ -1,0 +1,315 @@
+package devrunner
+
+import (
+	"bytes"
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"encoding/xml"
+	"errors"
+	"fmt"
+	"image/png"
+	"io"
+	"io/fs"
+	"maps"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
+	"slices"
+	"strings"
+)
+
+var diagramImport = regexp.MustCompile(`(?m)^\.\.\.@([^\r\n]+)$`)
+var diagramThemeOverride = regexp.MustCompile(`\btheme-id\s*:`)
+
+func diagramProfile(root, source string) (string, error) {
+	info, err := os.Lstat(source)
+	if err != nil {
+		return "", err
+	}
+	if !info.Mode().IsRegular() {
+		return "", fmt.Errorf("diagram source must be regular: %s", source)
+	}
+	data, err := os.ReadFile(source)
+	if err != nil {
+		return "", err
+	}
+	if diagramThemeOverride.Match(data) {
+		return "", fmt.Errorf("diagram must select its theme through dev/d2/themes: %s", source)
+	}
+	var profile string
+	for _, match := range diagramImport.FindAllSubmatch(data, -1) {
+		path := strings.TrimSpace(string(match[1]))
+		if filepath.Ext(path) == "" {
+			path += ".d2"
+		}
+		path = filepath.Clean(filepath.Join(filepath.Dir(source), path))
+		if filepath.Dir(path) != filepath.Join(root, "dev/d2/themes") {
+			continue
+		}
+		if profile != "" || filepath.Base(path) == "base.d2" {
+			return "", fmt.Errorf("diagram needs exactly one view profile: %s", source)
+		}
+		info, err := os.Lstat(path)
+		if err != nil {
+			return "", err
+		}
+		if !info.Mode().IsRegular() {
+			return "", fmt.Errorf("theme must be regular: %s", path)
+		}
+		profile = strings.TrimSuffix(filepath.Base(path), ".d2")
+	}
+	if profile == "" {
+		return "", fmt.Errorf("diagram has no view profile: %s", source)
+	}
+	return profile, nil
+}
+
+func diagramSources(root string) ([]string, error) {
+	var sources []string
+	err := filepath.WalkDir(filepath.Join(root, "docs"), func(path string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() && entry.Name() == "lib" {
+			return fs.SkipDir
+		}
+		if !entry.IsDir() && filepath.Ext(path) == ".d2" {
+			if _, err := diagramProfile(root, path); err != nil {
+				return err
+			}
+			sources = append(sources, path)
+		}
+		return nil
+	})
+	slices.Sort(sources)
+	if err == nil && len(sources) == 0 {
+		err = errors.New("no architecture diagram views")
+	}
+	return sources, err
+}
+
+func checkDiagramSVG(data []byte) error {
+	var svg struct {
+		XMLName xml.Name `xml:"http://www.w3.org/2000/svg svg"`
+		ViewBox string   `xml:"viewBox,attr"`
+	}
+	if err := xml.Unmarshal(data, &svg); err != nil {
+		return err
+	}
+	if svg.ViewBox == "" {
+		return errors.New("rendered SVG has no viewBox")
+	}
+	return nil
+}
+
+type diagramImage struct {
+	Source       string `json:"source"`
+	Theme        string `json:"theme"`
+	SourceSHA256 string `json:"sourceSHA256"`
+	SVG          string `json:"svgSHA256"`
+	PNG          string `json:"pngSHA256"`
+	Nodes        int    `json:"nodes"`
+	Edges        int    `json:"edges"`
+}
+type diagramRenderReport struct {
+	Status   string         `json:"status"`
+	HostCPUs int            `json:"hostCPUs"`
+	Workers  int            `json:"workers"`
+	Images   []diagramImage `json:"images"`
+	Errors   []string       `json:"errors"`
+}
+
+func diagramEvidence(data []byte, image diagramImage) error {
+	if err := checkDiagramSVG(data); err != nil {
+		return err
+	}
+	decoder := xml.NewDecoder(bytes.NewReader(data))
+	nodes, edges := map[string]bool{}, map[string]bool{}
+	var metadata struct {
+		Source string `json:"source"`
+		Digest string `json:"sourceDigest"`
+		Nodes  []struct {
+			ID string `json:"id"`
+		} `json:"nodes"`
+		Edges []struct{ ID, Source, Target string } `json:"edges"`
+	}
+	for {
+		token, err := decoder.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		element, ok := token.(xml.StartElement)
+		if !ok {
+			continue
+		}
+		if element.Name.Local == "metadata" {
+			var text string
+			if err := decoder.DecodeElement(&text, &element); err != nil {
+				return err
+			}
+			if err := json.Unmarshal([]byte(text), &metadata); err != nil {
+				return err
+			}
+		}
+		for _, attr := range element.Attr {
+			var target map[string]bool
+			switch attr.Name.Local {
+			case "data-source-node":
+				target = nodes
+			case "data-source-edge":
+				target = edges
+			default:
+				continue
+			}
+			if target[attr.Value] {
+				return fmt.Errorf("duplicated visual source identity: %s", attr.Value)
+			}
+			target[attr.Value] = true
+		}
+	}
+	if metadata.Source != image.Source || metadata.Digest != image.SourceSHA256 || len(nodes) != image.Nodes || len(edges) != image.Edges || len(metadata.Nodes) != len(nodes) || len(metadata.Edges) != len(edges) {
+		return fmt.Errorf("SVG source binding or graph coverage differs: %s", image.Source)
+	}
+	for _, node := range metadata.Nodes {
+		if !nodes[node.ID] {
+			return fmt.Errorf("source node omitted: %s", node.ID)
+		}
+	}
+	for _, edge := range metadata.Edges {
+		if !edges[edge.ID] || !nodes[edge.Source] || !nodes[edge.Target] {
+			return fmt.Errorf("source relationship omitted: %s", edge.ID)
+		}
+	}
+	return nil
+}
+
+// CheckDiagrams runs native TypeScript type/property checks and offline image rendering.
+func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
+	binary, err := exec.LookPath("bun")
+	if err != nil {
+		return err
+	}
+	for _, args := range [][]string{{"run", "typecheck"}, {"test"}} {
+		command := exec.CommandContext(ctx, binary, args...)
+		command.Dir = filepath.Join(root, "dev/d2")
+		command.Stdout = out
+		command.Stderr = out
+		if err := command.Run(); err != nil {
+			return err
+		}
+	}
+	return RenderDiagrams(ctx, root, out)
+}
+
+// RenderDiagrams owns a shell-free TypeScript -> SVG/PNG build, not an HTTP service.
+func RenderDiagrams(ctx context.Context, root string, out io.Writer) error {
+	sources, err := diagramSources(root)
+	if err != nil {
+		return err
+	}
+	before, err := SourceInputs(root)
+	if err != nil {
+		return err
+	}
+	binary, err := exec.LookPath("bun")
+	if err != nil {
+		return err
+	}
+	command := exec.CommandContext(ctx, binary, "run", "src/render.ts")
+	command.Dir = filepath.Join(root, "dev/d2")
+	command.Stdout = out
+	command.Stderr = out
+	command.Cancel = func() error { return command.Process.Signal(os.Interrupt) }
+	runErr := command.Run()
+	var failures []error
+	if runErr != nil {
+		failures = append(failures, runErr)
+	}
+	data, err := os.ReadFile(filepath.Join(root, ".cache/d2/typescript-render.json"))
+	var report diagramRenderReport
+	if err == nil {
+		err = json.Unmarshal(data, &report)
+	}
+	if err != nil {
+		failures = append(failures, err)
+	}
+	if report.Status != "PASS" || len(report.Images) != len(sources) {
+		failures = append(failures, errors.New("incomplete TypeScript image render"))
+	}
+	expected := map[string]bool{}
+	for _, source := range sources {
+		relative, _ := filepath.Rel(root, source)
+		expected[filepath.ToSlash(relative)] = true
+	}
+	seen := map[string]bool{}
+	for _, image := range report.Images {
+		if !expected[image.Source] || seen[image.Source] || before[image.Source] != image.SourceSHA256 {
+			failures = append(failures, fmt.Errorf("unexpected image source: %s", image.Source))
+			continue
+		}
+		seen[image.Source] = true
+		source := filepath.Join(root, filepath.FromSlash(image.Source))
+		profile, err := diagramProfile(root, source)
+		if err != nil || profile != image.Theme {
+			failures = append(failures, fmt.Errorf("image profile mismatch: %s", image.Source))
+			continue
+		}
+		svg, err := os.ReadFile(strings.TrimSuffix(source, ".d2") + ".svg")
+		if err == nil {
+			sum := sha256.Sum256(svg)
+			if hex.EncodeToString(sum[:]) != image.SVG {
+				err = errors.New("SVG hash mismatch")
+			}
+		}
+		if err == nil {
+			err = diagramEvidence(svg, image)
+		}
+		if err != nil {
+			failures = append(failures, fmt.Errorf("%s: %w", image.Source, err))
+		}
+		raster, err := os.ReadFile(filepath.Join(root, ".cache/d2/images", strings.TrimSuffix(filepath.FromSlash(image.Source), ".d2")+".png"))
+		if err == nil {
+			sum := sha256.Sum256(raster)
+			if hex.EncodeToString(sum[:]) != image.PNG {
+				err = errors.New("PNG hash mismatch")
+			}
+		}
+		if err == nil {
+			_, err = png.DecodeConfig(bytes.NewReader(raster))
+		}
+		if err != nil {
+			failures = append(failures, fmt.Errorf("%s: %w", image.Source, err))
+		}
+	}
+	after, err := SourceInputs(root)
+	if err != nil {
+		failures = append(failures, err)
+	} else if !maps.Equal(before, after) {
+		failures = append(failures, errors.New("renderer or architecture sources changed during image build"))
+	}
+	type receipt struct {
+		Status string              `json:"status"`
+		Inputs map[string]string   `json:"inputs"`
+		Report diagramRenderReport `json:"report"`
+		Errors []string            `json:"errors,omitempty"`
+	}
+	result := receipt{Status: "PASS", Inputs: before, Report: report}
+	for _, failure := range failures {
+		result.Errors = append(result.Errors, failure.Error())
+	}
+	if len(failures) > 0 {
+		result.Status = "FAIL"
+	}
+	data, err = json.MarshalIndent(result, "", "  ")
+	if err == nil {
+		err = os.WriteFile(filepath.Join(root, ".cache/d2/latest-render.json"), data, 0644)
+	}
+	fmt.Fprintf(out, "%s: %d source-bound SVG/PNG views; .cache/d2/latest-render.json\n", result.Status, len(report.Images))
+	return errors.Join(append(failures, err)...)
+}

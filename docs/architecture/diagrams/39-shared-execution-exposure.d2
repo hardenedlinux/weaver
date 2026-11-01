@@ -1,0 +1,70 @@
+...@../../../dev/d2/themes/data
+title: SHARED EXECUTION EXPOSURE {
+  class: title
+  near: top-center
+}
+tasks: Original task {
+  shape: sql_table
+  family: Canonical family { constraint: primary_key }
+  record: Immutable Task / original budget
+  budget: Projected budget
+  held: Retained shared exposure
+}
+records: RETAINED RESERVATIONS {
+  direction: right
+  requests: Requests {
+    shape: sql_table
+    family: Canonical family
+    node: Original operation
+    reserved: Bound proposal cost
+    state: Queued / unknown / observed
+  }
+  messages: Stream messages {
+    shape: sql_table
+    family: Canonical family
+    node: Original stream
+    message: Logical message
+    reserved: Bound message cost
+    state: Queued / active / unknown / complete
+  }
+  providers: Provider runs {
+    shape: sql_table
+    family: Canonical family
+    node: Original attempt
+    reserved: Bound plan cost
+    state: Queued / unknown / complete
+  }
+}
+claims: Original execution claims {
+  shape: sql_table
+  family: Canonical family
+  node: Original node
+  kind: Request / stream
+}
+check: Rust deciding transaction\nAll retained claims match\nHeld = every retained reservation\nProjected budget = original budget {
+  shape: hexagon
+  class: policy
+}
+gate: Current Cedar / publication / fence\nExact selected reservation\nSerialized final-use guard {
+  class: runtime
+}
+effect: One admitted execution opportunity {
+  class: verified
+}
+quarantine: Inconsistent recovery image\nRefuse new effects and admission\nKeep unknown exposure observable {
+  class: unknown
+}
+tasks.family -> records.requests.family
+tasks.family -> records.messages.family
+tasks.family -> records.providers.family
+records -> check: Complete family projection
+tasks.held -> check: Shared conservation
+claims -> check: Original kind membership
+check -> gate: All constraints hold
+check -> quarantine: Missing / changed / orphaned
+gate -> effect: Actual use
+note: "Restart never reconstructs claims from outcomes. Completion and usage observations do not authorize refunds.\nCoherent correlated rollback requires an independent authority beyond this local profile." {
+  class: note
+  shape: text
+  near: bottom-center
+}
