@@ -77,6 +77,40 @@ fn shared_exposure(c: &mut Criterion) {
     }
     group.finish();
 }
+fn original_reservation_bytes(c: &mut Criterion) {
+    let mut group = c.benchmark_group("ledger/original_reservation_bytes");
+    for (count, bytes) in [
+        (1usize, 128usize),
+        (8, 128),
+        (64, 128),
+        (1, 16384),
+        (8, 16384),
+        (64, 16384),
+        (1, 524288),
+    ] {
+        group.bench_with_input(
+            BenchmarkId::new(count.to_string(), bytes),
+            &(count, bytes),
+            |b, &(count, bytes)| {
+                b.iter_batched(
+                    || stores::family_with_body(count, bytes),
+                    |(temp, mut ledger)| {
+                        let permit = ledger
+                            .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+                            .expect("consume original");
+                        ledger
+                            .dispatch_provider(&permit, || black_box(()))
+                            .expect("current original amounts");
+                        assert_eq!(ledger.held("f").expect("conserved hold"), count as u64 * 4);
+                        black_box((temp, ledger))
+                    },
+                    BatchSize::PerIteration,
+                )
+            },
+        );
+    }
+    group.finish();
+}
 fn publication_operations(c: &mut Criterion) {
     let change = weaver_contracts::Publication {
         operation_id: "measured".into(),
@@ -389,5 +423,5 @@ fn source_authority(c: &mut Criterion) {
         )
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,shared_exposure,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,shared_exposure,original_reservation_bytes,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
 criterion_main!(benches);

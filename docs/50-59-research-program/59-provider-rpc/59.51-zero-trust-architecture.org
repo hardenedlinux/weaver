@@ -453,3 +453,39 @@ exhibits the aggregate-only bypass, and rejects admission after damaged recovery
 Lean proves pointwise binding preserves the total for arbitrary finite lists and
 composes it with admission capacity. Authentic original records, complete row
 coverage, and real transactional checks remain native refinement premises.
+
+** Reservation-guard cost boundary
+
+The source-owned =ledger/original_reservation_bytes/<count>/<bytes>= Criterion
+matrix in [[file:../../../crates/ledger/benches/README.org][the ledger benchmark contract]] varies retained plan count and original
+prompt content size. It times consumption, durable dispatch burn, current final
+use and hold observation, with fixture creation outside timing. This captures
+the JSON-backed original-ceiling checks in their actual durable path; it does
+not isolate parsing cost or establish concurrent/network throughput. Keep cold
+release build time separate from runtime samples and do not compare unmatched
+historical intervals as a regression estimate. The Go benchmark owner requires
+every new case rather than accepting only a favorable subset.
+
+** Focused local runtime receipt
+
+The seven cases completed in the optimized bench profile on a Darwin arm64 host
+with 12 logical CPUs. The first release build took 2m 56s, separate from runtime
+samples. Each case retained 30 samples and one-second warm-up. The configured
+two-second target is not a deadline: Criterion collected the large-body case
+using its normal longer estimate without reducing the sample count.
+
+| Retained plans | Prompt bytes per plan | Mean ms | Mean confidence interval ms |
+|----------------+-----------------------+---------+-----------------------------|
+| 1 | 128 | 1.031 | 0.945 to 1.131 |
+| 8 | 128 | 2.573 | 1.423 to 4.670 |
+| 64 | 128 | 1.718 | 1.498 to 1.993 |
+| 1 | 16384 | 3.621 | 1.897 to 6.915 |
+| 8 | 16384 | 3.013 | 2.493 to 3.681 |
+| 64 | 16384 | 4.957 | 4.564 to 5.407 |
+| 1 | 524288 | 78.012 | 60.884 to 96.486 |
+
+These are focused local measurements with shared-host variability, not a
+matched before/after comparison. In particular, selected request validation and
+authorization are included: the large-body result cannot be attributed solely
+to the original-reservation SQL scan. The full workspace benchmark gate was not
+run by this focused invocation. Raw artifacts remain under ignored target/tmp.
