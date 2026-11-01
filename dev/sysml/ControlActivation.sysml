@@ -140,6 +140,51 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Before deeper COMMIT attribution, use the pinned public Rust IO
+           interface only in unit-test builds. Delegate the actual platform IO,
+           completion, cancellation, file-lock and shared-WAL methods unchanged.
+           Record synchronous file-call wall/thread CPU only inside the original
+           COMMIT context; a group leader's IO belongs to that leader, not every
+           waiter. Correlate notifier context without treating it as completion
+           proof. IO/Yield/Sleep collapse into SDK Pending: neither pre-notify nor
+           post-notify is pure device or scheduler time. Paired wrapper-off/on
+           runs use one frozen binary, actual CPUs with a floor of four, FULL,
+           zero retries and the existing case bound. Preserve all observations,
+           including incomplete notification publication and observer overhead.
+           Test wrappers never introduce a production capability or dependency
+           pin. Current-use, borrowed guard, drain/restart and retained unknown
+           exposure remain independent hard gates. */
+        doc /* A test-only forwarding waker records bounded notification times
+           and original COMMIT Pending windows, using the same block_on target.
+           It forwards every wake even when observation storage overflows.
+           Notification before Pending, absent/late notifications and incomplete
+           observations remain explicit. Notification-to-repoll includes notifier
+           forwarding and executor/OS resumption; it is not pure runnable delay.
+           Driver residence before notification is not a durable I/O certificate.
+           No wake, observation or receipt changes original final-use authority.
+           Keep pre-proxy and forwarding-proxy paired campaigns separate. */
+        doc /* Workspace dependency versions and feature inventory are declared
+           at the owning repository root; members inherit them. Existing PBT
+           owns semantic operation sequences and shrinking counterexamples where
+           the repository already supplies that framework. Bounded byte fuzzing
+           covers malformed protocol/parser inputs and sanitizer failures; it
+           does not replace claim/budget/revocation/recovery properties. Native
+           deterministic fault tests are not relabeled PBT. No duplicate semantic
+           model or additional package is introduced for profiling or CI repair. */
+        doc /* Bridge/commit attribution uses the existing pinned safe POSIX
+           wrapper only in backend dev-dependencies. CLOCK_THREAD_CPUTIME_ID
+           spans are synchronous on one OS thread; no CPU subtraction crosses
+           an await or task migration. Worker bridge, transaction body/post-body,
+           caller validation and COMMIT poll/Pending records join by the original
+           scope/operation after drain. Wall minus CPU includes blocking and
+           runnable delay; it is not a pure scheduler or durability-I/O clock.
+           Request delivery and answer wakeup intervals retain channel/glue cost.
+           Kernel tracing privilege failure never blocks direct shared-Host runs;
+           missing syscall evidence remains explicit. Profiled samples are kept
+           separate because sampling itself can suspend threads. Existing guard,
+           cancellation/restart and retained unknown-exposure gates stay hard.
+           CI repairs preserve watchdogs, corpus, coverage and dependency pins;
+           actual compiler progress must not be replaced by timer heartbeats. */
         doc /* Native-read attribution first retains an uninstrumented A/AV/AV/A
            contrast, then separately measures test-only direct-query and split
            prepare/bind/next/value-copy paths inside the original transactions.
