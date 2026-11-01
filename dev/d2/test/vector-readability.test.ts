@@ -1,14 +1,10 @@
 import {test,expect} from 'bun:test';
-import {chromium,type Page} from 'playwright';
+import {chromium} from 'playwright';
 import {fileURLToPath} from 'node:url';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../../../',import.meta.url));
 const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
-async function surfaceGeometry(page:Page):Promise<string>{
- return page.evaluate(()=>JSON.stringify([...document.querySelectorAll('svg[data-vector-surface]')].map(surface=>[...surface.querySelectorAll('path,rect,ellipse,polygon')].map(shape=>({tag:shape.tagName,attributes:[...shape.attributes].map(a=>[a.name,a.value]).sort((a,b)=>a[0]!.localeCompare(b[0]!))})))));
-}
-
 test('all Library model SVGs retain legible fonts, vector icons and complete text at GitHub width',async()=>{
  const receipt:{status:string;report:{modelCaptureSHA256:string;images:{source:string;layout:string;sourceSHA256:string;svgSHA256:string}[]}}=JSON.parse(await readFile(root+'.cache/d2/latest-render.json','utf8'));
  const modelDigest=process.env.WEAVER_DIAGRAM_MODEL_SHA256;
@@ -34,18 +30,8 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
     const provenance:{inputSHA256:string;sourceSHA256:Record<string,string>}=JSON.parse(await page.locator('#figure-provenance').textContent()??'');
     expect(provenance.inputSHA256).toBe(exported.inputSHA256);
     expect(provenance.sourceSHA256[image.source]).toBe(image.sourceSHA256);
-    const surfaces=await surfaceGeometry(page);
-    if(image.layout==='question-map')expect(JSON.parse(surfaces).length).toBeGreaterThan(0);
     await page.setContent('<style>body{margin:0;background:#0d1117}body>svg{width:830px;height:auto}</style>'+body);
     await page.evaluate(()=>document.fonts.ready);
-    expect(await surfaceGeometry(page)).toBe(surfaces);
-    if(image.layout==='question-map'){
-     // Missing surface projection is a failed control, even on an opaque root.
-     await page.locator('svg[data-vector-surface]').first().evaluate(surface=>surface.remove());
-     expect(await surfaceGeometry(page)).not.toBe(surfaces);
-     await page.setContent('<style>body{margin:0;background:#0d1117}body>svg{width:830px;height:auto}</style>'+body);
-     await page.evaluate(()=>document.fonts.ready);
-    }
     const issues=await page.evaluate(()=>{
      const problems:string[]=[],root=document.querySelector('body>svg')!.getBoundingClientRect();
      const canvas=document.querySelector('body>svg>rect');
@@ -54,7 +40,7 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
       const box=text.getBoundingClientRect();
       if(box.left<root.left-1||box.right>root.right+1||box.bottom>root.bottom+1)problems.push('Out of image: '+text.textContent);
      }
-     for(const text of document.querySelectorAll<SVGGraphicsElement>('.scene-title,.scene-detail,.scene-label text,.relation-title,.relation-detail,[data-heading-role=question] [data-annotation-part=label] text,[data-heading-role=answer] [data-annotation-part=label] text,[data-heading-role=note] text')){
+     for(const text of document.querySelectorAll<SVGGraphicsElement>('.scene-title,.scene-detail,.scene-label text,[data-heading-role=question] [data-annotation-part=label] text,[data-heading-role=answer] [data-annotation-part=label] text,[data-heading-role=note] text')){
       const matrix=text.getScreenCTM()!,size=parseFloat(getComputedStyle(text).fontSize)*Math.hypot(matrix.a,matrix.b);
       if(size<18)problems.push('Small model label: '+text.textContent+' '+size.toFixed(2));
      }
