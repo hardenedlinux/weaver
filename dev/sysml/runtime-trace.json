@@ -26,6 +26,15 @@
   {
     "id": "SharedBudget",
     "witnesses": [
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn selected_message_binding_must_match_its_committed_digest_at_final_write"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn concurrent_message_admission_preserves_both_manifest_members"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn exhausted_budget_cannot_publish_a_manifest_member_without_its_row"},
+      {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem manifest_bound_runtime_step"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn surviving_stream_message_cannot_hide_a_lost_unknown_reservation"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn exact_message_manifest_guards_recovery_and_existing_write_handles"},
+      {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run partialMessageLossCounterexampleTest"},
+      {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run digestSubstitutionFinalUseGuardTest"},
+      {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem exact_manifest_admission_covers_original_exposure"},
       {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn balanced_provider_projection_never_funds_a_different_original_plan"},
       {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn balanced_stream_projection_never_funds_the_next_logical_message"},
       {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem admission_covers_original_exposure"},

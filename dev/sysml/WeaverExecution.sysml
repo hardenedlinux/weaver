@@ -13,7 +13,10 @@ package WeaverExecution {
         doc /* Original node holds sum to no more than the original family budget. */
         doc /* A single deciding projection covers request, stream-message and
            provider reservations together. Admission and actual use require all
-           retained execution-kind claims, equality of every retained reservation with its
+           retained execution-kind claims and an exact bijection between each
+           claim's member manifest and the request/message/provider rows. A
+           member binds its logical key, original digest and ceiling; surviving
+           messages cannot mask a missing sibling. Equality of every retained reservation with its
            original proposal or plan ceiling, exact shared exposure conservation and equality
            between the budget projection and the original task budget. Local
            checks of each effect kind cannot substitute for the shared sum. */
@@ -29,7 +32,8 @@ package WeaverExecution {
         doc /* Startup does not synthesize execution claims from outcome rows.
            An orphaned request claim cannot admit a replacement operation; a
            later message cannot recreate a missing stream claim while earlier
-           retained messages exist. Orphaned holds cannot be recycled into new
+           retained messages exist. A missing manifest is not backfilled from a
+           surviving outcome image. Orphaned holds cannot be recycled into new
            messages after outcome-row loss. Contradictory recovery images deny effects
            and remain observable; this is not independent rollback detection. */
     }

@@ -88,4 +88,110 @@ theorem aggregate_equality_alone_is_insufficient :
 #print axioms pointwise_binding_preserves_total
 #print axioms admission_covers_original_exposure
 #print axioms aggregate_equality_alone_is_insufficient
+
+/- Node/kind coverage is a separate guard from row-local amount equality.
+   A stream node can own several messages: this theorem does not establish
+   completeness of that message set, nor recovery of a rolled-back claim root. -/
+structure ClaimedReservation where
+  node : Nat
+  kind : Nat
+  amount : Reservation
+
+def ClaimCoverage (claims : List (Nat × Nat)) (rows : List ClaimedReservation) : Prop :=
+  ∀ claim ∈ claims, ∃ row ∈ rows, row.node = claim.1 ∧ row.kind = claim.2
+
+theorem orphaned_claim_blocks_admission (claims : List (Nat × Nat))
+    (rows : List ClaimedReservation) (claim : Nat × Nat)
+    (retainedClaim : claim ∈ claims)
+    (missing : ∀ row ∈ rows, ¬ (row.node = claim.1 ∧ row.kind = claim.2)) :
+    ¬ ClaimCoverage claims rows := by
+  intro covered
+  obtain ⟨row, member, binding⟩ := covered claim retainedClaim
+  exact missing row member binding
+
+theorem deciding_guard_covers_claims_and_budget
+    (claims : List (Nat × Nat)) (rows : List ClaimedReservation) (held next budget : Nat)
+    (coverage : ClaimCoverage claims rows)
+    (binding : ∀ row ∈ rows.map ClaimedReservation.amount, row.projected = row.original)
+    (aggregate : held = projectedTotal (rows.map ClaimedReservation.amount))
+    (capacity : held + next ≤ budget) :
+    ClaimCoverage claims rows ∧ originalTotal (rows.map ClaimedReservation.amount) + next ≤ budget := by
+  exact ⟨coverage, admission_covers_original_exposure _ held next budget binding aggregate capacity⟩
+
+theorem empty_projection_with_retained_claim_is_not_free_capacity :
+    projectedTotal ([] : List Reservation) = 0 ∧
+      ¬ ClaimCoverage [(0, 0)] ([] : List ClaimedReservation) := by
+  constructor
+  · rfl
+  · intro covered
+    obtain ⟨row, member, _⟩ := covered (0, 0) (by simp)
+    simp at member
+
+#print axioms orphaned_claim_blocks_admission
+#print axioms deciding_guard_covers_claims_and_budget
+#print axioms empty_projection_with_retained_claim_is_not_free_capacity
+
+/- Exact retained manifests strengthen node/kind coverage. The native refinement
+   must establish unique member keys and the bijection using the deciding writer
+   transaction. This premise is not derived from a restored outcome projection. -/
+structure ReservationCommitment where
+  node : Nat
+  kind : Nat
+  member : Nat
+  digest : Nat
+  ceiling : Nat
+  deriving DecidableEq
+
+def ManifestCovers (root rows : List ReservationCommitment) : Prop := root.Perm rows
+
+def committedTotal : List ReservationCommitment → Nat
+  | [] => 0
+  | row :: rest => row.ceiling + committedTotal rest
+
+theorem exact_manifest_preserves_total {root rows : List ReservationCommitment}
+    (covered : ManifestCovers root rows) : committedTotal root = committedTotal rows := by
+  induction covered with
+  | nil => rfl
+  | cons row covered ih => simp only [committedTotal, ih]
+  | swap a b rest => simp [committedTotal, Nat.add_left_comm]
+  | trans first second ih₁ ih₂ => exact Eq.trans ih₁ ih₂
+
+theorem missing_manifest_member_blocks_admission {root rows : List ReservationCommitment}
+    (entry : ReservationCommitment) (retained : entry ∈ root) (missing : entry ∉ rows) :
+    ¬ ManifestCovers root rows := by
+  intro covered
+  exact missing (covered.mem_iff.mp retained)
+
+theorem exact_manifest_admission_covers_original_exposure
+    (root rows : List ReservationCommitment) (held next budget : Nat)
+    (covered : ManifestCovers root rows) (aggregate : held = committedTotal rows)
+    (capacity : held + next ≤ budget) : committedTotal root + next ≤ budget := by
+  rw [aggregate, ← exact_manifest_preserves_total covered] at capacity
+  exact capacity
+
+theorem surviving_member_is_not_complete_stream_coverage (first second : ReservationCommitment) :
+    first.node = second.node → ¬ ManifestCovers [first, second] [second] := by
+  intro sameOwner covered
+  have sizes := covered.length_eq
+  simp at sizes
+
+/- Composition requires the native post-image to retain the same authentic root
+   and its exact projection. A transition proof alone does not establish that. -/
+theorem manifest_bound_runtime_step (root rows : List ReservationCommitment)
+    (covered : ManifestCovers root rows) (aggregate : t.held = committedTotal rows)
+    (safe : Safe budget s) (step : Step budget s t) :
+    Safe budget t ∧ committedTotal root ≤ budget := by
+  have after := safe_step safe step
+  constructor
+  · exact after
+  · have bound := after.2.1
+    rw [aggregate, ← exact_manifest_preserves_total covered] at bound
+    exact bound
+
+#print axioms exact_manifest_preserves_total
+#print axioms missing_manifest_member_blocks_admission
+#print axioms exact_manifest_admission_covers_original_exposure
+#print axioms surviving_member_is_not_complete_stream_coverage
+#print axioms manifest_bound_runtime_step
+
 end Weaver.RuntimeAdmission

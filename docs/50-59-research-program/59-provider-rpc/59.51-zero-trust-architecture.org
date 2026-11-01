@@ -513,3 +513,112 @@ those proofs to arbitrary database corruption. Completeness and authenticity of
 original records, real transactional serialization and the claim-kind joins
 remain separate premises. The core D2 shared-exposure view already shows all
 three retained domains and their common original-amount guard.
+
+** Exact reservation manifests under partial recovery
+
+Node/kind coverage is insufficient for a multi-message stream. A native negative
+control enqueues two messages under the same stream claim, consumes the first
+range, then removes that message/range and adjusts the shared hold to the
+surviving row. The former node-only guard accepts the original message again:
+the surviving sibling masks the missing reservation. This is a partial-image
+fault, not evidence that a whole-store rollback can be detected locally.
+
+The existing =execution_claims= root now retains a reservation member map.
+Requests and provider invocations have one member; a stream appends each original
+message key, binding its digest and original ceiling. Admission writes that
+member, the execution row and the budget hold in one deciding transaction.
+Only a distinct message can extend an existing stream claim. Provider roots use
+a separate execution kind, avoiding an implicit raw-stream/provider namespace.
+
+The family guard requires both directions of an exact join: every committed
+member has its original row, and every row has its committed member, kind,
+digest and ceiling. It also retains the existing original-record amount check,
+aggregate conservation and source-task budget equality. Completed rows remain
+members; an observation never removes an original reservation or releases
+unknown capacity. The materialized family projections avoid repeated expansion
+of the same JSON manifest within one deciding SQL statement. The selected typed
+proposal/message binding must also match its committed digest before actual
+use. Provider consumption computes that digest once and retains it inside the
+private dispatch owner; response releases reuse that commitment rather than
+rehashing the full original prompt per event.
+
+| Boundary | Required result |
+|----------+-----------------|
+| Lost row with a surviving sibling and balanced =held= | Refuse re-admission; do not reconstruct the original row from its sibling |
+| Changed member key, digest or original ceiling | Refuse current custody and the existing final-write handle; callback count remains zero |
+| Process restart after a rejected write | Re-evaluate the same manifest before granting custody; do not repair the damaged aggregate |
+| Historical receipt lookup or idempotent observation | May return the original observation; it conveys no dispatch capability |
+| Old schema without the retained member map | Fail opening the execution owner; never backfill a manifest from outcome rows |
+| Correlated rollback/replacement of root, rows and aggregate | Remains outside the local profile; requires independent recovery authority |
+
+=exact_message_manifest_guards_recovery_and_existing_write_handles= uses the
+existing Proptest framework to generate row deletion, identity substitution,
+digest substitution and balanced ceiling shrink, both with and without restart.
+The test exercises the actual final write callback and subsequent custody.
+=surviving_stream_message_cannot_hide_a_lost_unknown_reservation= preserves the
+focused native negative-control scenario. Raw diagnostics remain in temporary
+storage; regression seeds stay in the property framework's normal source file.
+
+The Quint model deliberately maps two logical members to the same stream owner.
+Its partial-loss witness satisfies node coverage and row-local amount equality
+while violating exact member coverage. Separate digest-substitution witnesses
+show why set cardinality alone is insufficient. Recovery and final-use actions
+require exact member and digest binding. This is a bounded schedule model, not
+an arbitrary-size theorem or a compiled-code proof.
+
+Lean models arbitrary finite commitment lists with node, execution kind, member,
+digest and original ceiling. Permutation expresses complete multiplicity-aware
+coverage. The proofs show that a missing member blocks admission, a surviving
+sibling does not imply completeness, and exact coverage plus the aggregate and
+capacity premises bounds original exposure. SQL key uniqueness, authentic roots,
+transaction atomicity and real transport fencing remain refinement premises.
+The Cedar evaluator and cedar-poo-spec semantic proofs remain the Policy owner;
+this manifest guard supplies execution evidence, never a substitute Policy DSL.
+
+The per-crate =ledger/stream_manifest_guard/{1,8,64}= benchmark measures range
+consumption and current final-write admission with that many messages under one
+claim. Fixture creation is outside timing. The existing provider-family and
+original-body matrices remain required; a fast one-member result cannot admit
+multi-message overhead or establish network throughput.
+
+*** Focused implementation evidence
+
+The local ledger run passes 22 library tests and 88 integration/property tests,
+including the ASP Rust deny gate, real loopback transport controls, concurrent
+member append and rollback after budget exhaustion. The prior partial-message
+recovery negative control fails on the node-only guard before this change.
+A property-test assertion that incorrectly treated a historical receipt as a
+capability was corrected; its saved seed is retained and is not reported as a
+runtime bypass. Restricted-listener and missing-host-linker runs are failures,
+separate from the qualified native execution.
+
+The Go integration owner rebuilds the current Rust server and race-enabled Go
+control binary. Real mutually authenticated gRPC/HTTPS tests pass for JSON/YAML
+publication and revocation across restart, shared-budget streaming and SDK retry,
+Protobuf/Arrow streaming, and partial-request recovery retaining unknown claims.
+These focused tests do not substitute for the complete Scheme integration suite.
+
+Quint typechecking, 25 tests and the existing 1,000-sample/50-step seeded safety
+run pass. Lean checks the finite manifest theorems and the conditional
+=manifest_bound_runtime_step= composition without =sorry=. Core =propext= is
+used by manifest equality proofs; the composed runtime theorem also inherits
+=Quot.sound= from =safe_step=. No new axiom or unproved native refinement is
+silently introduced.
+
+The initial optimized compilation takes 1m 03s; the final incremental build
+takes 3.37s, separately from the runtime samples
+on the 12-logical-CPU Darwin arm64 host. Each new case retains 30 samples and
+one-second warm-up. Criterion retains its normal adaptive collection; neither sample count nor
+configured target is relaxed. Its comparisons against the earlier local trial
+show no statistically detected change, not a matched pre-fix baseline.
+
+| Messages in one claim | Reported runtime interval | Point estimate |
+|-----------------------+---------------------------+----------------|
+| 1 | 728.65--756.57 us | 741.88 us |
+| 8 | 743.00--817.81 us | 771.41 us |
+| 64 | 1.1263--1.1738 ms | 1.1494 ms |
+
+These are focused current-path samples with outliers retained. There is no
+matched prior-revision run, network throughput claim, p99 admission claim or
+whole-workspace benchmark acceptance. Raw diagnostics and Criterion artifacts
+remain temporary or under ignored build output rather than committed logs.

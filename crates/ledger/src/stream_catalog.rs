@@ -76,7 +76,7 @@ impl Ledger {
             return Ok(old);
         }
         let ordinal = admit_message(&tx, message, &binding)?;
-        reserve_message(&tx, message)?;
+        reserve_message(&tx, message, &digest)?;
         insert_message(&tx, message, &binding, &digest, ordinal)?;
         tx.commit().map_err(db)?;
         self.message_receipt(&message.family, &message.node, &message.message)?
@@ -122,7 +122,7 @@ fn admit_message(
     )?;
     Ok(ordinal)
 }
-fn reserve_message(tx: &Transaction<'_>, message: &StreamMessage) -> Result<()> {
+fn reserve_message(tx: &Transaction<'_>, message: &StreamMessage, digest: &str) -> Result<()> {
     crate::execution_exposure::require_family(tx, &message.family)?;
     let kind: Option<String> = tx
         .query_row(
@@ -133,13 +133,21 @@ fn reserve_message(tx: &Transaction<'_>, message: &StreamMessage) -> Result<()> 
         .optional()
         .map_err(db)?;
     if kind.is_some_and(|k| k != "stream") {
-        return Err(Error::Conflict("logical node already claimed by request"));
+        return Err(Error::Conflict(
+            "logical node already claimed by another execution kind",
+        ));
     }
-    tx.execute(
-        "INSERT OR IGNORE INTO execution_claims VALUES(?1,?2,'stream')",
-        [&message.family, &message.node],
-    )
-    .map_err(db)?;
+    crate::execution_exposure::retain(
+        tx,
+        crate::execution_exposure::ReservationClaim {
+            family: &message.family,
+            node: &message.node,
+            kind: crate::execution_exposure::ClaimKind::Stream,
+            member: &message.message,
+            digest,
+            ceiling: message.ceiling,
+        },
+    )?;
     let n = tx
         .execute(
             "UPDATE tasks SET held=held+?1 WHERE family=?2 AND ?1<=budget-held",

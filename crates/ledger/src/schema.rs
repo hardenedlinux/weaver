@@ -41,7 +41,8 @@ CREATE TABLE IF NOT EXISTS operations (
  state TEXT NOT NULL CHECK(state IN ('queued','unknown','response_received')),
  PRIMARY KEY(family,node));
 CREATE TABLE IF NOT EXISTS execution_claims (
- family TEXT NOT NULL, node TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('request','stream')), PRIMARY KEY(family,node));
+ family TEXT NOT NULL, node TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('request','stream','provider')),
+ reservations TEXT NOT NULL CHECK(json_valid(reservations) AND json_type(reservations)='object'), PRIMARY KEY(family,node));
 CREATE TABLE IF NOT EXISTS streams (
  family TEXT NOT NULL REFERENCES tasks(family), node TEXT NOT NULL, contract TEXT NOT NULL, digest TEXT NOT NULL,
  generation INTEGER NOT NULL DEFAULT 0, owner TEXT, owner_fence INTEGER,

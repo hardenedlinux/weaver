@@ -608,7 +608,7 @@ fn final_release_keeps_current_guard_and_unknown_commit_in_one_transaction() {
                 "SELECT kind FROM execution_claims WHERE family='f' AND node='infer'",
                 [], |row| row.get(0),
             ).expect("canonical original claim");
-            assert_eq!(claim, "stream");
+            assert_eq!(claim, "provider");
             let blocked =
                 inspection.execute("UPDATE authority SET fence=fence+1 WHERE singleton=1", []);
             assert!(
@@ -834,5 +834,23 @@ proptest! {
         prop_assert!(ledger.enqueue_provider(&second).is_err());
         prop_assert!(ledger.provider_receipt("f","second").expect("observation").is_none());
         prop_assert_eq!(ledger.held("f").expect("unchanged projection"),1);
+    }
+}
+
+proptest! {
+    #![proptest_config(Config::with_cases(64))]
+    #[test]
+    fn lost_provider_reservation_row_keeps_orphaned_claim_budget_blocked(original in 5u64..8, restart in proptest::bool::ANY) {
+        let temp=tempfile::tempdir().expect("directory");let path=temp.path().join("orphaned-provider.db");
+        let (mut ledger,plan)=fixture_with_ceiling(&path,&["infer","second"],original);
+        ledger.enqueue_provider(&plan).expect("original hold");
+        drop(ledger.consume_provider("f","infer",&BTreeSet::from(["primary".into()])).expect("unknown original"));
+        let connection=rusqlite::Connection::open(&path).expect("fault writer");
+        connection.execute_batch("BEGIN IMMEDIATE; DELETE FROM provider_runs; UPDATE tasks SET held=0; COMMIT;").expect("lost reservation and aggregate");drop(connection);
+        if restart {drop(ledger);ledger=Ledger::open(&path).expect("restart");}
+        let mut second=plan.clone();second.node="second".into();
+        prop_assert!(ledger.enqueue_provider(&second).is_err());
+        prop_assert!(ledger.provider_receipt("f","second").expect("observe").is_none());
+        prop_assert_eq!(ledger.held("f").expect("unrepaired projection"),0);
     }
 }
