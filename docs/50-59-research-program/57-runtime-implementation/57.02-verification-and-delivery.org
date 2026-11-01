@@ -47,7 +47,7 @@ semantic tests. ASP Rust is a development policy provider, not an A2A/MCP
 protocol or a runtime authorization service.
 
 * Requirement correspondence
-| SysML v2 requirement | Native evidence | Formal boundary |
+| SysML v2 requirement | Implementation evidence | Formal boundary |
 |----------------------+-----------------+-----------------|
 | OriginalTaskBinding | Body/profile/endpoint negatives; Go refinement and immutable registration | Quint forged-original rejection; upstream BoundOperation host premise |
 | SharedBudget | Stateful PBT with independent hold oracle; concurrent node allocation; original cost-bound rejection | Quint shared capacity and cost floor; Lean bounded reserve and cost coverage |

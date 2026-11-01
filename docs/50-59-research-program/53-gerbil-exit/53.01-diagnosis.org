@@ -51,12 +51,12 @@ loaded cleanup canary tests that normal dynamic destruction still occurs.
 | Failure | Diagnosis and correction |
 |---------+--------------------------|
 | Initial source subset could not resolve package prelude | Capture complete Core source/data roles; include package metadata |
-| C compilation reported unknown FILE type | Inherited Nix SDKROOT mixed old SDK headers with the installed compiler; remove it only in isolated build processes |
+| C compilation reported unknown FILE type | Inherited Nix SDKROOT mixed old Gerbil toolchain headers with the installed compiler; remove it only in isolated build processes |
 | Fresh runtime could not resolve module-prelude interface | Import-only traversal missed prelude dependencies; traverse prelude contexts and rebuild their source closure |
 | Darwin whole-system static link requested crt0.o | Use ordinary Scheme AOT linking with shared platform libraries, not an unsupported system-static executable |
-| AOT link lacked platform symbols | Replay the final object link with an explicit usable SDK and system library after the other libraries; retain the failed gxc link separately |
+| AOT link lacked platform symbols | Replay the final object link with an explicit usable Gerbil toolchain and system library after the other libraries; retain the failed gxc link separately |
 | Raw canary compiler could not resolve its relocated root | Use the installed compiler's documented runtime-root option for building the canary only |
-| Raw canary link lacked C runtime symbols | Emit C, then link the owned bundle with explicit platform library/SDK and normal dynamic lookup |
+| Raw canary link lacked C runtime symbols | Emit C, then link the owned bundle with explicit platform library/Gerbil toolchain and normal dynamic lookup |
 | Canary bundle had the wrong module entry or compiler ABI | Match the module linker name and installed gambuild-C definitions; compile the C lifecycle observer separately |
 | Initial wrapper called private load with wrong arity | Use public load, validated against the actual installed binary; the source-level load-scheme shim is not an ABI guarantee |
 

@@ -12,7 +12,7 @@
 (def (validate-source-policy! policy-source schema-source)
   (cedar-validation (list policy-source schema-source)))
 
-;;; Pure projection of native Cedar values and already-read asset documents.
+;;; Pure projection of Scheme Cedar values and already-read asset documents.
 (def (project-policy profile expected asset-documents root-value)
   (def policies (.ref profile 'policies))
   (def names (.all-slots policies))

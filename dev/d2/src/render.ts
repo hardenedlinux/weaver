@@ -32,7 +32,7 @@ try{
     const stem=path.join(root,scene.view.source.slice(0,-3)),cache=path.join(root,'.cache/d2/images',scene.view.source.slice(0,-3));
     await mkdir(path.dirname(cache),{recursive:true});
     await writeFile(stem+'.svg',svg);await writeFile(cache+'.png',result.png);await writeFile(cache+'.html',result.html);await writeFile(cache+'.json',JSON.stringify(result.receipt,null,2));
-    if(scene.figure.layout!=='native-d2'||await access(stem+'.png').then(()=>true,()=>false))await writeFile(stem+'.png',result.png);
+    if(scene.figure.layout!=='d2'||await access(stem+'.png').then(()=>true,()=>false))await writeFile(stem+'.png',result.png);
     for(const variant of scene.figure.variants??[]){
      const image=await exportFigure(composeProjectFigure(scene,variant),browser);
      await writeFile(stem+'-'+variant.name+'.png',image.png);

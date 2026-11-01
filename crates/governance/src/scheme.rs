@@ -1,4 +1,4 @@
-//! Native object conversion using the pinned SDK's GC-rooted APIs.
+//! Scheme object conversion using the pinned Gerbil's GC-rooted APIs.
 //! No JSON text, unrooted object word, or VM borrow enters OwnedSource.
 use crate::{MAX_SOURCE_BYTES, OwnedSource, SourceData, SourceError};
 use gerbil_scheme::{
@@ -21,7 +21,7 @@ impl de::Error for SourceError {
         Self::Contract
     }
 }
-fn sdk<T>(value: Result<T, gerbil_scheme::NativeError>) -> Result<T, SourceError> {
+fn scheme_result<T>(value: Result<T, gerbil_scheme::NativeError>) -> Result<T, SourceError> {
     value.map_err(|_| SourceError::Scheme)
 }
 struct Limits {
@@ -42,7 +42,7 @@ impl Native<'_, '_> {
         Ok(())
     }
 }
-/// Approved producer supplies a stable typed snapshot. SDK table copies are
+/// Approved producer supplies a stable typed snapshot. Gerbil table copies are
 /// shallow; limits bound traversal, not arbitrary hostile VM allocation.
 pub fn materialize_source(source: RootedSchemeObject<'_>) -> Result<OwnedSource, SourceError> {
     let mut limits = Limits {
@@ -71,7 +71,7 @@ impl<'de> SeqAccess<'de> for Sequence<'_, '_> {
         if self.index == self.entries.len() {
             return Ok(None);
         }
-        let value = sdk(self.entries.root_element(self.index))?;
+        let value = scheme_result(self.entries.root_element(self.index))?;
         self.index += 1;
         seed.deserialize(Native {
             value,
@@ -105,21 +105,21 @@ impl<'de> MapAccess<'de> for Mapping<'_, '_> {
         if self.index == self.entries.len() {
             return Ok(None);
         }
-        let value = sdk(self.entries.root_element(self.index))?;
-        let kind = sdk(value.as_ref().kind())?;
+        let value = scheme_result(self.entries.root_element(self.index))?;
+        let kind = scheme_result(value.as_ref().kind())?;
         let name = if self.fields && kind == ObjectKind::Symbol {
             let mut names = IdentifierBuffer::default();
-            sdk(value.as_ref().copy_identifier_names(&mut names))?;
+            scheme_result(value.as_ref().copy_identifier_names(&mut names))?;
             match names.get(0) {
                 Some((IdentifierKind::Symbol, name)) => name.to_owned(),
                 _ => return Err(SourceError::Contract),
             }
         } else if !self.fields && kind == ObjectKind::String {
-            let key = sdk(value.into_string())?;
-            if sdk(key.len().into_result())? > self.limits.bytes {
+            let key = scheme_result(value.into_string())?;
+            if scheme_result(key.len().into_result())? > self.limits.bytes {
                 return Err(SourceError::Bound);
             }
-            sdk(key.to_string().into_result())?
+            scheme_result(key.to_string().into_result())?
         } else {
             return Err(SourceError::Contract);
         };
@@ -142,7 +142,7 @@ impl<'de> MapAccess<'de> for Mapping<'_, '_> {
         if !self.pending {
             return Err(SourceError::Contract);
         }
-        let value = sdk(self.entries.root_element(self.index + 1))?;
+        let value = scheme_result(self.entries.root_element(self.index + 1))?;
         self.index += 2;
         self.pending = false;
         seed.deserialize(Native {
@@ -159,14 +159,14 @@ impl<'de> de::Deserializer<'de> for Native<'_, '_> {
     type Error = SourceError;
     fn deserialize_any<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
         self.charge()?;
-        match sdk(self.value.as_ref().kind())? {
-            ObjectKind::Boolean => match sdk(self.value.as_ref().scalar())? {
+        match scheme_result(self.value.as_ref().kind())? {
+            ObjectKind::Boolean => match scheme_result(self.value.as_ref().scalar())? {
                 SchemeScalar::Boolean(value) => visitor.visit_bool(value),
                 _ => Err(SourceError::Contract),
             },
             ObjectKind::ExactInteger => {
                 let mut integer = BigIntegerBuffer::default();
-                sdk(self.value.as_ref().copy_big_integer(&mut integer))?;
+                scheme_result(self.value.as_ref().copy_big_integer(&mut integer))?;
                 let value = integer.value();
                 let bytes = value.magnitude();
                 if value.is_negative() || bytes.len() > 8 {
@@ -177,30 +177,30 @@ impl<'de> de::Deserializer<'de> for Native<'_, '_> {
                 visitor.visit_u64(u64::from_le_bytes(raw))
             }
             ObjectKind::String => {
-                let text = sdk(self.value.into_string())?;
-                if sdk(text.len().into_result())? > self.limits.bytes {
+                let text = scheme_result(self.value.into_string())?;
+                if scheme_result(text.len().into_result())? > self.limits.bytes {
                     return Err(SourceError::Bound);
                 }
-                let bytes = sdk(text.to_utf8_bytes().into_result())?;
-                let length = sdk(bytes.len().into_result())?;
+                let bytes = scheme_result(text.to_utf8_bytes().into_result())?;
+                let length = scheme_result(bytes.len().into_result())?;
                 self.limits.bytes = self
                     .limits
                     .bytes
                     .checked_sub(length)
                     .ok_or(SourceError::Bound)?;
-                let text = String::from_utf8(sdk(bytes.to_vec().into_result())?)
+                let text = String::from_utf8(scheme_result(bytes.to_vec().into_result())?)
                     .map_err(|_| SourceError::Contract)?;
                 visitor.visit_string(text)
             }
             ObjectKind::Nil => visitor.visit_unit(),
             ObjectKind::Vector => {
-                let sequence = sdk(self.value.into_collection(CollectionKind::Vector))?;
+                let sequence = scheme_result(self.value.into_collection(CollectionKind::Vector))?;
                 let length = sequence.len();
                 if length > 64 {
                     return Err(SourceError::Bound);
                 }
                 let mut entries = RootedObjectBatch::default();
-                sdk(sequence.copy_into(&mut entries))?;
+                scheme_result(sequence.copy_into(&mut entries))?;
                 visitor.visit_seq(Sequence {
                     entries,
                     index: 0,
@@ -212,7 +212,7 @@ impl<'de> de::Deserializer<'de> for Native<'_, '_> {
         }
     }
     fn deserialize_option<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value, Self::Error> {
-        if sdk(self.value.as_ref().kind())? == ObjectKind::Nil {
+        if scheme_result(self.value.as_ref().kind())? == ObjectKind::Nil {
             visitor.visit_none()
         } else {
             visitor.visit_some(self)
@@ -238,11 +238,11 @@ impl Native<'_, '_> {
         fields: bool,
     ) -> Result<V::Value, SourceError> {
         self.charge()?;
-        if sdk(self.value.as_ref().kind())? != ObjectKind::GambitTable {
+        if scheme_result(self.value.as_ref().kind())? != ObjectKind::GambitTable {
             return Err(SourceError::Contract);
         }
         let mut entries = RootedObjectBatch::default();
-        sdk(self.value.copy_table_entries(&mut entries))?;
+        scheme_result(self.value.copy_table_entries(&mut entries))?;
         if entries.len() > 128 || entries.len() % 2 != 0 {
             return Err(SourceError::Bound);
         }

@@ -61,7 +61,7 @@ credential/transport check.
 | Two workers consume/claim concurrently | Can both obtain usable authority for the same attempt? | Preserve grant affinity, unique claims and budget conservation under declared serialization | Real issuer serialization, durable ledger atomicity and one local handle |
 | A publication or identity observation becomes stale | Can stale input cross admission or a later checkpoint? | Preserve source/identity validity predicates under the selected lease rules | Authentic owner observations, bounded lifetime and runtime rejection |
 | A paused broker resumes after takeover | Can a stale emitter act despite a new database owner? | Keep database fencing distinct from the physical stop/receiver premise | Qualified stop/drain or receiver fencing where stronger exclusion is required |
-| An SDK retries after an unknown result | Is a second application attempt reachable without new admission? | Bind each attempt to its unique claim and preserve conservative unknown state | Retry controls, constrained credentials/egress and attributable observations |
+| An provider-client retries after an unknown result | Is a second application attempt reachable without new admission? | Bind each attempt to its unique claim and preserve conservative unknown state | Retry controls, constrained credentials/egress and attributable observations |
 
 These are requirements to model, prove and exercise, not claims of completed
 integration proofs. The detailed FM dossiers preserve the separate evidence
@@ -116,7 +116,7 @@ Host/component artifacts and the final Weaver consumer revision. A dependency
 change invalidates affected proofs, replay and native evidence. An internally consistent
 closure must be selected before enabling the protected integration. The
 greenfield decision and isolated qualification belong to
-[[file:12-fm1-baseline-and-native-qualification.org][FM1 baseline selection and native qualification]].
+[[file:12-fm1-baseline-and-runtime-qualification.org][FM1 baseline selection and native qualification]].
 
 * Assurance structure and ownership
 

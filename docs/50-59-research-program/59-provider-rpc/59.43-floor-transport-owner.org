@@ -55,7 +55,7 @@ Tokio or that a cached observation is fresh authorization.
 | Kubernetes integration | Reuse discovery, watches, re-list/reconcile and cloud authentication conventions | Observations become source candidates; they cannot replace authoritative floor state or fence an old socket |
 | Client/protocol ingress | Bound many HTTP/gRPC/stream connections, cancellation and backpressure; adapt MCP/A2A/client-session protocols to the existing canonical identity contract | Client session, reconnect or new task cannot reset original claim/budget/history; protocol adapters remain target work where not implemented |
 | Routing and capability discovery | Normalize permitted candidates, capabilities, health and cost preferences from integrations | Scheme defines admitted routine/strategy semantics; Rust selects and consumes an allowed route before sending |
-| Control lifecycle and recovery | Reconcile exact publication outcomes and cloud resource state using maintained client APIs | SDK retries cannot resubmit an ambiguous effect or rebase an original command; provider execution remains Rust-only |
+| Control lifecycle and recovery | Reconcile exact publication outcomes and cloud resource state using maintained client APIs | provider-client retries cannot resubmit an ambiguous effect or rebase an original command; provider execution remains Rust-only |
 | Operator integration | Use existing Go integration/testing/tooling surface rather than duplicating all cloud clients in Rust | Additional RPC, serialization, memory and multi-language maintenance costs must be measured |
 
 Go owns ingress and control networking; Rust owns final credentialed provider
@@ -71,7 +71,7 @@ Current evidence is narrower than the target. =go/internal/config=,
 =CompileProvider= preserves the complete source-authorized route order and
 original profile/body commitments; Rust owns current credential availability,
 Cedar selection and final consumption. =go/go.mod= does not contain =client-go=
-or a complete Kubernetes controller implementation. No new SDK or dependency pin
+or a complete Kubernetes controller implementation. No new Gerbil toolchain or dependency pin
 is added in this architecture review. Go must not become a second Scheme
 Workflow/Governance runtime or a second Rust authorization/accounting engine.
 
@@ -241,7 +241,7 @@ TCP writes and SQLite exclusion, with a fixed three-second IO/reply bound. They
 are plaintext loopback ordering tests, not TLS, gRPC identity, network policy,
 process-fencing or production independent-authority qualification.
 
-| Native scenario | Required observable evidence |
+| Runtime scenario | Required observable evidence |
 |-----------------+------------------------------|
 | Queued old cut after projection repair | No socket admission and no implicit rebase at unchanged epoch |
 | Partial request, lost owner reply, restored worker observations and owner restart | One observed request prefix; no retry under old or fresh epoch; durable burn retained |

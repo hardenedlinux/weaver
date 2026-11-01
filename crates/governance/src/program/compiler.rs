@@ -1,9 +1,9 @@
-//! Fixed compiled Scheme application on the existing thread-affine SDK owner.
+//! Fixed compiled Scheme application on the existing thread-affine Gerbil owner.
 use super::linked;
 use crate::{OwnedSource, SourceError, materialize_source, root_source};
 use gerbil_scheme::GerbilRuntime;
 
-/// Neither this owner nor its SDK runtime is Send. Construct it on the tracked
+/// Neither this owner nor its Gerbil runtime is Send. Construct it on the tracked
 /// blocking thread; no borrowed root/object crosses a queue or await.
 pub struct SchemeCompiler {
     runtime: GerbilRuntime,

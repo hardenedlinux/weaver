@@ -39,7 +39,7 @@ required-features = ["scheme-qualification"]
 name = "gateway"
 harness = false
 
-# Unsafe is scoped to the fixed SDK linker/export binding module; all typed
+# Unsafe is scoped to the fixed Gerbil linker/export binding module; all typed
 # conversion, lifecycle, catalog and source ownership code retains deny mode.
 [lints.rust]
 unsafe_code = "deny"

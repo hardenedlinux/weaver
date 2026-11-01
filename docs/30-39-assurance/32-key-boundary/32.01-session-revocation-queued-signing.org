@@ -242,7 +242,7 @@ barrier but is not a runtime oracle available to an implementation. There is no
 extracted model-to-driver proof, Byzantine device theorem or liveness guarantee.
 The sticky profile can keep unresolved work blocked indefinitely.
 
-* Native qualification and performance
+* Runtime qualification and performance
 
 Qualify the actual HSM/provider/driver combination using retained old sessions,
 duplicated FDs, mapped result buffers, callbacks, DMA/shared memory, device queues

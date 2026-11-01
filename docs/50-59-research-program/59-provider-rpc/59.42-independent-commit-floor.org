@@ -57,7 +57,7 @@ The persisted burn and actual network call are separate events. A crash between
 them may produce no call; recovery cannot infer no-execution or reissue the
 ambiguous burn. The live transport-owner continuation binds its original cut,
 epoch, logical key and one-use admission; it is not reconstructible from the
-presence of a persisted burn. Queued SDK retries and provider redirects remain
+presence of a persisted burn. Queued provider-client retries and provider redirects remain
 disabled. Stream range release reuses the existing per-release current-state
 guards. Bytes already admitted may drain. A partial write or missing usage
 receipt cannot prove final usage, no-execution, or a refundable reservation.

@@ -105,7 +105,7 @@ test deadline. The integration stage runs with Go's race detector and builds
 the real Rust server, including the existing optional Arrow feature. Its seven
 top-level control tests cover inert Cedar FFI validation, Scheme Governor
 selection, governance assets, JSON/YAML, revocation, restart, shared stream
-budget, SDK retry, partial writes and publication response loss. No synthetic
+budget, provider-client retry, partial writes and publication response loss. No synthetic
 CI success substitutes for these local executions.
 
 Focused Rust FFI tests, the existing ASP Rust deny gate, example Clippy with

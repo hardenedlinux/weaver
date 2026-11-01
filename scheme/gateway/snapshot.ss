@@ -1,6 +1,6 @@
-;;; Native data projection only: no JSON text and no procedure/object word escapes.
+;;; Scheme data projection only: no JSON text and no procedure/object word escapes.
 (import (only-in :clan/poo/object .all-slots .ref object<-alist))
-(export copy-source-data source-data->native native->source-data)
+(export copy-source-data source-data->scheme-value scheme-value->source-data)
 
 (def (copy-source-data value)
   (def remaining 8388608)
@@ -21,25 +21,25 @@
          (map (lambda (key) (cons key (copy (.ref value key) (1+ depth)))) (.all-slots value))))))
   (copy value 0))
 
-;;; Field names remain native symbols; declared identifier maps use native strings.
+;;; Field names remain Scheme symbols; declared identifier maps use Scheme strings.
 (def identifier-maps '(endpoints body_digests node_cost_bounds stream_contracts))
-(def (source-data->native value (identifier-map? #f))
+(def (source-data->scheme-value value (identifier-map? #f))
   (cond
     ((or (string? value) (boolean? value) (exact-integer? value)) value)
-    ((list? value) (list->vector (map source-data->native value)))
+    ((list? value) (list->vector (map source-data->scheme-value value)))
     (else
      (let ((result (make-table test: equal?)))
        (for-each
          (lambda (key)
            (table-set! result (if identifier-map? (symbol->string key) key)
-             (source-data->native (.ref value key) (and (memq key identifier-maps) #t))))
+             (source-data->scheme-value (.ref value key) (and (memq key identifier-maps) #t))))
          (.all-slots value))
        result))))
 
-(def (native->source-data value (identifier-map? #f))
+(def (scheme-value->source-data value (identifier-map? #f))
   (cond
     ((or (string? value) (boolean? value) (exact-integer? value)) value)
-    ((vector? value) (map native->source-data (vector->list value)))
+    ((vector? value) (map scheme-value->source-data (vector->list value)))
     ((null? value) #f)
     ((table? value)
      (let ((seen '()))
@@ -58,7 +58,7 @@
                ;; fields remain visible to closed Record validation.
                (and (not (and (not identifier-map?) (null? (cdr entry))
                               (memq field '(expected_revision provider_profile))))
-                    (cons field (native->source-data (cdr entry)
+                    (cons field (scheme-value->source-data (cdr entry)
                                   (and (memq field identifier-maps) #t))))))
            (table->list value)))))
-    (else (error "unsupported native source value"))))
+    (else (error "unsupported Scheme source value"))))

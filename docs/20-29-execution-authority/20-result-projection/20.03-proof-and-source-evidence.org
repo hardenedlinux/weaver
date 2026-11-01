@@ -141,7 +141,7 @@ comparison reproducible; no runtime compatibility layer or dependency change fol
 | ASP1/ASP2, optional | Shared code-tool contracts, parser-owned source fingerprints and exact read locators | Optional input provenance only; no role in consumption, result commitment or authority recovery |
 | Agentgateway controller/provider code | Cloud-native lifecycle and provider conversion patterns | Inform Go integration; retries still resolve original operations through the Rust broker |
 
-* Native acceptance obligations
+* Implementation acceptance obligations
 
 Inject crashes before/after result-body durability, journal commit, response release,
 each participant field write, cursor publication and acknowledgment. Restore source
@@ -150,7 +150,7 @@ qualify as complete images. Lose both commit and application responses, then que
 and replay under a new owner. The original nonce, result, profile and unknown
 exposure must remain unchanged.
 
-Retain old-worker apply handles, queued mutations, SDK retries and late callbacks
+Retain old-worker apply handles, queued mutations, provider-client retries and late callbacks
 through restart. Only current fenced CAS may publish a participant; historical
 observations remain data. Verify that replay of a committed result never invokes
 the provider, adds another reservation or releases unknown exposure. Verify the

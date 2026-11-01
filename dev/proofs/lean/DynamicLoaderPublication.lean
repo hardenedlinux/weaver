@@ -1,4 +1,4 @@
-import NativeExitQualification
+import GerbilExitQualification
 namespace Weaver.DynamicLoaderPublication
 
 -- This AST is the closed recognizer language, not arbitrary Scheme.
@@ -68,16 +68,16 @@ theorem repeated_import_does_not_duplicate (m : Nat) (loaded : List Nat) :
   by_cases h : m ∈ loaded <;> simp [acquireOnce,h]
 
 theorem native_completion_still_needs_cleanup
-    (pass : NativeExitQualification.Qualified c receipt) :
+    (pass : GerbilExitQualification.Qualified c receipt) :
     receipt.returned = true ∧ receipt.handles = [] :=
-  NativeExitQualification.qualification_preserves_cleanup pass
+  GerbilExitQualification.qualification_preserves_cleanup pass
 
 theorem dynamic_pass_still_needs_gateway_policy
-    (_pass : NativeExitQualification.Qualified c receipt)
+    (_pass : GerbilExitQualification.Qualified c receipt)
     (event : LlmRouting.Step router owner before after)
     (changed : after.dispatches ≠ before.dispatches) :
     ∃ p, owner.wireValid p ∧ owner.finalPolicyValid p (LlmRouting.view before) :=
-  NativeExitQualification.natural_pass_still_needs_gateway_policy _pass event changed
+  GerbilExitQualification.natural_pass_still_needs_gateway_policy _pass event changed
 
 #print axioms erasure_preserves_body_order
 #print axioms source_dependency_composition

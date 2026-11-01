@@ -250,12 +250,12 @@ variable {c : Weaver.FiniteDomainMigration.Config} {m : Weaver.FiniteStreamManif
   {p : Weaver.WriterSettlementClosure.Profile c m} {lineage root namespaceId : Nat}
   {owner : Weaver.GateConsumptionPersistence.EvidenceOwner} {projectionStore : Weaver.AnchorBrokerCommit.RootOwner}
   {family : Weaver.AnchorReconfiguration.Family} {store : Weaver.AnchorReconfiguration.Store} {signerOwner : Weaver.ProtectedSignerRelease.SignerOwner}
-  {keyOwner : Weaver.KeyBoundaryQueue.KeyOwner} {nativeOwner : Weaver.DeviceIsolationRecovery.NativeOwner} {eligible : Weaver.AnchorReconfiguration.Scope → Nat → Prop}
-local notation "DeviceStep" => Weaver.DeviceIsolationRecovery.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible
+  {keyOwner : Weaver.KeyBoundaryQueue.KeyOwner} {driverOwner : Weaver.DeviceIsolationRecovery.DriverOwner} {eligible : Weaver.AnchorReconfiguration.Scope → Nat → Prop}
+local notation "DeviceStep" => Weaver.DeviceIsolationRecovery.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible
 
 theorem initialized_product_refines_device (events : Run DeviceStep decisionOwner initial s) :
     Weaver.DeviceIsolationRecovery.Run (c := c) (m := m) (p := p) (lineage := lineage) (root := root) (namespaceId := namespaceId)
-      (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (nativeOwner := nativeOwner) (eligible := eligible) Weaver.DeviceIsolationRecovery.initial s.base := by
+      (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (driverOwner := driverOwner) (eligible := eligible) Weaver.DeviceIsolationRecovery.initial s.base := by
   induction events with
   | refl => exact .refl _
   | next prior e ih =>

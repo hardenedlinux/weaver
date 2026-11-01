@@ -109,7 +109,7 @@ existing boundary with real Rust processes and gRPC. The next certificate has
 the same subject and a different key under the same test CA. After startup pin
 rotation, the old key/token cannot stage or reach final publication. The new key
 continues the exact original command after a lost reply; sibling pending remains,
-and later SDK retry/restart preserves the consumed operation and held budget.
+and later provider-client retry/restart preserves the consumed operation and held budget.
 This demonstrates startup rotation, not online incarnation fencing.
 
 =TestProviderSourceCertificateConfigRollbackReacceptsOldKeyCounterexample=

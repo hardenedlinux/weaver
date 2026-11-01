@@ -59,7 +59,7 @@ executor: Rust final transport owner\nCurrent Policy / history / owner fence\nOn
   style.fill: "#eef3ef"
 }
 original -> active: Same canonical binding { style.font-size: 20 }
-active -> unknown: Native transaction result { style.font-size: 20 }
+active -> unknown: Turso transaction result { style.font-size: 20 }
 active -> stopped: Begin close / drain accepted work { style.font-size: 20 }
 stopped -> recovery: Complete resource closure { style.font-size: 20 }
 unknown -> recovery: Exact durable reconciliation { style.font-size: 20 }
@@ -76,6 +76,6 @@ footer: "Resource closure is not authority revocation · A free slot is not refu
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"67 writer owner lifecycle","purpose":"workflow","kind":"state","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which states and guarded transitions govern 67 writer owner lifecycle?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.67-writer-owner-lifecycle.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"native-d2","variants":[]}
+{"title":"67 writer owner lifecycle","purpose":"workflow","kind":"state","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which states and guarded transitions govern 67 writer owner lifecycle?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.67-writer-owner-lifecycle.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2","variants":[]}
 |
 } } }

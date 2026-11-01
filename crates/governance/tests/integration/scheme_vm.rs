@@ -52,7 +52,7 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
                 Ok(())
             },
         )
-        .expect("native SDK exact integer property");
+        .expect("native Gerbil exact integer property");
     // Valid individual plans may exceed the aggregate native handoff bound.
     // Conversion must refuse and leave the same VM usable for the next input.
     let mut large = fixture::source();
@@ -170,7 +170,7 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
     assert_eq!(owned.plans().len(), 2);
 
     // The caller receives only owned, original-bound data. All roots and the
-    // non-Send SDK runtime remain on this owner thread through natural cleanup.
+    // non-Send Gerbil runtime remain on this owner thread through natural cleanup.
     let capacity = std::thread::available_parallelism().expect("host capacity");
     let (client, inbox) = source_lane(capacity);
     let lane_input = OwnedSource::from_source(data.clone()).expect("lane original");

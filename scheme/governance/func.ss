@@ -1,4 +1,4 @@
-;;; Reuse Agentic AI Lab's actual native Profile and governor implementations.
+;;; Reuse Agentic AI Lab's actual Profile and governor implementations.
 (import (only-in :agentic-ai-lab/modules/loop-engine/control/governor loop-governor->contract)
         (only-in :agentic-ai-lab/modules/governance/funs agentic-ai-lab-governance-evaluate)
         (only-in :agentic-ai-lab/modules/governance/types agentic-ai-lab-governance-assessment?)

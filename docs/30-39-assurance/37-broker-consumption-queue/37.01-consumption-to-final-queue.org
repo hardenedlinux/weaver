@@ -14,7 +14,7 @@ a provider completion nor evidence of final usage. Unknown outcomes retain the
 original claim, budget reservation and history restriction.
 
 The Gateway owns logical execution rights through a Rust final broker. Go owns
-cloud-native integration and SDK adaptation. Scheme owns canonical operation
+cloud-native integration and Gerbil toolchain adaptation. Scheme owns canonical operation
 identity, Cedar policy semantics and accounting/history rules. These are software
 contracts. No physical isolation mechanism is required by this profile.
 
@@ -129,7 +129,7 @@ logical execution owner. Checking a fence and then allowing an independent
 worker to call the SDK is insufficient: the check-to-call race remains open.
 Fencing linearizes at application invocation admission; it cannot retract an
 invocation already admitted. Kernel packet retransmission is not a second
-application request. SDK retries, HTTP redirects, provider fallback, reconnect
+application request. provider-client retries, HTTP redirects, provider fallback, reconnect
 and SDK background sends are application effects and must return through the
 broker's original identity and policy gate.
 
@@ -163,16 +163,16 @@ It does not prove a new numerical billing algorithm or concurrent account API.
 | Owner | Required responsibility | Forbidden inference |
 |-------+-------------------------+---------------------|
 | Scheme / POO Flow | Canonical root/domain/manifest semantics, strict mediation state, Cedar requests, history monotonicity, reservation and settlement rules | A pure updated state or receipt is already durably published |
-| Go | Kubernetes discovery/lifecycle, provider and agent protocol shaping, backpressure, cancellation, SDK instrumentation and original-key reconciliation | SDK retry, redirect or reconnect creates transport authority |
+| Go | Kubernetes discovery/lifecycle, provider and agent protocol shaping, backpressure, cancellation, Gerbil toolchain instrumentation and original-key reconciliation | provider-client retry, redirect or reconnect creates transport authority |
 | Rust broker | Durable consumption bridge, authoritative queue insert-or-compare, immutable range intents, final live-policy gate, per-range invocation CAS, receipt provenance and recovery blocking | Accepted queue entry or persisted row proves provider completion |
 | Cedar | Evaluate all required layers against authenticated actual operation/state, deny errors and mismatches | Cedar allow performs storage, authenticates inputs or prevents a transport bypass |
 | Quint | Exercise commit/enqueue/write crash schedules and unsafe counterexamples | Bounded tests prove arbitrary deployment behavior |
-| Lean | Prove transition invariants, arbitrary finite disjoint ranges and conditional admission composition | A theorem establishes the native SDK/storage refinement |
+| Lean | Prove transition invariants, arbitrary finite disjoint ranges and conditional admission composition | A theorem establishes the native Gerbil toolchain/storage refinement |
 
 Go is selected for its cloud-native networking and Kubernetes/provider ecosystem,
 not as a second egress authority. Rust is selected for explicit ownership and
 controlled low-level transport integration. The runtime must ensure every
-provider-bound application request uses the broker, including SDK background
+provider-bound application request uses the broker, including Gerbil toolchain background
 paths. Language choice alone cannot enforce that deployment property. Scheme's
 semantic descriptors must reach Rust as authenticated immutable data; Go may
 shape bytes only within the authorized manifest/route or request a fresh semantic
@@ -249,7 +249,7 @@ execution, a native queue implementation or external provider qualification.
 Future runtime acceptance must inject crashes before and after consumption CAS,
 intent persistence, queue acceptance, write-intent persistence, call consumption
 and real invocation; drop each response independently; race restart/revocation
-with the final invocation; trigger SDK retry/redirect/background sends; deliver
+with the final invocation; trigger provider-client retry/redirect/background sends; deliver
 partial writes and reordered old receipts; and recover inconsistent queue/store
 snapshots. Observe actual application request IDs, exact manifest intervals,
 authoritative spent/accepted prefixes, current fence and held/charged account

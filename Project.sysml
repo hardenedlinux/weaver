@@ -300,9 +300,9 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.54-source-incarnation-authority.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.54-source-incarnation-authority.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.54-source-incarnation-authority.svg' : File;
-        part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.org' : File;
-        part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.d2' : File;
-        part 'docs/50-59-research-program/59-provider-rpc/59.55-native-reviewed-publication.svg' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.55-evidence-reviewed-publication.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.55-evidence-reviewed-publication.d2' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.55-evidence-reviewed-publication.svg' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.56-runtime-assets-and-authority-floor.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.56-runtime-assets-and-authority-floor.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.56-runtime-assets-and-authority-floor.svg' : File;
@@ -342,7 +342,7 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.69-hot-path-cost-boundaries.svg' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.70-borrowed-validation-dispatch.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.71-host-envelope-and-retest.org' : File;
-        part 'docs/50-59-research-program/59-provider-rpc/59.72-native-read-stage-attribution.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.72-turso-read-stage-attribution.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.73-bridge-commit-cpu-and-ci.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.74-commit-io-and-notification-origin.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.org' : File;

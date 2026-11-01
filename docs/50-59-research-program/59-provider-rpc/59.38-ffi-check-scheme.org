@@ -14,7 +14,7 @@ evidence in 59.37; removing the declaration does not erase failed controls.
 Library acquisition and cleanup remain obligations of the real consumer.
 The obsolete =dev/scheme= inventory, observer and image-packaging experiment
 are removed from the active tree. Their sealed historical evidence is retained.
-SDK tool resolution stays with the Go development runner; Scheme source tests
+Gerbil toolchain tool resolution stays with the Go development runner; Scheme source tests
 stay in =t/= and production modules stay in =scheme/=. No per-language development
 program package or second discovery driver is introduced.
 
@@ -40,7 +40,7 @@ actual twelve-CPU host. No dependency pin or timeout changes are permitted.
 | Rust partial stream / later revocation | An already delivered prefix is retained; forbidden tail is withheld; unknown usage remains held |
 | Dual process restart | Historical publication remains observable but does not override current Policy/fence or reopen consumed claims |
 | Publication response loss | Ingress stays inactive until exact outcome recovery; no rebasing, replacement identity or extra publication write |
-| Concurrent Scheme-authorized messages sharing one budget | Exactly one admissible send under the original reservation; losing requests and SDK retry cannot create extra capacity |
+| Concurrent Scheme-authorized messages sharing one budget | Exactly one admissible send under the original reservation; losing requests and provider-client retry cannot create extra capacity |
 
 The existing control tests share these helpers between JSON/YAML and the actual
 Scheme source-assets path. The added Scheme shared-budget test uses the same
@@ -51,13 +51,13 @@ it does not reproduce governance semantics in a mock.
 =AuthorityPublication.qnt= and =ProviderRpc.qnt= model publication recovery,
 fresh authority checks, affine invocation, held budget and revocation after
 partial release. Their unsafe retry/reset and stale-authority counterexamples
-remain in place. =NativeExitQualification.qnt= separately checks qualification:
+remain in place. =GerbilExitQualification.qnt= separately checks qualification:
 the official package entry, complete checks, exact source, natural return,
 closed library references and the unchanged deadline. A new two-reference
 counterexample rejects exit after only one FFI reference has closed.
 
 =PublicationRecovery.lean= composes immutable original decisions with accounting
-preservation. =NativeExitQualification.lean= retains cleanup and check-count
+preservation. =GerbilExitQualification.lean= retains cleanup and check-count
 obligations for FFI-loaded libraries; it does not assume or require a Scheme
 executable. The native integration tests refine the abstract transport, source,
 digest, persistence and real-send premises. Neither tool proves wall-clock
@@ -83,11 +83,11 @@ Cold package diagnostics remain a separate optional study. They invoke only
 =gerbil build/test=, retain the existing fifteen-second test deadline, preserve
 the nineteen Cases and record failures rather than retrying a slot into success.
 Each matrix slot runs in its own normal Go test process, so compilation does not
-consume an entire multi-slot test process's default watchdog. SDK trace overlays
+consume an entire multi-slot test process's default watchdog. Gerbil toolchain trace overlays
 are rebuilt only in temporary directories, identify original/modified source
-hashes and are explicitly diagnostic. They never qualify the original SDK.
+hashes and are explicitly diagnostic. They never qualify the original Gerbil toolchain.
 
-The existing NativeExitQualification Quint/Lean owners now distinguish original
+The existing GerbilExitQualification Quint/Lean owners now distinguish original
 package tests from instrumented tests, preserve failed observations across
 successful replays, and require matched source/cold-artifact premises. Ordered
 phase-cut decomposition is conditional on faithful native clocks and event

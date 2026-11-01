@@ -79,7 +79,7 @@ adapter is a same-host experiment, not independent anti-rollback storage.
 Weaver consumes that contract and keeps its actual ledger/transport tests; it
 does not maintain a second MRR package or external-manifest runner.
 
-| Native scenario | Observed boundary |
+| Runtime scenario | Observed boundary |
 |-----------------+-------------------|
 | Lost response, reopen, exact replay | Original unknown receipt and reservation survive; replay skips validation; substituted body is refused |
 | Remove content but retain metadata | Historical decision remains readable, while obligation recovery fails; metadata alone cannot certify readiness |

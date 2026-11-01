@@ -21,7 +21,7 @@ semantic: SEMANTICS / CLOUD LIFECYCLE {
     label.near: center-center
     class: semantic
   }
-  cloud: Go / cloud-native reconciliation\nOriginal status and recovery intent\nHealth cannot attest isolation {
+  cloud: Go / cloud-driver_boundary reconciliation\nOriginal status and recovery intent\nHealth cannot attest isolation {
     top: 295
     left: 20
     width: 310
@@ -54,7 +54,7 @@ semantic: SEMANTICS / CLOUD LIFECYCLE {
     height: 28
   }
 }
-native: NATIVE SCOPE / OUTPUT PATHS {
+driver_boundary: DRIVER / OUTPUT PATHS {
   top: 0
   left: 440
   width: 350
@@ -178,11 +178,11 @@ lean: LEAN\nExact isolation cut / current callback / original claim and budget {
   height: 100
   class: semantic
 }
-semantic.identity -> native.manifest
-semantic.cloud -> native.isolation
-native.manifest -> native.isolation
-native.isolation -> owner.certificate
-native.callback -> owner.emit
+semantic.identity -> driver_boundary.manifest
+semantic.cloud -> driver_boundary.isolation
+driver_boundary.manifest -> driver_boundary.isolation
+driver_boundary.isolation -> owner.certificate
+driver_boundary.callback -> owner.emit
 owner.certificate -> recovery.journal
 recovery.journal -> recovery.history
 recovery.history -> recovery.activate
@@ -191,6 +191,6 @@ recovery.activate -> owner.emit
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"02 device isolation","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern 02 device isolation?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/30-39-assurance/33-device-isolation/33.02-device-isolation.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"native-d2","variants":[]}
+{"title":"02 device isolation","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern 02 device isolation?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/30-39-assurance/33-device-isolation/33.02-device-isolation.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2","variants":[]}
 |
 } } }

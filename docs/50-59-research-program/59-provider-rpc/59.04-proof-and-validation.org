@@ -67,7 +67,7 @@ and complete external history publication remain separate refinement obligations
 
 * Correspondence
 
-| Property | Native evidence | Model/proof evidence |
+| Property | Implementation evidence | Model/proof evidence |
 |----------+-----------------+----------------------|
 | Same subject is not the same workload key | mTLS test with a distinct certificate signed by the same issuer and carrying the same subject | Quint sameSubjectDifferentKeyRejectedTest; Lean shared_name_is_not_key_authority |
 | Authentication precedes body decoding | Wrong-token RPC sends headers without a request body and receives unauthenticated, not a decoding deadline | SysML GrpcCallerBinding; native transport premise |

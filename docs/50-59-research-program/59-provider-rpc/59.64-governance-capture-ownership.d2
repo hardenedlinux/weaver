@@ -2,7 +2,7 @@
 vars: {d2-config: {layout-engine: tala;  pad: 70}}
 classes: {card: {label.near: center-center; style.font-size: 21; style.border-radius: 12}}
 title: ORIGINAL GOVERNANCE CAPTURE / INERT SOURCE HANDOFF {shape: text; near: top-center; style.font-size: 32; style.bold: true}
-profile: Original AA Profile and context\nIdentity / model / native threats\nOriginal source and Policy inputs\nCaller-owned data can be mutable {
+profile: Original AA Profile and context\nIdentity / model / Governance threats\nOriginal source and Policy inputs\nCaller-owned data can be mutable {
   class: card; left: 0; top: 0; width: 500; height: 220; style.fill: "#eef3ef"
 }
 capture: Scheme program / scoped capture\nOne producer / sealed methods\nPrivate source before callbacks\nClose fences late callback results {
@@ -11,7 +11,7 @@ capture: Scheme program / scoped capture\nOne producer / sealed methods\nPrivate
 assessment: AA assessment / source guard\nOriginal blocking threats refuse\nFinal guards after all callbacks\nOne completed source emission {
   class: card; left: 1440; top: 0; width: 500; height: 220; style.fill: "#eef3ef"
 }
-native: Rust / Scheme typed boundary\nFixed SDK exports / strong roots\nOwned result / compare original\nNo object words across queues {
+object_bridge: Rust / Scheme typed boundary\nFixed Gerbil exports / strong roots\nOwned result / compare original\nNo object words across queues {
   class: card; left: 1440; top: 320; width: 500; height: 220; style.fill: "#e7edf4"
   icon: ../../architecture/diagrams/assets/rust.svg; icon.near: top-left
 }
@@ -35,10 +35,10 @@ catalog: Configured original producer catalog\nFrozen artifact / source binding\
   class: card; left: 1440; top: 640; width: 500; height: 220; style.fill: "#eef3ef"
   icon: ../../architecture/diagrams/assets/rust.svg; icon.near: top-left
 }
-catalog -> native: Retained original {style.font-size: 18}
+catalog -> object_bridge: Retained original {style.font-size: 18}
 capture -> assessment: Frozen input {style.font-size: 18}
-assessment -> native: Typed objects / no file bridge {style.font-size: 18}
-native -> host: Rust-owned bound data {style.font-size: 18}
+assessment -> object_bridge: Typed objects / no file bridge {style.font-size: 18}
+object_bridge -> host: Rust-owned bound data {style.font-size: 18}
 host -> control: Typed source over gRPC {style.font-size: 18}
 control -> commit: Frozen source gRPC {style.font-size: 18}
 commit -> send: Original intent {style.font-size: 18}
@@ -48,6 +48,6 @@ footer: "Bounded Policy inputs · Original capture · Assessment never grants ex
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"64 governance capture ownership","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern 64 governance capture ownership?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"native-d2","variants":[]}
+{"title":"64 governance capture ownership","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern 64 governance capture ownership?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2","variants":[]}
 |
 } } }

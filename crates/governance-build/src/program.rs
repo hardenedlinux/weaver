@@ -1,5 +1,5 @@
-//! Approved SDK paths, compiler graph staging and native archive composition.
-use crate::stage::{prepare_sdk_modules, staging_expression};
+//! Approved Gerbil paths, compiler graph staging and native archive composition.
+use crate::stage::{prepare_gerbil_modules, staging_expression};
 use gerbil_scheme_aot_build::{
     NativeHeaderInput, ProgramArchiveContract, ProgramArchiveObservation, ProgramArchiveObserver,
     ProgramArchiveRequest, build_program_archive_with_contract, discover_gambit_gsc_from_env,
@@ -126,7 +126,7 @@ impl BuildPaths {
         }
     }
 }
-/// Stage an explicit application and emit native linker directives from the SDK.
+/// Stage an explicit application and emit native linker directives from the Gerbil.
 pub fn build_program() {
     for name in [
         "GERBIL_HOME",
@@ -143,7 +143,7 @@ pub fn build_program() {
     }
     let paths = BuildPaths::from_env();
     let compiler = env::var_os("WEAVER_CONTROL_SCHEME_COMPILER").expect("explicit Scheme compiler");
-    prepare_sdk_modules(&compiler, &paths.library);
+    prepare_gerbil_modules(&compiler, &paths.library);
     paths.stage(&compiler);
     paths.archive();
 }

@@ -199,7 +199,7 @@ protocol nor a replacement for live enforcement.
 
 Go owns Kubernetes discovery, service/learner reconciliation, readiness reporting
 and idempotent status orchestration. It passes immutable requests and authentic
-observations; SDK retry, pod health or successful deployment cannot grant signing
+observations; provider-client retry, pod health or successful deployment cannot grant signing
 qualification or bypass the final broker. No unrestricted signer/send client is
 an adapter convenience API.
 
@@ -240,7 +240,7 @@ Quint signer abstraction does not reimplement the prior full joint configuration
 or account pipeline. Native canonical full-image signature binding, cryptography
 and model-to-runtime refinement remain separate qualification work.
 
-* Native acceptance and performance boundary
+* Implementation acceptance and performance boundary
 
 Crash at each boundary: before/after protected commit, after response loss,
 before/after key emission and before peer delivery. Race conflicting calls with

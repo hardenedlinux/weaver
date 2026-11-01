@@ -187,7 +187,7 @@ completion and account application.
 
 A provider 429/5xx or connection failure is not automatically proof of no execution
 or no billing. An attributable provider rejection may support a future no-execution
-transition only with a qualified provider contract. Generic SDK retries, hedges,
+transition only with a qualified provider contract. Generic provider-client retries, hedges,
 mirrors and post-admission failover are not silently enabled.
 
 A future child attempt must have an owner-allocated ordinal under the same

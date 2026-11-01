@@ -1,4 +1,4 @@
-//! Pinned SDK compiler helper preparation and explicit graph staging input.
+//! Pinned Gerbil compiler helper preparation and explicit graph staging input.
 use gerbil_scheme_aot_build::{gerbil_command, run_native_process, source_workspace};
 /// Construct compiler input from explicit UTF-8 paths. This is build-time only.
 /// No path comes from a runtime RPC or grants producer authority.
@@ -28,19 +28,19 @@ pub fn staging_expression(
 }
 // Pin native runtime/UTF-8 modules and loaded compiler helper ABI together. An installed prefix may
 // contain an older same-named helper with a different argument contract.
-pub(crate) fn prepare_sdk_modules(compiler: &std::ffi::OsStr, library: &std::path::Path) {
-    let sdk = source_workspace();
+pub(crate) fn prepare_gerbil_modules(compiler: &std::ffi::OsStr, library: &std::path::Path) {
+    let gerbil_source = source_workspace();
     for name in ["utf8", "runtime", "program-metadata", "program-build"] {
-        let source = sdk.join("scheme").join(format!("{name}.ss"));
+        let source = gerbil_source.join("scheme").join(format!("{name}.ss"));
         println!("cargo:rerun-if-changed={}", source.display());
         let expression = format!(
             "(import :gerbil/compiler) (compile-module {:?} [output-dir: {:?} invoke-gsc: #t optimize: #t static: #t])",
-            source.to_str().expect("SDK source"),
+            source.to_str().expect("Gerbil source"),
             library.to_str().expect("isolated library")
         );
         run_native_process(
             gerbil_command(compiler).args(["-e", &expression]),
-            "pinned SDK compiler helper",
+            "pinned Gerbil compiler helper",
             true,
         )
         .expect("pinned helper build");

@@ -401,7 +401,7 @@ resulting dispatch claim or obtain the corresponding credential operation.
 Only the owner that won receives the local unforgeable emission handle. Through
 the constrained transport it validates the frozen bytes/reference and actual
 destination, attaches the bound credential, and invokes one upstream attempt.
-The enforcement boundary is the actual application request start, not one SDK
+The enforcement boundary is the actual application request start, not one Gerbil toolchain
 or HTTP-client method call. Headers/stream-open metadata already count as
 application submission; lower transport retries, redirects, mirrors and mesh
 fanout cannot hide within that call. Multiple socket writes/TCP retransmissions

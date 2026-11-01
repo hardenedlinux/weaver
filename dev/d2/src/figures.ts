@@ -12,12 +12,12 @@ export function composeProjectFigure(scene:Scene,variant?:NonNullable<FigureInpu
  if(input.model?.relations.length!==scene.edges.length||input.model.relations.some(edge=>!scene.edges.some(e=>e.id===edge.id&&e.source===owner(edge.src)&&e.target===owner(edge.dst)&&e.label===edge.label)))throw new Error('Figure replaced the captured relationship inventory');
  if(input.layout==='question-map')return composeFigure(input,questionMap);
  if(input.layout==='gateway-responsibility-map'||input.layout==='gateway-relationship-matrix')return composeFigure(input,context=>gatewayComposition(context,scene,input.layout==='gateway-relationship-matrix'));
- if(input.layout==='native-d2'){
+ if(input.layout==='d2'){
   const dimensions=scene.svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
-  if(!dimensions)throw new Error('Native D2 has no finite viewport');
+  if(!dimensions)throw new Error('D2 has no finite viewport');
   const width=Math.ceil(Number(dimensions[1]));
   input={...input,width:Math.min(4096,Math.max(input.width,width+64))};
-  return composeFigure(input,({question,text,copy,icon})=>({markup:`<main><h1 data-heading>${icon('question')}${text(question(input.view.question.ref).text)}</h1><section data-question="${text(input.view.question.ref)}" data-region="diagram" class="native-view">${scene.svg.replace(/<\?xml[^>]*>/,'')}</section></main>`,css:`main{padding:32px}h1{display:flex;gap:16px;align-items:center;font-size:26px;margin-bottom:24px}.native-view{width:${Math.min(width,input.width-64)}px;max-width:100%}.native-view>svg{width:100%;height:auto}[data-summary]{margin-top:24px;padding:16px;font-size:15px;line-height:1.5}` }));
+  return composeFigure(input,({question,text,copy,icon})=>({markup:`<main><h1 data-heading>${icon('question')}${text(question(input.view.question.ref).text)}</h1><section data-question="${text(input.view.question.ref)}" data-region="diagram" class="d2-view">${scene.svg.replace(/<\?xml[^>]*>/,'')}</section></main>`,css:`main{padding:32px}h1{display:flex;gap:16px;align-items:center;font-size:26px;margin-bottom:24px}.d2-view{width:${Math.min(width,input.width-64)}px;max-width:100%}.d2-view>svg{width:100%;height:auto}[data-summary]{margin-top:24px;padding:16px;font-size:15px;line-height:1.5}` }));
  }
  if(input.layout!=='execution-proof-correspondence')throw new Error('Unsupported Weaver composition: '+input.layout);
  const p=input.presentation;

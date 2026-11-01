@@ -31,7 +31,7 @@ The Rust final broker owns a per-range durable record containing current epoch,
 monotone revision, call-consumption count, active permit, immutable invocation
 identity, committed activation decisions and attributable observations. Scheme
 supplies authenticated canonical scope and policy/accounting semantics. Go
-submits recovery jobs and SDK/provider observations through this owner.
+submits recovery jobs and Gerbil toolchain/provider observations through this owner.
 
 The fence and the call-slot CAS must belong to one serializable logical execution
 history. If storage is partitioned, the selected publication must establish an
@@ -45,7 +45,7 @@ This is a software owner and persistence requirement, not physical isolation.
 | Certify | Authenticate exact post-fence scope, epoch, revision and call count | An empty cache or separate replica is authoritative |
 | Prepare | Persist an immutable job bound to that certified cut; require zero calls | A caller may later substitute a newer cut |
 | Activate | CAS exact current cut, closed old generation, zero calls and live Policy; append canonical permit decision | A lost activation response cancels the decision |
-| Invoke | Check exact active permit, range, epoch, revision and live Policy; consume original call slot before SDK handoff | A second permit or SDK retry may reset the slot |
+| Invoke | Check exact active permit, range, epoch, revision and live Policy; consume original call slot before SDK handoff | A second permit or provider-client retry may reset the slot |
 | Full receipt | Validate exact original invocation and full local interval length; reconcile data | Provider completion, final usage or stream release |
 
 The cut includes the original scope as well as the epoch/revision. Exact equality
@@ -123,14 +123,14 @@ must not silently inherit the local broker's at-most-once claim.
 | Component | Responsibility |
 |-----------+----------------|
 | Scheme / POO Flow | Immutable original scope, Code as Policy request semantics, domain/claim binding and unknown-outcome accounting rules; no durable commit inferred from a pure intent |
-| Go | Kubernetes lifecycle and SDK adaptation; query original recovery records, apply backpressure, submit attributable observations; no direct retry/reconnect transport |
-| Rust final broker | Single authoritative fence/call-slot history; certified cut reads, durable jobs and activation CAS; final permit/Policy check and SDK invocation consumption; exact receipt joins |
+| Go | Kubernetes lifecycle and Gerbil toolchain adaptation; query original recovery records, apply backpressure, submit attributable observations; no direct retry/reconnect transport |
+| Rust final broker | Single authoritative fence/call-slot history; certified cut reads, durable jobs and activation CAS; final permit/Policy check and Gerbil toolchain invocation consumption; exact receipt joins |
 | Cedar | All required layers allow without evaluation errors on authenticated actual operation/state; no storage or transport authority inferred from allow |
 | Quint | Enumerate both call/fence orders, lost observations, stale cuts, old permits, timeout replay and foreign receipts with actual parent queue transitions |
 | Lean | Prove non-resetting original call slots, current activation/invocation, cut provenance, parent data-path refinement, original-obligation preservation and a finite conditional progress path |
 
 The performance path keeps provider bytes and call-slot serialization in Rust.
-Go does not copy authority into an independently runnable SDK closure. Scheme
+Go does not copy authority into an independently runnable Gerbil toolchain closure. Scheme
 policy/manifest compilation can be amortized when its currentness remains valid.
 Recovery reads and CAS execute outside normal byte movement; the final current
 Policy and call-slot gate cannot be elided. Batching may share publication I/O

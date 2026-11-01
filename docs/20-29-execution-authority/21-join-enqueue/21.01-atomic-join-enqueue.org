@@ -151,7 +151,7 @@ premises. Remote exactly-once delivery is not claimed.
 |-------+----------------|
 | Scheme / POO Flow | Pure phase classification; original claim/profile/domain and admitted manifest semantics; source-issued canonical identity; current enqueue operation projection |
 | Cedar / cedar-poo-spec | Code as Policy over the actual authenticated enqueue operation and current authority state; all required layers allow without errors |
-| Go | Protocol/provider conversion and cloud-native lifecycle; retain original references, surface unknown/conflict, and resolve SDK retry through the original operation |
+| Go | Protocol/provider conversion and cloud-native lifecycle; retain original references, surface unknown/conflict, and resolve provider-client retry through the original operation |
 | Rust source authority | Commit pure results with executable no-send footprint; recover exact source/account projections |
 | Rust final admission owner | Serialize complete join, Policy/history, owner fence, key/slot CAS and durable original queue decision |
 | Rust executor | Separate current bounded offer gate; original operation lookup, logical range fencing, unknown outcome retention and attributable receipts |

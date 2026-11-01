@@ -223,7 +223,7 @@ binding. This keeps source compilation evidence separate from live enforcement.
 | Evidence | Checked boundary |
 |----------+------------------|
 | =t/governance-test.ss= | Native default assessment accepts its exact context; missing source context and a specialized ready assessment hiding an original blocking threat reject |
-| =t/gateway-source-test.ss= | Stable SDK source projection; Policy and route-order changes stay distinct; false Policy/Governance results cannot compile a handoff |
+| =t/gateway-source-test.ss= | Stable Gerbil toolchain source projection; Policy and route-order changes stay distinct; false Policy/Governance results cannot compile a handoff |
 | Scheme/Go/Rust integration | Stale source context, previous Profile revision, substituted model, mismatched threats and duplicate plans reject naturally before artifact/publication; provider invocation counts remain zero |
 | =AuthorityPublication.qnt= | Compose existing publication/outcome and execution models; check frozen command recovery, acknowledgment, revocation and restart schedules |
 | =WeaverPolicyBridge.lean= | Reuse cedar-poo-spec to relate actual effect/state and exact materialized policies to error-free Cedar allow |
@@ -285,7 +285,7 @@ heap objects and Rust references never cross Go gRPC.
 The user-authorized native bridge PR is
 [[https://github.com/tao3k/gerbil-scheme-rust/pull/18][gerbil-scheme-rust PR 18]], selected at
 =80e68254092589bbb778c9761a058da16fb6f72e=. Weaver reuses its
-=gerbil-scheme-aot-build::gerbil_command= SDK and native compiler environment
+=gerbil-scheme-aot-build::gerbil_command= Gerbil toolchain and native compiler environment
 boundary as a development dependency. The Policy ABI is application glue, not
 a replacement generic Scheme runtime. This implementation does not instantiate
 the PR's Rust-hosted =GerbilRuntime=, isolated VM pool or Python frontend.
@@ -429,7 +429,7 @@ Scheme unit assertions belong to =t/gateway-contracts-test.ss=,
 =t/governance-test.ss= and =t/policy-test.ss=, using native =:std/test=
 =test-suite=, =test-case= and checks. They exercise concrete Record contracts,
 exact numeric projection, Governor selection and the real inert Cedar C ABI.
-The existing SDK =gxtest= API discovers these suites. Its returned result is
+The existing Gerbil toolchain =gxtest= API discovers these suites. Its returned result is
 checked explicitly; an error result or failure to exit naturally within fifteen
 seconds fails the stage.
 

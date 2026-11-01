@@ -65,7 +65,7 @@ they are included when that successor epoch is retired. This supports ordinary
 new jobs without a whole-device barrier for each allocation.
 
 Exact registered scope does not prove physical inventory completeness. The
-NativeOwner contract must establish that every real FD duplicate, mapping,
+DriverOwner contract must establish that every real FD duplicate, mapping,
 callback and provider job is mediated/registered or otherwise inaccessible.
 An unregistered old alias defeats the premise. The model's alias map and blocked
 facts are specification state, not a discovery oracle available to the driver.

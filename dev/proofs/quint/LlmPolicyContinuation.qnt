@@ -24,7 +24,7 @@ module LlmPolicyContinuation {
   // bounded encoding allocation; Scheme/Rust framework properties own that
   // implementation evidence. These protocol schedules grant no allocator proof.
   // Production root_source constructs SDK input; materialize_source copies output.
-  // nativeTyped/exactIntegers/keyKinds cover both directions. Actual constructor
+  // schemeTyped/exactIntegers/keyKinds cover both directions. Actual constructor
   // fidelity, including UTF-8/NUL and optional-field presence, is a refinement
   // premise exercised by the real-VM framework property, not derived here.
   // Aggregate construction refusal supplies no BoundaryCheck or execution/refund.
@@ -35,7 +35,7 @@ module LlmPolicyContinuation {
   type BoundaryEvidence={kind:int,root:int,claim:int,profile:int,configurationSchema:int,normalizer:int,programModule:int,environment:int,
     vm:int,call:int,epoch:int,cut:int,input:int,output:int,schemaChecked:bool,governanceChecked:bool,
     readable:bool,stable:bool,owned:bool,retainedPointer:bool,reentrant:bool,
-    emissions:int,captureCompleted:bool,capturePoisoned:bool,nativeTyped:bool,exactIntegers:bool,keyKinds:bool,assessmentImageOwned:bool,status:int}
+    emissions:int,captureCompleted:bool,capturePoisoned:bool,schemeTyped:bool,exactIntegers:bool,keyKinds:bool,assessmentImageOwned:bool,status:int}
   type BoundaryCheck={evidence:BoundaryEvidence,configurationSchema:int,normalizer:int,programModule:int,environment:int,vm:int,call:int,epoch:int,cut:int,value:int,senderVM:int,senderCall:int,senderEpoch:int}
   type FactState={closure:FactClosure,candidate:FactEvidence,installed:FactEvidence,hostValue:int,sourceValue:int,sourceImages:Set[SourceImage],truth:Set[int],scope:Set[int],
     mode:int,grant:Freshness,connected:bool,channel:int,clock:int,now:int,timeFloor:int,uses:List[FactUse],deltas:List[FactDelta]}
@@ -89,7 +89,7 @@ module LlmPolicyContinuation {
   pure val boundary0={kind:0,root:10,claim:11,profile:20,configurationSchema:1,normalizer:1,programModule:0,environment:0,
     vm:0,call:0,epoch:0,cut:0,input:0,output:0,schemaChecked:true,governanceChecked:true,
     readable:true,stable:true,owned:true,retainedPointer:false,reentrant:false,
-    emissions:1,captureCompleted:true,capturePoisoned:false,nativeTyped:true,exactIntegers:true,keyKinds:true,assessmentImageOwned:true,status:0}
+    emissions:1,captureCompleted:true,capturePoisoned:false,schemeTyped:true,exactIntegers:true,keyKinds:true,assessmentImageOwned:true,status:0}
   def tip=if(s.log.length()==0)0 else s.log.nth(s.log.length()-1).change.id
   def effective=if(s.log.length()==0)true else s.log.nth(s.log.length()-1).change.allowed
   def view={generation:s.generation,tip:tip,fence:s.fence,revision:s.revision}
@@ -120,7 +120,7 @@ module LlmPolicyContinuation {
     e.cut==u.cut and e.input==u.value and e.output==u.value and e.schemaChecked and e.governanceChecked and
     e.readable and e.stable and e.owned and not(e.retainedPointer) and not(e.reentrant) and
     e.emissions==1 and e.captureCompleted and not(e.capturePoisoned) and
-    e.nativeTyped and e.exactIntegers and e.keyKinds and e.assessmentImageOwned and e.status==0}
+    e.schemeTyped and e.exactIntegers and e.keyKinds and e.assessmentImageOwned and e.status==0}
   action recordBoundary(e)=all {boundaryValid(boundaryCheck(e)),s'=s.with("boundaryRecords",s.boundaryRecords.append(boundaryCheck(e)))}
   action semanticRestart=s'=s.with("semanticVM",s.semanticVM+1).with("ffiCall",s.ffiCall+1).with("captureEpoch",s.captureEpoch+1)
   action endBorrow=s'=s.with("ffiCall",s.ffiCall+1)
@@ -665,17 +665,17 @@ module LlmPolicyContinuation {
   run zeroStatusCannotReplaceProducerCompletionTest=init
     .then(recordBoundary(boundary0.with("captureCompleted",false)).fail())
   // Encoding/shape facts are host premises, checked by the actual SDK tests.
-  run encodedBlobCannotClaimNativeOwnershipTest=init
-    .then(recordBoundary(boundary0.with("nativeTyped",false)).fail())
+  run encodedBlobCannotClaimSchemeOwnershipTest=init
+    .then(recordBoundary(boundary0.with("schemeTyped",false)).fail())
   run roundedIntegerCannotClaimSameBudgetTest=init
     .then(recordBoundary(boundary0.with("exactIntegers",false)).fail())
   run symbolStringKeyCoercionCannotClaimSameRecordTest=init
     .then(recordBoundary(boundary0.with("keyKinds",false)).fail())
   // Test-only configuration exports are not native callback completion.
   run fileExportCannotReplaceTypedDeliveryTest=init
-    .then(recordBoundary(boundary0.with("nativeTyped",false).with("captureCompleted",false)).fail())
+    .then(recordBoundary(boundary0.with("schemeTyped",false).with("captureCompleted",false)).fail())
   run fileExportAsDeliveryCounterexampleTest=init
-    .then(unsafeBoundaryRecord(boundary0.with("nativeTyped",false).with("captureCompleted",false)))
+    .then(unsafeBoundaryRecord(boundary0.with("schemeTyped",false).with("captureCompleted",false)))
     .expect(not(boundaryBound) and s.calls==0 and s.hold==6)
   run borrowedAssessmentImageCannotEnterBoundaryTest=init
     .then(recordBoundary(boundary0.with("assessmentImageOwned",false)).fail())
@@ -683,7 +683,7 @@ module LlmPolicyContinuation {
     .then(unsafeBoundaryRecord(boundary0.with("assessmentImageOwned",false)))
     .expect(not(boundaryBound) and s.hold==6 and s.calls==0)
   run unsafeNativeBlobWitness=init
-    .then(unsafeBoundaryRecord(boundary0.with("nativeTyped",false))).expect(not(safety))
+    .then(unsafeBoundaryRecord(boundary0.with("schemeTyped",false))).expect(not(safety))
   run newSourceCutCannotUseOldCaptureTest=factPending.then(changeFactContract(closure0.with("cut",1),Set(),true))
     .then(projectFromBoundary(boundary0).fail())
   run coherentReplacementCannotRedefineOriginalInputTest=init

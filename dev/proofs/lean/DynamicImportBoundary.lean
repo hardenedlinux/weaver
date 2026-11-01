@@ -1,5 +1,5 @@
-import NativeExitQualification
-namespace Weaver.NativeDynamicImportBoundary
+import GerbilExitQualification
+namespace Weaver.DynamicImportBoundary
 
 structure Contract where
   requiredBindings : List Nat
@@ -50,21 +50,21 @@ theorem absent_required_initializer_rejects
   exact missing (required_initializer_cannot_be_pruned admitted required)
 
 theorem dynamic_native_pass_still_closes_handles
-    (pass : NativeExitQualification.Qualified clock receipt) :
+    (pass : GerbilExitQualification.Qualified clock receipt) :
     receipt.returned = true ∧ receipt.handles = [] :=
-  NativeExitQualification.qualification_preserves_cleanup pass
+  GerbilExitQualification.qualification_preserves_cleanup pass
 
 theorem late_dynamic_exit_is_not_qualification
     (late : clock.budget < receipt.elapsed) :
-    ¬ NativeExitQualification.Qualified clock receipt :=
-  NativeExitQualification.late_natural_exit_still_fails late
+    ¬ GerbilExitQualification.Qualified clock receipt :=
+  GerbilExitQualification.late_natural_exit_still_fails late
 
 theorem dynamic_pass_still_requires_final_policy
-    (_pass : NativeExitQualification.Qualified clock receipt)
+    (_pass : GerbilExitQualification.Qualified clock receipt)
     (event : LlmRouting.Step router owner before after)
     (changed : after.dispatches ≠ before.dispatches) :
     ∃ p, owner.wireValid p ∧ owner.finalPolicyValid p (LlmRouting.view before) :=
-  NativeExitQualification.natural_pass_still_needs_gateway_policy _pass event changed
+  GerbilExitQualification.natural_pass_still_needs_gateway_policy _pass event changed
 
 #print axioms binding_agreement_composes
 #print axioms admitted_bindings_keep_original_owner
@@ -75,4 +75,4 @@ theorem dynamic_pass_still_requires_final_policy
 #print axioms dynamic_native_pass_still_closes_handles
 #print axioms late_dynamic_exit_is_not_qualification
 #print axioms dynamic_pass_still_requires_final_policy
-end Weaver.NativeDynamicImportBoundary
+end Weaver.DynamicImportBoundary

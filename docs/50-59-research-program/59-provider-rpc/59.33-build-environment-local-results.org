@@ -64,7 +64,7 @@ same committed source. Source and dependency hashes matched before and after.
 | Actual Scheme / Rust / Go control and stream integration | PASS, exit 0 | 144.272 s |
 
 The stream tests cover revocation, restart, partial writes, shared budgets,
-SDK retries and publication response loss. The environment test executes the
+provider-client retries and publication response loss. The environment test executes the
 actual Rust metadata producer and pkg-config consumer, including paths with
 spaces and a version checked against Cargo workspace metadata. Focused Go race
 tests, architecture/workflow checks, actionlint, example Clippy with warnings

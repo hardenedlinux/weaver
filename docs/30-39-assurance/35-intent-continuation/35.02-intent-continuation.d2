@@ -21,7 +21,7 @@ semantic: SEMANTICS / CLOUD RECONCILIATION {
     label.near: center-center
     class: semantic
   }
-  cloud: Go / cloud-native reconciliation\nRetry original root and status reads\nPod restart cannot create authority {
+  cloud: Go / cloud-continuation_owner reconciliation\nRetry original root and status reads\nPod restart cannot create authority {
     top: 295
     left: 20
     width: 310
@@ -88,7 +88,7 @@ ledger: PROTECTED ROOT / DURABLE HISTORY {
     class: ledger
   }
 }
-native: RUST / PHYSICAL CONTINUATION {
+continuation_owner: RUST / CONTINUATION OWNER {
   top: 0
   left: 880
   width: 350
@@ -113,7 +113,7 @@ native: RUST / PHYSICAL CONTINUATION {
     label.near: center-center
     class: runtime
   }
-  release: Final Rust broker and native gate\nCurrent hardware / original spent-state\nProtected commit and live Policy {
+  release: Final Rust broker and continuation_owner gate\nCurrent hardware / original spent-state\nProtected commit and live Policy {
     top: 500
     left: 20
     width: 310
@@ -180,24 +180,24 @@ lean: LEAN\nSame-root conservation / unique completion / conditional fair recove
 }
 semantic.obligation -> ledger.history
 semantic.cloud -> ledger.head
-ledger.history -> native.cut
-native.cut -> ledger.head
-ledger.head -> native.fence
-native.fence -> ledger.commit
+ledger.history -> continuation_owner.cut
+continuation_owner.cut -> ledger.head
+ledger.head -> continuation_owner.fence
+continuation_owner.fence -> ledger.commit
 ledger.head -> semantic.unknown: retained {
   style.stroke-dash: 4
 }
 ledger.commit -> recovery.observe
 recovery.observe -> recovery.progress
 recovery.progress -> recovery.activate
-recovery.activate -> native.release
+recovery.activate -> continuation_owner.release
 
-native.fence -> native.cut: new fence {
+continuation_owner.fence -> continuation_owner.cut: new fence {
   style.stroke-dash: 4
 }
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"02 intent continuation","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern 02 intent continuation?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/30-39-assurance/35-intent-continuation/35.02-intent-continuation.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"native-d2","variants":[]}
+{"title":"02 intent continuation","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern 02 intent continuation?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/30-39-assurance/35-intent-continuation/35.02-intent-continuation.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2","variants":[]}
 |
 } } }

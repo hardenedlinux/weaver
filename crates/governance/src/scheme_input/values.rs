@@ -1,4 +1,4 @@
-//! SDK constructors with cumulative traversal bounds; every intermediate is rooted.
+//! Gerbil constructors with cumulative traversal bounds; every intermediate is rooted.
 use crate::{MAX_SOURCE_BYTES, SourceError};
 use gerbil_scheme::{
     BinaryInteger, CollectionKind, GerbilRuntime, IdentifierKind, RootedSchemeObject, TableEquality,
@@ -11,7 +11,7 @@ pub(super) struct Input<'r> {
     bytes: Cell<usize>,
     nodes: Cell<usize>,
 }
-fn sdk<T>(value: std::result::Result<T, gerbil_scheme::NativeError>) -> Result<T> {
+fn scheme_result<T>(value: std::result::Result<T, gerbil_scheme::NativeError>) -> Result<T> {
     value.map_err(|_| SourceError::Scheme)
 }
 impl<'r> Input<'r> {
@@ -39,7 +39,7 @@ impl<'r> Input<'r> {
     pub(super) fn text(&self, value: &str) -> Result<Object<'r>> {
         self.node()?;
         self.bytes(value.len())?;
-        Ok(sdk(self.vm.string_from_utf8(value))?.into_object())
+        Ok(scheme_result(self.vm.string_from_utf8(value))?.into_object())
     }
     pub(super) fn number(&self, value: u64) -> Result<Object<'r>> {
         self.node()?;
@@ -48,7 +48,7 @@ impl<'r> Input<'r> {
             bytes.pop();
         }
         let integer = BinaryInteger::new(false, bytes).map_err(|_| SourceError::Contract)?;
-        sdk(self.vm.big_integer(&integer))
+        scheme_result(self.vm.big_integer(&integer))
     }
     pub(super) fn record(&self, fields: Vec<(&'static str, Object<'r>)>) -> Result<Object<'r>> {
         self.node()?;
@@ -59,23 +59,26 @@ impl<'r> Input<'r> {
             .iter()
             .map(|(name, _)| {
                 self.bytes(name.len())?;
-                sdk(self.vm.intern_identifier(IdentifierKind::Symbol, name))
+                scheme_result(self.vm.intern_identifier(IdentifierKind::Symbol, name))
             })
             .collect::<Result<Vec<_>>>()?;
         let entries: Vec<_> = keys
             .iter()
             .zip(fields.iter().map(|(_, value)| value))
             .collect();
-        sdk(self.vm.hash_table(TableEquality::Structural, &entries))
+        scheme_result(self.vm.hash_table(TableEquality::Structural, &entries))
     }
     pub(super) fn vector(&self, values: Vec<Object<'r>>) -> Result<Object<'r>> {
         self.node()?;
         if values.len() > 64 {
             return Err(SourceError::Bound);
         }
-        Ok(sdk(self
-            .vm
-            .collection_from_objects(CollectionKind::Vector, &values.iter().collect::<Vec<_>>()))?
+        Ok(scheme_result(
+            self.vm.collection_from_objects(
+                CollectionKind::Vector,
+                &values.iter().collect::<Vec<_>>(),
+            ),
+        )?
         .into_object())
     }
     pub(super) fn strings(&self, values: &[String]) -> Result<Object<'r>> {
@@ -108,12 +111,14 @@ impl<'r> Input<'r> {
             .iter()
             .map(|(key, value)| Ok((self.text(key)?, convert(value)?)))
             .collect::<Result<Vec<_>>>()?;
-        sdk(self.vm.hash_table(
-            TableEquality::Structural,
-            &entries
-                .iter()
-                .map(|(key, value)| (key, value))
-                .collect::<Vec<_>>(),
-        ))
+        scheme_result(
+            self.vm.hash_table(
+                TableEquality::Structural,
+                &entries
+                    .iter()
+                    .map(|(key, value)| (key, value))
+                    .collect::<Vec<_>>(),
+            ),
+        )
     }
 }

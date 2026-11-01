@@ -180,7 +180,7 @@ This is enrollment/control-plane work. Cache authenticated parsing/signature res
 only with exact identity and credential-generation dependencies; do not cache a live
 approval across rotation. Use a bounded per-task join certificate tied to the accepted
 prefix and determining CAS rather than a registry-wide scan on the streaming path.
-Existing final Rust broker checks still constrain routing, SDK retries, partial writes,
+Existing final Rust broker checks still constrain routing, provider-client retries, partial writes,
 unknown execution and budget settlement. No performance claim is established here.
 
 * Verification boundary

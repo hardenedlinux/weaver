@@ -140,7 +140,7 @@ broker: participants accept only authority-certified decisions at exact position
 and their mutation interfaces have no independent grant path. A late committed
 result can still be observed and materialized under the new owner; this cannot
 create another consumption. All old-owner effect-capable queues must remain behind
-the logical Rust broker fence. Go SDK retries, redirects and stream reconnects
+the logical Rust broker fence. Go provider-client retries, redirects and stream reconnects
 cannot open a direct provider connection around it.
 
 Whole-authority rollback or two independent primaries violate the qualification

@@ -14,7 +14,7 @@ outcome/cancellation categories, byte count and host-wall timestamps. They exclu
 source paths, source/Policy bodies and credentials. These ordinary stderr
 diagnostics do not deliver the target event bus, nonblocking exporter, loss
 accounting or durable security audit. A PID is not an authenticated incarnation.
-The native integration fixture also emits fixed labels and SDK CPU/real/host-wall
+The native integration fixture also emits fixed labels and Gerbil toolchain CPU/real/host-wall
 clocks. Trusted operator code can forge that text; it never selects a claim,
 authorizes publication or proves process quiescence.
 

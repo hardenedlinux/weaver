@@ -12,7 +12,7 @@
 | Rust contracts | =weaver-contracts= | Original task, explicit wire binding and domain-separated proposal digest |
 | Rust policy | =weaver-policy= | Actual Cedar evaluation over trusted original task and exact operation facts; error-free allow required |
 | Rust deciding store | =weaver-ledger= | Immutable task records, shared holds, queue, irreversible consumption, publication CAS and final serialization |
-| Rust final broker | =weaver-broker= | One private bounded HTTPS send with no redirect, proxy inheritance or SDK retry |
+| Rust final broker | =weaver-broker= | One private bounded HTTPS send with no redirect, proxy inheritance or provider-client retry |
 | Rust local adapter | =weaver-cli= | Trusted local publication/registration and explicit enqueue/execute commands |
 
 Go's next adapters can reuse its Kubernetes, networking and protocol ecosystems.

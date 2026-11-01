@@ -26,7 +26,7 @@ lag forwarding and remains explicit rather than blocking or fabricating evidence
 
 | Boundary | Pinned source behavior | Consequence |
 |----------+------------------------+-------------|
-| SDK step_inner | IO, Yield and Sleep all map to SDK Io | Pending does not identify physical I/O |
+| Turso step_inner | IO, Yield and Sleep all map to Turso Io | Pending does not identify physical I/O |
 | Default Darwin PlatformIO | UnixIO pread/pwrite/sync are synchronous; step is a no-op | Own file-call time is inside poll, not its later Pending gap |
 | MVCC group park | Register a completion while another transaction holds commit lock | A waiter can depend on another commit's progress |
 | Group unlock/wake | Complete parked waiters after shared progress changes | Context correlation is not new send authority |
@@ -55,7 +55,7 @@ native validation are distinct test modules. No gate waiver.
 
 * Measured separation
 
-The [[https://github.com/tao3k/mrr-data/blob/feat/mrr-property-source-port/docs/benchmarks/shared-backend-commit-io.org][MRR Data Rust-native receipt]] retains every mode/domain triplet, source/binary
+The [[https://github.com/tao3k/mrr-data/blob/feat/mrr-property-source-port/docs/benchmarks/shared-backend-commit-io.org][MRR Data Rust benchmark receipt]] retains every mode/domain triplet, source/binary
 identity and raw-data provenance. One frozen binary completes wrapper-off/on/on/off:
 72 cases, 55296 commits/exact recoveries and 165888 joined phase records, zero
 unexpected refusal/error/Unknown and natural exits. Actual/runtime/write/shared
@@ -155,11 +155,11 @@ neither a cold-build result nor acceptance of the missing local source cohort.
 
 The 6f839950 source jobs still fail. On Ubuntu the quiet owner is the mrr-gerbil
 archive build script after a roughly 59 MB program_link.i, with Rust compilation
-artifacts already complete. The SDK already applies -fno-gcse-lm to the linker
-object. The next candidate preserves the selected SDK's public
+artifacts already complete. The Gerbil toolchain already applies -fno-gcse-lm to the linker
+object. The next candidate preserves the selected Gerbil toolchain's public
 CORCXXFLAGS_GAMBUILD defaults and adds only -ftrack-macro-expansion=0; it changes
 neither O2, ABI flags, immutable release, dependency pins nor 1200/30 watchdogs.
-Eight focused controls and a real installed SDK query pass. The local newer SDK
+Eight focused controls and a real installed Gerbil toolchain query pass. The local newer Gerbil toolchain
 is not hosted cold-source acceptance. Native source CI must verify the candidate;
 previous failures and kernel/paired samples stay outside Git without deletion.
 The SysML diagnostic contract records this boundary; the core diagram remains
@@ -167,10 +167,10 @@ about authority and retained outcomes, with its SVG embedded above.
 
 At 19844e9c, both complete immutable Scheme packages build and remote Python
 passes all 71 tests. Darwin reaches final Rust linking after native archive
-compilation, then fails on ssl discovery: the SDK's recorded build-host Cellar
+compilation, then fails on ssl discovery: the Gerbil toolchain's recorded build-host Cellar
 path is absent. The next host-only correction retains existing RUSTFLAGS and
 adds a native search directory from brew --prefix openssl. It does not replace
-the SDK, alter ABI flags or weaken any recovery test. Reaching this new failure
+the Gerbil toolchain, alter ABI flags or weaken any recovery test. Reaching this new failure
 is not a controlled compiler-speedup measurement or full source acceptance.
 
 * Acceptance versus diagnostic workload
@@ -183,10 +183,10 @@ preprocessing reports 16 MB GGC; this is not a controlled compiler speedup or
 Darwin link acceptance. That failure remains preserved.
 
 The 7c79d914 quiet-mode experiment disables native verbosity and explicit LLVM
-pass diagnostics, but fails Ubuntu's original idle bound. The SDK invokes its
+pass diagnostics, but fails Ubuntu's original idle bound. The Gerbil toolchain invokes its
 observer; the pinned MRR adapter suppresses the callbacks at level zero. Runtime
 MRR_NATIVE_PROGRESS does not enable build observations. This corrects the earlier
-incomplete claim that SDK callbacks alone preserve Cargo-visible progress.
+incomplete claim that Gerbil toolchain callbacks alone preserve Cargo-visible progress.
 O2, ABI, original source graph, feature/test/resource
 matrix and 1200/30 limits remain unchanged. Silence still fails at the original
 bound. Detailed compiler tracing is an opt-in diagnostic workload, not a source
@@ -197,7 +197,7 @@ diagnostics opt-in and uses the supported GCC diagnostic destination solely to
 suppress optional optimizer notes. Real native events, collector output, errors
 and compiler-written artifacts remain enabled. A real paired compiler control
 produces identical objects with and without note suppression and preserves a
-syntax-error negative control; ten focused option controls pass. Initial SDK
+syntax-error negative control; ten focused option controls pass. Initial Gerbil toolchain
 home-mapping and runtime-option control failures remain retained separately.
 No controlled speedup or full hosted source pass is inferred. Native allocation
 dumps remain coupled in the pinned implementation; a fully independent native
@@ -226,7 +226,7 @@ it cannot fully distinguish compiler silence from delayed forwarding.
 A real isolated Rust/Cargo control makes the framing boundary explicit: a
 flushed fragment followed by a one-second wait reaches the receiver together
 with its terminating newline; the received marker gap is zero. A newline-first
-control yields a 1.005142-second received gap. SDK callback invocation, emitted
+control yields a 1.005142-second received gap. Gerbil toolchain callback invocation, emitted
 bytes, Cargo-visible records and final process completion are distinct facts.
 The earlier note-suppression controls prove object equality, not progress
 protocol equivalence; their failed acceptance experiments remain retained.
@@ -255,7 +255,7 @@ native stderr and 1.9 MB native stdout; compaction does not establish upstream
 liveness. This is a retained failure, not a completed CI fix.
 
 The next diagnostic retains generated linker inputs and the manifest, then
-replays exactly one confined preprocessed input through the SDK-declared compiler
+replays exactly one confined preprocessed input through the Gerbil toolchain-declared compiler
 outside Cargo, only after the standard gate has failed. It preserves declared
 ABI/O2 options and the same 1200/30 limits, writes separate outputs and records
 actual chunk times, bytes and newlines plus compiler identity and input digests.
@@ -263,7 +263,7 @@ No timer, input read or CPU activity becomes progress; no replay result replaces
 the original acceptance. Before/after digest matches are observations rather
 than hostile-host immutability proof. Pins and all original test/resource cases
 remain unchanged. The added diagnostic glue passes the complete 81-case Python
-suite and a real selected-SDK tiny-input plumbing control. The exact Linux
+suite and a real selected-Gerbil toolchain tiny-input plumbing control. The exact Linux
 compiler/forwarding attribution is still unresolved pending failed-input replay.
 The four-leg Rust benchmark and its clock/kernel-join limitations are unchanged.
 
@@ -285,6 +285,92 @@ The duplicate consumer gerbil build is removed because MRR's build adapter
 already invokes its canonical build.ss into isolated Cargo output. Dependencies
 are still prepared, and all original Cargo source/recovery checks remain.
 Source pins, benchmark samples and failure evidence remain unchanged. Compiler
-progress failures are still open at their actual SDK/MRR owner. No consumer
+progress failures are still open at their actual Gerbil toolchain/MRR owner. No consumer
 workaround or diagnostic result is treated as a completed CI fix. The embedded
 core diagram remains free of compiler options, versions and acceptance metrics.
+
+* Build protocol review and precise ownership
+
+The architecture owner is =ControlActivation::GovernancePolicyProjection=.
+Gerbil Scheme is a language implementation and toolchain; gerbil-scheme-rust
+owns Scheme/Rust integration and compiler build support. Names describe the
+boundary rather than an unspecified "Native" subsystem.
+
+| Owner | Responsibility | Excluded authority |
+|-------+----------------+--------------------|
+| MRR =build.ss= | PackageSpec, Scheme module closure, real build entry/return | Compiler optimization and final process-exit claims |
+| gerbil-scheme-rust AOT builder | Selected Gambit compiler, C flags, ABI, archive, output framing | Application module selection and runtime admission |
+| MRR =build.rs= and =mrr-gerbil-build= | Canonical package invocation, Cargo observations and output identity | Consumer compiler overrides and synthetic progress |
+| MRR Data | Typed source handoff, Rust storage tests and benchmarks | A second Scheme application or Python compiler strategy |
+| Weaver | Source admission, current Policy/fence, one-use final execution | Permission derived from a compiler receipt |
+
+MRR phase summaries must remain visible when detailed diagnostics are disabled.
+Package entry and return are genuine phase events, not successful natural exit.
+The Scheme build returns normally; the caller still requires actual child status
+and complete artifact identity. Per-module detail remains verbosity-controlled.
+
+Cargo line framing is a separate boundary from flushing a child pipe. The AOT
+builder delimits actual received compiler chunks when they lack a trailing
+newline. Existing complete records are unchanged. Added delimiters are protocol
+framing, so a framed transcript is not a byte-identical original compiler stream.
+An empty read emits nothing. A completely silent compiler cannot acquire progress
+from a clock, input read, cached file or elapsed CPU time.
+
+Detailed optimizer notes and allocation dumps are explicit diagnostics. They must
+not be enabled merely to obtain ordinary progress. The selected compiler,
+optimization and ABI stay fixed. Source changes are tested at their upstream
+owners; unchanged consumer pins do not automatically acquire this repair.
+
+The source-handoff feature path is intentional and explicit: MRR Data delegates
+to mrr-property-source, which uses mrr-frontends and its embedded Scheme grammar.
+The MRR workspace now selects =embedded-runtime= explicitly while disabling
+implicit defaults on that dependency. This preserves the prior module/runtime
+closure; it does not make source parsing compiler-free. Native inference is a
+separate optional semantic capability. Base storage remains independent of that
+optional source adapter.
+
+The core [[file:59.64-governance-capture-ownership.d2][Scheme object bridge view]] uses concrete owners; compiler switches,
+versions and acceptance records belong in this narrative rather than the graph.
+
+#+CAPTION: Scheme source capture, typed object bridge and independent execution authority.
+[[file:59.64-governance-capture-ownership.svg]]
+
+* Owner-level verification and remaining integration boundary
+
+| Check | Observed result | Limit |
+|-------+-----------------+-------|
+| gerbil-scheme-rust AOT builder | 25 library tests and 19 integration tests pass; strict all-target Clippy passes | Seven ignored environment/long-running controls are not counted as passed |
+| Actual paired Gambit/GCC | Explicit ignored control passes; baseline/progress/detailed modes produce identical object bytes | Tiny compilation control, not the hosted giant-linker performance gate |
+| MRR build adapter | Seven tests and strict all-target Clippy pass; one ignored live supervisor case remains distinct | No claim of a complete application rebuild |
+| MRR source feature closure | Locked Cargo tree confirms explicit frontend embedded-runtime reaches mrr-gerbil | Base MRR Data storage remains a different feature graph |
+| Existing Lean composition | 33 modules checked with the declared toolchain after namespace changes | Host compiler, transport and persistence premises remain separate |
+| Existing Quint temporal controls | 24 exit, 15 import, 15 locator and 214 Scheme-boundary continuation tests pass with the existing seed | No duplicate policy model or new execution authority |
+| Weaver Rust boundary | Locked offline scheme-vm all-target check and 22 library tests pass | Compiled application integration is a separate gate |
+| Diagrams | 108 source-bound SVG/PNG views generated using 12 host lanes | Full diagram test gate still records its original five-second hook failure |
+
+The naming audit exposed an existing stale conjunction projection in
+=DynamicPairedEvidence.whole_process_gate_composes=. Qualification had acquired
+a required package-entry condition. The composition now uses the named
+=GerbilExitQualification.qualification_preserves_deadline= theorem, retaining
+the same 15-second bound and cleanup obligation; no proposition is weakened.
+The failed Lean attempt remains outside Git alongside the corrected check.
+
+The diagram suite's first failure was Chromium process permission denial. With
+that permission restored, the existing D2 compilation hook still exceeded five
+seconds. Neither failure is relabeled a pass, and no timeout is changed. The
+separate standard renderer completed all views; current D2 source digests match
+the generated SVG receipt. Rendering is not the failed test gate's acceptance.
+
+The source fixes are published to gerbil-scheme-rust PR 18 and MRR PR 9. Their
+new CI runs were queued at the audit checkpoint. MRR Data PR 12 retains its
+existing dependency pins and does not yet consume these upstream source fixes.
+Do not infer a repaired MRR Data hosted build merely from owner-level tests.
+Historical failure receipts, compiler inputs and benchmark samples are preserved;
+new logs and temporary verification tools remain outside the repository.
+
+The unchanged-pin MRR Data source run at =224bc440= still fails Ubuntu with
+=ProgressTimeout: no output progress: cargo=. Its exact failed log tail is
+retained outside Git. The later consumer head and both repaired upstream heads
+have separate queued/pending runs. A passing compiler framing handshake does
+not establish whether the large Linux linker ever emits bytes during every
+quiet interval; that hosted build obligation remains open.

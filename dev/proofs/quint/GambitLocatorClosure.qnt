@@ -1,4 +1,4 @@
-module NativeLocatorClosure {
+module GambitLocatorClosure {
   type State={image0:int,image1:int,entry0:int,entry1:int,source0:int,source1:int,complete:bool,pureBodies:bool,published:bool,init:Set[int],opened:Set[int],closed:Set[int],stopping:bool}
   var s:State
   pure val initial:State={image0:0,image1:1,entry0:7,entry1:7,source0:11,source1:12,complete:false,pureBodies:true,published:false,init:Set(),opened:Set(),closed:Set(),stopping:false}

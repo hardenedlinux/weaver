@@ -31,7 +31,7 @@ by the original Agentic AI Lab package. No package was uninstalled.
 | Root =gerbil build -g= | PASS; production gateway, governance and policy libraries generated |
 | Development =gerbil build -g= | PASS; init-owned =exe:= compilation, linking and artifact issuance |
 | Go development-tool and project race tests | PASS |
-| Rust SDK build-helper Clippy, warnings denied | PASS |
+| gerbil-scheme-rust build-helper Clippy, warnings denied | PASS |
 | Quint qualification scenarios / counterexamples | PASS, 13 |
 | Quint audit exploration | PASS, 1,000 samples, 60 steps, seed 293, init =boot= |
 | Lean qualification and its dependency closure | PASS, 14 modules, pinned Lean 4.34.1 |

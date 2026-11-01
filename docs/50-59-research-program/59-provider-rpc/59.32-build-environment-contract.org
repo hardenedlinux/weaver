@@ -2,18 +2,18 @@
 #+language: en
 
 * Ownership
-The selected Gerbil/Gambit SDK owns native compiler selection. Weaver consumes
-the SDK's selected program receipt and resolves it against the build child's
+The selected Gerbil/Gambit Gerbil toolchain owns native compiler selection. Weaver consumes
+the Gerbil toolchain's selected program receipt and resolves it against the build child's
 environment and working directory. A recorded command name is not a repository
 filename. Tool hashing follows the executable selected by that environment,
 including symbolic links; it neither executes discovery commands nor evaluates
 shell command text. Parent-process PATH is not a substitute for the child's PATH.
 
-The SDK receipt distinguishes the Gambit compiler, C compiler and packager.
+The Gerbil toolchain receipt distinguishes the Gambit compiler, C compiler and packager.
 The diagnostic observer uses the recorded C compiler; no system compiler path
 is embedded in the test runner. Tests inject environment selections and derive
 their fixture paths from temporary directories. They cover unset CC with an
-SDK-discovered command, explicit relative and absolute selections, symbolic
+Gerbil toolchain-discovered command, explicit relative and absolute selections, symbolic
 links, and rejection of empty or non-executable selections. Optional process
 sampling requires an explicit =WEAVER_SCHEME_SAMPLER= environment selection.
 
@@ -36,7 +36,7 @@ from the generated package filename. A path containing spaces is not passed as
 a package expression. The original direct-file probe failed this case; the
 environment-based discovery test now checks it with the real pkg-config tool.
 
-The Scheme dependency build retains the selected SDK and caller compiler
+The Scheme dependency build retains the selected Gerbil toolchain and caller compiler
 environment, including an explicitly supplied =COMPILER_PATH=. Weaver does not
 substitute a fixed system directory. The dependency pins, original runtime
 fifteen-second gate and declared compiler heap envelope remain unchanged.
@@ -46,7 +46,7 @@ Independent suites use =ubuntu-latest= by default; Scheme integration covers
 =ubuntu-latest= and =macos-latest=. These are GitHub's supported moving stable
 runner labels, rather than a promise of a particular OS vendor release.
 [[https://docs.github.com/en/actions/reference/runners/github-hosted-runners][GitHub-hosted runner documentation]] defines the labels; each workflow records
-its actual image. Rust, Go, proof and SDK dependency revisions remain pinned.
+its actual image. Rust, Go, proof and Gerbil toolchain dependency revisions remain pinned.
 The workflow continues to exclude historical evidence archives from checkout.
 
 * Failure evidence and validation

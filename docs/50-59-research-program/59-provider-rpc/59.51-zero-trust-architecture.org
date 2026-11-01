@@ -27,7 +27,7 @@ The source-reviewed upstream contract is
 [[https://github.com/hardenedlinux/cedar-poo-spec/pull/8][SPEC ZeroTrust and Gateway composition]]. The generic framework is the
 authorization contract: authenticated, authorized, current at use, consumption
 committed, unknown retained, not revoked and mediated. Cedar Allow is one
-condition. Neither a Go proposal, Scheme receipt, proof object nor an SDK handle
+condition. Neither a Go proposal, Scheme receipt, proof object nor an Gerbil toolchain handle
 is by itself permission to send.
 
 The required parent is the authoritative original semantic contract, not a
@@ -51,7 +51,7 @@ proposals over typed gRPC. It cannot turn a cached Allow into an execution
 permit. Scheme retains the AA semantic/governance owner; it does not introduce
 a second authorization DSL. Rust owns current Cedar assessment, durable claim
 and exposure checks, and final execution. These checks do not add JSON to the
-Scheme/Rust SDK conversion boundary.
+Scheme/Rust object conversion boundary.
 
 ** Durable claim and exposure refinement
 
@@ -214,7 +214,7 @@ The follow-up qualification receipts are separate from the provider baseline:
   rows and mixed request/message exposure. Original callbacks remain uncalled
   on refusal. Outcome observation and the corrupted image are not repaired.
 - Four race-enabled Go/Rust TLS/gRPC tests passed again after the equality
-  change: complete streams sharing budget with SDK retry rejection, publication
+  change: complete streams sharing budget with provider-client retry rejection, publication
   reply loss, partial request/restart and original profile/Cedar final binding.
   This does not add a Go bypass around the Rust deciding owner.
 - Strict all-target Clippy passed. The Go benchmark-owner tests passed with
@@ -322,7 +322,7 @@ language or assumes a separate daemon.
 | SPEC Authorization / Delta | Cedar composition, exact policy-world comparison and conditional no-gain/replay laws | Same-world no-gain does not prove mutable-fact or trajectory safety |
 | Rust authority / PE responsibility | Reconstruct the concrete Cedar assessment, bind reviewed source/schema/profile evidence and current parent, resolve publication CAS | A staged proposal or historical publication result cannot authorize current use |
 | Go cloud integration / PA orchestration | Kubernetes/workload identity integration, lifecycle, protocol ingress, gRPC control, activation/revocation coordination | Informer readiness, RPC success or authenticated channel cannot skip Rust's deciding checks |
-| Rust broker / PEP responsibility | Durable consumption, reservations, dispatch burn, current checks and final queue/transport admission | A queue credit, SDK retry, Arrow batch or copied proof cannot create another send capability |
+| Rust broker / PEP responsibility | Durable consumption, reservations, dispatch burn, current checks and final queue/transport admission | A queue credit, provider-client retry, Arrow batch or copied proof cannot create another send capability |
 | Fact authorities and local telemetry | Publish authenticated observations; preserve audit outcomes and governed feedback | Monitoring scores and raw LLM/tool output cannot directly mutate authoritative Policy |
 
 Go's value is its cloud-native controllers, protocol libraries, operational
@@ -428,7 +428,7 @@ Local checks on the reviewed candidate sources:
   slow consumers, cancellation/reconnect, pending proposals, lost staging and
   publication replies, old parents, local restart and profile-bound sends.
   These do not exercise external identity/posture sources or mandatory Delta CAS.
-- The OpenSysML SDK project/trace checks passed. Named trace coverage is structural,
+- The OpenOpenSysML Go API project/trace checks passed. Named trace coverage is structural,
   not a behavioral refinement proof. Both D2 figures render; SVG is embedded above.
 
 Raw logs and generated receipts remain in temporary storage. CI does not gate
@@ -594,7 +594,7 @@ separate from the qualified native execution.
 
 The Go integration owner rebuilds the current Rust server and race-enabled Go
 control binary. Real mutually authenticated gRPC/HTTPS tests pass for JSON/YAML
-publication and revocation across restart, shared-budget streaming and SDK retry,
+publication and revocation across restart, shared-budget streaming and provider-client retry,
 Protobuf/Arrow streaming, and partial-request recovery retaining unknown claims.
 These focused tests do not substitute for the complete Scheme integration suite.
 

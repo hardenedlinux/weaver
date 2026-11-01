@@ -157,7 +157,7 @@ financial outcome.
 | Owner | Responsibility | Enforced boundary |
 |-------+----------------+-------------------|
 | Scheme / POO | Define exact frame/result semantics, original financial effect and pending obligation; derive Cedar requests | Distinguish local durability, candidate acceptance, financial decision and activation |
-| Go | Kubernetes lifecycle/identity integration, SDK observations and original-outcome query/retry proposals | No direct WAL-to-balance writer or authority from a restored SDK callback |
+| Go | Kubernetes lifecycle/identity integration, Gerbil toolchain observations and original-outcome query/retry proposals | No direct WAL-to-balance writer or authority from a restored Gerbil toolchain callback |
 | Rust WAL owner | Atomically frame complete candidate and durable flush; detect truncated/corrupt prefixes | Local frame cannot release money |
 | Rust independent account authority | Retain complete accepted candidates; serialize final commit with current head/owner/source/policy | One actual application/reservation/hold/delta transaction |
 | Rust projection/final broker | Repair exact committed prefix, install exact image and gate final financial use | No stale active handle, second delta or external send during replay |

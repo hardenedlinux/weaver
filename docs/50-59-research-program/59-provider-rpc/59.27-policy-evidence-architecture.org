@@ -225,7 +225,7 @@ deciding authority instead of creating one independent budget per family.
 | Decide | Compare original parent/fence, source incarnation, fact floor and all image bindings in the deciding transaction | Conflicting parent has an original rejected outcome; stale facts/owner cannot publish using the old validation |
 | Commit | Atomically record the applied image, evidence requirement and immutable operation outcome | Acknowledgment loss is unknown to the caller, not a second permission |
 | Activate | Observe the exact original committed outcome and join it with current authority | A historical receipt cannot undo revocation or make an old image current |
-| Consume/send | Join original task and actual request with current Policy/schema/history; consume before transport | Queues, SDK retries and new sessions cannot recreate consumed capability |
+| Consume/send | Join original task and actual request with current Policy/schema/history; consume before transport | Queues, provider-client retries and new sessions cannot recreate consumed capability |
 | Release/progress | Recheck bounded release and deliver typed observations to the original Session | Partial/unknown delivery retains the hold; late observations cannot advance a replacement root |
 
 Artifact storage may precede the deciding transaction only when its immutable
@@ -419,7 +419,7 @@ The existing AuthorityPublication local cases and PublicationRecovery cases were
 rerun: 13 and 10 passed respectively. The unchanged imported WeaverPolicyBridge
 built successfully and printed its standard Lean axiom dependencies. These are
 baseline reuse checks; the full evidence-image and MRR-fact joins are not thereby
-claimed as model-checked or implemented. The linked Project/SysML SDK gate checks
+claimed as model-checked or implemented. The linked Project/OpenSysML Go API gate checks
 structure and the existing 38 requirement traces. D2 is rendered and visually
 checked separately; neither result establishes a runtime security proof.
 

@@ -42,7 +42,7 @@ def makeLink (s : State) (i : Intent) (cut : Cut) : Link :=
 
 def KProjection (ks : Key → Key → Prop) (s t : Device) : Prop := t.base = s.base ∨ ks s.base t.base
 
-def Milestone (native : Weaver.DeviceIsolationRecovery.NativeOwner) (root : Nat) (s : State) (next : Device) (target : Nat) : Prop :=
+def Milestone (native : Weaver.DeviceIsolationRecovery.DriverOwner) (root : Nat) (s : State) (next : Device) (target : Nat) : Prop :=
   match target with
   | 10 => ∃ l, s.active = some l ∧ Weaver.DeviceIsolationRecovery.AllBlocked next l.cut
   | 9 => ∃ l, s.active = some l ∧ next.certified = some l.cut ∧ native.certificateValid root l.cut
@@ -56,7 +56,7 @@ def Milestone (native : Weaver.DeviceIsolationRecovery.NativeOwner) (root : Nat)
 
 inductive Step (ks : Key → Key → Prop) (ds : Device → Device → Prop)
     (decisionOwner : Weaver.FloorIntentDecision.DecisionOwner) (continuationOwner : ContinuationOwner)
-    (native : Weaver.DeviceIsolationRecovery.NativeOwner) (root : Nat) : State → State → Prop where
+    (native : Weaver.DeviceIsolationRecovery.DriverOwner) (root : Nat) : State → State → Prop where
   | normal (s next) (source : Weaver.FloorIntentDecision.Step ds decisionOwner s.legacy next)
       (projection : KProjection ks s.legacy.base next.base) (phase : s.phase = 14 ∨ s.phase = 0)
       (stableReady : s.phase = 0 → next.base.base.enabled = true ∨ s.legacy.worker < next.worker)
@@ -128,13 +128,13 @@ inductive Step (ks : Key → Key → Prop) (ds : Device → Device → Prop)
 
 inductive Run (ks : Key → Key → Prop) (ds : Device → Device → Prop)
     (decisionOwner : Weaver.FloorIntentDecision.DecisionOwner) (continuationOwner : ContinuationOwner)
-    (native : Weaver.DeviceIsolationRecovery.NativeOwner) (root : Nat) : State → State → Prop where
+    (native : Weaver.DeviceIsolationRecovery.DriverOwner) (root : Nat) : State → State → Prop where
   | refl (s) : Run ks ds decisionOwner continuationOwner native root s s
   | next : Run ks ds decisionOwner continuationOwner native root a b → Step ks ds decisionOwner continuationOwner native root b c → Run ks ds decisionOwner continuationOwner native root a c
 
 variable {ks : Key → Key → Prop} {ds : Device → Device → Prop}
   {decisionOwner : Weaver.FloorIntentDecision.DecisionOwner} {continuationOwner : ContinuationOwner}
-  {native : Weaver.DeviceIsolationRecovery.NativeOwner} {root : Nat}
+  {native : Weaver.DeviceIsolationRecovery.DriverOwner} {root : Nat}
 
 local notation "Event" => Step ks ds decisionOwner continuationOwner native root
 local notation "History" => Run ks ds decisionOwner continuationOwner native root
@@ -437,11 +437,11 @@ variable {c : Weaver.FiniteDomainMigration.Config} {m : Weaver.FiniteStreamManif
   {p : Weaver.WriterSettlementClosure.Profile c m} {lineage root namespaceId : Nat}
   {owner : Weaver.GateConsumptionPersistence.EvidenceOwner} {projectionStore : Weaver.AnchorBrokerCommit.RootOwner}
   {family : Weaver.AnchorReconfiguration.Family} {store : Weaver.AnchorReconfiguration.Store} {signerOwner : Weaver.ProtectedSignerRelease.SignerOwner}
-  {keyOwner : Weaver.KeyBoundaryQueue.KeyOwner} {nativeOwner : Weaver.DeviceIsolationRecovery.NativeOwner} {eligible : Weaver.AnchorReconfiguration.Scope → Nat → Prop}
-local notation "DeviceStep" => Weaver.DeviceIsolationRecovery.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible
+  {keyOwner : Weaver.KeyBoundaryQueue.KeyOwner} {driverOwner : Weaver.DeviceIsolationRecovery.DriverOwner} {eligible : Weaver.AnchorReconfiguration.Scope → Nat → Prop}
+local notation "DeviceStep" => Weaver.DeviceIsolationRecovery.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible
 
 local notation "KeyStep" => Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible
-theorem initialized_product_refines_key (events : Run KeyStep DeviceStep decisionOwner continuationOwner nativeOwner root initial s) :
+theorem initialized_product_refines_key (events : Run KeyStep DeviceStep decisionOwner continuationOwner driverOwner root initial s) :
     Weaver.KeyBoundaryQueue.Run (c := c) (m := m) (p := p) (lineage := lineage) (root := root) (namespaceId := namespaceId)
       (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (eligible := eligible) Weaver.KeyBoundaryQueue.initial s.legacy.base.base := by
   induction events with
@@ -451,16 +451,16 @@ theorem initialized_product_refines_key (events : Run KeyStep DeviceStep decisio
     · simpa [← same] using ih
     · exact .next ih source
 
-theorem original_consumption_and_settlement_remain_unique (events : Run KeyStep DeviceStep decisionOwner continuationOwner nativeOwner root initial s) (k) :
+theorem original_consumption_and_settlement_remain_unique (events : Run KeyStep DeviceStep decisionOwner continuationOwner driverOwner root initial s) (k) :
     s.legacy.base.base.base.base.base.base.base.burnCount k ≤ 1 ∧ s.legacy.base.base.base.base.base.base.dispatchCount k ≤ 1 ∧ s.legacy.base.base.base.base.base.base.base.base.authority.writes k ≤ 1 :=
   Weaver.KeyBoundaryQueue.original_consumption_and_settlement_remain_unique (initialized_product_refines_key events) k
 
-theorem original_budget_remains_conserved (events : Run KeyStep DeviceStep decisionOwner continuationOwner nativeOwner root initial s) (b) :
+theorem original_budget_remains_conserved (events : Run KeyStep DeviceStep decisionOwner continuationOwner driverOwner root initial s) (b) :
     Weaver.SettlementAnchorRecovery.accountMaterialized c s.legacy.base.base.base.base.base.base.base.base b ≤ Weaver.FiniteDomainMigration.booked c s.legacy.base.base.base.base.base.base.base.base.authority.source.base.base.control.journal.head.payload b ∧
     Weaver.SettlementAnchorRecovery.accountMaterialized c s.legacy.base.base.base.base.base.base.base.base b ≤ c.capacity b :=
   Weaver.KeyBoundaryQueue.original_budget_remains_conserved (initialized_product_refines_key events) b
 
-theorem unknown_original_reservation_stays_held (events : Run KeyStep DeviceStep decisionOwner continuationOwner nativeOwner root initial s)
+theorem unknown_original_reservation_stays_held (events : Run KeyStep DeviceStep decisionOwner continuationOwner driverOwner root initial s)
     (sealed : s.legacy.base.base.base.base.base.base.base.seals k = some a) :
     (s.legacy.base.base.base.base.base.base.base.base.authority.source.base.base.control.journal.head.payload.messages k).reserved = true :=
   Weaver.KeyBoundaryQueue.unknown_original_reservation_stays_held (initialized_product_refines_key events) sealed

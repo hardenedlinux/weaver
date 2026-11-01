@@ -134,7 +134,7 @@ proved by the safety model.
 The composition preserves original claim uniqueness, profile interpretation,
 budget/history domains and allowance. Continuation and alias admission do not
 consume. Unknown usage retains the original hold; no conflict status or protocol
-completion implies refund. New messages, SDK retries and streamed ranges remain
+completion implies refund. New messages, provider-client retries and streamed ranges remain
 subject to the earlier final execution gates.
 
 Keep immutable profiles and canonical alias records cacheable. Final owner

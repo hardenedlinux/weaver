@@ -8,7 +8,7 @@
 
 A complete admitted logical message owns one immutable finite range manifest.
 Its canonical coordinates are lineage, original message, manifest identity and
-range ordinal. A fresh nonce, Authority, SDK retry, connection, owner incarnation
+range ordinal. A fresh nonce, Authority, provider-client retry, connection, owner incarnation
 or range label cannot create another copy of that message's disclosure or escrow.
 The manifest is a partition of the complete admitted serialized message, subject
 to the authenticated framing/projection contract. It is not an open-ended producer
@@ -79,7 +79,7 @@ product for an already anchored intent.
 Connection opening, credential disclosure and autonomous protocol control frames
 require their own bounded parent authority. The finite body-byte theorem does
 not authorize them. Headers/trailers must be included in the admitted serialized
-inventory or an explicitly qualified control scope; hidden SDK retries, redirects
+inventory or an explicitly qualified control scope; hidden provider-client retries, redirects
 or control-frame sends cannot escape the broker through that distinction.
 
 A changed route, compression, content transform, SDK framing, trailer or semantic
