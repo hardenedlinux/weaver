@@ -32,10 +32,17 @@
                preconditions: (list (List PreconditionSnapshot)) mitigations: (list (List String))
                acceptance_authority: (list OptionalEvidence))
        identity: 'weaver/governance/threat-snapshot sealed: #t))
+(def PolicySourceSnapshot
+  (.cc (Record name: (list String) identity: (list String) source: (list GovernanceSource))
+       identity: 'weaver/governance/policy-source-snapshot sealed: #t))
+(def SourceAssetSnapshot
+  (.cc (Record identity: (list String) path: (list String) language: (list Symbol))
+       identity: 'weaver/governance/source-asset-snapshot sealed: #t))
 (def GovernanceProfileSnapshot
   (.cc (Record profile_identity: (list String) profile_revision: (list String)
                profile_owner: (list String) model_identity: (list String)
-               threats: (list (List ThreatSnapshot)))
+               threats: (list (List ThreatSnapshot)) policies: (list (List PolicySourceSnapshot))
+               source_assets: (list (List SourceAssetSnapshot)))
        identity: 'weaver/governance/profile-snapshot sealed: #t))
 (def ActionKey (Or Symbol String (Enum #f)))
 (def GovernorState (List (Pair Symbol ActionKey)))

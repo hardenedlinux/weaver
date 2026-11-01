@@ -16,6 +16,13 @@ import (
 func SourceInputs(root string) (map[string]string, error) {
 	result := map[string]string{}
 	add := func(path string) error {
+		info, err := os.Lstat(path)
+		if err != nil {
+			return err
+		}
+		if !info.Mode().IsRegular() {
+			return fmt.Errorf("verification input must be a regular source file: %s", path)
+		}
 		bytes, err := os.ReadFile(path)
 		if err != nil {
 			return err
@@ -29,39 +36,34 @@ func SourceInputs(root string) (map[string]string, error) {
 		return nil
 	}
 	for _, path := range []string{"Project.sysml", "README.org", ".gitignore", "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
-		"docs/50-59-research-program/59-provider-rpc/59.03-provider-rpc-core.d2",
-		"docs/50-59-research-program/59-provider-rpc/59.19-governance-control.org",
-		"docs/50-59-research-program/59-provider-rpc/59.20-project-structure.org",
-		"docs/50-59-research-program/59-provider-rpc/59.21-verification-ownership.org",
-		"docs/50-59-research-program/59-provider-rpc/59.22-parallel-ci.org",
-		"docs/50-59-research-program/59-provider-rpc/59.23-governance-policy-projection.org",
-		"docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org",
-		"docs/50-59-research-program/59-provider-rpc/59.30-dynamic-gxi-qualification.org",
-		"docs/50-59-research-program/59-provider-rpc/59.32-build-environment-contract.org",
-		"devenv.nix", "devenv.lock",
-		"devenv.yaml", ".envrc",
-		"dev/proofs/lean/RuntimeAdmission.lean", "dev/proofs/lean/StreamingExecution.lean", "dev/proofs/lean/ProviderRpc.lean", "dev/proofs/lean/PublicationRecovery.lean",
-		"dev/proofs/quint/RuntimeAdmission.qnt", "dev/proofs/quint/StreamingExecution.qnt", "dev/proofs/quint/RuntimeLifecycle.qnt", "dev/proofs/quint/ProviderRpc.qnt", "dev/proofs/quint/DispatchCancellation.qnt", "dev/proofs/quint/AuthorityAdmission.qnt", "dev/proofs/quint/ConnectionAdmission.qnt", "dev/proofs/quint/SourceIngress.qnt", "dev/proofs/quint/PublicationRecovery.qnt", "dev/proofs/quint/SourceOwner.qnt",
-		"dev/proofs/quint/ReleaseBinding.qnt",
-		"dev/proofs/quint/ProviderProfile.qnt",
-		"dev/proofs/quint/GatewayComposition.qnt",
-		"dev/proofs/quint/AuthorityPublication.qnt",
-		"dev/proofs/lean/NativeExitQualification.lean", "dev/proofs/quint/NativeExitQualification.qnt",
-		"dev/proofs/cedar/lakefile.toml", "dev/proofs/cedar/lake-manifest.json", "dev/proofs/cedar/lean-toolchain", "dev/proofs/cedar/WeaverPolicyBridge.lean"} {
+		"devenv.nix", "devenv.lock", "devenv.yaml", ".envrc"} {
 		if err := add(filepath.Join(root, path)); err != nil {
 			return nil, err
 		}
 	}
-	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", ".github"} {
+	// Inventory source owners, not a second hand-maintained list of proof roots.
+	// Include Lake manifests/pins, but do not traverse its dependency/build cache.
+	// Cache/toolchain integrity remains a separate qualification prerequisite.
+	// Historical evidence and generated diagrams are not source inputs.
+	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", ".github", "docs", "dev/proofs/lean", "dev/proofs/quint", "dev/proofs/cedar"} {
 		err := filepath.WalkDir(filepath.Join(root, directory), func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
 			if entry.IsDir() {
+				if entry.Name() == ".lake" {
+					return fs.SkipDir
+				}
 				return nil
 			}
+			if entry.Type()&os.ModeSymlink != 0 {
+				return fmt.Errorf("verification source alias is unsupported: %s", path)
+			}
+			if entry.Name() == "lean-toolchain" {
+				return add(path)
+			}
 			switch filepath.Ext(path) {
-			case ".go", ".rs", ".h", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar":
+			case ".go", ".rs", ".h", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar", ".lean", ".qnt", ".org", ".d2":
 				return add(path)
 			}
 			return nil

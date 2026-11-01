@@ -1,14 +1,28 @@
 package ControlActivation {
     private import ScalarValues::*;
+    requirement def CompiledSourceStartup {
+        doc /* The official compiler context must match the declared source root;
+           a dependency with that name cannot stand in for the initializer.
+           Explicit build module/source, fixed SDK ABI and archive membership
+           do not prove initialization. The application is the returning graph
+           root and must actually install its producer. Rust checks readiness,
+           then publishes one bounded startup catalog before ingress. Missing
+           program support, malformed catalog or absent installation refuses.
+           Qualification is debug-only, with no production fixture fallback.
+           Catalog identity/epoch fields are eligibility data; actual TLS PoP,
+           durable source floor and final publication/use CAS remain independent.
+           Startup errors/cancellation close and naturally drain the same owner. */
+    }
     requirement def SpecificSourceContracts {
         doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete native Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
     requirement def SourceStartupObservation {
         doc /* Local Go startup phases distinguish configuration readiness,
            authority connections/reconciliation and issuing Serve; only the
-           actual authenticated channel proves readiness. Scheme compiler start,
-           successful/failed reaping and artifact decoding are separate events.
-           The native fixture records module readiness, entry, compilation and
+           actual authenticated channel proves readiness. Go deployment never
+           starts a Scheme process. Compiler execution and artifact decoding in
+           source-preparation tests are separate events, not runtime interop.
+           The SDK fixture records module readiness, entry, compilation and
            artifact write with SDK CPU/real clocks and host-wall microseconds.
            Clock origins differ; compare calibrated intervals and retain clock
            adjustment/profiling premises. Phase text is forgeable diagnostics,
@@ -18,6 +32,43 @@ package ControlActivation {
            belongs in producer-created phase attributes. */
     }
     requirement def GovernorSourceHandoff {
+        doc /* A Scheme GatewayProgram has sealed specific Record/Function
+           methods. Typed invalid arguments reject before installation entry;
+           admitted installation seals its slot, and duplicates preserve the
+           current callback. Capture copies input/result and invokes the existing
+           producer's admitted-scope capture; it never assumes a shared ambient
+           sink across Yuanxu scopes. Close/reentry fences late results while
+           natural call completion remains the Rust owner's cleanup condition.
+           Creating a new local object cannot create a new source authority,
+           claim, reservation or final send opportunity. */
+        doc /* The approved producer catalog is immutable and bounded by entry
+           count and aggregate UTF-8 source text. Names, family uniqueness and
+           publication ID/content consistency are checked before binding. Selection
+           compares certificate, SPKI, credential digest and source epoch, then
+           supplies the catalog's original to the existing bounded source lane.
+           Observations must come from authenticated/current source state; this
+           local lookup alone cannot supply that authentication or authorize final
+           publication/send. The shared runtime publishes one catalog after compiler
+           initialization. It has no replacement or reopening path after shutdown. */
+        doc /* ServiceRuntime.start_governance installs a terminal tracked compiler
+           owner using an explicit host resource permit and source queue budget.
+           The Send factory builds its non-Send compiler on the owner thread.
+           Shared shutdown fences source delivery before returning, and shared
+           drain waits for natural VM cleanup. Abandoned or late initialization
+           cannot report activation after close. Embedding gRPC configuration
+           failure still drains attached owners. Neither startup readiness nor
+           resource cleanup is source admission, no-execution or budget evidence. */
+        doc /* Production root_source constructs native SDK input directly from
+           OwnedSource, using fallible bounded constructors rather than a test
+           fixture or encoded blob. Native roundtrips preserve all concrete fields,
+           exact bounded integers, UTF-8/NUL data and optional revision presence.
+           An aggregate-size refusal leaves the same VM available; no original
+           claim, reservation, history or source outcome is consumed or released. */
+        doc /* Compilation stays on an existing tracked blocking owner with a
+           thread-local Scheme VM. Bounded capacity includes queued, active and
+           unread ready replies. Running cancellation retains capacity until
+           natural return. Terminal close fences final delivery; owner join
+           follows VM cleanup and never implies no-execution or budget release. */
         doc /* The Rust host snapshots the independently admitted original
            artifact before producer invocation. Candidate consistency alone
            cannot authorize changed family, body/profile commitments or budget.
@@ -54,6 +105,30 @@ package ControlActivation {
            producer authentication, durable source cut, general closure purity
            or final-send authority. Existing Policy projection and Rust current
            execution checks remain separate. */
+        doc /* The sealed GatewayProgram Record owns the install Function
+           contract, including validation of the selected producer's input and
+           output. Private install code retains that already wrapped producer;
+           it must not construct another recursive Function wrapper. Native
+           tests must reject malformed nested inputs before callback entry,
+           reject malformed outputs, and permit subsequent valid compilation
+           on the same active owner without changing final-send authority. */
+        doc /* Production source delivery requires an active scoped capture.
+           It has no environment-selected JSON file fallback. The SDK carries
+           GC-rooted typed objects and Rust materializes owned domain data.
+           Configuration export belongs only to explicit test fixtures; it
+           cannot certify a native callback or authorize an external send. */
+        doc /* GatewaySourceInput is the exact private preparation Record for
+           task/plan/publication data before Governor, Policy or assessment
+           callbacks. The selected GatewayArtifact is an independently copied
+           image; callbacks receive detached source/context strings. The final
+           comparison runs after the last Policy projection and checks original
+           caller data, Profile data/methods and source root. Profile snapshots
+           include native Cedar policy names/identities/source and ordered asset
+           identity/path/language descriptors before any delegation. They read
+           no asset file; existing confined Policy projection owns actual reads.
+           Stable input during
+           initial copy and Governor-state selection remains a native premise.
+           This ownership condition is not a caller-supplied readiness flag. */
         doc /* Scheme projects native governor open-patterns after denylist, conflict and max-actionable clipping. Selected nodes, original task nodes and plan nodes must form the same duplicate-free set. A typed inert Governance assessment must match the exact task/plan/publication source serialized with recursively sorted object keys while preserving array order and exact integers, Profile identity/revision/owner, threat-model identity and complete assessed threats. Native blocking threats cannot be erased by a ready flag. False Policy preflight or Governance results reject. Assessment is a trusted compilation fact, never a portable execution permit. Candidate actionable-patterns are not a qualified handoff or a monetary reservation. */
     }
     requirement def PolicyCAbiIsInert {
@@ -217,6 +292,17 @@ package ControlActivation {
            Historical handoff receipts grant no new permission. Source SPKI
            continuity is not independent subject/incarnation issuance, full
            reviewed-publication qualification or whole-store anti-rollback. */
+        doc /* First source enrollment requires every durable application table
+           in the current main SQLite catalog to be empty. Discovery and row
+           checks run under the same Immediate writer transaction as the initial
+           binding/key commit. Residual schema/review projections and new tables
+           cannot disappear behind a fixed allowlist or a temporary table alias.
+           Refusal invokes no source callback and preserves original state.
+           A missing callback result after enrollment cannot replace its durable
+           first identity. Existing bindings use the normal current-source path;
+           catalog scanning is absent from provider message/final-send paths.
+           An entirely rolled-back empty image still needs independent recovery
+           protection; catalog emptiness is not an anti-rollback witness. */
         doc /* The retained recovery cut includes the four existing domain
            prefixes, execution owner/epoch, monotone one-use burns and the original
            reservation/unknown-exposure commitment. The admission transaction
@@ -326,6 +412,12 @@ package ControlActivation {
            may resolve its own staged intent while administrative siblings remain.
            Requiring globally empty pending here deadlocks progress. Provider
            effects still require the distinct global resolved-pending barrier. */
+        doc /* Go captures the optional parent in private typed storage before
+           its first observation or staging RPC and retains the same proposal
+           through final submission. Every outbound Protobuf request detaches
+           the parent again. Later caller/request mutation cannot rebase the
+           captured command; input must be stable during the initial copy.
+           Lost replies cause no automatic retry or replacement operation ID. */
         doc /* Publication review binds the independent authoritative parent,
            exact original command, approved Delta/replay artifact and deciding
            source cut under one final CAS. Caller-selected parent/evidence and

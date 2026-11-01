@@ -17,10 +17,7 @@ var ErrPublicationRejected = errors.New("original publication CAS rejected")
 // NotFound does not abort a possibly late command: the identical ID, payload and
 // parent still go through Rust's final CAS. No failed Publish is retried here.
 func (c *Client) ObserveOrPublish(ctx context.Context, p v1.Publication) (*pb.PublicationReceipt, error) {
-	if p.ExpectedRevision != nil {
-		parent := *p.ExpectedRevision
-		p.ExpectedRevision = &parent
-	}
+	p = snapshotPublication(p)
 	receipt, err := c.InspectPublication(ctx, p)
 	if err == nil {
 		if receipt.Outcome == pb.PublicationOutcome_REJECTED {
@@ -35,12 +32,25 @@ func (c *Client) ObserveOrPublish(ctx context.Context, p v1.Publication) (*pb.Pu
 }
 
 func Publication(p v1.Publication) *pb.PublishRequest {
+	p = snapshotPublication(p)
 	return &pb.PublishRequest{OperationId: p.OperationID, ExpectedRevision: p.ExpectedRevision, Fence: p.Fence, Policy: p.Policy, Schema: p.Schema}
+}
+
+// Snapshot before the first RPC and keep that proposal across all stages. The
+// caller must keep input stable during this initial copy; this is not concurrent
+// memory synchronization. Each outbound request receives its own parent too.
+func snapshotPublication(p v1.Publication) v1.Publication {
+	if p.ExpectedRevision != nil {
+		parent := *p.ExpectedRevision
+		p.ExpectedRevision = &parent
+	}
+	return p
 }
 
 // Publish stages the exact proposal then makes one final CAS call. Errors never
 // trigger automatic resubmission or CAS rebasing; staging alone cannot activate.
 func (c *Client) Publish(ctx context.Context, p v1.Publication) (*pb.PublicationReceipt, error) {
+	p = snapshotPublication(p)
 	if err := c.StagePublication(ctx, p); err != nil {
 		return nil, err
 	}
@@ -50,6 +60,7 @@ func (c *Client) Publish(ctx context.Context, p v1.Publication) (*pb.Publication
 // FinalizePublication makes the one final CAS call. It grants no activation by
 // itself; staged control handoffs call this only after staging and registration.
 func (c *Client) FinalizePublication(ctx context.Context, p v1.Publication) (*pb.PublicationReceipt, error) {
+	p = snapshotPublication(p)
 	digest, err := p.Digest()
 	if err != nil {
 		return nil, err
@@ -71,6 +82,7 @@ func (c *Client) FinalizePublication(ctx context.Context, p v1.Publication) (*pb
 // durable barrier; retry uses the original proposal and never invents a new ID.
 // Success is not a final decision and does not activate operation ingress.
 func (c *Client) StagePublication(ctx context.Context, p v1.Publication) error {
+	p = snapshotPublication(p)
 	digest, err := p.Digest()
 	if err != nil {
 		return err
@@ -87,6 +99,7 @@ func (c *Client) StagePublication(ctx context.Context, p v1.Publication) error {
 
 // InspectPublication only observes the original decision. NotFound is not abort.
 func (c *Client) InspectPublication(ctx context.Context, p v1.Publication) (*pb.PublicationReceipt, error) {
+	p = snapshotPublication(p)
 	digest, err := p.Digest()
 	if err != nil {
 		return nil, err

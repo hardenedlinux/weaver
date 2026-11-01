@@ -13,8 +13,16 @@ service Gateway {
   rpc InspectPublication(PublicationKey) returns (PublicationReceipt);
   rpc InspectSourceAuthority(Empty) returns (SourceAuthorityView);
   rpc RotateSourceAuthority(SourceRotationRequest) returns (SourceRotationReceipt);
+  // Preparation only. Actual ingress/source state selects an installed original;
+  // request labels cannot supply authority, replacement source or module paths.
+  rpc CompileSource(ProducerRequest) returns (CompiledSource);
 }
 message Empty {}
+message ProducerRequest { string producer = 1; }
+message GovernanceSelection { string schema = 1; string family = 2; repeated string open_nodes = 3; }
+message SourceArtifact { GovernanceSelection governance = 1; repeated Task tasks = 2; repeated ProviderPlan plans = 3; PublishRequest publication = 4; }
+// Source authority here is knowledge at response admission, never a later permit.
+message CompiledSource { string producer = 1; SourceAuthorityView authority = 2; SourceArtifact artifact = 3; }
 message OperationKey { string family = 1; string node = 2; }
 message Route { string target = 1; string endpoint = 2; }
 message ProviderPlan {

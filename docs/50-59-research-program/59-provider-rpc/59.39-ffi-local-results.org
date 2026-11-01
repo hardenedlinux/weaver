@@ -1,10 +1,103 @@
 #+title: 59.39 FFI-only Scheme Qualification: Local Evidence
 #+language: en
 
-* Ordinary source startup observations
+* Source-bound standard package result admission
 
-The production Go path records source child start/reap, artifact decode and
-control configuration/authority/Serve phases without source paths or payloads.
+The current production boundary is the compiled, typed SDK path described in
+[[file:59.64-governance-capture-ownership.org][Original Governance Capture]]. There is no production source subprocess or
+JSON artifact-file bridge. The subprocess preparation observations below are
+historical qualification evidence, not the current deployment architecture.
+
+The Go result validator contained an independent qualification bug: it required
+exactly 19 =CASE-OK= lines even though the current standard suite contains 40
+cases. It could reject a complete expanded suite, while accepting 19 orphaned
+completion lines without actual case starts or source modules. Neither case
+count was evidence of correct SDK protocol completion. This defect was not the
+cause of the retained watchdog failures: those processes were terminated before
+the result validator could run.
+
+The validator now derives the selected module inventory from direct
+=t/*-test.ss= regular files, matching the existing SDK =collect-files= rule for
+the unchanged unfiltered =gerbil test -g -v 5 t= entry. No separate module list,
+Scheme evaluator or second test driver is introduced. It requires the exact
+harness inventory, one completed nonempty visit to each module, balanced named
+suite/case starts and completions, no failure diagnostic and terminal =OK=.
+Newly selected source modules cannot disappear from the reported harness.
+Source aliases are refused. Process success, the original deadline and source
+currentness remain independently required by the existing stage owner.
+
+Go testing.F owns generation, corpus replay and shrinking. Race-enabled negative
+controls include incomplete and mismatched cases/suites, missing and duplicated
+modules, an omitted newly selected source, contradictory harness completion and
+the old orphaned-count witness. A real zero-exit Go subprocess exercises both
+refusal and successful admission through =runStage=. A recorded actual SDK
+transcript verifies format correspondence; that file-only check cannot certify
+process exit or timing. The complete devrunner race suite passed. Fixed fuzzing
+completed 1000 executions with 12 workers, and Project SysML/module ownership
+checks passed. The check-scheme Go stage now includes these controls and the
+framework's seed corpus.
+
+** Frozen dependency-image matrix
+
+The fixed ABBA matrix was completed on unchanged source
+=1ff85b1e5676aae5665843e5d522880aff85673c= with 12 host CPUs and all native PBT
+cases retained. Each slot cloned a prepared prefix, removed/rebuilt Weaver
+products through =gerbil build=, and used the unchanged 15-second test deadline.
+Only dependency =.o1= identity differed: cloned images versus hardlinks to the
+same seed. Source and seed hashes were stable across all four slots. The seed
+SHA-256 was =d8edd464075b9d30b9acc39fddace638c0dc2a9b63837151d75c7babdd084412=.
+
+| Slot | Dependency images | Build seconds | Test seconds | Harness begins, seconds | Result |
+|------+-------------------+---------------+--------------+-------------------------+--------|
+| 0 | Cloned | 82.385 | 15.012 | 10.889 | Fail |
+| 1 | Hardlinked | 14.496 | 15.012 | 9.133 | Fail |
+| 2 | Hardlinked | 14.375 | 15.012 | 9.124 | Fail |
+| 3 | Cloned | 82.727 | 15.009 | 11.231 | Fail |
+
+The cloned slots stopped during the program lifecycle property; the hardlinked
+slots stopped during assessed compilation ownership properties. None reached
+terminal harness completion or exit cleanup. Shared image identity alone does
+not close the failure. These are fresh paths/product builds, not OS-wide cold
+caches; the small fixed matrix does not isolate path, signing/page-cache and
+host scheduling effects or establish a universal timing improvement.
+
+** Corrected owner on an existing prepared prefix
+
+After correcting the result validator, the existing Go package-entry test ran
+four fixed trials on the explicitly prepared prefix. All completed naturally
+within the original 15-second deadline. The report retains its source identity
+map, before/after stability, complete output hashes and bounded failure excerpts
+through the existing retention owner. No forced exit, case reduction or timeout
+change was introduced.
+
+| Trial | Pre-harness seconds | Harness complete, seconds | Natural exit seconds | Post-terminal seconds |
+|-------+---------------------+---------------------------+----------------------+-----------------------|
+| 0 | 4.592 | 11.167 | 12.937 | 1.770 |
+| 1 | 3.105 | 9.658 | 11.435 | 1.777 |
+| 2 | 3.125 | 9.680 | 11.465 | 1.784 |
+| 3 | 3.143 | 9.687 | 11.451 | 1.764 |
+
+All four output hashes were
+=d1c73073ce8e2ae1eab92962ad34722230f4d677524dca7c64ee1ea14b650bca=;
+the report bound 855 source inputs and reported stable source. The existing
+128-case native framework properties were not reduced. These passes establish
+the corrected standard-entry admission on that prepared prefix. They do not
+replace the four failed fresh-prefix slots, the failed complete check-scheme
+campaign, the Apple linker failure or the executable cold connection failure.
+The new validator changes qualification evidence, not Runtime authorization.
+
+Frozen compact results and raw command transcripts remain temporary
+=/private/tmp/weaver-scheme-images-1ff85b1-*= and
+=/private/tmp/weaver-scheme-result-*= artifacts; only this curated summary is
+tracked. Existing Quint/Lean source, lifecycle, claim and budget laws remain
+unchanged: log protocol checks are native verification premises, not proofs
+of the SDK, a portable execution permit or authority to release an unknown hold.
+
+* Historical source-preparation observations
+
+An earlier Go-owned source-preparation qualification path recorded child
+start/reap, artifact decode and control configuration/authority/Serve phases
+without source paths or payloads.
 The existing Scheme fixture library records module readiness, entry, compile-begin
 and artifact-written. SDK CPU/real clocks and host-wall microseconds remain
 distinct: subtracting a Go elapsed clock from the SDK real clock is invalid.

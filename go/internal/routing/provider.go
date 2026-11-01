@@ -53,5 +53,8 @@ func CompileProvider(task v1.Task, p v1.ProviderPlan, view v1.View) (v1.Provider
 	}
 	p.Revision = view.Revision
 	p.Fence = view.Fence
+	// Retain the validated order independently of later caller mutations.
+	// Input must remain stable throughout this synchronous validation/copy.
+	p.Routes = slices.Clone(p.Routes)
 	return p, nil
 }

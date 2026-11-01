@@ -87,10 +87,24 @@ pub async fn serve_grpc(
     settings: GrpcConfig,
     shutdown: impl std::future::Future<Output = ()> + Send + 'static,
 ) -> weaver_contracts::Result<()> {
-    validate_listeners(&listeners, &settings)?;
-    let _ = rustls::crypto::ring::default_provider().install_default();
-    let runtime = RuntimeOwner::new();
-    let result = serve_owned(listeners, settings, runtime.clone(), shutdown).await;
+    serve_grpc_with_runtime(listeners, settings, RuntimeOwner::new(), shutdown).await
+}
+/// Embed approved owners in the same tracked runtime as source/operation RPC.
+/// All attached owners must naturally drain before service completion.
+pub async fn serve_grpc_with_runtime(
+    listeners: GrpcListeners,
+    settings: GrpcConfig,
+    runtime: RuntimeOwner,
+    shutdown: impl std::future::Future<Output = ()> + Send + 'static,
+) -> weaver_contracts::Result<()> {
+    let _lifetime = runtime.shutdown_guard();
+    let result = match validate_listeners(&listeners, &settings) {
+        Ok(()) => {
+            let _ = rustls::crypto::ring::default_provider().install_default();
+            serve_owned(listeners, settings, runtime.clone(), shutdown).await
+        }
+        Err(error) => Err(error),
+    };
     runtime.drain().await;
     result
 }
@@ -283,6 +297,50 @@ impl Gateway {
 #[tonic::async_trait]
 impl pb::gateway_server::Gateway for Gateway {
     type ExecuteProviderStream = ResponseStream;
+    async fn compile_source(
+        &self,
+        request: Request<pb::ProducerRequest>,
+    ) -> std::result::Result<Response<pb::CompiledSource>, Status> {
+        let caller = self.source_identity(&request)?;
+        let producer = request.into_inner().producer;
+        weaver_contracts::identifier(&producer)
+            .map_err(|_| Status::invalid_argument("producer name invalid"))?;
+        let source = self.ingress.source()?;
+        let before = source.authority(caller.clone()).await?;
+        let client = self
+            .runtime
+            .producers()
+            .map_err(|_| Status::failed_precondition("approved producer catalog unavailable"))?;
+        let job = client
+            .submit(&producer, &before)
+            .map_err(compilation_status)?;
+        let bound = tokio::select! {
+            result=job=>result.map_err(|error|compilation_status(error.into()))?,
+            _=self.runtime.cancellation()=>return Err(Status::unavailable("source compilation closed")),
+        };
+        // No source SQL lane is retained while foreign code runs. Re-observe the
+        // actual caller after completion; a captured old observation is not use.
+        let after = source.authority(caller).await?;
+        if after != before {
+            return Err(Status::permission_denied(
+                "source authority changed during compilation",
+            ));
+        }
+        if self.runtime.closing() {
+            return Err(Status::unavailable("source compilation closed"));
+        }
+        let reply = pb::CompiledSource {
+            producer,
+            authority: Some(crate::source_identity::view(after)?),
+            artifact: Some(crate::source_artifact::artifact(&bound)),
+        };
+        if prost::Message::encoded_len(&reply) > 4 * 1024 * 1024 {
+            return Err(Status::resource_exhausted(
+                "compiled source exceeds RPC response bound",
+            ));
+        }
+        Ok(Response::new(reply))
+    }
     async fn execute_provider(
         &self,
         request: Request<pb::ProviderRequest>,
@@ -540,6 +598,20 @@ impl pb::gateway_server::Gateway for Gateway {
             },
             authority: Some(crate::source_identity::view(receipt.authority)?),
         }))
+    }
+}
+fn compilation_status(error: weaver_governance::CatalogError) -> Status {
+    use weaver_governance::{CatalogError, SourceJobError};
+    match error {
+        CatalogError::Denied => Status::permission_denied("producer/source binding rejected"),
+        CatalogError::Invalid => Status::failed_precondition("producer catalog invalid"),
+        CatalogError::Schedule(SourceJobError::Busy) => {
+            Status::resource_exhausted("source compilation lane full")
+        }
+        CatalogError::Schedule(SourceJobError::Source(_)) => {
+            Status::failed_precondition("source compiler rejected original")
+        }
+        CatalogError::Schedule(_) => Status::unavailable("source compiler unavailable"),
     }
 }
 fn publication_receipt(receipt: weaver_contracts::PublicationReceipt) -> pb::PublicationReceipt {

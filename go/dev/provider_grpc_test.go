@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/http"
+	"slices"
 	"sync"
 	"testing"
 	"time"
@@ -64,6 +65,41 @@ func TestProviderGRPCStreamingAndArrowOption(t *testing.T) {
 			}
 			if f.primary.Load() != 1 || inspect(t, f).Held != 4 {
 				t.Fatal("retry duplicated invocation or hold")
+			}
+		})
+	}
+}
+
+func TestProviderCallerRouteMutationCannotChangeActiveStream(t *testing.T) {
+	for _, encoding := range []pb.Encoding{pb.Encoding_PROTOBUF, pb.Encoding_ARROW_IPC} {
+		t.Run(encoding.String(), func(t *testing.T) {
+			f := newFixture(t, completeSSE, false)
+			original := f.plan
+			original.Routes = slices.Clone(f.plan.Routes)
+			rows := uint32(1)
+			if encoding == pb.Encoding_ARROW_IPC {
+				rows = 2
+			}
+			ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
+			defer cancel()
+			mutated := false
+			receipt, err := f.client.Execute(ctx, f.plan, encoding, rows, func(event *pb.Event) error {
+				if !mutated {
+					f.plan.Routes[0].Target = "changed"
+					f.plan.Routes[0].Endpoint = "https://changed.invalid/v1/chat/completions"
+					mutated = true
+				}
+				return nil
+			})
+			if err != nil || !mutated || receipt.Target != "primary" || receipt.Held != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
+				t.Fatal("active stream followed caller routing storage", receipt, err)
+			}
+			f.plan = original
+			if _, _, err := execute(t, f, encoding, rows); err == nil {
+				t.Fatal("caller mutation reopened the original operation")
+			}
+			if f.primary.Load() != 1 || f.backup.Load() != 0 || inspect(t, f).Held != 4 {
+				t.Fatal("original retry duplicated dispatch or released its hold")
 			}
 		})
 	}

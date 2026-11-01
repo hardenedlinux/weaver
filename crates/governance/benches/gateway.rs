@@ -1,6 +1,8 @@
 use criterion::{Criterion, criterion_group, criterion_main};
 use std::{hint::black_box, time::Duration};
-#[path = "support/fixture.rs"]
+#[path = "support/catalog.rs"]
+mod catalog;
+#[path = "../tests/unit/fixture.rs"]
 mod fixture;
 fn source(c: &mut Criterion) {
     let data = fixture::source();
@@ -18,6 +20,28 @@ fn source(c: &mut Criterion) {
             assert!(expected.bind(candidate).is_ok());
         })
     });
+    let capacity = std::thread::available_parallelism().expect("host capacity");
+    let (client, inbox) = weaver_governance::source_lane(capacity);
+    let worker = std::thread::spawn(move || {
+        inbox.run(|source| weaver_governance::OwnedSource::from_source(source.data().clone()));
+    });
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("caller runtime");
+    c.bench_function("governance/source_lane_roundtrip", |b| {
+        b.iter(|| {
+            let input = weaver_governance::OwnedSource::from_source(black_box(data.clone()))
+                .expect("original");
+            assert!(
+                runtime
+                    .block_on(client.submit(input).expect("admission"))
+                    .is_ok()
+            );
+        });
+    });
+    client.close();
+    worker.join().expect("owner drained");
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=source}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=source,catalog::catalog}
 criterion_main!(benches);

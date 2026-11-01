@@ -73,6 +73,14 @@ package WeaverExecution {
         port effectObservations : ~PolicyEvidenceDesign::EffectObservationPort;
     }
     part def GoControlAdapter {
+        doc /* BootstrapProducer receives the server's typed CompileSource
+           artifact over authenticated gRPC and reobserves source authority.
+           Its typed independent copy does not JSON-roundtrip the source. Source
+           staging, task registration and publication still use existing CAS;
+           response admission is not permission for a later send. RunFromEnv
+           selects exactly one approved producer or JSON/YAML data file; Scheme
+           files cannot launch a compiler, and producer failure cannot fall back
+           to a file. The Rust deployment still must install its approved graph. */
         doc /* Refine routine node and routing preferences; emit typed data with
            no send capability. Carry configuration/capture commitments and
            authenticated original source identity over gRPC. Reconcile ambiguity;

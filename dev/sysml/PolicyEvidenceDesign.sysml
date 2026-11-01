@@ -140,8 +140,13 @@ package PolicyEvidenceDesign {
            Unicode scalars at both sides of the byte limit; Rust ABI properties
            separately retain valid-buffer lifetime premises. This is not a proof
            of allocator behavior, arbitrary addresses or concurrent mutation. */
-        doc /* Current C ABI is synchronous inert Policy/schema preflight only;
-           this target evidence does not invent a production callback ABI.
+        doc /* The Cedar C ABI is synchronous inert Policy/schema preflight.
+           Separately, SchemeCompiler uses fixed SDK rooted-object exports on
+           its owner thread; these exports do not grant publication authority.
+           Real SDK proptest composes conversion with SourceExpectation binding:
+           internally coherent replacements must refuse, and the same VM must
+           still accept the original after refusal. Negative, over-contract and
+           over-carrier integer magnitudes must not be coerced into counters.
            Borrowed regions must already be valid, alive and immutable until
            return, with runtime rooting/GC and thread-affinity qualified. Copy
            and decode to Rust-owned immutable values before queueing; no borrowed

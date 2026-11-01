@@ -15,6 +15,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -30,6 +31,9 @@ func fileSetting(name string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	return readBoundFile(path)
+}
+func readBoundFile(path string) ([]byte, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -111,23 +115,23 @@ func RunFromEnv(ctx context.Context) error {
 	}
 	bounded := BoundListener(listener)
 	defer bounded.Close()
-	data, err := fileSetting("WEAVER_CONTROL_CONFIG")
+	input, err := selectDeploymentSource(os.LookupEnv)
 	if err != nil {
 		return err
 	}
-	path, _ := required("WEAVER_CONTROL_CONFIG")
-	format := config.ProfileJSON
-	if ext := filepath.Ext(path); ext == ".yaml" || ext == ".yml" {
-		format = config.ProfileYAML
-	}
-	var bundle config.Bundle
-	if ext := filepath.Ext(path); ext == ".ss" || ext == ".scm" {
-		bundle, err = compileScheme(startup, path)
-	} else {
-		bundle, err = config.DecodeBundle(data, format)
-	}
-	if err != nil {
-		return err
+	if input.producer == "" {
+		data, err := readBoundFile(input.path)
+		if err != nil {
+			return err
+		}
+		format := config.ProfileJSON
+		if ext := strings.ToLower(filepath.Ext(input.path)); ext == ".yaml" || ext == ".yml" {
+			format = config.ProfileYAML
+		}
+		input.bundle, err = config.DecodeBundle(data, format)
+		if err != nil {
+			return err
+		}
 	}
 	trace("configuration-ready")
 	authorityRoots, err := roots("WEAVER_CONTROL_AUTHORITY_CA")
@@ -174,7 +178,7 @@ func RunFromEnv(ctx context.Context) error {
 	}
 	defer source.Connection.Close()
 	trace("source-channel-connected")
-	gateway, err := Bootstrap(startup, source, operation, bundle)
+	gateway, err := input.bootstrap(startup, source, operation)
 	if err != nil {
 		return err
 	}

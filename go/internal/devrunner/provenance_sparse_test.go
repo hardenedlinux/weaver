@@ -23,6 +23,18 @@ func TestSourceInputsWithArchivedEvidenceExcluded(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	sparse := copyVerificationInputs(t, root, inputs)
+	actual, err := SourceInputs(sparse)
+	if err != nil {
+		t.Fatalf("live source inventory requires excluded historical evidence: %v", err)
+	}
+	if !maps.Equal(inputs, actual) {
+		t.Fatal("sparse-checkout live source inventory changed")
+	}
+}
+
+func copyVerificationInputs(t testing.TB, root string, inputs map[string]string) string {
+	t.Helper()
 	sparse := t.TempDir()
 	for path := range inputs {
 		if strings.HasPrefix(path, "dev/proofs/evidence/") || strings.HasPrefix(path, "dev/specs/evidence/") {
@@ -40,11 +52,5 @@ func TestSourceInputsWithArchivedEvidenceExcluded(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	actual, err := SourceInputs(sparse)
-	if err != nil {
-		t.Fatalf("live source inventory requires excluded historical evidence: %v", err)
-	}
-	if !maps.Equal(inputs, actual) {
-		t.Fatal("sparse-checkout live source inventory changed")
-	}
+	return sparse
 }

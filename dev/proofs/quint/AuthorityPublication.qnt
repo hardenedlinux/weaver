@@ -10,7 +10,7 @@ module AuthorityPublication {
   type ReadUse={read:ReadView,actual:ReadView}
   // externalCalls is a trace observer outside the modeled store rollback, not
   // an implemented counter service or a second accounting owner.
-  type Control={compiled:int,desired:int,parent:int,requestedFence:int,registered:bool,ack:bool,active:bool,reads:Set[ReadView],uses:List[ReadUse],externalCalls:int,submits:int,effectPending:List[Set[int]],birthUses:List[int]}
+  type Control={compiled:int,desired:int,parent:int,capturedParent:int,callerParent:int,requestedFence:int,registered:bool,ack:bool,active:bool,reads:Set[ReadView],uses:List[ReadUse],externalCalls:int,submits:int,effectPending:List[Set[int]],birthUses:List[int]}
   var c:Control
   val original=A::authority.records.get(0)
   val resolved=A::authority.pending==Set()
@@ -18,11 +18,12 @@ module AuthorityPublication {
   val taskAuthorized=c.registered and original.outcome==1
   val actualView={revision:A::authority.head,fence:A::authority.fence,assignment:0,stage:E::s.stage,held:E::s.held,next:E::s.next,domainCut:E::s.domainCut,pending:pendingIds}
   val safe=E::safe and A::safe and E::s.calls==c.externalCalls and c.uses.indices().forall(i=>c.uses.nth(i).read==c.uses.nth(i).actual) and
+    (c.compiled>=0 implies c.parent==c.capturedParent) and
     c.submits<=1 and c.effectPending.indices().forall(i=>c.effectPending.nth(i)==Set()) and
     c.birthUses.indices().forall(i=>c.birthUses.nth(i)==1) and
     (c.active implies c.compiled>=0 and c.registered and original.outcome==1 and original.payload==c.compiled and c.ack) and
     (A::authority.head>=0 implies E::s.revision==A::authority.head and E::s.fence==A::authority.fence)
-  action init=all {E::init,A::init,c'={compiled:-1,desired:0,parent:-1,requestedFence:1,registered:false,ack:false,active:false,reads:Set(),uses:List(),externalCalls:0,submits:0,effectPending:List(),birthUses:List()}}
+  action init=all {E::init,A::init,c'={compiled:-1,desired:0,parent:-1,capturedParent:-1,callerParent:-1,requestedFence:1,registered:false,ack:false,active:false,reads:Set(),uses:List(),externalCalls:0,submits:0,effectPending:List(),birthUses:List()}}
   action stageIntent(id:int):bool=all {A::authority.head>=0,
     A::stage({id:id,payload:1,parent:A::authority.head,fence:A::authority.fence+1}),c'=c,E::observe}
   action decideIntent(id:int):bool={nondet q=A::authority.pending.filter(p=>p.id==id).oneOf()
@@ -30,9 +31,13 @@ module AuthorityPublication {
       if(q.parent==A::authority.head and q.fence>=A::authority.fence) E::publish else E::observe}}
   // Concrete source admission is witnessed by Scheme/FFI/Go tests, not a
   // duplicate Boolean implementation of those validators in this model.
-  action compile(accepted:bool):bool=all {accepted,c.compiled<0,c'=c.with("compiled",c.desired).with("parent",A::authority.head)
+  action compile(accepted:bool):bool=all {accepted,c.compiled<0,c'=c.with("compiled",c.desired).with("parent",A::authority.head).with("capturedParent",A::authority.head).with("callerParent",A::authority.head)
     .with("requestedFence",A::authority.fence+(if(A::authority.head>=0)1 else 0)),E::observe,A::observe}
   action editSource=all {c'=c.with("desired",1),E::observe,A::observe}
+  // The caller may change its own storage after the initial stable copy. This
+  // cannot rebase the frozen proposal between staging and final CAS.
+  action editCallerParent(parent:int):bool=all {c'=c.with("callerParent",parent),E::observe,A::observe}
+  action unsafeBorrowedParent=all {c'=c.with("parent",c.callerParent),E::observe,A::observe}
   action stageOriginal=all {c.compiled>=0,A::stage({id:0,payload:c.compiled,parent:c.parent,fence:c.requestedFence}),c'=c,E::observe}
   action register=all {c.compiled>=0,(pendingIds.contains(0) or original.outcome==1),c'=c.with("registered",true),E::observe,A::observe}
   action unsafeRegisterBeforeStage=all {c.compiled>=0,c'=c.with("registered",true),E::observe,A::observe}
@@ -74,7 +79,7 @@ module AuthorityPublication {
   action unsafeReadUse(v:ReadView):bool=all {c.reads.contains(v),
     c'=c.with("uses",c.uses.append({read:v,actual:actualView})),E::unsafeStaleRelease,A::observe}
   action step={nondet v=c.reads.union(Set(actualView)).oneOf()
-    any {compile(true),editSource,stageOriginal,register,commit,inspectMissing,inspectUnavailable,acknowledge,recover(0),recover(1),activate,loseReply,restart,publish,stageIntent(1),stageIntent(2),decideIntent(1),decideIntent(2),currentProposal,operationWorkerAdmit,domainChange,transport,admit,consume,burn,invoke,release,deliver,readCurrent,consumeRead(v),releaseRead(v)}}
+    any {compile(true),editSource,editCallerParent(-1),editCallerParent(0),editCallerParent(1),stageOriginal,register,commit,inspectMissing,inspectUnavailable,acknowledge,recover(0),recover(1),activate,loseReply,restart,publish,stageIntent(1),stageIntent(2),decideIntent(1),decideIntent(2),currentProposal,operationWorkerAdmit,domainChange,transport,admit,consume,burn,invoke,release,deliver,readCurrent,consumeRead(v),releaseRead(v)}}
   action prepared=init.then(compile(true)).then(stageOriginal).then(register)
   action ready=prepared.then(commit).then(acknowledge).then(activate)
   action spent=ready.then(admit).then(consume).then(burn).then(invoke)
@@ -137,4 +142,9 @@ module AuthorityPublication {
   run authorityRejectedBirthCannotUseOtherCurrentPolicyTest=rejectedBirth.expect(safe and resolved and original.outcome==2)
     .then(operationWorkerAdmit.fail())
   run authorityRejectedBirthGuardOmissionCounterexampleTest=rejectedBirth.then(unsafeTaskBirthOmission).expect(not(safe))
+  run authorityCallerMutationCannotRebaseFrozenProposalTest=init.then(compile(true)).then(stageOriginal).then(register)
+    .then(editCallerParent(1)).then(commit).then(loseReply).then(recover(0)).then(activate)
+    .expect(safe and c.parent == -1 and original.parent == -1 and c.submits==1)
+  run authorityBorrowedParentCounterexampleTest=init.then(compile(true)).then(stageOriginal).then(register)
+    .then(editCallerParent(1)).then(unsafeBorrowedParent).expect(not(safe))
 }

@@ -3944,7 +3944,10 @@ dependencies = [
  "gerbil-scheme-sys",
  "proptest",
  "serde",
+ "serde_json",
  "thiserror",
+ "tokio",
+ "tokio-util",
  "weaver-contracts",
  "weaver-governance-build",
  "weaver-policy-ffi",
@@ -4008,6 +4011,8 @@ dependencies = [
  "arrow-schema",
  "asp-rust",
  "criterion",
+ "gerbil-scheme",
+ "gerbil-scheme-sys",
  "hex",
  "proptest",
  "prost",
@@ -4024,7 +4029,9 @@ dependencies = [
  "tonic-prost-build",
  "weaver-contracts",
  "weaver-execution",
+ "weaver-governance",
  "weaver-ledger",
+ "weaver-policy-ffi",
 ]
 
 [[package]]

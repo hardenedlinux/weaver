@@ -439,6 +439,16 @@ structure CaptureDependency where
    encoding input; its actual UTF-8 byte check and Rust region guards have native
    property evidence. Ready below proves neither encoding allocation bounds nor
    address validity; retain those host premises and the inert-preflight boundary. -/
+/- root_source and materialize_source implement native input/output in Rust.
+   Fidelity of SDK constructors, UTF-8/NUL, exact integer magnitude and field/map
+   key kinds remains a concrete refinement premise, checked by real-VM PBT.
+   These semantic laws do not verify the SDK allocator or raw C representation.
+   Aggregate construction refusal cannot establish a Ready boundary.
+   Concrete witness: governance/tests/integration/scheme_vm.rs composes rooted
+   conversion with an independently captured SourceExpectation. Coherent changes
+   must produce Binding, not merely a parse error; each refusal is followed by
+   successful original conversion on the same VM. Malformed integer witnesses
+   distinguish negative, over-contract and over-carrier magnitudes. -/
 structure BoundaryContext where
   entry : ConfigurationEntry
   configurationSchema : Nat
@@ -467,6 +477,7 @@ structure BoundaryContext where
   nativeTyped : Bool
   exactIntegers : Bool
   keyKinds : Bool
+  assessmentImageOwned : Bool
   deriving DecidableEq
 
 def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
@@ -479,7 +490,8 @@ def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
   s.borrowedRegionStable = true ∧ s.rustOwned = true ∧
   s.retainsForeignPointer = false ∧ s.reentrant = false ∧
   s.captureEmissions = 1 ∧ s.captureCompleted = true ∧ s.capturePoisoned = false ∧
-  s.nativeTyped = true ∧ s.exactIntegers = true ∧ s.keyKinds = true
+  s.nativeTyped = true ∧ s.exactIntegers = true ∧ s.keyKinds = true ∧
+  s.assessmentImageOwned = true
 
 instance (s : BoundaryContext) : Decidable s.Ready := by
   unfold BoundaryContext.Ready
@@ -517,8 +529,26 @@ theorem coerced_key_cannot_preserve_source_identity (s : BoundaryContext)
   simp [BoundaryContext.ready,BoundaryContext.Ready,ambiguous]
 
 #print axioms encoded_blob_cannot_claim_native_capture
+
+/-- An exported configuration cannot substitute for a completed native call.
+This is a boundary refinement law, not a proof of the SDK or filesystem. -/
+theorem file_export_cannot_replace_typed_delivery (s : BoundaryContext)
+    (blob : s.nativeTyped = false) (incomplete : s.captureCompleted = false) :
+    s.ready = false := by
+  simp [BoundaryContext.ready, BoundaryContext.Ready, blob, incomplete]
+
+#print axioms file_export_cannot_replace_typed_delivery
 #print axioms lossy_integer_cannot_preserve_original_budget
 #print axioms coerced_key_cannot_preserve_source_identity
+
+/-- An assessed image must be independent before delegated Policy/Governance
+calls, not just copied during later FFI materialization. The Scheme framework
+property and real linked application test refine this native ownership premise. -/
+theorem borrowed_source_cannot_claim_completed_assessment (s : BoundaryContext)
+    (borrowed : s.assessmentImageOwned = false) : s.ready = false := by
+  simp [BoundaryContext.ready,BoundaryContext.Ready,borrowed]
+
+#print axioms borrowed_source_cannot_claim_completed_assessment
 
 theorem configuration_cannot_skip_governance (s : BoundaryContext)
     (missing : s.governanceChecked = false) : s.ready = false := by
@@ -635,6 +665,244 @@ theorem owned_artifact_cannot_ignore_current_source (s : OwnedCaptureContext)
     (changed : s.captureReceipt.captured ≠ s.currentCapture) : s.ready = false := by
   simp [OwnedCaptureContext.ready,OwnedCaptureContext.Ready,changed]
 
+/- Local host resources refine inert capture delivery, not execution authority.
+   The embedding must implement the shared gate and natural foreign-call drain.
+   Cancellation marks data unusable; disposal or natural return releases slots. -/
+inductive SourcePhase where
+  | queued | running | ready | delivered | discarded
+  deriving DecidableEq
+structure SourceHost where
+  closed : Bool
+  cancelled : Bool
+  phase : SourcePhase
+  slot : Bool
+  initializing : Bool
+  factoryActive : Bool
+  ownerCleaned : Bool
+  joined : Bool
+
+inductive SourceHostStep : SourceHost → SourceHost → Prop where
+  | close (s) : SourceHostStep s {s with closed := true}
+  | factoryReturn (s) : SourceHostStep s {s with factoryActive := false}
+  | initialize (s) (starting : s.initializing = true) (returned : s.factoryActive = false)
+      (admitted : s.closed = false) (live : s.ownerCleaned = false) :
+      SourceHostStep s {s with initializing := false}
+  | cleanup (s) (closed : s.closed = true) (returned : s.factoryActive = false)
+      (idle : s.phase ≠ .running) : SourceHostStep s {s with ownerCleaned := true}
+  | join (s) (cleaned : s.ownerCleaned = true) : SourceHostStep s {s with joined := true}
+  | start (s) (admitted : s.closed = false) (queued : s.phase = .queued)
+      (initialized : s.initializing = false) (live : s.ownerCleaned = false) :
+      SourceHostStep s {s with phase := .running}
+  | cancel (s) :
+      SourceHostStep s {s with cancelled := true}
+  | discardWaiting (s) (waiting : s.phase = .queued ∨ s.phase = .ready)
+      (blocked : s.closed = true ∨ s.cancelled = true) :
+      SourceHostStep s {s with phase := .discarded, slot := false}
+  | finish (s) (running : s.phase = .running)
+      (eligible : s.closed = false ∧ s.cancelled = false) :
+      SourceHostStep s {s with phase := .ready}
+  | discardFinished (s) (running : s.phase = .running)
+      (blocked : s.closed = true ∨ s.cancelled = true) :
+      SourceHostStep s {s with phase := .discarded, slot := false}
+  | deliver (s) (ready : s.phase = .ready)
+      (eligible : s.closed = false ∧ s.cancelled = false) :
+      SourceHostStep s {s with phase := .delivered, slot := false}
+
+theorem source_host_close_is_terminal (event : SourceHostStep s t)
+    (closed : s.closed = true) : t.closed = true := by
+  cases event <;> simp_all
+
+theorem source_host_delivery_requires_open_gate (event : SourceHostStep s t)
+    (fresh : s.phase ≠ .delivered) (delivered : t.phase = .delivered) :
+    s.closed = false ∧ s.cancelled = false := by
+  cases event <;> simp_all
+
+theorem source_host_running_cancel_retains_slot (event : SourceHostStep s t)
+    (running : s.phase = .running) (stillRunning : t.phase = .running) :
+    t.slot = s.slot := by
+  cases event <;> simp_all
+
+def SourceHost.ResourcesSafe (s : SourceHost) : Prop := s.joined = true → s.ownerCleaned = true
+theorem source_owner_join_preserves_cleanup (event : SourceHostStep s t)
+    (safe : s.ResourcesSafe) : t.ResourcesSafe := by
+  cases event <;> simp_all [SourceHost.ResourcesSafe]
+theorem source_owner_late_initialization_is_fenced (event : SourceHostStep s t)
+    (before : s.initializing = true) (after : t.initializing = false) : s.closed = false := by
+  cases event <;> simp_all
+theorem source_owner_cleanup_requires_natural_return (event : SourceHostStep s t)
+    (before : s.ownerCleaned = false) (after : t.ownerCleaned = true) :
+    s.factoryActive = false ∧ s.phase ≠ .running := by
+  cases event <;> simp_all
+
+/- Immutable local lookup, not the authoritative canonical registry. Authenticity
+   and currentness of SourceAuthority must be established by the service owner.
+   Sharing immutable original values supplies no new execution or budget grant. -/
+structure ProducerIdentity where
+  certificate : Nat
+  key : Nat
+  credential : Nat
+  epoch : Nat
+  deriving DecidableEq
+structure ProducerBinding where
+  original : Nat
+  root : Nat
+  profile : Nat
+  budget : Nat
+  history : Nat
+  authority : ProducerIdentity
+  deriving DecidableEq
+def ProducerSelected (catalog : Nat → Option ProducerBinding) (name : Nat)
+    (observed : ProducerIdentity) (entry : ProducerBinding) : Prop :=
+  catalog name = some entry ∧ entry.authority = observed
+
+theorem producer_name_has_one_original (catalog : Nat → Option ProducerBinding)
+    (first : ProducerSelected catalog name observed a)
+    (second : ProducerSelected catalog name otherObserved b) : a = b := by
+  exact Option.some.inj (first.1.symm.trans second.1)
+theorem changed_source_observation_rejects_producer
+    (selected : ProducerSelected catalog name observed entry)
+    (changed : otherObserved ≠ observed) : ¬ ProducerSelected catalog name otherObserved entry := by
+  intro other
+  exact changed (other.2.symm.trans selected.2)
+theorem producer_selection_keeps_all_original_fields
+    (first : ProducerSelected catalog name observed a)
+    (second : ProducerSelected catalog name observed b) :
+    a.original = b.original ∧ a.root = b.root ∧ a.profile = b.profile ∧ a.budget = b.budget ∧ a.history = b.history := by
+  have same := producer_name_has_one_original catalog first second
+  subst b
+  exact ⟨rfl,rfl,rfl,rfl,rfl⟩
+
+#print axioms producer_name_has_one_original
+/- Response admission composes catalog selection with two actual source reads.
+   These reads/authenticated peer facts remain service-owner premises. This is
+   not a theorem that a response stays authoritative after its admission point. -/
+def CompilationReplyReady (catalog : Nat → Option ProducerBinding) (name : Nat)
+    (entry : ProducerBinding) (before after : ProducerIdentity) : Prop :=
+  ProducerSelected catalog name before entry ∧ before = after
+theorem compilation_epoch_change_blocks_reply
+    (changed : before.epoch ≠ after.epoch) :
+    ¬ CompilationReplyReady catalog name entry before after := by
+  intro ready
+  exact changed (congrArg ProducerIdentity.epoch ready.2)
+theorem compilation_reply_keeps_registered_original
+    (ready : CompilationReplyReady catalog name entry before after) :
+    ProducerSelected catalog name after entry := by
+  rcases ready with ⟨selected,same⟩
+  simpa [same] using selected
+theorem compilation_reply_does_not_fix_future_authority
+    (ready : CompilationReplyReady catalog name entry before after)
+    (changed : later ≠ after) :
+    ¬ CompilationReplyReady catalog name entry before later := by
+  intro future
+  exact changed (future.2.symm.trans ready.2)
+#print axioms compilation_epoch_change_blocks_reply
+#print axioms compilation_reply_keeps_registered_original
+#print axioms compilation_reply_does_not_fix_future_authority
+/- Source presence is not source validity. The deployment selector forbids
+   ambiguity before opening files or attempting compilation. Successful producer
+   deployment additionally requires real compilation and publication evidence. -/
+def ExclusiveDeploymentSource (named file : Prop) : Prop :=
+  (named ∧ ¬ file) ∨ (file ∧ ¬ named)
+theorem deployment_source_cannot_be_ambiguous
+    (selected : ExclusiveDeploymentSource named file) : ¬ (named ∧ file) := by
+  intro both
+  rcases selected with producer | data
+  · exact producer.2 both.2
+  · exact data.2 both.1
+def ProducerDeploymentReady (catalog : Nat → Option ProducerBinding) (name : Nat)
+    (entry : ProducerBinding) (before after : ProducerIdentity)
+    (named file published : Prop) : Prop :=
+  ExclusiveDeploymentSource named file ∧ named ∧
+  CompilationReplyReady catalog name entry before after ∧ published
+theorem producer_deployment_never_uses_file_fallback
+    (ready : ProducerDeploymentReady catalog name entry before after named file published) : ¬ file := by
+  intro fallback
+  exact deployment_source_cannot_be_ambiguous ready.1 ⟨ready.2.1, fallback⟩
+theorem producer_deployment_requires_publication
+    (ready : ProducerDeploymentReady catalog name entry before after named file published) : published :=
+  ready.2.2.2
+theorem producer_deployment_keeps_registered_original
+    (ready : ProducerDeploymentReady catalog name entry before after named file published) :
+    ProducerSelected catalog name after entry :=
+  compilation_reply_keeps_registered_original ready.2.2.1
+#print axioms deployment_source_cannot_be_ambiguous
+#print axioms producer_deployment_never_uses_file_fallback
+#print axioms producer_deployment_requires_publication
+#print axioms producer_deployment_keeps_registered_original
+/- Local program admission snapshots are separate from RPC and final-use
+   authority. `original` below is the first admitted callback token, not an
+   authenticated task or key. The existing ProducerSelected/owned-source
+   binding supplies those independent premises. -/
+structure ProgramOwner where
+  phase : Nat
+  selected : Nat
+  original : Nat
+  busy : Bool
+def closeProgram (owner : ProgramOwner) : ProgramOwner :=
+  {owner with phase := 2, selected := 0}
+def installProgram (owner : ProgramOwner) (candidate : Nat) : ProgramOwner :=
+  if owner.phase = 0 then {owner with phase := 1, selected := candidate, original := candidate} else owner
+def ProgramResultReady (owner : ProgramOwner) (original result : Nat) : Prop :=
+  owner.phase = 1 ∧ owner.selected = owner.original ∧ owner.original > 0 ∧ owner.busy = true ∧ original = result
+theorem program_close_preserves_running_call (owner : ProgramOwner) :
+    (closeProgram owner).busy = owner.busy := rfl
+theorem program_close_refuses_delivery (owner : ProgramOwner) :
+    ¬ ProgramResultReady (closeProgram owner) original result := by
+  intro ready
+  have impossible : (2 : Nat) = 1 := ready.1
+  exact (by decide : (2 : Nat) ≠ 1) impossible
+theorem active_program_duplicate_preserves_owner (owner : ProgramOwner)
+    (active : owner.phase = 1) : installProgram owner candidate = owner := by
+  have notZero : owner.phase ≠ 0 := by
+    intro zero
+    exact (by decide : (1 : Nat) ≠ 0) (active.symm.trans zero)
+  exact if_neg notZero
+theorem closed_program_cannot_reopen (owner : ProgramOwner) :
+    installProgram (closeProgram owner) candidate = closeProgram owner := by
+  exact if_neg (by decide : (2 : Nat) ≠ 0)
+theorem program_result_composes_with_registered_original
+    (selected : ProducerSelected catalog name observed entry)
+    (ready : ProgramResultReady owner entry.original result) :
+    catalog name = some entry ∧ entry.authority = observed ∧ result = entry.original :=
+  ⟨selected.1, selected.2, ready.2.2.2.2.symm⟩
+#print axioms program_close_preserves_running_call
+#print axioms program_close_refuses_delivery
+#print axioms active_program_duplicate_preserves_owner
+#print axioms closed_program_cannot_reopen
+#print axioms program_result_composes_with_registered_original
+/- Producer-enabled service readiness requires actual initialization and local
+   catalog installation. Membership in archive metadata is only one premise.
+   These predicates do not authenticate a source RPC or authorize execution. -/
+def LinkedProgramReady (member rootMatches initialized installed catalog : Prop) : Prop :=
+  member ∧ rootMatches ∧ initialized ∧ installed ∧ catalog
+theorem graph_membership_cannot_replace_initialization
+    (notInitialized : ¬ initialized) : ¬ LinkedProgramReady member rootMatches initialized installed catalog := by
+  intro ready
+  exact notInitialized ready.2.2.1
+theorem dependency_membership_cannot_replace_expected_root
+    (wrongRoot : ¬ rootMatches) : ¬ LinkedProgramReady member rootMatches initialized installed catalog := by
+  intro ready
+  exact wrongRoot ready.2.1
+theorem linked_program_requires_installed_catalog
+    (ready : LinkedProgramReady member rootMatches initialized installed catalog) : installed ∧ catalog :=
+  ready.2.2.2
+theorem linked_program_and_reply_keep_original
+    (program : LinkedProgramReady member rootMatches initialized installed localCatalog)
+    (reply : CompilationReplyReady catalog name entry before after) :
+    LinkedProgramReady member rootMatches initialized installed localCatalog ∧ ProducerSelected catalog name after entry :=
+  ⟨program, compilation_reply_keeps_registered_original reply⟩
+#print axioms graph_membership_cannot_replace_initialization
+#print axioms dependency_membership_cannot_replace_expected_root
+#print axioms linked_program_requires_installed_catalog
+#print axioms linked_program_and_reply_keep_original
+#print axioms changed_source_observation_rejects_producer
+#print axioms producer_selection_keeps_all_original_fields
+#print axioms source_owner_join_preserves_cleanup
+#print axioms source_owner_late_initialization_is_fenced
+#print axioms source_owner_cleanup_requires_natural_return
+#print axioms source_host_close_is_terminal
+#print axioms source_host_delivery_requires_open_gate
+#print axioms source_host_running_cancel_retains_slot
 #print axioms owned_artifact_requires_admitted_capture
 #print axioms owned_artifact_cannot_ignore_current_source
 #print axioms configuration_cannot_skip_governance

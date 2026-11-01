@@ -1,10 +1,10 @@
 //! Compare an inert result to the host's independently retained original input.
-use crate::{OwnedSource, SourceData, SourceError};
+use crate::{OwnedSource, SourceError};
 
 /// Call-local original content, captured before invoking the approved producer.
 /// This is neither producer authentication nor a publication/execution permit.
 pub struct SourceExpectation {
-    original: SourceData,
+    original: OwnedSource,
 }
 
 /// Owned data equal to the retained original content. Current source credentials,
@@ -18,14 +18,14 @@ impl SourceExpectation {
     /// derive this expectation from the returned candidate or an agreeing alias.
     pub fn capture(original: &OwnedSource) -> Self {
         Self {
-            original: original.contents().clone(),
+            original: original.clone(),
         }
     }
 
     /// Consume this call's expectation and reject even self-consistent changes.
     /// Array order and exact strings remain part of the original source image.
     pub fn bind(self, candidate: OwnedSource) -> Result<BoundSource, SourceError> {
-        if candidate.contents() != &self.original {
+        if candidate.data() != self.original.data() {
             return Err(SourceError::Binding);
         }
         Ok(BoundSource { source: candidate })

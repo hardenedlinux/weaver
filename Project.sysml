@@ -75,6 +75,20 @@ package WeaverProject {
     }
 
     package Verification {
+        doc /* The Go verification owner inventories maintained project sources,
+           the complete Lean/Quint/Cedar proof source trees and Org/D2 design
+           sources. Gate inputs must be in that identity map. Before/after maps
+           and optional committed-blob checks bind the receipt to project bytes;
+           they do not prove an atomic filesystem snapshot or dependency-cache
+           integrity. Build outputs and archived run logs are not source inputs. */
+        doc /* The standard unfiltered Gerbil test gate derives its module
+           inventory from direct -test.ss files in t using the SDK's
+           collection rule. Qualification requires the exact harness inventory,
+           balanced module/suite/case starts and completions, nonempty modules,
+           a final OK and natural process success within the existing deadline.
+           A historical case count, zero exit alone or a partial transcript is
+           not completion evidence. Go testing.F exercises protocol corruption;
+           transcript checks do not prove SDK execution or final-send safety. */
         part rust : VerificationSuite { part 'check-rust' : VerificationMode; }
         part go : VerificationSuite { part 'check-go' : VerificationMode; }
         part scheme : VerificationSuite { part 'check-scheme' : VerificationMode; }
@@ -188,6 +202,10 @@ package WeaverProject {
         part cedarLibrary : WeaverExecution::CedarSecurityFrameworks;
         part semantics : WeaverExecution::SchemeSemanticPublisher;
         part control : WeaverExecution::GoControlAdapter;
+        doc /* Go deployment chooses an authenticated approved-producer RPC or
+           a JSON/YAML data file, exclusively. It never launches Scheme. Rust's
+           default production program installation remains a delivery gate;
+           qualification graphs do not silently become production semantics. */
         part policy : WeaverExecution::RustPolicy;
         part ledger : WeaverExecution::RustLedger;
         part broker : WeaverExecution::RustFinalBroker;
@@ -313,17 +331,45 @@ package WeaverProject {
 
         part 'crates/contracts' : RustPackage;
         part 'crates/governance' : RustPackage {
+            doc /* ApprovedProducer/ProducerCatalog seal a bounded local set of
+               names, immutable original artifacts and source identity/epoch
+               observations. A producer name cannot supply replacement input.
+               Private immutable SourceData ownership may be shared without
+               copying every body at queue admission. This catalog neither
+               authenticates observations nor replaces the durable source ledger. */
             doc /* Own checked concrete source records after a
                synchronous native Scheme strong-root conversion. No VM object survives in
                OwnedSource; conversion and transport confer no publication/send
                authority. Program graph/export admission remains host-owned. The scheme-vm feature
-               exposes conversion only; scheme-qualification links the test graph.
+               exposes conversion only; scheme-program links an explicit application
+               and fixed ABI; scheme-qualification selects a debug-only test root.
                SourceExpectation retains the independently admitted original
                before producer invocation; BoundSource compares the whole typed
                image and remains inert data, never a publication/send permit. */
+            doc /* root_source builds the reverse native input from concrete
+               validated original records using SDK rooted constructors. Field
+               symbols, identifier strings, exact integers and optional fields
+               retain their kinds. Fallible bounded construction owns temporary
+               roots; it confers neither producer admission nor execution rights. */
+            doc /* SourceClient/SourceInbox bound queued, running and unread
+               ready work on an existing tracked blocking owner. The VM remains
+               owner-thread local. Terminal close and cancellation fence future
+               delivery; active foreign calls drain naturally before join.
+               This lane has no publication, execution or budget authority. */
+            doc /* SchemeCompiler checks real installed-producer readiness before
+               becoming usable. program/linked.rs is the sole reviewed SDK ABI
+               exception to deny-mode unsafe policy; typed conversion and all
+               ownership/lifecycle code remain safe. Startup catalog data is
+               bounded/duplicate-free and supplies eligibility, never source PoP. */
             part 'weaver-contracts' : RuntimeDependency;
+            part 'weaver-policy-ffi' : RuntimeDependency;
         }
-        part 'crates/governance-build' : RustPackage;
+        part 'crates/governance-build' : RustPackage {
+            doc /* Match explicit application module/source to archive metadata;
+               initialize that application as the real root. The fixed ABI is a
+               dependency, not a replacement initializer. Production mode refuses
+               known fixture modules; qualification cannot build a release graph. */
+        }
         part 'crates/policy' : RustPackage {
             doc /* Reuse the existing fixed cedar-poo-spec revision's Rust
                runtime for schema-bound replay, declared IDs and entity checks.
@@ -344,7 +390,24 @@ package WeaverProject {
             part 'weaver-ledger' : RuntimeDependency;
         }
         part 'crates/server' : RustPackage {
+            doc /* An initialized GovernanceWorker may publish its producer
+               catalog once through the shared admission gate. Closed or duplicate
+               publication fails; the catalog uses this worker's fixed client.
+               CompileSource authenticates the source connection, observes its
+               durable authority before compilation and rechecks after the owned
+               result returns. A response is knowledge, never a publication or
+               execution permit; Go uses existing source publication CAS. */
+            doc /* ServiceRuntime is the existing shared task/resource owner.
+               Approved compiler factories construct non-Send Scheme VMs on its
+               tracked blocking worker. Terminal shutdown closes source delivery;
+               drain waits for natural factory/call return and VM cleanup.
+               One compiler owner is installed for this runtime incarnation;
+               rejected duplicates cannot retire the current owner. This lifecycle
+               run_from_env may install the compiled program and explicit startup
+               catalog through this owner before binding ingress. No implicit
+               application exists; CompileSource selects only the sealed set. */
             part 'weaver-contracts' : RuntimeDependency;
+            part 'weaver-governance' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;
             part 'weaver-execution' : RuntimeDependency;
         }
@@ -367,7 +430,14 @@ package WeaverProject {
 
         part 'scheme/governance' : SchemeModule;
         part 'scheme/policy' : SchemeModule;
-        part 'scheme/gateway' : SchemeModule;
+        part 'scheme/gateway' : SchemeModule {
+            doc /* program.ss owns a sealed Record/Function lifecycle for one
+               approved typed-return producer. Install/close are terminal at
+               their respective admission points; a duplicate cannot replace
+               the installed callback. Actual Governor/Profile construction
+               belongs to the approved application graph, never a default
+               fixture. This object supplies no publication or send authority. */
+        }
         part 't/gateway-contracts-test.ss' : File;
         part 't/governance-test.ss' : File;
         part 't/policy-test.ss' : File;

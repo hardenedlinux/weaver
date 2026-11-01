@@ -52,6 +52,33 @@ pub(crate) fn write(connection: &Connection, authority: &SourceAuthority) -> Res
     Ok(())
 }
 
+// Enrollment is the only caller. Discover all durable application tables in
+// this deciding transaction, including residual projections and future schema
+// extensions. Temporary aliases cannot hide rows in the main ledger namespace.
+fn has_application_rows(connection: &Connection) -> Result<bool> {
+    let mut statement = connection
+        .prepare("SELECT name FROM main.sqlite_schema WHERE type='table' AND name NOT GLOB 'sqlite_*' ORDER BY name")
+        .map_err(db)?;
+    let tables = statement
+        .query_map([], |row| row.get::<_, String>(0))
+        .map_err(db)?;
+    for table in tables {
+        let table = table.map_err(db)?;
+        let identifier = table.replace('"', "\"\"");
+        let occupied: bool = connection
+            .query_row(
+                &format!("SELECT EXISTS(SELECT 1 FROM main.\"{identifier}\")"),
+                [],
+                |row| row.get(0),
+            )
+            .map_err(db)?;
+        if occupied {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
 fn ensure(ledger: &mut Ledger, caller: &SourceIdentity) -> Result<()> {
     caller.validate()?;
     if current(&ledger.connection)?.is_some() {
@@ -62,8 +89,7 @@ fn ensure(ledger: &mut Ledger, caller: &SourceIdentity) -> Result<()> {
         .transaction_with_behavior(TransactionBehavior::Immediate)
         .map_err(db)?;
     if current(&tx)?.is_none() {
-        let occupied:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM authority) OR EXISTS(SELECT 1 FROM tasks) OR EXISTS(SELECT 1 FROM authority_publications) OR EXISTS(SELECT 1 FROM authority_pending) OR EXISTS(SELECT 1 FROM authority_review_requirements) OR EXISTS(SELECT 1 FROM source_keys) OR EXISTS(SELECT 1 FROM source_rotations) OR EXISTS(SELECT 1 FROM provider_profiles) OR EXISTS(SELECT 1 FROM execution_claims) OR EXISTS(SELECT 1 FROM operations) OR EXISTS(SELECT 1 FROM streams) OR EXISTS(SELECT 1 FROM provider_runs)",[],|r|r.get(0)).map_err(db)?;
-        if occupied {
+        if has_application_rows(&tx)? {
             return Err(Error::Conflict(
                 "source enrollment requires an empty unowned store",
             ));

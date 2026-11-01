@@ -334,6 +334,39 @@ theorem recovery_preserves_source_key_uniqueness [DecidableEq Key]
 
 #print axioms recovery_preserves_source_key_uniqueness
 
+/-- Native first enrollment reads the complete current main-table catalog under
+the deciding SQLite writer. These observations are not caller-supplied evidence.
+This local guard does not establish an independent rollback-resistant root. -/
+def enrollSourceFromCatalog (headPresent : Bool) (catalog : List Domain)
+    (occupied : Domain → Bool) (candidate : Nat) (s : State Key) : State Key :=
+  if headPresent || catalog.any occupied then s
+  else {s with registrarOwner := candidate, registrarEpoch := 0, sourceKeys := [candidate]}
+
+theorem retained_table_blocks_source_enrollment (member : table ∈ catalog)
+    (present : occupied table = true) :
+    enrollSourceFromCatalog headPresent catalog occupied candidate s = s := by
+  have found : catalog.any occupied = true := List.any_eq_true.mpr ⟨table, member, present⟩
+  simp [enrollSourceFromCatalog, found]
+
+/-- Coverage applies to any finite catalog, including a newly introduced table.
+The native catalog/row observation must share the final enrollment transaction. -/
+theorem complete_catalog_refusal_preserves_original_state
+    (complete : ∀ table, occupied table = true → table ∈ catalog)
+    (present : occupied residual = true) :
+    enrollSourceFromCatalog headPresent catalog occupied candidate s = s :=
+  retained_table_blocks_source_enrollment (complete residual present) present
+
+theorem source_enrollment_refusal_preserves_unknown_accounting
+    (complete : ∀ table, occupied table = true → table ∈ catalog)
+    (present : occupied residual = true) (safe : Safe held calls s) :
+    Safe held calls (enrollSourceFromCatalog headPresent catalog occupied candidate s) := by
+  rw [complete_catalog_refusal_preserves_original_state complete present]
+  exact safe
+
+#print axioms retained_table_blocks_source_enrollment
+#print axioms complete_catalog_refusal_preserves_original_state
+#print axioms source_enrollment_refusal_preserves_unknown_accounting
+
 theorem historical_registration_is_not_current (stale : entry.parent ≠ s.head) :
     ¬ RegisteredCurrent s id entry actor epoch := fun accepted => stale accepted.2.2.2.1
 
@@ -725,4 +758,75 @@ theorem finite_replay_does_not_certify_no_gain (samples : List Nat) (outside : N
   simp [different]
 
 #print axioms finite_replay_does_not_certify_no_gain
+
+/- Local adapter refinement only; this is not another authority owner. Command
+   denotes the complete exact proposal, including optional-parent presence.
+   The native initial copy requires stable input; outbound requests must not
+   share mutable storage with the captured proposal. Go framework properties
+   check both premises. Neither this value model nor a race test proves arbitrary
+   concurrent caller writes safe during that initial copy. -/
+structure ProposalCall (Command : Type) where
+  original : Command
+  captured : Command
+  caller : Command
+  wire : Command
+  requests : List Command := []
+
+def ProposalCall.Owned (s : ProposalCall Command) : Prop :=
+  s.captured = s.original ∧ ∀ q ∈ s.requests, q = s.original
+
+inductive ProposalCallStep : ProposalCall Command → ProposalCall Command → Prop where
+  | callerWrite (s : ProposalCall Command) (q : Command) : ProposalCallStep s {s with caller := q}
+  | transportWrite (s : ProposalCall Command) (q : Command) : ProposalCallStep s {s with wire := q}
+  | submit (s : ProposalCall Command) : ProposalCallStep s {s with wire := s.captured, requests := s.requests ++ [s.captured]}
+  | lostReplyOrObservation (s : ProposalCall Command) : ProposalCallStep s s
+
+variable {Command : Type} {a b c : ProposalCall Command}
+
+theorem call_step_preserves_snapshot (owned : a.Owned) (step : ProposalCallStep a b) : b.Owned := by
+  rcases owned with ⟨copied, requests⟩
+  cases step with
+  | callerWrite | transportWrite | lostReplyOrObservation => exact ⟨copied, requests⟩
+  | submit =>
+    refine ⟨copied, ?_⟩
+    intro q present
+    rcases List.mem_append.mp present with old | fresh
+    · exact requests q old
+    · have same : q = a.captured := by simpa using fresh
+      exact same.trans copied
+
+inductive ProposalCallRun : ProposalCall Command → ProposalCall Command → Prop where
+  | refl (s : ProposalCall Command) : ProposalCallRun s s
+  | next {a b c : ProposalCall Command} :
+      ProposalCallRun a b → ProposalCallStep b c → ProposalCallRun a c
+
+theorem call_run_preserves_snapshot (owned : a.Owned) (run : ProposalCallRun a b) : b.Owned := by
+  induction run with
+  | refl => exact owned
+  | next _ step ih => exact call_step_preserves_snapshot ih step
+
+theorem frozen_call_and_publication_recovery [DecidableEq Key]
+    (owned : a.Owned) (calls : ProposalCallRun a b) (run : Run s t)
+    (original : s.records id = some decision) :
+    b.Owned ∧ t.records id = some decision :=
+  ⟨call_run_preserves_snapshot owned calls, run_preserves_original_decisions run id decision original⟩
+
+#print axioms call_run_preserves_snapshot
+#print axioms frozen_call_and_publication_recovery
+
+theorem call_run_preserves_original (run : ProposalCallRun a b) : b.original = a.original := by
+  induction run with
+  | refl => rfl
+  | next _ step ih => cases step <;> exact ih
+
+/-- Instantiate Command with the complete typed task or provider plan, and
+observe with its ordered route/stream commitment projection. This reuses the
+same value-ownership law as publication; native copy fidelity remains a premise. -/
+theorem request_observation_keeps_original (owned : a.Owned) (run : ProposalCallRun a b)
+    (observe : Command → Observation) (submitted : q ∈ b.requests) :
+    observe q = observe a.original := by
+  have captured := (call_run_preserves_snapshot owned run).2 q submitted
+  exact congrArg observe (captured.trans (call_run_preserves_original run))
+
+#print axioms request_observation_keeps_original
 end Weaver.PublicationRecovery

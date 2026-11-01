@@ -3,7 +3,6 @@ package controlplane
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
@@ -30,11 +29,7 @@ func Bootstrap(ctx context.Context, source, owner *gatewayclient.Client, bundle 
 	if source == nil || owner == nil {
 		return nil, errors.New("source and operation authority roles required")
 	}
-	data, err := json.Marshal(bundle)
-	if err != nil {
-		return nil, err
-	}
-	frozen, err := config.DecodeBundle(data, config.ProfileJSON)
+	frozen, err := config.FreezeBundle(bundle)
 	if err != nil {
 		return nil, err
 	}

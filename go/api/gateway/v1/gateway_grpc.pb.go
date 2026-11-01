@@ -28,6 +28,7 @@ const (
 	Gateway_InspectPublication_FullMethodName     = "/weaver.gateway.v1.Gateway/InspectPublication"
 	Gateway_InspectSourceAuthority_FullMethodName = "/weaver.gateway.v1.Gateway/InspectSourceAuthority"
 	Gateway_RotateSourceAuthority_FullMethodName  = "/weaver.gateway.v1.Gateway/RotateSourceAuthority"
+	Gateway_CompileSource_FullMethodName          = "/weaver.gateway.v1.Gateway/CompileSource"
 )
 
 // GatewayClient is the client API for Gateway service.
@@ -45,6 +46,9 @@ type GatewayClient interface {
 	InspectPublication(ctx context.Context, in *PublicationKey, opts ...grpc.CallOption) (*PublicationReceipt, error)
 	InspectSourceAuthority(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SourceAuthorityView, error)
 	RotateSourceAuthority(ctx context.Context, in *SourceRotationRequest, opts ...grpc.CallOption) (*SourceRotationReceipt, error)
+	// Preparation only. Actual ingress/source state selects an installed original;
+	// request labels cannot supply authority, replacement source or module paths.
+	CompileSource(ctx context.Context, in *ProducerRequest, opts ...grpc.CallOption) (*CompiledSource, error)
 }
 
 type gatewayClient struct {
@@ -168,6 +172,16 @@ func (c *gatewayClient) RotateSourceAuthority(ctx context.Context, in *SourceRot
 	return out, nil
 }
 
+func (c *gatewayClient) CompileSource(ctx context.Context, in *ProducerRequest, opts ...grpc.CallOption) (*CompiledSource, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CompiledSource)
+	err := c.cc.Invoke(ctx, Gateway_CompileSource_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GatewayServer is the server API for Gateway service.
 // All implementations must embed UnimplementedGatewayServer
 // for forward compatibility
@@ -183,6 +197,9 @@ type GatewayServer interface {
 	InspectPublication(context.Context, *PublicationKey) (*PublicationReceipt, error)
 	InspectSourceAuthority(context.Context, *Empty) (*SourceAuthorityView, error)
 	RotateSourceAuthority(context.Context, *SourceRotationRequest) (*SourceRotationReceipt, error)
+	// Preparation only. Actual ingress/source state selects an installed original;
+	// request labels cannot supply authority, replacement source or module paths.
+	CompileSource(context.Context, *ProducerRequest) (*CompiledSource, error)
 	mustEmbedUnimplementedGatewayServer()
 }
 
@@ -216,6 +233,9 @@ func (UnimplementedGatewayServer) InspectSourceAuthority(context.Context, *Empty
 }
 func (UnimplementedGatewayServer) RotateSourceAuthority(context.Context, *SourceRotationRequest) (*SourceRotationReceipt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RotateSourceAuthority not implemented")
+}
+func (UnimplementedGatewayServer) CompileSource(context.Context, *ProducerRequest) (*CompiledSource, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompileSource not implemented")
 }
 func (UnimplementedGatewayServer) mustEmbedUnimplementedGatewayServer() {}
 
@@ -395,6 +415,24 @@ func _Gateway_RotateSourceAuthority_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_CompileSource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProducerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).CompileSource(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_CompileSource_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).CompileSource(ctx, req.(*ProducerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Gateway_ServiceDesc is the grpc.ServiceDesc for Gateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -433,6 +471,10 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RotateSourceAuthority",
 			Handler:    _Gateway_RotateSourceAuthority_Handler,
+		},
+		{
+			MethodName: "CompileSource",
+			Handler:    _Gateway_CompileSource_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

@@ -23,20 +23,35 @@ module LlmPolicyContinuation {
   // bounds before FFI. A readable/stable buffer and status zero do not prove
   // bounded encoding allocation; Scheme/Rust framework properties own that
   // implementation evidence. These protocol schedules grant no allocator proof.
+  // Production root_source constructs SDK input; materialize_source copies output.
+  // nativeTyped/exactIntegers/keyKinds cover both directions. Actual constructor
+  // fidelity, including UTF-8/NUL and optional-field presence, is a refinement
+  // premise exercised by the real-VM framework property, not derived here.
+  // Aggregate construction refusal supplies no BoundaryCheck or execution/refund.
+  // Concrete refinement witness: scheme_vm.rs checks coherent replacements
+  // through materialize_bound_source against a pre-call SourceExpectation.
+  // A Binding refusal and same-VM original recovery are both required; local
+  // shape validity alone cannot establish the input/output equality below.
   type BoundaryEvidence={kind:int,root:int,claim:int,profile:int,configurationSchema:int,normalizer:int,programModule:int,environment:int,
     vm:int,call:int,epoch:int,cut:int,input:int,output:int,schemaChecked:bool,governanceChecked:bool,
     readable:bool,stable:bool,owned:bool,retainedPointer:bool,reentrant:bool,
-    emissions:int,captureCompleted:bool,capturePoisoned:bool,nativeTyped:bool,exactIntegers:bool,keyKinds:bool,status:int}
+    emissions:int,captureCompleted:bool,capturePoisoned:bool,nativeTyped:bool,exactIntegers:bool,keyKinds:bool,assessmentImageOwned:bool,status:int}
   type BoundaryCheck={evidence:BoundaryEvidence,configurationSchema:int,normalizer:int,programModule:int,environment:int,vm:int,call:int,epoch:int,cut:int,value:int,senderVM:int,senderCall:int,senderEpoch:int}
   type FactState={closure:FactClosure,candidate:FactEvidence,installed:FactEvidence,hostValue:int,sourceValue:int,sourceImages:Set[SourceImage],truth:Set[int],scope:Set[int],
     mode:int,grant:Freshness,connected:bool,channel:int,clock:int,now:int,timeFloor:int,uses:List[FactUse],deltas:List[FactDelta]}
+  // Local compilation resources only: no publication, execution or refund right.
+  type ProducerIdentity={certificate:int,key:int,credential:int,epoch:int}
+  type Producer={name:int,root:int,profile:int,content:int,budget:int,history:int,publication:int,proposal:int,authority:ProducerIdentity}
+  type ProducerUse={producer:Producer,observed:ProducerIdentity}
+  type CompilationReply={before:ProducerIdentity,atAdmission:ProducerIdentity}
+  type SourceHost={closed:bool,phases:List[int],cancelled:Set[int],slots:int,deliveries:List[bool],worker:int,cleaned:bool,joined:bool,activations:List[bool],catalog:Set[Producer],catalogUses:List[ProducerUse],rpcAuthority:ProducerIdentity,rpcBefore:Set[ProducerIdentity],rpcReplies:List[CompilationReply]}
   type State={staged:Set[Change],log:List[Publication],generation:int,allowed:bool,fence:int,revision:int,online:bool,
     inspections:Set[View],approvals:Set[Approval],winner:int,visibleWinner:int,acks:Set[int],aliases:Set[Alias],permits:Set[Permit],
     uses:List[Use],spent:bool,everSpent:bool,calls:int,hold:int,usage:int,
     factFloor:int,barriers:List[Barrier],resolved:Set[int],pending:Set[int],hardAllowed:bool,visibleBarrier:int,
     receipts:Set[Receipt],frontier:int,nextAdmissions:List[NextAdmission],visibleAdmission:int,nextUses:List[NextUse],
     nextSpent:bool,nextCalls:int,nextHold:int,facts:FactState,semanticVM:int,ffiCall:int,captureEpoch:int,
-    configurationSchema:int,configurationNormalizer:int,schemeModule:int,boundaryRecords:List[BoundaryCheck]}
+    configurationSchema:int,configurationNormalizer:int,schemeModule:int,boundaryRecords:List[BoundaryCheck],host:SourceHost}
   var s:State
   pure val original={id:10,root:10,parent:0,tip:0,content:100,allowed:true,claim:11,profile:20,budget:5,history:9}
   pure val external0=original.with("id",20).with("root",20).with("content",200).with("allowed",false)
@@ -54,11 +69,27 @@ module LlmPolicyContinuation {
     inspections:Set(),approvals:Set(),winner:-1,visibleWinner:-1,acks:Set(),aliases:Set(),permits:Set(permit0),uses:List(),spent:false,everSpent:false,calls:0,hold:6,usage:-1,
     factFloor:0,barriers:List(),resolved:Set(),pending:Set(),hardAllowed:true,visibleBarrier:-1,receipts:Set(),frontier:0,
     nextAdmissions:List(),visibleAdmission:-1,nextUses:List(),nextSpent:false,nextCalls:0,nextHold:0,facts:facts0,
-    semanticVM:0,ffiCall:0,captureEpoch:0,configurationSchema:1,configurationNormalizer:1,schemeModule:0,boundaryRecords:List()}
+    semanticVM:0,ffiCall:0,captureEpoch:0,configurationSchema:1,configurationNormalizer:1,schemeModule:0,boundaryRecords:List(),
+    host:{closed:false,phases:List(0,0),cancelled:Set(),slots:0,deliveries:List(),worker:1,cleaned:false,joined:false,activations:List(),catalog:Set(),catalogUses:List(),rpcAuthority:{certificate:1,key:2,credential:3,epoch:1},rpcBefore:Set(),rpcReplies:List()}}
+  pure val producerIdentity0={certificate:1,key:2,credential:3,epoch:1}
+  pure val producer0={name:1,root:10,profile:20,content:0,budget:5,history:9,publication:30,proposal:100,authority:producerIdentity0}
+  // Deployment source presence is exclusive. A Scheme file is not a runtime
+  // compiler instruction; an absent producer must not fall back to data input.
+  pure def deploymentSourceValid(named:bool,file:bool,nameValid:bool,schemeFile:bool):bool=
+    named!=file and (named implies nameValid) and (file implies not(schemeFile))
+  run deploymentSourcePresenceIsExclusiveTest=init.expect(Set(false,true).forall(named=>Set(false,true).forall(file=>
+    deploymentSourceValid(named,file,true,false)==(named!=file))))
+  run deploymentCannotSelectSchemeFileTest=init.expect(not(deploymentSourceValid(false,true,true,true)))
+  run deploymentCannotUseEmptyProducerTest=init.expect(not(deploymentSourceValid(true,false,false,false)))
+  run deploymentCannotFallBackToFileTest=init.expect(not(deploymentSourceValid(true,true,true,false)))
+  run deploymentFileAndProducerAreSeparateTest=init.expect(deploymentSourceValid(true,false,true,true) and deploymentSourceValid(false,true,false,false))
+  pure def producerValid(e)=e.name>0 and (e.root==10 or e.root==20) and e.profile==20 and e.content==0 and e.budget==5 and e.history==9 and e.authority==producerIdentity0
+  pure def catalogValid(entries:Set[Producer]):bool=entries.size()>0 and entries.size()<=64 and entries.forall(e=>producerValid(e)) and
+    entries.forall(a=>entries.forall(b=>((a.name==b.name or a.root==b.root) implies a==b) and (a.publication==b.publication implies a.proposal==b.proposal)))
   pure val boundary0={kind:0,root:10,claim:11,profile:20,configurationSchema:1,normalizer:1,programModule:0,environment:0,
     vm:0,call:0,epoch:0,cut:0,input:0,output:0,schemaChecked:true,governanceChecked:true,
     readable:true,stable:true,owned:true,retainedPointer:false,reentrant:false,
-    emissions:1,captureCompleted:true,capturePoisoned:false,nativeTyped:true,exactIntegers:true,keyKinds:true,status:0}
+    emissions:1,captureCompleted:true,capturePoisoned:false,nativeTyped:true,exactIntegers:true,keyKinds:true,assessmentImageOwned:true,status:0}
   def tip=if(s.log.length()==0)0 else s.log.nth(s.log.length()-1).change.id
   def effective=if(s.log.length()==0)true else s.log.nth(s.log.length()-1).change.allowed
   def view={generation:s.generation,tip:tip,fence:s.fence,revision:s.revision}
@@ -89,13 +120,135 @@ module LlmPolicyContinuation {
     e.cut==u.cut and e.input==u.value and e.output==u.value and e.schemaChecked and e.governanceChecked and
     e.readable and e.stable and e.owned and not(e.retainedPointer) and not(e.reentrant) and
     e.emissions==1 and e.captureCompleted and not(e.capturePoisoned) and
-    e.nativeTyped and e.exactIntegers and e.keyKinds and e.status==0}
+    e.nativeTyped and e.exactIntegers and e.keyKinds and e.assessmentImageOwned and e.status==0}
   action recordBoundary(e)=all {boundaryValid(boundaryCheck(e)),s'=s.with("boundaryRecords",s.boundaryRecords.append(boundaryCheck(e)))}
   action semanticRestart=s'=s.with("semanticVM",s.semanticVM+1).with("ffiCall",s.ffiCall+1).with("captureEpoch",s.captureEpoch+1)
   action endBorrow=s'=s.with("ffiCall",s.ffiCall+1)
   action rebindConfiguration=s'=s.with("configurationSchema",s.configurationSchema+1).with("captureEpoch",s.captureEpoch+1)
   action loseVolatileCaptures=s'=s.with("boundaryRecords",List())
   action init=s'=initial
+  // 0 unused, 1 queued, 2 running, 3 ready, 4 delivered, 5 discarded.
+  def hostOccupied=s.host.phases.indices().filter(i=>s.host.phases.nth(i)>=1 and s.host.phases.nth(i)<=3).size()
+  // Worker: 0 factory executing, 1 active owner, 2 cleaned, 3 factory returned.
+  def hostRunning=s.host.phases.indices().exists(i=>s.host.phases.nth(i)==2)
+  def hostSafe=s.host.slots==hostOccupied and s.host.slots<=2 and s.host.deliveries.indices().forall(i=>s.host.deliveries.nth(i)) and
+    s.host.activations.indices().forall(i=>s.host.activations.nth(i)) and
+    (s.host.joined implies (s.host.cleaned and s.host.worker==2)) and
+    (s.host.cleaned implies (s.host.closed and not(hostRunning))) and
+    (s.host.catalog.size()==0 or catalogValid(s.host.catalog)) and
+    s.host.catalogUses.indices().forall(i=>{val use=s.host.catalogUses.nth(i)
+      s.host.catalog.contains(use.producer) and use.producer.authority==use.observed}) and
+    s.host.rpcReplies.indices().forall(i=>{val reply=s.host.rpcReplies.nth(i)
+      reply.before==reply.atAdmission and sameProducerPeer(producerIdentity0,reply.atAdmission)})
+  pure def sameProducerPeer(a,b)=a.certificate==b.certificate and a.key==b.key and a.credential==b.credential
+  // RPC before/after reads come from actual source state. The request has only
+  // a producer name. Local typed delivery precedes response admission and frees
+  // its queue slot; response knowledge is never a later publication/send permit.
+  action rpcBegin=all {not(s.host.closed),s.host.worker==1,s.host.catalog.contains(producer0),s.host.rpcBefore.size()==0,
+    sameProducerPeer(producerIdentity0,s.host.rpcAuthority),producer0.authority==s.host.rpcAuthority,
+    s.host.slots<2,s.host.phases.nth(0)==0,
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(0,1)).with("slots",s.host.slots+1).with("rpcBefore",Set(s.host.rpcAuthority)))}
+  action rpcRotate= s'=s.with("host",s.host.with("rpcAuthority",{certificate:9,key:9,credential:9,epoch:s.host.rpcAuthority.epoch+1}))
+  action rpcAdmitReply=all {not(s.host.closed),s.host.phases.nth(0)==4,s.host.rpcReplies.length()==0,
+    s.host.rpcBefore.contains(s.host.rpcAuthority),sameProducerPeer(producerIdentity0,s.host.rpcAuthority),
+    s'=s.with("host",s.host.with("rpcReplies",s.host.rpcReplies.append({before:s.host.rpcAuthority,atAdmission:s.host.rpcAuthority})))}
+  action rpcGoAccept=all {s.host.rpcReplies.length()==1,s.host.rpcReplies.nth(0).atAdmission==s.host.rpcAuthority,s'=s}
+  action rpcReady=init.then(catalogPublish(Set(producer0))).then(rpcBegin).then(hostStart(0)).then(hostFinish(0)).then(hostDeliver(0))
+  run compilationRechecksActualSourceAfterLocalDeliveryTest=rpcReady.then(rpcRotate).then(rpcAdmitReply.fail())
+  run sourceRotationDoesNotNeedCompilerLaneTest=init.then(catalogPublish(Set(producer0))).then(rpcBegin).then(hostStart(0))
+    .then(rpcRotate).then(hostFinish(0)).then(hostDeliver(0)).then(rpcAdmitReply.fail())
+  run compiledResponseLeavesClaimAndUnknownHoldTest=rpcReady.then(rpcAdmitReply)
+    .expect(hostSafe and s.host.slots==0 and s.hold==6 and s.calls==0 and not(s.spent))
+  run compiledResponseStillNeedsFinalCurrentCASTest=rpcReady.then(rpcAdmitReply).then(ledgerWrite).then(consume(permit0).fail())
+  run responseKnowledgeDoesNotMeanLaterSourceAuthorityTest=rpcReady.then(rpcAdmitReply).then(rpcRotate)
+    .expect(hostSafe and s.host.rpcReplies.nth(0).atAdmission!=s.host.rpcAuthority and s.calls==0)
+  run goRejectsSourceChangeAfterResponseAdmissionTest=rpcReady.then(rpcAdmitReply).then(rpcRotate).then(rpcGoAccept.fail())
+  action unsafeCachedCompilationReply=s'=s.with("host",s.host.with("rpcReplies",s.host.rpcReplies.append({before:producerIdentity0,atAdmission:s.host.rpcAuthority})))
+  run cachedSourceReadAsReplyPermitCounterexampleTest=rpcReady.then(rpcRotate).then(unsafeCachedCompilationReply).expect(not(hostSafe))
+  action catalogPublish(entries)=all {not(s.host.closed),s.host.worker==1,s.host.catalog.size()==0,catalogValid(entries),
+    s'=s.with("host",s.host.with("catalog",entries))}
+  action catalogSelect(name,observed)={
+    nondet e=s.host.catalog.oneOf()
+    all {not(s.host.closed),s.host.worker==1,e.name==name,e.authority==observed,
+      s'=s.with("host",s.host.with("catalogUses",s.host.catalogUses.append({producer:e,observed:observed})))}}
+  run freshProducerNameCannotReplaceOriginalTest=init.then(catalogPublish(Set(producer0))).then(catalogSelect(2,producerIdentity0).fail())
+  run producerAliasesCannotDuplicateOneFamilyTest=init.then(catalogPublish(Set(producer0,producer0.with("name",2))).fail())
+  run installedProducerSetCannotBeReplacedTest=init.then(catalogPublish(Set(producer0)))
+    .then(catalogPublish(Set(producer0.with("name",2))).fail())
+  run changedSourceEpochCannotSelectProducerTest=init.then(catalogPublish(Set(producer0)))
+    .then(catalogSelect(1,producerIdentity0.with("epoch",2)).fail())
+  run sharedPublicKeyCannotReplaceLeafAndCredentialTest=init.then(catalogPublish(Set(producer0)))
+    .then(catalogSelect(1,producerIdentity0.with("certificate",9).with("credential",9)).fail())
+  run producerSelectionKeepsOriginalObligationsTest=init.then(catalogPublish(Set(producer0))).then(catalogSelect(1,producerIdentity0))
+    .expect(hostSafe and s.hold==6 and s.calls==0 and not(s.spent) and s.pending==Set())
+  run conflictingProducerPublicationCannotInstallTest=init
+    .then(catalogPublish(Set(producer0,producer0.with("name",2).with("root",20).with("proposal",101))).fail())
+  action unsafeCatalogSelect(observed)=s'=s.with("host",s.host.with("catalogUses",s.host.catalogUses.append({producer:producer0,observed:observed})))
+  run sharedKeyOnlySelectionCounterexampleTest=init.then(catalogPublish(Set(producer0)))
+    .then(unsafeCatalogSelect(producerIdentity0.with("certificate",9))).expect(not(hostSafe))
+  // The supplied observation is not a live authority check. A later caller must
+  // use actual authenticated/current source state and recheck final publication.
+  run oldCatalogObservationStillCannotPublishThroughNewFenceTest=init.then(catalogPublish(Set(producer0)))
+    .then(restart).then(recover(true)).then(catalogSelect(1,producerIdentity0)).expect(hostSafe and s.hold==6 and s.calls==0)
+    .then(publish(original,0,true,true).fail())
+  run producerLookupCannotResetSpentClaimOrUnknownHoldTest=unknown.then(catalogPublish(Set(producer0)))
+    .then(catalogSelect(1,producerIdentity0)).expect(hostSafe and s.spent and s.everSpent and s.calls==1 and s.hold==6)
+  action initHostStarting=s'=initial.with("host",initial.host.with("worker",0))
+  action hostFactoryReturn=all {s.host.worker==0,s'=s.with("host",s.host.with("worker",3))}
+  action hostActivate=all {s.host.worker==3,not(s.host.closed),
+    s'=s.with("host",s.host.with("worker",1).with("activations",s.host.activations.append(not(s.host.closed))))}
+  action hostCleanup=all {s.host.closed,s.host.worker==1 or s.host.worker==3,not(hostRunning),
+    s'=s.with("host",s.host.with("worker",2).with("cleaned",true))}
+  action hostJoin=all {s.host.cleaned,s.host.worker==2,s'=s.with("host",s.host.with("joined",true))}
+  action hostSubmit(i)=all {s.host.worker==1,not(s.host.closed),s.host.slots<2,s.host.phases.nth(i)==0,
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,1)).with("slots",s.host.slots+1))}
+  action hostStart(i)=all {s.host.worker==1,not(s.host.closed),not(hostRunning),not(s.host.cancelled.contains(i)),s.host.phases.nth(i)==1,
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,2)))}
+  action hostFinish(i)=all {s.host.phases.nth(i)==2,
+    val discard=s.host.closed or s.host.cancelled.contains(i)
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,if(discard)5 else 3))
+      .with("slots",s.host.slots-(if(discard)1 else 0)))}
+  action hostCancel(i)=all {s.host.phases.nth(i)>=1,s.host.phases.nth(i)<=3,
+    s'=s.with("host",s.host.with("cancelled",s.host.cancelled.union(Set(i))))}
+  action hostDiscardWaiting(i)=all {s.host.phases.nth(i)==1 or s.host.phases.nth(i)==3,
+    s.host.closed or s.host.cancelled.contains(i),
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,5)).with("slots",s.host.slots-1))}
+  action hostClose=s'=s.with("host",s.host.with("closed",true))
+  action hostDeliver(i)=all {not(s.host.closed),not(s.host.cancelled.contains(i)),s.host.phases.nth(i)==3,
+    s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,4)).with("slots",s.host.slots-1)
+      .with("deliveries",s.host.deliveries.append(not(s.host.closed) and not(s.host.cancelled.contains(i)))))}
+  action hostStep=any {hostSubmit(0),hostSubmit(1),hostStart(0),hostStart(1),hostFinish(0),hostFinish(1),
+    hostCancel(0),hostCancel(1),hostDiscardWaiting(0),hostDiscardWaiting(1),hostClose,hostDeliver(0),hostDeliver(1),
+    hostFactoryReturn,hostActivate,hostCleanup,hostJoin,catalogPublish(Set(producer0)),catalogSelect(1,producerIdentity0),
+    catalogSelect(2,producerIdentity0),catalogSelect(1,producerIdentity0.with("epoch",2)),rpcBegin,rpcRotate,rpcAdmitReply,rpcGoAccept}
+  run abandonedFactoryRemainsTrackedTest=initHostStarting.then(hostClose).expect(hostSafe and not(s.host.joined))
+    .then(hostCleanup.fail())
+  run lateFactoryCannotActivateAfterCloseTest=initHostStarting.then(hostClose).then(hostFactoryReturn).then(hostActivate.fail())
+  run factoryReturnAllowsNaturalCleanupTest=initHostStarting.then(hostClose).then(hostFactoryReturn).then(hostCleanup).then(hostJoin)
+    .expect(hostSafe and s.host.joined and s.hold==6 and s.calls==0)
+  run activeCompilerPreventsSharedDrainTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostClose).then(hostCleanup.fail())
+  run activeCompilerReturnPrecedesSharedDrainTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostClose)
+    .then(hostFinish(0)).then(hostCleanup).then(hostJoin).expect(hostSafe and s.host.joined and s.hold==6)
+  action unsafeHostJoin=s'=s.with("host",s.host.with("joined",true))
+  run cancellationAsCleanupCounterexampleTest=initHostStarting.then(hostClose).then(unsafeHostJoin).expect(not(hostSafe))
+  action unsafeHostActivate=s'=s.with("host",s.host.with("worker",1).with("activations",s.host.activations.append(not(s.host.closed))))
+  run lateFactoryActivationCounterexampleTest=initHostStarting.then(hostClose).then(hostFactoryReturn).then(unsafeHostActivate).expect(not(hostSafe))
+  run readySourceCannotCrossTerminalCloseTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostFinish(0))
+    .then(hostClose).expect(hostSafe and s.hold==6 and s.calls==0).then(hostDeliver(0).fail())
+  run runningSourceCancelKeepsSlotTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostCancel(0))
+    .expect(hostSafe and s.host.slots==1).then(hostFinish(0)).expect(hostSafe and s.host.slots==0)
+  run queuedSourceCancelSkipsCompilerTest=init.then(hostSubmit(0)).then(hostCancel(0)).expect(hostSafe).then(hostStart(0).fail())
+  run readySourceCancelDiscardsDeliveryTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostFinish(0))
+    .then(hostCancel(0)).expect(hostSafe and s.host.slots==1).then(hostDiscardWaiting(0))
+    .expect(hostSafe and s.host.slots==0).then(hostDeliver(0).fail())
+  run closedSourceOwnerCannotReopenTest=init.then(hostClose).expect(hostSafe).then(hostSubmit(0).fail())
+  action unsafeHostDeliver(i)=s'=s.with("host",s.host.with("phases",s.host.phases.replaceAt(i,4)).with("slots",s.host.slots-1)
+    .with("deliveries",s.host.deliveries.append(not(s.host.closed) and not(s.host.cancelled.contains(i)))))
+  run checkThenSendCloseRaceCounterexampleTest=init.then(hostSubmit(0)).then(hostStart(0)).then(hostFinish(0))
+    .then(hostClose).then(unsafeHostDeliver(0)).expect(not(hostSafe))
+  action unsafeHostEarlyRelease=s'=s.with("host",s.host.with("slots",s.host.slots-1))
+  run runningCancelEarlySlotReleaseCounterexampleTest=init.then(hostSubmit(0)).then(hostStart(0))
+    .then(hostCancel(0)).then(unsafeHostEarlyRelease).expect(not(hostSafe))
   action stage(c,qualified)=all {qualified,c.root==10,s.staged.forall(old=>old.id!=c.id),s'=s.with("staged",s.staged.union(Set(c)))}
   action inspect(qualified)=all {s.online,s.winner == -1,s.log.indices().forall(i=>s.log.nth(i).change.root!=10),qualified,
     s'=s.with("inspections",s.inspections.union(Set(view)))}
@@ -518,6 +671,17 @@ module LlmPolicyContinuation {
     .then(recordBoundary(boundary0.with("exactIntegers",false)).fail())
   run symbolStringKeyCoercionCannotClaimSameRecordTest=init
     .then(recordBoundary(boundary0.with("keyKinds",false)).fail())
+  // Test-only configuration exports are not native callback completion.
+  run fileExportCannotReplaceTypedDeliveryTest=init
+    .then(recordBoundary(boundary0.with("nativeTyped",false).with("captureCompleted",false)).fail())
+  run fileExportAsDeliveryCounterexampleTest=init
+    .then(unsafeBoundaryRecord(boundary0.with("nativeTyped",false).with("captureCompleted",false)))
+    .expect(not(boundaryBound) and s.calls==0 and s.hold==6)
+  run borrowedAssessmentImageCannotEnterBoundaryTest=init
+    .then(recordBoundary(boundary0.with("assessmentImageOwned",false)).fail())
+  run borrowedAssessmentImageCounterexampleTest=init
+    .then(unsafeBoundaryRecord(boundary0.with("assessmentImageOwned",false)))
+    .expect(not(boundaryBound) and s.hold==6 and s.calls==0)
   run unsafeNativeBlobWitness=init
     .then(unsafeBoundaryRecord(boundary0.with("nativeTyped",false))).expect(not(safety))
   run newSourceCutCannotUseOldCaptureTest=factPending.then(changeFactContract(closure0.with("cut",1),Set(),true))

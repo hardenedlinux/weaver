@@ -46,7 +46,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	repo := filepath.Clean(filepath.Join(filepath.Dir(source), "../.."))
-	cmd := exec.Command("cargo", "build", "-p", "weaver-server", "--features", "arrow", "--locked", "--offline")
+	cmd := exec.Command("cargo", "build", "-p", "weaver-server", "--features", providerRuntimeFeatures, "--locked", "--offline")
 	cmd.Dir = repo
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr

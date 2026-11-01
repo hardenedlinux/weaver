@@ -2,6 +2,10 @@ import CommittedSemanticProfile
 namespace Weaver.NativeExitQualification
 -- Handles denote FFI-loaded library acquisitions. Qualification does not need
 -- an auxiliary executable; package tests and actual execution remain distinct.
+-- Config.source abstracts the complete maintained project input closure, not
+-- only runtime files or the directly checked model. Go SourceInputs inventories
+-- formal trees and Org/D2 sources; plan-derived tests require every gate root.
+-- Native before/after hashing is not an atomic snapshot or cache-integrity proof.
 inductive Entry where
   | packageTest
   | diagnostic

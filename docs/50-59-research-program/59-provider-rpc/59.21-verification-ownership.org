@@ -22,6 +22,41 @@ Concrete implementation evidence and structural/model results remain distinct
 receipts. Do not introduce another state machine merely to mirror the same
 invariant in a second verification language.
 
+* Source closure and currentness
+
+=SourceInputs= inventories maintained project files under the existing source
+owners, including the complete =dev/proofs/{lean,quint,cedar}= trees and Org/D2
+architecture sources. Lean source, Quint source, Lake manifests and toolchain
+declarations participate in the same receipt identity. A new proof or design
+source does not require another hand-maintained filename table. The executable
+Go plan is the independent coverage oracle: every proof path passed to a gate
+must appear in the inventory. Inventory membership does not mean that every
+research model is executed by the current plan.
+
+New, modified or deleted sources invalidate before/after currentness. Selected
+source files must be regular files; source symlinks are rejected rather than
+silently following external mutable inputs or omitting aliased directories.
+The Lake dependency/build cache, generated SVGs and historical run evidence are
+excluded. Committed manifests/pins are included, but cache/toolchain integrity
+is a separate prerequisite. Optional committed-blob checks additionally reject
+untracked or changed source bytes; hashing alone does not authenticate a commit.
+
+Before/after equality is not an atomic filesystem snapshot. It cannot detect a
+transient change restored between observations, prove SHA-256 collision freedom,
+authenticate dependency cache contents, qualify every model, or authorize a
+runtime send. =NativeExitQualification='s source identity remains conditional on
+those native refinement premises; this fix introduces no second qualification
+state machine or broader Lean/Quint theorem.
+
+The pre-fix inventory fails the plan-derived regression at
+=LlmPolicyContinuation.qnt=, which the semantic-boundary gate executes without
+having included it in source identity. The same manual list also omitted
+=GatewayProgram.qnt=. Tests now exercise additions, edits and deletions in all
+four maintained formal/design formats, rejection of proof aliases and exclusion
+of Lake build output. The archived-evidence sparse-copy control remains intact.
+Raw failure logs stay in temporary storage; this is a source-binding correction,
+not a claim that the whole Gateway or prior failed cold-start campaign passed.
+
 * Property testing framework boundary
 
 Property-based testing is owned by native test frameworks. Rust uses the workspace

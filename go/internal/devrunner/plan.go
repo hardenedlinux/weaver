@@ -48,6 +48,12 @@ func Plan(goBinary string) []Stage {
 		{"quint-safety", "quint", []string{"run", "dev/proofs/quint/RuntimeAdmission.qnt", "--main", "RuntimeAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "50", "--seed", "293"}},
 		{"lean", "elan", []string{"run", proofToolchain, "lean", "dev/proofs/lean/RuntimeAdmission.lean"}},
 		{"provider-routing-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzProviderPlanCannotExpandAuthority", "-fuzztime=3s"}},
+		{"provider-routing-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzCompiledProviderOwnsRouteOrder", "-fuzztime=3s"}},
+		{"provider-stream-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "FuzzProviderExecutionOwnsRouteObservation", "-fuzztime=3s"}},
+		{"source-task-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "FuzzTaskRequestOwnsMutableFields", "-fuzztime=3s"}},
+		{"publication-snapshot-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "FuzzPublicationStagesRetainOriginalParent", "-fuzztime=3s"}},
+		{"llm-routing-quint-tests", "quint", []string{"test", "dev/proofs/quint/LlmRouting.qnt", "--main", "LlmRouting", "--seed", "293"}},
+		{"llm-routing-quint-safety", "quint", []string{"run", "dev/proofs/quint/LlmRouting.qnt", "--main", "LlmRouting", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"provider-request-bounds-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzProviderRequestBounds", "-fuzztime=3s"}},
 		{"provider-profile-schema-pbt", goBinary, []string{"-C", "go", "test", "./api/v1", "-run", "^$", "-fuzz", "FuzzProviderProfileRequestFacts", "-fuzztime=3s"}},
 		{"provider-profile-config-pbt", goBinary, []string{"-C", "go", "test", "./internal/config", "-run", "^$", "-fuzz", "FuzzProviderProfileConfiguration", "-fuzztime=3s"}},
@@ -81,6 +87,8 @@ func Plan(goBinary string) []Stage {
 		{"authority-publication-quint-tests", "quint", []string{"test", "dev/proofs/quint/AuthorityPublication.qnt", "--main", "AuthorityPublication", "--seed", "293", "--match", "^authority[A-Z]"}},
 		{"authority-publication-quint-safety", "quint", []string{"run", "dev/proofs/quint/AuthorityPublication.qnt", "--main", "AuthorityPublication", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"semantic-boundary-quint-tests", "quint", []string{"test", "dev/proofs/quint/LlmPolicyContinuation.qnt", "--main", "LlmPolicyContinuation", "--seed", "293"}},
+		{"gateway-program-quint-tests", "quint", []string{"test", "dev/proofs/quint/GatewayProgram.qnt", "--main", "GatewayProgram", "--seed", "293"}},
+		{"gateway-program-quint-safety", "quint", []string{"run", "dev/proofs/quint/GatewayProgram.qnt", "--main", "GatewayProgram", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"semantic-boundary-quint-safety", "quint", []string{"run", "dev/proofs/quint/LlmPolicyContinuation.qnt", "--main", "LlmPolicyContinuation", "--step", "boundaryStep", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
 	}
 }
@@ -124,11 +132,11 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"scheme-declared-poo-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "dependencies"}},
 			{"scheme-core-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "core"}},
 			{"scheme-module-build", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline"}},
-			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^Test(SchemePkgConfig|SchemeHome|SchemeTool|SourceInputsWithArchived)", "-v"}},
+			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^(Test(SchemePkgConfig|SchemeHome|SchemeTool|SchemePackageResult|SchemeTestInventory|SchemeUsesPackageTestEntry|SourceInputsWithArchived)|FuzzSchemePackageResultProtocol)", "-v"}},
 			// Package tools own discovery, execution and result reporting. Historical
 			// direct-gxi image experiments are not a prerequisite for gerbil test.
 			{"scheme-unit-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t"}},
-			{"scheme-rooted-sdk-integration", "cargo", []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "--features", "weaver-governance/scheme-qualification", "--locked", "--offline"}},
+			{"scheme-rooted-sdk-integration", "cargo", []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "-p", "weaver-server", "--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification", "--locked", "--offline"}},
 			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration,schemeintegration", "./dev", "-run", "^TestProviderControl", "-v"}},
 		}, nil
 	case "bench":

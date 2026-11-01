@@ -114,6 +114,10 @@ package ProviderRpc {
            Kubernetes watches, SDK health and discovered routes are typed source
            candidates. Go validates/consumes response data under the original
            stream context, applies bounded backpressure and propagates cancellation.
+           Compiled route slices, outbound Task maps/slices and the stream
+           observer's plan are private typed copies. Copy before invoking RPC or
+           receive callbacks; no request/caller alias may rewrite the retained
+           route order or completion digest. Input must be stable during copying.
            A receive callback must not directly invoke tools, refund money or
            advance Scheme Session without authoritative terminal/history evidence
            and fresh Rust admission of the next proposal. */

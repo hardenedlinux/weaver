@@ -1,4 +1,8 @@
 use crate::Ledger;
+use proptest::{
+    arbitrary::any, collection, prop_assert, prop_assert_eq, prop_oneof, proptest, strategy::Just,
+    test_runner::Config,
+};
 use weaver_contracts::{SourceIdentity, SourceRotation, SourceRotationOutcome, body_digest};
 fn identity(n: u8) -> SourceIdentity {
     SourceIdentity {
@@ -13,6 +17,148 @@ fn command() -> SourceRotation {
         expected_epoch: 0,
         next: identity(1),
     }
+}
+
+#[test]
+fn residual_policy_schema_cannot_be_treated_as_an_empty_store_after_restart() {
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("residual.db");
+    let ledger = Ledger::open(&path).expect("store");
+    ledger
+        .connection
+        .execute(
+            "INSERT INTO authority_schema VALUES(1,?1)",
+            [include_str!(
+                "../../../../prod/policies/streaming/schema.json"
+            )],
+        )
+        .expect("retained schema projection");
+    ledger.close().expect("close");
+    let mut ledger = Ledger::open(&path).expect("restart");
+    let mut called = false;
+    assert!(
+        ledger
+            .with_authenticated_source(&identity(0), |_| {
+                called = true;
+                Ok(())
+            })
+            .is_err()
+    );
+    assert!(
+        !called,
+        "residual state reached a newly enrolled source callback"
+    );
+    assert!(ledger.source_authority().expect("unclaimed").is_none());
+}
+
+proptest! {
+    #![proptest_config(Config::with_cases(64))]
+    #[test]
+    fn first_enrollment_uses_all_durable_tables_without_temporary_aliases(
+        suffix in collection::vec(prop_oneof![Just('a'), Just('"'), Just('\''), Just(';'), Just('/'), Just(' '), Just('é')], 1..24),
+        prefix in prop_oneof![Just("extension "), Just("sqliteX")],
+        occupied in any::<bool>(), restart in any::<bool>(), shadow in any::<bool>(), enrolled in any::<bool>(),
+    ) {
+        let temp = tempfile::tempdir().expect("directory");
+        let path = temp.path().join("catalog.db");
+        let mut ledger = Ledger::open(&path).expect("store");
+        if enrolled {
+            ledger.with_authenticated_source(&identity(0), |_| Ok(())).expect("original binding");
+        }
+        let name = format!("{prefix}{}", suffix.into_iter().collect::<String>());
+        // SQLite quotes the independent fixture's identifier, rather than
+        // repeating the production identifier-escaping implementation.
+        let quoted: String = ledger.connection.query_row("SELECT quote(?1)", [&name], |row| row.get(0)).expect("quoted fixture name");
+        ledger.connection.execute_batch(&format!("CREATE TABLE {quoted} (retained INTEGER NOT NULL)")).expect("extension table");
+        if occupied {
+            ledger.connection.execute(&format!("INSERT INTO main.{quoted} VALUES(1)"), []).expect("retained row");
+        }
+        if restart {
+            ledger.close().expect("close");
+            ledger = Ledger::open(&path).expect("reopen");
+        }
+        if shadow {
+            ledger.connection.execute_batch(&format!("CREATE TEMP TABLE {quoted} (retained INTEGER NOT NULL)")).expect("temporary alias");
+            if !occupied {
+                ledger.connection.execute(&format!("INSERT INTO temp.{quoted} VALUES(1)"), []).expect("nondurable row");
+            }
+        }
+        let expected = enrolled || !occupied;
+        let mut calls = 0;
+        let result = ledger.with_authenticated_source(&identity(0), |_| { calls += 1; Ok(()) });
+        prop_assert_eq!(result.is_ok(), expected);
+        prop_assert_eq!(calls, if expected { 1 } else { 0 });
+        let rows: i64 = ledger.connection.query_row(&format!("SELECT COUNT(*) FROM main.{quoted}"), [], |row| row.get(0)).expect("original rows");
+        prop_assert_eq!(rows, if occupied { 1 } else { 0 });
+        ledger.close().expect("close after admission");
+        let mut ledger = Ledger::open(&path).expect("durable outcome");
+        prop_assert_eq!(ledger.source_authority().expect("source binding").is_some(), expected);
+        prop_assert!(ledger.with_authenticated_source(&identity(1), |_| Ok(())).is_err());
+    }
+}
+
+#[test]
+fn committed_writer_before_enrollment_cannot_be_hidden_by_an_old_empty_read() {
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("writer.db");
+    let mut ledger = Ledger::open(&path).expect("store");
+    let mut writer = rusqlite::Connection::open(&path).expect("other owner");
+    let tx = writer
+        .transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)
+        .expect("writer owns serialization");
+    tx.execute_batch(
+        "CREATE TABLE main.future_projection (retained INTEGER NOT NULL);\n\
+         INSERT INTO main.future_projection VALUES(1);",
+    )
+    .expect("new pending projection and catalog entry");
+    let (entered, observed) = std::sync::mpsc::channel();
+    let worker = std::thread::spawn(move || {
+        entered.send(()).expect("attempt");
+        let mut called = false;
+        let denied = ledger
+            .with_authenticated_source(&identity(0), |_| {
+                called = true;
+                Ok(())
+            })
+            .is_err();
+        (denied, called, ledger.source_authority().expect("outcome"))
+    });
+    observed.recv().expect("worker admitted to test");
+    tx.commit().expect("prior writer commits");
+    let (denied, called, authority) = worker.join().expect("worker completion");
+    assert!(denied && !called && authority.is_none());
+}
+
+#[test]
+fn callback_failure_after_enrollment_does_not_allow_a_replacement_identity() {
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("reply.db");
+    let mut ledger = Ledger::open(&path).expect("store");
+    let result: weaver_contracts::Result<()> =
+        ledger.with_authenticated_source(&identity(0), |_| {
+            Err(weaver_contracts::Error::Conflict(
+                "injected caller failure after enrollment",
+            ))
+        });
+    assert!(result.is_err());
+    ledger.close().expect("close");
+    let mut ledger = Ledger::open(&path).expect("restart");
+    assert!(
+        ledger
+            .with_authenticated_source(&identity(1), |_| Ok(()))
+            .is_err()
+    );
+    ledger
+        .with_authenticated_source(&identity(0), |_| Ok(()))
+        .expect("original recovery");
+    assert_eq!(
+        ledger
+            .source_authority()
+            .expect("view")
+            .expect("binding")
+            .epoch,
+        0
+    );
 }
 
 #[test]

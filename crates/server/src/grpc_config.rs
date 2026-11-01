@@ -94,13 +94,29 @@ fn load() -> Result<(GrpcConfig, ListenAddresses)> {
 }
 /// Start the default mTLS RPC service; no command/stdio request protocol exists.
 pub async fn run_from_env() -> Result<()> {
+    let runtime = crate::ServiceRuntime::new();
+    let result = run_owned(runtime.clone()).await;
+    runtime.drain().await;
+    result
+}
+async fn run_owned(runtime: crate::ServiceRuntime) -> Result<()> {
+    let _lifetime = runtime.shutdown_guard();
     let started = std::time::Instant::now();
     eprintln!(
         "weaver startup stage=runtime-entered clock={:?}",
         std::time::SystemTime::now()
     );
     let shutdown = crate::shutdown::signal()?;
-    let (settings, addresses) = crate::runtime::RuntimeOwner::initialize(load).await?;
+    let (settings, addresses, catalog) = crate::runtime::RuntimeOwner::initialize(|| {
+        let (settings, addresses) = load()?;
+        Ok((
+            settings,
+            addresses,
+            crate::governance_deployment::load_catalog()?,
+        ))
+    })
+    .await?;
+    let worker = crate::governance_deployment::start(&runtime, catalog).await?;
     eprintln!(
         "weaver startup stage=configured elapsed={:?}",
         started.elapsed()
@@ -114,5 +130,15 @@ pub async fn run_from_env() -> Result<()> {
         "weaver startup stage=listeners-bound elapsed={:?}",
         started.elapsed()
     );
-    crate::grpc::serve_grpc(GrpcListeners { operation, source }, settings, shutdown).await
+    let result = crate::grpc::serve_grpc_with_runtime(
+        GrpcListeners { operation, source },
+        settings,
+        runtime,
+        shutdown,
+    )
+    .await;
+    if let Some(worker) = worker {
+        worker.finish().await?;
+    }
+    result
 }

@@ -1,182 +1,15 @@
-//! Typed fixture projection through SDK constructors; no JSON intermediary.
-use gerbil_scheme::{
-    BinaryInteger, CollectionKind, GerbilRuntime, IdentifierKind, RootedSchemeObject as Object,
-    TableEquality,
-};
-use weaver_governance::SourceData;
+//! Deliberately malformed native values; ordinary construction uses production API.
+use gerbil_scheme::{GerbilRuntime, IdentifierKind, RootedSchemeObject as Object, TableEquality};
+use weaver_governance::{OwnedSource, SourceData, root_source};
 fn text<'r>(vm: &'r GerbilRuntime, value: &str) -> Object<'r> {
-    vm.string_from_utf8(value).expect("string").into_object()
-}
-fn number(vm: &GerbilRuntime, value: u64) -> Object<'_> {
-    let mut bytes = value.to_le_bytes().to_vec();
-    while bytes.last() == Some(&0) {
-        bytes.pop();
-    }
-    vm.big_integer(&BinaryInteger::new(false, bytes).expect("canonical integer"))
-        .expect("integer")
-}
-fn table<'r>(vm: &'r GerbilRuntime, fields: Vec<(&str, Object<'r>)>, symbols: bool) -> Object<'r> {
-    let keys: Vec<_> = fields
-        .iter()
-        .map(|(key, _)| {
-            if symbols {
-                vm.intern_identifier(IdentifierKind::Symbol, key)
-                    .expect("field")
-            } else {
-                text(vm, key)
-            }
-        })
-        .collect();
-    let entries: Vec<_> = keys
-        .iter()
-        .zip(fields.iter().map(|(_, value)| value))
-        .collect();
-    vm.hash_table(TableEquality::Structural, &entries)
-        .expect("table")
-}
-fn list<'r>(vm: &'r GerbilRuntime, values: Vec<Object<'r>>) -> Object<'r> {
-    vm.collection_from_objects(CollectionKind::Vector, &values.iter().collect::<Vec<_>>())
-        .expect("vector")
+    vm.string_from_utf8(value)
+        .expect("fixture string")
         .into_object()
 }
-fn strings<'r>(vm: &'r GerbilRuntime, values: &[String]) -> Object<'r> {
-    list(vm, values.iter().map(|v| text(vm, v)).collect())
-}
-fn texts<'r>(
-    vm: &'r GerbilRuntime,
-    values: &std::collections::BTreeMap<String, String>,
-) -> Object<'r> {
-    table(
-        vm,
-        values
-            .iter()
-            .map(|(k, v)| (k.as_str(), text(vm, v)))
-            .collect(),
-        false,
-    )
-}
 pub fn source<'r>(vm: &'r GerbilRuntime, data: &SourceData) -> Object<'r> {
-    let tasks = data
-        .tasks
-        .iter()
-        .map(|t| {
-            let p = t.provider_profile.as_ref().expect("profile");
-            table(
-                vm,
-                vec![
-                    ("family", text(vm, &t.family)),
-                    ("principal", text(vm, &t.principal)),
-                    ("profile", text(vm, &t.profile)),
-                    (
-                        "provider_profile",
-                        table(
-                            vm,
-                            vec![
-                                ("id", text(vm, &p.id)),
-                                ("protocol", text(vm, &p.protocol)),
-                                ("max_output_tokens", number(vm, p.max_output_tokens)),
-                                ("max_messages", number(vm, p.max_messages)),
-                                ("max_body_bytes", number(vm, p.max_body_bytes)),
-                            ],
-                            true,
-                        ),
-                    ),
-                    ("nodes", strings(vm, &t.nodes)),
-                    ("targets", strings(vm, &t.targets)),
-                    ("models", strings(vm, &t.models)),
-                    ("endpoints", texts(vm, &t.endpoints)),
-                    ("body_digests", texts(vm, &t.body_digests)),
-                    ("stream_contracts", texts(vm, &t.stream_contracts)),
-                    (
-                        "node_cost_bounds",
-                        table(
-                            vm,
-                            t.node_cost_bounds
-                                .iter()
-                                .map(|(k, v)| (k.as_str(), number(vm, *v)))
-                                .collect(),
-                            false,
-                        ),
-                    ),
-                    ("budget", number(vm, t.budget)),
-                ],
-                true,
-            )
-        })
-        .collect();
-    let plans = data
-        .plans
-        .iter()
-        .map(|p| {
-            table(
-                vm,
-                vec![
-                    ("family", text(vm, &p.family)),
-                    ("node", text(vm, &p.node)),
-                    ("profile", text(vm, &p.profile)),
-                    ("profile_commitment", text(vm, &p.profile_commitment)),
-                    ("model", text(vm, &p.model)),
-                    ("body", text(vm, &p.body)),
-                    ("ceiling", number(vm, p.ceiling)),
-                    ("revision", number(vm, p.revision)),
-                    ("fence", number(vm, p.fence)),
-                    (
-                        "routes",
-                        list(
-                            vm,
-                            p.routes
-                                .iter()
-                                .map(|r| {
-                                    table(
-                                        vm,
-                                        vec![
-                                            ("target", text(vm, &r.target)),
-                                            ("endpoint", text(vm, &r.endpoint)),
-                                        ],
-                                        true,
-                                    )
-                                })
-                                .collect(),
-                        ),
-                    ),
-                ],
-                true,
-            )
-        })
-        .collect();
-    let p = &data.publication;
-    let mut publication = vec![
-        ("operation_id", text(vm, &p.operation_id)),
-        ("fence", number(vm, p.fence)),
-        ("policy", text(vm, &p.policy)),
-        ("schema", text(vm, &p.schema)),
-    ];
-    if let Some(revision) = p.expected_revision {
-        publication.push(("expected_revision", number(vm, revision)));
-    }
-    table(
-        vm,
-        vec![
-            (
-                "governance",
-                table(
-                    vm,
-                    vec![
-                        ("schema", text(vm, &data.governance.schema)),
-                        ("family", text(vm, &data.governance.family)),
-                        ("open_nodes", strings(vm, &data.governance.open_nodes)),
-                    ],
-                    true,
-                ),
-            ),
-            ("tasks", list(vm, tasks)),
-            ("plans", list(vm, plans)),
-            ("publication", table(vm, publication, true)),
-        ],
-        true,
-    )
+    let source = OwnedSource::from_source(data.clone()).expect("valid original fixture");
+    root_source(vm, &source).expect("production input construction")
 }
-
 /// Rebuild a real native table with one deliberate field corruption.
 pub fn corrupt<'r>(vm: &'r GerbilRuntime, root: &Object<'r>, fault: u8) -> Object<'r> {
     use gerbil_scheme::{IdentifierBuffer, RootedObjectBatch, SchemeScalar};
@@ -198,6 +31,23 @@ pub fn corrupt<'r>(vm: &'r GerbilRuntime, root: &Object<'r>, fault: u8) -> Objec
                     .expect("false"),
                 1 => vm.nil_object().expect("nil"),
                 2 => vm.scalar_object(SchemeScalar::Flonum(1.0)).expect("float"),
+                5 => vm
+                    .big_integer(
+                        &gerbil_scheme::BinaryInteger::new(true, vec![1]).expect("negative"),
+                    )
+                    .expect("negative integer"),
+                6 => vm
+                    .big_integer(
+                        &gerbil_scheme::BinaryInteger::new(false, vec![255; 8])
+                            .expect("unsigned maximum"),
+                    )
+                    .expect("integer exceeds signed contract"),
+                7 => vm
+                    .big_integer(
+                        &gerbil_scheme::BinaryInteger::new(false, vec![1; 9])
+                            .expect("wide magnitude"),
+                    )
+                    .expect("integer exceeds carrier width"),
                 _ => value,
             };
         }

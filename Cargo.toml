@@ -18,6 +18,7 @@ license = "Apache-2.0"
 
 [workspace.dependencies]
 weaver-contracts = { path = "crates/contracts" }
+weaver-governance = { path = "crates/governance" }
 weaver-policy = { path = "crates/policy" }
 weaver-governance-build = { path = "crates/governance-build" }
 weaver-policy-ffi = { path = "crates/policy-ffi" }
