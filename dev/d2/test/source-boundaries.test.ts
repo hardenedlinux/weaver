@@ -1,12 +1,5 @@
 import { test, expect } from 'bun:test';
-import { generatedLifeline, localIcon } from '../src/source/compile';
-
-test('SDK icons normalize only recognized representations', () => {
-  expect(localIcon('assets/go.svg')).toBe('assets/go.svg');
-  expect(localIcon({ Path: 'assets/rust.svg' })).toBe('assets/rust.svg');
-  expect(localIcon(null)).toBeUndefined();
-  expect(localIcon({ Path: 7 })).toBeUndefined();
-});
+import { generatedLifeline } from '../src/source/compile';
 
 test('only exact generated sequence lifelines are decorations', () => {
   const ids = new Set(['adapter']);

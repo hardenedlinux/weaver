@@ -20,9 +20,9 @@ The root, Core, and Lambda Aitia revisions in
 
 * Canonical views
 
-| ID | View | D2 source | SVG preview | Semantic owner |
+| ID | View | D2 source | Preview | Semantic owner |
 |----+------+-----------+-------------+----------------|
-| W01 | Logical language and authority boundaries | [[file:diagrams/01-system-boundaries.d2][Source]] | [[file:diagrams/01-system-boundaries.svg][Preview]] | [[file:00-system-design.org][System design]] |
+| W01 | Logical language and authority boundaries | [[file:diagrams/01-system-boundaries.d2][Source]] | [[file:diagrams/01-system-boundaries.png][Preview]] | [[file:00-system-design.org][System design]] |
 | W02 | S1-S3 preparation, evaluation and consumption | [[file:diagrams/02-admission-sequence.d2][Source]] | [[file:diagrams/02-admission-sequence.svg][Preview]] | [[file:05-authorization-execution-protocol.org][Coordination protocol]] |
 | W03 | Attempt states and recovery | [[file:diagrams/03-attempt-state.d2][Source]] | [[file:diagrams/03-attempt-state.svg][Preview]] | [[file:05-authorization-execution-protocol.org][Coordination protocol]] |
 | W04 | Consume timeout, abort-winning schedule | [[file:diagrams/04-consume-timeout.d2][Source]] | [[file:diagrams/04-consume-timeout.svg][Preview]] | [[file:07-source-admission-ledger-fencing.org][Timeout decision table]] |
@@ -34,7 +34,7 @@ The root, Core, and Lambda Aitia revisions in
 | W10 | S4-S6 commit, claim, final send and observation | [[file:diagrams/10-commit-dispatch-sequence.d2][Source]] | [[file:diagrams/10-commit-dispatch-sequence.svg][Preview]] | [[file:05-authorization-execution-protocol.org][Coordination protocol]] |
 | W11 | Mandatory Quint, Lean and runtime assurance | [[file:diagrams/11-zero-trust-assurance.d2][Source]] | [[file:diagrams/11-zero-trust-assurance.svg][Preview]] | [[file:10-zero-trust-assurance.org][Zero Trust assurance framework]] |
 
-| W12 | Concrete events, Quint actions and Lean/evidence correspondence | [[file:diagrams/12-execution-correspondence.d2][Source]] | [[file:diagrams/12-execution-correspondence.svg][Preview]] | [[file:11-source-to-execution-assurance-review.org][Source-to-execution assurance review]] |
+| W12 | Concrete events, Quint actions and Lean/evidence correspondence | [[file:diagrams/12-execution-correspondence.d2][Source]] | [[file:diagrams/12-execution-correspondence.png][Preview]] | [[file:11-source-to-execution-assurance-review.org][Source-to-execution assurance review]] |
 
 | W13 | Cedar inside the core authorization-to-execution architecture | [[file:diagrams/13-policy-to-execution.d2][Source]] | [[file:diagrams/13-policy-to-execution.svg][Preview]] | [[file:09-code-as-policy.org][Cedar selection and enforcement design]] |
 
@@ -152,7 +152,7 @@ actual effect. A test receipt is not a component of the target architecture.
 * Enterprise presentation conventions
 
 The visual references are D2/Terrastruct's [[https://terrastruct.com/examples/1/][architecture example library]] and
-[[https://d2lang.com/examples/tala/][official TALA gallery]]. This is Weaver's own presentation system, not a claim
+[[https://d2lang.com/examples/tala/][official TALA gallery]]. The shared render Library supplies the engine and visual layers; this is not a claim
 to use a vendor-certified Enterprise template or a paid feature.
 
 Choose a visual grammar for the subject. Responsibility maps use ownership
@@ -186,11 +186,12 @@ the source; do not maintain an independent Mermaid copy of the same view.
 Change semantic prose, source labels, state guards, and acceptance references
 in the same revision. Generated previews must be refreshed after source changes.
 
-The offline TypeScript renderer compiles canonical D2 through the official D2
-SDK, preserves source identities and lays out measured SVG geometry with ELK.
-Explicit board positions retain their row and column order. Inter glyph outlines,
-local technology marks and semantic icons require no font or image requests.
-Profiles and presentation resources belong to =dev/d2/themes=.
+The default TypeScript entrypoint consumes the local shared render Library.
+D2 owns Questions and model relationships. Public library APIs own declaration
+reading, standard D2 rendering, composed styles and HTML/PNG export. Weaver adds
+question-specific responsibility, relationship-matrix and proof compositions,
+captured local assets and graph-binding verification. Generic layout, font
+outlining and card-renderer implementations have been removed from Weaver.
 
 Run from the Weaver repository root:
 
@@ -199,13 +200,15 @@ go -C go run ./cmd/weaver-dev render-diagrams
 #+end_src
 
 The Go owner uses the current host CPU count, validates source-selected profiles,
-writes standalone SVGs and PNGs through resvg and retains
+publishes library-driven PNGs and full model SVG references, and retains
 source/output identities in =.cache/d2=. A changed source image or failed render
 cannot produce a passing receipt. No Python, Bash or extra runtime service is used.
 
-When changing the renderer version, record the version and inspect all regenerated
-views. Geometry checks reject overlapping nodes and labels. Visual inspection remains
-necessary for hierarchy, reading order and readable image size.
+When updating the local library, record the captured package integrity and review
+regenerated views. Export checks reject declared region clipping and figure
+overflow; graph checks reject lost source identities and rebound endpoints.
+These checks do not establish that every label pair is separated. Visual
+inspection remains necessary for hierarchy, reading order and readable size.
 
 * Review and validation obligations
 
@@ -379,3 +382,14 @@ restorable replicas, cloud-native orchestration, actual broker fencing and the
 original account obligation. [[file:28-quorum-durable-promises-prefix-recovery.org][The dossier]] explains the conservative prefix
 profile and native trust assumptions; proof/acceptance detail stays outside the
 core diagram.
+
+* Question-led responsibility and relationship views
+
+[[file:diagrams/01-system-boundaries.png][Responsibility map]] answers who defines meaning, integrates cloud state and
+controls the final send. [[file:diagrams/01-system-relationships.png][The relationship matrix]] answers how declared owners
+connect, using a separate layout rather than recoloring the responsibility map.
+Both consume canonical D2 Questions and the shared render Library. Handwritten
+and node-editor variants are visual choices independent of that layout.
+Detailed premises remain in Org; the main images carry essential content at
+readable sizes without explanatory footer microtext. Full SVG links remain
+technical model references during the broader corpus review.

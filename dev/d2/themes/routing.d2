@@ -1,8 +1,2 @@
-# Routing view: presentation only; no protocol or proof authority.
-...@base
-vars: { d2-config: { theme-id: 101; layout-engine: tala; pad: 64 } }
-direction: right
-style.fill: "#FFFCF6"
-classes.card.style: { fill: "#FFF0D7"; stroke: "#A85E20"; font-color: "#A85E20"; border-radius: 12 }
-classes.title.style.font-color: "#A85E20"
-
+# Weaver extension point; library owns the standard profile.
+...@../node_modules/@deterministic-engineering/render/themes/routing
