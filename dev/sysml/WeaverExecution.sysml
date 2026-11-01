@@ -27,6 +27,11 @@ package WeaverExecution {
     }
     requirement def ConsumeBeforeSend {
         doc /* Persist irreversible unknown consumption before any possible external bytes. */
+        doc /* Final stream use joins the exact durable range sequence, offset,
+           length and unwritten unknown state to the owned permit, message cursor
+           and next sequence. An inconsistent receipt denies the writer and
+           retains unknown exposure; it cannot prove not-sent or authorize repair.
+           This detects partial recovery inconsistency, not coherent database rollback. */
     }
     requirement def CurrentFinalGuard {
         doc /* Serialize the final policy/history revision and fence check with actual send. */

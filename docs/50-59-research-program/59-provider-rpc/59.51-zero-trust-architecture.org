@@ -282,6 +282,39 @@ concrete deployment argument in addition to a functional requirement.
 
 This table is a coverage ledger, not a seven-out-of-seven implementation score.
 
+* Final range receipt refinement
+
+The Rust final writer must join the consumed in-memory opportunity with the
+exact durable range, not merely an =unknown= status. The primary key binds
+family/node/message/sequence; the row must also preserve offset, length and
+=written IS NULL=. The message must retain the same cursor, =unknown= state and
+=next_sequence = consumed sequence + 1=. This join runs under the existing
+deciding transaction before Policy evaluation or any writer callback. A mismatch
+returns =range consumption changed= without recording =not_sent=, moving the
+cursor or releasing the original hold. Missing/invalid rows also fail closed.
+
+Go supplies inert data and Scheme supplies the original semantic contract;
+neither can repair a damaged Rust receipt or mint a replacement opportunity.
+The existing immutable BLOB and authentic database transaction assumptions still
+apply. This check detects local recovery inconsistency; it does not establish
+coherent rollback resistance or verify external provider exactly-once delivery.
+It reads fixed-size metadata in the existing lookup and does not rehash the
+entire message on every range.
+
+The Proptest =final_write_requires_exact_durable_range= varies range size and
+offset/length/successor/written faults. It requires the exact denial, zero writer
+calls, retained hold and unchanged unknown range. Before the guard, an offset
+change with a one-byte range reaches the writer; the failing run remains in
+temporary evidence. =StreamingExecution.qnt= records the state-only guard
+counterexample and denial before both send and no-send classification. Its
+=receiptExact= flag abstracts the concrete field conjunction; it is not a model
+of SQLite recovery. Lean =RangeReceipt= proves mismatch rejection and composition
+with the existing execution safety step, conditional on faithful field reads and
+the transaction lock. The Rust property supplies concrete refinement evidence;
+the Lean theorem does not prove the SQL implementation.
+
+[[file:../../architecture/diagrams/15-stream-message-authorization.svg]]
+
 * Typed protection context and authority
 
 A subject consists of end-user/tenant identity, workload identity, actor

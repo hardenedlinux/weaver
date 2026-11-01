@@ -169,8 +169,19 @@ fn verify_binding(session: &str, owner: &StreamOwner, permit: &RangePermit) -> R
 }
 fn active_range(tx: &rusqlite::Transaction<'_>, p: &RangePermit) -> Result<state::MessageRecord> {
     let row = state::record(tx, &p.family, &p.node, &p.message)?;
-    let range_state:String=tx.query_row("SELECT state FROM stream_ranges WHERE family=?1 AND node=?2 AND message=?3 AND sequence=?4",rusqlite::params![p.family,p.node,p.message,p.sequence as i64],|r|r.get(0)).map_err(db)?;
-    if range_state != "unknown" || row.cursor != p.offset || row.state != "unknown" {
+    let (range_state, offset, length, written): (String, u64, u64, Option<i64>) = tx.query_row(
+        "SELECT state,offset,length,written FROM stream_ranges WHERE family=?1 AND node=?2 AND message=?3 AND sequence=?4",
+        rusqlite::params![p.family,p.node,p.message,p.sequence as i64],
+        |r| Ok((r.get(0)?, integer(r,1)?, integer(r,2)?, r.get(3)?)),
+    ).map_err(db)?;
+    if range_state != "unknown"
+        || offset != p.offset
+        || length != p.bytes.len() as u64
+        || written.is_some()
+        || row.next_sequence != p.sequence + 1
+        || row.cursor != p.offset
+        || row.state != "unknown"
+    {
         return Err(Error::Conflict("range consumption changed"));
     }
     Ok(row)

@@ -3,6 +3,42 @@ use proptest::{prop_assert, prop_assert_eq, proptest, test_runner::Config};
 use weaver_contracts::{MessageRule, StreamContract, StreamMessage, WriteObservation};
 use weaver_ledger::{Ledger, StreamClaim};
 
+proptest! {
+    #![proptest_config(Config::with_cases(32))]
+    #[test]
+    fn final_write_requires_exact_durable_range(
+        length in 1usize..=8,
+        fault in 0u8..4,
+    ) {
+        let temp = tempfile::tempdir().expect("directory");
+        let path = temp.path().join("range-binding.db");
+        let (mut ledger, contract) = stream_properties::fixture(&path);
+        ledger.enqueue_message(&stream_properties::message(&contract, 0, 0, 1)).expect("message");
+        let owner = ledger.claim_stream(StreamClaim {
+            family: "f", node: "emit", destination: &contract.destination, revision: 0, fence: 1,
+        }).expect("owner");
+        let permit = ledger.consume_range(&owner, "m0", length).expect("durable burn");
+        let connection = rusqlite::Connection::open(&path).expect("fault writer");
+        let sql = match fault {
+            0 => "UPDATE stream_ranges SET offset=offset+1",
+            1 => "UPDATE stream_ranges SET length=length+1",
+            2 => "UPDATE stream_messages SET next_sequence=next_sequence+1",
+            _ => "UPDATE stream_ranges SET written=1",
+        };
+        connection.execute(sql, []).expect("inconsistent recovery projection");
+        let mut calls = 0;
+        let result = ledger.write_range(&owner, permit, |_| {
+            calls += 1;
+            WriteObservation::Complete
+        });
+        prop_assert!(matches!(result, Err(weaver_contracts::Error::Conflict("range consumption changed"))));
+        prop_assert_eq!(calls, 0);
+        prop_assert_eq!(ledger.held("f").expect("retained exposure"), 4);
+        let state: String = connection.query_row("SELECT state FROM stream_ranges", [], |row| row.get(0)).expect("unknown range");
+        prop_assert_eq!(state, "unknown");
+    }
+}
+
 fn corrupt(path: &std::path::Path, stream: bool, fault: u8) {
     let connection = rusqlite::Connection::open(path).expect("fault writer");
     let sql = match (stream, fault) {

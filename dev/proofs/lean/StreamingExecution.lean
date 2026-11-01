@@ -157,4 +157,57 @@ theorem execution_and_drain_composition {M Worker : Type} [DecidableEq M]
 #print axioms shutdown_blocks_admission
 #print axioms execution_and_drain_composition
 end Lifecycle
+/- Refinement of the final durable receipt join. The database transaction must
+   read these fields faithfully and hold the writer lock through the callback.
+   This premise excludes coherent rollback and hostile storage forgery. -/
+namespace RangeReceipt
+
+structure Identity where
+  sequence : Nat
+  offset : Nat
+  length : Nat
+  deriving DecidableEq
+
+structure Record where
+  identity : Identity
+  unknown : Bool
+  written : Option Nat
+  cursor : Nat
+  nextSequence : Nat
+
+def Exact (r : Record) (p : Identity) : Prop :=
+  r.identity = p ∧ r.unknown = true ∧ r.written = none ∧
+  r.cursor = p.offset ∧ r.nextSequence = p.sequence + 1
+
+def GuardedStep {M : Type} [DecidableEq M] (owner : ExecutorEvidence M)
+    (budget : Nat) (s t : State M) (r : Record) (p : Identity) : Prop :=
+  Exact r p ∧ Step owner budget s t
+
+theorem mismatched_record_denies {r : Record} {p : Identity}
+    (mismatch : r.identity ≠ p ∨ r.unknown ≠ true ∨ r.written ≠ none ∨
+      r.cursor ≠ p.offset ∨ r.nextSequence ≠ p.sequence + 1) : ¬ Exact r p := by
+  intro h
+  rcases h with ⟨identity, unknown, written, cursor, successor⟩
+  rcases mismatch with h | h | h | h | h
+  · exact h identity
+  · exact h unknown
+  · exact h written
+  · exact h cursor
+  · exact h successor
+
+theorem inexact_cannot_refine_execution {M : Type} [DecidableEq M]
+    {owner : ExecutorEvidence M} {s t : State M} {r : Record} {p : Identity}
+    (inexact : ¬ Exact r p) : ¬ GuardedStep owner budget s t r p := by
+  intro step
+  exact inexact step.1
+
+theorem guarded_step_preserves_safety {M : Type} [DecidableEq M]
+    {owner : ExecutorEvidence M} {s t : State M} {r : Record} {p : Identity}
+    (safe : Safe budget s) (step : GuardedStep owner budget s t r p) : Safe budget t :=
+  safe_step safe step.2
+
+#print axioms mismatched_record_denies
+#print axioms inexact_cannot_refine_execution
+#print axioms guarded_step_preserves_safety
+end RangeReceipt
 end Weaver.StreamingExecution
