@@ -1,12 +1,16 @@
 import {test,expect} from 'bun:test';
-import {chromium} from 'playwright';
+import {chromium,type Page} from 'playwright';
 import {fileURLToPath} from 'node:url';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../../../',import.meta.url));
+const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
+async function surfaceGeometry(page:Page):Promise<string>{
+ return page.evaluate(()=>JSON.stringify([...document.querySelectorAll('svg[data-vector-surface]')].map(surface=>[...surface.querySelectorAll('path,rect,ellipse,polygon')].map(shape=>({tag:shape.tagName,attributes:[...shape.attributes].map(a=>[a.name,a.value]).sort((a,b)=>a[0]!.localeCompare(b[0]!))})))));
+}
 
 test('all Library model SVGs retain legible fonts, vector icons and complete text at GitHub width',async()=>{
- const receipt:{status:string;report:{modelCaptureSHA256:string;images:{source:string;layout:string;svgSHA256:string}[]}}=JSON.parse(await readFile(root+'.cache/d2/latest-render.json','utf8'));
+ const receipt:{status:string;report:{modelCaptureSHA256:string;images:{source:string;layout:string;sourceSHA256:string;svgSHA256:string}[]}}=JSON.parse(await readFile(root+'.cache/d2/latest-render.json','utf8'));
  const modelDigest=process.env.WEAVER_DIAGRAM_MODEL_SHA256;
  if(!modelDigest)throw new Error('Standalone vector admission requires the Go-owned SDK capture');
  expect(receipt.status).toBe('PASS');
@@ -22,8 +26,26 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
    expect(createHash('sha256').update(body).digest('hex')).toBe(image.svgSHA256);
    const page=await browser.newPage({viewport:{width:830,height:1000}});
    try{
+    const cache=root+'.cache/d2/images/'+image.source.slice(0,-3);
+    const html=await readFile(cache+'.html','utf8');
+    const exported:{htmlSHA256:string;inputSHA256:string}=JSON.parse(await readFile(cache+'.json','utf8'));
+    expect(hash(html)).toBe(exported.htmlSHA256);
+    await page.setContent(html);await page.evaluate(()=>document.fonts.ready);
+    const provenance:{inputSHA256:string;sourceSHA256:Record<string,string>}=JSON.parse(await page.locator('#figure-provenance').textContent()??'');
+    expect(provenance.inputSHA256).toBe(exported.inputSHA256);
+    expect(provenance.sourceSHA256[image.source]).toBe(image.sourceSHA256);
+    const surfaces=await surfaceGeometry(page);
+    if(image.layout==='question-map')expect(JSON.parse(surfaces).length).toBeGreaterThan(0);
     await page.setContent('<style>body{margin:0;background:#0d1117}body>svg{width:830px;height:auto}</style>'+body);
     await page.evaluate(()=>document.fonts.ready);
+    expect(await surfaceGeometry(page)).toBe(surfaces);
+    if(image.layout==='question-map'){
+     // Missing surface projection is a failed control, even on an opaque root.
+     await page.locator('svg[data-vector-surface]').first().evaluate(surface=>surface.remove());
+     expect(await surfaceGeometry(page)).not.toBe(surfaces);
+     await page.setContent('<style>body{margin:0;background:#0d1117}body>svg{width:830px;height:auto}</style>'+body);
+     await page.evaluate(()=>document.fonts.ready);
+    }
     const issues=await page.evaluate(()=>{
      const problems:string[]=[],root=document.querySelector('body>svg')!.getBoundingClientRect();
      const canvas=document.querySelector('body>svg>rect');
@@ -32,11 +54,22 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
       const box=text.getBoundingClientRect();
       if(box.left<root.left-1||box.right>root.right+1||box.bottom>root.bottom+1)problems.push('Out of image: '+text.textContent);
      }
-     for(const text of document.querySelectorAll<SVGGraphicsElement>('.scene-title,.scene-detail,.scene-label text,.relation-title,.relation-detail')){
+     for(const text of document.querySelectorAll<SVGGraphicsElement>('.scene-title,.scene-detail,.scene-label text,.relation-title,.relation-detail,[data-heading-role=question] [data-annotation-part=label] text,[data-heading-role=answer] [data-annotation-part=label] text,[data-heading-role=note] text')){
       const matrix=text.getScreenCTM()!,size=parseFloat(getComputedStyle(text).fontSize)*Math.hypot(matrix.a,matrix.b);
       if(size<18)problems.push('Small model label: '+text.textContent+' '+size.toFixed(2));
      }
      for(const annotation of document.querySelectorAll<SVGSVGElement>('svg[data-vector-annotation]')){
+      const role=annotation.dataset.headingRole;
+      if(role==='question'||role==='answer'){
+       const parts=[...annotation.querySelectorAll<SVGGraphicsElement>('[data-annotation-part]')].map(part=>part.getBoundingClientRect());
+       for(let i=1;i<parts.length;i++){
+        const a=parts[i-1]!,b=parts[i]!;
+        if(Math.abs((a.top+a.bottom-b.top-b.bottom)/2)>1)problems.push('Semantic heading misalignment');
+        if(a.right+8>b.left)problems.push('Semantic heading crowding');
+       }
+       if(role==='question'&&(annotation.querySelector('[data-annotation-part=glyph]')||annotation.querySelector('[data-annotation-part=ordinal] text')?.textContent!=='?'))problems.push('Question lost its inquiry marker');
+       if(role==='answer'&&(!annotation.querySelector('[data-annotation-part=glyph]')||annotation.querySelector('[data-annotation-part=ordinal]')))problems.push('Answer lost its domain glyph distinction');
+      }
       const texts=[...annotation.querySelectorAll<SVGTextElement>('text')];
       for(let i=0;i<texts.length;i++)for(let j=i+1;j<texts.length;j++){
        const a=texts[i]!.getBoundingClientRect(),b=texts[j]!.getBoundingClientRect();

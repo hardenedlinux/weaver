@@ -55,7 +55,7 @@ vars: { d2-config: { data: { figure: |json
     "evidenceRefs": []
   },
   "themes": [
-    "node-editor",
+    "sketchbook",
     "reading"
   ],
   "layout": "question-map",
@@ -76,31 +76,36 @@ vars: { d2-config: { data: { figure: |json
         "name": "propose",
         "type": "WeaverExecution::Propose",
         "label": "01  Propose\nGo: bound route",
-        "icon": "go"
+        "icon": "go",
+        "role": "selection"
       },
       {
         "name": "reserve",
         "type": "WeaverExecution::Enqueue",
         "label": "02  Reserve + enqueue\nDurable intent + hold",
-        "icon": "document"
+        "icon": "document",
+        "role": "semantic"
       },
       {
         "name": "consume",
         "type": "WeaverExecution::Consume",
         "label": "03  Consume once\nClaim + Policy + fence",
-        "icon": "decision"
+        "icon": "decision",
+        "role": "policy"
       },
       {
         "name": "finalSend",
         "type": "WeaverExecution::GuardAndSend",
         "label": "04  Guard + release\nCurrent write authority",
-        "icon": "capture"
+        "icon": "capture",
+        "role": "execution"
       },
       {
         "name": "observe",
         "type": "WeaverExecution::RecoverOutcome",
         "label": "05  Observe / recover\nUnknown retains hold",
-        "icon": "evidence"
+        "icon": "evidence",
+        "role": "pending"
       }
     ],
     "sections": [
@@ -188,7 +193,10 @@ vars: { d2-config: { data: { figure: |json
       }
     ],
     "options": {
-      "elk.direction": "DOWN",
+      "elk.direction": "RIGHT",
+      "elk.aspectRatio": "1.1",
+      "elk.layered.wrapping.strategy": "MULTI_EDGE",
+      "elk.layered.wrapping.cutting.strategy": "MSD",
       "elk.hierarchyHandling": "INCLUDE_CHILDREN",
       "elk.spacing.nodeNode": "24",
       "elk.layered.spacing.nodeNodeBetweenLayers": "32"

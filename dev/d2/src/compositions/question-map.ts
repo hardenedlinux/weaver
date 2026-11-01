@@ -1,4 +1,4 @@
-import {composeDiagram,graphFromModel,type FigureComposer} from '@deterministic-engineering/render';
+import {composeDiagram,composeHeading,graphFromModel,type HeadingSpec,type FigureComposer} from '@deterministic-engineering/render';
 
 interface Card {icon:string;title:string;lines:string[];}
 interface Section {question:string;cards?:Card[];model?:boolean;}
@@ -30,16 +30,17 @@ export const questionMap:FigureComposer=context=>{
  const configure=(node:typeof graph):void=>{if(node.children){node.layoutOptions={...node.layoutOptions,...p.options};node.children.forEach(configure);}};configure(graph);
  const diagram=composeDiagram(context,{graph,icons:p.icons,roles:p.roles,edgeLabels:false});
  const text=context.text;
- const annotation=(body:string,cls:string,height:number)=>`<svg data-vector-annotation class="${cls}" viewBox="0 0 864 ${height}">${body}</svg>`;
- const heading=annotation(`<text x="0" y="22" class="eyebrow">${text(p.eyebrow)}</text><text x="0" y="82" class="hero">${text(p.heading)}</text><text x="0" y="151" class="subtitle">${text(p.subtitle)}</text>`,'hero-panel',180);
- const cards=(items:Card[])=>`<div class="cards columns-${items.length}">${items.map((card,index)=>`<article>${annotation(`<rect width="100%" height="100%" rx="12" fill="var(--${index%2?'secondaryTint':'tint'})"/><g transform="translate(20 10)" class="card-icon">${context.glyph(card.icon).replace(/<svg\b/,'<svg width="34" height="34" style="width:34px;height:34px"')}</g><text x="68" y="46" class="card-title">${text(card.title)}</text>${card.lines.map((line,i)=>`<text x="20" y="${102+i*46}" class="card-detail">${text(line)}</text>`).join('')}`,'card-copy',126+card.lines.length*46).replace('viewBox="0 0 864','viewBox="0 0 '+(items.length===3?272:420))}</article>`).join('')}</div>`;
- const sections=p.sections.map((section,index)=>{
+ const styles=new Set<string>();
+ const heading=(spec:HeadingSpec)=>{const part=composeHeading(context,spec);styles.add(part.css);return part.markup;};
+ const hero=`<header class="hero-panel">${heading({role:'eyebrow',text:p.eyebrow})}${heading({role:'title',text:p.heading})}${heading({role:'subtitle',text:p.subtitle})}</header>`;
+ const cards=(items:Card[])=>`<div class="cards columns-${items.length}">${items.map(card=>`<article data-surface="rectangle" data-role="answer">${heading({role:'answer',text:card.title,glyph:card.icon})}<div class="answer-details">${card.lines.map(line=>heading({role:'note',text:line})).join('')}</div></article>`).join('')}</div>`;
+ const sections=p.sections.map(section=>{
   const question=context.question(section.question);
-  const title=annotation(`<circle cx="18" cy="28" r="18" class="number"/><text x="18" y="36" text-anchor="middle" class="number-text">${index+1}</text><text x="52" y="37" class="section-title">${text(question.text)}</text>`,'section-heading',64);
+  const title=heading({role:'question',questionRef:question.ref,text:question.text});
   return `<section data-question="${text(question.ref)}">${title}${section.model?`<div data-region="model">${ownerHeading}${diagram.markup}</div>`:cards(section.cards!)}</section>`;
  }).join('');
- return {markup:`<main>${heading}${sections}</main>`,css:diagram.css+`
- main{padding:36px 48px 40px;background:var(--background)}.owner-title{font-size:24px;font-weight:700;fill:var(--accent)}.owner-heading{width:100%;margin:6px 0 20px}.hero-panel,.section-heading{display:block;width:100%;height:auto}.eyebrow{font-size:17px;letter-spacing:2px;font-weight:700;fill:var(--accent)}.hero{font-size:42px;font-weight:700;fill:var(--ink)}.subtitle{font-size:23px;fill:var(--muted)}main>section{padding:22px 0;border-top:1px dashed var(--border)}.section-title{font-size:27px;font-weight:700;fill:var(--ink)}.number{fill:var(--accent)}.number-text{font-size:24px;font-weight:700;fill:var(--onAccent)}.cards{display:grid;gap:24px}.columns-3{grid-template-columns:repeat(3,minmax(0,1fr))}.columns-2{grid-template-columns:repeat(2,minmax(0,1fr))}.cards article{background:var(--tint);border-radius:14px;overflow:hidden}.cards article:nth-child(2){background:var(--secondaryTint)}.card-copy{display:block;width:100%;height:auto}.card-icon>svg{width:34px;height:34px;color:var(--accent)}.card-title{font-size:25px;font-weight:700;fill:var(--ink)}.card-detail{font-size:22px;fill:var(--muted)}
+ return {markup:`<main>${hero}${sections}</main>`,css:diagram.css+[...styles].join('\n')+`
+ main{padding:36px 48px 40px}.owner-title{font-size:var(--type-headingSize);font-weight:700;fill:var(--accent)}.owner-heading{width:100%;margin:6px 0 20px}.hero-panel{display:grid;gap:24px;margin-bottom:24px}main>section{padding:28px 0;border-top:1px dashed var(--border)}main>section>[data-heading-role=question]{margin-bottom:24px}[data-heading-role=eyebrow] text{font-size:var(--type-eyebrowSize);letter-spacing:2px;fill:var(--accent)}[data-heading-role=subtitle] text{font-size:var(--type-subtitleSize);font-weight:400;fill:var(--muted)}.cards{display:grid;gap:24px}.columns-3{grid-template-columns:repeat(3,minmax(0,1fr))}.columns-2{grid-template-columns:repeat(2,minmax(0,1fr))}.cards article{min-width:0;background:var(--tint);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:grid;gap:30px;align-content:start}.answer-details{display:grid;gap:14px}[data-heading-role=answer] text{font-weight:700}[data-heading-role=answer] [data-annotation-part=glyph]{color:var(--accent)}
  .scene-title{font-size:25px}.scene-detail{font-size:22px}.scene-group-title{font-size:24px;fill:var(--accent)}.scene-glyph>svg{width:34px;height:34px}.scene-svg{--scene-padding:20;--scene-label-padding:8}.scene-edge{stroke-width:2}.scene-frame{rx:12}[data-role="execution"]>.scene-frame{fill:var(--secondaryTint)}[data-role="semantic"]>.scene-frame{fill:var(--tint)}
  `};
 };

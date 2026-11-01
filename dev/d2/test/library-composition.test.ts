@@ -1,4 +1,4 @@
-import {test,expect,beforeAll,afterAll} from 'bun:test';
+import {test,expect,beforeAll,afterAll,describe} from 'bun:test';
 import {fileURLToPath} from 'node:url';
 import {collectCatalog} from '../src/source/catalog';
 import {CompilationOwner} from '../src/compiler';
@@ -10,7 +10,6 @@ beforeAll(async()=>{
  const catalog=collectCatalog(fileURLToPath(new URL('../../../',import.meta.url)));
  owner=new CompilationOwner(catalog);
  scene=await owner.compile(catalog.views.findIndex(v=>v.source.endsWith('/12-execution-correspondence.d2')));
- gateway=await owner.compile(catalog.views.findIndex(v=>v.source.endsWith('/01-system-boundaries.d2')));
 });
 afterAll(async()=>{await owner?.close();});
 test('actual D2 Question and declared hand-drawn style drive the library',()=>{
@@ -32,6 +31,11 @@ test('declared node-editor variant reuses the library theme',()=>{
  expect(figure.drawing.mode).toBe('precise');
  expect(figure.html).toContain('[data-node]:before');
 });
+describe('gateway responsibility composition',()=>{
+ beforeAll(async()=>{
+  const catalog=collectCatalog(fileURLToPath(new URL('../../../',import.meta.url)));
+  gateway=await owner!.compile(catalog.views.findIndex(v=>v.source.endsWith('/01-system-boundaries.d2')));
+ });
 test('responsibility view shows source-bound handoffs and rejects reversed contracts',()=>{
  if(!gateway)throw new Error('Missing captured gateway');
  const figure=composeProjectFigure(gateway);
@@ -47,4 +51,5 @@ test('theme variants preserve captured technology logos alongside library icon p
   expect(figure.html).toContain('cloud.brand');
   expect(figure.html).toContain('runtime.brand');
  }
+});
 });

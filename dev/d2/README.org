@@ -203,14 +203,66 @@ endpoints, sequence lifelines and the specialized relationship/correspondence
 compositions. Unsupported cases remain in the complete image gate; they are
 neither omitted from inventory nor silently advertised as migrated.
 
-* Standalone canvas contract
+* Semantic components and standalone vector surfaces
 
-The functional theme extension declares
-=[data-figure]{background:var(--background)}= once for every project composition.
-The published Library exports that root's computed background into its SVG
-canvas; a body or inner =main= background alone does not survive this boundary.
-No SVG rewriting or additional exporter is needed. Without this declaration,
-non-sketch themes produced a transparent canvas and dark text became unreadable
-against GitHub's dark page. The independent browser check now decodes the SVG
-as an image, checks opaque corner pixels, and previews it against a dark host.
-This complements the existing text-size, overlap and source-binding checks.
+The published Library owns =composeHeading=, semantic role presentation, complete
+annotation-group measurement and default opaque canvas export. Weaver supplies
+selected Question references, Answer/domain glyphs and explanatory content.
+The README compositor uses those public components; it contains no separate
+Question/Answer coordinate assembly or root-background override.
+
+A card host declares =data-surface="rectangle"=. The Library materializes the
+surface in precise and Rough drawing modes and includes it in standalone SVG
+before its child headings. Weaver supplies the card content and grid layout;
+it does not maintain a panel renderer. Unmarked HTML backgrounds/text are not
+implicitly converted to SVG. Unsupported primitive backgrounds/borders refuse;
+SVG assets provide explicit shapes beyond that declared surface contract.
+
+| Boundary | Authoritative input | Required behavior |
+|----------+---------------------+-------------------|
+| Question | Selected reference and exact wording | Inquiry marker separate from domain glyphs |
+| Answer | Domain content and capability/model glyph | Distinct answer hierarchy without an inquiry marker |
+| Annotation | Optional ordinal, glyph and actual font metrics | Measure and align all parts together |
+| Surface | Explicit host declaration and theme | Preserve projected shape attributes and drawing style |
+| Canvas | Theme background and explicit transparency choice | Opaque combined/extracted SVG by default |
+| Consumer | Immutable package and exact source/model cohort | Refuse stale, substituted or unresolved inputs |
+
+All README views select =sketchbook= and =reading=. Paper, handwriting, engineering
+glyphs, sketch boundaries and restrained fills share the existing overview’s
+visual language. Different Questions retain different model layouts. The
+execution view uses ELK wrapping declared in D2; geometry does not replace node
+identities, endpoints or relationships. Architecture images convey core design,
+not dependency versions or verification results.
+
+The renderer development dependency selects Library commit =4eea681= through
+package SHA-256 =18da4bc86969ef9cece90d6a1247585a56744aa395e3a5e881b2025b4471d0b8=.
+The package’s Linux/macOS checks passed. Rust, Go, Scheme and proof dependency
+pins are unchanged. A qualified archive is consumed, never a moving upstream
+worktree or different bytes hidden under the previous content-derived filename.
+
+** Consumer checks and retained counterexamples
+
+The independent browser check binds materialized HTML to the Library export
+receipt and selected D2 digest before comparing every declared surface’s shape
+attributes with standalone SVG. Removing a surface is a negative control, even
+when the root remains opaque. It also verifies role separation, group alignment,
+18-pixel minimum meaningful labels at 830 pixels, annotation bounds/overlap,
+vector logos and actual image decoding against a dark host.
+
+The earlier package exported a transparent root despite an opaque HTML preview.
+A later isolated consumer exposed missing card surfaces: PNG had pixel
+=[231,241,245,255]= where SVG showed the root =[240,245,247,255]=. These failures
+were reported on the existing [[https://github.com/hardenedlinux/deterministic-engineering/pull/2#issuecomment-6557025303][Library PR]] and fixed at the shared framework boundary.
+A custom panel candidate was discarded rather than added to the project.
+
+The immutable-package consumer passed nine existing model/source tests and an
+independent Go graph/source check for the selected three views. Its 16 declared
+surfaces retained exact shape attributes, image corners decoded with alpha 255,
+and meaningful text minima were approximately 18.08, 19.02 and 19.02 pixels.
+That selected receipt is separate from the complete 108-view Go gate.
+
+Earlier complete invocations generated the corpus but failed batched five-second
+test hooks; a subsequent separate 26-test run passed. Those failures remain
+historical evidence. Real source compilations now have independently bounded
+hooks; no existing timeout or readability threshold is widened. Raw diagnostics
+and images stay in ignored cache or temporary storage, not versioned log trees.

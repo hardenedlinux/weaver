@@ -26,7 +26,6 @@ test('actual D2 model uses Library scenes and retained relation captions',()=>{
  const result=composeProjectFigure(scene);
  expect(scene.svg).toBe('');expect(scene.figure.modelTrace).toBeUndefined();
  expect(result.html).toContain('data-scene');expect(result.html).not.toContain('data-d2-version');
- expect(result.html).toContain('[data-figure]{background:var(--background)}');
  for(const edge of scene.edges)expect(result.html).toContain('data-relation-caption="'+edge.id.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;')+'"');
 });
 test('caption partitions cannot omit source words or subjects',()=>{

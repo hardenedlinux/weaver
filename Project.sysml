@@ -13,6 +13,20 @@ package WeaverProject {
            captured source bytes. D2 declares Questions and presentation; the
            upstream functional Library owns model projection and image generation.
            README embeds the resulting architecture and Zero Trust SVGs directly.
+           README figures share the Library sketchbook visual language: paper
+           canvas, handwriting, engineering glyphs and measured sketch surfaces.
+           Different review Questions select different model layouts, not an
+           unrelated font or dark/editor palette for every page.
+           Required Library semantics distinguish a source-bound Question role
+           from an Answer's domain glyph; an ordinal is optional presentation,
+           not that distinction. Measure the whole label/marker/glyph group and
+           retain its alignment across themes and font metrics. Standalone SVG
+           exports default to the declared opaque canvas; transparency is explicit.
+           Declared vector surfaces retain their theme fill, border and drawing
+           style in both PNG and SVG; the HTML preview is not a substitute for
+           the consumed standalone image. Background loss must fail qualification.
+           Consume these semantic primitives through a qualified upstream package;
+           downstream glyph swaps or baseline corrections do not satisfy them.
            Model-map presentation retains native identities, arrowheads and every
            source word; D2 selects only explicit word breaks and visual roles.
            Disconnected text annotations cannot absorb connected subjects, and

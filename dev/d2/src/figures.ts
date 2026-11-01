@@ -2,15 +2,11 @@ import {gatewayComposition} from './compositions/gateway';
 import {composeFigure,type ComposedFigure,type FigureInput} from '@deterministic-engineering/render';
 import {questionMap} from './compositions/question-map';
 import {modelMap} from './compositions/model-map';
-import {defaultPresentationTheme,extendPresentationTheme} from '@deterministic-engineering/render/presentation-theme';
 import type {Scene} from './source/types';
 
 /** Weaver extension: a question-specific execution/proof composition, never a graph engine. */
 export function composeProjectFigure(scene:Scene,variant?:NonNullable<FigureInput['variants']>[number]):ComposedFigure{
  let input=variant?{...scene.figure,theme:variant.theme,layout:variant.layout??scene.figure.layout,icons:{...scene.figure.icons,...variant.icons}}:scene.figure;
- // The Library serializes the figure root's computed background into SVG.
- // Declare the canvas on that root, not only on its HTML body or inner main.
- input={...input,theme:extendPresentationTheme(input.theme??defaultPresentationTheme,{stylesheet:'[data-figure]{background:var(--background)}'})};
  const ids=new Set(scene.nodes.map(n=>n.id));
  if(input.model?.subjects.some(n=>!ids.has(n.id))||input.model?.subjects.length!==ids.size)throw new Error('Figure replaced the captured node inventory');
  const measured=['question-map','model-map'].includes(input.layout??'');

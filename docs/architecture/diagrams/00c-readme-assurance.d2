@@ -41,7 +41,7 @@ vars: { d2-config: { data: { figure: |json
     "evidenceRefs": []
   },
   "themes": [
-    "field-notes",
+    "sketchbook",
     "reading"
   ],
   "layout": "question-map",
@@ -56,25 +56,29 @@ vars: { d2-config: { data: { figure: |json
         "name": "WeaverProject::AssuranceResponsibilities::specification",
         "type": "VerificationResponsibility",
         "label": "SysML + Org\nStructure + contracts",
-        "icon": "model"
+        "icon": "model",
+        "role": "publication"
       },
       {
         "name": "WeaverProject::AssuranceResponsibilities::schedules",
         "type": "VerificationResponsibility",
         "label": "Quint\nSchedules + counterexamples",
-        "icon": "decision"
+        "icon": "decision",
+        "role": "selection"
       },
       {
         "name": "WeaverProject::AssuranceResponsibilities::semantics",
         "type": "VerificationResponsibility",
         "label": "Lean + cedar-poo-spec\nSemantic preservation",
-        "icon": "obligation"
+        "icon": "obligation",
+        "role": "selection"
       },
       {
         "name": "WeaverProject::AssuranceResponsibilities::implementation",
         "type": "VerificationResponsibility",
         "label": "Rust + Go + Scheme\nIntegration + PBT",
-        "icon": "evidence"
+        "icon": "evidence",
+        "role": "capture"
       }
     ],
     "sections": [
