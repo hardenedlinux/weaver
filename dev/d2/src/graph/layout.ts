@@ -27,7 +27,9 @@ export async function layoutScene(source: Scene): Promise<Scene> {
     }
   }
   const byId = new Map(active.map(node => [node.id, node]));
-  const rootDirection: Direction = ['routing', 'data', 'assurance'].includes(source.view.kind) ? 'DOWN' : 'RIGHT';
+  const roots = active.filter(node => !node.parent);
+  const explicitColumns = source.view.kind === "assurance" && roots.length > 1 && roots.every(node => node.group && node.positionHint && node.positionHint.y === roots[0]!.positionHint?.y) && new Set(roots.map(node => node.positionHint!.x)).size === roots.length;
+  const rootDirection: Direction = explicitColumns ? "RIGHT" : ['routing', 'data', 'assurance'].includes(source.view.kind) ? 'DOWN' : 'RIGHT';
   const childOf = (id: string, owner: string): string | undefined => {
     let node = byId.get(id);
     while (node && (node.parent ?? rootId) !== owner) node = node.parent ? byId.get(node.parent) : undefined;

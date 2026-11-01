@@ -48,7 +48,8 @@ status colors and typography rather than one universal page layout.
 | assurance | Assumptions and independent proof/runtime obligations |
 
 Source node and edge identities survive compilation, layout and export. Explicit
-boards retain row/column order. Compound scopes pack children in local coordinates
+boards retain row/column order. Explicit sibling proof columns remain parallel
+rather than becoming one vertical causal chain. Compound scopes pack children in local coordinates
 before composing containers. Labels use actual font metrics and cannot cover
 nodes, group headers or each other. Failed inline placement becomes a side callout.
 Versions and validation receipts stay in Org, outside core architecture images.

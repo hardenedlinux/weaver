@@ -100,3 +100,20 @@ test('sequence messages meet actual actor centers after header resizing', async 
   }
   expect(scene.width).toBeGreaterThan(Math.max(...scene.nodes.filter(node=>!node.annotation).map(node=>node.x+node.width)));
 });
+
+test('explicit parallel proof columns remain side by side', async () => {
+  const source=fixture(3,'assurance');
+  source.nodes.filter(node=>node.group).forEach((node,index)=>node.positionHint={x:index*490,y:140});
+  const scene=await layoutScene(source);
+  const columns=scene.nodes.filter(node=>node.group);
+  expect(columns[1]!.x).toBeGreaterThan(columns[0]!.x+columns[0]!.width);
+  expect(Math.abs(columns[1]!.y-columns[0]!.y)).toBeLessThan(Math.min(columns[0]!.height,columns[1]!.height));
+});
+
+test('parallel proof styling does not flatten data views into wide strips', async () => {
+  const source=fixture(3,'data');
+  source.nodes.filter(node=>node.group).forEach((node,index)=>node.positionHint={x:index*490,y:140});
+  const scene=await layoutScene(source);
+  const columns=scene.nodes.filter(node=>node.group);
+  expect(columns[1]!.y).toBeGreaterThan(columns[0]!.y+columns[0]!.height);
+});
