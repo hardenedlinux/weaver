@@ -246,3 +246,23 @@ this is neither whole-log coverage nor a compiler/runtime speedup claim.
 Full hosted acceptance remains an independent gate. Benchmark samples,
 unknown-exposure constraints, dependency pins and the embedded core SVG remain
 unchanged.
+
+* Exact failed-input evidence remains required
+
+At ef3a9f57 the Linux gate still refuses idle30 after the linker preprocessed
+input reaches 59703296 bytes. The receiver successfully retains about 72 MB
+native stderr and 1.9 MB native stdout; compaction does not establish upstream
+liveness. This is a retained failure, not a completed CI fix.
+
+The next diagnostic retains generated linker inputs and the manifest, then
+replays exactly one confined preprocessed input through the SDK-declared compiler
+outside Cargo, only after the standard gate has failed. It preserves declared
+ABI/O2 options and the same 1200/30 limits, writes separate outputs and records
+actual chunk times, bytes and newlines plus compiler identity and input digests.
+No timer, input read or CPU activity becomes progress; no replay result replaces
+the original acceptance. Before/after digest matches are observations rather
+than hostile-host immutability proof. Pins and all original test/resource cases
+remain unchanged. The added diagnostic glue passes the complete 81-case Python
+suite and a real selected-SDK tiny-input plumbing control. The exact Linux
+compiler/forwarding attribution is still unresolved pending failed-input replay.
+The four-leg Rust benchmark and its clock/kernel-join limitations are unchanged.

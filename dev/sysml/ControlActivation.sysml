@@ -140,6 +140,12 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Rejected compiler gates retain immutable generated input, exact
+           declared compiler/ABI flags, and original failure. A diagnostic replay
+           may bypass Cargo only to observe actual output chunks/newlines under
+           the same wall/idle limits; it never replaces standard acceptance.
+           Hash input before and after, refuse ambiguity or escaped aliases, and
+           keep replay outcomes distinct from publication/execution authority. */
         doc /* Acceptance retains real compiler/operation observations. The
            pinned MRR adapter couples its CargoObserver to numeric Gerbil
            verbosity; SDK callbacks alone do not prove emitted progress. Keep
