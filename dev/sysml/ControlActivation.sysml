@@ -140,6 +140,20 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Before deeper COMMIT attribution, use the pinned public Rust IO
+           interface only in unit-test builds. Delegate the actual platform IO,
+           completion, cancellation, file-lock and shared-WAL methods unchanged.
+           Record synchronous file-call wall/thread CPU only inside the original
+           COMMIT context; a group leader's IO belongs to that leader, not every
+           waiter. Correlate notifier context without treating it as completion
+           proof. IO/Yield/Sleep collapse into SDK Pending: neither pre-notify nor
+           post-notify is pure device or scheduler time. Paired wrapper-off/on
+           runs use one frozen binary, actual CPUs with a floor of four, FULL,
+           zero retries and the existing case bound. Preserve all observations,
+           including incomplete notification publication and observer overhead.
+           Test wrappers never introduce a production capability or dependency
+           pin. Current-use, borrowed guard, drain/restart and retained unknown
+           exposure remain independent hard gates. */
         doc /* A test-only forwarding waker records bounded notification times
            and original COMMIT Pending windows, using the same block_on target.
            It forwards every wake even when observation storage overflows.

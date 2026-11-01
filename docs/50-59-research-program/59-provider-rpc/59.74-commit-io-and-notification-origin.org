@@ -1,0 +1,101 @@
+#+TITLE: 59.74 Commit IO, Driver Wait and Notification Origin
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Predeclared SysML contract
+
+=ControlActivation.GovernancePolicyProjection= owns this refinement of
+[[file:59.73-bridge-commit-cpu-and-ci.org][the retained bridge/commit CPU evidence]]. SPEC/Lean retains semantics and
+Quint retains interleavings; this measurement introduces no authority model.
+
+Use the pinned public Rust =turso::core= re-export and =Builder.with_io_impl=
+only under cfg(test). No dependency, production feature or pin is introduced.
+Delegate the original PlatformIO, completion objects, clocks, lock/shared-WAL,
+cancellation/drain and error behavior. Collect synchronous selected file-call
+wall/thread CPU only within the original COMMIT. A group leader's sync belongs
+to that executing context; do not charge one shared sync to every waiter.
+
+Keep original claim/reservation/history, borrowed guard, FULL, zero retries,
+accepted-work drain, terminal old owners, exact restart recovery and unknown
+exposure. Observation supplies no refund, permission, completion or durability
+certificate. Native checks reject missing identity joins, IO spans outside polls,
+probe overflow and disconnected enabled probes. Notification publication may
+lag forwarding and remains explicit rather than blocking or fabricating evidence.
+
+* Source-grounded causal distinctions
+
+| Boundary | Pinned source behavior | Consequence |
+|----------+------------------------+-------------|
+| SDK step_inner | IO, Yield and Sleep all map to SDK Io | Pending does not identify physical I/O |
+| Default Darwin PlatformIO | UnixIO pread/pwrite/sync are synchronous; step is a no-op | Own file-call time is inside poll, not its later Pending gap |
+| MVCC group park | Register a completion while another transaction holds commit lock | A waiter can depend on another commit's progress |
+| Group unlock/wake | Complete parked waiters after shared progress changes | Context correlation is not new send authority |
+| Host block_on | Forward notification before OS/runtime resumption | After-notify is not pure scheduler time |
+
+Capture notifying context and forwarding wall/CPU as diagnostic origin, not a
+causal group identifier. Spurious/yield/early notifications, incomplete detail
+publication and unavailable origin remain separate. A waiter-to-notifier join
+does not prove which fsync released it. File-call wall includes syscall and
+preemption overhead; it is not device-only latency or an anti-rollback proof.
+
+* Fixed paired validation
+
+One frozen original-runtime binary, wrapper-off/on/on/off. Each leg reuses the
+standard Rust unit benchmark: three rotated WAL/fresh/reuse rounds, independent
+and hot original domains, 64 operations per lane. Use max(4, available CPUs),
+the original 30-second case bound and existing safety/resource contracts.
+No task-owned compilation or second workload overlaps timing. Keep all raw
+request/IO/notification/CPU samples outside Git. Do not pool with older probes
+or claim a runtime benefit from observer-on/off differences.
+
+Rust owns loads, clocks, causal/cardinality/probe checks and recovery. Python
+remains existing CI process/artifact glue. Tools use explicit env/PATH. ASP deny
+gate owns module responsibilities: clock/collector, IO scope, forwarding and
+native validation are distinct test modules. No gate waiver.
+
+* Measured separation
+
+The [[https://github.com/tao3k/mrr-data/blob/feat/mrr-property-source-port/docs/benchmarks/shared-backend-commit-io.org][MRR Data Rust-native receipt]] retains every mode/domain triplet, source/binary
+identity and raw-data provenance. One frozen binary completes wrapper-off/on/on/off:
+72 cases, 55296 commits/exact recoveries and 165888 joined phase records, zero
+unexpected refusal/error/Unknown and natural exits. Actual/runtime/write/shared
+workers are 12, reuse capacity 12, blocking threads 16. The original bound holds.
+
+In enabled independent/reuse I2 round 2 versus I3 round 2, COMMIT wall changes
+1563.7 to 225.8 us while thread CPU changes 94.0 to 85.9 us. Own sync wall is
+188.2 to 37.7 us; Pending gaps 1230.6 to 132.3 us, about 82% of excess wall.
+The gap splits into pre-notification 589.2 to 95.9 us per original operation
+and post-notification 641.4 to 36.4 us. A pure own-fsync explanation is insufficient.
+
+Matched detailed non-early independent/reuse notifications originate in another
+original operation's active COMMIT context. The slow round's split pre-notify
+intervals overlap that context's sync for about 71% of their duration. This is
+temporal/context evidence, not a group-ticket or causal device attribution.
+Only 442-563 sync calls serve 768 operations per enabled case; do not duplicate
+leader IO cost for every waiter.
+
+In the slow round, forwarding averages 2.66 us per detailed window (CPU 2.34 us),
+followed by 842.3 us to repoll. Pinned Tokio Handle.block_on uses the original
+thread's CachedParkThread notification/mutex/Condvar loop, not requeueing a task
+on the multi-thread executor. The remaining boundary is park/unpark/OS resumption
+and loop bookkeeping, with observer overhead. Kernel runnable versus mutex wait
+is still missing; do not claim pure scheduler delay.
+
+Of 9959 Pending windows, 26 are early, 6 have no in-window notification, and 20
+forwarding details are unpublished at snapshot. Timestamp unpublished slots and
+notification/window overflows are zero. Keep all incomplete observations; no
+timestamp, notification, profile or resource return permits a send/refund.
+The first on leg overlaps presentation parsing of a completed off leg; disclose
+that interference. Off/on ratios change direction. All samples remain diagnostic.
+
+The combined-helper ASP responsibility failure is retained; modular clock,
+IO-scope, forwarding and validation owners fix it without a waiver. Real standard
+integration cancellation/restart/exposure tests remain independent production-path
+gates, not misreported decorator-specific coverage. Still missing: exact syscall
+versus callback/device time, group tickets, kernel scheduling timing, matched Linux
+evidence and controlled replication. No runtime candidate or weakened FULL mode
+is promoted, and SPEC/Quint responsibilities remain unchanged.
+
+* Core execution design
+
+[[file:59.69-hot-path-cost-boundaries.svg]]

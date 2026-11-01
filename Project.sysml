@@ -326,6 +326,7 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.71-host-envelope-and-retest.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.72-native-read-stage-attribution.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.73-bridge-commit-cpu-and-ci.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.74-commit-io-and-notification-origin.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.svg' : File;

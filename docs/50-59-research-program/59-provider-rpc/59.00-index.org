@@ -3,6 +3,9 @@
 
 * Current implementation
 
+[[file:59.74-commit-io-and-notification-origin.org][COMMIT IO and notification origin]] distinguishes delegated synchronous
+file calls, shared driver progress and notification/resumption without new authority.
+
 The root [[file:../../../Project.sysml][Project.sysml]] controls package and asset ownership through
 [[file:59.20-project-structure.org][the executable project architecture gate]].
 Maintained native and formal checks follow [[file:59.21-verification-ownership.org][the verification ownership contract]].
