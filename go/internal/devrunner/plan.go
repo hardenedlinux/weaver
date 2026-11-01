@@ -113,11 +113,12 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		selected := []Stage{
 			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates)", "-v"}},
 			{"storage-rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
+			{"storage-workspace-types", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
 			{"storage-rust-tests", "cargo", []string{"test", "-p", "weaver-ledger", "-p", "weaver-execution", "--locked", "--offline"}},
 			{"storage-rust-clippy", "cargo", []string{"clippy", "-p", "weaver-ledger", "-p", "weaver-execution", "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
 		}
 		for _, stage := range Plan(goBinary) {
-			if stage.Name == "lean" || stage.Name == "lean-stream" || stage.Name == "turso-atomicity-tests" || stage.Name == "turso-atomicity-safety" {
+			if stage.Name == "lean" || stage.Name == "lean-stream" || stage.Name == "quint-stream-tests" || stage.Name == "quint-stream-safety" || stage.Name == "turso-atomicity-tests" || stage.Name == "turso-atomicity-safety" {
 				selected = append(selected, stage)
 			}
 		}

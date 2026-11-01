@@ -141,3 +141,46 @@ An indexed latest-tail lookup does not scan range history. Cross-family write
 parallelism through MVCC is not enabled: the present contract deliberately keeps
 the immediate WAL writer order. New measurements describe this Turso cohort;
 without a matched frozen baseline they establish neither a speedup nor p99.
+
+* Local qualification and retained failures
+
+The host exposes twelve CPUs and the builds select twelve jobs. The focused
+ledger run passes 24 library/deny tests and 94 integration/property tests; the
+execution library passes fifteen tests, including real TCP/TLS partial-write
+and old-worker controls. All Go packages pass with the race detector. These
+are local execution receipts, not remote CI or power-loss qualification.
+
+The first complete storage attempt failed its architecture stage because the
+new SVG had not yet been exported; it also detected source changes during model
+regeneration and PR1 integration. Neither failure is counted as acceptance.
+Two provider fixtures exceeded their existing three-second startup gate before
+any process-main marker during that attempt. A separate no-benchmark-build
+control reproduced one such failure: compilation contention alone does not
+explain it. No timeout, assertion, parallelism limit or startup warm-up is changed.
+
+An existing fresh-file control executed the exact 100,976,816-byte image with
+SHA-256 =9025a3a93fe13211da68b5c6a80247cfe69148214c38ce190c0851f443780c2f=:
+its first operation/source connections took 1.436/1.440 seconds, and exact-image
+restart took 0.110/0.115 seconds. Configuration and listener creation after
+runtime entry took about two milliseconds or less. A fresh inode does not flush
+host caches; this pass does not close the intermittent pre-main cold-launch gap.
+The final source-stable =check-storage= receipt must be assessed separately from
+these retained failures. Raw failure evidence remains in temporary/ignored paths.
+
+The optimized =ledger/range_tail_guard= measurements retain thirty samples, one
+second of warm-up and two seconds of requested measurement. Local 95% time
+intervals were 1.212--1.350 ms (zero retained ranges), 1.085--1.473 ms (eight),
+and 1.262--1.960 ms (sixty-four). The sixty-four case required an estimated
+3.144 seconds to collect thirty samples; the Criterion warning is retained and
+its suggested sample/time changes were not applied. Outliers remain included.
+There is no matched retired-engine baseline, throughput or p99 claim. The first
+release build failed because the selected host linker could not locate iconv;
+selecting the same standard host compiler PATH as the qualified Go lane fixed
+that environment failure without changing source, dependency pins or gates.
+
+The seven selected core images were exported by the locked upstream Library
+from Go/OpenSysML capture and source-bound Lean evidence, using seven host lanes.
+The unchanged Lake pin still lacks Gateway.ZeroTrust; its isolated upstream
+reference projection and the ordinary locked-entry failure remain distinct, as
+recorded in [[file:59.51-zero-trust-architecture.org][the SPEC integration status]]. Storage transition proofs pass
+independently; this migration does not claim the full SPEC runtime refinement.
