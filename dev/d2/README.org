@@ -70,3 +70,28 @@ hashes, and decodes PNGs. Logs and receipts belong in cache or temporary storage
 Geometry checks do not establish a good composition. Inspect all view genres at
 readable scale for hierarchy, crossings, whitespace and label association after
 renderer changes. Presentation checks do not replace Quint or Lean security work.
+
+* Shared rendering library convergence
+
+The independently developed =@deterministic-engineering/render= package in
+Deterministic Engineering's =packages/render= owns composable presentation
+styles, Figure composition, font resources, mature drawing utilities and static
+image export. Weaver should consume those public APIs rather than maintain a
+parallel generic visual framework. Project-specific mapping from Org/SysML/D2,
+source discovery, graph coverage and publication verification remain Weaver-owned.
+The Go OpenSysML model checks remain distinct from this presentation library.
+
+An independent installed-package probe used actual W12 source nodes and relations
+and exported a local image through the public composition/theme/export APIs.
+It exercised 18 model nodes and 14 relations with a project-owned three-column
+composition. Chromium was used only for local export; no HTTP service was started.
+The package's clipping/export checks do not establish aesthetic acceptance or
+replace Weaver's graph-coverage verification.
+
+The inspected upstream worktree is still being developed. Its existing packed
+consumer artifact was used for this probe; no moving external worktree path was
+added to the repository dependency manifest. Before replacing the default path,
+qualify an immutable distributable, preserve the source identities and authority
+boundary, verify process-tree memory accounting, and exercise architecture and
+workflow styles against Weaver's corpus. Probe HTML/PNG and receipts belong in
+=.cache/d2/library-probe=, not in runtime packages or committed logs.

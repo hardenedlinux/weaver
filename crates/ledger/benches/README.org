@@ -55,3 +55,19 @@ Regression warnings remain evidence even when the benchmark process succeeds;
 these measurements do not establish a production latency or throughput target.
 
 See [[file:../../../docs/50-59-research-program/59-provider-rpc/59.05-benchmarks.org][the workspace benchmark contract]] for the complete matrix and interpretation rules.
+
+* Original reservation bytes
+
+=ledger/original_reservation_bytes/<count>/<bytes>= crosses one, eight and 64
+retained provider plans with 128-byte and 16-KiB prompt content. A single-plan
+512-KiB case covers a larger original record without conflating record count and
+body size. The complete JSON body also contains the fixed provider envelope.
+The guard reads original ceilings from retained JSON; family-size-only fixtures
+cannot characterize that cost.
+
+All original task registration and reservation inserts occur before timing.
+Consumption, durable burn, current final-use authorization and hold observation
+are timed. The callback performs no network IO. These are local durable-path
+measurements, not pure SQL microbenchmarks, provider throughput or evidence of
+snapshot-rollback protection. Report exact build mode and host conditions;
+compare revisions only with a matched source and measurement protocol.

@@ -26,6 +26,11 @@ pub fn fresh(bytes: usize, endpoint: &str) -> (tempfile::TempDir, Ledger, Provid
 
 /// Populate exact original plans outside measurement; only the selected final use is timed.
 pub fn family(count: usize) -> (tempfile::TempDir, Ledger) {
+    family_with_body(count, 128)
+}
+
+/// Retained original JSON bytes remain part of the deciding guard scan.
+pub fn family_with_body(count: usize, bytes: usize) -> (tempfile::TempDir, Ledger) {
     let temp = tempfile::tempdir().expect("family store");
     let mut ledger = Ledger::open(temp.path().join("ledger.db")).expect("ledger");
     ledger
@@ -37,7 +42,7 @@ pub fn family(count: usize) -> (tempfile::TempDir, Ledger) {
         )
         .expect("benchmark policy");
     let (mut task, original) =
-        super::fixtures::task_plan(128, "https://provider.invalid/v1/chat/completions");
+        super::fixtures::task_plan(bytes, "https://provider.invalid/v1/chat/completions");
     task.nodes.clear();
     task.body_digests.clear();
     task.node_cost_bounds.clear();
