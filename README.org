@@ -10,6 +10,9 @@ revocation and recovery.
 
 * Architecture
 
+#+CAPTION: Weaver connects governed configuration and cloud-native routing to Rust-owned final execution.
+[[file:docs/architecture/diagrams/00a-readme-overview.svg]]
+
 | Component | Responsibility |
 |-----------+----------------|
 | Scheme | Reuse Agentic AI Lab Governor and Governance; compose typed modules and project policies/source-assets into Cedar |
@@ -20,7 +23,22 @@ Go and Rust communicate through mutually authenticated gRPC. Protobuf is the
 default stream encoding; Arrow IPC is optional. Scheme uses Gambit C FFI for
 inert Cedar validation. Configuration validation does not grant execution rights.
 
-[[file:docs/50-59-research-program/59-provider-rpc/59.03-provider-rpc-core.svg]]
+** Zero Trust architecture
+
+Routing proposes an operation; it does not authorize external bytes. Rust joins
+current Policy, the original claim, shared budget and owner fence at actual use.
+Each stream message or range retains its own bound authorization and exposure.
+
+#+CAPTION: Original scope, current Policy and retained exposure constrain every send, retry and stream release.
+[[file:docs/architecture/diagrams/00d-zero-trust-overview.svg]]
+
+** Architecture and verification
+
+The models have distinct responsibilities and connect to implementation tests.
+Proofs remain conditional on their stated storage, identity and execution premises.
+
+#+CAPTION: SysML and Org define the contracts; Quint explores schedules, Lean proves properties, and implementation tests check concrete boundaries.
+[[file:docs/architecture/diagrams/00c-readme-assurance.svg]]
 
 * Workspace
 

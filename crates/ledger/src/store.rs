@@ -47,6 +47,11 @@ impl Ledger {
             )
             .map_err(db)?;
         connection.execute_batch(SCHEMA).map_err(db)?;
+        // A missing retained manifest cannot be reconstructed from outcome rows.
+        // Older images require explicit authoritative recovery, never backfill.
+        connection
+            .prepare("SELECT reservations FROM execution_claims LIMIT 0")
+            .map_err(db)?;
         let session: String = connection
             .query_row("SELECT lower(hex(randomblob(32)))", [], |r| r.get(0))
             .map_err(db)?;
@@ -158,11 +163,17 @@ impl Ledger {
                 "logical node already claimed without original operation",
             ));
         }
-        tx.execute(
-            "INSERT OR IGNORE INTO execution_claims VALUES(?1,?2,'request')",
-            [&proposal.family, &proposal.node],
-        )
-        .map_err(db)?;
+        crate::execution_exposure::retain(
+            &tx,
+            crate::execution_exposure::ReservationClaim {
+                family: &proposal.family,
+                node: &proposal.node,
+                kind: crate::execution_exposure::ClaimKind::Request,
+                member: "",
+                digest: &digest,
+                ceiling: proposal.ceiling,
+            },
+        )?;
         let updated = tx
             .execute(
                 "UPDATE tasks SET held=held+?1 WHERE family=?2 AND ?1<=budget-held",

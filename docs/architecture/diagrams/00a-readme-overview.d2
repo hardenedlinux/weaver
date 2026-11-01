@@ -1,0 +1,230 @@
+...@../../../dev/d2/themes/system
+# SysML owns topology. This D2 declaration owns questions and presentation.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "Gateway overview",
+  "purpose": "architecture",
+  "kind": "system",
+  "language": "en",
+  "width": 960,
+  "primary": "q1",
+  "questions": [
+    {
+      "ref": "q1",
+      "text": "What does Weaver make possible?",
+      "focusRefs": [
+        "model"
+      ]
+    },
+    {
+      "ref": "q2",
+      "text": "How do the core responsibilities connect?",
+      "focusRefs": [
+        "model"
+      ]
+    },
+    {
+      "ref": "q3",
+      "text": "Who defines meaning and coordinates routing?",
+      "focusRefs": [
+        "model"
+      ]
+    },
+    {
+      "ref": "q4",
+      "text": "Who controls effects and observes them?",
+      "focusRefs": [
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "model": "dev/sysml/ArchitectureViews.sysml",
+    "execution": "dev/sysml/WeaverExecution.sysml",
+    "project": "Project.sysml"
+  },
+  "copy": {},
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/00a-readme-overview.d2#design-view",
+    "modelRefs": [
+      "Project.sysml",
+      "dev/sysml/ArchitectureViews.sysml",
+      "dev/sysml/WeaverExecution.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "reading"
+  ],
+  "layout": "question-map",
+  "variants": [],
+  "presentation": {
+    "modelView": "WeaverViews::architecture",
+    "eyebrow": "WEAVER / GATEWAY OVERVIEW",
+    "heading": "One gateway. Governed execution.",
+    "subtitle": "Scheme defines meaning. Go integrates. Rust controls effects.",
+    "captions": [
+      {
+        "name": "WeaverExecution::gateway",
+        "type": "",
+        "label": "Weaver Gateway",
+        "icon": "model"
+      },
+      {
+        "name": "semanticPublisher",
+        "type": "SchemeSemanticPublisher",
+        "label": "Scheme Governance\nGovernor + assets",
+        "icon": "library",
+        "role": "semantic"
+      },
+      {
+        "name": "controlAdapter",
+        "type": "GoControlAdapter",
+        "label": "Go control plane\nRouting + publication",
+        "icon": "go"
+      },
+      {
+        "name": "policy",
+        "type": "RustPolicy",
+        "label": "Cedar Policy\nCurrent decisions",
+        "icon": "decision"
+      },
+      {
+        "name": "ledger",
+        "type": "RustLedger",
+        "label": "Rust authority\nClaims + budget",
+        "icon": "rust",
+        "role": "execution"
+      },
+      {
+        "name": "broker",
+        "type": "RustFinalBroker",
+        "label": "Final broker\nConsume + fence",
+        "icon": "capture",
+        "role": "execution"
+      },
+      {
+        "name": "executor",
+        "type": "HttpsExecutor",
+        "label": "HTTPS executor\nMessage guard",
+        "icon": "capture",
+        "role": "execution"
+      },
+      {
+        "name": "provider",
+        "type": "LlmProviderEndpoint",
+        "label": "LLM / tools\nExternal effects",
+        "icon": "model"
+      },
+      {
+        "name": "telemetry",
+        "type": "TelemetryService",
+        "label": "Telemetry\nLocal events",
+        "icon": "evidence"
+      },
+      {
+        "name": "derivedEvidence",
+        "type": "DerivedEvidenceAdapter",
+        "label": "Derived evidence\nRead-only facts",
+        "icon": "document"
+      }
+    ],
+    "sections": [
+      {
+        "question": "q1",
+        "cards": [
+          {
+            "icon": "library",
+            "title": "Configure",
+            "lines": [
+              "Scheme modules",
+              "JSON / YAML inputs",
+              "Reuse the Governor"
+            ]
+          },
+          {
+            "icon": "selection",
+            "title": "Route",
+            "lines": [
+              "Model / provider fit",
+              "Cloud-native control",
+              "Bound task semantics"
+            ]
+          },
+          {
+            "icon": "capture",
+            "title": "Execute",
+            "lines": [
+              "Cedar decisions",
+              "Durable consumption",
+              "Guard every release"
+            ]
+          }
+        ]
+      },
+      {
+        "question": "q2",
+        "model": true
+      },
+      {
+        "question": "q3",
+        "cards": [
+          {
+            "icon": "library",
+            "title": "Scheme: semantic owner",
+            "lines": [
+              "Reuse Agentic AI Lab Governance",
+              "Project policies and source assets",
+              "Keep the original task contract"
+            ]
+          },
+          {
+            "icon": "go",
+            "title": "Go: integration owner",
+            "lines": [
+              "Kubernetes and protocol adapters",
+              "MCP / A2A / Client ACP ingress",
+              "Publish authority over mTLS gRPC"
+            ]
+          }
+        ]
+      },
+      {
+        "question": "q4",
+        "cards": [
+          {
+            "icon": "rust",
+            "title": "Rust: execution owner",
+            "lines": [
+              "Policy, ledger and final broker",
+              "Retry never creates permission",
+              "Partial writes retain exposure"
+            ]
+          },
+          {
+            "icon": "evidence",
+            "title": "Telemetry: observe",
+            "lines": [
+              "Local operational observability",
+              "Explicitly governed export",
+              "Events never grant execution"
+            ]
+          }
+        ]
+      }
+    ],
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "32",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "2"
+    },
+    "containerProjection": "heading"
+  }
+}
+|
+} } }

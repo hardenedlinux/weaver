@@ -71,3 +71,14 @@ are timed. The callback performs no network IO. These are local durable-path
 measurements, not pure SQL microbenchmarks, provider throughput or evidence of
 snapshot-rollback protection. Report exact build mode and host conditions;
 compare revisions only with a matched source and measurement protocol.
+
+* Multi-message retained manifests
+
+=ledger/stream_manifest_guard/{1,8,64}= retains that many message commitments in
+one stream claim. Source task, manifest, all message rows and custody are created
+outside timing. The timed path consumes one range, evaluates the current exact
+member/digest/ceiling join and calls a local complete-range writer. The entire
+original shared hold remains retained. This measures the deciding path with a
+multi-member root; it does not measure socket throughput, fixture admission,
+refunds or independent rollback recovery. Use the unchanged thirty-sample,
+one-second warm-up and two-second requested measurement configuration.

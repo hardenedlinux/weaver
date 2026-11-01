@@ -1,15 +1,16 @@
 import {gatewayComposition} from './compositions/gateway';
 import {composeFigure,type ComposedFigure,type FigureInput} from '@deterministic-engineering/render';
-import {composePresentationTheme} from '@deterministic-engineering/render/presentation-theme';
+import {questionMap} from './compositions/question-map';
 import type {Scene} from './source/types';
 
 /** Weaver extension: a question-specific execution/proof composition, never a graph engine. */
 export function composeProjectFigure(scene:Scene,variant?:NonNullable<FigureInput['variants']>[number]):ComposedFigure{
- let input=variant?{...scene.figure,theme:composePresentationTheme(variant.themes),layout:variant.layout??scene.figure.layout}:scene.figure;
+ let input=variant?{...scene.figure,theme:variant.theme,layout:variant.layout??scene.figure.layout,icons:{...scene.figure.icons,...variant.icons}}:scene.figure;
  const ids=new Set(scene.nodes.map(n=>n.id));
  if(input.model?.subjects.some(n=>!ids.has(n.id))||input.model?.subjects.length!==ids.size)throw new Error('Figure replaced the captured node inventory');
  const owner=(id:string)=>ids.has(id)?id:[...ids].filter(n=>id.startsWith(n+'.')).sort((a,b)=>b.length-a.length)[0]??id;
  if(input.model?.relations.length!==scene.edges.length||input.model.relations.some(edge=>!scene.edges.some(e=>e.id===edge.id&&e.source===owner(edge.src)&&e.target===owner(edge.dst)&&e.label===edge.label)))throw new Error('Figure replaced the captured relationship inventory');
+ if(input.layout==='question-map')return composeFigure(input,questionMap);
  if(input.layout==='gateway-responsibility-map'||input.layout==='gateway-relationship-matrix')return composeFigure(input,context=>gatewayComposition(context,scene,input.layout==='gateway-relationship-matrix'));
  if(input.layout==='native-d2'){
   const dimensions=scene.svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);

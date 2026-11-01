@@ -22,7 +22,7 @@ The root, Core, and Lambda Aitia revisions in
 
 | ID | View | D2 source | Preview | Semantic owner |
 |----+------+-----------+-------------+----------------|
-| W01 | Logical language and authority boundaries | [[file:diagrams/01-system-boundaries.d2][Source]] | [[file:diagrams/01-system-boundaries.png][Preview]] | [[file:00-system-design.org][System design]] |
+| W01 | Logical language and authority boundaries | [[file:diagrams/01-system-boundaries.d2][Source]] | [[file:diagrams/01-system-boundaries.svg][Preview]] | [[file:00-system-design.org][System design]] |
 | W02 | S1-S3 preparation, evaluation and consumption | [[file:diagrams/02-admission-sequence.d2][Source]] | [[file:diagrams/02-admission-sequence.svg][Preview]] | [[file:05-authorization-execution-protocol.org][Coordination protocol]] |
 | W03 | Attempt states and recovery | [[file:diagrams/03-attempt-state.d2][Source]] | [[file:diagrams/03-attempt-state.svg][Preview]] | [[file:05-authorization-execution-protocol.org][Coordination protocol]] |
 | W04 | Consume timeout, abort-winning schedule | [[file:diagrams/04-consume-timeout.d2][Source]] | [[file:diagrams/04-consume-timeout.svg][Preview]] | [[file:07-source-admission-ledger-fencing.org][Timeout decision table]] |
@@ -34,7 +34,7 @@ The root, Core, and Lambda Aitia revisions in
 | W10 | S4-S6 commit, claim, final send and observation | [[file:diagrams/10-commit-dispatch-sequence.d2][Source]] | [[file:diagrams/10-commit-dispatch-sequence.svg][Preview]] | [[file:05-authorization-execution-protocol.org][Coordination protocol]] |
 | W11 | Mandatory Quint, Lean and runtime assurance | [[file:diagrams/11-zero-trust-assurance.d2][Source]] | [[file:diagrams/11-zero-trust-assurance.svg][Preview]] | [[file:10-zero-trust-assurance.org][Zero Trust assurance framework]] |
 
-| W12 | Concrete events, Quint actions and Lean/evidence correspondence | [[file:diagrams/12-execution-correspondence.d2][Source]] | [[file:diagrams/12-execution-correspondence.png][Preview]] | [[file:11-source-to-execution-assurance-review.org][Source-to-execution assurance review]] |
+| W12 | Concrete events, Quint actions and Lean/evidence correspondence | [[file:diagrams/12-execution-correspondence.d2][Source]] | [[file:diagrams/12-execution-correspondence.svg][Preview]] | [[file:11-source-to-execution-assurance-review.org][Source-to-execution assurance review]] |
 
 | W13 | Cedar inside the core authorization-to-execution architecture | [[file:diagrams/13-policy-to-execution.d2][Source]] | [[file:diagrams/13-policy-to-execution.svg][Preview]] | [[file:09-code-as-policy.org][Cedar selection and enforcement design]] |
 
@@ -177,7 +177,7 @@ W02 and W10 split one long sequence at its positive consumption observation.
 They are the same original attempt, source lease and synchronous callback.
 W08 folds invalid/stale/missing/error/deny branches into one labeled evaluation
 boundary exit; the predicate and CX cases retain the individual failure causes.
-A full-resolution [[file:diagrams/01-system-boundaries.png][PNG overview]] accompanies the SVG for convenient preview.
+A full-resolution [[file:diagrams/01-system-boundaries.svg][PNG overview]] accompanies the SVG for convenient preview.
 
 * Authoring and reproducible rendering
 
@@ -385,11 +385,155 @@ core diagram.
 
 * Question-led responsibility and relationship views
 
-[[file:diagrams/01-system-boundaries.png][Responsibility map]] answers who defines meaning, integrates cloud state and
-controls the final send. [[file:diagrams/01-system-relationships.png][The relationship matrix]] answers how declared owners
+[[file:diagrams/01-system-boundaries.svg][Responsibility map]] answers who defines meaning, integrates cloud state and
+controls the final send. [[file:diagrams/01-system-relationships.svg][The relationship matrix]] answers how declared owners
 connect, using a separate layout rather than recoloring the responsibility map.
 Both consume canonical D2 Questions and the shared render Library. Handwritten
 and node-editor variants are visual choices independent of that layout.
 Detailed premises remain in Org; the main images carry essential content at
 readable sizes without explanatory footer microtext. Full SVG links remain
 technical model references during the broader corpus review.
+
+* README architecture entrypoints
+
+The repository README directly embeds three readable SVG views. They consume
+the Library's measured scenes and vector export, independently of the older
+technical D2 SVG references. The overview uses the Library's hand-drawn engine;
+the Zero Trust view uses an execution corridor with explicit retry, stream and
+unknown-outcome constraints; the assurance view keeps Quint exploration, Lean
+proofs and concrete tests distinct. Native OpenSysML views supply the subjects
+and relationships. D2 supplies the numbered Questions, captions and theme choices.
+
+[[file:diagrams/00a-readme-overview.d2][Overview source]]
+
+[[file:diagrams/00a-readme-overview.svg]]
+
+[[file:diagrams/00d-zero-trust-overview.d2][Zero Trust source]]
+
+[[file:diagrams/00d-zero-trust-overview.svg]]
+
+[[file:diagrams/00c-readme-assurance.d2][Assurance source]]
+
+[[file:diagrams/00c-readme-assurance.svg]]
+
+* Embedded architecture views
+
+** 01-system-boundaries.svg
+
+[[file:diagrams/01-system-boundaries.svg]]
+
+** 02-admission-sequence.svg
+
+[[file:diagrams/02-admission-sequence.svg]]
+
+** 03-attempt-state.svg
+
+[[file:diagrams/03-attempt-state.svg]]
+
+** 04-consume-timeout.svg
+
+[[file:diagrams/04-consume-timeout.svg]]
+
+** 05-fencing-boundaries.svg
+
+[[file:diagrams/05-fencing-boundaries.svg]]
+
+** 06-source-admission.svg
+
+[[file:diagrams/06-source-admission.svg]]
+
+** 07-post-claim-outcomes.svg
+
+[[file:diagrams/07-post-claim-outcomes.svg]]
+
+** 08-code-as-policy.svg
+
+[[file:diagrams/08-code-as-policy.svg]]
+
+** 09-claim-wins-race.svg
+
+[[file:diagrams/09-claim-wins-race.svg]]
+
+** 10-commit-dispatch-sequence.svg
+
+[[file:diagrams/10-commit-dispatch-sequence.svg]]
+
+** 11-zero-trust-assurance.svg
+
+[[file:diagrams/11-zero-trust-assurance.svg]]
+
+** 12-execution-correspondence.svg
+
+[[file:diagrams/12-execution-correspondence.svg]]
+
+** 13-policy-to-execution.svg
+
+[[file:diagrams/13-policy-to-execution.svg]]
+
+** 14-adapter-broker-boundary.svg
+
+[[file:diagrams/14-adapter-broker-boundary.svg]]
+
+** 15-stream-message-authorization.svg
+
+[[file:diagrams/15-stream-message-authorization.svg]]
+
+** 16-authoritative-spent-state.svg
+
+[[file:diagrams/16-authoritative-spent-state.svg]]
+
+** 17-logical-message-observation.svg
+
+[[file:diagrams/17-logical-message-observation.svg]]
+
+** 18-shared-identity-budget.svg
+
+[[file:diagrams/18-shared-identity-budget.svg]]
+
+** 19-finite-domains-and-migration.svg
+
+[[file:diagrams/19-finite-domains-and-migration.svg]]
+
+** 20-anchor-recovery-and-egress.svg
+
+[[file:diagrams/20-anchor-recovery-and-egress.svg]]
+
+** 21-composed-journal-transport-lifecycle.svg
+
+[[file:diagrams/21-composed-journal-transport-lifecycle.svg]]
+
+** 22-finite-stream-manifest.svg
+
+[[file:diagrams/22-finite-stream-manifest.svg]]
+
+** 23-driver-completion-recovery.svg
+
+[[file:diagrams/23-driver-completion-recovery.svg]]
+
+** 24-writer-settlement-closure.svg
+
+[[file:diagrams/24-writer-settlement-closure.svg]]
+
+** 25-settlement-anchor-recovery.svg
+
+[[file:diagrams/25-settlement-anchor-recovery.svg]]
+
+** 26-gate-consumption-persistence.svg
+
+[[file:diagrams/26-gate-consumption-persistence.svg]]
+
+** 27-anchor-commit-broker-fencing.svg
+
+[[file:diagrams/27-anchor-commit-broker-fencing.svg]]
+
+** 28-anchor-configuration-prefix.svg
+
+[[file:diagrams/28-anchor-configuration-prefix.svg]]
+
+** 29-quorum-durable-promises.svg
+
+[[file:diagrams/29-quorum-durable-promises.svg]]
+
+** 01-system-relationships.svg
+
+[[file:diagrams/01-system-relationships.svg]]

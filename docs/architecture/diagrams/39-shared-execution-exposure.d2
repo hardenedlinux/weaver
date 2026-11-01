@@ -39,9 +39,10 @@ claims: Original execution claims {
   shape: sql_table
   family: Canonical family
   node: Original node
-  kind: Request / stream
+  kind: Request / stream / provider
+  reservations: Member key / digest / original ceiling
 }
-check: Rust deciding transaction\nClaims and original amounts retained\nHeld = every retained reservation\nProjected budget = original budget {
+check: Rust deciding transaction\nExact member manifest retained\nHeld = every original reservation\nProjected budget = original budget {
   shape: hexagon
   class: policy
 }
@@ -59,7 +60,7 @@ tasks.family -> records.messages.family
 tasks.family -> records.providers.family
 records -> check: Complete family projection
 tasks.held -> check: Shared conservation
-claims -> check: Original kind membership
+claims -> check: Exact member and kind coverage
 check -> gate: All constraints hold
 check -> quarantine: Missing / changed / orphaned
 gate -> effect: Actual use

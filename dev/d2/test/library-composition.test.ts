@@ -40,3 +40,11 @@ test('responsibility view shows source-bound handoffs and rejects reversed contr
  const changed={...gateway,edges:gateway.edges.map(edge=>edge.source==='semantic.composition'&&edge.target==='cloud.distribution'?{...edge,targetArrow:false}:edge)};
  expect(()=>composeProjectFigure(changed)).toThrow('Missing declared handoff');
 });
+test('theme variants preserve captured technology logos alongside library icon packs',()=>{
+ if(!gateway)throw new Error('Missing gateway capture');
+ for(const variant of gateway.figure.variants??[]){
+  const figure=composeProjectFigure(gateway,variant);
+  expect(figure.html).toContain('cloud.brand');
+  expect(figure.html).toContain('runtime.brand');
+ }
+});

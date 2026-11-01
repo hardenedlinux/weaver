@@ -53,15 +53,17 @@ impl Ledger {
         crate::execution_exposure::require_family(&tx, &plan.family)?;
         let old = receipt(&tx, &plan.family, &plan.node)?;
         if old.is_none() {
-            let claimed = tx
-                .execute(
-                    "INSERT OR IGNORE INTO execution_claims VALUES(?1,?2,'stream')",
-                    [&plan.family, &plan.node],
-                )
-                .map_err(db)?;
-            if claimed != 1 {
-                return Err(Error::Conflict("logical node already claimed"));
-            }
+            crate::execution_exposure::retain(
+                &tx,
+                crate::execution_exposure::ReservationClaim {
+                    family: &plan.family,
+                    node: &plan.node,
+                    kind: crate::execution_exposure::ClaimKind::Provider,
+                    member: "",
+                    digest: &digest,
+                    ceiling: plan.ceiling,
+                },
+            )?;
             let held = tx
                 .execute(
                     "UPDATE tasks SET held=held+?1 WHERE family=?2 AND ?1<=budget-held",
@@ -106,7 +108,8 @@ impl Ledger {
             &record.ok_or(Error::Conflict("provider not queued or already consumed"))?,
         )?;
         let route = any_authorized(&tx, &plan, "invokeProvider", Some(eligible))?;
-        require_exposure(&tx, &plan)?;
+        let digest = plan.digest()?;
+        require_exposure(&tx, &plan, &digest)?;
         let task_record: String = tx
             .query_row(
                 "SELECT record FROM tasks WHERE family=?1",
@@ -116,7 +119,6 @@ impl Ledger {
             .map_err(db)?;
         let task: Task = serde_json::from_str(&task_record)?;
         let binding = weaver_policy::bind_provider(&task, &plan, &route)?;
-        let digest = plan.digest()?;
         tx.execute(
             "UPDATE provider_runs SET state='unknown',target=?1 WHERE family=?2 AND node=?3",
             params![route.target, family, node],
@@ -289,15 +291,15 @@ impl Ledger {
 fn active(tx: &Transaction<'_>, p: &ProviderDispatch) -> Result<()> {
     let same:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND digest=?3 AND target=?4 AND state='unknown')",params![p.plan.family,p.plan.node,p.digest,p.route.target],|r|r.get(0)).map_err(db)?;
     if same {
-        require_exposure(tx, &p.plan)
+        require_exposure(tx, &p.plan, &p.digest)
     } else {
         Err(Error::Conflict("provider consumption changed"))
     }
 }
 /// Refinement of ZeroTrust.consumptionCommitted / unknownRetained at actual use.
 /// Never reconstruct a missing claim or refund a contradictory recovery image.
-fn require_exposure(tx: &Transaction<'_>, plan: &ProviderPlan) -> Result<()> {
-    crate::execution_exposure::provider(tx, plan)
+fn require_exposure(tx: &Transaction<'_>, plan: &ProviderPlan, digest: &str) -> Result<()> {
+    crate::execution_exposure::provider(tx, plan, digest)
 }
 fn started(tx: &Transaction<'_>, p: &ProviderDispatch) -> Result<()> {
     let burned: bool = tx

@@ -115,11 +115,12 @@ type diagramImage struct {
 	Edges        int    `json:"edges"`
 }
 type diagramRenderReport struct {
-	Status   string         `json:"status"`
-	HostCPUs int            `json:"hostCPUs"`
-	Workers  int            `json:"workers"`
-	Images   []diagramImage `json:"images"`
-	Errors   []string       `json:"errors"`
+	ModelCapture string         `json:"modelCaptureSHA256"`
+	Status       string         `json:"status"`
+	HostCPUs     int            `json:"hostCPUs"`
+	Workers      int            `json:"workers"`
+	Images       []diagramImage `json:"images"`
+	Errors       []string       `json:"errors"`
 }
 
 func diagramEvidence(data []byte, image diagramImage) error {
@@ -230,12 +231,17 @@ func diagramEvidence(data []byte, image diagramImage) error {
 
 // CheckDiagrams runs TypeScript type/property checks and offline image rendering.
 func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
+	modelDigest, err := publishModelViews(ctx, root)
+	if err != nil {
+		return err
+	}
 	binary, err := exec.LookPath("bun")
 	if err != nil {
 		return err
 	}
 	for _, args := range [][]string{{"run", "typecheck"}, {"test"}} {
 		command := exec.CommandContext(ctx, binary, args...)
+		command.Env = append(os.Environ(), "WEAVER_DIAGRAM_MODEL_SHA256="+modelDigest)
 		command.Dir = filepath.Join(root, "dev/d2")
 		command.Stdout = out
 		command.Stderr = out
@@ -243,11 +249,19 @@ func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
 			return err
 		}
 	}
-	return RenderDiagrams(ctx, root, out)
+	return renderDiagrams(ctx, root, modelDigest, out)
 }
 
 // RenderDiagrams owns a shell-free TypeScript -> SVG/PNG build, not an HTTP service.
 func RenderDiagrams(ctx context.Context, root string, out io.Writer) error {
+	modelDigest, err := publishModelViews(ctx, root)
+	if err != nil {
+		return err
+	}
+	return renderDiagrams(ctx, root, modelDigest, out)
+}
+
+func renderDiagrams(ctx context.Context, root, modelDigest string, out io.Writer) error {
 	sources, err := diagramSources(root)
 	if err != nil {
 		return err
@@ -261,6 +275,7 @@ func RenderDiagrams(ctx context.Context, root string, out io.Writer) error {
 		return err
 	}
 	command := exec.CommandContext(ctx, binary, "run", "src/render.ts")
+	command.Env = append(os.Environ(), "WEAVER_DIAGRAM_MODEL_SHA256="+modelDigest)
 	command.Dir = filepath.Join(root, "dev/d2")
 	command.Stdout = out
 	command.Stderr = out
@@ -280,6 +295,9 @@ func RenderDiagrams(ctx context.Context, root string, out io.Writer) error {
 	}
 	if report.Status != "PASS" || len(report.Images) != len(sources) {
 		failures = append(failures, errors.New("incomplete TypeScript image render"))
+	}
+	if report.ModelCapture != modelDigest {
+		failures = append(failures, errors.New("renderer receipt does not bind the current SDK capture"))
 	}
 	expected := map[string]bool{}
 	for _, source := range sources {

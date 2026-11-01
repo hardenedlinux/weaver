@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { isViewKind, type SourceCatalog, type ViewEntry } from './types';
+import {readModelCapture} from './models';
 
 function files(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
@@ -23,15 +24,15 @@ export function collectCatalog(root: string): SourceCatalog {
     const title = text.match(/^title:\s*([^\n{]+)/m)?.[1]?.trim() ?? path.basename(file, '.d2').replace(/^\d+[.-]/, '').replaceAll('-', ' ');
     views.push({ id: source, source, title, kind: profile, sha256: createHash('sha256').update(text).digest('hex') });
   }
-  for (const file of files(path.join(root, "dev/d2/node_modules/@deterministic-engineering/render/themes"))) {
-    if (file.endsWith(".d2")) fs[path.relative(root,file).split(path.sep).join("/")] = readFileSync(file,"utf8");
-  }
-  const documents=Object.fromEntries(["Project.sysml","docs/architecture/08-diagram-catalog.org"].map(name=>[name,readFileSync(path.join(root,name),"utf8")]));
+  const modelFiles=files(path.join(root,'dev/sysml')).filter(file=>file.endsWith('.sysml')).map(file=>path.relative(root,file).split(path.sep).join('/'));
+  const documents=Object.fromEntries(["Project.sysml","docs/architecture/08-diagram-catalog.org",...modelFiles].map(name=>[name,readFileSync(path.join(root,name),"utf8")]));
+  const expected=process.env.WEAVER_DIAGRAM_MODEL_SHA256;
+  const modelCapture=expected?readModelCapture(readFileSync(path.join(root,'.cache/d2/model-views.json'),'utf8'),expected,documents):undefined;
   for (const name of ['go', 'rust', 'kubernetes']) {
     const source = `docs/architecture/diagrams/assets/${name}.svg`;
     fs[source] = readFileSync(path.join(root, source), 'utf8');
 
   }
   views.sort((a, b) => a.source.localeCompare(b.source));
-  return { views, fs, documents };
+  return { views, fs, documents,modelCapture };
 }

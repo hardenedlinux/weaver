@@ -9,6 +9,7 @@ import {exportFigure} from '@deterministic-engineering/render/export';
 import {collectCatalog} from './source/catalog';
 import {CompilationOwner} from './compiler';
 import {composeProjectFigure} from './figures';
+import {bindSceneSVG} from './source/d2-svg';
 const root=fileURLToPath(new URL('../../../',import.meta.url));
 const catalog=collectCatalog(root);
 const {values}=parseArgs({args:process.argv.slice(2),options:{view:{type:'string',multiple:true}}});
@@ -27,16 +28,17 @@ try{
    try{
     const scene=await compiler.compile(index),figure=composeProjectFigure(scene);
     const result=await exportFigure(figure,browser);
+    const svg=scene.figure.layout==='question-map'?bindSceneSVG(scene,(result.svg[0]??'').replace(/\n[ \t]+\n/g,'\n\n')):scene.svg;
     const stem=path.join(root,scene.view.source.slice(0,-3)),cache=path.join(root,'.cache/d2/images',scene.view.source.slice(0,-3));
     await mkdir(path.dirname(cache),{recursive:true});
-    await writeFile(stem+'.svg',scene.svg);await writeFile(cache+'.png',result.png);await writeFile(cache+'.html',result.html);await writeFile(cache+'.json',JSON.stringify(result.receipt,null,2));
+    await writeFile(stem+'.svg',svg);await writeFile(cache+'.png',result.png);await writeFile(cache+'.html',result.html);await writeFile(cache+'.json',JSON.stringify(result.receipt,null,2));
     if(scene.figure.layout!=='native-d2'||await access(stem+'.png').then(()=>true,()=>false))await writeFile(stem+'.png',result.png);
     for(const variant of scene.figure.variants??[]){
      const image=await exportFigure(composeProjectFigure(scene,variant),browser);
      await writeFile(stem+'-'+variant.name+'.png',image.png);
      await writeFile(cache+'-'+variant.name+'.html',image.html);
     }
-    images.push({source:scene.view.source,theme:scene.view.kind,sourceSHA256:scene.view.sha256,svgSHA256:hash(scene.svg),pngSHA256:hash(result.png),nodes:scene.nodes.length,edges:scene.edges.length,libraryInputSHA256:result.receipt.inputSHA256});
+    images.push({source:scene.view.source,theme:scene.view.kind,sourceSHA256:scene.view.sha256,svgSHA256:hash(svg),pngSHA256:hash(result.png),nodes:scene.nodes.length,edges:scene.edges.length,libraryInputSHA256:result.receipt.inputSHA256});
     console.log('[library] '+scene.view.source);
    }catch(error:unknown){errors.push(catalog.views[index]!.source+': '+String(error));console.error(errors.at(-1));}
   }
@@ -47,6 +49,6 @@ if(JSON.stringify(collectCatalog(root))!==JSON.stringify(catalog))errors.push('C
 if(images.length!==indexes.length)errors.push('Incomplete library export');
 images.sort((a,b)=>a.source.localeCompare(b.source));
 await mkdir(path.join(root,'.cache/d2'),{recursive:true});
-await writeFile(path.join(root,'.cache/d2/typescript-render.json'),JSON.stringify({status:errors.length?'FAIL':'PASS',hostCPUs:cpus().length,workers:count,engine:'@deterministic-engineering/render',images,errors},null,2));
+await writeFile(path.join(root,'.cache/d2/typescript-render.json'),JSON.stringify({status:errors.length?'FAIL':'PASS',modelCaptureSHA256:catalog.modelCapture?.sha256,hostCPUs:cpus().length,workers:count,engine:'@deterministic-engineering/render',images,errors},null,2));
 if(errors.length)throw new Error('Library rendering failed; see cache receipt');
 console.log(`PASS: ${images.length} library-driven images, ${count} host lanes, no HTTP service`);

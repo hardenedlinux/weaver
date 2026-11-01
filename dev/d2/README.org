@@ -13,8 +13,12 @@ renderer.
 Project composers answer different questions: the gateway responsibility map
 focuses on Scheme/Go/Rust allocation; its relationship matrix aggregates declared
 owner relationships; execution/proof correspondence compares three obligation
-lanes. Other views use the library's standard D2 model rendering. Domain
-composition and visual theme are independent choices.
+lanes. The README uses native OpenSysML projections and the Library's measured
+SVG scenes: a hand-drawn overview, a Zero Trust execution corridor and a separate
+assurance map. Domain
+composition and visual theme are independent choices. Legacy technical views
+still embed the D2 reference SVG; they are not evidence of conversion to the
+new measured scene engine.
 
 Each D2 view declares its presentation Question, copy, purpose, layout, ordered
 theme layers and variants through the library's existing =data.figure= contract.
@@ -22,16 +26,51 @@ These are design-view questions, not issued governance Questions or accepted
 review/authorization evidence. =Project.sysml= and the existing Go OpenSysML
 checks retain their model-ownership role.
 
+* Model capture and functional composition
+
+The Go owner parses named in-memory SysML documents, renders the declared views,
+and atomically publishes an ignored capture plus its exact byte digest. The
+official JavaScript SDK reads the saved transport; the published Library projects
+IDs, parents, ports and connections directly. There is no SysML-to-D2 topology
+copy. D2 caption selectors require a unique native name and type; only the
+resolved SDK IDs become identity. Missing, changed or ambiguous selections refuse.
+
+=question-map= is a functional project composition using Library primitives.
+Every heading, Question, capability card, caption and theme choice is declared
+in D2. It contains no README filename checks or hand-authored model topology.
+An explicit =containerProjection: heading= may show an enclosing model owner as
+a visible title instead of a nested frame. It refuses owners with incident
+relationships and retains the owner's native identity in the vector output.
+The complete native parent/port trace remains in SVG metadata.
+
+The =reading= theme layer in =dev/d2/themes/index.ts= extends published themes
+with readable model labels. The Library owns font loading, actual measurements,
+ELK routing, Rough.js drawing and vector extraction. Independent browser tests
+decode the standalone SVGs at 830 pixels and check effective label size, all
+annotation text overlaps and image decoding; a host preview alone is insufficient.
+
+The older technical corpus still has raw D2 SVG paths and specialized notation.
+This delivery removes the README-specific compositor; it does not claim that
+those older paths have been removed or that unsupported notation has been
+converted. They remain visible migration work, never a fallback for model views.
+
 * Local library consumption
 
 GitHub publication is unnecessary. The development dependency is a local package
-archive at =.data/render-library/deterministic-engineering-render-1.0.0.tgz=.
-The archive is ignored; its dependency integrity is recorded in =bun.lock=.
+archive under =.data/render-library/=. Its content-derived filename is selected
+by =package.json=, and its dependency integrity is recorded in =bun.lock=.
+The archive itself is ignored.
 From the library package directory, use its standard package command:
 
 #+begin_src text
 bun pm pack --destination <weaver>/.data/render-library
 #+end_src
+
+Retain the captured archive under the filename selected in =package.json=.
+Renaming an updated archive to its SHA256 prefix prevents the package manager
+from reusing different bytes under the same local version/path. The lockfile
+must match those captured bytes; an arbitrary new producer checkout cannot
+recreate an earlier package identity.
 
 From =dev/d2=, install the captured development dependencies and browser:
 
@@ -53,7 +92,10 @@ go -C go run ./cmd/weaver-dev check-diagrams
 go -C go run ./cmd/weaver-dev render-diagrams
 #+end_src
 
-A focused selection can be rendered from =dev/d2=:
+A focused selection requires the current Go-owned capture digest in
+=WEAVER_DIAGRAM_MODEL_SHA256=; direct invocation without that receipt refuses a
+model-driven figure. The normal Go entrypoint supplies it. Technical D2-only
+views can also be selected from =dev/d2=:
 
 #+begin_src text
 bun run render --view docs/architecture/diagrams/01-system-boundaries.d2
@@ -65,10 +107,26 @@ jobs use the host CPU count; active contexts drain before browser shutdown.
 There is no HTTP service. Browser subprocess memory is outside the earlier
 Bun-only RSS measurement; do not reuse that measurement as a process-tree bound.
 
-The library produces Question-led HTML and PNG. Full D2 SVG remains a technical
-model reference. Selected project compositions publish adjacent PNG previews and
-declared theme variants. Cached HTML, image receipts and raw diagnostics belong
+The library produces Question-led HTML, PNG and true SVG scene exports. README
+SVGs include actual measured nodes, routed edges, vector glyphs and embedded
+fonts; they are neither bitmap wrappers nor foreignObject exports. Other full
+D2 SVGs remain technical model references. Selected project compositions publish
+adjacent PNG previews and declared theme variants. Cached HTML, image receipts and raw diagnostics belong
 under =.cache/d2= or temporary storage.
+
+README and document figures use standalone Org file-image syntax, for example
+=\[\[file:diagrams/example.svg\]\]=. Navigation links may coexist, but every
+referenced architecture SVG also has a direct image in that document. The Go
+architecture gate checks these embeddings, regular-file targets and README
+scene text scale at an 830-pixel reading width. The independent browser test
+additionally measures the decoded SVG rather than inferring cascade or scale
+from source CSS. Visual inspection remains part of review.
+
+The shared Library owns compound-edge placement. A browser regression with two
+nested responsibility boundaries checks actual SVG path endpoints against node
+frames; local edge coordinates must be translated by their ELK container origin.
+Weaver consumes that fix through the captured development package rather than
+maintaining a second edge-routing implementation.
 
 * Reading and fidelity contract
 

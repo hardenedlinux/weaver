@@ -264,3 +264,9 @@ consumption/current-prefix checks and the final writer barrier cannot be replace
 by a cached leader term. Batching/sharding must preserve per-original-key tombstones,
 shared-budget/history identity and durability before executable acknowledgement.
 The full-shard unknown barrier remains conservative and can prevent progress.
+
+* Embedded architecture views
+
+** 27-anchor-commit-broker-fencing.svg
+
+[[file:diagrams/27-anchor-commit-broker-fencing.svg]]

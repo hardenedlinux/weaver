@@ -111,6 +111,33 @@ fn original_reservation_bytes(c: &mut Criterion) {
     }
     group.finish();
 }
+fn stream_manifest_guard(c: &mut Criterion) {
+    let mut group = c.benchmark_group("ledger/stream_manifest_guard");
+    for count in [1usize, 8, 64] {
+        group.bench_with_input(BenchmarkId::from_parameter(count), &count, |b, &count| {
+            b.iter_batched(
+                || stores::stream(count),
+                |(temp, mut ledger, owner)| {
+                    let permit = ledger
+                        .consume_range(&owner, "m0", 4)
+                        .expect("consume range");
+                    ledger
+                        .write_range(&owner, permit, |_| {
+                            weaver_contracts::WriteObservation::Complete
+                        })
+                        .expect("current manifest guard");
+                    assert_eq!(
+                        ledger.held("f").expect("retained exposure"),
+                        count as u64 * 4
+                    );
+                    black_box((temp, ledger, owner))
+                },
+                BatchSize::PerIteration,
+            )
+        });
+    }
+    group.finish();
+}
 fn publication_operations(c: &mut Criterion) {
     let change = weaver_contracts::Publication {
         operation_id: "measured".into(),
@@ -423,5 +450,5 @@ fn source_authority(c: &mut Criterion) {
         )
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,shared_exposure,original_reservation_bytes,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,shared_exposure,original_reservation_bytes,stream_manifest_guard,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
 criterion_main!(benches);

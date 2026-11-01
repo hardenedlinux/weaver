@@ -263,3 +263,9 @@ backpressure, and performs authoritative CAS/live-policy checks at the semantic
 admission/write boundaries. Batching must preserve every original interval and
 its failure status; an unverified cache hit cannot skip a final gate. No latency
 optimization may turn an unknown result into permission to replay.
+
+* Embedded architecture views
+
+** 37.02-broker-consumption-queue.svg
+
+[[file:37.02-broker-consumption-queue.svg]]

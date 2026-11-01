@@ -71,3 +71,59 @@ pub fn family_with_body(count: usize, bytes: usize) -> (tempfile::TempDir, Ledge
     }
     (temp, ledger)
 }
+
+/// One stream owns several original message commitments under one durable claim.
+pub fn stream(count: usize) -> (tempfile::TempDir, Ledger, weaver_ledger::StreamOwner) {
+    let temp = tempfile::tempdir().expect("stream store");
+    let mut ledger = Ledger::open(temp.path().join("ledger.db")).expect("ledger");
+    ledger
+        .publish(None, "permit(principal,action,resource);", 1)
+        .expect("policy");
+    let (mut task, _) = super::fixtures::task_plan(128, "https://provider.invalid/");
+    task.provider_profile = None;
+    task.budget = count as u64 * 4;
+    task.node_cost_bounds.insert("infer".into(), task.budget);
+    let contract = weaver_contracts::StreamContract {
+        family: task.family.clone(),
+        node: "infer".into(),
+        profile: task.profile.clone(),
+        target: "primary".into(),
+        input_digest: task.body_digests["infer"].clone(),
+        destination: "tcp://127.0.0.1:9000".into(),
+        messages: (0..count)
+            .map(|index| weaver_contracts::MessageRule {
+                id: format!("m{index}"),
+                max_bytes: 8,
+                cost_bound: 4,
+            })
+            .collect(),
+    };
+    let digest = contract.digest().expect("manifest");
+    task.stream_contracts.insert("infer".into(), digest.clone());
+    ledger.register_task(&task).expect("task");
+    ledger.register_stream(&contract).expect("contract");
+    for index in 0..count {
+        ledger
+            .enqueue_message(&weaver_contracts::StreamMessage {
+                family: task.family.clone(),
+                node: "infer".into(),
+                message: format!("m{index}"),
+                contract_digest: digest.clone(),
+                payload: "abcdefgh".into(),
+                ceiling: 4,
+                revision: 0,
+                fence: 1,
+            })
+            .expect("original message");
+    }
+    let owner = ledger
+        .claim_stream(weaver_ledger::StreamClaim {
+            family: &task.family,
+            node: "infer",
+            destination: &contract.destination,
+            revision: 0,
+            fence: 1,
+        })
+        .expect("custody");
+    (temp, ledger, owner)
+}

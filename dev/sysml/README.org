@@ -22,3 +22,51 @@ No Python checker or separate SysML command interpreter is required.
 
 Structural and trace admission complements the executable tests and proofs;
 its verdict is not a send permit or a proof of behavioral refinement.
+
+* Model-driven architecture views
+
+=ArchitectureViews.sysml= selects existing model owners rather than maintaining
+another Gateway topology. =WeaverViews::architecture= and
+=WeaverViews::zeroTrust= are two perspectives of =WeaverExecution::gateway=.
+The security perspective retains the same connections; exposing individual
+leaf parts alone returned nodes without their owner connections in the current
+SDK and is not an acceptable substitute for the connected security model.
+
+=WeaverViews::execution= composes the existing Propose, Enqueue, Consume,
+GuardAndSend and RecoverOutcome action definitions. The assurance view selects
+the four existing =WeaverProject::AssuranceResponsibilities= owners; it does not
+invent connections or duplicate the responsibility registry.
+
+The Go development owner calls the existing OpenSysML SDK with named in-memory
+source documents. Source hashes describe exactly the bytes supplied to that
+parse, avoiding a second filesystem read inside the SDK. Its native view result
+retains original IDs, parents, ports, connections and source origins. A captured
+cohort is not a claim of an atomic snapshot of the entire filesystem.
+
+D2 owns Questions, concise captions, visual grouping, themes and glyph selection.
+The upstream functional Library owns supported model projection and rendering.
+The README consumes generated SVG files. A README-specific TypeScript renderer,
+a second SysML parser, raw D2 image fallback and fabricated SDK results are not
+part of the model-view path. The three README figures consume the published
+functional interface. The older technical corpus still requires separate
+notation migration before its raw D2 paths can be removed.
+
+The overview explains capabilities, component relationships and Scheme/Go/Rust
+allocation. The Zero Trust view explains original scope, current Cedar decisions,
+durable claim and budget/history retention, final-use fencing and unknown
+outcomes. Their explanatory sections are D2 presentation data bound to the named
+model view and existing requirements. Test counts, versions and qualification
+receipts remain outside those architecture images.
+
+=TestModelViewsUseActualSDK= exercises all four declared views against the real
+SDK. =FuzzModelViewCaptureTracksSource= uses Go's property-testing framework to
+change a source identity and require a fresh model hash and rendered name while
+preserving the prior capture. These checks establish the model-capture boundary;
+they do not establish renderer integration, runtime authorization or full
+architecture delivery. =model-view.test.ts= additionally checks the live SDK
+projection through the published Library, exact source trace and fail-closed
+caption/port selection. =vector-readability.test.ts= checks the exported SVG at
+830 pixels, including actual font transforms, annotation overlap and independent
+image decoding. The Zero Trust README figure selects =WeaverViews::execution=;
+=WeaverViews::zeroTrust= retains the connected component perspective for deeper
+security review. Neither presentation declares a new runtime execution authority.
