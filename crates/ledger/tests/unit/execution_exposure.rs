@@ -235,3 +235,52 @@ proptest! {
         prop_assert_eq!(ledger.held("f").expect("hold"), if fault == 3 { 4 } else { 8 });
     }
 }
+
+#[test]
+fn balanced_projection_cannot_shrink_another_original_reservation() {
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("balanced.db");
+    let mut ledger = Ledger::open(&path).expect("ledger");
+    ledger.publish(None, fixtures::POLICY, 1).expect("policy");
+    let mut task = fixtures::task();
+    task.budget = 7;
+    ledger.register_task(&task).expect("original budget");
+    ledger
+        .enqueue(&fixtures::proposal(0, 4))
+        .expect("original hold");
+    let permit = ledger.consume("family", "n0").expect("unknown original");
+    drop(permit);
+    drop(ledger);
+    let connection = rusqlite::Connection::open(&path).expect("fault writer");
+    connection.execute_batch("BEGIN IMMEDIATE; UPDATE operations SET reserved=1 WHERE node='n0'; UPDATE tasks SET held=1; COMMIT;").expect("balanced incomplete recovery");
+    drop(connection);
+    let mut recovered = Ledger::open(&path).expect("restart");
+    assert!(recovered.enqueue(&fixtures::proposal(1, 4)).is_err());
+    assert!(recovered.lookup("family", "n1").expect("observe").is_none());
+    assert_eq!(recovered.held("family").expect("unchanged projection"), 1);
+}
+
+proptest! {
+    #![proptest_config(Config::with_cases(64))]
+    #[test]
+    fn balanced_shrink_never_admits_a_different_node(original in 4u64..13, projected in 1u64..4, restart in proptest::bool::ANY) {
+        let temp=tempfile::tempdir().expect("directory");
+        let path=temp.path().join("balanced-property.db");
+        let mut ledger=Ledger::open(&path).expect("ledger");
+        ledger.publish(None,fixtures::POLICY,1).expect("policy");
+        let mut task=fixtures::task();
+        task.budget=original+3;
+        ledger.register_task(&task).expect("original budget");
+        ledger.enqueue(&fixtures::proposal(0,original)).expect("original hold");
+        let permit=ledger.consume("family","n0").expect("consumption");
+        drop(permit);
+        let connection=rusqlite::Connection::open(&path).expect("fault writer");
+        connection.execute("UPDATE operations SET reserved=?1 WHERE node='n0'",[projected as i64]).expect("row projection");
+        connection.execute("UPDATE tasks SET held=?1",[projected as i64]).expect("balanced aggregate");
+        drop(connection);
+        if restart { drop(ledger);ledger=Ledger::open(&path).expect("restart"); }
+        prop_assert!(ledger.enqueue(&fixtures::proposal(1,4)).is_err());
+        prop_assert!(ledger.lookup("family","n1").expect("observation").is_none());
+        prop_assert_eq!(ledger.held("family").expect("projection"),projected);
+    }
+}

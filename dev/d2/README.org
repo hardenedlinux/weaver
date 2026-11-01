@@ -1,0 +1,72 @@
+#+TITLE: Offline Architecture Image Rendering
+#+LANGUAGE: en
+
+* Ownership and entrypoints
+
+D2 remains the canonical architecture source. This development-only TypeScript
+package produces standalone SVG and PNG images without an HTTP service or browser.
+Go owns source discovery, currentness and output verification. Rendering has no
+role in gateway authorization.
+
+Install dependencies from =dev/d2= using =bun install --frozen-lockfile=.
+Run from the repository root:
+
+#+begin_src text
+go -C go run ./cmd/weaver-dev check-diagrams
+go -C go run ./cmd/weaver-dev render-diagrams
+#+end_src
+
+The first command includes strict TypeScript checks and property tests. To render
+one image, run from =dev/d2=:
+
+#+begin_src text
+bun run render --view docs/architecture/diagrams/01-system-boundaries.d2
+#+end_src
+
+SVGs accompany their D2 sources. PNGs and digest receipts live under =.cache/d2=;
+existing adjacent PNG previews are refreshed too. Workers use the host CPU count,
+limited by selected image count. One shared D2/WASM compiler subprocess replaces per-image-worker compiler instances. Its
+scope is recycled after four compilations; CPU-parallel image workers remain
+independent. Parent RSS plus sampled compiler-process RSS is observed; crossing a 4 GiB admission budget stops new
+scheduling and drains owned jobs as a failed run. This is a scheduling guard,
+not an operating-system hard memory limit. Completed workers release resources.
+
+* View-specific visual grammar
+
+Each source imports one profile from =dev/d2/themes=. Profiles own D2 conventions;
+=presentation.ts= owns matching SVG palettes. The shared base supplies semantic
+status colors and typography rather than one universal page layout.
+
+| Profile | Visual grammar |
+|---------+----------------|
+| system | Responsibility zones, original board ranks and technology headers |
+| routing | Advisory candidates, route selection and one actual provider |
+| flow | Progression, decisions and explicit failure exits |
+| sequence | Actor lifelines and ordered messages |
+| state | Distinct state pills and irreversible transitions |
+| data | Persistent record fields, joins and conserved account domains |
+| assurance | Assumptions and independent proof/runtime obligations |
+
+Source node and edge identities survive compilation, layout and export. Explicit
+boards retain row/column order. Explicit sibling proof columns remain parallel
+rather than becoming one vertical causal chain. Compound scopes pack children in local coordinates
+before composing containers. Labels use actual font metrics and cannot cover
+nodes, group headers or each other. Failed inline placement becomes a side callout.
+Versions and validation receipts stay in Org, outside core architecture images.
+
+* Resources and validation
+
+The official [[https://github.com/d2lang/d2/tree/master/d2js/js][D2 SDK]] compiles sources. ELK lays out scopes, React serializes pure
+SVG, and resvg exports PNGs. Local Inter glyph outlines preserve typography without
+font fetching. Lucide provides semantic symbols; local Go, Rust and Kubernetes
+marks identify actual technologies. Attribution remains in the
+[[file:../../docs/architecture/diagrams/assets/icon-sources.org][asset source register]]. See the [[https://d2lang.com/tour/themes/][D2 theme documentation]] for source palette conventions.
+
+Fast-check properties cover measured wrapping, nested geometry, source identity
+and portable SVG output. Regressions cover coordinate composition, SDK values and
+explicit board order. Go compares source digests, graph identities and output
+hashes, and decodes PNGs. Logs and receipts belong in cache or temporary storage.
+
+Geometry checks do not establish a good composition. Inspect all view genres at
+readable scale for hierarchy, crossings, whitespace and label association after
+renderer changes. Presentation checks do not replace Quint or Lean security work.

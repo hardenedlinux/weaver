@@ -13,7 +13,8 @@ package WeaverExecution {
         doc /* Original node holds sum to no more than the original family budget. */
         doc /* A single deciding projection covers request, stream-message and
            provider reservations together. Admission and actual use require all
-           retained execution-kind claims, exact shared exposure conservation and equality
+           retained execution-kind claims, equality of every retained reservation with its
+           original proposal or plan ceiling, exact shared exposure conservation and equality
            between the budget projection and the original task budget. Local
            checks of each effect kind cannot substitute for the shared sum. */
     }

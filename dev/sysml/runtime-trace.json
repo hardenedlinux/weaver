@@ -1,4 +1,8 @@
 [
+  {"id":"ArchitectureViewGrammar","witnesses":[
+    {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestArchitectureDiagramsUseDifferentViewProfiles"},
+    {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestDiagramProfilesAreExplicitAndLocal"},
+    {"file":"go/internal/devrunner/diagrams.go","pattern":"func RenderDiagrams"}]},
   {"id":"ProductionAssetBoundary","witnesses":[
     {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRuntimeAssetBoundary"},
     {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRejectsRuntimeDevReferences"}]},
@@ -18,6 +22,9 @@
   {
     "id": "SharedBudget",
     "witnesses": [
+      {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem admission_covers_original_exposure"},
+      {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run balancedProjectionCounterexampleTest"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn balanced_shrink_never_admits_a_different_node"},
       {"file":"crates/ledger/src/execution_exposure.rs","pattern":"fn require_family"},
       {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn mixed_request_and_stream_exposure_cannot_be_checked_in_separate_domains"},
       {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_exposure_keeps_original_budget"},

@@ -150,6 +150,12 @@ evidence and the replayable property seed are committed.
 
 ** Cross-effect recovery and conservation follow-up
 
+#+CAPTION: A data view shows the shared records and deciding join separately from the system overview.
+#+ATTR_ORG: :width 1600
+[[file:../../architecture/diagrams/39-shared-execution-exposure.svg]]
+
+[[file:../../architecture/diagrams/39-shared-execution-exposure.d2][Editable data view]].
+
 The previous provider-only check left the ordinary request and original stream
 owners outside the refinement. Real SQLite properties reproduced consumption
 and custody with missing claims. The request startup schema also rebuilt claims
@@ -427,3 +433,23 @@ Local checks on the reviewed candidate sources:
 
 Raw logs and generated receipts remain in temporary storage. CI does not gate
 this architecture iteration. Dependency pins remain unchanged.
+
+* Recovery review: balanced reservation projections
+
+A matching aggregate is insufficient when a recovered row has lost part of its
+original reservation. Reducing an unknown request reservation and =tasks.held=
+together preserves the sum but can admit a different logical node using unknown
+exposure. The deciding transaction must compare every retained request, stream
+message and provider reservation against its retained original ceiling before
+admitting another effect. This extends the existing shared-exposure guard; it
+introduces no new ledger or refund path.
+
+The regression =balanced_projection_cannot_shrink_another_original_reservation=
+restarts after such a balanced projection fault and requires rejection without
+creating the next operation or repairing the damaged hold. The original retained
+proposal/plan remains a trusted recovery premise. Correlated replacement of that
+record still requires an independent recovery authority. The RuntimeAdmission Quint model retains original amounts independently,
+exhibits the aggregate-only bypass, and rejects admission after damaged recovery.
+Lean proves pointwise binding preserves the total for arbitrary finite lists and
+composes it with admission capacity. Authentic original records, complete row
+coverage, and real transactional checks remain native refinement premises.

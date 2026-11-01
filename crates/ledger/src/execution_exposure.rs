@@ -9,13 +9,14 @@ pub(crate) fn require_family(tx: &Transaction<'_>, family: &str) -> Result<()> {
     let retained: bool = tx
         .query_row(
             "WITH retained AS (
-           SELECT node,reserved,'request' AS kind FROM operations WHERE family=?1
-           UNION ALL SELECT node,reserved,'stream' FROM stream_messages WHERE family=?1
-           UNION ALL SELECT node,reserved,'stream' FROM provider_runs WHERE family=?1
+           SELECT node,reserved,'request' AS kind,json_extract(proposal,'$.ceiling') AS original FROM operations WHERE family=?1
+           UNION ALL SELECT node,reserved,'stream',json_extract(proposal,'$.ceiling') FROM stream_messages WHERE family=?1
+           UNION ALL SELECT node,reserved,'stream',json_extract(plan,'$.ceiling') FROM provider_runs WHERE family=?1
          )
          SELECT EXISTS(SELECT 1 FROM tasks t WHERE t.family=?1
            AND t.budget=json_extract(t.record,'$.budget')
            AND t.held<=t.budget
+           AND NOT EXISTS(SELECT 1 FROM retained WHERE reserved IS NOT original)
            AND t.held=COALESCE((SELECT SUM(reserved) FROM retained),0)
            AND NOT EXISTS(SELECT 1 FROM retained r LEFT JOIN execution_claims c
              ON c.family=?1 AND c.node=r.node AND c.kind=r.kind WHERE c.node IS NULL))",

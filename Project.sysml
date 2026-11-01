@@ -5,6 +5,15 @@ package WeaverProject {
        This structural contract does not grant runtime execution authority. */
 
     part def Directory;
+    requirement def ArchitectureViewGrammar {
+        doc /* Development-only D2 profiles live under dev/d2/themes. System,
+           routing, flow, sequence, state, data and assurance views select
+           subject-appropriate visual grammars rather than one global template.
+           The Go development owner renders local bundled assets with the actual
+           host CPU count, records source identities and rejects changed inputs.
+           Presentation cannot change runtime Policy, claims or proof premises. */
+    }
+    requirement architectureViews : ArchitectureViewGrammar;
     part def File;
     part def IgnoredDirectory;
     part def Absent;
@@ -219,6 +228,9 @@ package WeaverProject {
         part scheme : Directory;
         part prod : Directory;
         part dev : Directory;
+        part 'dev/d2' : Directory;
+        part 'dev/d2/themes' : Directory;
+        part 'dev/d2/README.org' : File;
         part t : Directory;
         part docs : Directory;
         part proto : Directory;
