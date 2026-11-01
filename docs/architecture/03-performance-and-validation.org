@@ -296,7 +296,7 @@ and the binding between proof assumptions and actual observations.
 | Sensitive read racing with egress across tools/workers | Pending flow restriction committed before data release and enforced on send |
 | History crash, truncation, policy update or replica switch | No permission gain from lost or reset state |
 | Same history version used by competing admissions | At most the compatible serialized transitions commit |
-| SDK redirect/retry or pooled connection across credential scopes | No secret misrouting, attempt bypass, or confused-deputy signing |
+| Gerbil toolchain redirect/retry or pooled connection across credential scopes | No secret misrouting, attempt bypass, or confused-deputy signing |
 | Buffer mutation after hashing/consumption | Actual emission rejected or immutable bytes preserved |
 | Partitioned issuer after lease expiry / rollback after restart | No stale issuance or lowered epoch/high-water state |
 | Crash during group commit or credential dispatch | No pre-durable permission/secret release; uncertain effects remain fenced |

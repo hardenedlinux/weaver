@@ -6,7 +6,7 @@
 The top-level [[file:../../../Project.sysml][Project.sysml]] owns repository organization. Cargo, Go and Gerbil
 manifests remain their language toolchain inputs; the project model declares
 where their packages belong and which runtime Rust dependency edges are allowed.
-Go's existing OpenSysML SDK parses and queries the model under strict conformance.
+Go's existing OpenOpenSysML Go API parses and queries the model under strict conformance.
 No parallel JSON/YAML project registry is maintained.
 
 Go has one module, owned by =go/go.mod=. Commands from the repository root use
@@ -30,7 +30,7 @@ model. Parsing the root without its domain definitions is a negative control.
 | File under =prod/= | Policy, schema, profile and associated case assets consumed across verification languages |
 | File under =t/= | Native Scheme standard test suites and integration fixtures |
 | Directory under =dev/= | Formal models, proof dependencies and development tooling |
-| IgnoredDirectory | =.cache/= bounded latest results and reusable tool caches, =target/= Cargo outputs, =.data/= research checkouts and =.devenv/= local SDK state; none may be Git-tracked |
+| IgnoredDirectory | =.cache/= bounded latest results and reusable tool caches, =target/= Cargo outputs, =.data/= research checkouts and =.devenv/= local Gerbil toolchain state; none may be Git-tracked |
 | Absent | Retired ambiguous package roots and misplaced Policy/benchmark directories |
 
 * Executable admission

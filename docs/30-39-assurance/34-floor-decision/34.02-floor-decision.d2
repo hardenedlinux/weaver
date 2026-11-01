@@ -21,7 +21,7 @@ semantic: SEMANTICS / CLOUD LIFECYCLE {
     label.near: center-center
     class: semantic
   }
-  cloud: Go / cloud-native reconciliation\nRetry original identity and status\nPod restart cannot unlock intent {
+  cloud: Go / cloud-intent_owner reconciliation\nRetry original identity and status\nPod restart cannot unlock intent {
     top: 295
     left: 20
     width: 310
@@ -54,7 +54,7 @@ semantic: SEMANTICS / CLOUD LIFECYCLE {
     height: 28
   }
 }
-native: PROTECTED INTENT / DECISION {
+intent_owner: PROTECTED INTENT / DECISION {
   top: 0
   left: 440
   width: 350
@@ -178,15 +178,15 @@ lean: LEAN\nUnique durable decision / retained intent / original claim and budge
   height: 100
   class: semantic
 }
-semantic.identity -> native.manifest
-semantic.cloud -> native.manifest
-native.manifest -> native.isolation
-owner.certificate -> native.isolation
-native.isolation -> native.callback
-native.isolation -> semantic.unknown: retained {
+semantic.identity -> intent_owner.manifest
+semantic.cloud -> intent_owner.manifest
+intent_owner.manifest -> intent_owner.isolation
+owner.certificate -> intent_owner.isolation
+intent_owner.isolation -> intent_owner.callback
+intent_owner.isolation -> semantic.unknown: retained {
   style.stroke-dash: 4
 }
-native.callback -> recovery.journal
+intent_owner.callback -> recovery.journal
 recovery.journal -> recovery.history
 recovery.history -> recovery.activate
 owner.reset -> owner.emit

@@ -104,7 +104,7 @@ linearization point. Neither condition authorizes a budget refund.
 | Owner | Responsibility |
 |-------+----------------|
 | Scheme / POO Flow | Canonical original task and semantic context; immutable claim/profile/history/reservation bindings; Cedar projection and required layer checks; recovery obligations; same-intent validation |
-| Go | Cloud native lifecycle, protocol adapters, reconnection and status queries keyed by original operation; SDK retries submit the same intent; no direct provider-send authority or custody reassignment by local lease |
+| Go | Cloud native lifecycle, protocol adapters, reconnection and status queries keyed by original operation; provider-client retries submit the same intent; no direct provider-send authority or custody reassignment by local lease |
 | Rust | Durable intent/arm/outcome, current custody fencing, actual source/account/floor CAS serialization, replay pins, broker queues and final executor checks |
 | Cedar | Policy decision over authentic bound operation and current facts; it does not persist custody or make an external send atomic |
 | Quint | Bounded commit/transfer/restart interleavings and deliberately broken boundary controls |

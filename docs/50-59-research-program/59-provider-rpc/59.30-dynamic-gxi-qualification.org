@@ -4,13 +4,13 @@
 * Contract and scope
 This work qualifies the ordinary installed =gxi= entry on the local twelve-CPU
 Darwin host. Every runtime trial retains the original fifteen-second deadline,
-all nineteen Scheme-owned test cases, the SDK =gxtest= result check, caller
+all nineteen Scheme-owned test cases, the Gerbil toolchain =gxtest= result check, caller
 return, natural process exit, and an empty owned process group. A watchdog kill
 is a failed trial and cannot establish successful cleanup. No successful path
 calls =exit=, skips =dlclose=, or disables library validation or dyld notifications.
 
 Dependency pins and the installed Gerbil runtime remain unchanged. Rust's
-existing pinned SDK supplies dynamic module compilation and linker-export
+existing pinned Gerbil toolchain supplies dynamic module compilation and linker-export
 validation. Go owns preparation, paired trials and typed evidence; Scheme's
 standard suites own semantic assertions. This is development load-path
 packaging, not a replacement Governor, a new VM, Gateway runtime code, or an
@@ -63,7 +63,7 @@ upstream ABI targets are not added merely to manufacture a dependency closure.
 
 The development inventory evaluates the same exported suite values through
 the public expander interface used by =gxtest=. It records Gerbil's actual
-module registry after discovery; it does not scan the SDK tree or execute test
+module registry after discovery; it does not scan the Gerbil toolchain tree or execute test
 cases. The subsequent runtime still performs ordinary discovery and executes
 the complete standard suites. A newly encountered module falls back to its
 original loader path; the inventory is a packaging selection, never authority.

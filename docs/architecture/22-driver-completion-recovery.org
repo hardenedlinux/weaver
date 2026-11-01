@@ -239,7 +239,7 @@ for durable publication or authorize runtime completion.
 Go owns cloud-native agent/session orchestration, SDK adapters, Kubernetes
 identity/lifecycle integration, backpressure and read-only recovery/status
 coordination. It retains original operation IDs across RPC retries, suppresses
-SDK retry/redirect/reconnect behavior that would enqueue a protected effect and
+provider-client retry/redirect/reconnect behavior that would enqueue a protected effect and
 passes immutable complete-message proposals into the Rust broker. A Pod restart,
 new controller leader or SDK success cannot release a stream, retag a tail or
 settle provider usage. Go needs no raw protected egress handle to perform these

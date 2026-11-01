@@ -36,7 +36,7 @@ Installed standard library/runtime artifacts remain explicit trusted dependencie
 
 AOT means compiled Scheme code in one program image, with ordinary dynamically
 linked platform libraries. It does not mean a fully static macOS executable.
-The platform SDK/runtime link settings belong to the isolated build recipe,
+The platform Gerbil toolchain/runtime link settings belong to the isolated build recipe,
 not architecture diagrams or a dependency migration layer.
 
 * Native resource lifecycle
@@ -59,7 +59,7 @@ canary demonstrates this actual resource path; it is not proof that all possible
 foreign plugins or arbitrary programs clean up correctly.
 
 * Qualification and Gateway authority
-[[file:../../../dev/proofs/lean/NativeExitQualification.lean][NativeExitQualification]] models assertions, decoder rejection, handle acquisition
+[[file:../../../dev/proofs/lean/GerbilExitQualification.lean][GerbilExitQualification]] models assertions, decoder rejection, handle acquisition
 and release, main return, time progression and natural exit as distinct events.
 Its initialized audit preserves source identity and requires complete checks and
 empty owned handles at exit. Qualified evidence also requires the original budget.
@@ -81,7 +81,7 @@ Do not point it at shared Core build products.
 The gxc executable stage generates the final entry and static Scheme objects.
 Its retained failed system-link invocation does not become a pass. The successful
 [[file:../../../dev/proofs/evidence/native-gerbil-exit/link-public-load.json][explicit final link]] uses those freshly generated object paths and an explicit
-platform SDK plus system library at the end of the argument vector. This local
+platform Gerbil toolchain plus system library at the end of the argument vector. This local
 build recipe is recorded separately from dependency pins. The
 link replay helper (retired Python driver) preserves that exact argument vector; use a new receipt
 directory when reproducing. Installed compiler/stdlib binaries remain trusted.

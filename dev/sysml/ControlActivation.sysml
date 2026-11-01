@@ -3,7 +3,7 @@ package ControlActivation {
     requirement def CompiledSourceStartup {
         doc /* The official compiler context must match the declared source root;
            a dependency with that name cannot stand in for the initializer.
-           Explicit build module/source, fixed SDK ABI and archive membership
+           Explicit build module/source, fixed Gerbil ABI and archive membership
            do not prove initialization. The application is the returning graph
            root and must actually install its producer. Rust checks readiness,
            then publishes one bounded startup catalog before ingress. Missing
@@ -14,7 +14,7 @@ package ControlActivation {
            Startup errors/cancellation close and naturally drain the same owner. */
     }
     requirement def SpecificSourceContracts {
-        doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete native Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
+        doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
     requirement def SourceStartupObservation {
         doc /* Local Go startup phases distinguish configuration readiness,
@@ -22,8 +22,8 @@ package ControlActivation {
            actual authenticated channel proves readiness. Go deployment never
            starts a Scheme process. Compiler execution and artifact decoding in
            source-preparation tests are separate events, not runtime interop.
-           The SDK fixture records module readiness, entry, compilation and
-           artifact write with SDK CPU/real clocks and host-wall microseconds.
+           The Gerbil fixture records module readiness, entry, compilation and
+           artifact write with Gambit CPU/real clocks and host-wall microseconds.
            Clock origins differ; compare calibrated intervals and retain clock
            adjustment/profiling premises. Phase text is forgeable diagnostics,
            not proof of child quiescence, authority, source outcome or budget
@@ -58,9 +58,9 @@ package ControlActivation {
            cannot report activation after close. Embedding gRPC configuration
            failure still drains attached owners. Neither startup readiness nor
            resource cleanup is source admission, no-execution or budget evidence. */
-        doc /* Production root_source constructs native SDK input directly from
+        doc /* Production root_source constructs Scheme object input directly from
            OwnedSource, using fallible bounded constructors rather than a test
-           fixture or encoded blob. Native roundtrips preserve all concrete fields,
+           fixture or encoded blob. Scheme object roundtrips preserve all concrete fields,
            exact bounded integers, UTF-8/NUL data and optional revision presence.
            An aggregate-size refusal leaves the same VM available; no original
            claim, reservation, history or source outcome is consumed or released. */
@@ -72,14 +72,14 @@ package ControlActivation {
         doc /* The Rust host snapshots the independently admitted original
            artifact before producer invocation. Candidate consistency alone
            cannot authorize changed family, body/profile commitments or budget.
-           Complete native record equality yields BoundSource data only. The
+           Complete Scheme record equality yields BoundSource data only. The
            host must not derive its expectation from the returned candidate.
            Callback provenance and current source/history/Policy/fence/CAS
            remain separate. Local binding burns no durable authority. */
-        doc /* Go preparation discovers the selected SDK home from explicit
+        doc /* Go preparation discovers the selected Gerbil installation from explicit
            environment or the selected compiler, refusing an invalid explicit
            home. Embedded module lookup cannot infer it from the Rust executable.
-           The prepared check-scheme owner qualifies the fixed SDK graph after
+           The prepared check-scheme owner qualifies the fixed Gerbil module graph after
            standard Gerbil tests. Runtime Rust/Arrow checks enable converter
            features without linking this qualification graph. Source contracts
            preserve field-symbol versus identifier-string key kinds in both
@@ -90,14 +90,14 @@ package ControlActivation {
            and closes on return or exception. Old inherited sinks cannot emit
            into a new capture. Both file and memory facades reuse actual admitted
            AA/Governor/Cedar production and currentness checks; the emitter's
-           Boolean result is distinct from an admission evidence object. The native SDK strong root is converted into concrete Rust-owned data before any await; no JSON blob is the in-process carrier. Host/export authentication and final authority remain separate. */
+           Boolean result is distinct from an admission evidence object. The Gambit GC strong root is converted into concrete Rust-owned data before any await; no JSON blob is the in-process carrier. Host/export authentication and final authority remain separate. */
         doc /* Cross-language qualification imports the package-built Scheme
            fixture library. Standard gerbil build owns its expansion; the fixture
            is not a production module or executable. Changing load ownership
            neither changes Governance semantics nor proves a timeout root cause.
            Native properties and actual publication/send controls remain required. */
         doc /* Scheme captures independent canonical bytes for original Profile
-           identity/revision/owner, model identity, complete native threat data
+           identity/revision/owner, model identity, complete Governance threat data
            and assessment context before invoking an AA method. A callback may
            not change these data or replace the selected method references and
            then validate two agreeing live aliases. Original blocking threats
@@ -113,61 +113,77 @@ package ControlActivation {
            reject malformed outputs, and permit subsequent valid compilation
            on the same active owner without changing final-send authority. */
         doc /* Production source delivery requires an active scoped capture.
-           It has no environment-selected JSON file fallback. The SDK carries
+           It has no environment-selected JSON file fallback. The Scheme object bridge carries
            GC-rooted typed objects and Rust materializes owned domain data.
            Configuration export belongs only to explicit test fixtures; it
-           cannot certify a native callback or authorize an external send. */
+           cannot certify a Scheme callback or authorize an external send. */
         doc /* GatewaySourceInput is the exact private preparation Record for
            task/plan/publication data before Governor, Policy or assessment
            callbacks. The selected GatewayArtifact is an independently copied
            image; callbacks receive detached source/context strings. The final
            comparison runs after the last Policy projection and checks original
            caller data, Profile data/methods and source root. Profile snapshots
-           include native Cedar policy names/identities/source and ordered asset
+           include Scheme Cedar policy names/identities/source and ordered asset
            identity/path/language descriptors before any delegation. They read
            no asset file; existing confined Policy projection owns actual reads.
            Stable input during
            initial copy and Governor-state selection remains a native premise.
            This ownership condition is not a caller-supplied readiness flag. */
-        doc /* Scheme projects native governor open-patterns after denylist, conflict and max-actionable clipping. Selected nodes, original task nodes and plan nodes must form the same duplicate-free set. A typed inert Governance assessment must match the exact task/plan/publication source serialized with recursively sorted object keys while preserving array order and exact integers, Profile identity/revision/owner, threat-model identity and complete assessed threats. Native blocking threats cannot be erased by a ready flag. False Policy preflight or Governance results reject. Assessment is a trusted compilation fact, never a portable execution permit. Candidate actionable-patterns are not a qualified handoff or a monetary reservation. */
+        doc /* Scheme projects Agentic AI Lab Governor open-patterns after denylist, conflict and max-actionable clipping. Selected nodes, original task nodes and plan nodes must form the same duplicate-free set. A typed inert Governance assessment must match the exact task/plan/publication source serialized with recursively sorted object keys while preserving array order and exact integers, Profile identity/revision/owner, threat-model identity and complete assessed threats. Governance blocking threats cannot be erased by a ready flag. False Policy preflight or Governance results reject. Assessment is a trusted compilation fact, never a portable execution permit. Candidate actionable-patterns are not a qualified handoff or a monetary reservation. */
     }
     requirement def PolicyCAbiIsInert {
         doc /* One Scheme source-bytes owner rejects empty/overlong character
            inputs before UTF-8 allocation and then checks the encoded byte bound
-           for each Policy/schema value. Native Record predicates and actual C
+           for each Policy/schema value. Record predicates and actual C
            FFI reuse it; Rust independently checks both borrowed lengths and UTF-8.
            Size acceptance never supplies current authority or a send permit. */
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
-        doc /* Acceptance retains real compiler/operation observations. The
-           pinned MRR adapter couples its CargoObserver to numeric Gerbil
-           verbosity; SDK callbacks alone do not prove emitted progress. Keep
-           native verbosity and genuine newline-bearing compiler output enabled;
-           Cargo can withhold byte fragments until a newline. Compact native
-           diagnostics only after receipt, retain exact native lines separately,
-           and leave LLVM pass ordinals opt-in. Counters advance on received
-           compiler events, never a timer or a read-only input. A display filter
-           does not change the existing raw-input idle or wall deadline.
-           Allocation dumps remain coupled to the pinned native implementation;
-           independent native diagnostics remain an upstream API gap.
-           Removing diagnostic work never removes
-           source modules or tests, changes O2/ABI, invents progress or extends
-           the unchanged wall/idle limits. A genuinely silent compiler still
-           fails closed at the original idle bound. */
+        doc /* MRR owns its Scheme PackageSpec and module graph in build.ss.
+           gerbil-scheme-rust owns generic GSC/C compilation, ABI, optimization,
+           linking, compiler replay and source-side progress framing. MRR's Rust
+           build adapter delegates those responsibilities. MRR Data consumes
+           typed MRR APIs and must not implement compiler policy in Python.
+           Consumer Python is limited to process/artifact orchestration.
+           Base storage does not own a Scheme application. The pinned optional
+           source-handoff path requires mrr-frontends' explicitly selected
+           embedded-runtime; this dependency feature is not a consumer-owned VM.
+           Feature isolation requires explicit upstream review, never silently
+           disabling existing semantics to turn an acceptance gate green. */
+        doc /* Build observations and detailed compiler diagnostics have separate
+           controls. Package entry/return, phase transitions and bytes actually
+           received from compiler pipes are observations, never completion proof.
+           Partial diagnostic records require explicit newline framing before
+           Cargo can expose them. No time-based or input-read heartbeat qualifies.
+           Compiler dump generation is opt-in and cannot determine module closure,
+           optimization, ABI, successful completion or runtime admission.
+           Names identify owners: Gerbil toolchain, Gambit compiler, Scheme object
+           bridge, MRR package builder and Rust archive builder. Scheme integration namespaces identify a concrete
+           role rather than use Native or SDK. Exact upstream identifiers in
+           source references are provenance, not recommended project namespaces. */
+        doc /* Acceptance retains real compiler and operation observations. The
+           pinned predecessor coupled CargoObserver summaries and compiler dumps to
+           Gerbil verbosity. The revised MRR adapter always emits phase summaries;
+           the gerbil-scheme-rust repair frames actual pipe chunks independently of
+           explicit detailed diagnostics. Pinned consumers do not acquire it by
+           documentation or adapter renaming. Keep original source identities and
+           distinguish original compiler payload from framing-added delimiters.
+           Compiler events, not timers or read-only input, advance observations.
+           A display filter does not change the raw-input idle or wall deadline.
+           Removing diagnostic work never removes source modules, changes O2/ABI,
+           invents progress or extends limits. A silent compiler still fails closed. */
         doc /* Hosted dynamic-library discovery uses the package manager's
-           current prefix as an explicit native linker search path. SDK build-host
+           current prefix as an explicit native linker search path. Gerbil build-host
            Cellar paths are not deployment authority. Preserve ABI, existing
-           compiler flags and pinned SDK identity; successful archive compilation
+           compiler flags and pinned Gerbil identity; successful archive compilation
            alone does not qualify final linking or source recovery. */
-        doc /* Native archive diagnosis must track Cargo build-script lifetime,
-           not infer a quiet owner from the last Rust artifact. SDK-selected GCC
-           may use Gambit's declared CORCXXFLAGS_GAMBUILD override to disable
-           macro-expansion diagnostic tracking while retaining every literal SDK
-           default, ABI flag and optimization level. Reject ambiguous/unsupported
-           declarations or conflicting explicit options; never substitute ambient
-           CC, mutate the release, patch a dependency or relax watchdogs. Full
-           original-source recovery remains the acceptance gate for this change. */
+        doc /* Native archive diagnosis tracks Cargo build-script lifetime,
+           rather than inferring its owner from the last Rust artifact. Compiler
+           flags and replay are gerbil-scheme-rust-owned. Consumer CI must not reconstruct a
+           GCC command or override gerbil-scheme-rust compilation policy. Invoke MRR's canonical
+           Cargo/build.ss path once; keep Gerbil identity, source pins and watchdogs
+           unchanged until an upstream fix has separate qualification evidence. */
         doc /* A separate bounded owned-process kernel trace refines syscall and
            runnable/blocked/preempted intervals only after PID/TID and trace-clock
            joins pass coverage checks. Foreign/unresolved rows and censored
@@ -189,7 +205,7 @@ package ControlActivation {
            Record synchronous file-call wall/thread CPU only inside the original
            COMMIT context; a group leader's IO belongs to that leader, not every
            waiter. Correlate notifier context without treating it as completion
-           proof. IO/Yield/Sleep collapse into SDK Pending: neither pre-notify nor
+           proof. IO/Yield/Sleep collapse into Turso Pending: neither pre-notify nor
            post-notify is pure device or scheduler time. Paired wrapper-off/on
            runs use one frozen binary, actual CPUs with a floor of four, FULL,
            zero retries and the existing case bound. Preserve all observations,
@@ -228,12 +244,12 @@ package ControlActivation {
            cancellation/restart and retained unknown-exposure gates stay hard.
            CI repairs preserve watchdogs, corpus, coverage and dependency pins;
            actual compiler progress must not be replaced by timer heartbeats. */
-        doc /* Native-read attribution first retains an uninstrumented A/AV/AV/A
+        doc /* Turso-read attribution first retains an uninstrumented A/AV/AV/A
            contrast, then separately measures test-only direct-query and split
            prepare/bind/next/value-copy paths inside the original transactions.
            A future's poll wall time is not thread CPU; Pending-to-repoll gaps
            include driver completion and Host scheduling. Rows.next couples VM
-           stepping with SDK row construction; get_value measures a subsequent
+           stepping with Turso row construction; get_value measures a subsequent
            owned-value copy, not all result materialization. Never subtract
            overlapping stage clocks or claim kernel I/O from public API clocks.
            Record all per-read samples, observer cost and exact case boundaries.
@@ -258,7 +274,7 @@ package ControlActivation {
            Fixed ABBA contrasts isolate admission (original versus ready-only)
            and validator (ready-only versus ready+Condvar); the latter is a
            conditional effect, not validator-only versus original. Use identical
-           workload/SDK/profile and frozen binary identities. Safety failures
+           workload/Turso/profile and frozen binary identities. Safety failures
            reject independently of Host grade:
            exact original recovery, once-only validation, borrowed guard lifetime,
            cancellation/restart and held unknown exposure remain mandatory.
@@ -282,11 +298,11 @@ package ControlActivation {
            benefit on the contended Host. Keep callback on the polling caller;
            never offload borrowed state or extend its lifetime unsafely. Drop
            before answer refuses; queued true survives caller drop; accepted
-           work owns its original lease through native completion. There is no
+           work owns its original lease through Turso completion. There is no
            spin loop, cached authority or early unknown-budget release. Future
            ready-permit review must preserve registered semaphore fairness and
            distinguish admission from durable authority CAS ordering. Retain
-           frozen baseline/candidate binaries, all ABBA and native-control
+           frozen baseline/candidate binaries, all ABBA and Turso-control
            samples at actual CPUs with minimum four, Host-load observations and
            borrowed-guard/cancellation/panic/recovery evidence. Neither fewer
            source-level hops nor local correctness establishes throughput gain. */
@@ -295,7 +311,7 @@ package ControlActivation {
            wait, API duration, provider pre-body/body/post-body, physical gets/
            puts, validator read+integrity/decode and residual rendezvous time.
            ProfilePort runs the borrowed validator on the async caller through
-           request/answer channels while the native worker holds its transaction;
+           request/answer channels while the Turso worker holds its transaction;
            body residual is not pure engine CPU. FULL post-body latency includes
            COMMIT and release, not isolated fsync. Do not replace the provider or
            weaken durability for instrumentation. Retain per-request samples,
@@ -303,7 +319,7 @@ package ControlActivation {
            Host jitter requires corroboration; missing kernel I/O evidence must
            remain explicit. Existing SPEC semantics and final-use ownership stay. */
         doc /* A sequential diagnostic may invoke the existing public metadata
-           engine with the same immutable body, authority vector and native store
+           engine with the same immutable body, authority vector and Turso store
            while a CPU-sized runtime services driver I/O. It removes ProfilePort
            admission/rendezvous only as a causal control, never as a production
            replacement for borrowed guards, cancellation or final admission.
@@ -318,7 +334,7 @@ package ControlActivation {
            historical runs. Preserve the 30-second bound, exact operation and
            authority recovery, held unknown exposure and terminal old owners.
            Provider reconstruction and process-death evidence stay distinct. */
-        doc /* Native multithreaded acceptance uses at least four Tokio workers;
+        doc /* Rust multithreaded acceptance uses at least four Tokio workers;
            explicit blocking-thread budgets also have a four-thread minimum. CPU-derived performance drivers
            scale to the available Host CPUs with a four-worker minimum and report
            actual CPU/worker counts separately. Logical one-slot refusal controls
@@ -481,7 +497,7 @@ package ControlActivation {
            Revocation and final use serialize at the authority journal. A delayed
            issuer outcome remains historical and cannot activate an old epoch. */
         doc /* The historical startup-pin rollback counterexample is now a
-           native regression: after an explicit durable key handoff, restoring
+           Rust recovery regression: after an explicit durable key handoff, restoring
            its old transport pin still cannot authorize source writes. Retain
            whole-store rollback and missing incarnation/independent authority
            counterexamples; the local key floor does not close those premises. */
@@ -512,7 +528,7 @@ package ControlActivation {
            cached prechecks are insufficient. SPEC PublicationReview composes
            LeanPoo Contract.bindEvidence with generic ZeroTrust requirements;
            Weaver's existing recovery Step supplies outcome/intent/accounting
-           preservation under an explicit native refinement premise. */
+           preservation under an explicit implementation refinement premise. */
         doc /* Review registration is immutable per original command ID.
            Unknown registration or publication replies retain pending intent.
            Replacement evidence rejects; stale parent/fence is an original
@@ -520,7 +536,7 @@ package ControlActivation {
            preserves siblings. Historical outcomes remain queryable but confer
            no current execution authority. Production RPC has no Delta artifact
            field yet: command commitment tests do not qualify review admission. */
-        doc /* Native Cedar Policy values and cedar-language GovernanceSource assets project to one exact ordered Cedar policy set. Assets use explicit confined roots and bounded regular-file reads. Unsupported domain obligations reject. The publication carries the exact projected bytes; the native source manifest is compilation evidence and not a runtime permit. */
+        doc /* Scheme Cedar Policy values and cedar-language GovernanceSource assets project to one exact ordered Cedar policy set. Assets use explicit confined roots and bounded regular-file reads. Unsupported domain obligations reject. The publication carries the exact projected bytes; the Scheme source manifest is compilation evidence and not a runtime permit. */
         doc /* Reviewed no-gain publication additionally needs exact original
            parent/profile/source/schema/policy evidence bound at the final CAS.
            Typed validation, a source credential and a publication receipt do
@@ -550,7 +566,7 @@ package ControlActivation {
            a committed original assignment. */
     }
     requirement def ControlStreamRecoveryBinding {
-        doc /* Go compiles proposals against the frozen original task and forwards one Rust execution stream over mutual TLS gRPC. Source methods are absent from operation ingress. Shared budgets, original claims and unknown holds survive partial output, revocation, SDK retries and both process restarts. Previously authorized queue entries may drain after revocation. */
+        doc /* Go compiles proposals against the frozen original task and forwards one Rust execution stream over mutual TLS gRPC. Source methods are absent from operation ingress. Shared budgets, original claims and unknown holds survive partial output, revocation, provider-client retries and both process restarts. Previously authorized queue entries may drain after revocation. */
     }
     part def SchemeAuthor {
         attribute governorOpenSelection : Boolean;

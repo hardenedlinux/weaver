@@ -167,7 +167,7 @@ The runner recompiles Weaver's actual composition chain. The upstream files are
 freshly checked pinned source bytes/excerpts; this is not an assertion that their
 entire Lean/runtime builds were rerun. No upstream source or dependency pin changes.
 
-* Native acceptance and evidence boundary
+* Implementation acceptance and evidence boundary
 
 [[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/working-source-check.json][Live source hashes]] separate current working files from pinned references.
 Eighteen match; P17 differs only in two control-plane import paths, recorded in

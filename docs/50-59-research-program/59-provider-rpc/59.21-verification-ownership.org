@@ -9,9 +9,9 @@ Cedar, Quint and Lean gates. =check-scheme= adds isolated native dependency
 builds, standard Scheme suites and real cross-language publication/execution
 tests. =bench= measures each crate's package-owned target and Go gRPC cases.
 All three modes admit the root Project model and linked development SysML
-contracts through the Go OpenSysML SDK.
+contracts through the Go OpenOpenSysML Go API.
 
-Scheme assertions belong to =t/*-test.ss= and run through the standard SDK
+Scheme assertions belong to =t/*-test.ss= and run through the standard Gerbil toolchain
 =gxtest= API. Their returned verdict and natural child exit are checked.
 The single responsibility registry is
 =WeaverProject::AssuranceResponsibilities= in [[file:../../../Project.sysml][Project.sysml]].
@@ -44,7 +44,7 @@ untracked or changed source bytes; hashing alone does not authenticate a commit.
 Before/after equality is not an atomic filesystem snapshot. It cannot detect a
 transient change restored between observations, prove SHA-256 collision freedom,
 authenticate dependency cache contents, qualify every model, or authorize a
-runtime send. =NativeExitQualification='s source identity remains conditional on
+runtime send. =GerbilExitQualification='s source identity remains conditional on
 those native refinement premises; this fix introduces no second qualification
 state machine or broader Lean/Quint theorem.
 

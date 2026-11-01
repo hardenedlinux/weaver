@@ -34,7 +34,7 @@ deployment ownership; it establishes no current Policy approval or send right.
 | Lean/Quint sources, proof bridges, solver diagnostics and raw replay receipts | Development verification; unavailable to the production dependency graph |
 | Deployable Cedar Policy/schema/manifest bytes | Explicitly owned production assets, validated and promoted before deployment |
 | Rust/Go/Scheme runtime modules and protocol source | Existing Project runtime owners; no imports of development-only packages or artifacts |
-| Go verification command, SDK and test fixtures | Development graph; may read production assets and verification inputs |
+| Go verification command, Gerbil toolchain and test fixtures | Development graph; may read production assets and verification inputs |
 | Current epoch, revocation, registration, consumption and budget state | Configured durable authority/ledger storage; live state is not a versioned =prod/= configuration value |
 
 Promotion is a concrete ownership step: freeze the deployable bytes, validate the
@@ -134,7 +134,7 @@ This is a real SQLite/gRPC recovery receipt for the existing consumption boundar
 not proof of a deployed persistent registrar epoch. The earlier concrete
 counterexample still applies: restoring a retired startup certificate pin can
 restore source-role access. The existing
-[[file:59.55-native-reviewed-publication.org][local reviewed-publication admission]]
+[[file:59.55-evidence-reviewed-publication.org][local reviewed-publication admission]]
 retains its exact parent/evidence latch. It does not supply the independent
 source-epoch/revocation and authoritative artifact-registry recovery adapter.
 Those production gaps remain explicit; this review changes no production runtime
@@ -156,7 +156,7 @@ dependency pins remain unchanged and raw logs stay temporary.
 
 * Executed evidence
 
-- The SysML SDK Project/trace checks and production boundary gate pass. Negative
+- The OpenSysML Go API Project/trace checks and production boundary gate pass. Negative
   fixtures cover imports, reads, embeds, build inputs, Scheme references,
   JSON/unquoted YAML references and a production alias into development. The
   gate is included in the existing architecture command by its test prefix.

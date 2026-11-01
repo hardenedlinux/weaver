@@ -7,7 +7,7 @@
 =verify-suite.yml= workflow. Scheme runs on Ubuntu and Darwin. Job names describe
 the responsible language or contract rather than a generic execution category.
 The suite/mode allocation is declared in root =Project.sysml= and checked by the
-Go OpenSysML SDK gate against the actual workflow.
+Go OpenOpenSysML Go API gate against the actual workflow.
 
 CI installs host libraries through Ubuntu apt or Darwin Homebrew. Official Go
 setup selects the validated standard Go release, rustup consumes the root
@@ -58,7 +58,7 @@ Weaver. Ordinary dynamic gxi configurations consume the compiled dependency
 libraries; an AOT configuration executable does not replace the dynamic source
 test. The development links expose Core's declared public prelude identity and
 source package. A preexisting developer library is not required.
-The published Scheme SDK setup action is reused at the same immutable revision
+The published Scheme Gerbil toolchain setup action is reused at the same immutable revision
 as the authorized bridge dependency. Its release/host admission remains separate
 from application and formal proof results.
 

@@ -33,7 +33,7 @@ provider hot path; this research introduces no per-request compiler or Gateway.
 Go owns cloud native reconciliation, lifecycle publication and typed proposals.
 It must consume the completed source-bound qualification result. A progress file,
 collector exit zero, warm pass or image UUID cannot promote a failed required
-first-use series or issue a new task family. SDK retries remain proposals subject
+first-use series or issue a new task family. provider-client retries remain proposals subject
 to the original claim, reservation and history constraints.
 
 Rust owns the designed final broker/executor checks: current source, owner fence,
@@ -42,7 +42,7 @@ Native qualification is evidence about a source-bound authoring profile, not a
 capability for transport or a replacement for final compare-and-consume.
 
 * Lean composition
-[[file:../../../dev/proofs/lean/NativeLocatorClosure.lean][NativeLocatorClosure]] imports the existing native image custody, receipt-retention,
+[[file:../../../dev/proofs/lean/GambitLocatorClosure.lean][GambitLocatorClosure]] imports the existing native image custody, receipt-retention,
 failed-series rejection and actual-routing proof closure. It proves uniqueness of
 qualified handle/entry resolution under an admitted immutable manifest; same-name
 entries for distinct modules must occupy different images. Wrong-image lookup,
@@ -61,7 +61,7 @@ must remain valid; arbitrary order-sensitive foreign plugins remain outside this
 bounded original workload qualification.
 
 * Quint controls and actual counterexamples
-[[file:../../../dev/proofs/quint/NativeLocatorClosure.qnt][NativeLocatorClosure]] checks distinct handles with equal entry names, duplicate
+[[file:../../../dev/proofs/quint/GambitLocatorClosure.qnt][GambitLocatorClosure]] checks distinct handles with equal entry names, duplicate
 entry rejection within an image, incomplete producer refusal, foreign-body refusal,
 entry rewriting, wrong-handle lookup, requested-owner initialization, mapping
 without eager initialization and closed/duplicate initialization rejection.

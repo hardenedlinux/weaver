@@ -1,10 +1,10 @@
-...@../../../dev/d2/themes/state
+...@../../../dev/d2/themes/flow
 # Core lifecycle only. Commands, timings and receipts belong to Org.
-title: WEAVER / NATIVE VERIFICATION / OWNED LIFECYCLE {
+title: WEAVER / NATIVE SEMANTICS / FINAL EFFECT BOUNDARY {
   class: title
   near: top-center
 }
-source: SCHEME / SOURCE AUTHORITY {
+source: SCHEME / DEFINING OWNERS {
   left: 0
   top: 0
   width: 370
@@ -13,7 +13,7 @@ source: SCHEME / SOURCE AUTHORITY {
   style.font-size: 16
   style.fill: "#f7faf9"
   style.stroke: "#9bb6ad"
-  contract: Original value Contracts\nPOO object and decoded JSON\nPreserve exact workload {
+  contract: JSON and parser semantic Contract\nOriginal binding owners and ABI\nRequired initializer closure {
     left: 20
     top: 85
     width: 330
@@ -21,7 +21,7 @@ source: SCHEME / SOURCE AUTHORITY {
     label.near: center-center
     class: semantic
   }
-  closure: Source and package preludes\nCoherent isolated build\nExplicit trusted runtime {
+  closure: Narrow I/O to defining owners\nPack admitted pure dynamic bodies\nPreserve independent linker entries {
     left: 20
     top: 270
     width: 330
@@ -29,7 +29,7 @@ source: SCHEME / SOURCE AUTHORITY {
     label.near: center-center
     class: cloud
   }
-  image: Compiled verification image\nOrdinary platform libraries\nOwned dynamic canary {
+  image: Coherent native source rebuild\nShared images / distinct lazy modules\nInstalled ordinary gxi {
     left: 20
     top: 455
     width: 330
@@ -38,7 +38,7 @@ source: SCHEME / SOURCE AUTHORITY {
     class: runtime
   }
 }
-lifecycle: NATIVE / NATURAL COMPLETION {
+lifecycle: GXI / DYNAMIC EXECUTION {
   left: 460
   top: 0
   width: 370
@@ -47,7 +47,7 @@ lifecycle: NATIVE / NATURAL COMPLETION {
   style.font-size: 16
   style.fill: "#f8fafb"
   style.stroke: "#9bb6ad"
-  checks: Run original assertions\nObserve decoder rejection\nCompletion is intermediate {
+  checks: Original expander / defining owners\nOS library validation / real native load\nIndependent lazy module entries {
     left: 20
     top: 85
     width: 330
@@ -55,7 +55,7 @@ lifecycle: NATIVE / NATURAL COMPLETION {
     label.near: center-center
     class: semantic
   }
-  return: Acquire dynamic resource\nReturn normally from main\nRetain normal cleanup {
+  return: Original Contract assertions\nDecode unchanged configuration\nPreserve every native acquisition {
     left: 20
     top: 270
     width: 330
@@ -63,7 +63,7 @@ lifecycle: NATIVE / NATURAL COMPLETION {
     label.near: center-center
     class: runtime
   }
-  exit: Release owned resources\nNatural process termination\nQualify the whole lifecycle {
+  exit: Normal return / reject late initialization\nClose every reference / run destructors\nRelease image after its final close {
     left: 20
     top: 455
     width: 330
@@ -81,7 +81,7 @@ authority: GATEWAY / EFFECT AUTHORITY {
   style.font-size: 16
   style.fill: "#f7faf9"
   style.stroke: "#9bb6ad"
-  evidence: Source-bound assurance evidence\nUnknown or incomplete stays open\nNo execution permission minted {
+  evidence: Native bodies / required initializers\nPass / fail / late evidence retained\nFailed candidate stays unqualified\nNo execution permission minted {
     left: 20
     top: 85
     width: 330
@@ -97,7 +97,7 @@ authority: GATEWAY / EFFECT AUTHORITY {
     label.near: center-center
     class: cloud
   }
-  broker: Rust final broker and executor\nCurrent Policy and history join\nFenced actual provider dispatch {
+  broker: Rust final broker and executor\nCurrent Cedar Policy / history join\nFenced actual provider dispatch {
     left: 20
     top: 455
     width: 330
@@ -106,14 +106,14 @@ authority: GATEWAY / EFFECT AUTHORITY {
     class: runtime
   }
 }
-quint: QUINT / EXECUTABLE COUNTEREXAMPLES\nIncomplete checks / live handles / late exit / substituted source {
+quint: QUINT / EXECUTABLE COUNTEREXAMPLES\nLate exit / failed series / unsafe evidence {
   left: 50
   top: 740
   width: 575
   height: 90
   class: policy
 }
-lean: LEAN / COMPOSITION\nSource and cleanup invariants / actual Gateway guards still required {
+lean: LEAN / COMPOSITION\nReceipt retention / series rejection / actual Policy guard {
   left: 740
   top: 740
   width: 575
@@ -131,7 +131,7 @@ authority.goBrand: "" {
 authority.rustBrand: "" {
   shape: image
   icon: ../../architecture/diagrams/assets/rust.svg
-  top: 432
+  top: 418
   left: 312
   width: 28
   height: 28
@@ -141,12 +141,14 @@ source.closure -> source.image
 source.image -> lifecycle.checks
 lifecycle.checks -> lifecycle.return
 lifecycle.return -> lifecycle.exit
-lifecycle.exit -> authority.evidence: Assurance only
+lifecycle.exit -> authority.evidence
 authority.go -> authority.broker: Canonical proposal
-authority.evidence -> authority.broker: Evidence / never a grant { style.stroke-dash: 4 }
+authority.evidence -> authority.broker { style.stroke-dash: 4 }
+
+lifecycle.checks -> authority.evidence { style.stroke-dash: 4 }
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"04 native lifecycle","purpose":"workflow","kind":"state","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which states and guarded transitions govern 04 native lifecycle?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/50-59-research-program/53-native-gerbil-exit/53.04-native-lifecycle.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{"title":"04 native boundary","purpose":"workflow","kind":"flow","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which progression and failure boundaries govern 04 native boundary?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/50-59-research-program/55-dynamic-gxi-paired/55.04-runtime-boundary.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
 |
 } } }

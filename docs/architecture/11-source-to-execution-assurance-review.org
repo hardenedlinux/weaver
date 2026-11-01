@@ -44,7 +44,7 @@ into Weaver. The integration lemmas named by their purpose are future work.
 
 P18/P19/P20/P33/P34/P35 were inspected, not compiled in this review. The local
 P30 axiom-check run cannot qualify their transitive imports. The subsequent
-[[file:12-fm1-baseline-and-native-qualification.org][FM1 owner builds]] compile the pinned POO aggregate with its actual parent
+[[file:12-fm1-baseline-and-runtime-qualification.org][FM1 owner builds]] compile the pinned POO aggregate with its actual parent
 Core, but do not instantiate those theorems with concrete physical premises. The existing
 pure Scheme P12/P13 token/nonce transitions also need a persistence and
 serialization refinement; repeated evaluation of the same immutable input is
@@ -416,7 +416,7 @@ validation and protobuf round trips. Do not silently accept a new constructor,
 drop it during export, or assume unchanged outer authorizer code makes changed
 imported evaluation equivalent. Select one owner-qualified semantic
 closure for the new framework and port/requalify its consumers directly. A
-legacy adapter is not required. [[file:12-fm1-baseline-and-native-qualification.org][The subsequent FM1 investigation]] records this
+legacy adapter is not required. [[file:12-fm1-baseline-and-runtime-qualification.org][The subsequent FM1 investigation]] records this
 greenfield decision and actual isolated build/native evidence without pin changes.
 
 ** Limited read-only proof and freshness receipt

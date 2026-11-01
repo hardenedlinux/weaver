@@ -33,14 +33,14 @@ registry serialization; it is not a replacement proof for its mutex implementati
 | Complete workload and unchanged deadline | late_dynamic_exit_is_not_qualification | missingDecoderRejectsReturnTest; lateNaturalExitRejectedTest |
 | Assurance never grants dispatch | dynamic_pass_still_requires_final_policy | Native qualification remains separate from execution authority |
 
-[[file:../../../dev/proofs/lean/NativeDynamicImportBoundary.lean][Lean]] states binding/ABI and required-initializer preservation as explicit
+[[file:../../../dev/proofs/lean/DynamicImportBoundary.lean][Lean]] states binding/ABI and required-initializer preservation as explicit
 admission premises and proves their composition with the prior native lifecycle
 and actual Gateway Policy guards. It does not prove the compiler, interpreter,
 Darwin or selection of every required initializer. Import-only source diffs,
 actual resolver/ABI comparisons and matched native execution must discharge the
 operational side of those premises for this bounded workload.
 
-[[file:../../../dev/proofs/quint/NativeDynamicImportBoundary.qnt][Quint]] supplies finite executable controls and explicit unsafe import-publication
+[[file:../../../dev/proofs/quint/DynamicImportBoundary.qnt][Quint]] supplies finite executable controls and explicit unsafe import-publication
 counterexamples. Unsafe mutations are excluded from the safe step. The two-check
 finite abstraction is distinct from the eleven-assertion native workload. Neither
 these traces nor printed Lean axioms establish a real-time scheduling guarantee.
@@ -93,7 +93,7 @@ original lowered-source digest, independent linker entry, image digest, native
 ABI and run context. Equal image bytes or an equal inode are insufficient identity.
 No earlier AOT receipt or old verifier profile is silently reused.
 
-The existing NativeExitQualification source guard and
+The existing GerbilExitQualification source guard and
 =wrong_source_is_not_qualified= theorem apply to that complete profile identity,
 with its retained substituted-source Quint counterexample. The native controller
 checks the closed manifest before/after the final exact-original-script run.

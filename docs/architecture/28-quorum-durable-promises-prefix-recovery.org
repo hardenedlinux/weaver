@@ -239,7 +239,7 @@ actual forked-root replay counterexample is rerun separately to connect loss of
 root history to duplicate internal account application; the new small quorum
 model does not itself simulate account writes.
 
-* Native qualification still required
+* Runtime qualification still required
 
 - Crash after durable promise but before signature, after signature but before
   response, and after certificate commit but before the caller observes it.

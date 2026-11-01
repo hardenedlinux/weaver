@@ -3,7 +3,7 @@
 
 * One project entry
 The public Scheme project commands are =gerbil build= and =gerbil test=.
-The SDK owns command dispatch, test discovery, test assertions and lifecycle.
+The Gerbil toolchain owns command dispatch, test discovery, test assertions and lifecycle.
 Root =build.ss= declares production libraries through Yuanxu's existing
 =defbuild-script=. Governance modules and the Cedar adapter are FFI-loaded
 libraries, not Scheme executables. The temporary development executable package
@@ -16,7 +16,7 @@ Root build specification evaluation is declarative: it does not compile
 dependencies as a side effect of =spec= or =clean=. Gerbil's package manager
 prepares the unchanged full Agentic AI Lab dependency declarations and package
 manifests. Yuanxu's existing =std-make-spec= still selects Weaver's modules.
-The Rust SDK helper prepares Cargo-owned pkg-config metadata and invokes =gerbil build -g=;
+The gerbil-scheme-rust build helper prepares Cargo-owned pkg-config metadata and invokes =gerbil build -g=;
 Go orchestrates this preparation and runs =gerbil test -g -v 5 t=.
 The =-g= option selects the explicit isolated =GERBIL_PATH= rather than creating
 a different local package environment. All build concurrency follows available
@@ -60,9 +60,9 @@ in the source/currentness contract. Isolated dependency clones prevent package
 build outputs from modifying the existing reference checkouts.
 
 * Model boundary
-=NativeExitQualification.qnt= adds a counterexample in which a diagnostic
+=GerbilExitQualification.qnt= adds a counterexample in which a diagnostic
 invocation completes the same abstract checks and cleanup but cannot qualify
-the package entry. =NativeExitQualification.lean= proves the corresponding
+the package entry. =GerbilExitQualification.lean= proves the corresponding
 entry obligation while retaining exact checks, original source, cleanup and
 deadline obligations. The finite model's check count is an abstract fixture;
 the executable package gate still requires nineteen real cases. Neither proof

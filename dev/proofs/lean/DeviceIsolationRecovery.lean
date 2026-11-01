@@ -34,7 +34,7 @@ structure View where
   head : Nat
   intent : Option Cut
   deriving DecidableEq
-structure NativeOwner where
+structure DriverOwner where
   aliasValid : Nat → Nat → Alias → Prop
   blockValid : Nat → Cut → Nat → Prop
   certificateValid : Nat → Cut → Prop
@@ -79,85 +79,85 @@ variable {c : Weaver.FiniteDomainMigration.Config} {m : Weaver.FiniteStreamManif
   {p : Weaver.WriterSettlementClosure.Profile c m} {lineage root namespaceId : Nat}
   {owner : Weaver.GateConsumptionPersistence.EvidenceOwner} {projectionStore : Weaver.AnchorBrokerCommit.RootOwner}
   {family : Weaver.AnchorReconfiguration.Family} {store : Weaver.AnchorReconfiguration.Store} {signerOwner : Weaver.ProtectedSignerRelease.SignerOwner}
-  {keyOwner : Weaver.KeyBoundaryQueue.KeyOwner} {nativeOwner : NativeOwner} {eligible : Weaver.AnchorReconfiguration.Scope → Nat → Prop}
+  {keyOwner : Weaver.KeyBoundaryQueue.KeyOwner} {driverOwner : DriverOwner} {eligible : Weaver.AnchorReconfiguration.Scope → Nat → Prop}
 inductive Step (c : Weaver.FiniteDomainMigration.Config) (m : Weaver.FiniteStreamManifest.Manifest c)
     (p : Weaver.WriterSettlementClosure.Profile c m) (lineage root namespaceId : Nat)
     (owner : Weaver.GateConsumptionPersistence.EvidenceOwner) (projectionStore : Weaver.AnchorBrokerCommit.RootOwner)
     (family : Weaver.AnchorReconfiguration.Family) (store : Weaver.AnchorReconfiguration.Store) (signerOwner : Weaver.ProtectedSignerRelease.SignerOwner)
-    (keyOwner : Weaver.KeyBoundaryQueue.KeyOwner) (nativeOwner : NativeOwner) (eligible : Weaver.AnchorReconfiguration.Scope → Nat → Prop) : State → State → Prop where
+    (keyOwner : Weaver.KeyBoundaryQueue.KeyOwner) (driverOwner : DriverOwner) (eligible : Weaver.AnchorReconfiguration.Scope → Nat → Prop) : State → State → Prop where
   | delegate (s next) (source : Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base next)
-      (frame : Frame s.base next) : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with base := next}
+      (frame : Frame s.base next) : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with base := next}
   | register (s id a) (unused : s.aliases id = none) (bound : a.epoch = s.base.epoch ∧ a.device = s.device ∧ a.driver = s.driver)
       (admission : s.captured = none ∨ s.base.enabled = true)
-      (authentic : nativeOwner.aliasValid root id a) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with aliases := update s.aliases id (some a)}
+      (authentic : driverOwner.aliasValid root id a) :
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with aliases := update s.aliases id (some a)}
   | seal (s cut) (closed : s.base.enabled = false) (view : CurrentView s) (noPending : s.pendingFloor = none)
       (serial : cut.serial = s.serial + 1) (hardware : cut.device = s.device ∧ cut.driver = s.driver ∧ cut.profile = s.profile)
       (before : Before s cut) (roster : RosterExact s cut) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with serial := cut.serial, captured := some cut, certified := none}
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with serial := cut.serial, captured := some cut, certified := none}
   | block (s cut id a) (held : s.captured = some cut) (current : Context s cut) (before : Before s cut)
-      (member : (id,a) ∈ cut.members) (authentic : nativeOwner.blockValid root cut id) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with blocked := update s.blocked id true}
+      (member : (id,a) ∈ cut.members) (authentic : driverOwner.blockValid root cut id) :
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with blocked := update s.blocked id true}
   | certify (s next cut) (source : Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base next)
       (quiet : Quiet s.base next) (held : s.captured = some cut) (current : Context s cut) (before : Before s cut)
-      (coverage : AllBlocked s cut) (authentic : nativeOwner.certificateValid root cut)
+      (coverage : AllBlocked s cut) (authentic : driverOwner.certificateValid root cut)
       (effect : next.isolation = some (cut.oldFloor + 1) ∧ next.enabled = false ∧ next.barrierKnown = false ∧ next.floorKnown = false) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with base := next, certified := some cut}
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with base := next, certified := some cut}
   | barrier (s next cut) (source : Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base next)
       (quiet : Quiet s.base next) (proof : s.certified = some cut) (current : Context s cut) (before : Before s cut)
       (coverage : AllBlocked s cut) (effect : next.barrierKnown = true) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with base := next}
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with base := next}
   | prepareFloor (s cut) (closed : s.base.enabled = false) (proof : s.certified = some cut)
       (current : Context s cut) (before : Before s cut) (coverage : AllBlocked s cut)
-      (known : s.base.barrierKnown = true) (unused : s.pendingFloor = none) (authentic : nativeOwner.certificateValid root cut) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with pendingFloor := some cut, view := none}
+      (known : s.base.barrierKnown = true) (unused : s.pendingFloor = none) (authentic : driverOwner.certificateValid root cut) :
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with pendingFloor := some cut, view := none}
   | advance (s next cut) (source : Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base next)
       (proof : s.certified = some cut) (current : Context s cut) (before : Before s cut) (coverage : AllBlocked s cut)
       (intent : s.pendingFloor = some cut)
       (effect : next.epoch = s.base.epoch + 1 ∧ next.exports = s.base.exports) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with base := next, journal := s.journal ++ [cut], pendingFloor := none, view := none}
-  | readFloor (s history v) (authentic : nativeOwner.readValid root history v)
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with base := next, journal := s.journal ++ [cut], pendingFloor := none, view := none}
+  | readFloor (s history v) (authentic : driverOwner.readValid root history v)
       (exact : history = s.journal ∧ v = ⟨s.base.epoch,s.base.base.epoch,s.journal.length,s.pendingFloor⟩) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with view := some v}
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with view := some v}
   | liveFloor (s next cut) (source : Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base next)
       (quiet : Quiet s.base next) (proof : s.certified = some cut) (current : Context s cut) (afterCut : After s cut)
       (coverage : AllBlocked s cut) (view : CurrentView s) (effect : next.floorKnown = true) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with base := next}
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with base := next}
   | activate (s next cut) (source : Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base next)
       (quiet : Quiet s.base next) (proof : s.certified = some cut) (current : Context s cut) (afterCut : After s cut)
       (coverage : AllBlocked s cut) (view : CurrentView s) (effect : next.enabled = true)
-      (authentic : nativeOwner.activeValid root cut s.device s.driver s.profile) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with base := next}
+      (authentic : driverOwner.activeValid root cut s.device s.driver s.profile) :
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with base := next}
   | enqueue (s next job q) (source : Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base next)
       (quiet : Quiet s.base next) (hardware : HardwareReady s) (current : CurrentSubmission s q)
       (unused : s.submissions job = none) (effect : next.queued job = some q.ticket) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with base := next, submissions := update s.submissions job (some q)}
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with base := next, submissions := update s.submissions job (some q)}
   | start (s next job q) (source : Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base next)
       (quiet : Quiet s.base next) (hardware : HardwareReady s) (held : s.submissions job = some q)
       (current : CurrentSubmission s q) (effect : next.running job = some q.ticket) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with base := next}
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with base := next}
   | complete (s next job receipt) (source : Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base next)
       (quiet : Quiet s.base next) (held : s.submissions job = some receipt) (current : CurrentSubmission s receipt)
-      (authentic : nativeOwner.callbackValid root receipt) (effect : next.completed job = some receipt.ticket) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with base := next, validated := update s.validated job (some receipt)}
+      (authentic : driverOwner.callbackValid root receipt) (effect : next.completed job = some receipt.ticket) :
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with base := next, validated := update s.validated job (some receipt)}
   | emit (s next job q cut) (source : Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base next)
       (sameFloor : next.epoch = s.base.epoch) (held : s.submissions job = some q) (validated : s.validated job = some q)
       (current : CurrentSubmission s q) (proof : s.certified = some cut) (context : Context s cut) (afterCut : After s cut)
-      (coverage : AllBlocked s cut) (view : CurrentView s) (sealedOutput : nativeOwner.outputSealed root q)
-      (live : nativeOwner.activeValid root cut s.device s.driver s.profile) (effect : next.exports = s.base.exports ++ [q.ticket]) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with base := next}
+      (coverage : AllBlocked s cut) (view : CurrentView s) (sealedOutput : driverOwner.outputSealed root q)
+      (live : driverOwner.activeValid root cut s.device s.driver s.profile) (effect : next.exports = s.base.exports ++ [q.ticket]) :
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with base := next}
   | close (s) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with
         base := {s.base with enabled := false, isolation := none, barrierKnown := false, floorKnown := false}
         serial := s.serial + 1
         captured := none
         certified := none
         view := none}
   | loseBuffer (s job) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with
         base := {s.base with queued := update s.base.queued job none, running := update s.base.running job none, completed := update s.base.completed job none}}
   | resetDevice (s profile) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with
         base := {s.base with enabled := false, isolation := none, barrierKnown := false, floorKnown := false}
         device := s.device + 1
         driver := s.driver + 1
@@ -168,7 +168,7 @@ inductive Step (c : Weaver.FiniteDomainMigration.Config) (m : Weaver.FiniteStrea
         certified := none
         view := none}
   | restartDriver (s) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with
         base := {s.base with enabled := false, isolation := none, barrierKnown := false, floorKnown := false}
         driver := s.driver + 1
         serial := s.serial + 1
@@ -176,14 +176,14 @@ inductive Step (c : Weaver.FiniteDomainMigration.Config) (m : Weaver.FiniteStrea
         captured := none
         certified := none
         view := none}
-  | archiveCallback (s job receipt) (original : s.submissions job = some receipt) (authentic : nativeOwner.callbackValid root receipt) :
-      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s {s with archived := s.archived ++ [receipt]}
-  | loseResponse (s) : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s s
+  | archiveCallback (s job receipt) (original : s.submissions job = some receipt) (authentic : driverOwner.callbackValid root receipt) :
+      Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s {s with archived := s.archived ++ [receipt]}
+  | loseResponse (s) : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s s
 inductive Run : State → State → Prop where
   | refl (s) : Run s s
-  | next : Run s t → Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible t u → Run s u
+  | next : Run s t → Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible t u → Run s u
 
-theorem parent_step_or_stutter (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t) :
+theorem parent_step_or_stutter (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s t) :
     s.base = t.base ∨ Weaver.KeyBoundaryQueue.Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner eligible s.base t.base := by
   cases event with
   | delegate _ source => exact .inr source
@@ -202,17 +202,17 @@ theorem parent_step_or_stutter (event : Step c m p lineage root namespaceId owne
   | restartDriver => exact .inr (.close _)
   | _ => exact .inl rfl
 
-theorem protected_floor_never_rolls_back (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t) : s.base.epoch ≤ t.base.epoch := by
+theorem protected_floor_never_rolls_back (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s t) : s.base.epoch ≤ t.base.epoch := by
   rcases parent_step_or_stutter event with eq | source
   · rw [eq]; exact Nat.le_refl _
   · exact Weaver.KeyBoundaryQueue.protected_key_epoch_never_rolls_back source
 
-theorem committed_floor_log_never_shrinks (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t) : s.journal <+: t.journal := by
+theorem committed_floor_log_never_shrinks (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s t) : s.journal <+: t.journal := by
   cases event with
   | advance => exact List.prefix_append _ _
   | _ => exact List.prefix_refl _
 
-theorem registered_alias_never_relabels {id : Nat} (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t)
+theorem registered_alias_never_relabels {id : Nat} (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s t)
     (old : s.aliases id = some a) : t.aliases id = some a := by
   cases event with
   | register other alias unused =>
@@ -222,7 +222,7 @@ theorem registered_alias_never_relabels {id : Nat} (event : Step c m p lineage r
   | _ => exact old
 
 theorem every_floor_append_keeps_exact_isolation_cut
-    (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t)
+    (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s t)
     (changed : t.journal ≠ s.journal) : ∃ cut, t.journal = s.journal ++ [cut] ∧ s.certified = some cut ∧
       Context s cut ∧ Before s cut ∧ AllBlocked s cut := by
   cases event with
@@ -232,7 +232,7 @@ theorem every_floor_append_keeps_exact_isolation_cut
 def JournalAligned (s : State) : Prop := s.journal.length = s.base.epoch
 
 theorem journal_tracks_every_floor_commit (inv : JournalAligned s)
-    (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t) : JournalAligned t := by
+    (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s t) : JournalAligned t := by
   cases event with
   | delegate next source frame => simpa [JournalAligned,frame.1.1] using inv
   | certify next cut source quiet => simpa [JournalAligned,quiet.1] using inv
@@ -247,7 +247,7 @@ theorem journal_tracks_every_floor_commit (inv : JournalAligned s)
     simpa [JournalAligned, List.length_append, effect.1] using inv
   | _ => exact inv
 
-theorem every_new_export_requires_current_hardware (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t)
+theorem every_new_export_requires_current_hardware (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s t)
     (changed : t.base.exports ≠ s.base.exports) : ∃ job q cut, s.submissions job = some q ∧ s.validated job = some q ∧
       CurrentSubmission s q ∧ s.certified = some cut ∧ Context s cut ∧ After s cut ∧ AllBlocked s cut ∧ CurrentView s := by
   cases event with
@@ -263,16 +263,16 @@ theorem every_new_export_requires_current_hardware (event : Step c m p lineage r
   | advance next cut source proof current before coverage intent effect => exact False.elim (changed effect.2)
   | _ => exact False.elim (changed rfl)
 
-theorem validated_callback_has_original_current_envelope (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t)
-    (changed : t.validated ≠ s.validated) : ∃ job q, s.submissions job = some q ∧ CurrentSubmission s q ∧ nativeOwner.callbackValid root q := by
+theorem validated_callback_has_original_current_envelope (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s t)
+    (changed : t.validated ≠ s.validated) : ∃ job q, s.submissions job = some q ∧ CurrentSubmission s q ∧ driverOwner.callbackValid root q := by
   cases event with
   | complete next job receipt source quiet held current authentic => exact ⟨job,receipt,held,current,authentic⟩
   | _ => exact False.elim (changed rfl)
 
 theorem newly_accepted_isolation_has_complete_scope
-    (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t)
+    (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s t)
     (accepted : t.certified = some cut) (new : s.certified ≠ some cut) :
-    Context s cut ∧ Before s cut ∧ AllBlocked s cut ∧ nativeOwner.certificateValid root cut := by
+    Context s cut ∧ Before s cut ∧ AllBlocked s cut ∧ driverOwner.certificateValid root cut := by
   cases event with
   | certify next actual source quiet held current before coverage authentic =>
     have same : actual = cut := Option.some.inj accepted
@@ -284,7 +284,7 @@ theorem newly_accepted_isolation_has_complete_scope
   | _ => exact False.elim (new accepted)
 
 theorem unresolved_floor_intent_survives_until_original_commit
-    (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner nativeOwner eligible s t)
+    (event : Step c m p lineage root namespaceId owner projectionStore family store signerOwner keyOwner driverOwner eligible s t)
     (held : s.pendingFloor = some cut) : t.pendingFloor = some cut ∨ (s.certified = some cut ∧ t.journal = s.journal ++ [cut]) := by
   cases event with
   | prepareFloor actual closed proof current before coverage known unused =>
@@ -295,7 +295,7 @@ theorem unresolved_floor_intent_survives_until_original_commit
   | _ => exact .inl held
 
 theorem initialized_product_refines_key_boundary (events : Run (c := c) (m := m) (p := p) (lineage := lineage) (root := root) (namespaceId := namespaceId)
-    (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (nativeOwner := nativeOwner) (eligible := eligible) initial s) :
+    (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (driverOwner := driverOwner) (eligible := eligible) initial s) :
     Weaver.KeyBoundaryQueue.Run (c := c) (m := m) (p := p) (lineage := lineage) (root := root) (namespaceId := namespaceId)
       (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (eligible := eligible) Weaver.KeyBoundaryQueue.initial s.base := by
   induction events with
@@ -306,23 +306,23 @@ theorem initialized_product_refines_key_boundary (events : Run (c := c) (m := m)
     · exact .next ih source
 
 theorem initialized_floor_log_is_complete (events : Run (c := c) (m := m) (p := p) (lineage := lineage) (root := root) (namespaceId := namespaceId)
-    (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (nativeOwner := nativeOwner) (eligible := eligible) initial s) : JournalAligned s := by
+    (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (driverOwner := driverOwner) (eligible := eligible) initial s) : JournalAligned s := by
   induction events with
   | refl => rfl
   | next _ event ih => exact journal_tracks_every_floor_commit ih event
 theorem original_consumption_and_settlement_remain_unique (events : Run (c := c) (m := m) (p := p) (lineage := lineage) (root := root)
-    (namespaceId := namespaceId) (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (nativeOwner := nativeOwner) (eligible := eligible) initial s) (k) :
+    (namespaceId := namespaceId) (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (driverOwner := driverOwner) (eligible := eligible) initial s) (k) :
     s.base.base.base.base.base.base.burnCount k ≤ 1 ∧ s.base.base.base.base.base.dispatchCount k ≤ 1 ∧ s.base.base.base.base.base.base.base.authority.writes k ≤ 1 :=
   Weaver.KeyBoundaryQueue.original_consumption_and_settlement_remain_unique (initialized_product_refines_key_boundary events) k
 
 theorem original_budget_remains_conserved (events : Run (c := c) (m := m) (p := p) (lineage := lineage) (root := root)
-    (namespaceId := namespaceId) (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (nativeOwner := nativeOwner) (eligible := eligible) initial s) (b) :
+    (namespaceId := namespaceId) (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (driverOwner := driverOwner) (eligible := eligible) initial s) (b) :
     Weaver.SettlementAnchorRecovery.accountMaterialized c s.base.base.base.base.base.base.base b ≤ Weaver.FiniteDomainMigration.booked c s.base.base.base.base.base.base.base.authority.source.base.base.control.journal.head.payload b ∧
     Weaver.SettlementAnchorRecovery.accountMaterialized c s.base.base.base.base.base.base.base b ≤ c.capacity b :=
   Weaver.KeyBoundaryQueue.original_budget_remains_conserved (initialized_product_refines_key_boundary events) b
 
 theorem unknown_original_reservation_stays_held (events : Run (c := c) (m := m) (p := p) (lineage := lineage) (root := root)
-    (namespaceId := namespaceId) (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (nativeOwner := nativeOwner) (eligible := eligible) initial s)
+    (namespaceId := namespaceId) (owner := owner) (projectionStore := projectionStore) (family := family) (store := store) (signerOwner := signerOwner) (keyOwner := keyOwner) (driverOwner := driverOwner) (eligible := eligible) initial s)
     (sealed : s.base.base.base.base.base.base.seals k = some a) :
     (s.base.base.base.base.base.base.base.authority.source.base.base.control.journal.head.payload.messages k).reserved = true :=
   Weaver.KeyBoundaryQueue.unknown_original_reservation_stays_held (initialized_product_refines_key_boundary events) sealed

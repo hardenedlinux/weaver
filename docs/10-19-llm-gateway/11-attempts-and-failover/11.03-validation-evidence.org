@@ -104,7 +104,7 @@ The [[file:../../../dev/proofs/evidence/llm-attempt-ledger/SHA256SUMS][manifest]
 * Runtime acceptance still required
 
 Test every crash boundary with real durable stores and provider adapters: lost
-allocation/invoke acknowledgement; pre/post queue crash; automatic SDK retry;
+allocation/invoke acknowledgement; pre/post queue crash; automatic provider-client retry;
 redirect; prefix race; partial stream failure; late receipt after owner restart;
 loser cancellation with continuing billing; duplicate final usage; root account
 commit loss and rollback. Preserve unknown holds and exact source identities.

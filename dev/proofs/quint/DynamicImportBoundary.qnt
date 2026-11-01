@@ -1,4 +1,4 @@
-module NativeDynamicImportBoundary {
+module DynamicImportBoundary {
   type State={active:Set[int],needed:Set[int],bindings:List[int],bodyDigest:int,abi:int,published:bool,loaded:Set[int],closed:Set[int],checks:int,decoder:bool,returned:bool,exited:bool,elapsed:int}
   var s:State
   pure val initial:State={active:Set(0,1,2,3,4),needed:Set(0,1,2),bindings:List(0,1,2),bodyDigest:7,abi:4,published:false,loaded:Set(),closed:Set(),checks:0,decoder:false,returned:false,exited:false,elapsed:0}

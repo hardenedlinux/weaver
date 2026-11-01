@@ -3,7 +3,7 @@
 
 * Priority and implemented path
 The primary performance target is the already running Gateway. Dependency
-compilation, module discovery, SDK process startup and publication are separate
+compilation, module discovery, Gerbil toolchain process startup and publication are separate
 engineering/control-plane costs. The current Scheme source compiler runs before
 activation, not for each provider request. Future live Scheme routines need
 their own runtime measurements and cannot replace fresh Rust execution checks.
@@ -103,7 +103,7 @@ Continue through the existing owners and fixtures:
   execution; retain exact original task/profile/provider/body commitments.
 - Measure finite authorized request pools and message/range release under
   concurrent load, with queue wait, time to first event and per-request tails.
-  Repetitions need distinct legitimate claims; SDK retry, reconnect or budget
+  Repetitions need distinct legitimate claims; provider-client retry, reconnect or budget
   reset cannot manufacture another execution opportunity.
 - Profile immutable fact construction and repeated durable operations before
   selecting optimizations. The deciding lock currently spans response headers;
@@ -111,7 +111,7 @@ Continue through the existing owners and fixtures:
   current Policy/history/fence proof, not an unchecked I/O continuation.
 - Preserve real revocation, partial-write, lost-response and restart controls
   in any before/after comparison. Reuse existing ProviderRpc/PublicationRecovery
-  Quint and Lean laws; NativeExitQualification only owns tool/measurement
+  Quint and Lean laws; GerbilExitQualification only owns tool/measurement
   qualification and does not prove request-path speed.
 
 The earlier fifteen-second SDK timeout remains documented and causally open.

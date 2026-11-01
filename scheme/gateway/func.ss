@@ -108,7 +108,7 @@
     (admit-current)
     ((.get gateway emit) bundle)))
 
-;;; Native source-generation guards qualify compilation, not final execution.
+;;; Scheme source-generation guards qualify compilation, not final execution.
 (def (emit-governed-gateway init governor profile context states tasks plans publication)
   (with-current-gateway init
     (lambda (gateway admit-current)

@@ -4,7 +4,7 @@
         (only-in :clan/poo/object .get)
         :gerbil-scheme-rust/scheme/runtime
         (only-in "./program.ss" make-gateway-program)
-        (only-in "./snapshot.ss" native->source-data source-data->native))
+        (only-in "./snapshot.ss" scheme-value->source-data source-data->scheme-value))
 (export install-gateway-producer!)
 (def source-program (make-gateway-program))
 (def installed? #f)
@@ -17,7 +17,7 @@
   ;; Semantic decline is a valid false result, not a failed root transfer.
   (with-catch (lambda (_) #f)
     (lambda ()
-      (source-data->native ((.get source-program capture) (native->source-data value))))))
+      (source-data->scheme-value ((.get source-program capture) (scheme-value->source-data value))))))
 (begin-foreign
  (c-define (capture-root root) (int64) int64 "weaver_capture_source_v1" "extern"
    (gerbil-scheme-rust/scheme/runtime#gerbil-rs-rooted-call root

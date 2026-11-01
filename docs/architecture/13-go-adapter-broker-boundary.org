@@ -121,7 +121,7 @@ starts; they still obey its content/range and resource limits.
 
 The broker must qualify the lowest application-submission path, including
 asynchronous queues, library retries and connection-pool recovery. Disabling
-an SDK retry counter, using a lower-level API, or observing one wrapper call is
+an provider-client retry counter, using a lower-level API, or observing one wrapper call is
 insufficient. A transport that cannot expose/control this boundary is unavailable
 for this protected profile. Library claims of idempotence, an HTTP method or an
 Idempotency-Key header are not effect-absence or receiver-idempotency evidence.
@@ -260,7 +260,7 @@ cost; backpressure cannot manufacture extra budget or extend a deadline.
 [[file:15-authoritative-spent-state.org][The P13 alignment and recovery review]] binds membership, source and revision to
 the actual authoritative state. Retrying an internal command can resolve an old
 consumption fact, but cannot regenerate a broker handle. A fresh issuance/nonce
-cannot turn a recovered pending logical message into a new send. Go SDK retry,
+cannot turn a recovered pending logical message into a new send. Go provider-client retry,
 Rust stream restoration and observation callbacks all preserve that distinction.
 
 * Quint and Lean correspondence
@@ -299,7 +299,7 @@ hash or source digest does not automatically supply this refinement proof.
 
 | Scenario | Unsafe trace to expose | Required refusal or bounded behavior |
 |----------+------------------------+--------------------------------------|
-| SDK retry disabled, transport retry remains | One wrapper call opens a second application stream after reset | Reject/disable the hidden path; capture actual application starts, not wrapper counters |
+| provider-client retry disabled, transport retry remains | One wrapper call opens a second application stream after reset | Reject/disable the hidden path; capture actual application starts, not wrapper counters |
 | Mirroring or mesh retry | One claimed send produces another recipient/request | Extra effect is unavailable without separate admitted authority; include proxy/receiver boundary |
 | Lost broker reply and repeated RPC | Same command creates two claims/handles | Stable command binding resolves the original result; mismatch rejects and no new handle appears |
 | Redirect across origin or method rewrite | Old allow sends credentials/body to Location or changes action | No follow-up submission; new request receives fresh projection/admission |

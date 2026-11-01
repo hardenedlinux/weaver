@@ -110,7 +110,7 @@ does not model credential impersonation or prove capability unforgeability.
 
 The two determining events cannot both publish from the same predecessor. A
 transfer does not rewrite =proposal.worker=: custody holder and Gateway execution
-owner remain distinct. SDK retries recover or resubmit the original typed intent;
+owner remain distinct. provider-client retries recover or resubmit the original typed intent;
 Go cannot allocate a replacement family, nonce or operation to escape its outcome.
 
 * Cross-storage recovery

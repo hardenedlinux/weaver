@@ -44,7 +44,7 @@ Resolve A04 and A06. Reuse semantic-contract, broker, and streaming designs.
 Deliver a small provider/deployment feature matrix, independent golden corpus,
 and exact canonical-to-wire mapping with unsupported conversions rejected.
 Trace original claim/profile, Policy facts, budget, destination, payload,
-credential, queue identity, and deciding fence through every SDK call.
+credential, queue identity, and deciding fence through every Gerbil toolchain call.
 
 Exit evidence: retry, redirect, cancellation, partial write, policy change after
 queueing, and lost response each have a deciding event and conservative unknown

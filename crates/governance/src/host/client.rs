@@ -7,7 +7,7 @@ use std::{
 };
 use tokio::sync::{Semaphore, mpsc, oneshot};
 use tokio_util::sync::CancellationToken;
-/// Cloneable ingress for a single terminal owner. No SDK root or VM crosses it.
+/// Cloneable ingress for a single terminal owner. No Gerbil root or VM crosses it.
 #[derive(Clone)]
 pub struct SourceClient {
     sender: mpsc::Sender<Command>,

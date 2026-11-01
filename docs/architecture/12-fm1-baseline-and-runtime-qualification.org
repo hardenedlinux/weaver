@@ -1,4 +1,4 @@
-#+title: Weaver FM1 Baseline Selection and Native Qualification
+#+title: Weaver FM1 Baseline Selection and Runtime Qualification
 #+language: en
 #+date: 2026-10-18
 #+property: STATUS isolated-review-complete-native-gates-partial-no-pin-or-implementation-change
@@ -406,11 +406,11 @@ failed to locate its relocated ~~bin directory. The installation wrapper's
 GERBIL_HOME/GAMBOPT relocation settings were then applied explicitly.
 
 That attempt compiled the Rust/Gambit lifecycle archive but failed while gxi
-compiled the Cargo-resolved scheme/native.ss: inherited Nix SDK 14.4 include
+compiled the Cargo-resolved scheme/native.ss: inherited Nix Gerbil toolchain 14.4 include
 paths entered the Homebrew GCC/Gambit compilation and produced unknown FILE
-type errors. This is an observed mixed-SDK build environment, not proof of a
+type errors. This is an observed mixed-Gerbil toolchain build environment, not proof of a
 source-version ABI mismatch. The complete fixture needs one explicitly selected
-compiler/SDK/runtime environment; matching a binary name or Cargo lock is not
+compiler/Gerbil toolchain/runtime environment; matching a binary name or Cargo lock is not
 sufficient. No generated source or expected test output was changed.
 
 Each environment-specific failure has its own stage receipt. Only a later
@@ -418,7 +418,7 @@ successful stage in the corrected environment can qualify this native fixture;
 source resolution, the earlier C/Lean Host tests and these setup failures cannot
 substitute for its actual execution.
 
-After relocation and SDK isolation, Cargo's bridge Scheme modules compiled.
+After relocation and Gerbil toolchain isolation, Cargo's bridge Scheme modules compiled.
 The canonical POO fixture then failed to resolve :core/object-family/syntax
 because the isolated source load path had repository name poo-flow-core, not
 the declared module namespace core. The fixture declares the parent's

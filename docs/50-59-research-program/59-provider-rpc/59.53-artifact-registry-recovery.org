@@ -4,7 +4,7 @@
 
 * Allocation and evidence status
 
-The subsequent [[file:59.55-native-reviewed-publication.org][native local adapter]]
+The subsequent [[file:59.55-evidence-reviewed-publication.org][native local adapter]]
 implements the existing ledger's review latch, full artifact persistence and
 actual-parent final-CAS guard. The statements below describe this audit's earlier
 evidence boundary. Independent anchor recovery, authenticated registrar custody
@@ -198,7 +198,7 @@ pins are unchanged and CI is not awaited.
   reply loss with concurrent pending, same-ID binding under concurrent admission,
   and the expected source-role/incarnation coverage counterexample. All use real
   Rust processes and gRPC; none is an artifact-registry implementation test.
-- OpenSysML SDK project/trace checks passed. Trace-name coverage remains
+- OpenOpenSysML Go API project/trace checks passed. Trace-name coverage remains
   structural rather than behavioral proof. The rendered D2/SVG was visually
   inspected and is embedded above.
 

@@ -19,15 +19,15 @@ pub fn initialize() -> GerbilRuntime {
     );
     // SAFETY: compiler-owned graph
     // includes the pinned bridge and returning
-    // initializer; its exact SDK linker signature and symbols have process life.
+    // initializer; its exact Gerbil linker signature and symbols have process life.
     let program = unsafe { LinkedGerbilProgram::from_linker(___LNK_weaver__governance__program) };
     eprintln!(
-        "governance SDK capabilities={:?}",
+        "governance Gerbil capabilities={:?}",
         gerbil_scheme::VmCapabilities::linked()
     );
     GerbilRuntime::initialize_program(program).unwrap_or_else(|error| {
         let mut diagnostic = [0i64; 4];
-        // SAFETY: SDK copies exactly four i64 values to this live local buffer.
+        // SAFETY: Gerbil copies exactly four i64 values to this live local buffer.
         let status = unsafe { gerbil_scheme_instance_setup_diagnostic(diagnostic.as_mut_ptr()) };
         panic!("AA initialization: {error:?}; diagnostic={diagnostic:?} status={status}");
     })

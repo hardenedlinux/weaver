@@ -12,7 +12,7 @@ requires the exact before image and the supported common-schema profile.
 [[file:../../../Project.sysml][Project]] and
 [[file:../../../dev/sysml/ControlActivation.sysml][GovernancePolicyProjection]]
 allocate candidate evidence checking to =weaver-policy= and deciding publication
-to the existing ledger. This extends [[file:59.55-native-reviewed-publication.org][local
+to the existing ledger. This extends [[file:59.55-evidence-reviewed-publication.org][local
 review admission]], without adding a second Policy engine, ledger or DSL.
 
 The production adapter now invokes the actual SPEC Rust runtime's
@@ -131,7 +131,7 @@ must be closed before that stronger deployment claim.
 Replay runs during administrative host preparation, not every provider range.
 Compilation reuse caches exact immutable source; every execution still makes a
 fresh current-Policy/claim/budget/fence decision. Candidate evidence never creates
-a queue entry, connection, SDK retry or send capability.
+a queue entry, connection, provider-client retry or send capability.
 
 Each affected package owns benchmarks: Policy has named JSON/schema validation
 and actual SPEC candidate replay; ledger has replay plus registration/final CAS.

@@ -56,7 +56,7 @@ about a newer release, native ABI or deployed storage behavior follows.
 | C8 BoundOperation | Equality checks supplied actual values; Host must authenticate and bind eventual execution | Authenticate the final cut and actual effect, not a previously evaluated stale context |
 | C10 CompoundAuthorization | Required nonempty layers all allow with no evaluation errors | Evaluate all applicable actual-operation layers against the joined authoritative state |
 | C11 Composition | Validation/evaluation alignment is an explicit condition | Keep input alignment through commit; these laws do not prove distributed serializability |
-| Agentgateway conversion/controller sources | Cloud-native reconciliation and provider adaptation patterns | Retain Go ecosystem value; adapters and SDK replies do not own original claim/profile/ledger authority |
+| Agentgateway conversion/controller sources | Cloud-native reconciliation and provider adaptation patterns | Retain Go ecosystem value; adapters and Gerbil toolchain replies do not own original claim/profile/ledger authority |
 
 * Composition proof and explicit premises
 
@@ -104,7 +104,7 @@ old-owner cases must demonstrate actual earlier permit/request issuance. Passing
 negative controls mean the intentionally weakened model exposes the specified
 violation, not that the unsafe transition is accepted by the guarded model.
 
-* Native acceptance and performance gates
+* Implementation acceptance and performance gates
 
 Inject a Policy/history update after each individual read and immediately before
 CAS. Test Allow/Deny/Allow with the same visible Boolean but newer generation.

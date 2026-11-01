@@ -1,4 +1,4 @@
-//! Warm local catalog lookup and bounded data delivery; no SDK or authority check.
+//! Warm local catalog lookup and bounded data delivery; no Gerbil or authority check.
 use super::fixture;
 use criterion::Criterion;
 use weaver_contracts::{SourceAuthority, SourceIdentity};

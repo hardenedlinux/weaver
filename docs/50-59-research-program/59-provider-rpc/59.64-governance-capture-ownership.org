@@ -26,7 +26,7 @@ revision. The recorded build capacity was 12 CPUs. The final result is *FAIL*:
 |----------+---------+--------------------|
 | Preparation and libraries | Pass | Declared dependencies, Weaver modules, pkg-config and build-environment checks completed. |
 | Standard Gerbil test | Fail | The unchanged 15-second watchdog terminated the process at 15.01006875 seconds. |
-| Rooted SDK suite | Fail | Apple linker crashed before the scheme_vm test could run; stage elapsed 3m23.218344958s. |
+| Rooted Gerbil toolchain suite | Fail | Apple linker crashed before the scheme_vm test could run; stage elapsed 3m23.218344958s. |
 | Go gRPC integration | Pass | Full TestProviderControl selection with race checking completed in 5m26.089359792s, including build work. |
 | Source currentness | Pass | Committed source and linked source checks passed before and after execution. |
 
@@ -39,7 +39,7 @@ watchdog termination is retained as failure, not a successful natural exit.
 
 The gRPC stage exercised configuration export and actual compiled Scheme program
 deployment, Cedar refusal, real source-assets, partial writes, revocation, dual
-restart, shared budget, SDK retry refusal, publication/staging reply loss and
+restart, shared budget, Gerbil toolchain retry refusal, publication/staging reply loss and
 native negative Governance cases. In this campaign the previously unexercised
 configuration export was reached successfully. This does not repair the prior
 cold connection failure or substitute for the two failing owner stages.
@@ -66,7 +66,7 @@ producer argument. The private install body previously validated it again,
 adding another argument/result wrapper for every later capture. The body now
 retains the contract-owned wrapper. Public Record/Function contracts, owned
 input/result copies, close/reentry fencing and final Rust checks remain intact.
-Native tests explicitly check nested malformed input before callback entry,
+Implementation tests explicitly check nested malformed input before callback entry,
 malformed output refusal and later valid capture on the same active owner.
 The lifecycle framework property retains all 128 generated cases. This is not
 a measured speedup or closure of the failed 15-second campaign.
@@ -79,12 +79,12 @@ gate after a 97-second build, with no process-main marker before termination;
 the complete Go command failed in 102.927 seconds. Thus this follow-up did not
 exercise the changed code through the executable deployment path. It is not a
 counterexample to the native contract property and does not establish native
-SDK acceptance. The full-owner passing gRPC stage above belongs to the earlier
+Gerbil toolchain acceptance. The full-owner passing gRPC stage above belongs to the earlier
 frozen revision and cannot certify this later source change.
 
 The existing real-VM/shared-owner integration subsequently passed on the changed
 source: =actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain=
-completed in 9.15 seconds after its separate build. It exercised actual SDK
+completed in 9.15 seconds after its separate build. It exercised actual Gerbil toolchain
 capture, the Go source frontend, Cedar refusal/allow controls, stale-source
 fencing and natural VM cleanup before shared drain. This independently refines
 the changed program's native contract; it does not replace the failed cold
@@ -104,9 +104,9 @@ therefore do not change for this validation deduplication.
 
 Production =deliver-gateway-source= now requires an active scoped capture. It
 cannot select an output file through an environment variable. The approved
-application returns native data through the pinned SDK's GC-rooted object
+application returns native data through the pinned Gerbil toolchain's GC-rooted object
 interfaces; Rust materializes owned domain types before any queue or await.
-The Rust Serde visitor consumes native object kinds, not JSON text. Symbol
+The Rust Serde visitor consumes Scheme object kinds, not JSON text. Symbol
 field keys, string identifier keys, exact integers and traversal bounds remain
 explicit refinement obligations.
 
@@ -116,14 +116,14 @@ configuration for existing configuration-import qualification. That fixture
 export is neither Scheme/Rust runtime transport nor evidence of a completed
 native callback. Production assessment still uses canonical JSON locally for
 detached comparison/context values; this remaining representation must not be
-confused with the SDK boundary or removed without preserving exact binding.
+confused with the Gerbil toolchain boundary or removed without preserving exact binding.
 Provider JSON bodies and Go JSON/YAML configuration are separate protocols.
 
 The standard Scheme suite checks refusal outside capture as well as native
 capture ownership properties. Quint rejects file export substituted for typed
 completion and records the unsafe bypass as a counterexample. The corresponding
 Lean theorem is conditional on native boundary predicates; it does not prove
-the SDK, loader or arbitrary Scheme callbacks. Neither model grants final-send
+the Gerbil toolchain, loader or arbitrary Scheme callbacks. Neither model grants final-send
 authority: current Policy, source fence, original claim and shared reservation
 remain required at Rust execution.
 
@@ -138,7 +138,7 @@ Scoped qualification for the file-fallback removal:
   =propext=. Project SysML and Scheme ownership checks passed. The core D2
   was rendered and visually inspected with its existing theme and icons.
 - The real compiled-asset deployment case passed in 11.43 seconds, covering
-  actual SDK capture, authenticated Go publication, partial Rust send,
+  actual Gerbil toolchain capture, authenticated Go publication, partial Rust send,
   revocation and dual restart with the original unknown hold retained.
 - The two-case Go race-enabled command failed overall in 98.088 seconds,
   including an 81-second Rust rebuild. Its other case,
@@ -159,7 +159,7 @@ above exercised that path. Full =check-scheme= acceptance and the prior cold
 startup issue remain open.
 
 Rust now has an explicit compiled-application build and startup path, a fixed
-SDK ABI, real producer readiness and bounded startup catalog installation.
+Gerbil toolchain ABI, real producer readiness and bounded startup catalog installation.
 Go producer deployment reaches that path through authenticated typed gRPC.
 There is no implicit production application or default fixture Profile.
 Acceptance uses an explicitly selected debug qualification application; an
@@ -278,12 +278,12 @@ assessment and after final Policy reprojection. Source image, original caller
 data and source-root comparisons occur after all delegated callbacks, closing
 the prior gap after the final projection. Policy validation and assessment use
 the private image; matching live aliases cannot replace that image. Input must
-be stable during initial copying and native Governor-state selection. This
+be stable during initial copying and Agentic AI Lab Governor-state selection. This
 does not sandbox approved application code, prove arbitrary closure purity or
 freeze external fact/history stores. Rust's independent original binding and
 current publication/final-send checks remain mandatory.
 
-The reused Profile snapshot now also covers native Cedar policy slot names,
+The reused Profile snapshot now also covers Scheme Cedar policy slot names,
 identities and source bytes, plus ordered source-asset identity/path/language
 descriptors. Slot-name order is normalized without changing asset order. It
 does not read files or implement another Policy projector; the existing confined
@@ -353,13 +353,13 @@ changed. This later pass does not establish a repair or causal explanation of
 the earlier linker crash. Do not combine the two candidates into an all-green
 campaign or treat that host-tool failure as a Policy/test assertion failure.
 
-The Gateway scope now exposes =capture= with a specific native Function contract:
+The Gateway scope now exposes =capture= with a specific Scheme Function contract:
 it accepts a zero-argument Boolean producer and returns one independent =GatewayArtifact= Record. The public
 =capture-governed-gateway= facade uses the same admitted Yuanxu view, AA/Governor
 selection, native Governance assessment, Cedar preflight and currentness checks
 as =emit-governed-gateway=. Only the delivery mode changes. There is no additional
 DSL or evaluator. File delivery returns the emitter's Boolean; memory delivery
-returns the captured native Record after the final currentness check. Emission completion
+returns the captured Scheme Record after the final currentness check. Emission completion
 is not the admission evidence object.
 
 =scheme/gateway/capture.ss= owns a private thread-local sink. Its mutex serializes
@@ -384,7 +384,7 @@ that local commitment format is not the Scheme-to-Rust object transport.
 | Owner | Delivered or remaining responsibility |
 |-------+---------------------------------------|
 | Scheme | Typed scope, actual governed producer, bounded single completed output, duplicate fuse and late-sink fence |
-| Rust host / pinned upstream SDK | Assemble the admitted VM/program graph, bind its actual export, retain a strong result root, copy/validate into Rust-owned values before await/queue and release roots on the owner thread |
+| Rust host / pinned upstream Gerbil toolchain | Assemble the admitted VM/program graph, bind its actual export, retain a strong result root, copy/validate into Rust-owned values before await/queue and release roots on the owner thread |
 | Go | Exclusive approved-producer RPC or JSON/YAML file deployment; typed Bootstrap, publication/routing and reconciliation; no Scheme process |
 | Quint | Existing boundary evidence now requires one emission, completion and an unpoisoned capture; existing borrow/VM restart and source/fence schedules remain shared |
 | Lean | Three conditional refusal laws strengthen the existing BoundaryContext; they do not prove Gambit mutexes, native ABI provenance, allocation or durability |
@@ -411,7 +411,7 @@ zero, the binary64 boundary and the signed 63-bit limit; absent or present
 expected revisions; and NUL, multibyte Unicode and variable-length strings.
 Field-level assertions require exact integer types and preserve family, budget,
 node lists and identifier maps. This tests Scheme Record/table projection;
-the separate Rust proptest on actual SDK roots covers native ABI conversion.
+the separate Rust proptest on actual Gerbil toolchain roots covers native ABI conversion.
 Neither property establishes final-send authorization or durable recovery.
 
 Native Rust qualification additionally composes =root_source=,
@@ -427,7 +427,7 @@ evidence for =BoundaryContext.Ready='s original-content and =exactIntegers=
 premises in Lean and =boundaryValid= in Quint's =LlmPolicyContinuation= model;
 it does not turn transport fidelity into source authentication or a send permit.
 
-The combined real-SDK test completed naturally in 6.61 seconds after a separate
+The combined real-Gerbil toolchain test completed naturally in 6.61 seconds after a separate
 56.13-second rebuild, including both 128-case Rust properties, malformed-value
 controls, actual AA capture and owned-data use after VM cleanup. This focused
 receipt does not resolve the separate cold executable connection failure.
@@ -550,9 +550,9 @@ fifteen-second deadline and cleanup semantics are unchanged. The existing normal
 Scheme publication/restart scenario remains the positive cross-language control.
 
 Standard =gerbil build= rebuilt the changed libraries, and =gerbil test= owns
-native suite discovery and execution. This SDK's test command can return process
+native suite discovery and execution. This Gerbil toolchain's test command can return process
 zero even after a TestError: actual case/module/harness verdicts must be inspected.
-The maintained Go gate also checks the SDK's returned test verdict explicitly.
+The maintained Go gate also checks the Gerbil toolchain's returned test verdict explicitly.
 An exit code or isolated success marker alone is not native acceptance.
 
 * Quint and Lean correspondence
@@ -598,7 +598,7 @@ schema admission and external source-cut recovery remain required.
 The inherited JsonSchema public scope was inspected: contract admission rejects
 unsupported constraints, while its default object schema is unconstrained. It
 cannot be selected as Gateway admission by default. This change uses the existing
-native Record schema for selected metadata; it does not claim to implement the
+Scheme Record schema for selected metadata; it does not claim to implement the
 full dual JSON/Scheme configuration-schema pipeline. Higher-order Governance's
 thirteen complete acceptance scenarios remain unqualified.
 
@@ -736,7 +736,7 @@ seconds). The inert-FFI authorization case did not reach control readiness befor
 its existing deadline; the watchdog killed startup and natural-exit checks failed
 (17.61 seconds). No timing cause is established. The separate partial-write,
 revocation and dual-restart scenario passed in 30.89 seconds with the original
-hold retained; shared-budget concurrency and SDK retry refusal passed in 10.53
+hold retained; shared-budget concurrency and Gerbil toolchain retry refusal passed in 10.53
 seconds. Those successes qualify their scenarios only, not the failed owner or
 the whole invocation. No timeout, cleanup or dependency pin was relaxed.
 
@@ -749,7 +749,7 @@ each). This receipt remains separate from the failed Go integration invocation.
 =crates/governance= owns concrete =SourceSelection=, =SourceData= and =OwnedSource=.
 The approved Scheme export returns native symbol-keyed field tables, string-keyed
 identifier maps, vectors, strings, Booleans and exact integers through the existing
-SDK strong-root API. Weaver uses those SDK conversions directly to deserialize
+Gerbil toolchain strong-root API. Weaver uses those Gerbil toolchain conversions directly to deserialize
 into its concrete Rust contracts. No =serde_json::Value=, whole-record string,
 raw Scheme object word or foreign pointer is used as the interop carrier.
 Serde's =deserialize_any= is a required dispatcher method, not an application
@@ -758,20 +758,20 @@ Serde's =deserialize_any= is a required dispatcher method, not an application
 Field tables require symbol keys; declared identifier maps require string keys.
 Unknown fields, duplicate normalized keys, wrong key kinds, floats, negative
 unsigned values, procedures and unsupported object shapes refuse. Integers use
-the SDK sign/magnitude conversion and checked =u64= reconstruction, never =f64=
+the Gerbil toolchain sign/magnitude conversion and checked =u64= reconstruction, never =f64=
 or decimal text. False, zero, absent fields and explicit nil are distinct; nil
 is admitted only where the destination type permits absence. No schema validation
 result authenticates the producer or supplies a current publication/send permit.
 
 The Scheme native snapshot precedes root transfer. During Rust traversal the
 source must remain stable and the host must authenticate the compiled export,
-program graph and owner thread. SDK table snapshots are shallow, not atomic deep
+program graph and owner thread. Gerbil toolchain table snapshots are shallow, not atomic deep
 snapshots. Traversal bounds do not constrain arbitrary hostile VM allocation;
 the trusted typed producer and its bounds remain explicit premises. Rust-owned
 strings, maps and records survive root release and VM cleanup; no VM object may
 cross an await, queue, worker or Go gRPC boundary.
 
-=crates/governance-build= owns build-time graph staging through the pinned SDK's
+=crates/governance-build= owns build-time graph staging through the pinned Gerbil toolchain's
 compiler/archive API. The qualification fixture is a returning linked library
 initializer, not a runtime CLI or evaluator service. The production converter
 forbids unsafe code; only the integration test admits documented linker/export
@@ -788,13 +788,13 @@ replacement still requires installing the approved producer graph and lifecycle.
 | Cedar JSON schema/entities | Cedar-defined document representation |
 | Protobuf over authenticated gRPC | Go/Rust process boundary |
 
-The existing Quint boundary slice now requires =nativeTyped=, =exactIntegers=
+The existing Quint boundary slice now requires =schemeTyped=, =exactIntegers=
 and =keyKinds= alongside original capture, current source and one completed
 emission. Rejected schedules cover encoded blobs, rounded budget integers and
 symbol/string coercion; an unsafe blob witness demonstrates why ownership labels
 alone are insufficient. Lean adds three conditional refusal laws to the existing
 Cedar-linked =BoundaryContext=. These are refinement premises, not a proof of
-Gambit GC, the SDK implementation, ABI provenance or atomic snapshots. Existing
+Gambit GC, the Gerbil toolchain implementation, ABI provenance or atomic snapshots. Existing
 final-use Cedar and source/fence laws remain the authorization owner.
 
 The package benchmark measures cloning/validation of concrete source records,
@@ -818,7 +818,7 @@ Standard =gerbil build -g= and =gerbil test -g -v 5 t= passed all five test modu
 and 29 cases, including the three inherited 128-trial properties. Native capture
 now tests Record ownership and keeps JSON only in the explicit file adapter.
 The concrete Rust contract suite passed four tests including its 128-trial PBT
-and ASP deny gate. Focused Go file-boundary, benchmark-inventory and SysML SDK
+and ASP deny gate. Focused Go file-boundary, benchmark-inventory and OpenSysML Go API
 requirement-trace checks passed. Quint passed 174 witnesses and its separate
 1000-by-60 boundary schedule sample; this is bounded sampling, not exhaustive
 verification. The actual fixed-SPEC Lean bridge rebuilt with the three new
@@ -830,52 +830,52 @@ was 97.672 seconds including Rust rebuilding. Neither value is a cold-build or
 comparative runtime benchmark. This scenario still uses the named legacy file
 adapter and does not by itself qualify in-process VM embedding.
 
-Native SDK tests exercised exact integers, including zero, 2^53+1 and the
+Native Gerbil toolchain tests exercised exact integers, including zero, 2^53+1 and the
 maximum admitted credit value, before the AA composition refusal. This partial
 progress must not be reported as a passing complete native integration test.
 The first unqualified C-defined fixture used an unqualified Scheme name; moving
 the body into an ordinary compiled procedure and binding its full namespace
 allowed execution to reach actual AA/Yuanxu source compilation. A later refusal
-identified =SyntaxError::t= in that composition. The SDK's existing runtime
+identified =SyntaxError::t= in that composition. The Gerbil toolchain's existing runtime
 metadata facility is the selected remedy; it does not replace Yuanxu loading.
 
-The isolated compiler prefix also contained stale SDK dynamic helper code: its
+The isolated compiler prefix also contained stale Gerbil toolchain dynamic helper code: its
 loaded staging function accepted two arguments while the unchanged fixed source
 accepts three. Rebuilding only interface/static files did not update that loaded
 code. The qualification builder now explicitly rebuilds the UTF-8/runtime modules
 and both compiler helpers from the same fixed source, including dynamic outputs, before
-using the SDK's runtime-metadata registration. This is a build-time operation.
+using the Gerbil toolchain's runtime-metadata registration. This is a build-time operation.
 No runtime source evaluator or alternate Governance interpreter is introduced.
 
-The host reports 12 logical CPUs. The selected linked SDK reports capability
+The host reports 12 logical CPUs. The selected linked Gerbil toolchain reports capability
 flags 1, maximum processors 1 and one active processor. A strict request for the
-host population failed initialization with SDK status 4 and diagnostic
+host population failed initialization with Gerbil toolchain status 4 and diagnostic
 =[2, 1, 0, 0]=. That is retained failed SMP evidence. The converter test keeps the
-SDK's existing scheduling policy and applies no fixed processor override; any
+Gerbil toolchain's existing scheduling policy and applies no fixed processor override; any
 passing conversion result would qualify type/ownership behavior only. Twelve
 active native VM processors and throughput remain unqualified. Go/Rust host
 worker capacity does not establish native Scheme SMP capability.
 
 Apple's linker also failed with =Bus error: 10= on two native-link invocations.
 One used the default deployment target, another used the discovered Xcode linker
-and installed SDK deployment target. Intervening links succeeded. Therefore the
+and installed Gerbil toolchain deployment target. Intervening links succeeded. Therefore the
 target adjustment is not an established fix, and no compiler/host root cause or
 reproducible-link qualification is claimed. Dependency versions, Git revisions,
 existing lockfile dependency edges and runtime cleanup rules remain unchanged.
 
-** Actual AA rooted-SDK qualification
+** Actual AA rooted-Gerbil toolchain qualification
 
 The identified module-read failure was a missing =:gerbil/core= prelude while
 reading Yuanxu's installed interface. An embedded Rust executable does not have
-gxi's executable-relative SDK home. Supplying the selected SDK's explicit
+gxi's executable-relative Gerbil toolchain home. Supplying the selected Gerbil toolchain's explicit
 =GERBIL_HOME= closed that failure. The builder and linked fixture now require
 this standard environment input and check for the core interface before entering
 the graph. File existence is an early compatibility check, not authentication;
-the approved SDK home, compiler/module graph and captured environment remain
+the approved Gerbil toolchain home, compiler/module graph and captured environment remain
 host admission premises and part of the original semantic binding.
 
 The actual native integration then passed in 4.93 seconds and exited naturally.
-It constructed typed SDK input objects, ran 128 seeded integer cases (seed 293),
+It constructed typed Gerbil toolchain input objects, ran 128 seeded integer cases (seed 293),
 checked explicit zero/2^53+1/maximum-credit boundaries, and refused false/nil/float
 counters, string field keys, unknown fields and encoded top-level blobs. The
 same initialized VM invoked the compiled AA/Governor/Cedar producer through its
@@ -884,7 +884,7 @@ through rooted table/vector/integer APIs into concrete Rust contracts. Input
 roots and the VM were released; original task, plan/body and publication data
 remained usable afterward. No whole-source JSON string participated in that
 native call. This success closes this composition refusal; the failed preceding
-invocations and the separate SDK one-processor limit remain recorded above.
+invocations and the separate Gerbil toolchain one-processor limit remain recorded above.
 
 This is an installed-prefix functional qualification with build caches. It is
 not a comparative latency claim, a 12-processor qualification, production server
@@ -894,7 +894,7 @@ in a test-only module; production conversion continues to forbid unsafe code.
 
 ** Production and qualification feature ownership
 
-=scheme-vm= enables the rooted converter and SDK dependency only. It does not
+=scheme-vm= enables the rooted converter and Gerbil toolchain dependency only. It does not
 assemble the AA test graph. =scheme-qualification= additionally opts into the
 linked fixture and its compiled module metadata. Production host construction
 must supply its own approved graph/export and source credentials; it must not
@@ -903,7 +903,7 @@ has separate path/staging, helper-compilation and archive responsibilities with
 its own ASP deny gate. All-target, all-feature Clippy passed with warnings denied.
 
 The final Scheme key-kind refinement passed 30 cases under the standard package
-entrypoint. SDK inputs also require symbol field keys and string identifier-map
+entrypoint. Gerbil toolchain inputs also require symbol field keys and string identifier-map
 keys; different kinds cannot collapse into one POO field. Duplicate canonical
 names refuse. Nil omission is restricted to declared optional fields, so an
 unknown nil-valued field remains visible to closed Record validation. The runtime
@@ -912,23 +912,23 @@ bindings; a shared ABI number or same module name alone is not source provenance
 
 The temporary Rust whole-source JSON/file decoder was removed rather than kept
 as a parallel configuration owner. Go owns JSON/YAML file decoding; Rust's source
-API accepts concrete records or an SDK strong root. Existing contract JSON codecs
+API accepts concrete records or an Gerbil toolchain strong root. Existing contract JSON codecs
 remain unchanged for their provider/Cedar document purposes. The native crate has
 no direct =serde_json= dependency. The explicit Go eight-MiB source-file decoder
 also fixes its previous mismatch with the ordinary two-MiB message decoder.
 
-The existing Go =check-scheme= owner now runs the rooted-SDK qualification after
+The existing Go =check-scheme= owner now runs the rooted-Gerbil toolchain qualification after
 standard package tests. Preparation obtains =GERBIL_HOME= from an explicit
-inherited value or the selected compiler's public SDK-home query, then checks
+inherited value or the selected compiler's public Gerbil toolchain-home query, then checks
 its core interface. An invalid explicit value refuses without fallback. This
 query is build-time tool discovery, not runtime process communication. Rust
 runtime checks and benchmarks explicitly enable both runtime options (Arrow and
 the converter) while leaving the test graph to the prepared Scheme owner.
 No verification owner or alternate runner is added, and runtime feature coverage
 is retained. The native crate's latest suite contains six tests: three source/ASP,
-one actual SDK composition with 128 integer trials, and two build-owner tests.
+one actual Gerbil toolchain composition with 128 integer trials, and two build-owner tests.
 
-Final same-source SDK qualification passed all six Rust tests, including both
+Final same-source Gerbil toolchain qualification passed all six Rust tests, including both
 ASP deny gates and the 128-trial native property; the actual AA composition and
 natural VM cleanup completed in 6.39 seconds. Final all-target/all-feature Clippy
 passed with warnings denied. The runtime-only converter compiled successfully
@@ -955,10 +955,10 @@ float conversion or candidate-provided expectation participates. This current
 source producer preserves those artifact fields; a producer that intentionally
 changes them requires a separately approved original intent, not silent rebasing.
 
-=materialize_bound_source= combines SDK ownership conversion with this comparison
+=materialize_bound_source= combines Gerbil toolchain ownership conversion with this comparison
 and returns =BoundSource=. Plain =materialize_source= remains an explicit low-level
 conversion operation, not a production publication-admission API. Binding refusal
-drops the candidate and its consumed SDK roots; it creates no publication, send,
+drops the candidate and its consumed Gerbil toolchain roots; it creates no publication, send,
 nonce burn, budget release or durable outcome. =BoundSource= is still inert data.
 Consuming a Rust expectation is not a durable consume protocol or anti-replay gate.
 Current source identity, pending intent, history, Policy, fence and final ledger
@@ -985,7 +985,7 @@ Framework PBT uses 128 cases with seed 293 and shrinking. Eleven replacement
 classes deliberately retain valid task/plan commitments, so ordinary candidate
 validation succeeds before original binding refuses. Positive controls bind the
 unchanged original. Separate controls exercise independent ownership and rebuilding
-the expectation from the candidate. Native SDK qualification repeats all eleven
+the expectation from the candidate. Native Gerbil toolchain qualification repeats all eleven
 coherent replacement classes through actual rooted objects, then binds the actual
 AA/Governor/Cedar result to a snapshot captured before invocation and reads it
 after VM cleanup. The added package benchmark includes capture, candidate cloning
@@ -1005,20 +1005,20 @@ The existing library test harness now owns that fixture once and both suites
 borrow that owner; no lint suppression or duplicate fixture copy was added.
 
 Focused qualification: all six Rust source tests passed, including ASP deny and
-both 128-trial properties. The actual SDK/AA composition test passed with all
+both 128-trial properties. The actual Gerbil toolchain/AA composition test passed with all
 eleven coherent replacement controls and original-bound data surviving natural
 VM cleanup in 4.77 seconds. Strict all-target/all-feature Clippy passed after
 sharing the fixture owner. Both package Criterion entries passed test mode,
 including capture-and-bind; no performance baseline is claimed. Quint passed
 176 witnesses and the separate 1000-by-60 boundary sample; the fixed-SPEC Lean
 bridge rebuilt and both new laws report only =propext=. Go benchmark inventory,
-SysML SDK structure and requirement traces passed. The D2 was rendered and
+OpenSysML Go API structure and requirement traces passed. The D2 was rendered and
 inspected. These scoped results do not close production source-registry/VM-host
 migration, external history freshness or final publication/execution admission.
 
 * Bounded thread-affine compilation owner
 
-The Scheme/Rust boundary uses SDK strong roots and native typed conversion.
+The Scheme/Rust boundary uses Gerbil toolchain strong roots and native typed conversion.
 =serde= here supplies a typed deserializer interface; it does not imply JSON
 encoding. JSON/YAML configuration files remain Go input formats, and provider
 payloads or official Cedar PolicySet JSON retain their own protocol meanings.
@@ -1027,7 +1027,7 @@ None is a reason to encode the complete Scheme source artifact as JSON for FFI.
 =source_lane= returns a cloneable =SourceClient= and one =SourceInbox=. The
 embedding server supplies an existing tracked blocking worker and constructs
 the approved Scheme VM on that worker. The compiler closure need not be Send:
-it may borrow the thread-local runtime and approved export. SDK roots never
+it may borrow the thread-local runtime and approved export. Gerbil toolchain roots never
 cross the queue. The client captures the independently admitted original before
 enqueue; the worker converts the candidate and binds it before future delivery.
 
@@ -1052,7 +1052,7 @@ unconfirmed; a cancellation notification cannot turn that state into successful
 cleanup, no-execution evidence or a refund. This is a safety contract with an
 explicit compiler-termination premise for shutdown progress.
 Production wiring into the server runtime and migration of Go's legacy file
-adapter remain open; the new SDK test is an actual capture qualification slice.
+adapter remain open; the new Gerbil toolchain test is an actual capture qualification slice.
 
 The existing Quint owner now includes a local compilation-resource refinement,
 without another execution ledger. Seven schedules cover close, queued/running/
@@ -1066,24 +1066,24 @@ Rust gate and foreign-call drain are faithfully implemented; they do not prove
 FFI memory safety, OS scheduling, callback authenticity or provider delivery.
 
 Retained development failures: the first unit compilation omitted a property
-macro import; the unprepared shell lacked the SDK link path for =iconv=; ASP deny
+macro import; the unprepared shell lacked the Gerbil toolchain link path for =iconv=; ASP deny
 rejected implementation inside =mod.rs= and a benchmark-owned external test
 fixture. State now has its own leaf module and the shared fixture is owned by
-=tests/unit=. The SDK test initially used a Debug-requiring assertion on sensitive
+=tests/unit=. The Gerbil toolchain test initially used a Debug-requiring assertion on sensitive
 source data; direct equality preserves its deliberate lack of Debug. Quint first
 used a set predicate on a list and then inspected state after a deliberately
 failed action; both were fixture errors. Lean first used a reserved identifier.
 These failed iterations remain distinct from final checks; raw logs stay in
 temporary storage and no dependency revision was changed.
 
-The SDK-link attempt also reproduced Apple linker =Bus error: 10= before test
+The Gerbil toolchain-link attempt also reproduced Apple linker =Bus error: 10= before test
 execution. This remains a host-toolchain failure, not a passing runtime result or
 a diagnosed linker repair. After completing the additional disposal/failure
 properties, the final source state passed all 14 Rust tests, including ASP deny
 and the three 128-trial framework properties. The actual approved AA/Governor/
 Cedar capture passed twice in one VM, with one result delivered through the
 bounded owner lane; Rust-owned output remained readable after natural VM cleanup.
-That SDK integration test took 5.48 seconds. This is scoped integration evidence,
+That Gerbil toolchain integration test took 5.48 seconds. This is scoped integration evidence,
 not a cold-start performance claim or production Go-host migration acceptance.
 
 Quint passed 181 schedules, including the two deliberate unsafe host controls,
@@ -1099,19 +1099,19 @@ test mode validates workloads and establishes no latency/throughput baseline.
 
 The reverse Rust-to-Scheme direction now belongs to =scheme_input= in the
 production Governance crate, enabled by =scheme-vm=. =root_source= accepts a
-validated =OwnedSource= and the current owner-thread SDK runtime. It returns a
+validated =OwnedSource= and the current owner-thread Gerbil toolchain runtime. It returns a
 root tied to that runtime, not to the lifetime of borrowed Rust source data.
 The original Rust record can be dropped before Scheme reads the native snapshot.
 The test fixture now delegates ordinary construction to this public API and
 retains only deliberately malformed-object controls; it no longer owns a second
 source projection or production =expect=-based conversion.
 
-The implementation directly reuses SDK string, binary exact-integer, symbol,
+The implementation directly reuses Gerbil toolchain string, binary exact-integer, symbol,
 vector and structural-table constructors. Record field keys are symbols;
 identifier-map keys are strings. Optional absent fields are omitted rather than
 filled with false, zero or a default revision. UTF-8 byte lengths preserve
-non-ASCII and embedded NUL. Every intermediate SDK object has an owned strong
-root. SDK errors return normalized =SourceError::Scheme=; traversal-bound errors
+non-ASCII and embedded NUL. Every intermediate Gerbil toolchain object has an owned strong
+root. Gerbil toolchain errors return normalized =SourceError::Scheme=; traversal-bound errors
 return =SourceError::Bound=. No unsafe ABI declaration or application Any was
 added. This is native conversion with copies, not a zero-copy performance claim.
 
@@ -1130,7 +1130,7 @@ contracts; a set of individually legal plans can still exceed the aggregate
 native handoff budget and must refuse before producer invocation. That refusal
 does not create no-execution evidence for any earlier request or release a hold.
 
-The real SDK framework property now compares every concrete field after
+The real Gerbil toolchain framework property now compares every concrete field after
 rooting/materialization, with bounded exact integers, optional revision presence
 and arbitrary Unicode prefixed by embedded NUL/non-ASCII data. It destroys the
 Rust input before reading the root. An internally valid source containing 33
@@ -1143,7 +1143,7 @@ Existing Quint =roundedIntegerCannotClaimSameBudgetTest=,
 =symbolStringKeyCoercionCannotClaimSameRecordTest= and original-content controls,
 plus Lean =coherent_replacement_cannot_redefine_original= and
 =ready_output_keeps_retained_original= retain their conditional roles. Native
-constructor fidelity is an implementation premise exercised by real SDK PBT,
+constructor fidelity is an implementation premise exercised by real Gerbil toolchain PBT,
 not a new axiom or a new Boolean approval flag. SysML maps this production API
 to the same =GovernorSourceHandoff= requirement. No second formal ledger or policy
 semantics was added. Approved producer registration, server lifecycle wiring,
@@ -1155,7 +1155,7 @@ was restored in that test owner; the failure is separate from subsequent native
 qualification. Raw logs remain temporary and dependency revisions are unchanged.
 
 Final production-constructor qualification passed all 14 Rust source/host/ASP
-tests and the actual linked SDK integration in 6.09 seconds. The SDK receipt
+tests and the actual linked Gerbil toolchain integration in 6.09 seconds. The Gerbil toolchain receipt
 reported max/active processors =1=; this does not qualify host-sized SMP. The
 aggregate-bound refusal marker preceded both actual source captures in the same
 VM. The bounded owner callback now invokes =root_source= directly on its original
@@ -1164,7 +1164,7 @@ native property checks complete roundtrip equality, including input destruction,
 Unicode/NUL and optional revisions. All-target/all-feature strict Clippy and
 Project/requirement checks are separate receipts. The D2 was rendered and checked;
 Quint/Lean annotations map the existing conditional laws to this constructor,
-without claiming a new kernel proof of the SDK implementation.
+without claiming a new kernel proof of the Gerbil toolchain implementation.
 
 * Shared server runtime and Scheme owner lifecycle
 
@@ -1173,7 +1173,7 @@ existing runtime owner as =ServiceRuntime=. =start_governance= installs one
 terminal compiler owner for this runtime incarnation. The trusted embedding
 supplies a Send factory, an existing host resource permit and an explicit nonzero
 source-queue budget. The factory constructs the compiler on the existing tracked
-blocking worker; the compiler itself need not be Send and may own the SDK VM.
+blocking worker; the compiler itself need not be Send and may own the Gerbil toolchain VM.
 No new thread pool, independent tracker or execution-authority ledger is created.
 One installed owner is a lifecycle boundary, not a fixed VM processor setting.
 
@@ -1217,7 +1217,7 @@ or activation checks; inert data claimed earlier is not retroactively recalled.
 Final source publication and executor consumption must still recheck current
 credentials, Policy/history/fence and original durable obligations.
 
-The SDK qualification target reuses Governance's existing documented test ABI
+The Gerbil toolchain qualification target reuses Governance's existing documented test ABI
 leaf for the approved linked graph. Server library and deployment entrypoint both
 forbid unsafe code. Package deny lints allow only that test leaf to bind compiler
 symbols; no production unsafe block, new ABI implementation or arbitrary runtime
@@ -1239,7 +1239,7 @@ unknown hold untouched; they do not create a parallel budget protocol.
 The Cedar-linked Lean bridge extends the same SourceHost step relation. New laws
 preserve cleanup-before-join, reject fresh activation after a closed cut, and
 require factory/call return before a new cleanup acknowledgment. Their premises
-still depend on faithful task tracking, SDK destruction and runtime semantics;
+still depend on faithful task tracking, Gerbil toolchain destruction and runtime semantics;
 they do not prove foreign-call termination, provider exactly-once delivery or
 raw memory validity. Existing ownership/delivery laws remain checked alongside
 these lifecycle laws.
@@ -1247,7 +1247,7 @@ these lifecycle laws.
 Retained failures: the initial workspace manifest lacked the new local Governance
 dependency edge; ASP rejected the newly public runtime's missing documentation;
 an active-call fixture accidentally consumed its one-shot sender and became
-FnOnce. The first server SDK target also inherited a global unsafe-forbid that
+FnOnce. The first server Gerbil toolchain target also inherited a global unsafe-forbid that
 blocked the existing approved test ABI leaf, and omitted its pinned sys dev edge.
 The production library/binary retain explicit forbid attributes; the existing
 reviewed leaf is the sole test exception under package deny lints. None of these
@@ -1259,8 +1259,8 @@ remain temporary; only source-specific compact evidence is retained here.
 | Entry | Fresh scope and outcome |
 |-------+-------------------------|
 | =cargo test -p weaver-server --all-features --locked --offline -- --nocapture= | 24 unit tests passed, including ASP deny, shared-owner 32-case PBT, active guard drop, abandoned/late startup and invalid-RPC cleanup. One existing Go-owned observed-server fixture remains intentionally ignored by the ordinary Rust runner. |
-| Actual server SDK integration in that entry | One real AA/Governor/Cedar capture passed on the tracked blocking owner in 3.99 seconds. The compiler's destructor dropped the VM on its owner thread before cleanup acknowledgment; shared drain returned the worker permit. Bound output remained readable afterward. SDK max/active processors were 1, not host-sized SMP. |
-| =cargo clippy -p weaver-server --all-targets --all-features --locked --offline -- -D warnings= | Passed on the final shared shutdown guard, including ordinary/Arrow and SDK qualification targets. This compiles benchmark targets but is not measured runtime performance. |
+| Actual server Gerbil toolchain integration in that entry | One real AA/Governor/Cedar capture passed on the tracked blocking owner in 3.99 seconds. The compiler's destructor dropped the VM on its owner thread before cleanup acknowledgment; shared drain returned the worker permit. Bound output remained readable afterward. Gerbil toolchain max/active processors were 1, not host-sized SMP. |
+| =cargo clippy -p weaver-server --all-targets --all-features --locked --offline -- -D warnings= | Passed on the final shared shutdown guard, including ordinary/Arrow and Gerbil toolchain qualification targets. This compiles benchmark targets but is not measured runtime performance. |
 | =quint test dev/proofs/quint/LlmPolicyContinuation.qnt= | 188 schedules passed, including seven new lifecycle schedules and deliberate unsafe early-join/late-activation controls. |
 | =hostStep= / =hostSafe= sampling | Separate initialized-owner and =initHostStarting= campaigns each sampled 1000 traces of at most 60 steps without a violation. Sampling is not exhaustive verification or a fairness/termination proof. |
 | Fixed-SPEC =lake build= | Passed. The three new owner lifecycle laws report only =propext= and no =sorryAx=. Imported Cedar and earlier semantic laws retain their existing premises. |
@@ -1372,13 +1372,13 @@ and preservation of its original/root/profile/budget/history fields. The proofs
 are conditional on a fixed admitted mapping; they do not prove the Rust catalog
 constructor, mTLS, currentness of the observation, arbitrary cross-origin scope
 or canonical registry recovery. Actual source selection is checked by framework
-properties and real SDK/server-owner qualification.
+properties and real Gerbil toolchain/server-owner qualification.
 
 Two package-owned Criterion workloads cover one and 64 approved families. Their
 setup admits the originals and constructs the catalog, runtime and worker outside
 timing. The timed path includes name/observation comparison, immutable retention,
 bounded queue delivery and original binding. The callback is an identity function;
-it excludes SDK/Cedar, live authority observation, gRPC and final execution. Test
+it excludes Gerbil toolchain/Cedar, live authority observation, gRPC and final execution. Test
 mode validates these workloads without claiming performance. Go's benchmark
 inventory names both cases explicitly.
 
@@ -1391,12 +1391,12 @@ catalog benchmark. Raw logs stay temporary and no dependency pin changed.
 ** Catalog qualification receipt
 
 The final all-feature Governance/server entry passed 20 Governance unit tests,
-25 server unit tests and both actual SDK integrations. The existing Go-owned
+25 server unit tests and both actual Gerbil toolchain integrations. The existing Go-owned
 observed-server fixture remains intentionally ignored in the ordinary Rust
 runner. The native roundtrip/capture test took 7.23 seconds; registered producer
 lookup through the shared server owner and actual AA/Governor/Cedar capture took
 3.32 seconds, with natural owner-thread cleanup before drain and readable bound
-output afterward. Both SDK receipts still report active/max processors of one;
+output afterward. Both Gerbil toolchain receipts still report active/max processors of one;
 no host-sized SMP or matched performance qualification is implied.
 
 Strict all-target/all-feature Clippy passed for both packages. All five package
@@ -1457,7 +1457,7 @@ Scheme/Rust FFI carrier.
 
 ** Executable obligations and retained failure evidence
 
-The actual linked SDK integration starts source and operation mTLS endpoints
+The actual linked Gerbil toolchain integration starts source and operation mTLS endpoints
 on loopback, then invokes an independent Go test consumer over real gRPC. The
 consumer compiles an approved source, performs typed Bootstrap and requests
 execution under the resulting Cedar Forbid. It checks the public failure and
@@ -1492,17 +1492,17 @@ the RPC result. Later authority changes remain separate final-CAS obligations.
 The Lean compilation laws prove exact-authority reply admission, preservation
 of every original field and the absence of any implication about future
 authority. Their premises are the existing authenticated observation, immutable
-catalog and bound-source contracts; they do not prove TLS, SDK implementation,
+catalog and bound-source contracts; they do not prove TLS, Gerbil toolchain implementation,
 database durability or deployment installation.
 
 ** Local qualification receipt
 
-The socket-capable actual SDK/server integration passed in 7.11 seconds of test
+The socket-capable actual Gerbil toolchain/server integration passed in 7.11 seconds of test
 runtime; its preceding graph build took 59.76 seconds and is separate evidence.
 The independent Go consumer ran over real mTLS and passed. Rotation completed
 while the second compilation was paused; its retired caller was rejected and
 both calls preceded natural VM cleanup. The same-task Permit admission control
-also passed. The SDK still reports maximum/active processors one; this is not
+also passed. The Gerbil toolchain still reports maximum/active processors one; this is not
 host-sized Scheme SMP qualification.
 
 The four changed Go packages passed race checks. Separate standard fuzz campaigns
@@ -1514,7 +1514,7 @@ The fixed-SPEC Lean bridge rebuilt; all three compilation laws report no axioms.
 Strict all-target/all-feature Clippy and linked Go SysML/project checks passed.
 All 20 Governance and 25 server all-feature unit/property tests passed. The one
 existing observed-server fixture remains Go-owned and intentionally ignored by
-the ordinary Rust unit runner; this is separate from the actual SDK RPC test.
+the ordinary Rust unit runner; this is separate from the actual Gerbil toolchain RPC test.
 The core D2 rendered and was visually inspected. No dependency pin changed.
 
 * Go deployment uses the approved producer boundary
@@ -1535,7 +1535,7 @@ reach frontend Serve. File mode retains bounded JSON/YAML decoding and the same
 publication CAS; it is the explicitly trusted data-administration profile,
 not a substitute evaluator for Scheme programs. No new Governance DSL is added.
 
-The actual linked SDK test now exercises =RunFromEnv= over real source and
+The actual linked Gerbil toolchain test now exercises =RunFromEnv= over real source and
 operation mTLS channels and a second frontend mTLS connection. Its compiler
 setting points to a nonexistent path: activation must still complete using the
 producer RPC. The repeated compilation reconciles the same original publication.
@@ -1547,7 +1547,7 @@ integration passed in 8.21 seconds of runtime; its build was separate.
 
 This does not install a production Scheme graph into the stock Rust binary.
 It still must explicitly install its approved program and catalog through the
-shared lifecycle. The current SDK graph is a qualification fixture, with fixture
+shared lifecycle. The current Gerbil toolchain graph is a qualification fixture, with fixture
 Governor/Profile construction. Promoting it would silently impose test semantics
 on production. Without a catalog, named Go deployment refuses; it cannot quietly
 resume the removed compiler path. Program installation and canonical registry
@@ -1557,7 +1557,7 @@ Existing Go-owned Scheme integration scenarios now prepare their source under
 the test owner, then feed only the resulting validated data file to the control
 process. Their negative source controls remain source-preparation tests. They
 do not establish runtime FFI or replace root Gerbil build/test qualification;
-the linked SDK/server test supplies the real in-process boundary evidence.
+the linked Gerbil toolchain/server test supplies the real in-process boundary evidence.
 Prospective revocation data is decoded directly instead of mistakenly invoking
 a compiler on an already prepared JSON file.
 
@@ -1579,7 +1579,7 @@ not current production lifecycle requirements.
 The migrated Go-owned preparation/control suite passed all six top-level
 scenarios, including all 20 source rejection controls, in 176.380 seconds total.
 Revocation after partial streaming and dual restart retained the original hold;
-shared-budget/SDK-retry and source publication reply-loss/restart scenarios
+shared-budget/Gerbil toolchain-retry and source publication reply-loss/restart scenarios
 passed. Each rejected source completed naturally under its unchanged 15-second
 per-source gate. Suite wall time includes repeated source preparation and is not
 Gateway runtime latency or a cold performance comparison. The three changed Go
@@ -1602,7 +1602,7 @@ approved application installs its producer once; that producer calls the
 existing =capture-governed-gateway= with its actual Governor, Governance Profile,
 context, state and admitted module view. The lifecycle does not construct those
 semantics from labels or borrow the qualification fixture's default Profile.
-The SDK fixture now installs its test-specific producer into this shared
+The Gerbil toolchain fixture now installs its test-specific producer into this shared
 production lifecycle. Its C ABI returns the resulting Record through the
 existing native object projection; there is no encoded interop carrier.
 Program capture is administrative source preparation, not a per-token or
@@ -1640,13 +1640,13 @@ the uninstalled state and still requires one admitted callback, duplicate
 refusal, terminal close and exact callback counts. No Function contract was
 weakened or bypassed to satisfy the property.
 
-The first SDK composition failed with =WEAVER_CONTROL_ARTIFACT is required=.
+The first Gerbil toolchain composition failed with =WEAVER_CONTROL_ARTIFACT is required=.
 An outer ambient sink did not capture emission through the actual admitted
 Gateway scope. The existing scoped capture function already solves this;
 the producer now calls it and returns its typed Record. The owner validates
 and copies that result directly. A Boolean or a serialized blob is rejected.
 No artifact path, global sink workaround or JSON bridge was added. The
-bounded exception text is a qualification-only SDK diagnostic; production RPC
+bounded exception text is a qualification-only Gerbil toolchain diagnostic; production RPC
 errors still omit source content. Raw failure output remains temporary.
 
 The initial Quint test harness attempted to inspect state after a failed action
@@ -1671,13 +1671,13 @@ code purity or a process sandbox.
 Five fixed-SPEC Lean laws establish close-preserves-running-call, closed-result
 refusal, duplicate-install preservation, no reopening and conditional composition
 with the original registered source. All five report no axioms. Original task
-truth, application authenticity, actual stable SDK data and the source-owner
+truth, application authenticity, actual stable Gerbil toolchain data and the source-owner
 publication protocol remain independent premises. These laws do not replace
 the existing RPC/final-send models or prove arbitrary Scheme code safe.
 
 Standard root =gerbil build/test= owns the lifecycle properties, sealed-method
 regression, input/result alias tests, typed-result rejection, callback close and
-caught reentry. The actual SDK/server test composes the same implementation
+caught reentry. The actual Gerbil toolchain/server test composes the same implementation
 with Go deployment, final Cedar denial, source rotation and natural VM cleanup.
 The scoped-return correction passed in 7.55 seconds of runtime; the final sealed
 version has its own qualification receipt below. Neither run promotes the
@@ -1686,29 +1686,29 @@ program linking/installation and canonical registry recovery remain open.
 
 The final sealed version passed standard root Gerbil build/test with all 36
 cases, including 128 generated eight-command lifecycle sequences. The actual
-SDK/server/Go deployment integration passed in 7.45 seconds of test runtime,
+Gerbil toolchain/server/Go deployment integration passed in 7.45 seconds of test runtime,
 including three captures, the final Cedar denial, source rotation and natural
 VM destruction. The preceding archive build is separate from runtime evidence.
 Go runner race checks and linked SysML/project/module-owner checks passed; the
-core diagram was rendered and visually inspected. The qualification's SDK
+core diagram was rendered and visually inspected. The qualification's Gerbil toolchain
 still reports one maximum/active processor, with no host-sized SMP claim.
-The changed real SDK integration also passed targeted strict Clippy with the
+The changed real Gerbil toolchain integration also passed targeted strict Clippy with the
 existing Rust deny gates. No dependency pin changed.
 
 * Explicit compiled application and service startup
 
-=scheme/gateway/compiled.ss= is the fixed SDK bridge library. It exports one
+=scheme/gateway/compiled.ss= is the fixed Gerbil toolchain bridge library. It exports one
 installation function to the approved Scheme application and fixed C readiness
 and capture entries. It has no Governor, Profile, task, Policy or module-path
 default. The approved application imports that library, installs its typed
-producer, and supplies the SDK's returning library initializer. This is not a
+producer, and supplies the Gerbil toolchain's returning library initializer. This is not a
 command executable, operation CLI or runtime evaluator.
 
 The application is the actual archive initializer root. Merely including it in
 the archive's module inventory does not run its installation. The build owner
 first produces a loadable/static ABI library, compiles the explicit application,
 then stages that application as the root. Archive contracts require the pinned
-SDK runtime, fixed bridge and expected application module. Known qualification
+Gerbil toolchain runtime, fixed bridge and expected application module. Known qualification
 application/control modules are forbidden in the production branch.
 The official Gerbil expander context ID of the selected source must also equal
 the declared application ID. Dependency membership alone cannot bind that source
@@ -1730,17 +1730,17 @@ module/path checks and known-fixture exclusion are concrete build constraints,
 not a cryptographic certificate that arbitrary application code is safe.
 
 =SchemeCompiler= is the production thread-local owner. It checks the existing
-Policy ABI, initializes the linked SDK graph and requires a real readiness
+Policy ABI, initializes the linked Gerbil toolchain graph and requires a real readiness
 response before becoming usable. Its capture call constructs native input with
-=root_source= and materializes concrete owned output with the existing SDK
+=root_source= and materializes concrete owned output with the existing Gerbil toolchain
 converter. There is no test-owned constructor or arbitrary export pointer in the
-service path. One small =program/linked.rs= leaf contains the three reviewed SDK
+service path. One small =program/linked.rs= leaf contains the three reviewed Gerbil toolchain
 registration operations. It dereferences no raw pointer and accepts no runtime
 graph/export choice. The rest of Governance retains deny-mode unsafe checking;
 the server library still forbids unsafe code.
 
 A semantic decline returns a fresh rooted Boolean false. That valid data result
-fails the concrete source contract and leaves the VM usable. SDK/root-transfer
+fails the concrete source contract and leaves the VM usable. Gerbil toolchain/root-transfer
 failure is a different terminal owner error. The actual linked test first
 submits an invalid Cedar candidate, observes a contract decline, then compiles
 valid sources on the same production owner. A false data value is not a zero
@@ -1787,7 +1787,7 @@ not run its initializer. The production readiness check returned false and
 refused startup in 0.06 seconds. Making the application the real root corrected
 the composition. These failures are preserved separately from native successes.
 
-The real SDK/server integration then passed in 11.52 seconds, using production
+The real Gerbil toolchain/server integration then passed in 11.52 seconds, using production
 =SchemeCompiler= rather than the test's manual ABI binding. It covered semantic
 decline/reuse, source-role mTLS, Go deployment, final Cedar denial, rotation and
 natural cleanup. The focused executable integration built both actual service
@@ -1817,7 +1817,7 @@ matching, actual installation, catalog binding
 and producer-service activation. The metadata-as-initialization counterexample
 captures the failed design. Four additional fixed-SPEC Lean laws preserve
 readiness requirements and compose them with current-source original binding;
-all report no axioms. These do not prove the SDK, loader, application code or
+all report no axioms. These do not prove the Gerbil toolchain, loader, application code or
 storage recovery. Cargo.lock changes only the local Governance test dependency
 membership for existing workspace serde_json; no package version or source pin
 changed. Approved production application acceptance and canonical registry/

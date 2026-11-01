@@ -1,4 +1,4 @@
-//! Fixed SDK application owner and its separately reviewed ABI leaf.
+//! Fixed Gerbil application owner and its separately reviewed ABI leaf.
 mod compiler;
 #[allow(unsafe_code)]
 mod linked;

@@ -1,5 +1,5 @@
 import CommittedSemanticProfile
-namespace Weaver.NativeExitQualification
+namespace Weaver.GerbilExitQualification
 -- Handles denote FFI-loaded library acquisitions. Qualification does not need
 -- an auxiliary executable; package tests and actual execution remain distinct.
 -- Config.source abstracts the complete maintained project input closure, not
@@ -80,6 +80,9 @@ theorem initialized_audit (run : Run c (initial c) s) : Audit c s := by
 
 def Qualified (c : Config) (s : State) : Prop :=
   Audit c s ∧ s.exited = true ∧ s.elapsed ≤ c.budget ∧ s.entry = .packageTest
+
+theorem qualification_preserves_deadline (accepted : Qualified c s) : s.elapsed ≤ c.budget :=
+  accepted.2.2.1
 
 theorem package_entry_required (accepted : Qualified c s) : s.entry = .packageTest :=
   accepted.2.2.2
@@ -197,4 +200,4 @@ end TimingStudy
 #print axioms TimingStudy.new_source_cannot_be_silently_paired
 #print axioms TimingStudy.reused_artifact_is_not_independent
 #print axioms TimingStudy.append_preserves_failed_receipt
-end Weaver.NativeExitQualification
+end Weaver.GerbilExitQualification

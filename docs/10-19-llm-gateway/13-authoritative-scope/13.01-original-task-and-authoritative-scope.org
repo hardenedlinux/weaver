@@ -106,7 +106,7 @@ authenticated head. It checks the original history account's restriction state,
 not the execution-domain number or a caller-supplied replacement history account.
 
 Observe and consume are separate transitions. A cached ticket that was once
-correct fails if the current image differs. SDK retries, queue handoff, redirects,
+correct fails if the current image differs. provider-client retries, queue handoff, redirects,
 provider changes and response release cannot bypass that comparison. Changes to
 soft ranking metrics need not change authority; hard route publication does.
 The model compares the full current image in the same abstract transition as
@@ -196,7 +196,7 @@ path is such a protocol.
 | Owner | Responsibility at this boundary |
 |-------+---------------------------------|
 | Scheme / POO Flow | Canonical task and contract meaning; freeze exact producer/source/profile references; define scope derivation and Cedar request projection |
-| Go | Kubernetes/provider capability and identity reconciliation, SDK adaptation and attributable observations; propose encodings, never publish task authority from adapter data |
+| Go | Kubernetes/provider capability and identity reconciliation, Gerbil toolchain adaptation and attributable observations; propose encodings, never publish task authority from adapter data |
 | Rust authority owner | Persist immutable root-to-profile binding, original claim/domain record and authenticated current publication; recover an exact committed prefix |
 | Rust final broker | Join current root, profile, actual child and wire; consume once; gate winner-bound disclosure/proposal promotion and retain unknown budget |
 | Cedar | Validate actual bound operation and observed authority state, then require all applicable nonempty policy layers to Allow without evaluation errors |

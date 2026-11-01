@@ -1,4 +1,4 @@
-module NativeExitQualification {
+module GerbilExitQualification {
   // Entry 0 is gerbil test; entry 1 is a diagnostic invocation. Even the same
   // cases and cleanup through another entry do not qualify the package tool.
   // Open references cover FFI-loaded libraries. No executable build target is

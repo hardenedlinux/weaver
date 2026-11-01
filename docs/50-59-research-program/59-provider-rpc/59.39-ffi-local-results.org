@@ -17,7 +17,7 @@ cause of the retained watchdog failures: those processes were terminated before
 the result validator could run.
 
 The validator now derives the selected module inventory from direct
-=t/*-test.ss= regular files, matching the existing SDK =collect-files= rule for
+=t/*-test.ss= regular files, matching the existing Gerbil toolchain =collect-files= rule for
 the unchanged unfiltered =gerbil test -g -v 5 t= entry. No separate module list,
 Scheme evaluator or second test driver is introduced. It requires the exact
 harness inventory, one completed nonempty visit to each module, balanced named
@@ -99,8 +99,8 @@ An earlier Go-owned source-preparation qualification path recorded child
 start/reap, artifact decode and control configuration/authority/Serve phases
 without source paths or payloads.
 The existing Scheme fixture library records module readiness, entry, compile-begin
-and artifact-written. SDK CPU/real clocks and host-wall microseconds remain
-distinct: subtracting a Go elapsed clock from the SDK real clock is invalid.
+and artifact-written. Gerbil toolchain CPU/real clocks and host-wall microseconds remain
+distinct: subtracting a Go elapsed clock from the Gerbil toolchain real clock is invalid.
 Host-wall calibration assumes no intervening clock adjustment. Only actual Wait
 proves that child was reaped; phase text cannot certify descendants, durable
 publication, natural exit or readiness.
@@ -193,7 +193,7 @@ of the delay occurred before the reports or during subsequent cleanup.
 
 The passing integration stage includes source-assets response-loss recovery,
 revocation after a partial stream, preserved unknown budget across dual-process
-restart, a shared-budget concurrency race and rejection of SDK retry. These are
+restart, a shared-budget concurrency race and rejection of provider-client retry. These are
 real local mTLS/transport tests with controlled provider endpoints, not live
 commercial provider qualification or proof of whole-store anti-rollback.
 
@@ -263,8 +263,8 @@ The source guard remained stable. These later-use processes overlapped the
 integration suite; they are not isolated cold paired controls.
 
 The earlier fifteen-second failure remains a failed receipt. The added observer
-uses a drained output pipe instead of handing the SDK the log file directly;
-the SDK arguments and all output bytes remain unchanged. There is no matched
+uses a drained output pipe instead of handing the Gerbil toolchain the log file directly;
+the Gerbil toolchain arguments and all output bytes remain unchanged. There is no matched
 first-use control isolating that output transport from prefix or host effects.
 Therefore this result qualifies the current complete entry locally; it does
 not establish a repaired Gerbil cleanup defect, prove the earlier timeout's

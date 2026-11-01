@@ -80,9 +80,9 @@ theorem fewer_images_need_not_mean_faster :
   ⟨7, 98, 16, 8, by decide, by decide⟩
 
 theorem whole_process_gate_composes
-    (native : NativeExitQualification.Qualified c s)
+    (native : GerbilExitQualification.Qualified c s)
     (fixed : c.budget = 15) : s.elapsed ≤ 15 ∧ s.handles = [] := by
-  exact ⟨fixed ▸ native.2.2, (NativeExitQualification.qualification_preserves_cleanup native).2⟩
+  exact ⟨fixed ▸ GerbilExitQualification.qualification_preserves_deadline native, (GerbilExitQualification.qualification_preserves_cleanup native).2⟩
 
 theorem evidence_cannot_mint_dispatch (_receipt : Eligible r)
     (step : LlmRouting.Step router owner before after)

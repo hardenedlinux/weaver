@@ -144,7 +144,7 @@ premises, not consequences of an equality proof or Kubernetes deployment.
 | Language | Responsibility | Authority restriction |
 |----------+----------------+-----------------------|
 | Scheme / POO / Cedar | Original semantic contract; independent launch assignment; current policy/history and original claim/reservation facts | No policy decision creates a pending issuance or sends a request |
-| Go | Kubernetes discovery and workload eligibility; protocol/session adapters; enrollment orchestration; exact-key recovery requests | No caller-selected assignment, token forwarding as identity, transparent issuance remint, or SDK send retry |
+| Go | Kubernetes discovery and workload eligibility; protocol/session adapters; enrollment orchestration; exact-key recovery requests | No caller-selected assignment, token forwarding as identity, transparent issuance remint, or Gerbil toolchain send retry |
 | Rust authority / broker | Native peer and possession verification; canonical encoding; atomic invitation consumption and issuance record; recovery-prefix qualification; final custody CAS | No stale projection authorizes admission, settlement or provider I/O |
 | Rust executor | Existing dispatch ledger, current execution fence and range/message authorization at final send | Pending enrollment and activation replies are not send permits |
 

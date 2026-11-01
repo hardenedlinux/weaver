@@ -55,7 +55,7 @@ Weaver is greenfield: existing Gateway APIs, old Policy encodings and native
 objects need no compatibility layer. Reuse owner semantics and source contracts
 against one deliberately selected baseline, then regenerate and qualify its
 consumers. Research pins document evidence rather than mandate legacy support.
-[[file:12-fm1-baseline-and-native-qualification.org][FM1 baseline selection]] distinguishes internal semantic/native consistency
+[[file:12-fm1-baseline-and-runtime-qualification.org][FM1 baseline selection]] distinguishes internal semantic/native consistency
 from backward compatibility and defines the direct migration boundary.
 
 * One architecture, three different kinds of responsibility
@@ -82,7 +82,7 @@ and Lean proof checking are not per-packet RPCs. An admitted profile may still
 require a Lean-native evaluator at operation time: proof checking and policy
 evaluation are distinct activities, and optimization must preserve that profile.
 
-The reference placement is deliberate: Go brings the Kubernetes/network/SDK
+The reference placement is deliberate: Go brings the Kubernetes/network/Gerbil toolchain
 integration ecosystem; Rust reuses the native authority boundary and provides
 explicit ownership for physical coordination; Scheme preserves POO-native
 Governance. Neither cloud readiness nor the implementation language confers

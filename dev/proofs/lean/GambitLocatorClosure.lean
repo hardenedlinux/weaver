@@ -1,5 +1,5 @@
 import DynamicPairedEvidence
-namespace Weaver.NativeLocatorClosure
+namespace Weaver.GambitLocatorClosure
 
 structure Locator where
   image : Nat
@@ -73,13 +73,13 @@ theorem resolved_body_keeps_authoritative_commitment (admitted : SourceBound com
   admitted.2 mid resolved.1
 
 theorem semantic_owner_and_native_source_compose
-    (semantic : NativeDynamicImportBoundary.Admitted contract publication)
+    (semantic : DynamicImportBoundary.Admitted contract publication)
     (required : binding ∈ contract.requiredBindings)
     (native : SourceBound committed m)
     (resolved : Resolves m whereAt (publication.resolve binding)) :
     Resolves m whereAt (contract.resolve binding) ∧
       m.sourceDigest (contract.resolve binding) = committed.digest (contract.resolve binding) := by
-  have owner := NativeDynamicImportBoundary.admitted_bindings_keep_original_owner semantic required
+  have owner := DynamicImportBoundary.admitted_bindings_keep_original_owner semantic required
   have original : Resolves m whereAt (contract.resolve binding) := owner ▸ resolved
   exact ⟨original,native.2 _ original.1⟩
 
@@ -95,15 +95,15 @@ theorem shared_image_preserves_all_owned_refs
   DynamicImageCustody.initialized_shared_image_custody run
 
 theorem late_exit_rejects_even_with_valid_partition (_valid : Admitted m)
-    (late : clock.budget < receipt.elapsed) : ¬ NativeExitQualification.Qualified clock receipt :=
-  NativeExitQualification.late_natural_exit_still_fails late
+    (late : clock.budget < receipt.elapsed) : ¬ GerbilExitQualification.Qualified clock receipt :=
+  GerbilExitQualification.late_natural_exit_still_fails late
 
 theorem shared_native_profile_never_grants_dispatch (_valid : Admitted m)
-    (pass : NativeExitQualification.Qualified clock receipt)
+    (pass : GerbilExitQualification.Qualified clock receipt)
     (step : LlmRouting.Step router owner before after)
     (changed : after.dispatches ≠ before.dispatches) :
     ∃ p, owner.wireValid p ∧ owner.finalPolicyValid p (LlmRouting.view before) :=
-  NativeExitQualification.natural_pass_still_needs_gateway_policy pass step changed
+  GerbilExitQualification.natural_pass_still_needs_gateway_policy pass step changed
 
 #print axioms qualified_lookup_is_unique
 #print axioms colliding_names_require_different_images
@@ -118,4 +118,4 @@ theorem shared_native_profile_never_grants_dispatch (_valid : Admitted m)
 #print axioms shared_image_preserves_all_owned_refs
 #print axioms late_exit_rejects_even_with_valid_partition
 #print axioms shared_native_profile_never_grants_dispatch
-end Weaver.NativeLocatorClosure
+end Weaver.GambitLocatorClosure

@@ -132,7 +132,7 @@ inherit that ordering automatically.
 | H3 Both operation/authority consumption and original hold persist together | Existing actual dispatch/retry/restart cases; conditional prefix theorem | Full native-to-SPEC ledger refinement and arbitrary multi-store failure proof |
 | H4 Non-reused generation and prefix recovery | Same-DB process restart and repeated operation-ID checks | Independent anti-rollback floor and snapshot recovery implementation |
 | H5 Unknown exposure survives interruption | Partial-write, cancellation and enqueue-before-commit crash cases | General account/history reconciliation and delayed usage evidence composition |
-| H6 No alternate sender or copied capability | Rust final sender boundary and SDK retry/fallback tests | Complete implementation refinement/audit of every future adapter/credential owner |
+| H6 No alternate sender or copied capability | Rust final sender boundary and provider-client retry/fallback tests | Complete implementation refinement/audit of every future adapter/credential owner |
 
 No new axiom or sorry is used. Generic framework and POO laws are distinct from
 the Gateway/Cedar laws' inherited native-decision dependencies. Printed axiom

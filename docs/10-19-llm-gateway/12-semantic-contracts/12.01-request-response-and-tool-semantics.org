@@ -179,13 +179,13 @@ they cannot be disclosed or promoted to effects merely because parsing succeeded
 | Component | Responsibility | Required cross-language contract |
 |-----------+----------------+----------------------------------|
 | Scheme / POO Flow | Canonical task/semantic projection, tool and schema semantics, budget/history domain ownership, Code as Policy | Typed immutable contract and digest; explicit supported transformations and all required Cedar layers |
-| Go | Kubernetes capability publication, provider/workload identities, SDK ecosystem integration and provider observations | Typed capability/codec profiles and source-bound data; no independent grant, retry or refund authority |
+| Go | Kubernetes capability publication, provider/workload identities, Gerbil toolchain ecosystem integration and provider observations | Typed capability/codec profiles and source-bound data; no independent grant, retry or refund authority |
 | Rust | Canonical protocol runtime, final encoding seal, bounded parser/assembly, actual child admission, winner/range disclosure | Exact body/manifest and actual target; current Policy, authoritative spent-state and owner epoch at final handoff |
 | Cedar | Decide the typed actual operation under all required Policy layers | Validate the actual request schema and evaluator inputs; deny/indeterminate closes the gate |
 | Quint | Explore ordering, mutation, malformed projections, partial messages and restart controls | Explicit unsafe variants and observable counterexample states |
 | Lean | Prove projection/source/buffer preservation and refine typed child invocation | State external codec, schema, observation, storage and release-owner premises explicitly |
 
-Go's cloud-native and provider ecosystems are useful without forcing a Go SDK
+Go's cloud-native and provider ecosystems are useful without forcing a Go Gerbil toolchain
 onto every token path. Rust may implement a provider protocol directly when that
 keeps the final queue and bounded streaming efficient. A Go adapter can return a
 candidate encoding or normalized observation, but Rust must seal and validate its

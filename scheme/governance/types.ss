@@ -1,4 +1,4 @@
-;;; Native POO scope Contract for inert governance semantics.
+;;; Scheme POO scope Contract for inert governance semantics.
 (import (only-in :clan/poo/object .cc)
         (only-in :clan/poo/mop Function Bool)
         (only-in :clan/poo/type Record List String Symbol Pair Or Enum)

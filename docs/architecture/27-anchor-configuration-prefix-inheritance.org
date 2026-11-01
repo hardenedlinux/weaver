@@ -242,7 +242,7 @@ Rust validates complete membership envelopes, installation/prefix joins and the
 actual broker barrier/activation contract. Qualified storage/effect owners supply
 the physical facts. No language implementation is changed by this review.
 
-* Native acceptance and performance boundary
+* Implementation acceptance and performance boundary
 
 Exercise disjoint rosters, old-only/new-only partitions, learner promotion before
 copy completion, old snapshots omitting control entries or burns, old leader
