@@ -140,6 +140,29 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Native archive diagnosis must track Cargo build-script lifetime,
+           not infer a quiet owner from the last Rust artifact. SDK-selected GCC
+           may use Gambit's declared CORCXXFLAGS_GAMBUILD override to disable
+           macro-expansion diagnostic tracking while retaining every literal SDK
+           default, ABI flag and optimization level. Reject ambiguous/unsupported
+           declarations or conflicting explicit options; never substitute ambient
+           CC, mutate the release, patch a dependency or relax watchdogs. Full
+           original-source recovery remains the acceptance gate for this change. */
+        doc /* A separate bounded owned-process kernel trace refines syscall and
+           runnable/blocked/preempted intervals only after PID/TID and trace-clock
+           joins pass coverage checks. Foreign/unresolved rows and censored
+           boundaries are not original-operation evidence. Do not join benchmark
+           operation/clock to kernel time without an explicit anchor. An fsync
+           return, thread wake or successful profiling exit is neither the original
+           authoritative COMMIT outcome nor release permission. */
+        doc /* CI compiler observation must be bounded in cost as well as time.
+           Keep the existing 1200/30 build and 120/5 test wall/idle limits.
+           Coarse compiler phase logs and owned writable artifacts cover normal
+           dependencies; detailed LLVM phase events are selected by actual quiet
+           application crate, never globally expanded to all inference/inline
+           events. Explicit Host logging remains authoritative. Verify compiled
+           output/error/jobserver parity and preserve original timeout receipts.
+           No CPU/timer heartbeat, pin change or workload omission is permitted. */
         doc /* Before deeper COMMIT attribution, use the pinned public Rust IO
            interface only in unit-test builds. Delegate the actual platform IO,
            completion, cancellation, file-lock and shared-WAL methods unchanged.
