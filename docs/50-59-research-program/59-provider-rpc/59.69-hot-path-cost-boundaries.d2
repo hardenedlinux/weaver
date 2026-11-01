@@ -24,7 +24,7 @@ admission: Original canonical home\nOrdered head / bounded Host admission\nCPU-b
   height: 240
   style.fill: "#e7edf4"
 }
-transaction: MRR exclusive transaction\nCurrent head and authority checks\nWorker retains transaction through answer {
+transaction: MRR exclusive transaction\nCurrent head and authority checks\nBounded record reads / owned results\nWorker retains transaction through answer {
   class: card
   left: 1620
   top: 0
@@ -62,7 +62,7 @@ original -> admission: Preserve original identity { style.font-size: 20 }
 admission -> transaction: Accepted bounded work { style.font-size: 20 }
 transaction <-> validator: Borrowed request / answer { style.font-size: 20 }
 transaction -> commit: Original durable decision { style.font-size: 20 }
-commit -> execution: Receipt plus separate current-use gate { style.font-size: 20 }
+commit -> execution: Receipt + current-use gate { style.font-size: 20 }
 footer: "Cancellation is not rollback · Historical recovery creates no send capability\nBenchmark results and returned resources cannot release unknown budget" {
   shape: text
   left: 140
