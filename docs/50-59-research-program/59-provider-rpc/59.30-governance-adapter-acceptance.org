@@ -279,3 +279,9 @@ go -C go test ./dev -run '^Test(SysMLSDK|ProjectArchitecture)' -count=1 -v
 - [[file:../../../scheme/policy/cedar-ffi.ss][Current synchronous Scheme CFFI wrapper]] and [[file:../../../crates/policy-ffi/src/abi.rs][reviewed borrowed-region ABI]]
 - [[file:../../../go/internal/config/bundle.go][Current typed data bundle decoder]] and [[file:../../../crates/server/src/source_owner.rs][serialized source owner]]
 - [[https://github.com/tao3k/gebril-yuanxu/blob/79a5526a2ecd06408201be87b4a028b167c8d8a0/modules/json-schema/interface.ss][Inherited JsonSchema public scope]]
+
+* Embedded architecture views
+
+** 59.30-governance-adapter-acceptance.svg
+
+[[file:59.30-governance-adapter-acceptance.svg]]

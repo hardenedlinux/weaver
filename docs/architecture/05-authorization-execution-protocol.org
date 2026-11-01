@@ -632,3 +632,9 @@ range records before external calls. A lost reply or owner restart cannot mint
 a new claim, free an unknown hold, erase restrictive history or replay a possibly
 exposed range. Abort remains sealed in the checked conservative profile; no
 implicit timeout-based reopen or liveness guarantee is introduced.
+
+* Embedded architecture views
+
+** 15-stream-message-authorization.svg
+
+[[file:diagrams/15-stream-message-authorization.svg]]

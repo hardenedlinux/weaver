@@ -13,8 +13,11 @@ renderer.
 Project composers answer different questions: the gateway responsibility map
 focuses on Scheme/Go/Rust allocation; its relationship matrix aggregates declared
 owner relationships; execution/proof correspondence compares three obligation
-lanes. Other views use the library's standard D2 model rendering. Domain
-composition and visual theme are independent choices.
+lanes. The README uses the Library's measured SVG scenes: a hand-drawn overview,
+a responsibility-grouped execution flow and a separate assurance map. Domain
+composition and visual theme are independent choices. Legacy technical views
+still embed the D2 reference SVG; they are not evidence of conversion to the
+new measured scene engine.
 
 Each D2 view declares its presentation Question, copy, purpose, layout, ordered
 theme layers and variants through the library's existing =data.figure= contract.
@@ -25,13 +28,20 @@ checks retain their model-ownership role.
 * Local library consumption
 
 GitHub publication is unnecessary. The development dependency is a local package
-archive at =.data/render-library/deterministic-engineering-render-1.0.0.tgz=.
-The archive is ignored; its dependency integrity is recorded in =bun.lock=.
+archive under =.data/render-library/=. Its content-derived filename is selected
+by =package.json=, and its dependency integrity is recorded in =bun.lock=.
+The archive itself is ignored.
 From the library package directory, use its standard package command:
 
 #+begin_src text
 bun pm pack --destination <weaver>/.data/render-library
 #+end_src
+
+Retain the captured archive under the filename selected in =package.json=.
+Renaming an updated archive to its SHA256 prefix prevents the package manager
+from reusing different bytes under the same local version/path. The lockfile
+must match those captured bytes; an arbitrary new producer checkout cannot
+recreate an earlier package identity.
 
 From =dev/d2=, install the captured development dependencies and browser:
 
@@ -65,10 +75,25 @@ jobs use the host CPU count; active contexts drain before browser shutdown.
 There is no HTTP service. Browser subprocess memory is outside the earlier
 Bun-only RSS measurement; do not reuse that measurement as a process-tree bound.
 
-The library produces Question-led HTML and PNG. Full D2 SVG remains a technical
-model reference. Selected project compositions publish adjacent PNG previews and
-declared theme variants. Cached HTML, image receipts and raw diagnostics belong
+The library produces Question-led HTML, PNG and true SVG scene exports. README
+SVGs include actual measured nodes, routed edges, vector glyphs and embedded
+fonts; they are neither bitmap wrappers nor foreignObject exports. Other full
+D2 SVGs remain technical model references. Selected project compositions publish
+adjacent PNG previews and declared theme variants. Cached HTML, image receipts and raw diagnostics belong
 under =.cache/d2= or temporary storage.
+
+README and document figures use standalone Org file-image syntax, for example
+=\[\[file:diagrams/example.svg\]\]=. Navigation links may coexist, but every
+referenced architecture SVG also has a direct image in that document. The Go
+architecture gate checks these embeddings, regular-file targets and README
+scene text scale at an 830-pixel reading width. This is a nominal text-scale
+gate, not a substitute for visual inspection.
+
+The shared Library owns compound-edge placement. A browser regression with two
+nested responsibility boundaries checks actual SVG path endpoints against node
+frames; local edge coordinates must be translated by their ELK container origin.
+Weaver consumes that fix through the captured development package rather than
+maintaining a second edge-routing implementation.
 
 * Reading and fidelity contract
 

@@ -1,0 +1,16 @@
+...@../../../dev/d2/themes/system
+direction: down
+agent: Agent applications
+scheme: Scheme governance\nAgentic AI Lab + Cedar
+control: Go control plane\nIdentity + LLM routing { icon: assets/go.svg }
+runtime: Rust execution\nPolicy + ledger + broker { icon: assets/rust.svg }
+provider: LLM providers / tools\nBound HTTPS + streaming
+agent -> control
+scheme -> control
+control -> runtime: Authenticated gRPC
+runtime -> provider
+
+vars: { d2-config: { data: { figure: |json
+{"title":"Weaver / AI Agent Gateway","purpose":"architecture","kind":"system","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"How do governance, routing and final execution fit together?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"How do governance, routing and final execution fit together?"},"basis":{"captureRef":"docs/architecture/diagrams/00a-readme-overview.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["sketchbook","compact"],"layout":"readme-overview","variants":[],"presentation":{"heading":"One gateway. Governed execution.","subtitle":"Scheme defines meaning · Go integrates · Rust controls effects","icons":{"agent":"model","scheme":"library","control":"control","runtime":"runtime","provider":"capture"}}}
+|
+} } }

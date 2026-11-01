@@ -4,13 +4,22 @@ import {collectCatalog} from '../src/source/catalog';
 import {CompilationOwner} from '../src/compiler';
 import {composeProjectFigure} from '../src/figures';
 import type {Scene} from '../src/source/types';
-let owner:CompilationOwner|undefined,scene:Scene|undefined,gateway:Scene|undefined;
+let owner:CompilationOwner|undefined,scene:Scene|undefined,gateway:Scene|undefined,readme:Scene|undefined;
 function captured():Scene{if(!scene)throw new Error('Missing captured source');return scene;}
 beforeAll(async()=>{
  const catalog=collectCatalog(fileURLToPath(new URL('../../../',import.meta.url)));
  owner=new CompilationOwner(catalog);
  scene=await owner.compile(catalog.views.findIndex(v=>v.source.endsWith('/12-execution-correspondence.d2')));
  gateway=await owner.compile(catalog.views.findIndex(v=>v.source.endsWith('/01-system-boundaries.d2')));
+ readme=await owner.compile(catalog.views.findIndex(v=>v.source.endsWith('/00a-readme-overview.d2')));
+});
+test('README uses the Library vector scene and hand-drawn engine, not raw D2 SVG',()=>{
+ if(!readme)throw new Error('Missing README capture');
+ const figure=composeProjectFigure(readme);
+ expect(figure.html).toContain('data-scene');
+ expect(figure.html).toContain('data-vector-annotation');
+ expect(figure.html).not.toContain('data-d2-version');
+ expect(figure.drawing.mode).toBe('sketch');
 });
 afterAll(async()=>{await owner?.close();});
 test('actual D2 Question and declared hand-drawn style drive the library',()=>{
@@ -39,4 +48,12 @@ test('responsibility view shows source-bound handoffs and rejects reversed contr
  expect(figure.html).toContain('min-height:104px');
  const changed={...gateway,edges:gateway.edges.map(edge=>edge.source==='semantic.composition'&&edge.target==='cloud.distribution'?{...edge,targetArrow:false}:edge)};
  expect(()=>composeProjectFigure(changed)).toThrow('Missing declared handoff');
+});
+test('theme variants preserve captured technology logos alongside library icon packs',()=>{
+ if(!gateway)throw new Error('Missing gateway capture');
+ for(const variant of gateway.figure.variants??[]){
+  const figure=composeProjectFigure(gateway,variant);
+  expect(figure.html).toContain('cloud.brand');
+  expect(figure.html).toContain('runtime.brand');
+ }
 });

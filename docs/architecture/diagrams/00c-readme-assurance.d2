@@ -1,0 +1,15 @@
+...@../../../dev/d2/themes/assurance
+direction: down
+design: SysML + Org\nOwnership + contracts
+quint: Quint\nSchedules + counterexamples
+lean: Lean + cedar-poo-spec\nMeaning + preservation
+tests: Rust + Go + Scheme\nIntegration tests + PBT
+design -> quint
+design -> lean
+quint -> tests
+lean -> tests
+
+vars: { d2-config: { data: { figure: |json
+{"title":"One design / distinct verification roles","purpose":"architecture","kind":"assurance","language":"en","width":960,"primary":"main","questions":[{"ref":"main","text":"How is the architecture connected to executable verification?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"How is the architecture connected to executable verification?"},"basis":{"captureRef":"docs/architecture/diagrams/00c-readme-assurance.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["field-notes","compact"],"layout":"readme-assurance","variants":[],"presentation":{"heading":"Different questions. Distinct checks.","subtitle":"Model the protocol · prove properties · exercise real effects","icons":{"design":"model","quint":"decision","lean":"obligation","tests":"evidence"}}}
+|
+} } }

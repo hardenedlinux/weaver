@@ -249,3 +249,9 @@ pretend to execute a real provider adapter or an integrated billing service.
 | LM8 | Unknown does not authorize another attempt | unknownCannotAutomaticallyFailoverTest; sdkRetryCannotReadmitRootTest; unknownRetryRouteCounterexampleTest | one_provider_admission_per_root; dispatch_record_never_disappears; duplicate_root_dispatch_counterexample | broker.send |
 | LM9 | One admitted source owns a client stream | responseRequiresActualProviderAdmissionTest; responseDisclosureRequiresPolicyTest; duplicateStreamWinnerRejectedTest; mixedStreamRouteCounterexampleTest | one_response_source_per_root; initialized_audit | broker.stream |
 | LM10 | Partial outcomes retain original provenance | lateTimeoutDoesNotEraseOriginalDispatchTest; rankedPrimaryDispatchTest | dispatch_record_never_disappears; original_claim_is_not_recreated | providers.hosted |
+
+* Embedded architecture views
+
+** 10.02-llm-routing.svg
+
+[[file:10.02-llm-routing.svg]]
