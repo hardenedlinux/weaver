@@ -144,6 +144,64 @@ corrected to that tracked filename. Corrective CI is pending, not acceptance.
 
 * Darwin failure attribution
 
+The large archive failure has a separate, source-grounded cause: POO's producer
+=build.ss= bounds table host functions, while generic archive recompilation
+does not inherit that gxc command-line option. Its retained C has 20,116 labels.
+The approved upstream build-owner repair uses the paired Gambit header's own
+optimized-module threshold to select multiple host functions for large GCC
+modules, keeping O2 and the complete module graph. The exact failed C then
+compiles naturally in 66.36 seconds with maximum RSS 1,756,725,248 bytes.
+This is a focused compiler observation, not full concurrent-build or runtime
+acceptance. MRR explicitly adopts only the repaired AOT build dependency;
+its runtime Gerbil source and other dependency pins remain unchanged.
+
+The unchanged eight-module Scheme inventory imports the Query core APIs it
+actually tests instead of the Orgize-bearing facade. Provider class/lifecycle
+imports also identify their existing owners. No assertion or rejection condition
+is dropped. The original 45-second wall and five-second idle gate remain.
+Package registration, compiler environment selection and natural child cleanup
+are required independently of successful source acquisition or marker output.
+
+The complete Scheme inventory now passes with eight module receipts, 147 case
+receipts, =HARNESS-OK=, final =OK= and natural process exit within the original
+wall/idle gates. Parser's existing stage trace reports real decompression,
+verification and IR admission; it is not a timer heartbeat or evidence of
+semantic success by itself. The earlier silent IR admission failure remains.
+
+The first complete archive attempt after host splitting exposes a separate
+upstream link-kind defect. The owner now accepts the shared dependency declared
+by an ordinary linker input while continuing to reject a shared-only package
+for an explicit static request. Its clean isolated Darwin unit suite passes 27 tests with
+seven opt-in tests unchanged, and strict Clippy passes. CI uses that same build
+owner's setup action: the previous separate action selected a Darwin release
+without Ascent's required compile-output admission API. Runtime dependency pins
+and the source-owned Ascent implementation are unchanged.
+
+MRR's full linked workspace compile now returns zero naturally in 4 minutes
+37 seconds. It stages 479 carriers and compiles 279 native objects using 12
+workers; the native batch takes 135,581 milliseconds. Existing Rust dependency
+artifacts and the admitted dependency prefix remain available, so this is not
+a fully cold dependency-bootstrap benchmark. The following test entry reuses
+the archive and exposes a missing declared Lean 4.31.0 installation; its real
+kernel discovery budget remains unchanged. Execution acceptance requires the
+complete test entry after that standard environment prerequisite is installed.
+
+The following full confirmation returns zero naturally in 60.47 seconds with
+291 Rust tests passing and all doctest phases retained. All three existing
+opt-in resource controls pass separately, including the 12-worker Cargo
+backpressure pair and complete 1,508,947-byte output comparison. The missing
+kernel refusal and an intervening rustdoc I/O idle refusal are both retained;
+one successful confirmation does not establish a latency distribution or erase
+those observations. Watchdog tests and false-success controls retain their
+original rejection thresholds. Upstream's later thread-receipt correction only
+observes exact kernel baseline within that existing operation gate; it does not
+alter the production API adopted by MRR.
+
+The model-bound render produces the changed tooling SVG and updated model views.
+The full render still refuses four pre-existing =d2-reference= sequence views
+under the concurrently adopted renderer's =model-view= requirement. Its partial
+107-view receipt is retained outside Git and is not a full rendering pass.
+
 The original CI diagnostic is Cargo's bare =os error 35=. That message alone
 does not identify a failed process spawn, thread creation or write. Source audit
 shows =gxpkg= invokes its child with inherited stdin/stdout/stderr. Actual local

@@ -151,6 +151,15 @@ package ControlActivation {
            embedded-runtime; this dependency feature is not a consumer-owned VM.
            Feature isolation requires explicit upstream review, never silently
            disabling existing semantics to turn an acceptance gate green. */
+        doc /* Large generated-module diagnosis preserves actual host parallelism,
+           the complete module closure, O2 and the paired Gambit runtime ABI.
+           gerbil-scheme-rust owns GCC host-function layout: use Gambit's declared
+           optimized-module label threshold to select multiple host functions
+           rather than one unbounded function. Retained generated-C compilation,
+           resource observations and full runtime acceptance are distinct gates.
+           Unchanged pinned consumers do not silently acquire an upstream patch.
+           Standard Scheme suites import the exercised owner APIs without an
+           unrelated Orgize facade; all modules and assertions remain required. */
         doc /* Build observations and detailed compiler diagnostics have separate
            controls. Package entry/return, phase transitions and bytes actually
            received from compiler pipes are observations, never completion proof.
