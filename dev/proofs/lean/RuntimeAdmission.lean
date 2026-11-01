@@ -48,4 +48,44 @@ theorem original_cost_is_covered (originalCost reservation budget : Nat)
 #print axioms stale_fence_cannot_match
 #print axioms unknown_retains_original_hold
 #print axioms original_cost_is_covered
+
+/- The retained list must cover every original row; original amounts are authentic.
+   The storage refinement must establish these premises under the deciding CAS. -/
+structure Reservation where
+  original : Nat
+  projected : Nat
+
+def originalTotal : List Reservation → Nat
+  | [] => 0
+  | r :: rest => r.original + originalTotal rest
+
+def projectedTotal : List Reservation → Nat
+  | [] => 0
+  | r :: rest => r.projected + projectedTotal rest
+
+theorem pointwise_binding_preserves_total (rows : List Reservation)
+    (bound : ∀ r ∈ rows, r.projected = r.original) :
+    projectedTotal rows = originalTotal rows := by
+  induction rows with
+  | nil => rfl
+  | cons r rest ih =>
+    have head := bound r (by simp)
+    have tail : ∀ item ∈ rest, item.projected = item.original := by
+      intro item member
+      exact bound item (by simp [member])
+    simp only [projectedTotal, originalTotal, head, ih tail]
+
+theorem admission_covers_original_exposure (rows : List Reservation) (held next budget : Nat)
+    (bound : ∀ r ∈ rows, r.projected = r.original)
+    (aggregate : held = projectedTotal rows) (capacity : held + next ≤ budget) :
+    originalTotal rows + next ≤ budget := by
+  rw [aggregate, pointwise_binding_preserves_total rows bound] at capacity
+  exact capacity
+
+theorem aggregate_equality_alone_is_insufficient :
+    (1 + 6 ≤ (10 : Nat)) ∧ ¬ (6 + 6 ≤ (10 : Nat)) := by decide
+
+#print axioms pointwise_binding_preserves_total
+#print axioms admission_covers_original_exposure
+#print axioms aggregate_equality_alone_is_insufficient
 end Weaver.RuntimeAdmission
