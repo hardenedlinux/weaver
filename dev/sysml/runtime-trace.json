@@ -18,6 +18,11 @@
   {
     "id": "SharedBudget",
     "witnesses": [
+      {"file":"crates/ledger/src/execution_exposure.rs","pattern":"fn require_family"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn mixed_request_and_stream_exposure_cannot_be_checked_in_separate_domains"},
+      {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_exposure_keeps_original_budget"},
+      {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem orphaned_hold_blocks_new_admission"},
+      {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run separateEffectDomainsCounterexampleTest"},
       {
         "file": "crates/ledger/tests/unit/properties.rs",
         "pattern": "fn arbitrary_replays_restarts_and_consumption_preserve_claims"
@@ -65,6 +70,10 @@
   {
     "id": "UnknownRetainsHold",
     "witnesses": [
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn restart_never_backfills_request_claims_from_operations"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn orphaned_request_claim_cannot_admit_a_replacement_operation"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn next_stream_message_cannot_recreate_a_lost_node_claim"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn lost_message_projection_cannot_recycle_original_unknown_hold"},
       {
         "file": "crates/execution/tests/unit/https_transport.rs",
         "pattern": "fn partial_transport_failure_is_unknown_and_never_retried"

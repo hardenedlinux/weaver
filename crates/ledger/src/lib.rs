@@ -1,5 +1,6 @@
 //! One deciding SQLite store: immutable logical keys, holds, queue, policy and fence.
 //! Snapshot rollback and multi-host SQLite filesystems are outside this profile.
+mod execution_exposure;
 mod provider;
 mod provider_profiles;
 mod publication;

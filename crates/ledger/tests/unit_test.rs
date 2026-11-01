@@ -1,5 +1,7 @@
 #[path = "unit/concurrency.rs"]
 mod concurrency;
+#[path = "unit/execution_exposure.rs"]
+mod execution_exposure;
 #[path = "unit/fixtures.rs"]
 mod fixtures;
 #[path = "unit/properties.rs"]

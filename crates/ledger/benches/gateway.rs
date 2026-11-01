@@ -56,6 +56,27 @@ fn durable_operations(c: &mut Criterion) {
         })
     });
 }
+fn shared_exposure(c: &mut Criterion) {
+    let mut group = c.benchmark_group("ledger/shared_exposure_dispatch");
+    for count in [1usize, 8, 64] {
+        group.bench_with_input(BenchmarkId::from_parameter(count), &count, |b, &count| {
+            b.iter_batched(
+                || stores::family(count),
+                |(temp, mut ledger)| {
+                    let permit = ledger
+                        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+                        .expect("consume");
+                    ledger
+                        .dispatch_provider(&permit, || black_box(()))
+                        .expect("current final use");
+                    black_box((temp, ledger))
+                },
+                BatchSize::PerIteration,
+            )
+        });
+    }
+    group.finish();
+}
 fn publication_operations(c: &mut Criterion) {
     let change = weaver_contracts::Publication {
         operation_id: "measured".into(),
@@ -368,5 +389,5 @@ fn source_authority(c: &mut Criterion) {
         )
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,shared_exposure,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
 criterion_main!(benches);

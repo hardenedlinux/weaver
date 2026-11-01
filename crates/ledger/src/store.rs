@@ -144,6 +144,7 @@ impl Ledger {
             return Ok(old);
         }
         guard(&tx, proposal)?;
+        crate::execution_exposure::require_family(&tx, &proposal.family)?;
         let kind: Option<String> = tx
             .query_row(
                 "SELECT kind FROM execution_claims WHERE family=?1 AND node=?2",
@@ -152,8 +153,10 @@ impl Ledger {
             )
             .optional()
             .map_err(db)?;
-        if kind.is_some_and(|k| k != "request") {
-            return Err(Error::Conflict("logical node already claimed by stream"));
+        if kind.is_some() {
+            return Err(Error::Conflict(
+                "logical node already claimed without original operation",
+            ));
         }
         tx.execute(
             "INSERT OR IGNORE INTO execution_claims VALUES(?1,?2,'request')",
@@ -202,6 +205,7 @@ impl Ledger {
         let p: Proposal =
             serde_json::from_str(&body.ok_or(Error::Conflict("not queued or already consumed"))?)?;
         guard(&tx, &p)?;
+        crate::execution_exposure::request(&tx, &p)?;
         tx.execute(
             "UPDATE operations SET state='unknown' WHERE family=?1 AND node=?2",
             [family, node],
@@ -231,6 +235,7 @@ impl Ledger {
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db)?;
         guard(&tx, &p)?;
+        crate::execution_exposure::request(&tx, &p)?;
         let old =
             receipt(&tx, &p.family, &p.node)?.ok_or(Error::Conflict("consumption missing"))?;
         if old.digest != p.digest()? || old.outcome != Outcome::Unknown {

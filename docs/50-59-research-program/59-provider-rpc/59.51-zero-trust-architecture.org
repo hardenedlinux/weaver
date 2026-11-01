@@ -43,7 +43,7 @@ that would also incorrectly prohibit legitimate authorized changes.
 | Authorized | Scheme supplies retained task/profile semantics through AA Governor; Rust validates those commitments and evaluates current Cedar against the exact route, request and row |
 | Current at use / not revoked | Pending-publication barrier, current revision/fence and profile checks run after waits inside the final deciding transaction |
 | Consumption committed | Original canonical task/node claim and consumed provider run precede dispatch; final use now requires that the persisted claim still has stream ownership |
-| Unknown retained | Exact original per-run reservation and aggregate retained provider exposure are checked against shared task held/budget at consumption and every final-use boundary |
+| Unknown retained | Exact selected reservations and all retained request/message/provider exposure are checked against shared task held and the immutable original budget at admission and final use |
 | Mediated | Rust alone invokes the private transport/queue callback while holding deciding write order; affine burns and unknown release ranges prevent replay after ambiguity |
 
 Go manages cloud-native integration, configuration publication and routing
@@ -55,19 +55,22 @@ Scheme/Rust SDK conversion boundary.
 
 ** Durable claim and exposure refinement
 
-=crates/ledger/src/provider.rs:require_exposure= joins the original stream
-claim, exact plan reservation and shared task accounting under the existing
-SQLite deciding writer. It requires the held amount to cover the sum of every
-retained provider reservation in the family, including queued and complete
-runs: provider completion currently never authorizes settlement/refund.
+=crates/ledger/src/execution_exposure.rs= is the sole shared conservation
+projection. The provider =require_exposure= adapter and the request/message
+owners join original execution-kind claims, exact selected reservations and
+shared task accounting under the existing SQLite deciding writer. The held
+amount must equal the sum of all retained request, stream-message and provider
+reservations in the family, including queued and complete records: none of
+these completion paths currently authorizes settlement/refund. The projected
+budget must still equal the immutable task's original budget.
 Checking only the current run's cost would allow two reservations of four to
 survive with a shared held projection of four. SQLite SUM overflow or a failed
 read denies use. The check runs before queued consumption and through =active=
 at dispatch, range preparation, range release and completion. No new ledger,
 permit type, scheduler or caller-supplied truth flag is introduced.
 
-This is a provider-exposure lower bound, not proof of conservation across all
-execution kinds. It does not detect a coherent rollback of every correlated
+This is exact conservation over the three implemented reservation owners,
+not a complete recovery-authority proof. It does not detect a coherent rollback of every correlated
 record, establish external identity authority or implement an independent
 anti-rollback anchor. An inconsistent recovery image is rejected, not repaired
 from the request. A previously admitted physical write cannot be unsent.
@@ -99,7 +102,7 @@ landable now; the new upstream Lean consumer remains isolated candidate
 qualification until an explicit dependency promotion. Do not label this as a
 default fixed-pin ZeroTrust import or complete deployment qualification.
 
-** Implementation verification receipt
+** Provider refinement baseline receipt
 
 The pre-fix native property failed with minimized input =fault = 0, phase = 0=:
 deleting the original claim after consumption still admitted the callback. The
@@ -144,6 +147,95 @@ ordinary API transactions can independently lose one SQLite row.
 
 Raw failing and passing transcripts remain in temporary storage. Only curated
 evidence and the replayable property seed are committed.
+
+** Cross-effect recovery and conservation follow-up
+
+The previous provider-only check left the ordinary request and original stream
+owners outside the refinement. Real SQLite properties reproduced consumption
+and custody with missing claims. The request startup schema also rebuilt claims
+from operations, so opening an incomplete image could silently issue a new
+request-kind claim. The shared implementation now checks every retained row's
+kind and exact conservation across all three reservation owners.
+
+Let =R= be the sum of =operations.reserved=, =stream_messages.reserved= and
+=provider_runs.reserved= for the original family. Admission and actual use
+require =held = R=, =held <= originalBudget= and
+=projectedBudget = originalBudget=. Every retained row must join the same
+family/node execution claim with its original kind. The selected effect also
+requires its stored reservation to equal its immutable proposal cost. The
+source audit found exactly three writes increasing =tasks.held=, each atomic
+with its corresponding reservation insertion; no implemented completion or
+usage observation decrements that field. Adding a new reservation owner or
+settlement path must extend this projection and its proofs before deployment.
+
+A lower bound alone would miss orphaned holds after message/outcome projection
+loss. Exact equality denies that image rather than treating its old hold as
+capacity for a replacement logical message. Fresh request admission also
+refuses an existing claim without its original operation. Startup performs no
+claim backfill. New stream messages cannot recreate a missing node claim while
+retained earlier messages exist. Read-only outcomes remain available for
+diagnosis, but they carry no repair or send capability.
+
+The projection executes under the existing deciding writer, before any fresh
+hold and at request consumption/dispatch, stream custody/connect/resume/range
+consumption/write, and provider consumption/final use. It shares no new ledger
+or scheduler with Go. Go remains the cloud/protocol integration owner and
+Scheme remains the source semantic owner. Neither can publish a new caller
+flag that bypasses the Rust invariant.
+
+=SharedExecutionExposure= in the existing Lean owner covers arbitrary finite
+lists from each reservation domain, exact conservation and the original budget.
+The SPEC continuing-contract consumer strengthens its existing requirement
+with both per-effect and shared exposure. Quint supplies bad-projection and
+separate-domain counterexamples; these pure guard checks are not a temporal
+model of SQLite corruption. Native Proptest injects the concrete faults around
+consumption, custody, writes, restart and new admission. Authentic complete
+projection under the deciding writer remains the native refinement premise.
+Coherent correlated rollback, cryptographic source authority and independent
+anti-rollback recovery remain outside this single-host proof boundary.
+
+The follow-up qualification receipts are separate from the provider baseline:
+
+- Pre-fix native properties failed for both request and stream with minimized
+  =fault = 0, phase = 0=. Their regression seeds remain in the test corpus.
+  The first test-authoring =FromSql= and assertion-format compile failures are
+  retained separately; they are not counted as behavioral counterexamples.
+- The final exact-conservation implementation passed 22 ledger library tests,
+  75 ledger integration tests and 14 actual executor tests. The new module
+  contains three 64-case Proptest properties and four deterministic recovery
+  regressions, covering missing/substituted claims, wrong selected reservation,
+  shared-hold deficit/surplus, changed original-budget projection, lost message
+  rows and mixed request/message exposure. Original callbacks remain uncalled
+  on refusal. Outcome observation and the corrupted image are not repaired.
+- Four race-enabled Go/Rust TLS/gRPC tests passed again after the equality
+  change: complete streams sharing budget with SDK retry rejection, publication
+  reply loss, partial request/restart and original profile/Cedar final binding.
+  This does not add a Go bypass around the Rust deciding owner.
+- Strict all-target Clippy passed. The Go benchmark-owner tests passed with
+  the three new required Criterion case identities.
+- Go-owned SysML/project and source-currentness checks passed after correcting
+  the new witness regex, which initially interpreted =pub(crate)= as a regex
+  group. The D2 rendered and its raster preview was visually inspected.
+- Standalone Lean checked exact conservation over arbitrary finite domain
+  lists. The updated SPEC consumer checked against the same isolated upstream
+  commit and retained namespace-only bridge migration. Native complete-image
+  materialization remains a premise; no new axiom or =sorry= was introduced.
+- Quint passed 70 witnesses with seed 293, including separate-domain and
+  orphaned-hold counterexamples and refusal of negative integer reservations.
+  The prior 1,000 sampled temporal traces remain focused model evidence;
+  these new projection tests do not model filesystem corruption transitions.
+- The three focused Criterion cases completed with 30 samples, one-second
+  warmup and two-second requested measurement. Estimates for 1/8/64 retained
+  provider runs were 2.1090/4.0437/3.6069 ms; intervals were
+  1.3972--3.3094 / 2.3574--6.0696 / 2.8057--4.6224 ms. Criterion estimated
+  7.8512 seconds to collect the 64-run case including untimed setup; the target
+  settings were unchanged. Concurrent build/test work, outliers and wide
+  intervals prohibit a scaling, improvement or regression claim. This is not
+  the complete workspace benchmark matrix or a transport throughput result.
+
+The earlier full =check-scheme= failures remain open historical evidence; this
+follow-up does not replace them with focused Rust/Go/model passes. No dependency
+pin, timeout, CPU limit or production recovery-authority profile was changed.
 
 #+NAME: fig:zero-trust-architecture
 #+CAPTION: Identity, governance and enforcement form a continuous resource protection loop.
@@ -311,7 +403,7 @@ The advantage is the intended composability of semantic governance, Cedar and
 execution evidence. The cost is the adapter/refinement work needed to make that
 composition real. Architecture coverage is not measured security superiority.
 
-* Current verification receipt
+* Earlier architecture verification receipt
 
 Local checks on the reviewed candidate sources:
 

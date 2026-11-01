@@ -69,6 +69,11 @@ pub(crate) fn authorize(tx: &Transaction<'_>, check: StreamCheck<'_>) -> Result<
     }
     weaver_policy::authorize_stream(&policy, &task(tx, &check.contract.family)?, check)
 }
+/// Existing-message effects require the original durable reservation and claim.
+pub(crate) fn authorize_committed(tx: &Transaction<'_>, check: StreamCheck<'_>) -> Result<()> {
+    crate::execution_exposure::message(tx, check.message)?;
+    authorize(tx, check)
+}
 pub(crate) fn receipt(
     c: &Connection,
     family: &str,

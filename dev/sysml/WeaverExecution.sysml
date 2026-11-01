@@ -11,6 +11,11 @@ package WeaverExecution {
     }
     requirement def SharedBudget {
         doc /* Original node holds sum to no more than the original family budget. */
+        doc /* A single deciding projection covers request, stream-message and
+           provider reservations together. Admission and actual use require all
+           retained execution-kind claims, exact shared exposure conservation and equality
+           between the budget projection and the original task budget. Local
+           checks of each effect kind cannot substitute for the shared sum. */
     }
     requirement def ConsumeBeforeSend {
         doc /* Persist irreversible unknown consumption before any possible external bytes. */
@@ -20,6 +25,12 @@ package WeaverExecution {
     }
     requirement def UnknownRetainsHold {
         doc /* Crashes, lost replies and partial writes cannot prove no execution or refund capacity. */
+        doc /* Startup does not synthesize execution claims from outcome rows.
+           An orphaned request claim cannot admit a replacement operation; a
+           later message cannot recreate a missing stream claim while earlier
+           retained messages exist. Orphaned holds cannot be recycled into new
+           messages after outcome-row loss. Contradictory recovery images deny effects
+           and remain observable; this is not independent rollback detection. */
     }
     requirement def NoImplicitRetry {
         doc /* One logical node has one consumed send opportunity; redirects and SDK retries are disabled. */

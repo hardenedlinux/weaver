@@ -56,7 +56,7 @@ impl Ledger {
         let row = active_range(&tx, &permit)?;
         let contract = state::contract(&tx, &permit.family, &permit.node)?;
         let guarded = verify_owner(&tx, &self.session, owner).and_then(|()| {
-            state::authorize(
+            state::authorize_committed(
                 &tx,
                 StreamCheck {
                     contract: &contract,
@@ -105,7 +105,7 @@ fn prepare_range(
         return Err(Error::Conflict("no remaining range"));
     }
     let contract = state::contract(tx, &owner.family, &owner.node)?;
-    state::authorize(
+    state::authorize_committed(
         tx,
         StreamCheck {
             contract: &contract,

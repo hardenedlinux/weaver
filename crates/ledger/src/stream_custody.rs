@@ -99,7 +99,7 @@ impl Ledger {
             return Err(Error::Conflict("only known unsent messages may resume"));
         }
         let contract = state::contract(&tx, &owner.family, &owner.node)?;
-        state::authorize(
+        state::authorize_committed(
             &tx,
             StreamCheck {
                 contract: &contract,
@@ -119,7 +119,7 @@ fn authorize_connection(tx: &rusqlite::Transaction<'_>, owner: &StreamOwner) -> 
     let contract = state::contract(tx, &owner.family, &owner.node)?;
     let id:String=tx.query_row("SELECT message FROM stream_messages WHERE family=?1 AND node=?2 AND state!='complete' ORDER BY ordinal LIMIT 1",[&owner.family,&owner.node],|r|r.get(0)).map_err(db)?;
     let row = state::record(tx, &owner.family, &owner.node, &id)?;
-    state::authorize(
+    state::authorize_committed(
         tx,
         StreamCheck {
             contract: &contract,
@@ -178,7 +178,7 @@ fn admit_custody(tx: &rusqlite::Transaction<'_>, request: &StreamClaim<'_>) -> R
     }
     let id:String=tx.query_row("SELECT message FROM stream_messages WHERE family=?1 AND node=?2 AND state!='complete' ORDER BY ordinal LIMIT 1",[family,node],|r|r.get(0)).map_err(db)?;
     let message = state::record(tx, family, node, &id)?.proposal;
-    state::authorize(
+    state::authorize_committed(
         tx,
         StreamCheck {
             contract: &contract,

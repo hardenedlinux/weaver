@@ -1,5 +1,37 @@
 namespace Weaver.ProviderRpc
 
+/- The native complete-family projection includes every effect kind. claimsMatch
+   means every retained row joins its original execution kind, not an RPC flag. -/
+def SharedExecutionExposure (claimsMatch : Bool)
+    (requests messages providers : List Nat) (held budget originalBudget : Nat) : Prop :=
+  claimsMatch = true ∧ budget = originalBudget ∧
+  requests.sum + messages.sum + providers.sum = held ∧ held ≤ budget
+
+theorem shared_exposure_keeps_original_budget
+    (accepted : SharedExecutionExposure claims requests messages providers held budget originalBudget) :
+    requests.sum + messages.sum + providers.sum ≤ held ∧ held ≤ originalBudget := by
+  exact ⟨Nat.le_of_eq accepted.2.2.1, accepted.2.1 ▸ accepted.2.2.2⟩
+
+theorem orphaned_hold_blocks_new_admission
+    (orphaned : requests.sum + messages.sum + providers.sum ≠ held) :
+    ¬ SharedExecutionExposure claims requests messages providers held budget originalBudget :=
+  fun accepted => orphaned accepted.2.2.1
+
+theorem changed_budget_projection_blocks_all_effects (changed : budget ≠ originalBudget) :
+    ¬ SharedExecutionExposure claims requests messages providers held budget originalBudget :=
+  fun accepted => changed accepted.2.1
+
+theorem missing_retained_claim_blocks_family :
+    ¬ SharedExecutionExposure false requests messages providers held budget originalBudget := by
+  simp [SharedExecutionExposure]
+
+theorem separate_domain_checks_do_not_prove_shared_retention :
+    4 ≤ 4 ∧ 4 ≤ 4 ∧ ¬ SharedExecutionExposure true [4] [4] [] 4 12 12 := by
+  simp [SharedExecutionExposure]
+
+#print axioms shared_exposure_keeps_original_budget
+#print axioms changed_budget_projection_blocks_all_effects
+
 /- Native final-use projection: complete family provider reservations are read
    under the same deciding writer as claim, hold and actual callback. This is a
    lower bound, not settlement authority or proof of an anti-rollback store. -/

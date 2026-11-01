@@ -23,3 +23,46 @@ pub fn fresh(bytes: usize, endpoint: &str) -> (tempfile::TempDir, Ledger, Provid
         .expect("benchmark committed task birth");
     (temp, ledger, plan)
 }
+
+/// Populate exact original plans outside measurement; only the selected final use is timed.
+pub fn family(count: usize) -> (tempfile::TempDir, Ledger) {
+    let temp = tempfile::tempdir().expect("family store");
+    let mut ledger = Ledger::open(temp.path().join("ledger.db")).expect("ledger");
+    ledger
+        .publish_typed(
+            None,
+            "permit(principal,action,resource);",
+            super::policy_fixture::SCHEMA,
+            1,
+        )
+        .expect("benchmark policy");
+    let (mut task, original) =
+        super::fixtures::task_plan(128, "https://provider.invalid/v1/chat/completions");
+    task.nodes.clear();
+    task.body_digests.clear();
+    task.node_cost_bounds.clear();
+    task.stream_contracts.clear();
+    task.budget = count as u64 * 4;
+    let mut plans = Vec::with_capacity(count);
+    for index in 0..count {
+        let mut plan = original.clone();
+        if index > 0 {
+            plan.node = format!("extra-{index}");
+        }
+        task.nodes.push(plan.node.clone());
+        task.body_digests
+            .insert(plan.node.clone(), weaver_contracts::body_digest(&plan.body));
+        task.node_cost_bounds
+            .insert(plan.node.clone(), plan.ceiling);
+        task.stream_contracts
+            .insert(plan.node.clone(), plan.digest().expect("commitment"));
+        plans.push(plan);
+    }
+    ledger.register_task(&task).expect("original task");
+    for plan in plans {
+        ledger
+            .enqueue_provider(&plan)
+            .expect("retained reservation");
+    }
+    (temp, ledger)
+}

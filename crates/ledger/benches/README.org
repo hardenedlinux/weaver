@@ -4,15 +4,15 @@
 * Workload
 
 Fresh admission; consumption and dispatch burn; idempotent admission; atomic publication commit; exact publication replay; historical outcome lookup.
-Atomic task/profile registration and exact task replay with one or 256 tasks
+Atomic task/profile registration and exact task replay use one or 256 tasks
 sharing the same immutable profile. Durable staging plus decision and trusted-host
-review registration plus final CAS bring this package to eleven measured cases.
-The twelfth case includes actual SPEC replay, local review registration and final
+review registration plus final CAS are measured separately.
+The named-Policy case includes actual SPEC replay, local review registration and final
 CAS for the complete named-Policy fixture. Its store/stage fixture is outside timing.
-Persistent source-key handoff and source-authenticated publication bring this
-package to fourteen cases. Initial empty-store enrollment is outside timing;
+Persistent source-key handoff and source-authenticated publication are also measured.
+Initial empty-store enrollment is outside timing;
 retained key history, actual source checks, atomic receipt and final CAS are timed.
-The fifteenth declared case measures parent-bound revision replay, registration
+The parent-bound revision case measures revision replay, registration
 and final CAS. Initial parent publication and staging are outside timing.
 The review case captures its actual parent and stages the requirement outside
 timing; registration persistence, exact artifact validation and final CAS are timed.
@@ -26,6 +26,14 @@ The cases do not measure recovery from an empty whole-store rollback image or
 provide evidence of an independent retained root.
 
 * Measurement boundary
+
+=ledger/shared_exposure_dispatch/{1,8,64}= measures consumption, the durable
+dispatch burn and the current final guard with that many retained provider
+reservations in one family. Exact original tasks, plans and reservations are
+created outside timing. The shared projection scans request, message and
+provider reservations and verifies their execution-kind claims and original
+budget. These fixtures expose family-size cost; they do not measure mixed-kind
+throughput, external network IO or an independently anchored recovery protocol.
 
 SQLite FULL/WAL operations and current authorization. Fresh database setup and object destruction are outside timing. Serial measurements do not establish concurrent throughput or crash recovery.
 Profile replay includes the retained original-task semantic floor and registry
