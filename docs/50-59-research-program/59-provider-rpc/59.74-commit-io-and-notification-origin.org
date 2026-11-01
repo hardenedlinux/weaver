@@ -164,3 +164,11 @@ is not hosted cold-source acceptance. Native source CI must verify the candidate
 previous failures and kernel/paired samples stay outside Git without deletion.
 The SysML diagnostic contract records this boundary; the core diagram remains
 about authority and retained outcomes, with its SVG embedded above.
+
+At 19844e9c, both complete immutable Scheme packages build and remote Python
+passes all 71 tests. Darwin reaches final Rust linking after native archive
+compilation, then fails on ssl discovery: the SDK's recorded build-host Cellar
+path is absent. The next host-only correction retains existing RUSTFLAGS and
+adds a native search directory from brew --prefix openssl. It does not replace
+the SDK, alter ABI flags or weaken any recovery test. Reaching this new failure
+is not a controlled compiler-speedup measurement or full source acceptance.
