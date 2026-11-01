@@ -489,3 +489,27 @@ matched before/after comparison. In particular, selected request validation and
 authorization are included: the large-body result cannot be attributed solely
 to the original-reservation SQL scan. The full workspace benchmark gate was not
 run by this focused invocation. Raw artifacts remain under ignored target/tmp.
+
+** Native specialization across retained execution kinds
+
+The original-reservation recovery property is exercised for requests, stream
+messages and provider runs. Stream tests retain an unknown consumed range before
+shrinking its message reservation and the shared aggregate; the next declared
+message must not be created. Provider tests retain a consumed original plan,
+shrink its projected reservation and aggregate, then attempt a different original
+plan. Both properties vary original costs and running/restarted owners. Their
+original combined exposure exceeds the authenticated task budget even though
+the damaged aggregate appears to admit the next operation.
+
+A controlled negative run removed only the per-record original-amount predicate.
+All four balanced-projection tests failed, including the request properties.
+The source was restored exactly before qualifying the fixed tests. No failure
+corpus from that intentionally weakened run is treated as a production fixture.
+Raw negative/positive receipts remain in temporary storage.
+
+These native cases specialize the existing type-erased RuntimeAdmission Quint
+counterexample and arbitrary-finite-list Lean composition; they do not extend
+those proofs to arbitrary database corruption. Completeness and authenticity of
+original records, real transactional serialization and the claim-kind joins
+remain separate premises. The core D2 shared-exposure view already shows all
+three retained domains and their common original-amount guard.

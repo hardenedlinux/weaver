@@ -22,6 +22,8 @@
   {
     "id": "SharedBudget",
     "witnesses": [
+      {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn balanced_provider_projection_never_funds_a_different_original_plan"},
+      {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn balanced_stream_projection_never_funds_the_next_logical_message"},
       {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem admission_covers_original_exposure"},
       {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run balancedProjectionCounterexampleTest"},
       {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn balanced_shrink_never_admits_a_different_node"},
