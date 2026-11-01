@@ -5,6 +5,17 @@ module ProviderRpc {
     preparedFirst:int,preparedRows:int,preparedEncoding:int,preparedSession:int,dropped:Set[int],
     releases:List[{rows:Set[int],permitted:Set[int],guardRevision:int,currentRevision:int,guardCut:int,currentCut:int,encoding:int,requested:int,cancelled:bool}],invocations:List[{cancelled:bool,guardRevision:int,currentRevision:int}]}
   var s:S
+  pure def familyExposure(claimsMatch:bool,requests:List[int],messages:List[int],providers:List[int],held:int,budget:int,originalBudget:int):bool =
+    claimsMatch and budget==originalBudget and budget>0 and held>=0 and held<=budget and
+    requests.indices().forall(i=>requests.nth(i)>0) and messages.indices().forall(i=>messages.nth(i)>0) and
+    providers.indices().forall(i=>providers.nth(i)>0) and
+    requests.foldl(0,(total,n)=>total+n)+messages.foldl(0,(total,n)=>total+n)+providers.foldl(0,(total,n)=>total+n)==held
+  run mixedEffectExposurePositiveTest=init.expect(familyExposure(true,List(4),List(4),List(),8,12,12))
+  run separateEffectDomainsCounterexampleTest=init.expect(4<=4 and 4<=4 and not(familyExposure(true,List(4),List(4),List(),4,12,12)))
+  run changedOriginalBudgetBlocksFamilyTest=init.expect(not(familyExposure(true,List(4),List(4),List(),8,13,12)))
+  run lostRetainedClaimBlocksNewAdmissionTest=init.expect(not(familyExposure(false,List(4),List(),List(),4,12,12)))
+  run orphanedUnknownHoldBlocksNewMessageTest=init.expect(not(familyExposure(true,List(),List(),List(),4,12,12)))
+  run negativeReservationCannotCancelExposureTest=init.expect(not(familyExposure(true,List(4),List(-4),List(),0,12,12)))
   // Native refinement guard over a complete authoritative family projection.
   // Recovery faults are inputs here, not reachable safe protocol transitions.
   pure def providerExposure(claim:bool,reserved:int,original:int,held:int,budget:int,reservations:List[int]):bool =

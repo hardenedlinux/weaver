@@ -164,10 +164,12 @@ theorem usage_control_keeps_current_consumption
 -- premise. Strengthen the upstream continuing contract, never replace it.
 theorem provider_exposure_strengthens_continuing_zero_trust
     (accepted : ((Gateway.ZeroTrust.continuing proposal assessment).withRequirement
-      (fun _ _ => Weaver.ProviderRpc.ProviderExposure claim reserved originalCost held budget reservations)).required
+      (fun _ _ => Weaver.ProviderRpc.ProviderExposure claim reserved originalCost held budget reservations ∧
+        Weaver.ProviderRpc.SharedExecutionExposure claimsMatch requestCosts messageCosts providerCosts held budget originalBudget)).required
       requested actual) :
     (Gateway.ZeroTrust.continuing proposal assessment).required requested actual ∧
-    Weaver.ProviderRpc.ProviderExposure claim reserved originalCost held budget reservations := by
+    Weaver.ProviderRpc.ProviderExposure claim reserved originalCost held budget reservations ∧
+    Weaver.ProviderRpc.SharedExecutionExposure claimsMatch requestCosts messageCosts providerCosts held budget originalBudget := by
   exact ⟨ZeroTrust.with_requirement_preserves_framework _ _ _ _ accepted, accepted.2.1.2⟩
 
 #print axioms provider_exposure_strengthens_continuing_zero_trust

@@ -42,7 +42,6 @@ CREATE TABLE IF NOT EXISTS operations (
  PRIMARY KEY(family,node));
 CREATE TABLE IF NOT EXISTS execution_claims (
  family TEXT NOT NULL, node TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('request','stream')), PRIMARY KEY(family,node));
-INSERT OR IGNORE INTO execution_claims SELECT family,node,'request' FROM operations;
 CREATE TABLE IF NOT EXISTS streams (
  family TEXT NOT NULL REFERENCES tasks(family), node TEXT NOT NULL, contract TEXT NOT NULL, digest TEXT NOT NULL,
  generation INTEGER NOT NULL DEFAULT 0, owner TEXT, owner_fence INTEGER,

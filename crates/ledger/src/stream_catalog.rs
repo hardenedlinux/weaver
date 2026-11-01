@@ -123,6 +123,7 @@ fn admit_message(
     Ok(ordinal)
 }
 fn reserve_message(tx: &Transaction<'_>, message: &StreamMessage) -> Result<()> {
+    crate::execution_exposure::require_family(tx, &message.family)?;
     let kind: Option<String> = tx
         .query_row(
             "SELECT kind FROM execution_claims WHERE family=?1 AND node=?2",

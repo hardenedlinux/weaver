@@ -50,6 +50,7 @@ impl Ledger {
             }
         }
         any_authorized(&tx, plan, "admitProvider", None)?;
+        crate::execution_exposure::require_family(&tx, &plan.family)?;
         let old = receipt(&tx, &plan.family, &plan.node)?;
         if old.is_none() {
             let claimed = tx
@@ -296,23 +297,7 @@ fn active(tx: &Transaction<'_>, p: &ProviderDispatch) -> Result<()> {
 /// Refinement of ZeroTrust.consumptionCommitted / unknownRetained at actual use.
 /// Never reconstruct a missing claim or refund a contradictory recovery image.
 fn require_exposure(tx: &Transaction<'_>, plan: &ProviderPlan) -> Result<()> {
-    let retained: bool = tx.query_row(
-        "SELECT EXISTS(SELECT 1 FROM provider_runs r
-         JOIN execution_claims c ON c.family=r.family AND c.node=r.node AND c.kind='stream'
-         JOIN tasks t ON t.family=r.family
-         WHERE r.family=?1 AND r.node=?2 AND r.reserved=?3
-         AND t.held >= (SELECT SUM(all_runs.reserved) FROM provider_runs all_runs WHERE all_runs.family=r.family)
-         AND t.held <= t.budget)",
-        params![plan.family, plan.node, plan.ceiling as i64],
-        |row| row.get(0),
-    ).map_err(db)?;
-    if retained {
-        Ok(())
-    } else {
-        Err(Error::Conflict(
-            "provider claim or shared exposure not retained",
-        ))
-    }
+    crate::execution_exposure::provider(tx, plan)
 }
 fn started(tx: &Transaction<'_>, p: &ProviderDispatch) -> Result<()> {
     let burned: bool = tx
