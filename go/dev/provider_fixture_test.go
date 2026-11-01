@@ -54,12 +54,19 @@ func TestMain(m *testing.M) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	serverBinary = filepath.Join(repo, "target/debug/weaver-server")
 	directory, err := os.MkdirTemp("", "weaver-control-build-*")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+	serverBinary = filepath.Join(directory, "weaver-server")
+	digest, err := publishProviderImage(filepath.Join(repo, "target/debug/weaver-server"), serverBinary)
+	if err != nil {
+		os.RemoveAll(directory)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fmt.Fprintln(os.Stderr, "test-owned provider image sha256="+digest)
 	controlBinary = filepath.Join(directory, "weaver-control")
 	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "build", "-race", "-o", controlBinary, "./cmd/weaver-control")
 	controlBuild.Dir, controlBuild.Stdout, controlBuild.Stderr = repo, os.Stderr, os.Stderr

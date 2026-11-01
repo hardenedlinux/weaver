@@ -184,3 +184,24 @@ The unchanged Lake pin still lacks Gateway.ZeroTrust; its isolated upstream
 reference projection and the ordinary locked-entry failure remain distinct, as
 recorded in [[file:59.51-zero-trust-architecture.org][the SPEC integration status]]. Storage transition proofs pass
 independently; this migration does not claim the full SPEC runtime refinement.
+
+** Test-owned executable handoff
+
+A source-stable run retained the same pre-main failure while all other storage
+stages passed. The Go fixture now copies the completed server artifact into its
+own temporary directory, rejects nonregular/symlink input and existing output,
+checks source identity/size/modification time, fsyncs a read-only destination and
+independently verifies its SHA-256. Every provider test uses that same image.
+There is no execution, probe launch or server warm-up during this handoff; first
+connection and natural shutdown retain the original three/fifteen-second gates.
+The standard testing/quick property checks that subsequent build writes cannot
+change the captured bytes and that an existing image cannot be overwritten.
+This is test artifact custody, not an independently protected security root.
+
+The same server hash above passed the competing-cap, sixteen-stream saturation
+and fresh-file/restart controls after this change. First test-image connection
+took 1.367 seconds; its source channel took 1.372 seconds. The additional new-file
+control took 1.028/1.032 seconds and its restart 0.111/0.115 seconds. These results
+qualify that exact image handoff; they do not identify the operating-system cause
+of the mutable Cargo-path delay or establish flushed-cache latency. All original
+failed receipts remain separate from the pending full source-stable acceptance.
