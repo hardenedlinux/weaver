@@ -150,3 +150,17 @@ neither a cold-build result nor acceptance of the missing local source cohort.
 * Core execution design
 
 [[file:59.69-hot-path-cost-boundaries.svg]]
+
+* Remaining source compiler owner
+
+The 6f839950 source jobs still fail. On Ubuntu the quiet owner is the mrr-gerbil
+archive build script after a roughly 59 MB program_link.i, with Rust compilation
+artifacts already complete. The SDK already applies -fno-gcse-lm to the linker
+object. The next candidate preserves the selected SDK's public
+CORCXXFLAGS_GAMBUILD defaults and adds only -ftrack-macro-expansion=0; it changes
+neither O2, ABI flags, immutable release, dependency pins nor 1200/30 watchdogs.
+Eight focused controls and a real installed SDK query pass. The local newer SDK
+is not hosted cold-source acceptance. Native source CI must verify the candidate;
+previous failures and kernel/paired samples stay outside Git without deletion.
+The SysML diagnostic contract records this boundary; the core diagram remains
+about authority and retained outcomes, with its SVG embedded above.

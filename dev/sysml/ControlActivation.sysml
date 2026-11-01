@@ -140,6 +140,14 @@ package ControlActivation {
         doc /* Synchronous Gambit C FFI borrows bounded immutable UTF-8 data for Rust typed Cedar validation. No returned status, buffer, callback or source artifact is an execution capability. Rust final publication and execution repeat authoritative checks. */
     }
     requirement def GovernancePolicyProjection {
+        doc /* Native archive diagnosis must track Cargo build-script lifetime,
+           not infer a quiet owner from the last Rust artifact. SDK-selected GCC
+           may use Gambit's declared CORCXXFLAGS_GAMBUILD override to disable
+           macro-expansion diagnostic tracking while retaining every literal SDK
+           default, ABI flag and optimization level. Reject ambiguous/unsupported
+           declarations or conflicting explicit options; never substitute ambient
+           CC, mutate the release, patch a dependency or relax watchdogs. Full
+           original-source recovery remains the acceptance gate for this change. */
         doc /* A separate bounded owned-process kernel trace refines syscall and
            runnable/blocked/preempted intervals only after PID/TID and trace-clock
            joins pass coverage checks. Foreign/unresolved rows and censored
