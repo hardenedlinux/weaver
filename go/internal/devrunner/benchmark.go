@@ -47,6 +47,8 @@ var rustBenchmarkCases = []string{
 	"ledger_spec_parent_bound_revision_registration",
 	"ledger_source_key_handoff",
 	"ledger_source_authenticated_publication",
+	"ledger_source_empty_store_enrollment/0",
+	"ledger_source_empty_store_enrollment/32",
 	"ledger_publication_exact_replay",
 	"ledger_publication_historical_lookup",
 	"ledger_profile_task_registration",

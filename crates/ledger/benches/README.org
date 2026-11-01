@@ -17,6 +17,13 @@ and final CAS. Initial parent publication and staging are outside timing.
 The review case captures its actual parent and stages the requirement outside
 timing; registration persistence, exact artifact validation and final CAS are timed.
 No external producer authentication, solver or independent anchor is measured.
+Two additional cases measure first source enrollment against the actual
+application-table catalog, with zero or 32 empty extension tables. Database
+creation and extension DDL are outside timing; catalog discovery, row-existence
+checks and the atomic initial key/binding commit are inside. This scan is absent
+from already-enrolled source checks and from the provider message/send path.
+The cases do not measure recovery from an empty whole-store rollback image or
+provide evidence of an independent retained root.
 
 * Measurement boundary
 
@@ -29,7 +36,7 @@ range seeks separately; a query plan is not a latency benchmark.
 * Entrypoints
 
 Run this package with =cargo bench -p weaver-ledger --all-features --bench gateway --locked --offline -- --noplot=.
-Run the complete measured matrix with =go run ./go/cmd/weaver-dev bench=.
+Run the complete measured matrix with =go -C go run ./cmd/weaver-dev bench=.
 Criterion is inherited from the workspace as a development dependency.
 Each case uses thirty samples, one second of warm-up and two seconds of requested measurement.
 Compilation or a smoke invocation alone is not a measured baseline.

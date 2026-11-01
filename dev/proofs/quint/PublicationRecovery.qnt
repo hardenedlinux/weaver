@@ -818,6 +818,25 @@ module PublicationRecovery {
     .expect(f.external==1 and authority.exposureProjection.held==0 and authority.held==4)
   run mrrPublishedBodyWithoutAdmissionCannotCreateTicketTest=executionRecovered
     .expect(authority.mrrBodyAvailable and f.burned==Set()).then(admitAfterMRR(executionReceipt,1,f.cut,f.epoch).fail())
+  // Native enrollment alone: these are authoritative main-catalog table IDs,
+  // not caller labels or a recovered=true flag. SQLite's deciding writer owns
+  // completeness and freshness. Existing source/authentication laws remain.
+  pure def enrollmentOwner(headPresent:bool,catalog:Set[int],occupied:Set[int],original:int,candidate:int):int=
+    if(headPresent or catalog.exists(table=>occupied.contains(table)))original else candidate
+  pure val enrollmentCatalog=Set(0,1,2,99)
+  run everyRetainedTableBlocksSourceEnrollmentTest=init.expect(enrollmentCatalog.forall(table=>
+    enrollmentOwner(false,enrollmentCatalog,Set(table),1,2)==1))
+  run emptyStoreEnrollmentPositiveControlTest=init.expect(enrollmentOwner(false,enrollmentCatalog,Set(),0,1)==1)
+  run existingSourceBindingDoesNotReenrollTest=init.expect(enrollmentOwner(true,enrollmentCatalog,Set(),1,2)==1)
+  run omittedProjectionEnrollmentCounterexampleTest=init.expect(
+    enrollmentOwner(false,Set(0,1,2),Set(99),1,2)==2 and
+    enrollmentOwner(false,enrollmentCatalog,Set(99),1,2)==1)
+  run lateCatalogCommitMustReachDecidingGuardTest=init.expect(
+    enrollmentOwner(false,Set(0,1,2),Set(),1,2)==2 and
+    enrollmentOwner(false,enrollmentCatalog,Set(99),1,2)==1)
+  run residualStoreRefusalKeepsOriginalExposureTest=init.expect(
+    enrollmentOwner(false,enrollmentCatalog,Set(99),authority.floor.registrarOwner,2)==authority.floor.registrarOwner and
+    authority.held==4 and authority.calls==1 and safe)
   action mrrAdmissionRecoverySchedule=any {retainSourcePrefix,repairExposureProjection,readSourceObservation(sourcePublish0),
     qualifyRegistryRecovery(executionReceipt.source),qualifyRetainedRegistry(executionReceipt),
     captureMRRApproval(executionReceipt),commitMRRBurn(executionReceipt,1,f.cut,f.epoch),observeMRRReplay(1),

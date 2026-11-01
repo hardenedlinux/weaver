@@ -275,6 +275,17 @@ package ControlActivation {
            Historical handoff receipts grant no new permission. Source SPKI
            continuity is not independent subject/incarnation issuance, full
            reviewed-publication qualification or whole-store anti-rollback. */
+        doc /* First source enrollment requires every durable application table
+           in the current main SQLite catalog to be empty. Discovery and row
+           checks run under the same Immediate writer transaction as the initial
+           binding/key commit. Residual schema/review projections and new tables
+           cannot disappear behind a fixed allowlist or a temporary table alias.
+           Refusal invokes no source callback and preserves original state.
+           A missing callback result after enrollment cannot replace its durable
+           first identity. Existing bindings use the normal current-source path;
+           catalog scanning is absent from provider message/final-send paths.
+           An entirely rolled-back empty image still needs independent recovery
+           protection; catalog emptiness is not an anti-rollback witness. */
         doc /* The retained recovery cut includes the four existing domain
            prefixes, execution owner/epoch, monotone one-use burns and the original
            reservation/unknown-exposure commitment. The admission transaction

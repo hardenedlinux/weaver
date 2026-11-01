@@ -1,7 +1,7 @@
 vars: {d2-config: {layout-engine: tala; theme-id: 3; pad: 70}}
 classes: {card: {label.near: center-center; style.font-size: 21; style.border-radius: 12}}
 title: SOURCE KEY CUSTODY / FINAL TRANSACTION ADMISSION {shape: text; near: top-center; style.font-size: 32; style.bold: true}
-author: Scheme Governor / Policy\nOriginal task and source assets\nExact semantic commitments\nCompilation grants no execution {
+author: Scheme Governor / Policy\nRust SDK typed source capture\nOriginal task / exact commitments\nCompilation grants no execution {
   class: card; left: 0; top: 0; width: 480; height: 220; style.fill: "#eef3ef"
 }
 control: Go source control\nExplicit handoff / exact reconciliation\nControlled credential rollout\nNo implicit rebase or key reuse {
@@ -15,17 +15,17 @@ host: Rust authenticated RPC host\nActual TLS leaf / SPKI / credential\nSeparate
 custody: Persistent source custody\nCurrent binding / retained key prefix\nOriginal command and outcome\nUnknown reply preserves commitment {
   class: card; left: 0; top: 500; width: 480; height: 220; style.fill: "#f4f2ec"
 }
-decision: Rust deciding transaction\nRecheck actual source at mutation\nAtomic handoff or publication\nHistorical receipt grants no permit {
+decision: Rust deciding transaction\nFirst enrollment: every app table empty\nRecheck actual source at mutation\nAtomic handoff or publication\nHistorical receipt grants no permit {
   class: card; left: 700; top: 500; width: 500; height: 220; style.fill: "#e7edf4"
 }
 send: Rust final executor\nCurrent Cedar / original task / fence\nClaim and shared budget retained\nUnknown sends cannot redispatch {
   class: card; left: 1420; top: 500; width: 500; height: 220; style.fill: "#eef3ef"
 }
-author -> control: Exact original publication {style.font-size: 18}
+author -> control: Typed source over gRPC {style.font-size: 18}
 control -> host: Authenticated source RPC {style.font-size: 18}
 host -> decision: Actual principal {style.font-size: 18}
 custody -> decision: Current deciding state {style.font-size: 18}
-decision -> send: Committed original authority {style.font-size: 18}
+decision -> send: Original authority {style.font-size: 18}
 footer: "Retired keys stay fenced · Handoff never refunds unknown exposure · Local custody requires independent recovery protection" {
   shape: text; left: 30; top: 890; width: 1890; height: 70; style.font-size: 24; style.font-color: "#5c8b77"
 }

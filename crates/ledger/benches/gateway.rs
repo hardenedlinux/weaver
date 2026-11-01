@@ -276,6 +276,39 @@ fn profile_registration(c: &mut Criterion) {
 }
 fn source_authority(c: &mut Criterion) {
     let caller = source_fixture::source_identity(0);
+    for additional_tables in [0, 32] {
+        c.bench_with_input(
+            BenchmarkId::new("ledger/source_empty_store_enrollment", additional_tables),
+            &additional_tables,
+            |b, &tables| {
+                b.iter_batched(
+                    || {
+                        let temp = tempfile::tempdir().expect("directory");
+                        let path = temp.path().join("enrollment.db");
+                        let ledger = weaver_ledger::Ledger::open(&path).expect("store");
+                        let mut catalog =
+                            rusqlite::Connection::open(&path).expect("fixture catalog");
+                        let tx = catalog.transaction().expect("fixture transaction");
+                        for table in 0..tables {
+                            tx.execute_batch(&format!(
+                                "CREATE TABLE extension_{table} (retained INTEGER NOT NULL)"
+                            ))
+                            .expect("empty extension table");
+                        }
+                        tx.commit().expect("fixture catalog complete");
+                        (temp, ledger)
+                    },
+                    |(temp, mut ledger)| {
+                        ledger
+                            .with_authenticated_source(&caller, |_| Ok(()))
+                            .expect("empty-store enrollment");
+                        black_box((temp, ledger))
+                    },
+                    BatchSize::PerIteration,
+                )
+            },
+        );
+    }
     let command = weaver_contracts::SourceRotation {
         operation_id: "source-handoff".into(),
         expected_epoch: 0,

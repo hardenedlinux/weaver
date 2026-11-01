@@ -334,6 +334,39 @@ theorem recovery_preserves_source_key_uniqueness [DecidableEq Key]
 
 #print axioms recovery_preserves_source_key_uniqueness
 
+/-- Native first enrollment reads the complete current main-table catalog under
+the deciding SQLite writer. These observations are not caller-supplied evidence.
+This local guard does not establish an independent rollback-resistant root. -/
+def enrollSourceFromCatalog (headPresent : Bool) (catalog : List Domain)
+    (occupied : Domain → Bool) (candidate : Nat) (s : State Key) : State Key :=
+  if headPresent || catalog.any occupied then s
+  else {s with registrarOwner := candidate, registrarEpoch := 0, sourceKeys := [candidate]}
+
+theorem retained_table_blocks_source_enrollment (member : table ∈ catalog)
+    (present : occupied table = true) :
+    enrollSourceFromCatalog headPresent catalog occupied candidate s = s := by
+  have found : catalog.any occupied = true := List.any_eq_true.mpr ⟨table, member, present⟩
+  simp [enrollSourceFromCatalog, found]
+
+/-- Coverage applies to any finite catalog, including a newly introduced table.
+The native catalog/row observation must share the final enrollment transaction. -/
+theorem complete_catalog_refusal_preserves_original_state
+    (complete : ∀ table, occupied table = true → table ∈ catalog)
+    (present : occupied residual = true) :
+    enrollSourceFromCatalog headPresent catalog occupied candidate s = s :=
+  retained_table_blocks_source_enrollment (complete residual present) present
+
+theorem source_enrollment_refusal_preserves_unknown_accounting
+    (complete : ∀ table, occupied table = true → table ∈ catalog)
+    (present : occupied residual = true) (safe : Safe held calls s) :
+    Safe held calls (enrollSourceFromCatalog headPresent catalog occupied candidate s) := by
+  rw [complete_catalog_refusal_preserves_original_state complete present]
+  exact safe
+
+#print axioms retained_table_blocks_source_enrollment
+#print axioms complete_catalog_refusal_preserves_original_state
+#print axioms source_enrollment_refusal_preserves_unknown_accounting
+
 theorem historical_registration_is_not_current (stale : entry.parent ≠ s.head) :
     ¬ RegisteredCurrent s id entry actor epoch := fun accepted => stale accepted.2.2.2.1
 
