@@ -39,6 +39,12 @@ The stable task key is also part of private final-use stamps and fresh Cedar
 context. A key mismatch between consumption, registry and historical decision is
 rejected; receipt metadata is not a replacement permission for current execution.
 
+Source rotation revokes source mutation credentials, not the meaning of every
+already valid execution grant. An existing original operation still requires
+current Policy/fence, original scope and consumption. Revoking those effects uses
+the existing Policy/fencing protocol; source epoch alone is not an execution
+revocation signal.
+
 Concurrent registrations serialize through the existing deciding writer. A task
 key already assigned to an origin rejects a different origin/family/body/scope.
 A new key cannot acquire an already owned family or origin. The exact same
@@ -132,3 +138,29 @@ Raw build/runtime failures and structured evidence remain ignored under =.cache=
 the minimized property seed is a reproducible test asset, not an execution log.
 Initial compilation and needless-borrow failures are retained. Acceptance results
 are recorded separately after verification of committed source.
+
+The first complete cohort at =25ed70e= failed the unchanged ledger ASP gate:
+the public registration function combined too many algorithm steps. Its passing
+provider/model/benchmark stages do not qualify that failed cohort, and the full
+native integration target did not run after the library gate failed. Recovery,
+command validation and fresh installation were split into named private steps;
+the focused ledger gate then passed all 30 library checks. The public API, native
+transaction ordering and failure rules are preserved. Lean additionally separates
+immutable task assignment from the monotone first-publication seal: adding that
+constraint cannot broaden authorization, and a sealed birth cannot be replaced.
+
+| First cohort measurement, not acceptance | Samples | Mean ms | 95% interval ms |
+|-----------------------------------------+---------+---------+-----------------|
+| Fresh registration | 30 | 1.688 | 1.567 to 1.850 |
+| Receipt replay | 30 | 0.999 | 0.938 to 1.086 |
+| Rebind rejection | 30 | 0.919 | 0.855 to 0.998 |
+| WAL final pair | 30 | 19.182 | 17.982 to 20.481 |
+| MVCC serial final pair | 30 | 15.465 | 14.424 to 17.051 |
+| MVCC parallel final pair | 30 | 10.178 | 9.547 to 10.937 |
+| MVCC shared-budget pair | 30 | 17.974 | 16.715 to 19.496 |
+| MVCC shared-history pair | 30 | 21.532 | 17.921 to 26.239 |
+
+These are synthetic native measurements including natural owner drain, not a
+provider latency SLO or TLS benchmark. Differences from 59.80 do not establish
+that the additional registry checks improved performance; the workloads and host
+cohorts differ. Every measured cohort remains visible.

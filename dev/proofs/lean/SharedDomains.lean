@@ -103,7 +103,6 @@ structure Assignment where
   claim : Nat
   budget : Nat
   history : Nat
-  publication : Nat
   deriving DecidableEq
 def register (registry : Nat → Option Assignment) (key : Nat) (value : Assignment) :=
   match registry key with
@@ -119,10 +118,33 @@ theorem source_epoch_does_not_change_task_scope (registry : Nat → Option Assig
     register registry key replacement key = some original := assigned_task_cannot_rebind _ _ _ _ bound
 theorem stale_source_command_cannot_commit (expected current : Nat)
     (changed : expected < current) : ¬ expected = current := by omega
+
+def sealBirth (original proposed : Option Nat) :=
+  match original with
+  | some _ => original
+  | none => proposed
+
+def birthAllows (committed : Nat → Prop) (birth : Option Nat) : Prop :=
+  match birth with
+  | none => True
+  | some key => committed key
+
+theorem first_birth_seal_cannot_broaden (committed : Nat → Prop)
+    (original proposed : Option Nat)
+    (allowed : birthAllows committed (sealBirth original proposed)) :
+    birthAllows committed original := by
+  cases original with
+  | none => trivial
+  | some key => exact allowed
+
+theorem sealed_birth_cannot_be_replaced (original : Nat) (proposed : Option Nat) :
+    sealBirth (some original) proposed = some original := rfl
 /- Native receipt replay is observational and the entire assignment/consumption
    prefix must survive restart. Authentic stable key assignment remains a host
    premise; these results do not detect an issuer inventing every new label. -/
 #print axioms assigned_task_cannot_rebind
 #print axioms source_epoch_does_not_change_task_scope
 #print axioms stale_source_command_cannot_commit
+#print axioms first_birth_seal_cannot_broaden
+#print axioms sealed_birth_cannot_be_replaced
 end Weaver.TaskOrigin

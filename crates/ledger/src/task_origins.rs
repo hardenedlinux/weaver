@@ -139,6 +139,105 @@ pub(crate) fn seal_publication(tx: &WriteScope<'_>, family: &str) -> Result<()> 
     }
     Ok(())
 }
+// Recover only the committed command. This never installs a new task or grant.
+fn recover(
+    tx: &WriteScope<'_>,
+    task: &Task,
+    binding: &DomainBinding,
+    admission: &TaskAdmission,
+    digest: &str,
+) -> Result<Option<TaskAdmissionReceipt>> {
+    let old = persistence::maybe(
+        tx,
+        "SELECT digest,receipt FROM task_admissions WHERE operation_id=?1",
+        [admission.operation_id.as_str()],
+        |r| Ok((r.get::<String>(0)?, r.get::<String>(1)?)),
+    )
+    .map_err(db)?;
+    let Some((old, body)) = old else {
+        return Ok(None);
+    };
+    let receipt: TaskAdmissionReceipt = weaver_contracts::decode(body.as_bytes())?;
+    if old != digest
+        || receipt.digest != digest
+        || receipt.operation_id != admission.operation_id
+        || receipt.task_key != admission.task_key
+        || receipt.origin != binding.origin
+        || receipt.family != task.family
+        || receipt.source_epoch != admission.expected_source_epoch
+    {
+        return Err(Error::Conflict("original admission decision changed"));
+    }
+    require(tx, &task.family)?;
+    let registered: String = persistence::one(
+        tx,
+        "SELECT task_key FROM original_tasks WHERE family=?1",
+        [task.family.as_str()],
+        |r| r.get(0),
+    )
+    .map_err(db)?;
+    if registered != admission.task_key {
+        return Err(Error::Conflict(
+            "original task key no longer matches its decision",
+        ));
+    }
+    Ok(Some(receipt))
+}
+struct Registration<'a> {
+    task: &'a Task,
+    binding: &'a DomainBinding,
+    admission: &'a TaskAdmission,
+    publication: Option<&'a weaver_contracts::PublicationKey>,
+}
+impl Registration<'_> {
+    fn digest(&self) -> Result<String> {
+        weaver_contracts::identifier(&self.admission.task_key)?;
+        weaver_contracts::identifier(&self.admission.operation_id)?;
+        Ok(body_digest(&serde_json::to_string(&(
+            self.admission,
+            self.task,
+            self.binding,
+            self.publication,
+        ))?))
+    }
+    fn install(
+        &self,
+        tx: &WriteScope<'_>,
+        digest: String,
+        epoch: u64,
+    ) -> Result<TaskAdmissionReceipt> {
+        if epoch != self.admission.expected_source_epoch {
+            return Err(Error::Conflict("stale source task admission epoch"));
+        }
+        retain(
+            tx,
+            &self.admission.task_key,
+            self.task,
+            self.binding,
+            self.publication,
+        )?;
+        crate::store::register_task_in(tx, self.task, self.publication, Some(self.binding))?;
+        let receipt = TaskAdmissionReceipt {
+            operation_id: self.admission.operation_id.clone(),
+            digest,
+            task_key: self.admission.task_key.clone(),
+            family: self.task.family.clone(),
+            origin: self.binding.origin.clone(),
+            source_epoch: epoch,
+        };
+        persistence::exec(
+            tx,
+            "INSERT INTO task_admissions VALUES(?1,?2,?3)",
+            [
+                receipt.operation_id.as_str(),
+                receipt.digest.as_str(),
+                serde_json::to_string(&receipt)?.as_str(),
+            ],
+        )
+        .map_err(db)?;
+        Ok(receipt)
+    }
+}
 impl crate::Ledger {
     /// Atomically register the source task, origin, immutable scope and original decision.
     pub fn register_original_task(
@@ -148,74 +247,20 @@ impl crate::Ledger {
         admission: &TaskAdmission,
         publication: Option<&weaver_contracts::PublicationKey>,
     ) -> Result<TaskAdmissionReceipt> {
-        weaver_contracts::identifier(&admission.task_key)?;
-        weaver_contracts::identifier(&admission.operation_id)?;
-        let digest = body_digest(&serde_json::to_string(&(
-            admission,
+        let registration = Registration {
             task,
             binding,
+            admission,
             publication,
-        ))?);
+        };
+        let digest = registration.digest()?;
         let tx = persistence::begin(&mut self.connection).map_err(db)?;
         crate::source_authority::require(&tx, self.source.as_ref())?;
         let epoch = crate::source_authority::current(&tx)?.map_or(0, |a| a.epoch);
-        if let Some((old, body)) = persistence::maybe(
-            &tx,
-            "SELECT digest,receipt FROM task_admissions WHERE operation_id=?1",
-            [admission.operation_id.as_str()],
-            |r| Ok((r.get::<String>(0)?, r.get::<String>(1)?)),
-        )
-        .map_err(db)?
-        {
-            let receipt: TaskAdmissionReceipt = weaver_contracts::decode(body.as_bytes())?;
-            if old != digest
-                || receipt.digest != digest
-                || receipt.operation_id != admission.operation_id
-                || receipt.task_key != admission.task_key
-                || receipt.origin != binding.origin
-                || receipt.family != task.family
-                || receipt.source_epoch != admission.expected_source_epoch
-            {
-                return Err(Error::Conflict("original admission decision changed"));
-            }
-            require(&tx, &task.family)?;
-            let registered: String = persistence::one(
-                &tx,
-                "SELECT task_key FROM original_tasks WHERE family=?1",
-                [task.family.as_str()],
-                |r| r.get(0),
-            )
-            .map_err(db)?;
-            if registered != admission.task_key {
-                return Err(Error::Conflict(
-                    "original task key no longer matches its decision",
-                ));
-            }
+        if let Some(receipt) = recover(&tx, task, binding, admission, &digest)? {
             return Ok(receipt);
         }
-        if epoch != admission.expected_source_epoch {
-            return Err(Error::Conflict("stale source task admission epoch"));
-        }
-        retain(&tx, &admission.task_key, task, binding, publication)?;
-        crate::store::register_task_in(&tx, task, publication, Some(binding))?;
-        let receipt = TaskAdmissionReceipt {
-            operation_id: admission.operation_id.clone(),
-            digest,
-            task_key: admission.task_key.clone(),
-            family: task.family.clone(),
-            origin: binding.origin.clone(),
-            source_epoch: epoch,
-        };
-        persistence::exec(
-            &tx,
-            "INSERT INTO task_admissions VALUES(?1,?2,?3)",
-            [
-                receipt.operation_id.as_str(),
-                receipt.digest.as_str(),
-                serde_json::to_string(&receipt)?.as_str(),
-            ],
-        )
-        .map_err(db)?;
+        let receipt = registration.install(&tx, digest, epoch)?;
         tx.commit().map_err(db)?;
         Ok(receipt)
     }

@@ -46,6 +46,8 @@
     {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRuntimeAssetBoundary"},
     {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRejectsRuntimeDevReferences"}]},
   {"id":"OriginalTaskBinding","witnesses":[
+    {"file":"dev/proofs/lean/SharedDomains.lean","pattern":"theorem first_birth_seal_cannot_broaden","declaration":"Weaver.TaskOrigin.first_birth_seal_cannot_broaden"},
+    {"file":"dev/proofs/lean/SharedDomains.lean","pattern":"theorem sealed_birth_cannot_be_replaced","declaration":"Weaver.TaskOrigin.sealed_birth_cannot_be_replaced"},
     {"file":"crates/ledger/tests/unit/task_publication.rs","pattern":"fn lost_birth_projection_cannot_authorize_or_be_silently_repaired"},
     {"file":"crates/ledger/src/task_origins.rs","pattern":"fn register_original_task"},
     {"file":"crates/ledger/tests/unit/task_origins.rs","pattern":"fn source_rotation_cannot_reallocate_task_and_lost_reply_recovers_original_commit"},
