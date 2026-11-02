@@ -39,7 +39,7 @@ module TursoMvcc {
   action unsafePublish= s'=s.with("fence",s.fence+1)
   action unsafeSnapshotSend(k:int):bool=s'=s.with("calls",s.calls.set(k,s.calls.get(k)+1)).with("stale",s.authorized.get(k)!=s.fence)
   action unsafeRefund(k:int):bool=s'=s.with("held",s.held.set(k,0))
-  action unsafeClaimOnlyLock(k:int):bool=s'=s.with("active",s.active.union(Set(k)))
+  action unsafeClaimOnlyLock(k:int):bool=all{s.permits.contains(k),s'=s.with("active",s.active.union(Set(k)))}
   action accepted=init.then(begin(0)).then(reserve(0)).then(begin(0)).then(consume(0))
   action step={nondet k=logicalKeys.oneOf() any{begin(k),reserve(k),consume(k),conflict(k),publish,finalGuard(k),send(k),finish(k),failUse(k),replyLoss,restart}}
   run independentFamiliesOverlapTest=init.then(begin(0)).then(begin(2)).then(reserve(0)).then(reserve(2)).expect(safety and s.held.get(0)==3 and s.held.get(2)==3)
@@ -52,7 +52,9 @@ module TursoMvcc {
   run publicationWaitsForAllFinalDomainsTest=twoFamilies.then(finalGuard(0)).then(finalGuard(2)).then(send(0)).then(finish(0)).then(publish.fail())
   run postSendCommitConflictKeepsPhysicalEffectTest=accepted.then(finalGuard(0)).then(send(0)).then(failUse(0)).then(restart).expect(safety and s.calls.get(0)==1 and s.held.get(0)==3 and not(s.recorded.contains(0))).then(begin(0)).then(consume(0).fail())
   run lostFinalCommitReplyKeepsPhysicalEffectTest=accepted.then(finalGuard(0)).then(send(0)).then(finish(0)).then(replyLoss).then(restart).expect(safety and s.calls.get(0)==1 and s.recorded.contains(0))
-  run sameFamilyClaimOnlyLockCounterexampleTest=accepted.then(finalGuard(0)).then(unsafeClaimOnlyLock(1)).expect(not(safety))
+  action sameFamily=accepted.then(begin(1)).then(reserve(1)).then(begin(1)).then(consume(1))
+  run sameFamilyFinalGuardsSerializeTest=sameFamily.then(finalGuard(0)).then(finalGuard(1).fail())
+  run sameFamilyClaimOnlyLockCounterexampleTest=sameFamily.then(finalGuard(0)).then(unsafeClaimOnlyLock(1)).expect(not(safety))
   run conflictCannotSendTest=init.then(begin(0)).then(conflict(0)).then(finalGuard(0).fail())
   run conflictRetainsOtherCommittedHoldTest=accepted.then(begin(2)).then(conflict(2)).expect(safety and s.held.get(0)==3)
   run revokeBeforeGuardBlocksSendTest=accepted.then(publish).then(finalGuard(0).fail())

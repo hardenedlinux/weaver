@@ -173,3 +173,36 @@ one current storage view, not an acceptance claim for unrelated imported-SPEC
 views. Initial Lean case-pattern errors are retained separately from the corrected
 compiler receipts. Raw failures, metrics and execution logs remain ignored in
 =.cache=; maintained design documents and shrunk regression cases remain tracked.
+
+* Committed-source cohort and retained readiness failure
+
+The first complete Go storage run at =fd6fb5c= passed architecture, native/PBT,
+strict Clippy, all model stages, fresh benchmark admission and source-currentness,
+but failed its provider suite at =TestProviderCompetingCapsCannotReachDispatch=:
+the unchanged three-second startup deadline expired at 3.014 seconds. The process
+entered main about 2.666 seconds after launch and configured/bound listeners
+about fourteen milliseconds later. This identifies a pre-main/readiness delay;
+it does not isolate its OS/client-backoff cause or establish an MVCC regression.
+The structured failure receipt remains separate from passing observations.
+
+A bounded control pair using unchanged runtime sources passed the competing-cap
+case and fresh-image/restart case. Its captured image SHA-256 was
+=126bb578b721280d38369f334285fe0f91d3cd70b3537281da09ba44abea452e=.
+There is no claim that this success repairs the earlier readiness failure.
+Neither startup/drain limits, warm-up behavior nor cleanup changed.
+
+The same complete run produced another independent benchmark cohort, with all
+three thirty-sample results verified by Go from fresh Criterion JSON:
+
+| Pair workload | Mean ms | 95 percent interval ms |
+|---------------+---------+------------------------|
+| WAL | 18.138 | 15.823 to 20.903 |
+| MVCC serial control | 13.576 | 11.703 to 15.927 |
+| MVCC parallel | 6.805 | 6.346 to 7.390 |
+
+Both cohorts remain reported. Their difference is a reason to avoid a general
+speedup/SLO claim, not a reason to discard the first cohort. The model's claim-only
+lock counterexample was subsequently strengthened to start from two legitimately
+consumed claims in the same shared family. The safe second final guard is rejected;
+only the narrower-lock mutation admits both. All twenty-one scenarios and the
+same bounded exploration pass with this stronger negative control.
