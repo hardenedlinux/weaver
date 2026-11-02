@@ -401,6 +401,7 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.79-turso-final-domains.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.80-shared-domain-authority.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.81-original-task-origin-registration.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.82-semantic-responsibility-allocation.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.77-mrr-turso-storage.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.77-mrr-turso-storage.svg' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.75-complete-entry-and-output-contract.d2' : File;

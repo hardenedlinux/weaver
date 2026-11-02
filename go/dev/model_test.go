@@ -102,3 +102,45 @@ func TestSysMLSDKRejectsSemanticErrors(t *testing.T) {
 		t.Fatalf("missing expected unresolved-type evidence: %v", model.Errors())
 	}
 }
+
+// Check ownership through the linked SDK model, rather than a second manifest.
+// This guards architecture allocation; it does not establish runtime refinement.
+func TestSysMLSemanticResponsibilityAllocation(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	client, err := opensysml.New(opensysml.WithCacheSize(1))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	model := projectModel(t, ctx, client)
+	actions, err := client.Query(ctx, model, opensysml.Query{
+		Scope: []string{"WeaverExecution"}, Select: []string{"name", "owner", "type"},
+		Where: opensysml.Equals("@type", "ActionUsage"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"WeaverExecution::SchemeSemanticPublisher::deriveCandidate": "WeaverExecution::DeriveSemanticCandidate",
+		"WeaverExecution::GoControlAdapter::publishCandidate":       "WeaverExecution::OrchestrateSourcePublication",
+		"WeaverExecution::RustLedger::commitOriginal":               "WeaverExecution::CommitOriginalAdmission",
+		"WeaverExecution::RustFinalBroker::guardEffect":             "WeaverExecution::GuardFinalEffect",
+	}
+	for _, action := range actions {
+		key := action.Properties["owner"] + "::" + action.Properties["name"]
+		if expected, ok := want[key]; ok {
+			if action.Properties["type"] != expected {
+				t.Fatalf("%s has type %q, want %s", key, action.Properties["type"], expected)
+			}
+			delete(want, key)
+			continue
+		}
+		if action.Properties["type"] == "WeaverExecution::GuardFinalEffect" {
+			t.Fatalf("final-effect action allocated outside the Rust broker: %s", key)
+		}
+	}
+	if len(want) != 0 {
+		t.Fatalf("missing semantic/publication/commit/final-effect allocations: %v; SDK actions: %v", want, actions)
+	}
+}

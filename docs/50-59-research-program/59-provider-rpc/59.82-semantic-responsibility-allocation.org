@@ -1,0 +1,91 @@
+#+TITLE: 59.82 Semantic Responsibility Allocation
+#+LANGUAGE: en
+
+* Normative model
+
+[[file:../../../dev/sysml/WeaverExecution.sysml][WeaverExecution.sysml]] owns the allocation. The existing parts contain typed
+actions, rather than introducing another issuer, coordinator or source ledger:
+
+| Existing owner | Allocated action | Contract and boundary |
+|----------------+------------------+-----------------------|
+| SchemeSemanticPublisher | DeriveSemanticCandidate | Independently admitted SemanticCommitment to inert SourceCommand |
+| GoControlAdapter | OrchestrateSourcePublication | Preserve the original while submitting an authenticated SourceCommand |
+| RustLedger | CommitOriginalAdmission | SourceCommand to PublishedObservation under current authority and durable CAS |
+| RustFinalBroker | GuardFinalEffect | ConsumedPermit to actual wire request under current final custody |
+
+Action signatures allocate responsibilities; they do not establish an executable
+refinement, sufficient authorization or a theorem about external delivery. Existing
+ports and connections remain the communication topology. No action creates a new
+service or permits a shortcut between source compilation and external bytes.
+
+* Scheme semantics and upstream reuse
+
+Scheme owns routine meaning, original task scope, required parent profiles and
+permitted derivation or alias relations. Reuse Agentic AI Lab Governor selection
+and Governance assessment, obligations and source assets. Reuse inherited specific
+Record/Function contracts and the existing typed Scheme-to-Rust FFI handoff.
+JSON/YAML fills the same admitted data contracts; no second governance DSL is needed.
+
+An original binds claim, profile commitment and shared budget/history domains.
+Routing, fallback, protocol reconnect and source replacement preserve that meaning.
+Scheme proposes a candidate; it does not commit consumption, settle reservations,
+own provider credentials or send bytes. An assessment success cannot release an
+unknown hold. Semantic alias derivation does not authenticate its own input.
+
+Cedar and cedar-poo-spec own reusable authorization semantics and conditional
+preservation laws. Rust supplies authenticated actual effect/state to the existing
+Cedar mechanism. Lean checks the imported semantic contracts under their explicit
+premises; Quint explores interleavings and counterexamples. Neither tool replaces
+current context acquisition, durable transactions or final transport mediation.
+Only declarations checked against the pinned dependency count as imported proofs.
+
+Go owns configuration normalization, cloud/protocol integration, route proposals,
+authenticated publication orchestration and uncertain-outcome reconciliation.
+Rust owns the FFI lifetime boundary, typed original comparison, current actual
+context, MRR Data/Turso deciding transaction, consumption and final-use fencing.
+This keeps programmable semantics out of duplicate Rust/Go policy interpreters
+while retaining the necessary durable execution mechanisms.
+
+* Existing implementation and remaining gap
+
+| Existing mechanism | Reuse and limit |
+|--------------------+-----------------|
+| =crates/governance/src/catalog/admission.rs= | Immutable approved producer catalog; trusted embedding supplies the original, so construction alone does not authenticate its truth |
+| =crates/governance/src/binding.rs= | SourceExpectation captures before compilation; BoundSource requires typed equality, not agreement between two caller-selected aliases |
+| =crates/server/src/grpc.rs= | compile_source checks actual source authority before and after the bounded compiler call; returned data remains inert |
+| =go/internal/controlplane/source_compile.go= | BootstrapProducer retains the original-bound artifact and rechecks source authority; successful compilation grants no send right |
+| =crates/ledger/src/task_origins.rs= | Existing source transaction persists task/origin/domain commitments and exact admission outcomes; final use rejects missing bindings |
+| =dev/proofs/cedar/WeaverPolicyBridge.lean= | Existing registered-original and matched-context composition laws retain authenticated-original and runtime-refinement premises |
+
+The accepted runtime still trusts issuance of the stable original task key.
+Changing task_key, family and origin together remains the explicit issuer-trust
+counterexample in [[file:59.81-original-task-origin-registration.org][59.81]]. Matching body content cannot distinguish a replay
+from genuine independent work. A SysML allocation is not evidence that this gap
+has been closed.
+
+The next implementation must bind the independent original through the existing
+catalog/capture, authenticated source publication and original-task transaction.
+Before adding any field or CAS, identify the missing provenance coordinate and
+its authoritative source. Reuse existing outcome recovery and source fencing.
+Do not introduce parallel issuer credentials, another ledger or content deduplication
+as a substitute for that binding.
+
+* Model validation and delivery gate
+
+=TestSysMLSemanticResponsibilityAllocation= queries the linked strict OpenSysML
+model for the four typed action owners and rejects allocation of GuardFinalEffect
+outside the Rust broker. =TestSysMLSDKAndRequirementTrace= retains the named
+GovernorSourceHandoff trace and complete requirement inventory.
+
+These checks establish model structure only. Runtime closure still requires
+actual original-provenance integration, an all-label rename negative control,
+lost-publication-response recovery, source handoff and restart with unchanged
+claim, shared exposure and history. Existing Quint and Lean issuer premises remain
+explicit; no new behavioral proof or runtime acceptance is claimed by this change.
+
+#+CAPTION: 00a-readme-overview.svg — Core component ownership
+[[file:../../architecture/diagrams/00a-readme-overview.svg]]
+
+D2 and SVG are derived through Go/OpenSysML and the upstream Library; no independently authored diagram
+may redefine ownership. This allocation adds model detail without changing the
+existing overview topology or runtime dependencies.

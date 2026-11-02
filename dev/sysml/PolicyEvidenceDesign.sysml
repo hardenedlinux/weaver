@@ -231,6 +231,11 @@ package PolicyEvidenceDesign {
            unavailable. No fact change is justified by pointwise Policy delta. */
     }
     item def SemanticCommitment {
+        doc /* Scheme-owned meaning, carried unchanged by Go and joined to
+           authoritative Rust state at admission and final use. taskRoot names
+           an independently admitted original, not a protocol/session alias.
+           These fields describe a target contract, not proof of provenance.
+           Binding a caller-chosen root to itself does not establish identity. */
         attribute taskRoot : String;
         attribute claim : String;
         attribute profile : String;
