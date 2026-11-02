@@ -34,14 +34,16 @@ the guarded executor.
 
 | Workspace package | Required measured cases | Package-local target |
 |-------------------+-------------------------+----------------------|
+| weaver-governance | 5 | crates/governance/benches/gateway.rs |
+| weaver-governance-build | 1 | crates/governance-build/benches/gateway.rs |
 | weaver-contracts | 10 | crates/contracts/benches/gateway.rs |
 | weaver-policy | 6 | crates/policy/benches/gateway.rs |
 | weaver-policy-ffi | 1 | crates/policy-ffi/benches/gateway.rs |
-| weaver-ledger | 15 | crates/ledger/benches/gateway.rs |
+| weaver-ledger | 33 | crates/ledger/benches/gateway.rs |
 | weaver-execution | 1 | crates/execution/benches/gateway.rs |
 | weaver-server | 5 | crates/server/benches/gateway.rs |
 
-The current declared all-features matrix contains 38 Rust cases. Three additional Go
+The current declared all-features matrix contains 62 Rust cases. Three additional Go
 benchmarks exercise the actual Rust service through mTLS gRPC, each repeated
 three times. These complement the package-local costs rather than replacing
 them with a single aggregate number.
@@ -55,7 +57,8 @@ them with a single aggregate number.
 | contracts | Immutable provider profile commitment; closed request validation at 128 B, 16 KiB and 512 KiB | Full semantic descriptor hashing and duplicate-aware request schema, message and sampling validation |
 | policy | Typed schema validation; warmed compilation with a fresh decision; sixteen-source cache churn | Schema/parse cost and actual Cedar evaluation; no decision-cache benchmark |
 | policy | Named PolicySet JSON schema validation; actual SPEC schema-bound candidate replay | Exact candidate IDs/bodies/schema and full four-case replay, not producer authentication or no-gain |
-| ledger | Fresh admission; consumption plus dispatch burn; idempotent admission | SQLite FULL/WAL operations, current authorization and original hold checks |
+| ledger | Latest durable range guard with zero, eight or sixty-four prior ranges | Indexed tail/current cursor join under the same Turso deciding scope; local callback only |
+| ledger | Fresh admission; consumption plus dispatch burn; idempotent admission | MRR Data / Turso FULL/WAL operations, current authorization and original hold checks |
 | ledger | Atomic publication commit; exact publication replay; historical outcome lookup | Joint authority/schema/outcome commit versus immutable result observation; setup/teardown outside timed closure |
 | ledger | Durable staging plus decision; trusted-host review registration plus final CAS | FULL/WAL registration and actual-parent join; excludes upstream semantic approval and independent recovery |
 | ledger | Actual SPEC replay plus local registration and final CAS | Replay and FULL/WAL persistence; setup/staging excluded; no independent authority qualification |

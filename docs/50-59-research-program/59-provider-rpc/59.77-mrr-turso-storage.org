@@ -120,7 +120,7 @@ provider tests cover concurrent consumption, SDK retry/fallback refusal,
 publication/reply loss, restart, shared budgets, response backpressure and partial
 writes. A green focused test is not a substitute for this complete lane.
 
-Initial migration failures are retained outside Git: dependency-cohort conflict,
+Initial migration failures were captured outside Git: dependency-cohort conflict,
 unported async test calls, unsupported compound/nested SQL, incomplete main-file
 snapshots and model syntax/test-fixture errors. No timeout, budget invariant or
 deny gate is relaxed to turn these failures into passes.
@@ -165,7 +165,7 @@ restart took 0.110/0.115 seconds. Configuration and listener creation after
 runtime entry took about two milliseconds or less. A fresh inode does not flush
 host caches; this pass does not close the intermittent pre-main cold-launch gap.
 The final source-stable =check-storage= receipt must be assessed separately from
-these retained failures. Raw failure evidence remains in temporary/ignored paths.
+these retained failures. Failure excerpts remain outside Git with the recovery provenance recorded below.
 
 The optimized =ledger/range_tail_guard= measurements retain thirty samples, one
 second of warm-up and two seconds of requested measurement. Local 95% time
@@ -203,5 +203,27 @@ and fresh-file/restart controls after this change. First test-image connection
 took 1.367 seconds; its source channel took 1.372 seconds. The additional new-file
 control took 1.028/1.032 seconds and its restart 0.111/0.115 seconds. These results
 qualify that exact image handoff; they do not identify the operating-system cause
-of the mutable Cargo-path delay or establish flushed-cache latency. All original
-failed receipts remain separate from the pending full source-stable acceptance.
+of the mutable Cargo-path delay or establish flushed-cache latency. Failed attempts remain separate evidence; completed source-stable acceptance
+is recorded below.
+
+** Completed source-stable storage lane
+
+At commit =f28b4b2=, =go -C go run ./cmd/weaver-dev -clean-source check-storage=
+passes all fifteen stages, including committed-source checks before/after, the
+actual workspace type graph, architecture/asset coverage, Rust tests/ASP/Clippy,
+stream and storage Quint exploration, both Lean JSON owners and the complete
+race-enabled Provider gRPC suite. The source-currentness check passes.
+No first-launch probe or timeout change is used. This qualifies the selected
+local storage/execution contract and test-owned image, not the unresolved OS
+cause of the earlier mutable-Cargo-path failures or a general cold-start SLO.
+The subsequent changes register the three already measured range-tail cases in
+the existing Go benchmark collector and record this receipt; they change no
+runtime or proof source.
+
+After verification the temporary worktree and its raw logs became unavailable.
+The committed source was restored into an ignored repository cache. The PASS
+receipt was observed in tool output before that loss; the retained compact
+record is explicitly a transcript reconstruction, not the original JSON file
+or a newly executed run. Earlier failure excerpts and bounded timing evidence
+are retained with the same provenance. The original commands remain reproducible;
+this recovery does not promote a reconstruction into independent execution evidence.
