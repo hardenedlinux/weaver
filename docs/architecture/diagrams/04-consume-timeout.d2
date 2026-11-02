@@ -8,15 +8,15 @@ broker: Rust broker
 coord -> ledger: Record ConsumePending\nBind the exact command and attempt
 coord -> issuer: Consume the original signed grant
 issuer -> issuer: Remove the pending grant
-coord -> coord: Keep consumption unknown\nThe response timed out
+coord -> coord: Treat consumption as unknown\nThe response timed out
 coord -> ledger: Try AbortNoDispatch CAS\nNo claim may exist
-ledger -> coord: Confirm the durable abort
+ledger -> coord: Confirm that abort is committed
 issuer -> coord: Return a late success receipt
 coord -> ledger: Try to commit the original attempt\nKeep its original correlation
 ledger -> coord: Reject the terminal attempt
 coord -> broker: Report status only\nIssue no send handle
-broker -> broker: Refuse the send\nNo SendCommitted or valid claim
-ledger.rule: "Resolve a lost abort response from its durable command first.\nIf a claim wins first, refuse both abort and refund."
+broker -> broker: Block dispatch\nRequire SendCommitted and a valid claim
+ledger.rule: "If the abort reply is lost, read the recorded command outcome first.\nIf a claim wins first, refuse both abort and refund."
 
 # Shared role accents; brand marks are confined to architecture headers.
 coord.class: runtime
@@ -28,7 +28,7 @@ ledger.rule.class: note
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
 {
-  "title": "When consumption times out",
+  "title": "When the consume response times out",
   "purpose": "workflow",
   "kind": "sequence",
   "language": "en",

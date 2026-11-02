@@ -28,6 +28,14 @@ contract. The upstream root =build.ss= must not fix compilation to one worker.
 The child-process regression rejects stale inherited capacity; this evidence
 does not imply that remote CI, compiler I/O or final linking has passed.
 
+The upstream SCM provenance includes =build.ss=. Its worker declaration is a
+build input, so changing that declaration also requires the existing
+=just bridge-regenerate= entry and the compiler-produced SCM plus external
+receipts. The first CI run after the capacity change rejected the old input
+receipt; this is a generated-artifact failure, not missing core propagation.
+Keep that failure and verify an independent read-only check after regeneration.
+Neither hand-edited hashes nor disabled provenance checks establish acceptance.
+
 #+CAPTION: Required embedded tooling ownership; command-based bootstrap is not the public API.
 [[file:59.76-embedded-tooling-and-darwin-io.svg]]
 
