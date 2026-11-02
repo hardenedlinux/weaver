@@ -206,3 +206,28 @@ lock counterexample was subsequently strengthened to start from two legitimately
 consumed claims in the same shared family. The safe second final guard is rejected;
 only the narrower-lock mutation admits both. All twenty-one scenarios and the
 same bounded exploration pass with this stronger negative control.
+
+* Complete acceptance of the final model cohort
+
+At =94586a58018e9731ff7daf7f40c12551beff0e70=, the ordinary Go-owned
+=-clean-source check-storage= entrypoint passes all eighteen stages, including
+the complete race-enabled provider suite, fresh release benchmark admission,
+Quint/Lean, native/PBT/ASP/Clippy and committed-source/currentness checks before
+and after. All Go packages pass the race suite. No dependency pin, startup/drain
+gate or benchmark sample setting changed. This passing cohort does not resolve
+or erase the earlier pre-main/readiness failure.
+
+Its independently collected thirty-sample benchmark cohort is:
+
+| Pair workload | Mean ms | 95 percent interval ms |
+|---------------+---------+------------------------|
+| WAL | 17.610 | 15.565 to 20.199 |
+| MVCC serial control | 16.546 | 14.251 to 19.054 |
+| MVCC parallel | 9.706 | 7.738 to 12.037 |
+
+These remain synthetic two-callback pair measurements, with all outliers retained;
+they are not a general provider speedup, p99 or publication-latency guarantee.
+The following change records acceptance only. Runtime, model, test and generated
+storage-view sources remain those of the admitted revision. Ignored structured
+receipts retain the exact selected benchmark scope and confidence/sample checks;
+a partial benchmark cannot qualify unrelated workspace packages or diagrams.
