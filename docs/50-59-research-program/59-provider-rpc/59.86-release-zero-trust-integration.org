@@ -21,13 +21,32 @@ conflict and retired-commit checkout are distinct failures.
 | Orgize | 5873bffee72e5756fee99e36c91d76eea27bda9c | Scheme and Rust inherit the same Parser |
 | Agentic AI Lab | aeac4f4c12b1722f992da9354695b611d3e0851f | Gitlink, Parser, Ascent and Orgize select that common closure |
 
-Owner fixes are published on separate dependency-alignment branches; existing
-upstream branches and tags are unchanged. These are source-cohort commits, not
-new releases of those owners. No downstream Zero Trust model or governance DSL
+Owner fixes are retained in the existing owner reviews listed below. The five
+temporary Scheme alignment branches have been deleted after fetching each
+published review head and checking ancestry of the exact selected commit.
+These are source-cohort commits, not new releases of those owners. Existing
+tags are unchanged. No downstream Zero Trust model or governance DSL
 is substituted. The SPEC producer test and Gateway.ZeroTrust build complete 386
 jobs against the release. The maintained Weaver Lake build completes 391 jobs,
 including ZeroTrustEnrichment and ZeroTrustArchitecture. The earlier isolated
 candidate is not the maintained dependency source.
+
+| Owner | Active review | Retention of selected source |
+|-------+---------------+------------------------------|
+| Core | [[https://github.com/tao3k/gebril-yuanxu/pull/19][PR 19]] | a8030b1 retained by merge 6e86abf |
+| Parser | [[https://github.com/tao3k/gerbil-parser/pull/13][PR 13]] | Fast-forward to 27b31d2 |
+| Ascent | [[https://github.com/tao3k/gerbil-ascent/pull/1][PR 1]] | 96faa69 retained by merge 433a8f0 |
+| Orgize | [[https://github.com/tao3k/orgize/pull/18][PR 18]] | Fast-forward to 5873bff |
+| Agentic AI Lab | [[https://github.com/tao3k/agentic-ai-lab/pull/34][PR 34]] | Fast-forward to aeac4f4 |
+| SPEC | [[https://github.com/hardenedlinux/cedar-poo-spec/pull/13][PR 13]] | 7638173 remains the review source branch |
+
+Core and Ascent had subsequent peer changes. Their ordinary merges preserve
+those changes, including the active Core dependency and matching replay-proof
+binding. Their latest review heads are not substituted for Weaver's frozen
+release cohort. Ancestry retains the selected cohort without claiming that
+the newer review heads have passed this cohort's qualification. SPEC had no
+open review to reuse; its two-file metadata repair therefore has its own owner
+review. Weaver continues exclusively in its existing PR 1. No PR is merged.
 
 * Tag resolution and source admission
 
@@ -109,6 +128,13 @@ source-bytes unit. The complete failure and timing remain in
 .cache/zerotrust-first-complete-check-scheme-failure.json. Concurrent working-tree
 changes invalidate its source-currentness stage; no successful sibling stage
 promotes that run. A fresh, stable-source standard run is required after fixes.
+
+On frozen source e26facf, the complete clean-source check-policy passes all 61
+stages. The subsequent standard check-scheme attempt fails in dependency
+preparation: the ordinary Ascent clone reports a connection reset, early EOF
+and invalid index-pack output. Package tests do not start. The preserved receipt
+is .cache/zerotrust-stable-preparation-network-failure.json. This network failure
+neither qualifies the corrected module imports nor diagnoses a runtime timeout.
 
 Native package and full integration qualification remain in progress. Passing
 producer/consumer Lean builds and source resolution do not count as a passing
