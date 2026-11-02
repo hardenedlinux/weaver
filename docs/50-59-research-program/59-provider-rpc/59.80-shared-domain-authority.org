@@ -146,3 +146,52 @@ run exposed missing low-level root fixtures and a module-boundary ASP violation;
 socket tests also encountered sandbox denial. These failures are retained rather
 than described as passes. Subsequent acceptance is recorded separately after the
 complete Go entry finishes; no timeout or dependency pins are relaxed.
+
+** Accepted runtime cohort
+
+The clean committed runtime source
+=bbf2642d29adf69aaa3e77ff787744a7fd4d70f9= passed all 21 stages of
+=go -C go run ./cmd/weaver-dev -clean-source check-storage= on the 12-core host.
+The run started at =2026-11-02T05:00:21.478368Z= and retained clean-source checks
+before and after, full workspace type checking, 30 ledger library/ASP tests,
+108 ledger integration/property tests, 15 actual execution tests, Clippy,
+all recovery models and the complete race-enabled provider integration suite.
+The new Quint model passed 13 scenarios, including four deliberate unsafe
+variants, plus 1,000 schedules of up to 60 steps. Lean JSON marks all four
+named =SharedDomainAuthority= trace declarations =CHECKED= against their source
+hash. This status does not discharge the native refinement premises above.
+
+| Matched final pair | Samples | Mean ms | 95% confidence interval ms |
+|--------------------+---------+---------+---------------------------|
+| WAL | 30 | 34.738 | 25.745 to 48.681 |
+| MVCC independent domains, serial control | 30 | 43.057 | 36.849 to 50.365 |
+| MVCC independent domains, parallel | 30 | 22.600 | 16.243 to 30.221 |
+| MVCC cross-family shared budget | 30 | 79.492 | 64.470 to 97.288 |
+| MVCC cross-family shared history | 30 | 68.167 | 59.329 to 76.850 |
+
+The shared cases retain their additional member/history verification and mutual
+exclusion. Their cost is visible and must not be removed by pretending that their
+families are independent. These values include storage and natural owner drain,
+not just the two synthetic 2 ms callbacks. The previous independent-family-only
+cohorts in 59.79 have a different contract workload. No latency SLO, general
+throughput improvement or attribution of all timing differences is claimed;
+profiling is required before making a stronger performance claim.
+
+After this runtime cohort, the only Rust/Go changes add public type documentation
+required by the contracts ASP gate and update the Go proof-owner inventory from
+four to five. The initial failures of those checks remain in ignored evidence.
+The affected contracts, policy and server library/ASP gates pass with 1, 2 and 25
+tests respectively. The server's one existing ignored test is a private observed
+server entry launched by Go integration, not a disabled safety scenario. Runtime
+authorization, SQL, models, pins and benchmark parameters remain the accepted
+cohort above. The full Go race suite and scoped diagram checks are rerun after
+the inventory/documentation correction.
+
+Current binding cardinality is one budget root and one history root per origin,
+with any finite number of registered families. Additional simultaneous quota
+domains require an explicit source/read-set extension, not an adapter-created
+replacement identity. Aggregated reservation history is not evidence that an
+unrelated origin completed a causal predecessor: semantic history predicates
+must retain their source-owned origin/member witnesses. A union fences old
+permits and requires fresh authorization; it does not prove that arbitrary Cedar
+predicates are monotone under history union.

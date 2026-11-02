@@ -2,6 +2,7 @@
 use crate::{Error, MAX_CREDITS, Result, identifier};
 use serde::{Deserialize, Serialize};
 
+/// Immutable source assignment of one original task to shared constraint domains.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DomainBinding {
@@ -21,6 +22,7 @@ impl DomainBinding {
         Ok(())
     }
 }
+/// Observable domain coordinates; only a private executor handle carries authority.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DomainStamp {
@@ -30,6 +32,7 @@ pub struct DomainStamp {
     pub budget_epoch: u64,
     pub history_epoch: u64,
 }
+/// Current registry projection, never a reusable permission to perform an effect.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DomainView {
@@ -40,6 +43,7 @@ pub struct DomainView {
     pub held: u64,
     pub history_count: u64,
 }
+/// Exact-parent whole-domain union proposal; it cannot detach an original family.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DomainMigration {
@@ -67,6 +71,7 @@ impl DomainMigration {
         Ok(())
     }
 }
+/// Durable original migration outcome, recovered by operation ID and command digest.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DomainMigrationReceipt {
