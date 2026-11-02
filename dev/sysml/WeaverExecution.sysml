@@ -184,7 +184,7 @@ package WeaverExecution {
         attribute securityName : String = "Scheme / Original contract";
         attribute securityResponsibility : String = "Task scope and required parents\nPublished selected profile\nConfiguration grants no send right";
         attribute displayName : String = "Scheme / Semantics";
-        attribute responsibility : String = "Governor: eligible steps\nGovernance: profile assessment\nInert source projections";
+        attribute responsibility : String = "Governor: eligible steps\nGovernance: profile assessment\nChecked Cedar projection";
         attribute glyph : String = "library";
         attribute visualRole : String = "publication";
         doc /* Scheme is the programmable semantic owner of reusable routines,

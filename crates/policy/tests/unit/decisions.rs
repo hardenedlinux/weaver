@@ -39,4 +39,10 @@ fn default_deny_forbid_and_evaluation_error_are_fail_closed() {
         .is_err()
     );
     assert!(weaver_policy::authorize("permit(principal,action,resource); permit(principal,action,resource) when { context.missing };",&task,&p).is_err());
+    proptest::proptest!(|(padding in 0usize..128, reverse in proptest::bool::ANY)| {
+        let permit = format!("permit(principal,action,resource); //{}", "x".repeat(padding));
+        let forbid = "forbid(principal,action,resource);";
+        let documents = if reverse { [forbid, permit.as_str()] } else { [permit.as_str(), forbid] };
+        proptest::prop_assert!(weaver_policy::authorize(&documents.join("\n"), &task, &p).is_err());
+    });
 }

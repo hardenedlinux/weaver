@@ -7,6 +7,7 @@
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceAssessmentContext)
         (only-in :hardenedlinux/weaver/scheme/governance/capture governance-profile-snapshot)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyProjection)
+        (only-in :hardenedlinux/weaver/scheme/policy/func validate-policy-projection!)
         (only-in "./capture.ss" deliver-gateway-source gateway-source-json)
         (only-in "./snapshot.ss" copy-source-data)
         (only-in "./program.ss" make-gateway-program)
@@ -70,9 +71,7 @@
     (def (projection-json value)
       (json->string (json<- PolicyProjection value) (JSONWriteOptions sort-keys: #t)))
     (def policy-inputs (projection-json projection))
-    (unless ((.get policy validate) (string-copy (.get projection policy))
-                                  (string-copy (.get publication-image schema)))
-      (error "Policy preflight declined the source handoff"))
+    (validate-policy-projection! projection (.get publication-image schema) (.get policy validate))
     (require-profile-current!)
     (let ((bound-context (validate GovernanceAssessmentContext
                             (.o request: (.get context request) source: (string-copy source-text)

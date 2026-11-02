@@ -3,6 +3,9 @@
         (only-in :std/error Error? Error-message)
         (only-in :std/misc/ports read-all-as-string)
         (only-in :std/source this-source-file)
+        (only-in :clan/poo/object .o)
+        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
+        (only-in ../scheme/policy/assets policy-document)
         (prefix-in :clan/poo/testing/property/generator generator.)
         (prefix-in :clan/poo/testing/property property.)
         (only-in :clan/poo/testing/property/test check-property)
@@ -21,6 +24,21 @@
     (test-case "invalid Cedar and schema input reject naturally"
       (check-exception (validate-source-policy! "not Cedar" "{}") Error?)
       (check-exception (validate-source-policy! "" "{}") Error?))
+    (test-case "real Rust preflight refuses cross-document syntax assembly"
+      (def schema
+        (call-with-input-file
+          (path-expand "../prod/policies/provider/schema.json" (path-directory (this-source-file)))
+          read-all-as-string))
+      (def aggregate "permit(principal,action,resource)\n;")
+      (def profile (.o (:: @ AgenticAILabGovernanceProfile.)
+                        identity: "weaver/policy-test" revision: "1" owner: "operator"))
+      (def projection
+        (project-policy profile aggregate
+          (list (policy-document "a" "permit(principal,action,resource)" "")
+                (policy-document "b" ";" "")) ""))
+      (check-equal? (validate-source-policy! aggregate schema) #t)
+      (check-exception
+        (validate-policy-projection! projection schema validate-source-policy!) Error?))
     (test-case "the actual FFI entry refuses oversized Unicode before foreign preflight"
       (for-each
         (lambda (inputs)

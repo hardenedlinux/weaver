@@ -168,6 +168,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		return []Stage{
 			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership|CIWorkflows)", "-v"}},
 			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},
+			{"scheme-policy-preflight", "cargo", []string{"test", "-p", "weaver-policy-ffi", "--lib", "--benches", "--locked", "--offline"}},
 			{"scheme-build-capacity", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "resources"}},
 			{"scheme-declared-poo-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "dependencies"}},
 			{"scheme-core-library", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--locked", "--offline", "--", "core"}},

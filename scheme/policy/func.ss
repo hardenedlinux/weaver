@@ -5,12 +5,27 @@
         (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy?)
         "./types.ss"
         (only-in "./assets.ss" policy-document))
-(export validate-source-policy! project-policy)
+(export validate-source-policy! validate-policy-projection! project-policy)
 (def cedar-validation
   (module-action "hardenedlinux/weaver/scheme/policy/cedar-ffi"
                  'hardenedlinux/weaver/scheme/policy/cedar-ffi#validate-source-policy!))
 (def (validate-source-policy! policy-source schema-source)
   (cedar-validation (list policy-source schema-source)))
+
+;;; Each named input is a complete Cedar policy set, never a syntax fragment.
+;;; Reuse the admitted Rust validator; no second Cedar parser lives in Scheme.
+(def (validate-policy-projection! projection schema-source validator)
+  (validate PolicyProjection projection)
+  (unless (<= (length (.ref projection 'inputs)) 64)
+    (error "Governance policy inventory bound"))
+  (for-each
+    (lambda (document)
+      (unless (validator (string-copy (.ref document 'source)) (string-copy schema-source))
+        (error "Policy document preflight declined the source handoff" (.ref document 'identity))))
+    (.ref projection 'inputs))
+  (unless (validator (string-copy (.ref projection 'policy)) (string-copy schema-source))
+    (error "Policy preflight declined the source handoff"))
+  #t)
 
 ;;; Pure projection of Scheme Cedar values and already-read asset documents.
 (def (project-policy profile expected asset-documents root-value)

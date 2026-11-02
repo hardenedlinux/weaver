@@ -479,6 +479,9 @@ structure BoundaryContext where
   exactIntegers : Bool
   keyKinds : Bool
   assessmentImageOwned : Bool
+  /-- Results for every exact named document under the publication schema.
+      Native refinement supplies parser fidelity; aggregate validity is separate. -/
+  policyDocuments : List Bool
   deriving DecidableEq
 
 def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
@@ -492,13 +495,27 @@ def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
   s.retainsForeignPointer = false ∧ s.reentrant = false ∧
   s.captureEmissions = 1 ∧ s.captureCompleted = true ∧ s.capturePoisoned = false ∧
   s.nativeTyped = true ∧ s.exactIntegers = true ∧ s.keyKinds = true ∧
-  s.assessmentImageOwned = true
+  s.assessmentImageOwned = true ∧ ∀ result ∈ s.policyDocuments, result = true
 
 instance (s : BoundaryContext) : Decidable s.Ready := by
   unfold BoundaryContext.Ready
   infer_instance
 
 def BoundaryContext.ready (s : BoundaryContext) : Bool := decide s.Ready
+
+theorem incomplete_policy_document_cannot_admit (s : BoundaryContext)
+    (incomplete : false ∈ s.policyDocuments) : s.ready = false := by
+  have invalid : ¬ (∀ result ∈ s.policyDocuments, result = true) := by
+    intro complete
+    have impossible := complete false incomplete
+    cases impossible
+  simp only [BoundaryContext.ready, decide_eq_false_iff_not]
+  intro admitted
+  apply invalid
+  simp only [BoundaryContext.Ready] at admitted
+  grind only
+
+#print axioms incomplete_policy_document_cannot_admit
 
 /-- Native refinement must supply both upstream checks independently. A ready
 Governance assessment cannot replace the Governor's eligible-node projection. -/

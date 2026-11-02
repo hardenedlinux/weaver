@@ -35,7 +35,7 @@ module LlmPolicyContinuation {
   type BoundaryEvidence={kind:int,root:int,claim:int,profile:int,configurationSchema:int,normalizer:int,programModule:int,environment:int,
     vm:int,call:int,epoch:int,cut:int,input:int,output:int,schemaChecked:bool,governanceChecked:bool,governorChecked:bool,
     readable:bool,stable:bool,owned:bool,retainedPointer:bool,reentrant:bool,
-    emissions:int,captureCompleted:bool,capturePoisoned:bool,schemeTyped:bool,exactIntegers:bool,keyKinds:bool,assessmentImageOwned:bool,status:int}
+    emissions:int,captureCompleted:bool,capturePoisoned:bool,schemeTyped:bool,exactIntegers:bool,keyKinds:bool,assessmentImageOwned:bool,policyDocuments:List[bool],status:int}
   type BoundaryCheck={evidence:BoundaryEvidence,configurationSchema:int,normalizer:int,programModule:int,environment:int,vm:int,call:int,epoch:int,cut:int,value:int,senderVM:int,senderCall:int,senderEpoch:int}
   type FactState={closure:FactClosure,candidate:FactEvidence,installed:FactEvidence,hostValue:int,sourceValue:int,sourceImages:Set[SourceImage],truth:Set[int],scope:Set[int],
     mode:int,grant:Freshness,connected:bool,channel:int,clock:int,now:int,timeFloor:int,uses:List[FactUse],deltas:List[FactDelta]}
@@ -89,7 +89,7 @@ module LlmPolicyContinuation {
   pure val boundary0={kind:0,root:10,claim:11,profile:20,configurationSchema:1,normalizer:1,programModule:0,environment:0,
     vm:0,call:0,epoch:0,cut:0,input:0,output:0,schemaChecked:true,governanceChecked:true,governorChecked:true,
     readable:true,stable:true,owned:true,retainedPointer:false,reentrant:false,
-    emissions:1,captureCompleted:true,capturePoisoned:false,schemeTyped:true,exactIntegers:true,keyKinds:true,assessmentImageOwned:true,status:0}
+    emissions:1,captureCompleted:true,capturePoisoned:false,schemeTyped:true,exactIntegers:true,keyKinds:true,assessmentImageOwned:true,policyDocuments:List(true,true),status:0}
   def tip=if(s.log.length()==0)0 else s.log.nth(s.log.length()-1).change.id
   def effective=if(s.log.length()==0)true else s.log.nth(s.log.length()-1).change.allowed
   def view={generation:s.generation,tip:tip,fence:s.fence,revision:s.revision}
@@ -120,7 +120,8 @@ module LlmPolicyContinuation {
     e.cut==u.cut and e.input==u.value and e.output==u.value and e.schemaChecked and e.governanceChecked and e.governorChecked and
     e.readable and e.stable and e.owned and not(e.retainedPointer) and not(e.reentrant) and
     e.emissions==1 and e.captureCompleted and not(e.capturePoisoned) and
-    e.schemeTyped and e.exactIntegers and e.keyKinds and e.assessmentImageOwned and e.status==0}
+    e.schemeTyped and e.exactIntegers and e.keyKinds and e.assessmentImageOwned and
+    e.policyDocuments.indices().forall(i=>e.policyDocuments.nth(i)) and e.status==0}
   action recordBoundary(e)=all {boundaryValid(boundaryCheck(e)),s'=s.with("boundaryRecords",s.boundaryRecords.append(boundaryCheck(e)))}
   action semanticRestart=s'=s.with("semanticVM",s.semanticVM+1).with("ffiCall",s.ffiCall+1).with("captureEpoch",s.captureEpoch+1)
   action endBorrow=s'=s.with("ffiCall",s.ffiCall+1)
@@ -745,6 +746,15 @@ module LlmPolicyContinuation {
     .expect(not(boundaryBound) and s.hold==6 and s.calls==0)
   action unsafePreflightGrant=s'=s.with("pending",Set()).with("frontier",1).with("hold",0)
   run jsonGovernanceBypassCounterexampleTest=init.then(unsafeBoundaryRecord(boundary0.with("governanceChecked",false))).expect(not(boundaryBound))
+  // Parser results are a native premise. A valid aggregate/status cannot
+  // certify incomplete inputs; no parsing algorithm is duplicated in Quint.
+  run incompletePolicyDocumentCannotAdmitTest=init
+    .then(recordBoundary(boundary0.with("policyDocuments",List(false,false))).fail())
+  run aggregateOnlyPolicyValidationCounterexampleTest=init
+    .then(unsafeBoundaryRecord(boundary0.with("policyDocuments",List(false,false))))
+    .expect(not(boundaryBound) and s.calls==0 and s.hold==6)
+  run completePolicyDocumentsRemainInertTest=init.then(recordBoundary(boundary0))
+    .expect(safety and s.calls==0 and s.hold==6)
   run retainedForeignPointerCounterexampleTest=init.then(unsafeBoundaryRecord(boundary0.with("retainedPointer",true))).expect(not(boundaryBound))
   run oldVMCallbackPromotionCounterexampleTest=factPending.then(semanticRestart).then(unsafeBoundaryRecord(boundary0)).expect(not(boundaryBound))
   run preflightAsExecutionPermitCounterexampleTest=factPending.then(recordBoundary(boundary0)).then(unsafePreflightGrant)

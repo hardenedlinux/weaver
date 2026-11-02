@@ -162,6 +162,14 @@ package ControlActivation {
         doc /* Scheme projects Agentic AI Lab Governor open-patterns after denylist, conflict and max-actionable clipping. Selected nodes, original task nodes and plan nodes must form the same duplicate-free set. A typed inert Governance assessment must match the exact task/plan/publication source serialized with recursively sorted object keys while preserving array order and exact integers, Profile identity/revision/owner, threat-model identity and complete assessed threats. Governance blocking threats cannot be erased by a ready flag. False Policy preflight or Governance results reject. Assessment is a trusted compilation fact, never a portable execution permit. Candidate actionable-patterns are not a qualified handoff or a monetary reservation. */
     }
     requirement def PolicyCAbiIsInert {
+        doc /* SchemePolicy validates every named Cedar document independently
+           under the exact publication schema through RustPolicy, then validates
+           the ordered aggregate before Governance assessment. Documents are
+           complete policy sets, never cross-document syntax fragments. The
+           projection remains byte-identical across assessment; preflight status
+           grants no publication, reservation release or execution authority.
+           JSON PolicySet documents must also be individually valid; multiple
+           JSON documents are not merged by textual concatenation. */
         doc /* One Scheme source-bytes owner rejects empty/overlong character
            inputs before UTF-8 allocation and then checks the encoded byte bound
            for each Policy/schema value. Record predicates and actual C

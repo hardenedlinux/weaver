@@ -4,6 +4,9 @@
 * Workload
 Validate the same fixed typed Cedar Policy/schema fixture used by the Policy
 package. Thirty samples retain the existing warmup and measurement settings.
+The document-and-aggregate workload validates two complete policy sets followed
+by their newline-separated aggregate under the same schema. It measures source
+preparation work, not an extra check in the per-message execution path.
 
 * Measurement boundary
 This measures the safe byte-oriented preflight used by the ABI. It excludes

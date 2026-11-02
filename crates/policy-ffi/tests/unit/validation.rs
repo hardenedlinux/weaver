@@ -22,3 +22,36 @@ fn ffi_preflight_accepts_official_named_json_but_never_duplicate_policy_keys() {
     );
     assert_ne!(validate(duplicate.as_bytes(), schema), 0);
 }
+
+#[test]
+fn aggregate_validity_does_not_establish_complete_source_documents() {
+    let schema = include_bytes!("../../../../prod/policies/provider/schema.json");
+    let first = b"permit(principal,action,resource)";
+    let second = b";";
+    assert_eq!(validate(first, schema), 1);
+    assert_eq!(validate(second, schema), 1);
+    // A single aggregate preflight would accept a statement neither document
+    // supplied on its own. Scheme must validate every document before joining.
+    assert_eq!(validate(b"permit(principal,action,resource)\n;", schema), 0);
+}
+
+proptest::proptest! {
+    #![proptest_config(proptest::test_runner::Config::with_cases(128))]
+    #[test]
+    fn complete_documents_and_composition_share_the_actual_cedar_validator(
+        padding in 0usize..128, reverse in proptest::bool::ANY,
+        comment in proptest::bool::ANY
+    ) {
+        let schema = include_bytes!("../../../../prod/policies/provider/schema.json");
+        let permit = format!("permit(principal,action,resource);{}{}",
+            " ".repeat(padding), if comment { "// trailing comment" } else { "" });
+        let forbid = "forbid(principal,action,resource);";
+        let documents = if reverse { [forbid, permit.as_str()] } else { [permit.as_str(), forbid] };
+        for document in documents {
+            proptest::prop_assert_eq!(validate(document.as_bytes(), schema), 0);
+        }
+        proptest::prop_assert_eq!(validate(documents.join("\n").as_bytes(), schema), 0);
+        // Text that actually violates this pinned grammar must stay rejected.
+        proptest::prop_assert_eq!(validate(b"permit(principal,action,resource); /*", schema), 1);
+    }
+}
