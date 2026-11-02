@@ -24,6 +24,8 @@ conflict and retired-commit checkout are distinct failures.
 Owner fixes are retained in the existing owner reviews listed below. The five
 temporary Scheme alignment branches have been deleted after fetching each
 published review head and checking ancestry of the exact selected commit.
+The redundant SPEC alignment branch has also been removed and duplicate
+PR 13 closed after retaining its commit in the existing PR 12.
 These are source-cohort commits, not new releases of those owners. Existing
 tags are unchanged. No downstream Zero Trust model or governance DSL
 is substituted. The SPEC producer test and Gateway.ZeroTrust build complete 386
@@ -38,15 +40,16 @@ candidate is not the maintained dependency source.
 | Ascent | [[https://github.com/tao3k/gerbil-ascent/pull/1][PR 1]] | 96faa69 retained by merge 433a8f0 |
 | Orgize | [[https://github.com/tao3k/orgize/pull/18][PR 18]] | Fast-forward to 5873bff |
 | Agentic AI Lab | [[https://github.com/tao3k/agentic-ai-lab/pull/34][PR 34]] | Fast-forward to aeac4f4 |
-| SPEC | [[https://github.com/hardenedlinux/cedar-poo-spec/pull/13][PR 13]] | 7638173 remains the review source branch |
+| SPEC | [[https://github.com/hardenedlinux/cedar-poo-spec/pull/12][PR 12]] | 7638173 retained by merge 4719381; duplicate PR 13 closed |
 
 Core and Ascent had subsequent peer changes. Their ordinary merges preserve
 those changes, including the active Core dependency and matching replay-proof
 binding. Their latest review heads are not substituted for Weaver's frozen
 release cohort. Ancestry retains the selected cohort without claiming that
-the newer review heads have passed this cohort's qualification. SPEC had no
-open review to reuse; its two-file metadata repair therefore has its own owner
-review. Weaver continues exclusively in its existing PR 1. No PR is merged.
+the newer review heads have passed this cohort's qualification. SPEC PR 12
+already contained the same release metadata; its retention merge changes no
+files relative to its preceding head. The selected SPEC pin remains unchanged.
+Weaver continues exclusively in its existing PR 1. No PR is merged into main.
 
 * Tag resolution and source admission
 
