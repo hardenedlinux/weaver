@@ -11,6 +11,7 @@ import {exportFigure} from '@deterministic-engineering/render/export';
 import {collectCatalog} from './source/catalog';
 import {capturedViews} from './source/models';
 import {themes} from '../themes';
+import {composeSequence} from './sequence';
 
 const root=fileURLToPath(new URL('../../../',import.meta.url));
 const catalog=collectCatalog(root);
@@ -30,9 +31,9 @@ try{
   while(!cancelled){const view=selected[cursor++];if(!view)return;
    try{
     const input=await compileFigureSource({...catalog.fs,...catalog.documents},view.source,resources,{layout:'elk'});
-    if(input.layout!=='model-view')throw new Error('Unmigrated declaration: '+input.layout);
+    if(input.layout!=='model-view'&&!(input.layout==='sequence-view'&&input.view.kind==='sequence'))throw new Error('Unmigrated declaration: '+input.layout);
     if(input.modelSource&&!Object.hasOwn(catalog.modelCapture?.mapped??{},view.source))throw new Error('Missing authoritative mapped source');
-    const result=await exportFigure(composeFigure(input,composeModelView),browser);
+    const result=await exportFigure(composeFigure(input,input.layout==='sequence-view'?composeSequence:composeModelView),browser);
     const svg=result.svg[0];if(!svg)throw new Error('Library exported no standalone SVG');
     const stem=path.join(root,view.source.slice(0,-3)),cache=path.join(root,'.cache/d2/images',view.source.slice(0,-3));
     await mkdir(path.dirname(cache),{recursive:true});

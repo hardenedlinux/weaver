@@ -173,6 +173,22 @@ Presentation ownership lives under [[file:../../dev/d2/README.org][dev/d2]], wit
 profiles in =dev/d2/themes=. The shared base only supplies typography and semantic
 status conventions; each view chooses its own profile and layout grammar.
 
+W02, W04, W09 and W10 use the Library's theme, font and vector-export
+interfaces with a source-bound sequence notation. Participant lanes, ordered
+messages, self-calls and constraint ownership remain distinct. The captured
+message inventories are 17, 11, 15 and 16 respectively. Explicit source refs
+cover every relationship, including D2's synthetic lifelines; a missing,
+duplicated or reordered message refuses composition. These are presentation
+checks and do not introduce a second authorization or temporal model.
+
+Use natural English action sentences on arrows. Keep exact state names where
+they identify a protocol transition, and place qualifying conditions on their
+own lines. Emphasize a complete action rather than its first wrapped line.
+The =sequence-reading= layer separates page titles, participant headers,
+messages and safety rules. Measure actual embedded-font line boxes, including
+at GitHub width, instead of assuming the nominal font size gives safe leading.
+The exported SVGs below are embedded directly in this Org document.
+
 W02 and W10 split one long sequence at its positive consumption observation.
 They are the same original attempt, source lease and synchronous callback.
 W08 folds invalid/stale/missing/error/deny branches into one labeled evaluation

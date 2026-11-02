@@ -250,6 +250,14 @@ package ControlActivation {
            GCC command or override gerbil-scheme-rust compilation policy. Invoke MRR's canonical
            Cargo/build.ss path once; keep Gerbil identity, source pins and watchdogs
            unchanged until an upstream fix has separate qualification evidence. */
+        doc /* The upstream AOT owner resolves available host parallelism at
+           build execution and injects GERBIL_BUILD_CORES into Gerbil children.
+           Native object workers and Tokio coordination share that capacity.
+           A precompiled driver must not embed its build machine's CPU count;
+           stale inherited values must not cap the executing host. Package-local
+           build.ss owns its declaration and must not impose a fixed one-worker
+           compiler cap. This contract does not establish CI latency or linkage
+           success and does not weaken cancellation or cleanup requirements. */
         doc /* A separate bounded owned-process kernel trace refines syscall and
            runnable/blocked/preempted intervals only after PID/TID and trace-clock
            joins pass coverage checks. Foreign/unresolved rows and censored

@@ -20,6 +20,14 @@ coordinates outer asynchronous work and I/O. Existing affine VM owners execute
 foreign calls; a live VM does not migrate among arbitrary Tokio workers. One
 serialized VM session does not lower the host's native compiler parallelism.
 
+The upstream AOT owner injects =GERBIL_BUILD_CORES= when constructing each
+Gerbil build child, using the executing host's available parallelism. The
+native object pool and shared Tokio runtime use that same capacity. Neither a
+CI-only setting nor a CPU count compiled into a reusable driver satisfies this
+contract. The upstream root =build.ss= must not fix compilation to one worker.
+The child-process regression rejects stale inherited capacity; this evidence
+does not imply that remote CI, compiler I/O or final linking has passed.
+
 #+CAPTION: Required embedded tooling ownership; command-based bootstrap is not the public API.
 [[file:59.76-embedded-tooling-and-darwin-io.svg]]
 

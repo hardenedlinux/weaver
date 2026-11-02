@@ -1,27 +1,27 @@
 ...@../../../dev/d2/themes/sequence
 # W09: late positive response can win only while original live premises remain valid.
 shape: sequence_diagram
-coord: Original fenced coordinator
-issuer: Original issuer
-ledger: Authoritative ledger
-broker: Final broker
+coord: Fenced coordinator
+issuer: Grant authority
+ledger: Admission ledger
+broker: Rust broker
 cancel: Authorized abort task
-coord -> ledger: Exact ConsumePending already durable
-coord -> issuer: Consume exact original grant
+coord -> ledger: Retain the durable ConsumePending\nKeep the exact original command
+coord -> issuer: Consume the exact original grant
 issuer -> issuer: Consume once
-coord -> coord: Response timeout\nNo guessed success / holds retained
-cancel -> cancel: Abort requested / scheduling delay
-issuer -> coord: Late authenticated positive response
-coord -> ledger: S4 original allowed-state CAS\nCurrent source / versions / lineage / fence
-ledger -> coord: SendCommitted wins before abort
-broker -> coord: Claim under current valid premise
-coord -> ledger: S5 unique claim CAS
-ledger -> coord: Claim durably spent
-coord -> broker: Original one-use emission handle
-cancel -> ledger: AbortNoDispatch CAS\nRequires absent claim
-ledger -> cancel: Reject abort / claim already exists\nNo refund / no reopened row
-broker -> broker: Final transport gate may still pass or fail
-ledger.rule: "S4 winning alone does not defeat abort; S5 claim must win too.\nIf abort wins between S4 and S5, claim fails and no handle is issued.\nIf a required premise or original owner changed, the late callback cannot commit."
+coord -> coord: Retain holds after timeout\nDo not infer success
+cancel -> cancel: Wait to run the requested abort
+issuer -> coord: Return a late authenticated success
+coord -> ledger: Try the original S4 CAS\nCheck source, versions, lineage and fence
+ledger -> coord: Commit SendCommitted before abort
+broker -> coord: Request a claim\nIts premises must still hold
+coord -> ledger: Try the unique S5 claim CAS
+ledger -> coord: Record the claim as durably spent
+coord -> broker: Issue the original one-use send handle
+cancel -> ledger: Try AbortNoDispatch CAS\nNo claim may exist
+ledger -> cancel: Refuse abort: the claim exists\nDo not refund or reopen the attempt
+broker -> broker: Apply the final transport gate\nA claim does not guarantee a send
+ledger.rule: "S4 alone does not defeat abort; the S5 claim must win too.\nAn abort between S4 and S5 prevents a claim and a send handle.\nA late callback cannot commit after its premises or original owner change."
 
 # Shared role accents; brand marks are confined to architecture headers.
 coord.class: runtime
@@ -33,6 +33,79 @@ ledger.rule.class: note
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"claim wins race","purpose":"workflow","kind":"sequence","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which owner messages and ordering constraints govern claim wins race?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/architecture/diagrams/09-claim-wins-race.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "When the claim wins",
+  "purpose": "workflow",
+  "kind": "sequence",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "What prevents a late abort from reopening a claimed attempt?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/09-claim-wins-race.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "blueprint", "sequence-reading"
+  ],
+  "layout": "sequence-view",
+  "variants": [],
+  "presentation": {
+    "actors": [
+      "coord",
+      "issuer",
+      "ledger",
+      "broker",
+      "cancel"
+    ],
+    "messages": [
+      "(coord -> ledger)[0]",
+      "(coord -> issuer)[0]",
+      "(issuer -> issuer)[0]",
+      "(coord -> coord)[0]",
+      "(cancel -> cancel)[0]",
+      "(issuer -> coord)[0]",
+      "(coord -> ledger)[1]",
+      "(ledger -> coord)[0]",
+      "(broker -> coord)[0]",
+      "(coord -> ledger)[2]",
+      "(ledger -> coord)[1]",
+      "(coord -> broker)[0]",
+      "(cancel -> ledger)[0]",
+      "(ledger -> cancel)[0]",
+      "(broker -> broker)[0]"
+    ],
+    "lifelines": [
+      "(coord -- )[0]",
+      "(issuer -- )[0]",
+      "(ledger -- )[0]",
+      "(broker -- )[0]",
+      "(cancel -- )[0]"
+    ],
+    "notes": {
+      "ledger.rule": "ledger"
+    }
+  }
+}
 |
 } } }

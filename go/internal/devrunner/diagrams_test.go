@@ -1,11 +1,66 @@
 package devrunner
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 )
+
+func TestSequenceEvidenceRequiresDeclaredSyntheticLifelines(t *testing.T) {
+	image := diagramImage{Layout: "sequence-view", Source: "docs/view.d2", SourceSHA256: "bound-source", Nodes: 1, Edges: 1}
+	valid := `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><metadata>{"layout":"sequence-view","view":{"source":"docs/view.d2"},"sourceSHA256":{"docs/view.d2":"bound-source"},"presentation":{"actors":["a"],"lifelines":["line"]},"model":{"subjects":[{"id":"a"}],"relations":[{"id":"line","src":"a","dst":"time-marker"}]}}</metadata><g data-scene-node="a"/><g data-scene-edge="line" data-source-id="a" data-target-id="time-marker"/></svg>`
+	if err := diagramEvidence([]byte(valid), image); err != nil {
+		t.Fatal(err)
+	}
+	for _, broken := range []string{
+		strings.Replace(valid, `"lifelines":["line"]`, `"lifelines":["other"]`, 1),
+		strings.Replace(valid, `"actors":["a"]`, `"actors":["unknown"]`, 1),
+		strings.Replace(valid, `"dst":"time-marker"`, `"dst":"time-marker","label":"hidden message"`, 1),
+		strings.Replace(valid, `"dst":"time-marker"`, `"dst":"time-marker","dstArrow":"triangle"`, 1),
+		strings.Replace(valid, `"layout":"sequence-view"`, `"layout":"model-view"`, 1),
+	} {
+		if err := diagramEvidence([]byte(broken), image); err == nil {
+			t.Fatal("undeclared or decorated synthetic relationship accepted")
+		}
+	}
+}
+
+func TestSequenceExportsRetainActualSourceCoverage(t *testing.T) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	root, err := FindRoot(cwd)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, view := range []struct {
+		name         string
+		nodes, edges int
+	}{
+		{"02-admission-sequence", 6, 22}, {"04-consume-timeout", 5, 15},
+		{"09-claim-wins-race", 6, 20}, {"10-commit-dispatch-sequence", 6, 21},
+	} {
+		t.Run(view.name, func(t *testing.T) {
+			source := "docs/architecture/diagrams/" + view.name + ".d2"
+			body, err := os.ReadFile(filepath.Join(root, source))
+			if err != nil {
+				t.Fatal(err)
+			}
+			svg, err := os.ReadFile(filepath.Join(root, "docs/architecture/diagrams/"+view.name+".svg"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			image := diagramImage{Layout: "sequence-view", Source: source, SourceSHA256: fmt.Sprintf("%x", sha256.Sum256(body)), Nodes: view.nodes, Edges: view.edges}
+			if err := diagramEvidence(svg, image); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
 
 func TestDiagramProfilesAreExplicitAndLocal(t *testing.T) {
 	root := t.TempDir()

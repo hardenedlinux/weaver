@@ -99,15 +99,29 @@ runtime latency or throughput benchmark. The fix is maintained in
 [[https://github.com/hardenedlinux/deterministic-engineering/pull/5][the upstream Library PR]];
 Weaver consumes its exact Git commit rather than copying its implementation.
 
-107 declarations now select the public model-view composition. Four historical
-sequence sources still require an upstream notation adapter for SDK-generated
-lifeline endpoints: W02, W04, W09 and W10; tracked in
-[[https://github.com/hardenedlinux/deterministic-engineering/issues/6][the upstream sequence-projection issue]]. Their source messages and existing
-artifacts are retained. They are not silently flattened, filtered or counted as
-newly accepted exports. A complete catalog gate must remain FAIL until those
-sources have a supported, reviewed representation. There is no old renderer
-fallback. Focused README checks and complete-catalog acceptance are reported
-separately.
+107 declarations select the public model-view composition. W02, W04, W09 and
+W10 now use a project-owned =sequence-view= composer through the same Library
+theme, font, compile and export interfaces. This adapter handles the exact
+captured participant and synthetic-lifeline identities; it does not parse a
+second D2 language or flatten time into a general graph. The upstream
+[[https://github.com/hardenedlinux/deterministic-engineering/issues/6][sequence-projection issue]] remains a separate producer concern.
+All 17, 11, 15 and 16 source messages, their order, self-calls and constraint
+ownership remain checked. English copy changes preserve those transitions and
+make actions and conditions readable as sentences.
+
+Four real exports, property checks and 830-pixel browser checks pass locally.
+The original sequential four-source hook failure and a measured font-line
+overlap failure remain in ignored persistent cache evidence. Independent source
+captures now run concurrently and drain under the original five-second hook;
+actual font-box measurements determine line spacing. The existing two-source
+acceptance boundary is unchanged.
+
+The complete catalog entry still fails before rendering: the locked SPEC
+revision lacks =CedarPooSpec/Gateway/ZeroTrust.lean=, which the existing
+=ZeroTrustArchitecture.lean= capture imports. The real Lake build failure is
+retained; no fallback, fabricated capture or dependency-pin change substitutes
+for that prerequisite. Focused diagram results are not 111-view architecture
+acceptance, Lean acceptance, gateway safety proof or remote CI success.
 
 The concurrent PR1 complete-entry obligation is retained as one standard
 five-second integration test over the two original real sources. Source

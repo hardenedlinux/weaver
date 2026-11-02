@@ -2,28 +2,28 @@
 # W02: selected success schedule; failure and evidence axes are separate views.
 shape: sequence_diagram
 adapter: Protocol adapter
-coord: Rust coordination service
-scheme: Serialized Scheme owner
-issuer: Rust grant authority
-ledger: Durable ledger
-adapter -> coord: Frozen authenticated operation
-coord -> ledger: S1 Prepare holds and pending flow
-ledger -> coord: Durable Prepared and cut V
-coord -> scheme: S2 Authorize exact admitted request
-scheme -> issuer: Trusted source-bound evaluation
-issuer -> issuer: Complete matching witnesses\nError-free execution gate required
-issuer -> scheme: Signed receipt and grant
-scheme -> coord: Bound local lifecycle grant
-coord -> scheme: S3 Reserve local grant once
-scheme -> coord: Local reservation / no effect
-coord -> ledger: Persist exact ConsumePending command
-ledger -> coord: Durable pending acknowledgment
-coord -> scheme: Deliver reservation once
-scheme -> scheme: Validate qualified finite source lease
-scheme -> coord: Configured synchronous delivery callback\nSeparate bounded coordinator task
-coord -> issuer: Consume original grant and exact subject
-issuer -> coord: Authenticated positive consumption
-coord.caveat: "S1-S3 ends with positive consume knowledge, not permission to send.\nContinue at W10. Qualified finite lease; no callback into the blocked Scheme owner."
+coord: Rust coordinator
+scheme: Scheme owner
+issuer: Grant authority
+ledger: Admission ledger
+adapter -> coord: Freeze the authenticated operation
+coord -> ledger: S1: reserve holds and prepare the flow
+ledger -> coord: Confirm durable Prepared at cut V
+coord -> scheme: S2: authorize the exact admitted request
+scheme -> issuer: Bind evaluation to the trusted source
+issuer -> issuer: Require complete matching witnesses\nReject execution errors
+issuer -> scheme: Return the signed receipt and grant
+scheme -> coord: Bind the grant to its local lifecycle
+coord -> scheme: S3: reserve the local grant once
+scheme -> coord: Confirm a local reservation\nPerform no external effect
+coord -> ledger: Persist the exact ConsumePending command
+ledger -> coord: Confirm the durable pending record
+coord -> scheme: Deliver the reservation once
+scheme -> scheme: Validate the qualified finite source lease
+scheme -> coord: Run the synchronous delivery callback\nUse a separate bounded coordinator task
+coord -> issuer: Consume the original grant\nBind its exact subject
+issuer -> coord: Confirm authenticated consumption
+coord.caveat: "Positive consumption is known; sending is not yet authorized. Continue at W10.\nThe Scheme owner remains serialized and uses a qualified finite lease.\nDo not call back into the blocked Scheme owner."
 # Shared role accents; brand marks are confined to architecture headers.
 adapter.class: cloud
 coord.class: runtime
@@ -34,6 +34,81 @@ coord.caveat.class: note
 
 # Project-owned presentation question; not an issued governance Question.
 vars: { d2-config: { data: { figure: |json
-{"title":"admission sequence","purpose":"workflow","kind":"sequence","language":"en","width":1600,"primary":"main","questions":[{"ref":"main","text":"Which owner messages and ordering constraints govern admission sequence?","focusRefs":["catalog","model"]}],"references":{"catalog":"docs/architecture/08-diagram-catalog.org","model":"Project.sysml"},"copy":{"takeaway":"The declared source relationships define this view; presentation does not grant execution authority."},"basis":{"captureRef":"docs/architecture/diagrams/02-admission-sequence.d2#design-view","modelRefs":["Project.sysml"],"obligationRefs":[],"evidenceRefs":[]},"themes":["blueprint"],"layout":"d2-reference","variants":[]}
+{
+  "title": "Authorize before dispatch",
+  "purpose": "workflow",
+  "kind": "sequence",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How does an authenticated request become a consumed grant?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/02-admission-sequence.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "blueprint", "sequence-reading"
+  ],
+  "layout": "sequence-view",
+  "variants": [],
+  "presentation": {
+    "actors": [
+      "adapter",
+      "coord",
+      "scheme",
+      "issuer",
+      "ledger"
+    ],
+    "messages": [
+      "(adapter -> coord)[0]",
+      "(coord -> ledger)[0]",
+      "(ledger -> coord)[0]",
+      "(coord -> scheme)[0]",
+      "(scheme -> issuer)[0]",
+      "(issuer -> issuer)[0]",
+      "(issuer -> scheme)[0]",
+      "(scheme -> coord)[0]",
+      "(coord -> scheme)[1]",
+      "(scheme -> coord)[1]",
+      "(coord -> ledger)[1]",
+      "(ledger -> coord)[1]",
+      "(coord -> scheme)[2]",
+      "(scheme -> scheme)[0]",
+      "(scheme -> coord)[2]",
+      "(coord -> issuer)[0]",
+      "(issuer -> coord)[0]"
+    ],
+    "lifelines": [
+      "(adapter -- )[0]",
+      "(coord -- )[0]",
+      "(scheme -- )[0]",
+      "(issuer -- )[0]",
+      "(ledger -- )[0]"
+    ],
+    "notes": {
+      "coord.caveat": "coord"
+    }
+  }
+}
 |
 } } }

@@ -11,7 +11,7 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
  if(!modelDigest)throw new Error('Standalone vector admission requires the Go-owned SDK capture');
  expect(receipt.status).toBe('PASS');
  expect(receipt.report.modelCaptureSHA256).toBe(modelDigest);
- const images=receipt.report.images.filter(image=>image.layout==='model-view');
+ const images=receipt.report.images.filter(image=>image.layout==='model-view'||image.layout==='sequence-view');
  expect(images.length).toBeGreaterThan(3);
  const browser=await chromium.launch();
  const failures:string[]=[];
@@ -36,11 +36,11 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
      const problems:string[]=[],root=document.querySelector('body>svg')!.getBoundingClientRect();
      const canvas=document.querySelector('body>svg>rect');
      if(!canvas||getComputedStyle(canvas).fill==='rgba(0, 0, 0, 0)'||getComputedStyle(canvas).fill==='none')problems.push('Transparent standalone canvas');
-     for(const text of document.querySelectorAll<SVGTextElement>('svg[data-vector-annotation] text,.scene-copy text')){
+     for(const text of document.querySelectorAll<SVGTextElement>('svg[data-vector-annotation] text,.scene-copy text,svg[data-vector-surface=sequence] text')){
       const box=text.getBoundingClientRect();
       if(box.left<root.left-1||box.right>root.right+1||box.bottom>root.bottom+1)problems.push('Out of image: '+text.textContent);
      }
-     for(const text of document.querySelectorAll<SVGGraphicsElement>('.scene-title,.scene-detail,.scene-label text,[data-heading-role=question] [data-annotation-part=label] text,[data-heading-role=answer] [data-annotation-part=label] text,[data-heading-role=note] text')){
+     for(const text of document.querySelectorAll<SVGGraphicsElement>('svg[data-vector-surface=sequence] text:not(.sequence-index):not(.sequence-note-title),.scene-title,.scene-detail,.scene-label text,[data-heading-role=question] [data-annotation-part=label] text,[data-heading-role=answer] [data-annotation-part=label] text,[data-heading-role=note] text')){
       const matrix=text.getScreenCTM()!,size=parseFloat(getComputedStyle(text).fontSize)*Math.hypot(matrix.a,matrix.b);
       if(size<18)problems.push('Small model label: '+text.textContent+' '+size.toFixed(2));
      }

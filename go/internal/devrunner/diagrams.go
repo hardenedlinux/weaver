@@ -133,8 +133,12 @@ func diagramEvidence(data []byte, image diagramImage) error {
 	connections := map[string][2]string{}
 	metadataCount := 0
 	var metadata struct {
-		Layout string `json:"layout"`
-		View   struct {
+		Layout       string `json:"layout"`
+		Presentation struct {
+			Actors    []string `json:"actors"`
+			Lifelines []string `json:"lifelines"`
+		} `json:"presentation"`
+		View struct {
 			Source string `json:"source"`
 		} `json:"view"`
 		SourceSHA256 map[string]string `json:"sourceSHA256"`
@@ -142,7 +146,7 @@ func diagramEvidence(data []byte, image diagramImage) error {
 			Subjects []struct {
 				ID string `json:"id"`
 			} `json:"subjects"`
-			Relations []struct{ ID, Src, Dst string } `json:"relations"`
+			Relations []struct{ ID, Src, Dst, Label, SrcArrow, DstArrow string } `json:"relations"`
 		} `json:"model"`
 	}
 	for {
@@ -226,6 +230,27 @@ func diagramEvidence(data []byte, image diagramImage) error {
 			return fmt.Errorf("source node omitted: %s", node.ID)
 		}
 	}
+	// D2 sequence captures contain explicit lifeline relationships whose endpoint
+	// is a synthetic time marker, not another participant. Admit only the exact
+	// source-declared lifeline set; ordinary edges still require both real nodes.
+	lifelines, actors, actorLines := map[string]bool{}, map[string]bool{}, map[string]bool{}
+	if metadata.Layout == "sequence-view" {
+		for _, actor := range metadata.Presentation.Actors {
+			if !nodes[actor] || actors[actor] {
+				return errors.New("invalid sequence participant")
+			}
+			actors[actor] = true
+		}
+		for _, id := range metadata.Presentation.Lifelines {
+			if id == "" || lifelines[id] {
+				return errors.New("invalid sequence lifeline identity")
+			}
+			lifelines[id] = true
+		}
+		if len(actors) == 0 || len(actors) != len(lifelines) {
+			return errors.New("incomplete sequence lifelines")
+		}
+	}
 	for _, edge := range metadata.Model.Relations {
 		if edge.ID == "" || seenEdges[edge.ID] {
 			return errors.New("duplicate or empty declared relationship identity")
@@ -234,9 +259,20 @@ func diagramEvidence(data []byte, image diagramImage) error {
 		if connections[edge.ID] != [2]string{edge.Src, edge.Dst} {
 			return errors.New("visual relationship endpoints differ from declaration")
 		}
-		if !edges[edge.ID] || !nodes[edge.Src] || !nodes[edge.Dst] {
+		if lifelines[edge.ID] {
+			if !actors[edge.Src] || actorLines[edge.Src] || edge.Dst == "" || nodes[edge.Dst] || edge.Label != "" || (edge.SrcArrow != "" && edge.SrcArrow != "none") || (edge.DstArrow != "" && edge.DstArrow != "none") {
+				return errors.New("invalid sequence lifeline endpoints or decoration")
+			}
+			actorLines[edge.Src] = true
+		} else if !nodes[edge.Dst] {
 			return fmt.Errorf("source relationship omitted: %s", edge.ID)
 		}
+		if !edges[edge.ID] || !nodes[edge.Src] {
+			return fmt.Errorf("source relationship omitted: %s", edge.ID)
+		}
+	}
+	if len(actorLines) != len(lifelines) {
+		return errors.New("unrendered sequence lifeline")
 	}
 	return nil
 }
