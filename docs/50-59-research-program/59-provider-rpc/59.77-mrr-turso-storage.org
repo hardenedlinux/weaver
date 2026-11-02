@@ -190,6 +190,17 @@ it does not relabel their old execution receipts as Turso measurements. The
 retirement audit therefore establishes one current engine, not deletion of every
 historical occurrence of the old engine's name.
 
+The retirement cleanup was checked against PR1 head =2d737d9=. The actual Go
+=TestProjectArchitectureStorageUsesMRRDataTursoOnly= gate passed (2.687 seconds),
+including locked offline Cargo metadata inspection. CI preparation's local-job
+rejection and modular gate-coverage tests passed (0.854 seconds). The strict
+Go/OpenSysML =TestProjectArchitecture= gate passed (14.564 seconds), and
+=git diff --check= passed. Initial attempts could not fetch missing locked Go
+dependencies inside the network-restricted environment; the same gates passed
+after those exact dependencies were fetched. These are audit/model checks, not
+a new runtime concurrency benchmark, full storage integration run or remote CI
+receipt. No dependency pin, transaction isolation or timeout was changed.
+
 * Local qualification and retained failures
 
 The host exposes twelve CPUs and the builds select twelve jobs. The focused
