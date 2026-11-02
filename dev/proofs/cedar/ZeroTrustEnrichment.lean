@@ -4,8 +4,8 @@ import PublicationRecovery
 import WeaverPolicyBridge
 import ProviderRpc
 
-/-! Candidate-library consumer, checked in isolation against the upstream PR.
-The normal WeaverPolicyBridge target retains its unchanged dependency pin.
+/-! Maintained consumer of the locked upstream Gateway Zero Trust framework.
+The ordinary Lake target checks this composition against the released LeanPoo closure.
 The generic functional framework belongs to CedarPooSpec.ZeroTrust; Gateway
 specializes it through Gateway.ZeroTrust and existing POO publication; this file enriches
 the existing Weaver view and applies the library's final-use laws. -/

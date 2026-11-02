@@ -23,6 +23,12 @@ package ControlActivation {
         doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
     requirement def SourceStartupObservation {
+        doc /* Resolve inherited release tags to their peeled commit in the
+           existing source cut; reject same-name branches, missing tags and
+           retargeting before/after preparation and at source-currentness checks.
+           A release label grants no Policy, publication or execution authority.
+           Standard gerbil build/test and actual FFI/gRPC integration remain
+           independent obligations after dependency resolution succeeds. */
         doc /* The existing Go verification owner records package preparation in
            the same check-scheme receipt before package tests. Dependency failure
            cannot escape as an absent result or be interpreted as a test pass.

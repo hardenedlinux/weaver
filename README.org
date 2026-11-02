@@ -35,10 +35,12 @@ unknown budget. Autonomous external export and OTLP are not enabled. See the
 
 ** Zero Trust security architecture
 
-Weaver's Zero Trust architecture follows =cedar-poo-spec= and
-=CedarPooSpec.Gateway.ZeroTrust=. Complete import of that Gateway framework
-remains gated by the [[file:docs/50-59-research-program/59-provider-rpc/59.83-spec-source-closure-and-architecture-admission.org][dependency source closure]]; current Rust enforcement is validated
-separately. It does not define a separate Gateway security framework.
+Weaver imports =CedarPooSpec.Gateway.ZeroTrust= from =cedar-poo-spec=.
+The upstream framework defines the security contract; Weaver connects it to
+authenticated source publication, durable consumption and final Rust mediation.
+The checked composition retains explicit host obligations for authentication,
+currentness, atomic storage and actual transport. See the
+[[file:docs/50-59-research-program/59-provider-rpc/59.86-release-zero-trust-integration.org][implementation and validation boundary]].
 Zero Trust grants no implicit authority from network location,
 service ownership or an authenticated connection. Each concrete effect needs
 current, explicitly bound authorization. See [[https://csrc.nist.gov/pubs/sp/800/207/final][NIST SP 800-207]].

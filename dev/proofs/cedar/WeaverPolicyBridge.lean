@@ -188,13 +188,13 @@ theorem missing_account_application_cannot_justify_release (known complete : Boo
 
 theorem compound_acceptance_requires_each_error_free_allow
     (model : CedarPooSpec.PolicyModules.Model) (root : String) (requests : List Request)
-    (entities : Entities) (receipt : CedarPooSpec.CompoundAuthorization.Receipt model root requests entities)
+    (entities : Entities) (receipt : CedarPooSpec.Authorization.Compound.Receipt model root requests entities)
     (accepted : receipt.allowed = true) :
     ∀ request ∈ requests, let response := isAuthorized request entities receipt.policies
       (response.decision == .allow && response.erroringPolicies.isEmpty) = true := by
   have all : requests ≠ [] ∧ ∀ response ∈ receipt.responses,
       response.decision = .allow ∧ response.erroringPolicies.isEmpty = true := by
-    simpa [CedarPooSpec.CompoundAuthorization.Receipt.allowed,List.all_eq_true] using accepted
+    simpa [CedarPooSpec.Authorization.Compound.Receipt.allowed,List.all_eq_true] using accepted
   intro request member
   have evaluated : isAuthorized request entities receipt.policies ∈ receipt.responses := by
     rw [receipt.evaluated]
@@ -214,7 +214,7 @@ theorem governance_projection_and_actual_request_require_error_free_allow
     (model : CedarPooSpec.PolicyModules.Model) (root : String)
     (entities : Entities) (runtimePolicies : Policies)
     (materialized : model.compile root = .ok runtimePolicies)
-    (receipt : CedarPooSpec.CompoundAuthorization.Receipt model root [operation.request] entities)
+    (receipt : CedarPooSpec.Authorization.Compound.Receipt model root [operation.request] entities)
     (accepted : receipt.allowed = true) :
     let response := isAuthorized (project effect state) entities runtimePolicies
     (response.decision == .allow && response.erroringPolicies.isEmpty) = true := by
@@ -235,7 +235,7 @@ theorem bound_successor_requires_current_semantics
     (model : CedarPooSpec.PolicyModules.Model) (root : String)
     (entities : Entities) (runtimePolicies : Policies)
     (materialized : model.compile root = .ok runtimePolicies)
-    (receipt : CedarPooSpec.CompoundAuthorization.Receipt model root [operation.request] entities)
+    (receipt : CedarPooSpec.Authorization.Compound.Receipt model root [operation.request] entities)
     (accepted : receipt.allowed = true) :
     operation.state = actual ∧ actual.pendingHardFacts = [] ∧
     actual.requiredDomain = actual.receiptDomain ∧ actual.receiptComplete = true ∧
@@ -404,7 +404,7 @@ theorem fact_context_and_cedar_bind_actual_execution
     (model : CedarPooSpec.PolicyModules.Model) (root : String)
     (entities : Entities) (runtimePolicies : Policies)
     (materialized : model.compile root = .ok runtimePolicies)
-    (receipt : CedarPooSpec.CompoundAuthorization.Receipt model root [operation.request] entities)
+    (receipt : CedarPooSpec.Authorization.Compound.Receipt model root [operation.request] entities)
     (accepted : receipt.allowed = true) :
     operation.state = actual ∧ actual.Ready ∧
     let response := isAuthorized (project effect actual) entities runtimePolicies
@@ -603,7 +603,9 @@ theorem changed_capture_cannot_reuse_adapter_evidence (s : BoundaryContext)
 
 /-- Preparation retains the original source cut. The host must establish full
 metadata/asset coverage and source/artifact identity independently; pre/post
-hash equality alone does not prove an immutable filesystem snapshot. -/
+hash equality alone does not prove an immutable filesystem snapshot. A released
+tag is resolved to its peeled commit in this cut and rechecked after preparation;
+retaining a tag label cannot authenticate a changed resolved source. -/
 theorem changed_preparation_cut_cannot_rebase_boundary (s : BoundaryContext)
     (changed : s.captured.sourceCut ≠ s.expectedCapture.sourceCut) : s.ready = false := by
   apply changed_capture_cannot_reuse_adapter_evidence
@@ -666,7 +668,7 @@ theorem adapter_context_and_cedar_bind_actual_effect
     (model : CedarPooSpec.PolicyModules.Model) (root : String)
     (entities : Entities) (runtimePolicies : Policies)
     (materialized : model.compile root = .ok runtimePolicies)
-    (receipt : CedarPooSpec.CompoundAuthorization.Receipt model root [operation.request] entities)
+    (receipt : CedarPooSpec.Authorization.Compound.Receipt model root [operation.request] entities)
     (accepted : receipt.allowed = true) :
     operation.state = actual ∧ actual.Ready ∧
     let response := isAuthorized (project effect actual) entities runtimePolicies

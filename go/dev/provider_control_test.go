@@ -143,6 +143,19 @@ func (c *controlProcess) start(t testing.TB) {
 		}
 	}
 }
+
+func (c *controlProcess) useProducer(name string) {
+	if name == "" {
+		return
+	}
+	var environment []string
+	for _, value := range c.env {
+		if !strings.HasPrefix(value, "WEAVER_CONTROL_CONFIG=") {
+			environment = append(environment, value)
+		}
+	}
+	c.env = append(environment, "WEAVER_CONTROL_PRODUCER="+name)
+}
 func (c *controlProcess) stop(t testing.TB) {
 	t.Helper()
 	if c.child == nil {
@@ -227,15 +240,7 @@ func exerciseControlPolicies(t *testing.T, format string, source func(*testing.T
 		policies.configure(t, f, bundle)
 	}
 	c := newControlProcess(t, f, path)
-	if policies.producer != "" {
-		var environment []string
-		for _, value := range c.env {
-			if !strings.HasPrefix(value, "WEAVER_CONTROL_CONFIG=") {
-				environment = append(environment, value)
-			}
-		}
-		c.env = append(environment, "WEAVER_CONTROL_PRODUCER="+policies.producer)
-	}
+	c.useProducer(policies.producer)
 	c.start(t)
 	parent := uint64(1)
 	revocation := v1.Publication{OperationID: "control-revoke", ExpectedRevision: &parent, Fence: 3, Policy: `forbid(principal,action,resource);`, Schema: f.schema}
@@ -399,6 +404,10 @@ func (p *publicationReplyLoss) RegisterTask(ctx context.Context, in *pb.Register
 	source := p.sourceClient()
 	return source.RPC.RegisterTask(source.Context(ctx), in)
 }
+func (p *publicationReplyLoss) CompileSource(ctx context.Context, in *pb.ProducerRequest) (*pb.CompiledSource, error) {
+	source := p.sourceClient()
+	return source.RPC.CompileSource(source.Context(ctx), in)
+}
 func (p *publicationReplyLoss) RegisterPublishedTask(ctx context.Context, in *pb.RegisterPublishedTaskRequest) (*pb.Empty, error) {
 	source := p.sourceClient()
 	return source.RPC.RegisterPublishedTask(source.Context(ctx), in)
@@ -432,14 +441,14 @@ func preparedControlBundle(t testing.TB, path string) config.Bundle {
 }
 
 func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string) {
-	exerciseControlSourceReplyLoss(t, source, false)
+	exerciseControlSourceReplyLoss(t, source, false, controlPolicySources{})
 }
 
 func TestProviderControlStagingReplyLossCannotActivateOrLosePending(t *testing.T) {
-	exerciseControlSourceReplyLoss(t, nil, true)
+	exerciseControlSourceReplyLoss(t, nil, true, controlPolicySources{})
 }
 
-func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string, loseStage bool) {
+func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string, loseStage bool, policies controlPolicySources) {
 	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
@@ -447,7 +456,11 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	if source != nil {
 		path = source(t, f, bundle)
 	}
+	if policies.configure != nil {
+		policies.configure(t, f, bundle)
+	}
 	c := newControlProcess(t, f, path)
+	c.useProducer(policies.producer)
 	certificate, err := tls.X509KeyPair(f.pki.serverPEM, f.pki.serverKey)
 	if err != nil {
 		t.Fatal(err)

@@ -73,8 +73,8 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, evide
 	if err != nil {
 		return nil, err
 	}
-	if declared != heads["gerbil-poo"] {
-		return nil, errors.New("Gerbil POO source must match Core's declared exact dependency pin")
+	if err := requirePooRevision(ctx, poo, declared, heads["gerbil-poo"]); err != nil {
+		return nil, err
 	}
 	link := exec.CommandContext(ctx, "git", "-C", source, "ls-tree", "HEAD", "core")
 	declaredCore, err := link.Output()
@@ -208,6 +208,9 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, evide
 	if !maps.Equal(current, hashes) {
 		return nil, errors.New("linked Scheme sources changed during package preparation")
 	}
+	if err := requirePooRevision(ctx, poo, declared, heads["gerbil-poo"]); err != nil {
+		return nil, err
+	}
 	if err := checkLinkedSchemeHeads(ctx, source, poo, heads); err != nil {
 		return nil, err
 	}
@@ -233,11 +236,29 @@ func DeclaredPooRevision(core string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	matches := regexp.MustCompile(`"github\.com/tao3k/gerbil-poo@([a-f0-9]{40})"`).FindAllSubmatch(data, -1)
-	if len(matches) != 1 {
+	matches := regexp.MustCompile(`"github\.com/tao3k/gerbil-poo@([^"\s]+)"`).FindAllSubmatch(data, -1)
+	if len(matches) != 1 || !regexp.MustCompile(`^([a-f0-9]{40}|v[0-9]+\.[0-9]+\.[0-9]+)$`).Match(matches[0][1]) {
 		return "", errors.New("Core must declare one exact Gerbil POO revision")
 	}
 	return string(matches[0][1]), nil
+}
+
+// Resolve only a declared release tag, never an identically named branch.
+// The immutable source cut remains the peeled commit, not a tag label.
+func requirePooRevision(ctx context.Context, source, declared, expected string) error {
+	resolved := declared
+	if strings.HasPrefix(declared, "v") {
+		cmd := exec.CommandContext(ctx, "git", "-C", source, "rev-parse", "--verify", "refs/tags/"+declared+"^{commit}")
+		data, err := cmd.Output()
+		if err != nil {
+			return fmt.Errorf("resolve declared Gerbil POO release: %w", err)
+		}
+		resolved = strings.TrimSpace(string(data))
+	}
+	if resolved != expected {
+		return errors.New("Gerbil POO source must match Core's declared exact dependency pin")
+	}
+	return nil
 }
 
 func schemeSourceHashes(source, poo string) (map[string]string, error) {
@@ -392,6 +413,13 @@ func schemeSourceCurrentness(ctx context.Context, directory, name string, settin
 				changed[index] = path[:min(len(path), 160)]
 			}
 			err = fmt.Errorf("linked Scheme sources changed (%d): %s", count, strings.Join(changed, ", "))
+		}
+	}
+	if err == nil {
+		var declared string
+		declared, err = DeclaredPooRevision(filepath.Join(receipt.SourceRoot, "core"))
+		if err == nil {
+			err = requirePooRevision(ctx, receipt.PooSource, declared, receipt.SourceHeads["gerbil-poo"])
 		}
 	}
 	if err == nil {

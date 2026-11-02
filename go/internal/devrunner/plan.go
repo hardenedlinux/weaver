@@ -46,7 +46,8 @@ func Plan(goBinary string) []Stage {
 		{"quint-lifecycle-tests", "quint", []string{"test", "dev/proofs/quint/RuntimeLifecycle.qnt", "--main", "RuntimeLifecycle", "--seed", "293"}},
 		{"quint-lifecycle-safety", "quint", []string{"run", "dev/proofs/quint/RuntimeLifecycle.qnt", "--main", "RuntimeLifecycle", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"lean-stream", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/StreamingExecution.lean"}},
-		{"cedar-proof-bridge", "elan", []string{"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "build", "WeaverPolicyBridge"}},
+		{"cedar-proof-bridge", "elan", []string{"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "build"}},
+		leanArchitectureStage(),
 		{"quint-typecheck", "quint", []string{"typecheck", "dev/proofs/quint/RuntimeAdmission.qnt"}},
 		{"quint-tests", "quint", []string{"test", "dev/proofs/quint/RuntimeAdmission.qnt", "--main", "RuntimeAdmission", "--seed", "293"}},
 		{"quint-safety", "quint", []string{"run", "dev/proofs/quint/RuntimeAdmission.qnt", "--main", "RuntimeAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "50", "--seed", "293"}},
@@ -112,7 +113,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"rust-dependencies", "cargo", []string{"fetch", "--locked"}},
 			{"go-dependencies", goBinary, []string{"-C", "go", "mod", "download"}},
 			{"proof-toolchain", "elan", []string{"run", "--install", proofToolchain, "lean", "--version"}},
-			{"proof-dependencies", "elan", []string{"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "build", "WeaverPolicyBridge"}},
+			{"proof-dependencies", "elan", []string{"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "build"}},
 		}, nil
 	case "check":
 		return Plan(goBinary), nil

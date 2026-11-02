@@ -216,6 +216,10 @@ package WeaverExecution {
            original. Go neither invents original task keys from session labels
            nor treats compile/publication acknowledgments as final-use permits. */
         attribute displayName : String = "Go / Control + routing";
+        attribute leanDeclaration : String = "CedarPooSpec.Gateway.Context";
+        attribute leanFields : String = "scope,policyRevision,ownerEpoch,historyRevision,factFloor";
+        attribute securityName : String = "Go / Source publication";
+        attribute securityResponsibility : String = "Carry the original context\nPublish over authenticated gRPC\nUnknown replies stay unresolved";
         attribute responsibility : String = "Cloud and protocol integration\nPublish authenticated proposals\nChoose eligible providers";
         attribute glyph : String = "go";
         attribute visualRole : String = "selection";

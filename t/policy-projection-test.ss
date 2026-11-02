@@ -1,7 +1,6 @@
 ;;; Standard Cedar Policy values compose without an additional policy language.
 (import :std/test
         (only-in :std/error Error?)
-        (only-in :std/srfi/13 string-join)
         (only-in :clan/poo/object .o .get)
         (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
         (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)

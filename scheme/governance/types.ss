@@ -3,7 +3,7 @@
         (only-in :clan/poo/mop Function Bool)
         (only-in :clan/poo/type Record List String Symbol Or Enum)
         (only-in :yuanxu/object-types/contracts YuanxuContract.)
-        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile))
+        (only-in :agentic-ai-lab/modules/governance/types AgenticAILabGovernanceProfile))
 (export GovernanceScopeContract GovernanceContext GovernanceAssessmentContext
         AgenticAILabGovernanceProfile GovernanceProfileSnapshot)
 (def GovernanceContext

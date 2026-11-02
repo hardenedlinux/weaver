@@ -98,10 +98,13 @@ package WeaverViews {
         attribute displayEyebrow : String = "WEAVER / PRODUCT ARCHITECTURE";
         attribute leanEnvironment : String = "required";
         expose WeaverExecution::gateway::semanticPublisher;
+        expose WeaverExecution::gateway::controlAdapter;
         expose WeaverExecution::gateway::policy;
         expose WeaverExecution::gateway::ledger;
         expose WeaverExecution::gateway::broker;
         expose WeaverExecution::gateway::executor;
+        expose WeaverExecution::gateway::semanticPublisher_sourceCandidates_to_controlAdapter_sourceCandidates;
+        expose WeaverExecution::gateway::controlAdapter_sourceCommands_to_ledger_sourceCommands;
         expose WeaverExecution::gateway::ledger_policyEvaluation_to_policy_evaluation;
         expose WeaverExecution::gateway::ledger_consumed_to_broker_consumed;
         expose WeaverExecution::gateway::broker_wire_to_executor_wire;

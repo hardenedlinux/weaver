@@ -20,7 +20,11 @@ pub fn fixture() -> (Publication, PublicationReview, Value) {
             .policies
             .to_json_string()
             .expect("identified PolicySet"),
-        schema: serde_json::to_string(&manifest.schema).expect("schema"),
+        schema: manifest
+            .schema
+            .source_identity()
+            .expect("schema")
+            .to_owned(),
     };
     let evidence = serde_json::json!({"manifest":serde_json::from_str::<Value>(MANIFEST).expect("wire"),"receipts":receipts,"candidate_case":"scoped-public"});
     let review = PublicationReview {

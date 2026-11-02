@@ -66,7 +66,7 @@ pub fn verify_publication_replay(
         return Err(Error::Invalid("replay case bounds"));
     }
     let schema: serde_json::Value = weaver_contracts::decode(change.schema.as_bytes())?;
-    if schema != artifact.manifest.schema {
+    if schema != *artifact.manifest.schema {
         return Err(Error::Conflict("replay candidate schema"));
     }
     let candidate_cases = bind_image(&change.policy, &artifact.candidate_case, &artifact)?;
@@ -95,7 +95,7 @@ fn bind_predecessor(parent: Option<&AuthorityParent>, artifact: &CandidateReplay
                 return Err(Error::Conflict("replay predecessor bytes"));
             }
             let schema: serde_json::Value = weaver_contracts::decode(before.schema.as_bytes())?;
-            if schema != artifact.manifest.schema {
+            if schema != *artifact.manifest.schema {
                 return Err(Error::Conflict("replay predecessor schema"));
             }
             bind_image(&before.policy, &before.case, artifact)

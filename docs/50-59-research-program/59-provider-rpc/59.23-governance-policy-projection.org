@@ -135,9 +135,10 @@ The Rust preflight regression suite exercises the actual locked Cedar engine,
 including the aggregate-only counterexample, official JSON input, invalid source
 regions and 128-case composition properties. Scheme tests add actual-CFFI
 document rejection, copied callback inputs, exact validation order and 128-case
-refusal-position coverage. Their standard package qualification remains blocked
-by the unchanged upstream dependency closure documented in
-[[file:59.85-source-preparation-admission.org][source preparation admission]]; adding tests does not claim they ran.
+refusal-position coverage. The initial standard package qualification was blocked
+by the upstream dependency closure documented in
+[[file:59.85-source-preparation-admission.org][source preparation admission]]. Current Release qualification is tracked in
+[[file:59.86-release-zero-trust-integration.org][Release integration]]; adding tests alone does not claim they ran.
 
 =BoundaryContext.policyDocuments= and the Quint boundary evidence retain the
 individual results separately from aggregate/schema status. Lean proves that a
@@ -145,8 +146,9 @@ false document result blocks admission. Quint preserves the aggregate-only
 negative control and the invariant that valid preflight grants neither a send
 nor a refund. These models assume faithful native parsing of the exact frozen
 documents under the exact schema; they do not prove Cedar parser correctness.
-The locked SPEC still lacks the complete =Gateway.ZeroTrust= source closure
-described in [[file:59.83-spec-source-closure-and-architecture-admission.org][SPEC source closure]]. No dependency pin is changed here.
+The document-preflight change originally retained the former SPEC pin. The
+subsequent [[file:59.86-release-zero-trust-integration.org][Release integration]] updates the maintained SPEC closure and directly
+imports =Gateway.ZeroTrust=, without copying its definitions.
 
 The Go =check-scheme= plan now includes =scheme-policy-preflight= for the Rust
 unit/property suite and Criterion smoke checks. The existing package build/test

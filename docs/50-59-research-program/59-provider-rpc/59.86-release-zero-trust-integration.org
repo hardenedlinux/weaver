@@ -1,0 +1,120 @@
+#+TITLE: 59.86 Release Closure and Gateway Zero Trust Integration
+#+LANGUAGE: en
+
+* Dependency ownership
+
+LeanPoo and its companion Gerbil POO library publish v0.1.2. SPEC and Core
+must inherit those releases through their own declarations. A successful local
+checkout of a retired branch commit does not establish ordinary clone/install
+availability. Initial standard preparation failed during checkout, before any
+Weaver package test; it was not a runtime timeout. The former Ascent/Core
+conflict and retired-commit checkout are distinct failures.
+
+| Owner | Selected source | Dependency obligation |
+|-------+-----------------+-----------------------|
+| LeanPoo | v0.1.2 / b29ea0d9d2ffeed0c13b66794fc6d418fd5b0393 | Released proof library |
+| Gerbil POO | v0.1.2 / a84e76c1b1a61de2db52e38ba8d1d8c8671ec601 | Released Scheme object/types/property framework |
+| SPEC | 76381738b9a2afde13c79c36650b025b82b1b979 | Inherits LeanPoo v0.1.2; Cargo and Lake select this same producer |
+| Core | a8030b11417520eec727b4634f180241512ec575 | Inherits Gerbil POO v0.1.2 |
+| Parser | 27b31d2b110363e341b351c0f10d00baec760879 | Inherits the selected Core |
+| Ascent | 96faa6917cc389018fde049455d1d0d0c058beef | Inherits the same Core |
+| Orgize | 5873bffee72e5756fee99e36c91d76eea27bda9c | Scheme and Rust inherit the same Parser |
+| Agentic AI Lab | aeac4f4c12b1722f992da9354695b611d3e0851f | Gitlink, Parser, Ascent and Orgize select that common closure |
+
+Owner fixes are published on separate dependency-alignment branches; existing
+upstream branches and tags are unchanged. These are source-cohort commits, not
+new releases of those owners. No downstream Zero Trust model or governance DSL
+is substituted. The SPEC producer test and Gateway.ZeroTrust build complete 386
+jobs against the release. The maintained Weaver Lake build completes 391 jobs,
+including ZeroTrustEnrichment and ZeroTrustArchitecture. The earlier isolated
+candidate is not the maintained dependency source.
+
+* Tag resolution and source admission
+
+The existing Go preparation owner accepts an exact SHA or inherited release
+tag, resolves only refs/tags/<tag> to its peeled commit, and compares that commit
+with the supplied POO checkout. It rechecks after preparation and in subsequent
+source-currentness validation. A same-name branch, missing tag or retargeted tag
+cannot substitute for the retained source cut. Package metadata and Policy
+assets remain included in its independent pre-call source hash. Tags do not
+prove arbitrary filesystem immutability, compiler fidelity or runtime authority.
+
+The native entry remains gerbil build/test. Twelve host cores are used through
+the existing resource policy. Dependency build budgets belong to their upstream
+owners; the original Weaver runtime/startup/drain gates are unchanged. Neither
+an AOT-only result nor a manually fetched old object establishes standard
+package acceptance. No package uninstall is used.
+
+* Authorization to execution
+
+Scheme composes admitted Agentic AI Lab Governor/Governance modules, typed
+Profile and source-assets. Each complete Cedar document and the exact aggregate
+are validated through the existing Rust C ABI under the publication schema.
+Typed objects cross the rooted Scheme/Rust SDK boundary; the production Go
+control plane obtains compiled source through authenticated gRPC. Source
+compilation and publication commit perform no provider send.
+
+Rust compares replay schemas with the immutable schema source supplied by the
+current SPEC API. Candidate and authoritative predecessor equality checks remain
+mandatory. Test fixtures serialize through the upstream source-identity API,
+not a replacement schema representation. Rust evaluates actual Cedar requests,
+persists the existing Turso consumption and current fence, and mediates dispatch
+and each stream release. An old approval, successful preflight, historical
+publication or released dependency label supplies no send capability.
+
+Go keeps publication operation identity and exact outcome recovery. Unknown
+staging/publication outcomes cannot activate ingress by guessing success.
+Provider exposure after any partial request or response retains the original
+claim and reservation; retries and dual restart cannot redispatch or refund it.
+This is logical execution ownership in an AI Agent Gateway, not physical
+isolation or an exactly-once delivery promise.
+
+* Proof and executable correspondence
+
+The maintained Lake targets import the actual Gateway.ZeroTrust framework and
+apply its final-use, continuing-consumption and required-parent laws. Existing
+PublicationRecovery and ProviderRpc modules supply the recovery/accounting
+composition. No definitions are copied and no compatibility namespace is added.
+The public Authorization.Compound namespace replaces the retired producer name.
+
+Quint retains schedules and counterexamples. A release-label-preserving source
+replacement is modeled as a changed cut under the existing boundary relation.
+Lean's changed_preparation_cut_cannot_rebase_boundary is reused; native Git tests
+establish tag resolution and retargeting refusal. Those laws assume faithful
+native facts; they are not a compiler or Git authentication proof.
+
+Compiled-program integration uses the real installed Scheme producer and actual
+CompileSource RPC, including through the existing reply-loss relay. The relay
+forwards compilation and only loses the selected staging/publication response.
+It does not synthesize a Governance result. Cases cover revocation after a
+response prefix, lost staging/final replies, provider prefix-read/disconnect,
+SDK retry and dual-process restart. Assertions inspect provider call counts and
+the original unknown hold, not merely an error status.
+
+* Qualification record
+
+The first complete standard attempt passes dependency preparation, common
+Core/POO admission, Rust preflight, package capacity and build-environment
+checks. Weaver's module build then rejects a role reversal: Governance types,
+functions and objects imported the aggregate interface rather than their
+exporting upstream roles. These imports are corrected to the public types,
+funs and objects owners. The role rule is unchanged. A test also imported the
+unavailable std/srfi/13 module; it now uses Gerbil's existing runtime string join.
+
+That attempt reaches the unchanged fifteen-second package-test watchdog with
+missing compiled FFI modules and a module-import failure. It is not natural
+package acceptance, and it does not by itself isolate a remaining runtime
+performance cause. SDK/integration compilation also cannot find the unbuilt
+source-bytes unit. The complete failure and timing remain in
+.cache/zerotrust-first-complete-check-scheme-failure.json. Concurrent working-tree
+changes invalidate its source-currentness stage; no successful sibling stage
+promotes that run. A fresh, stable-source standard run is required after fixes.
+
+Native package and full integration qualification remain in progress. Passing
+producer/consumer Lean builds and source resolution do not count as a passing
+gerbil test or provider integration result. Raw failures and stage receipts stay
+under ignored .cache. The retained initial checkout failure is
+.cache/zerotrust-retired-sha-failure.json; it precedes any package tests.
+
+#+CAPTION: The imported security contract is interpreted at the actual Gateway execution boundary.
+[[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]

@@ -1,7 +1,17 @@
 #+TITLE: SPEC Source Closure and Architecture Admission
 #+LANGUAGE: en
 
-* Source ownership
+* Current source closure
+
+The maintained dependency now imports Gateway.ZeroTrust through the SPEC
+owner's release-aligned declaration and lock. LeanPoo v0.1.2 is inherited from
+that owner, not overridden by Weaver. The ordinary Lake targets include the
+Weaver enrichment and architecture environment. See
+[[file:59.86-release-zero-trust-integration.org][Release integration]] for exact source identities, native qualification and
+remaining implementation premises. The observations below describe the former
+baseline and isolated experiment; they are not the current dependency pin.
+
+* Historical source ownership
 
 The locked SPEC revision 38af276ffbd17a378408bb7886e8122faadcbcfd does not
 provide CedarPooSpec.Gateway.ZeroTrust. Its inherited LeanPoo revision
@@ -55,7 +65,7 @@ Every Library export retains its SVG, PNG, HTML and provenance receipt. The
 image-decode assertions. A redundant additional full-page raster is not an
 assertion. Removing it does not remove any view or validation condition.
 
-* Promotion boundary
+* Historical promotion boundary
 
 The candidate is isolated under the persistent research checkout. Its dependency
 closure and renderer changes are not promoted while the complete gate fails.

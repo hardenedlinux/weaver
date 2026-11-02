@@ -5,7 +5,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 )
+
+func leanArchitectureStage() Stage {
+	return Stage{Name: "lean-architecture-environment", Binary: "elan", Args: []string{
+		"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "env", "lean", "--json", "dev/proofs/cedar/ZeroTrustArchitecture.lean",
+	}}
+}
 
 // Use the existing Lake dependency closure. Never silently substitute the
 // ignored upstream research checkout for the project's locked dependency.
@@ -18,9 +25,7 @@ func exportLeanArchitecture(ctx context.Context, root string) (Result, error) {
 	if err != nil {
 		return Result{}, err
 	}
-	stage := Stage{Name: "lean-architecture-environment", Binary: "elan", Args: []string{
-		"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "env", "lean", "--json", "dev/proofs/cedar/ZeroTrustArchitecture.lean",
-	}}
+	stage := leanArchitectureStage()
 	result := runStage(ctx, root, dir, os.Environ(), stage)
 	if result.Status != "PASS" || result.Lean == nil || result.Lean.Environment == nil {
 		return result, fmt.Errorf("locked Lean dependency could not export the Gateway contract; no SysML/D2 fallback: %s (%s)", result.Log, result.Error)
@@ -66,5 +71,28 @@ func publishSelectedArchitecture(ctx context.Context, root string, selected []st
 		}
 		results = append(results, result)
 	}
+	// The SDK, rather than a D2 filename convention, declares whether the
+	// selected views require the imported contract. Final capture independently
+	// rechecks sources and still rejects absent or incomplete evidence.
+	capture, err := CaptureModelViews(ctx, root)
+	if err != nil {
+		return "", err
+	}
+	if capture.requiresLeanEnvironment(selected) {
+		imported, err := exportLeanArchitecture(ctx, root)
+		if err != nil {
+			return "", err
+		}
+		results = append(results, imported)
+	}
 	return publishModelViewsWithEvidence(ctx, root, results, selected...)
+}
+
+func (capture *ModelViewCapture) requiresLeanEnvironment(selected []string) bool {
+	for _, description := range capture.Descriptions {
+		if description.LeanEnvironment && slices.Contains(selected, description.File) {
+			return true
+		}
+	}
+	return false
 }

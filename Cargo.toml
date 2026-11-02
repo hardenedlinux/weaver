@@ -32,7 +32,7 @@ thiserror = "2.0"
 sha2 = "0.10"
 hex = "0.4"
 cedar-policy = { version = "=4.12.0", default-features = false }
-cedar-poo-runtime = { git = "https://github.com/HardenedLinux/cedar-poo-spec", rev = "38af276ffbd17a378408bb7886e8122faadcbcfd" }
+cedar-poo-runtime = { git = "https://github.com/HardenedLinux/cedar-poo-spec", rev = "76381738b9a2afde13c79c36650b025b82b1b979" }
 mrr-data-backend = { git = "https://github.com/tao3k/mrr-data", rev = "daa6487820f798f0583713de8d03110aeac5d1fd", default-features = false, features = ["turso"] }
 futures-executor = "0.3"
 reqwest = { version = "0.13.5", default-features = false, features = ["blocking", "rustls"] }

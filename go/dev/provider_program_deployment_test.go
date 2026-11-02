@@ -3,6 +3,7 @@
 package dev
 
 import (
+	"context"
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/hex"
@@ -14,8 +15,10 @@ import (
 	"testing"
 	"time"
 
+	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 	"github.com/HardenedLinux/weaver/go/internal/config"
+	"google.golang.org/protobuf/proto"
 )
 
 type configuredAuthority struct {
@@ -53,28 +56,73 @@ func configuredCatalogPath(t testing.TB, f *fixture, bundle config.Bundle) strin
 }
 
 func TestProviderControlCompiledProgramRevocationAndRestart(t *testing.T) {
-	exerciseControlPolicies(t, "json", nil, controlPolicySources{producer: "approved-control", configure: func(t *testing.T, f *fixture, bundle config.Bundle) {
-		path := configuredCatalogPath(t, f, bundle)
-		f.stop(t)
-		f.env = append(f.env, "WEAVER_GOVERNANCE_CATALOG="+path)
-		f.start(t)
-	}})
+	exerciseControlPolicies(t, "json", nil, compiledControlSources(false))
 }
 
 func TestProviderControlCompiledAssetsRevocationAndRestart(t *testing.T) {
-	exerciseControlPolicies(t, "json", nil, controlPolicySources{producer: "approved-control", configure: func(t *testing.T, f *fixture, bundle config.Bundle) {
+	exerciseControlPolicies(t, "json", nil, compiledControlSources(true))
+}
+
+func compiledControlSources(assets bool) controlPolicySources {
+	return controlPolicySources{producer: "approved-control", configure: func(t *testing.T, f *fixture, bundle config.Bundle) {
 		path := configuredCatalogPath(t, f, bundle)
-		assetRoot := filepath.Join(f.directory, "governance-assets")
-		if err := os.Mkdir(assetRoot, 0700); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(filepath.Join(assetRoot, "policy.cedar"), []byte(bundle.Publication.Policy), 0600); err != nil {
-			t.Fatal(err)
-		}
 		f.stop(t)
-		f.env = append(f.env, "WEAVER_GOVERNANCE_CATALOG="+path, "WEAVER_TEST_GOVERNANCE_ASSET_ROOT="+assetRoot)
+		f.env = append(f.env, "WEAVER_GOVERNANCE_CATALOG="+path)
+		if assets {
+			assetRoot := filepath.Join(f.directory, "governance-assets")
+			if err := os.Mkdir(assetRoot, 0700); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(assetRoot, "policy.cedar"), []byte(bundle.Publication.Policy), 0600); err != nil {
+				t.Fatal(err)
+			}
+			f.env = append(f.env, "WEAVER_TEST_GOVERNANCE_ASSET_ROOT="+assetRoot)
+		}
 		f.start(t)
-	}})
+	}}
+}
+
+func TestProviderControlCompiledAssetsPublicationReplyLossAndRestart(t *testing.T) {
+	exerciseControlSourceReplyLoss(t, nil, false, compiledControlSources(true))
+}
+
+func TestProviderControlCompiledAssetsStagingReplyLossAndRestart(t *testing.T) {
+	exerciseControlSourceReplyLoss(t, nil, true, compiledControlSources(true))
+}
+
+func TestProviderControlCompiledAssetsPartialRequestAndRestart(t *testing.T) {
+	f := newFixture(t, partialRequestDisconnect, true)
+	bundle := controlBundle(t, f)
+	policy := compiledControlSources(true)
+	policy.configure(t, f, bundle)
+	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	c.useProducer(policy.producer)
+	c.start(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	plan := bundle.Plans[0]
+	if _, err := c.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
+		t.Fatal("partial request accepted as complete")
+	}
+	key := &pb.OperationKey{Family: plan.Family, Node: plan.Node}
+	before, err := c.client.RPC.Inspect(c.client.Context(ctx), key)
+	if err != nil || before.GetState() != "unknown" || before.GetHeld() != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
+		t.Fatal("partial execution lost its original hold", before, err)
+	}
+	cancel()
+	c.stop(t)
+	f.stop(t)
+	f.start(t)
+	c.start(t)
+	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	if _, err := c.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
+		t.Fatal("restart or SDK retry reopened the consumed claim")
+	}
+	after, err := c.client.RPC.Inspect(c.client.Context(ctx), key)
+	if err != nil || !proto.Equal(before, after) || f.primary.Load() != 1 || f.backup.Load() != 0 {
+		t.Fatal("restart duplicated the send or released unknown budget", after, err)
+	}
 }
 
 func TestProviderControlCompiledProgramRequiresRealInstallation(t *testing.T) {

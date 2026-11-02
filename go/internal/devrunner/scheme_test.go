@@ -3,6 +3,7 @@ package devrunner
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"maps"
 	"os"
 	"os/exec"
@@ -50,6 +51,52 @@ func TestPooRevisionFollowsInheritedCoreDeclaration(t *testing.T) {
 	}
 }
 
+func TestPooReleaseAdmissionUsesPeeledTagAndRejectsRetargeting(t *testing.T) {
+	for _, annotated := range []bool{false, true} {
+		t.Run(fmt.Sprint("annotated=", annotated), func(t *testing.T) {
+			source := t.TempDir()
+			schemeGitFixture(t, source, "init", "-q")
+			schemeGitFixture(t, source, "commit", "--allow-empty", "-qm", "release")
+			head := schemeGitFixture(t, source, "rev-parse", "HEAD")
+			schemeGitFixture(t, source, "branch", "v0.1.2")
+			if requirePooRevision(t.Context(), source, "v0.1.2", head) == nil {
+				t.Fatal("branch substituted for release tag")
+			}
+			args := []string{"tag", "v0.1.2"}
+			if annotated {
+				args = []string{"tag", "-a", "v0.1.2", "-m", "release"}
+			}
+			schemeGitFixture(t, source, args...)
+			if err := requirePooRevision(t.Context(), source, "v0.1.2", head); err != nil {
+				t.Fatal(err)
+			}
+			schemeGitFixture(t, source, "commit", "--allow-empty", "-qm", "different source")
+			schemeGitFixture(t, source, "tag", "-f", "v0.1.2")
+			if requirePooRevision(t.Context(), source, "v0.1.2", head) == nil {
+				t.Fatal("retargeted release retained original admission")
+			}
+		})
+	}
+}
+
+func TestPooDeclarationAcceptsReleaseButRejectsAmbiguousOrMovingRefs(t *testing.T) {
+	root := t.TempDir()
+	for _, revision := range []string{"v0.1.2", "main", "HEAD", "v0.1.2^{commit}", "v0.1.2/escape"} {
+		data := `(depend: ("github.com/tao3k/gerbil-poo@` + revision + `"))`
+		if err := os.WriteFile(filepath.Join(root, "gerbil.pkg"), []byte(data), 0600); err != nil {
+			t.Fatal(err)
+		}
+		got, err := DeclaredPooRevision(root)
+		if revision == "v0.1.2" {
+			if err != nil || got != revision {
+				t.Fatal("declared release lost", err)
+			}
+		} else if err == nil {
+			t.Fatal("moving or malformed ref admitted", revision)
+		}
+	}
+}
+
 func TestLinkedSchemeCurrentnessRejectsSourceChange(t *testing.T) {
 	source := t.TempDir()
 	poo := t.TempDir()
@@ -68,6 +115,10 @@ func TestLinkedSchemeCurrentnessRejectsSourceChange(t *testing.T) {
 		schemeGitFixture(t, directory, "init", "-q")
 		schemeGitFixture(t, directory, "commit", "--allow-empty", "-qm", "original source")
 		heads[name] = schemeGitFixture(t, directory, "rev-parse", "HEAD")
+	}
+	if err := os.WriteFile(filepath.Join(source, "core", "gerbil.pkg"),
+		[]byte(`(depend: ("github.com/tao3k/gerbil-poo@`+heads["gerbil-poo"]+`"))`), 0600); err != nil {
+		t.Fatal(err)
 	}
 	hashes, err := schemeSourceHashes(source, poo)
 	if err != nil {

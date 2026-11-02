@@ -6,7 +6,47 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"testing/quick"
 )
+
+func TestSelectedViewImportFollowsSDKRequirement(t *testing.T) {
+	property := func(required, selectSecurity, selectLocal bool) bool {
+		capture := &ModelViewCapture{Descriptions: map[string]*ModelDescription{
+			"security": {File: "security.d2", LeanEnvironment: required},
+			"local":    {File: "local.d2"},
+		}}
+		var selected []string
+		if selectSecurity {
+			selected = append(selected, "security.d2")
+		}
+		if selectLocal {
+			selected = append(selected, "local.d2")
+		}
+		return capture.requiresLeanEnvironment(selected) == (required && selectSecurity)
+	}
+	if err := quick.Check(property, &quick.Config{MaxCount: 128}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestPolicyPlanIncludesMaintainedGatewayBuildAndJSONExport(t *testing.T) {
+	stages, err := Stages("check-policy", "go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	build, exported := false, false
+	for _, stage := range stages {
+		if stage.Name == "cedar-proof-bridge" {
+			build = strings.Join(stage.Args, " ") == "run "+proofToolchain+" lake -d dev/proofs/cedar build"
+		}
+		if stage.Name == "lean-architecture-environment" {
+			exported = leanSource(stage) == "dev/proofs/cedar/ZeroTrustArchitecture.lean"
+		}
+	}
+	if !build || !exported {
+		t.Fatal("ordinary policy gate lost the Gateway composition or actual environment export")
+	}
+}
 
 func TestLeanEnvironmentRequiresCompilerAndSourceBinding(t *testing.T) {
 	for _, scenario := range []string{"valid", "failed", "changed-source", "duplicate", "wrong-schema", "duplicate-field", "wrong-source"} {

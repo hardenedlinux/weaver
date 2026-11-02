@@ -440,6 +440,9 @@
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlSchemeGovernorRejectsUnselectedPlans"},
     {"file":"go/internal/config/bundle_test.go","pattern":"func TestBundleRejectsSelectionAndCommitmentSubstitution"}]},
   {"id":"SourceStartupObservation","witnesses":[
+    {"file":"go/internal/devrunner/scheme_test.go","pattern":"func TestPooReleaseAdmissionUsesPeeledTagAndRejectsRetargeting"},
+    {"file":"go/internal/devrunner/scheme_test.go","pattern":"func TestPooDeclarationAcceptsReleaseButRejectsAmbiguousOrMovingRefs"},
+    {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"run releaseTagCannotRebaseCapturedSourceCounterexampleTest"},
     {"file":"go/internal/devrunner/scheme_test.go","pattern":"func TestLinkedSchemeCurrentnessRejectsSourceChange"},
     {"file":"go/internal/devrunner/scheme_test.go","pattern":"func TestPropertySchemeMetadataAndPolicyAssetsCannotChangeUnderReceipt"},
     {"file":"go/internal/devrunner/scheme_test.go","pattern":"func TestSchemeNestedAliasesAndMissingMetadataCannotEscapeCapture"},
@@ -470,10 +473,13 @@
     {"file":"scheme/policy/cedar-ffi.ss","pattern":"def-C-lambda policy-validate/raw"},
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authoritySourceCommitNeverSendsTest"}]},
   {"id":"ControlActivationAcknowledgment","witnesses":[
+    {"file":"go/dev/provider_program_deployment_test.go","pattern":"func TestProviderControlCompiledAssetsPublicationReplyLossAndRestart"},
+    {"file":"go/dev/provider_program_deployment_test.go","pattern":"func TestProviderControlCompiledAssetsStagingReplyLossAndRestart"},
     {"file":"go/dev/provider_control_test.go","pattern":"func TestProviderControlPublicationReplyLossCannotActivateOrRebase"},
     {"file":"dev/proofs/quint/AuthorityPublication.qnt","pattern":"run authorityLostReplyCannotActivateTest"},
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlGovernanceAssetsPublicationReplyLossAndRestart"}]},
   {"id":"ControlStreamRecoveryBinding","witnesses":[
+    {"file":"go/dev/provider_program_deployment_test.go","pattern":"func TestProviderControlCompiledAssetsPartialRequestAndRestart"},
     {"file":"go/dev/provider_control_test.go","pattern":"func TestProviderControlCompleteStreamsShareBudgetAndRejectSDKRetry"},
     {"file":"go/dev/provider_control_scheme_integration_test.go","pattern":"func TestProviderControlSchemeGovernorRevocationAndRestart"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem profile_recovery_retains_original_hold"}]},

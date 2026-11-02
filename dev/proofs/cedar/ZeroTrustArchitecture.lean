@@ -12,6 +12,7 @@ run_cmd do
     let names := #[
       ``CedarPooSpec.ZeroTrust.Framework,
       ``CedarPooSpec.ZeroTrust.Framework.required,
+      ``CedarPooSpec.Gateway.Context,
       ``CedarPooSpec.Gateway.ProfileObject.Publication,
       ``CedarPooSpec.Gateway.Receipt,
       ``CedarPooSpec.Gateway.ZeroTrust.Host,

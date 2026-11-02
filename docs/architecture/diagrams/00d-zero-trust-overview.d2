@@ -79,17 +79,19 @@ vars: { d2-config: { data: { figure: |json
     },
     "icons": {
       "n0": "library",
-      "n1": "decision",
-      "n2": "rust",
-      "n3": "capture",
-      "n4": "capture"
+      "n1": "go",
+      "n2": "decision",
+      "n3": "rust",
+      "n4": "capture",
+      "n5": "capture"
     },
     "roles": {
       "n0": "publication",
-      "n1": "policy",
-      "n2": "semantic",
-      "n3": "execution",
-      "n4": "execution"
+      "n1": "selection",
+      "n2": "policy",
+      "n3": "semantic",
+      "n4": "execution",
+      "n5": "execution"
     },
     "edgeLabels": false,
     "graph": {
@@ -124,6 +126,12 @@ vars: { d2-config: { data: { figure: |json
           "layoutOptions": {
             "elk.partitioning.partition": "2"
           }
+        },
+        {
+          "id": "n5",
+          "layoutOptions": {
+            "elk.partitioning.partition": "2"
+          }
         }
       ],
       "layoutOptions": {
@@ -143,14 +151,15 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::zeroTrust",
-    "modelHash": "ca4288bd33fa55a8541b1d4f44805a5db373cebd3382b8531fcda8acabf22f28",
+    "modelHash": "1749ca1b8b846013f1113fd4bd494d66d95a87072fc70266264d4d2e271de65a",
     "portProjection": "owner",
     "labels": {
       "n0": "Scheme / Original contract\nTask scope and required parents\nPublished selected profile\nConfiguration grants no send right",
-      "n1": "Cedar / Actual request\nExact effect, facts and schema\nCurrent Policy + profile checks\nError-free Allow is one premise",
-      "n2": "Rust / Original consumption\nOriginal operation + grant\nCommit both ledgers with budget\nRenewed grants cannot replay work",
-      "n3": "Rust / Final-use guard\nIdentity, profile and current view\nDurable consume + unknown holds\nFence every actual external effect",
-      "n4": "Rust / Stream continuity\nRetain original spent prefix\nReassess each new governed use\nRecovery cannot mint permission"
+      "n1": "Go / Source publication\nCarry the original context\nPublish over authenticated gRPC\nUnknown replies stay unresolved",
+      "n2": "Cedar / Actual request\nExact effect, facts and schema\nCurrent Policy + profile checks\nError-free Allow is one premise",
+      "n3": "Rust / Original consumption\nOriginal operation + grant\nCommit both ledgers with budget\nRenewed grants cannot replay work",
+      "n4": "Rust / Final-use guard\nIdentity, profile and current view\nDurable consume + unknown holds\nFence every actual external effect",
+      "n5": "Rust / Stream continuity\nRetain original spent prefix\nReassess each new governed use\nRecovery cannot mint permission"
     }
   }
 }

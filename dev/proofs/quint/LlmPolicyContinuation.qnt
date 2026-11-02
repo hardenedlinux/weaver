@@ -753,6 +753,11 @@ module LlmPolicyContinuation {
   run aggregateOnlyPolicyValidationCounterexampleTest=init
     .then(unsafeBoundaryRecord(boundary0.with("policyDocuments",List(false,false))))
     .expect(not(boundaryBound) and s.calls==0 and s.hold==6)
+  // The native Git owner resolves release tags. Model only the resulting cut,
+  // reusing the existing source/actual-view equality, not a second version model.
+  run releaseTagCannotRebaseCapturedSourceCounterexampleTest=init
+    .then(unsafeBoundaryRecord(boundary0.with("cut",1)))
+    .expect(not(boundaryBound) and s.calls==0 and s.hold==6)
   run completePolicyDocumentsRemainInertTest=init.then(recordBoundary(boundary0))
     .expect(safety and s.calls==0 and s.hold==6)
   run retainedForeignPointerCounterexampleTest=init.then(unsafeBoundaryRecord(boundary0.with("retainedPointer",true))).expect(not(boundaryBound))
