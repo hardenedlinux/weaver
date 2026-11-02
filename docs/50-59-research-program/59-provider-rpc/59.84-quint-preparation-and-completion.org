@@ -168,3 +168,23 @@ build/test image. An unpublished package-tools draft already adds build_package
 and test_package to the existing GerbilRuntime; it is the reuse baseline, not
 a completed integration receipt. See the [[file:59.76-embedded-tooling-and-darwin-io.org][direct package API boundary]] for its
 remaining image, provenance, cancellation and cleanup obligations.
+
+* Direct package API implementation
+
+Upstream PR #18 now publishes package-tools on the existing GerbilRuntime.
+The read-only generated-source check, real build/pass/fail/cancel/stage test
+and natural owner shutdown complete locally in 2.19 seconds with 12 workers;
+strict Clippy passes. See [[file:59.76-embedded-tooling-and-darwin-io.org][the implemented ownership boundary]]. The full MRR
+consumer and new remote CI remain separate qualification obligations. No Quint
+inventory, partition, seed or limit changes accompany the C ABI implementation.
+
+** Tooling teardown evidence refinement
+
+Darwin CI exposed a post-cleanup environment-table lifetime defect after its
+cleanup marker. A local allocation-churn counterexample reproduces SIGSEGV;
+upstream =ad8ac98= now preserves valid host environment storage across Gambit
+teardown. The strengthened complete fixture exits naturally in 1.82 seconds
+with 12 workers under the unchanged 15-second wall / five-second idle gate,
+and strict Clippy passes. See [[file:59.76-embedded-tooling-and-darwin-io.org][the source-grounded ownership review]].
+This is a concrete host-lifetime obligation, not a second Quint semantic model.
+The complete MRR inventory and exact-head CI remain independent evidence.
