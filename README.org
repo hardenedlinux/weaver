@@ -152,7 +152,9 @@ go -C go run ./cmd/weaver-dev bench
 
 Individual suites are =check-rust=, =check-go=, =check-policy=,
 =check-architecture=, =check-storage= and =check-scheme=. Scheme qualification requires an explicit
-Gerbil compiler and the pinned Agentic AI Lab dependency checkout; see the
+Gerbil compiler and a prepared =GERBIL_PATH= package environment. Install the
+single root dependency explicitly with =gerbil deps --install= when needed;
+verification never installs, updates or deletes that environment. See the
 [[file:docs/50-59-research-program/59-provider-rpc/59.19-governance-control.org][Scheme integration guide]]. Builds use the machine's available CPU capacity.
 Generated output stays in ignored caches or temporary directories.
 

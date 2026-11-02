@@ -25,14 +25,6 @@ struct BuildPaths {
 }
 impl BuildPaths {
     fn from_env() -> Self {
-        let home = PathBuf::from(
-            env::var_os("GERBIL_HOME")
-                .expect("explicit approved GERBIL_HOME for embedded module loading"),
-        );
-        assert!(
-            home.join("lib/gerbil/core.ssi").is_file(),
-            "selected Gerbil home has no core interface"
-        );
         let root = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").expect("manifest"))
             .join("../..")
             .canonicalize()
@@ -141,8 +133,8 @@ pub fn build_program() {
     if env::var_os("CARGO_FEATURE_SCHEME_PROGRAM").is_none() {
         return;
     }
-    let paths = BuildPaths::from_env();
     let compiler = env::var_os("WEAVER_CONTROL_SCHEME_COMPILER").expect("explicit Scheme compiler");
+    let paths = BuildPaths::from_env();
     prepare_gerbil_modules(&compiler, &paths.library);
     paths.stage(&compiler);
     paths.archive();

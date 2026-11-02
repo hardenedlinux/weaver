@@ -1,14 +1,12 @@
 package devrunner
 
 import (
-	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -65,28 +63,4 @@ func resolveBuildTool(root, tool string, environment []string) (string, error) {
 		return resolved, nil
 	}
 	return "", fmt.Errorf("recorded build tool %q is not executable in the build environment", tool)
-}
-
-// Discover the standard SDK home through the selected compiler during build
-// preparation. This is tool discovery, never a runtime Scheme IPC path.
-func schemeHome(ctx context.Context, root, compiler string, environment []string) (string, error) {
-	home := environmentMap(environment)["GERBIL_HOME"]
-	if home == "" {
-		command := exec.CommandContext(ctx, compiler, "-e", "(displayln (gerbil-home))")
-		command.Dir, command.Env = root, environment
-		data, err := command.Output()
-		if err != nil {
-			return "", fmt.Errorf("discover Gerbil SDK home: %w", err)
-		}
-		home = strings.TrimSuffix(string(data), "\n")
-	}
-	if !filepath.IsAbs(home) || strings.ContainsAny(home, "\r\n") {
-		return "", errors.New("Gerbil SDK home must be one absolute directory")
-	}
-	core := filepath.Join(home, "lib", "gerbil", "core.ssi")
-	info, err := os.Stat(core)
-	if err != nil || !info.Mode().IsRegular() {
-		return "", errors.New("selected Gerbil SDK home has no core interface")
-	}
-	return home, nil
 }

@@ -11,7 +11,11 @@ select the same producer through [[file:../../../Cargo.toml][Cargo.toml]], [[fil
 dependency. [[file:../../../gerbil.pkg][gerbil.pkg]] declares the Scheme library dependency; its producer
 owns the transitive declarations. These package mechanisms own versions and
 resolved identities; this document does not duplicate their dependency ledger.
-Other Weaver dependencies and the selected Scheme cohort remain unchanged.
+The Rust SDK selection now follows the inspected
+[[https://github.com/tao3k/gerbil-scheme-rust/pull/18][gerbil-scheme-rust PR 18]] in its workspace declaration and Cargo lock. Its native
+package operations, tool environment and archive contract replace downstream
+tool preparation. The already selected Agentic AI Lab cohort is now declared in
+the single root Scheme dependency instead of separate Go checkout arguments.
 Continue delivery in [[https://github.com/hardenedlinux/weaver/pull/1][Weaver PR 1]]; do not open another integration PR.
 
 Compared with Weaver's previous SPEC selection, this revision changes
@@ -58,16 +62,20 @@ authorization interpreter, storage boundary or dependency upgrade is required.
 
 ** S2: Close standard Scheme package qualification
 
-Use the retained Agentic AI Lab/Core/POO cohort from
-[[file:59.86-release-zero-trust-integration.org][the release closure record]]. Retry the full existing clean-source check-scheme
-entry after the recorded Ascent clone interruption. Keep dependency preparation,
-module discovery/loading, test execution and natural cleanup separately visible.
+Use the package environment prepared by Gerbil from the root declaration.
+Installation/update is explicit; ordinary validation never allocates an empty
+package environment, fetches dependencies, links transitive sources or deletes
+the caller's package store. The discarded full-history download is recorded as
+CANCELLED, not an acceptance result. Keep package installation separate from
+module discovery/loading, test execution and natural cleanup.
 Confirm the corrected upstream module-role imports through actual package build
 and tests, not an AOT-only entry or a manually loaded substitute module.
 
 Exit: standard gerbil build/test, the rooted Scheme/Rust SDK tests, all real Go
 control integration cases, source-currentness and cleanup pass on one stable
-source cut. A preparation failure or a killed test is FAIL. Keep the existing
+source cut. SDK source/archive fidelity remains an explicit producer/host premise;
+the removed Go source scanner's earlier results do not qualify this path. A
+package failure or a killed test is FAIL. Keep the existing
 runtime and lifecycle gates, all generated cases and host-derived core count.
 Do not use forced exit, package uninstall or a changed dependency pin as a retry.
 
@@ -128,13 +136,15 @@ redispatch an ambiguous attempt or refund unknown exposure.
 
 * Current qualification and next decision
 
-The upgraded dependency passes the maintained Lake build (391 jobs), complete
-Policy tests (2 library and 10 unit tests), FFI tests (7 tests including ASP deny)
-and strict Policy/FFI Clippy tests/benches. The complete Go race suite also passes.
-Raw results remain ignored under .cache. Seven affected mapped views pass the
-existing Library source-capture, readability, font and icon checks. Previous
-check-policy and native failures are retained in the
-release closure record; they do not qualify the upgraded native chain.
+The preceding SPEC upgrade passed maintained Lean/Policy/FFI and complete
+clean-source proof checks. Those results retain their original source scope.
+After the SDK ownership correction, the complete Go race suite, Rust build
+integration tests and strict Clippy pass. The Governance library suite also
+passes with the scheme-vm feature compiled; this is library-level evidence,
+not execution of the qualification application's real native capture test.
+Raw results and the cancelled full-history preparation receipt remain ignored
+under .cache. Previous preparation and native failures remain historical,
+not acceptance of the delegated SDK path.
 
 The next delivery decision is S2/S3 acceptance, not expansion of the feature
 surface. Defer adaptive Routing, additional protocol profiles and new caches

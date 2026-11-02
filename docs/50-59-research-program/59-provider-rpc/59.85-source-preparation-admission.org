@@ -1,6 +1,13 @@
 #+TITLE: 59.85 Source Preparation Admission and Failure Retention
 #+LANGUAGE: en
 
+* Historical implementation boundary
+
+The Go installer, linked-source scanner and temporary package store described
+below have been retired in favor of standard Gerbil package operations and the
+upstream Rust SDK. See [[file:59.87-spec-upgrade-and-delivery-plan.org][the current delivery plan]]. Earlier checks remain
+historical evidence and are not native acceptance of the delegated path.
+
 * Implementation boundary
 
 The existing Go verification owner now includes Scheme dependency preparation

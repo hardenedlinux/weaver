@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"path/filepath"
 
 	"github.com/HardenedLinux/weaver/go/internal/devrunner"
 )
@@ -24,9 +23,6 @@ func run() error {
 	goBinary := flag.String("go-bin", "", "Go executable; defaults to the compiling toolchain")
 	clean := flag.Bool("clean-source", false, "Require every verification input to match the same committed revision")
 	view := flag.String("view", "", "Render one exact SysML-mapped D2 source; default renders the complete inventory")
-	schemeSource := flag.String("scheme-source", "", "Agentic AI Lab source checkout for Scheme source qualification")
-	schemeLibrary := flag.String("scheme-library", "", "Optional additional qualified Scheme dependency library")
-	schemePoo := flag.String("scheme-poo", "", "Gerbil POO checkout at Core's existing declared dependency pin")
 	flag.Parse()
 	if flag.NArg() != 1 {
 		return errors.New("usage: weaver-dev [-go-bin PATH] [-clean-source] bootstrap|bootstrap-build|bootstrap-proofs|check|check-rust|check-go|check-policy|check-architecture|check-scheme|check-storage|check-telemetry|bench|render-diagrams|check-diagrams|generate-rpc|prepare-ci-host")
@@ -64,27 +60,6 @@ func run() error {
 	if *view != "" {
 		return errors.New("-view requires render-diagrams or check-diagrams")
 	}
-	if flag.Arg(0) == "scheme-poo-revision" {
-		source := *schemeSource
-		if !filepath.IsAbs(source) {
-			source = filepath.Join(working, source)
-		}
-		revision, err := devrunner.DeclaredPooRevision(filepath.Join(source, "core"))
-		if err != nil {
-			return err
-		}
-		if target := os.Getenv("GITHUB_OUTPUT"); target != "" {
-			file, err := os.OpenFile(target, os.O_APPEND|os.O_WRONLY, 0600)
-			if err != nil {
-				return err
-			}
-			_, written := fmt.Fprintln(file, "revision="+revision)
-			return errors.Join(written, file.Close())
-		}
-		fmt.Fprintln(os.Stdout, revision)
-		return nil
-	}
-	_, err = devrunner.Run(ctx, devrunner.Config{Root: working, GoBinary: *goBinary, Mode: flag.Arg(0), RequireClean: *clean,
-		SchemeSource: *schemeSource, SchemePoo: *schemePoo, SchemeLibrary: *schemeLibrary}, os.Stdout)
+	_, err = devrunner.Run(ctx, devrunner.Config{Root: working, GoBinary: *goBinary, Mode: flag.Arg(0), RequireClean: *clean}, os.Stdout)
 	return err
 }

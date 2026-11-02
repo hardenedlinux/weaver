@@ -3,7 +3,6 @@
 package devrunner
 
 import (
-	"context"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -38,7 +37,7 @@ func TestSchemePkgConfigUsesCargoAndEnvironment(t *testing.T) {
 	settings := map[string]string{"WEAVER_POLICY_LIBRARY": library.Name(), "WEAVER_POLICY_INCLUDE_DIR": include, "WEAVER_POLICY_PKG_CONFIG": metadata}
 	settings["PKG_CONFIG_PATH"] = filepath.Dir(metadata)
 	settings["WEAVER_POLICY_PKG_CONFIG_PACKAGE"] = strings.TrimSuffix(filepath.Base(metadata), ".pc")
-	build := exec.CommandContext(t.Context(), "cargo", "run", "--locked", "--offline", "-p", "weaver-policy-ffi", "--example", "compile_scheme", "--", "pkg-config")
+	build := exec.CommandContext(t.Context(), "cargo", "run", "--locked", "--offline", "-p", "weaver-policy-ffi", "--example", "policy_pkg_config")
 	build.Dir = root
 	build.Env = Environment(settings)
 	if body, err := build.CombinedOutput(); err != nil {
@@ -80,28 +79,5 @@ func TestSchemePkgConfigUsesCargoAndEnvironment(t *testing.T) {
 	}
 	if !strings.Contains(query("--libs"), "\\ ") || !strings.Contains(query("--cflags"), "\\ ") {
 		t.Fatal("environment paths containing spaces lost argument boundaries")
-	}
-}
-
-func TestSchemeHomeUsesSelectedCompiler(t *testing.T) {
-	compiler := os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER")
-	if !filepath.IsAbs(compiler) {
-		t.Fatal("explicit selected Scheme compiler required")
-	}
-	environment := []string{}
-	for _, entry := range os.Environ() {
-		if !strings.HasPrefix(entry, "GERBIL_HOME=") {
-			environment = append(environment, entry)
-		}
-	}
-	home, err := schemeHome(context.Background(), t.TempDir(), compiler, environment)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !filepath.IsAbs(home) {
-		t.Fatalf("relative discovered SDK: %q", home)
-	}
-	if _, err := os.Stat(filepath.Join(home, "lib", "gerbil", "core.ssi")); err != nil {
-		t.Fatal(err)
 	}
 }

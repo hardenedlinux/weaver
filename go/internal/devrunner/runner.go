@@ -12,13 +12,13 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"time"
 )
 
 type Config struct {
-	Root, GoBinary, Mode                   string
-	RequireClean                           bool
-	SchemeSource, SchemePoo, SchemeLibrary string
+	Root, GoBinary, Mode string
+	RequireClean         bool
 }
 type Stage struct {
 	Name, Binary string
@@ -140,49 +140,17 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		return directory, err
 	}
 	failed := false
-	var schemeEnvironment map[string]string
 	if mode == "check-scheme" {
-		configured, preparation := prepareSchemeStage(ctx, root, directory, config, &receipt)
-		if configured != nil {
-			defer func() {
-				if cleanup := os.RemoveAll(configured["GERBIL_PATH"]); cleanup != nil {
-					receipt.Status = "FAIL"
-					receipt.Stages = append(receipt.Stages, Result{Name: "scheme-preparation-cleanup", Status: "FAIL", Error: cleanup.Error()})
-					runErr = errors.Join(runErr, cleanup, writeReceipt(directory, receipt))
-				}
-			}()
+		// These are Weaver's FFI link inputs and host resource policy, not
+		// a Scheme package installer or SDK discovery layer.
+		metadata := filepath.Join(directory, "pkgconfig")
+		settings["WEAVER_POLICY_PKG_CONFIG"] = filepath.Join(metadata, "weaver-policy-ffi.pc")
+		settings["PKG_CONFIG_PATH"] = metadata
+		if inherited := os.Getenv("PKG_CONFIG_PATH"); inherited != "" {
+			settings["PKG_CONFIG_PATH"] += string(os.PathListSeparator) + inherited
 		}
-		receipt.Stages = append(receipt.Stages, preparation)
-		if preparation.Status != "PASS" {
-			receipt.Status = preparation.Status
-		}
-		fmt.Fprintf(output, "%s %s\n", preparation.Status, preparation.Name)
-		if err := writeReceipt(directory, receipt); err != nil {
-			return directory, err
-		}
-		if preparation.Status != "PASS" {
-			return directory, errors.New("Scheme preparation failed; package tests did not start")
-		}
-		for key, value := range configured {
-			settings[key] = value
-		}
+		settings["GERBIL_BUILD_CORES"] = strconv.Itoa(runtime.NumCPU())
 		environment = Environment(settings)
-		for i := range stages {
-			if stages[i].Name == "scheme-unit-tests" {
-				stages[i].Binary = configured["WEAVER_SCHEME_TOOL"]
-			}
-		}
-		schemeEnvironment = configured
-		result := schemeSourceCurrentness(ctx, directory, "linked-source-before", schemeEnvironment, receipt)
-		receipt.Stages = append(receipt.Stages, result)
-		fmt.Fprintf(output, "%s %s\n", result.Status, result.Name)
-		if result.Status != "PASS" {
-			receipt.Status = "FAIL"
-			if err := writeReceipt(directory, receipt); err != nil {
-				return directory, err
-			}
-			return directory, errors.New("linked Scheme source admission failed")
-		}
 	}
 	for _, stage := range stages {
 		if ctx.Err() != nil {
@@ -207,14 +175,6 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 			failed = true
 		}
 		fmt.Fprintf(output, "%s %s\n", current.Status, current.Name)
-	}
-	if mode == "check-scheme" {
-		result := schemeSourceCurrentness(ctx, directory, "linked-source-after", schemeEnvironment, receipt)
-		receipt.Stages = append(receipt.Stages, result)
-		fmt.Fprintf(output, "%s %s\n", result.Status, result.Name)
-		if result.Status != "PASS" {
-			failed = true
-		}
 	}
 	if mode == "bench" && !failed {
 		if err := collectBenchmarks(root, directory, receipt.Started); err != nil {

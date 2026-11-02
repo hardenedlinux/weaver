@@ -1,7 +1,6 @@
 package devrunner
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -80,26 +79,6 @@ func TestSchemeToolReceiptUsesBuildPathAndDirectory(t *testing.T) {
 	})
 }
 
-func TestSchemeHomeExplicitEnvironmentDoesNotFallBackToAnotherCompiler(t *testing.T) {
-	home := t.TempDir()
-	core := filepath.Join(home, "lib", "gerbil")
-	if err := os.MkdirAll(core, 0700); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(core, "core.ssi"), []byte("test-only core identity"), 0600); err != nil {
-		t.Fatal(err)
-	}
-	got, err := schemeHome(context.Background(), home, filepath.Join(home, "must-not-execute"), []string{"GERBIL_HOME=" + home})
-	if err != nil || got != home {
-		t.Fatalf("explicit SDK changed: %q %v", got, err)
-	}
-	for _, bad := range []string{"relative", home + "\n", filepath.Join(home, "missing")} {
-		if _, err := schemeHome(context.Background(), home, "must-not-execute", []string{"GERBIL_HOME=" + bad}); err == nil {
-			t.Fatalf("invalid explicit home admitted: %q", bad)
-		}
-	}
-}
-
 func TestSchemeQualificationStaysWithPreparedSchemeOwner(t *testing.T) {
 	stages, err := Stages("check-scheme", "go")
 	if err != nil {
@@ -126,5 +105,27 @@ func TestSchemeQualificationStaysWithPreparedSchemeOwner(t *testing.T) {
 				t.Fatal("runtime coverage includes test graph or loses Arrow/converter")
 			}
 		}
+	}
+}
+
+func TestSchemeVerificationUsesOnlyPublicPackageEntries(t *testing.T) {
+	stages, err := Stages("check-scheme", "go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	entries := map[string]string{}
+	for _, stage := range stages {
+		args := strings.Join(stage.Args, " ")
+		for _, forbidden := range []string{"deps --install", "gxpkg", "gebril-yuanxu", "gerbil-poo", "compile_scheme"} {
+			if strings.Contains(args, forbidden) {
+				t.Fatalf("verification manages transitive packages: %s", stage.Name)
+			}
+		}
+		if stage.Binary == schemeTool() {
+			entries[stage.Name] = args
+		}
+	}
+	if len(entries) != 2 || entries["scheme-module-build"] != "build -g" || entries["scheme-unit-tests"] != "test -g -v 5 t" {
+		t.Fatalf("unexpected Scheme package lifecycle: %v", entries)
 	}
 }

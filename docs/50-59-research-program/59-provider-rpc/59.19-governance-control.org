@@ -449,14 +449,17 @@ CI uploads only compact latest results and the latest benchmark summary.
 The Go-owned =check= gate includes strict SysML trace checks, Rust tests and all
 ASP deny gates, race tests, bounded source configuration PBT, Quint/Lean, and real
 Go/Rust/HTTPS integration. The separately required native =check-scheme= gate
-has no missing-tool skip. It links Agentic AI Lab and Core into a fresh isolated
-environment, links Gerbil POO at Core's existing exact declared pin, compiles the actual Gambit C FFI using upstream build support,
-and runs =integration,schemeintegration= tests. Linked source hashes are checked
-before and after execution; dependency-library qualification remains explicit.
+has no missing-tool skip. Use an existing Gerbil package environment. Dependency
+installation is an explicit =gerbil deps --install= action, not a verification
+side effect. The root package declares only Agentic AI Lab, whose producer owns
+its transitive dependencies. Standard =gerbil build/test/clean= owns package
+operations; the upstream Rust SDK owns compiler/native-tool environment and
+archive preparation. Go composes Weaver's FFI, actual provider and gRPC tests.
+The retired Go linked-source checker is not evidence for this delegated path.
 
 #+begin_src text
 go -C go run ./cmd/weaver-dev check
-go -C go run ./cmd/weaver-dev -scheme-source /absolute/agentic-ai-lab -scheme-poo /absolute/pinned-gerbil-poo check-scheme
+go -C go run ./cmd/weaver-dev check-scheme
 go -C go build ./cmd/weaver-control
 #+end_src
 

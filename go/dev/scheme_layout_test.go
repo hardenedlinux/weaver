@@ -10,6 +10,14 @@ import (
 
 func TestSchemeModuleOwnershipAndSpecificContracts(t *testing.T) {
 	repository := root(t)
+	manifest, err := os.ReadFile(filepath.Join(repository, "gerbil.pkg"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	dependencies := regexp.MustCompile(`"github\.com/[^\"]+"`).FindAllString(string(manifest), -1)
+	if len(dependencies) != 1 || !strings.HasPrefix(dependencies[0], `"github.com/tao3k/agentic-ai-lab`) {
+		t.Fatal("Agentic AI Lab must remain the only direct Scheme dependency", dependencies)
+	}
 	for _, name := range []string{"gerbil.pkg", "build.ss", "init.ss"} {
 		info, err := os.Stat(filepath.Join(repository, name))
 		if err != nil || !info.Mode().IsRegular() {

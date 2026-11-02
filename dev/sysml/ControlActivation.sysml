@@ -23,28 +23,21 @@ package ControlActivation {
         doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
     requirement def SourceStartupObservation {
-        doc /* Resolve inherited release tags to their peeled commit in the
-           existing source cut; reject same-name branches, missing tags and
-           retargeting before/after preparation and at source-currentness checks.
-           A release label grants no Policy, publication or execution authority.
-           Standard gerbil build/test and actual FFI/gRPC integration remain
-           independent obligations after dependency resolution succeeds. */
-        doc /* The existing Go verification owner records package preparation in
-           the same check-scheme receipt before package tests. Dependency failure
-           cannot escape as an absent result or be interpreted as a test pass.
-           Capture original source hashes before preparation, including root
-           init/build/package metadata and Policy/schema assets. Preserve that
-           original cut; compare source bytes and revisions after preparation.
-           Use the explicit owner-selected receipt, not ambient process state.
-           Compare it to the owner-retained original digest, source heads and
-           canonical roots; agreeing rewritten source/receipt aliases cannot
-           replace that independent expectation.
-           Canonical root aliases are allowed; nested source aliases are denied.
-           The supplied Core must match the Lab gitlink. Installed Core/POO
-           identities are checked after dependency preparation before Lab build.
-           A late cleanup error invalidates a passing verification receipt.
-           Endpoint equality alone does not exclude an unobserved filesystem ABA;
-           immutable artifact/source admission remains an upstream prerequisite. */
+        doc /* Package declarations and installed dependency state belong to
+           Gerbil. Installation and updates are explicit operations; verification
+           uses standard gerbil build/test and never clones, links, reinstalls
+           or deletes a package environment. Agentic AI Lab is the sole direct
+           Scheme dependency. Its transitive closure belongs to that producer.
+           The upstream Rust SDK owns native tool discovery, compiler environment,
+           archive/source correspondence and package lifecycle operations.
+           Weaver's Go runner records actual command outcomes and root source
+           currentness; it is not a second package manager. */
+        doc /* A package result or release label grants no Policy, publication
+           or send authority. Changed-source and preparation-cut laws retain
+           their explicit host premises; an upstream SDK API alone does not prove
+           arbitrary external source fidelity or exclude filesystem ABA.
+           The retired Go linked-source checker is not native evidence for the
+           current path. Actual FFI/gRPC qualification remains independent. */
         doc /* Local Go startup phases distinguish configuration readiness,
            authority connections/reconciliation and issuing Serve; only the
            actual authenticated channel proves readiness. Go deployment never
