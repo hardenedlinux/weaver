@@ -142,6 +142,54 @@ parallelism through MVCC is not enabled: the present contract deliberately keeps
 the immediate WAL writer order. New measurements describe this Turso cohort;
 without a matched frozen baseline they establish neither a speedup nor p99.
 
+* Storage retirement audit and concurrency limits
+
+The workspace manifests and committed Cargo lock contain neither =rusqlite= nor
+=libsqlite3-sys=. The Go architecture gate rejects either package anywhere in
+the resolved dependency graph, rejects direct workspace dependencies on Turso,
+and requires the one pinned MRR Data Backend edge with only its =turso= feature.
+CI host preparation no longer installs Ubuntu =libsqlite3-dev= or Homebrew
+=sqlite=. Current SysML storage descriptions name Turso. Earlier qualification
+records retain the engine names they actually measured; they are historical
+evidence rather than supported runtime alternatives.
+
+The remaining =main.sqlite_schema= query and =sqlite_*= catalog exclusion are
+Turso-compatible SQL identifiers, not a linked SQLite implementation. The
+=sqliteX= adversarial table-name property remains necessary: it checks that a
+similar-looking application table cannot be hidden by an overbroad exclusion.
+The retired package names in the negative dependency gate must also remain.
+
+| Capability | Current execution contract |
+|------------+----------------------------|
+| Native Turso engine | Used exclusively through MRR Data's public driver |
+| Multiprocess WAL | Explicitly enabled; separate sessions retain independent connection custody |
+| Durability | FULL synchronization and foreign keys are verified on open |
+| Writer ordering | Immediate transactions, a bounded busy wait and exclusive mutable session custody |
+| Native asynchronous IO | Futures are driven by blocking Gateway workers; this is not an asynchronous end-to-end execution path |
+| MVCC / concurrent writers | Not enabled for admission or final-send transactions |
+| Remote sync / replication | Not enabled; no remote durability or rollback protection is inferred |
+
+The migration removes the old engine; it does not establish parallel final-writer
+throughput. A final broker callback still holds the deciding write transaction.
+The blocking provider HTTP call also waits for response headers in this scope;
+it is not merely the duration of a socket write. Parallel control requests and
+WAL readers therefore do not imply parallel final-writer execution.
+Simply changing it to snapshot isolation would allow a Policy publication after
+the read, followed by an external send and a conflicting commit. That rejected
+commit cannot retract external bytes. Retrying the transaction could send again.
+Concurrent admission therefore requires a separately specified final-use fence
+and an irreversible send-consumption protocol before changing isolation modes.
+Unknown sends must retain their original reservation throughout that transition.
+No throughput, p99, remote-sync or independent anti-rollback claim follows from
+the engine name or from WAL support alone.
+
+Earlier numbered design notes mix historical qualification receipts with
+then-current SQLite descriptions. Those notes are not evidence of a retained
+runtime backend. This decision supersedes their storage implementation names;
+it does not relabel their old execution receipts as Turso measurements. The
+retirement audit therefore establishes one current engine, not deletion of every
+historical occurrence of the old engine's name.
+
 * Local qualification and retained failures
 
 The host exposes twelve CPUs and the builds select twelve jobs. The focused

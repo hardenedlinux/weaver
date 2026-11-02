@@ -584,7 +584,7 @@ package PolicyEvidenceDesign {
            Compare observed/current deciding coordinates inside the serialized
            guard. Historical publication outcomes never restore an active head.
            Recovery requires an independently authenticated monotonic floor;
-           local SQLite WAL and a new process session do not establish it.
+           local Turso WAL and a new process session do not establish it.
            The floor covers execution consumption, account applications and
            history prefixes as well as publication. A publication-only floor
            misses rollback of a spend under an unchanged valid publication.

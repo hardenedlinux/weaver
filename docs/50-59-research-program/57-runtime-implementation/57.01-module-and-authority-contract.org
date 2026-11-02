@@ -67,10 +67,10 @@ pending/publication/acknowledgment bridge specified in earlier chapters.
 Calling a change pending is not an immediate effective revocation.
 
 * Storage and availability premises
-SQLite uses WAL, =synchronous=FULL= and immediate write transactions. The database
+Turso uses WAL, =synchronous=FULL= and immediate write transactions. The database
 file, WAL and shared-memory file form one local deciding store; operating it over
 unqualified network filesystems or copying a live partial snapshot is forbidden.
-Power-loss durability depends on the SQLite/VFS/filesystem/device contract.
+Power-loss durability depends on the Turso IO/filesystem/device contract.
 The profile assumes no rollback of the deciding store. Independently anchored
 rollback detection and distributed owner recovery are not implemented here.
 

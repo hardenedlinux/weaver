@@ -70,7 +70,7 @@ package ProviderRpc {
            admission. Keep bounded native capacity until the actual worker ends.
            Two private frames do not bound HTTP/2, network or Go application
            buffers; those domains require their own limits and verification. */
-        doc /* The local release transaction holds the deciding SQLite write
+        doc /* The local release transaction holds the deciding Turso write
            order through the callback. Original burn and unknown range must
            already be committed; the later release-completion marker is not
            the prerequisite. This does not serialize independent fact stores

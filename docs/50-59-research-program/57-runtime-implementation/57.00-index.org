@@ -5,7 +5,7 @@
 * Delivery boundary
 This checkpoint starts native Rust and Go implementation. Earlier design and
 qualification checkpoints remain historical evidence. The implemented profile is
-a trusted local owner, one SQLite deciding store, immutable original tasks,
+a trusted local owner, one MRR Data / Turso deciding store, immutable original tasks,
 non-streaming committed JSON requests and a bounded HTTPS executor. It is not a
 production multi-tenant service or the complete architecture.
 

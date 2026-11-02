@@ -99,6 +99,6 @@ filesystem stalls and host scheduling are not covered by a global shutdown proof
 Immutable task/plan facts and their hashes are bound once at consumption. Each
 release reads current authority and evaluates Cedar over small cached facts; it
 does not reparse or rehash the complete request for every token. No permission
-decision is cached. The SQLite deciding lock remains held across initial request
+decision is cached. The Turso deciding lock remains held across initial request
 invocation through response headers and across final bounded queue admission.
 This serial reference profile is not a qualified high-concurrency shard design.
