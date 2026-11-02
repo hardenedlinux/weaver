@@ -7,6 +7,7 @@ import (
 	"crypto/tls"
 	"errors"
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
+	"github.com/HardenedLinux/weaver/go/internal/telemetry"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
@@ -56,6 +57,7 @@ func NewServer(gateway *Gateway, security *tls.Config, leaf, token [32]byte) (*g
 		grpc.UnaryInterceptor(func(ctx context.Context, req any, info *grpc.UnaryServerInfo, next grpc.UnaryHandler) (any, error) {
 			release, err := auth(ctx)
 			if err != nil {
+				gateway.metrics.Record(telemetry.RPCAuthRejected)
 				return nil, err
 			}
 			defer release()
@@ -64,6 +66,7 @@ func NewServer(gateway *Gateway, security *tls.Config, leaf, token [32]byte) (*g
 		grpc.StreamInterceptor(func(service any, stream grpc.ServerStream, info *grpc.StreamServerInfo, next grpc.StreamHandler) error {
 			release, err := auth(stream.Context())
 			if err != nil {
+				gateway.metrics.Record(telemetry.RPCAuthRejected)
 				return err
 			}
 			defer release()

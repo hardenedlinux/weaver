@@ -370,5 +370,39 @@ theorem failed_observation_after_send_keeps_spent_hold (image : EffectImage)
 #print axioms two_independent_final_uses_preserve_all_budgets
 #print axioms observation_or_conflict_cannot_erase_effect_safety
 #print axioms failed_observation_after_send_keeps_spent_hold
+
+namespace Telemetry
+/- Statistics are a separate projection. The runtime refinement must expose no
+   execution/storage callback to the recorder; recovery of effect is the existing
+   durable-owner premise, not a consequence of resetting process-local counters. -/
+structure Image where
+  effect : EffectImage
+  counters : Fin 9 → Nat
+
+def observe (image : Image) (signal : Fin 9) : Image :=
+  {image with counters := fun k => if k = signal then image.counters k + 1 else image.counters k}
+
+def reset (image : Image) : Image := {image with counters := fun _ => 0}
+
+theorem arbitrary_observations_keep_execution (signals : List (Fin 9)) (image : Image) :
+    (signals.foldl observe image).effect.execution = image.effect.execution := by
+  induction signals generalizing image with
+  | nil => rfl
+  | cons head tail ih => exact ih (observe image head)
+
+theorem telemetry_reset_keeps_unknown_hold (image : Image) :
+    (reset image).effect.execution.held = image.effect.execution.held ∧
+    (reset image).effect.execution.spent = image.effect.execution.spent := ⟨rfl, rfl⟩
+
+theorem observations_preserve_effect_safety (signals : List (Fin 9)) (image : Image)
+    (safe : Safe budget image.effect.execution) :
+    Safe budget (signals.foldl observe image).effect.execution := by
+  rw [arbitrary_observations_keep_execution]
+  exact safe
+
+#print axioms arbitrary_observations_keep_execution
+#print axioms telemetry_reset_keeps_unknown_hold
+#print axioms observations_preserve_effect_safety
+end Telemetry
 end MVCC
 end Weaver.RuntimeAdmission

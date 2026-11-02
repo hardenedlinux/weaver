@@ -124,6 +124,7 @@ fn full_output() -> (Output, QueueReceiver, QueueSender) {
     }
     (
         Output {
+            telemetry: std::sync::Arc::new(weaver_telemetry::Metrics::default()),
             sender: sender.clone(),
             cancelled: CancellationToken::new(),
             shutdown: CancellationToken::new(),

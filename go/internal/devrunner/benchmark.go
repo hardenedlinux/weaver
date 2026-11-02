@@ -16,6 +16,8 @@ import (
 var storageBenchmarkCases = []string{"ledger_final_family_pair/wal", "ledger_final_family_pair/mvcc-serial", "ledger_final_family_pair/mvcc-parallel", "ledger_final_family_pair/mvcc-shared-budget", "ledger_final_family_pair/mvcc-shared-history", "ledger_task_origin_registration/fresh", "ledger_task_origin_registration/receipt-replay", "ledger_task_origin_registration/rebind-rejected"}
 
 var rustBenchmarkCases = []string{
+	"telemetry_local/record",
+	"telemetry_local/snapshot",
 	"ledger_task_origin_registration/fresh",
 	"ledger_task_origin_registration/receipt-replay",
 	"ledger_task_origin_registration/rebind-rejected",
@@ -92,7 +94,7 @@ var rustBenchmarkCases = []string{
 
 // Criterion sanitizes the package/group separator to an underscore on disk.
 func benchmarkPackage(name string) (string, error) {
-	for _, member := range []string{"contracts", "governance", "governance-build", "policy", "policy-ffi", "ledger", "execution", "server"} {
+	for _, member := range []string{"contracts", "governance", "governance-build", "policy", "policy-ffi", "ledger", "execution", "server", "telemetry"} {
 		if strings.HasPrefix(name, member+"_") {
 			return "weaver-" + member, nil
 		}

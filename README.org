@@ -15,15 +15,23 @@ revocation and recovery.
 
 | Component | Responsibility |
 |-----------+----------------|
-| Scheme | Reuse Agentic AI Lab Governor and Governance; compose typed modules and project policies/source-assets into Cedar |
+| Scheme | Reuse upstream Governor for eligible steps and Governance for Profile assessment; compose typed modules and project policies/source-assets into Cedar |
 | Go | Accept JSON/YAML data or a Rust-compiled Scheme artifact, coordinate authenticated authority publication, and provide routing and protocol integration |
 | Rust | Own atomic MRR Data/Turso state, evaluate current Cedar Policy, reserve budgets, consume execution authority, and control final provider dispatch and stream release |
+| Telemetry | Collect fixed local counters in both services; expose authenticated operational snapshots without execution or settlement authority |
 
 Go and Rust communicate through mutually authenticated gRPC. Protobuf is the
 default stream encoding; Arrow IPC is optional. Rust hosts the approved Gerbil
 runtime; typed Scheme objects cross the Gambit C ABI through =gerbil-scheme-rust=.
 Go neither evaluates Scheme nor owns VM objects. Configuration validation does
 not grant execution rights.
+
+Local telemetry is enabled with the service owners. =InspectTelemetry= reads
+process-local counters through existing authenticated gRPC; Rust additionally
+requires the current source role. It records no prompts, response text,
+credentials or identity labels. Counter reset on restart cannot reset claims or
+unknown budget. Autonomous external export and OTLP are not enabled. See the
+[[file:docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org][telemetry service contract]] for the implemented boundary and export requirements.
 
 ** Zero Trust security architecture
 

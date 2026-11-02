@@ -22,6 +22,19 @@ service Gateway {
   // Preparation only. Actual ingress/source state selects an installed original;
   // request labels cannot supply authority, replacement source or module paths.
   rpc CompileSource(ProducerRequest) returns (CompiledSource);
+  // Statistical process-local counters only; never durable execution evidence.
+  rpc InspectTelemetry(Empty) returns (TelemetrySnapshot);
+}
+message TelemetrySnapshot {
+  uint64 compilations_succeeded = 1;
+  uint64 compilations_failed = 2;
+  uint64 provider_admitted = 3;
+  uint64 provider_completed = 4;
+  uint64 provider_failed = 5;
+  uint64 response_frames_queued = 6;
+  uint64 queue_wait_failed = 7;
+  uint64 rpc_auth_rejected = 8;
+  uint64 snapshot_reads = 9;
 }
 message Empty {}
 message ProducerRequest { string producer = 1; }

@@ -29,7 +29,7 @@ func run() (resultErr error) {
 	schemePoo := flag.String("scheme-poo", "", "Gerbil POO checkout at Core's existing declared dependency pin")
 	flag.Parse()
 	if flag.NArg() != 1 {
-		return errors.New("usage: weaver-dev [-go-bin PATH] [-clean-source] bootstrap|bootstrap-build|bootstrap-proofs|check|check-rust|check-go|check-policy|check-architecture|check-scheme|check-storage|bench|render-diagrams|check-diagrams|generate-rpc|prepare-ci-host")
+		return errors.New("usage: weaver-dev [-go-bin PATH] [-clean-source] bootstrap|bootstrap-build|bootstrap-proofs|check|check-rust|check-go|check-policy|check-architecture|check-scheme|check-storage|check-telemetry|bench|render-diagrams|check-diagrams|generate-rpc|prepare-ci-host")
 	}
 	if flag.Arg(0) == "prepare-ci-host" {
 		return devrunner.PrepareHostedCI(os.Stdout)

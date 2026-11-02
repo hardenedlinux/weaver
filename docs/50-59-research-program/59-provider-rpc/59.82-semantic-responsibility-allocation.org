@@ -134,6 +134,21 @@ lost-publication-response recovery, source handoff and restart with unchanged
 claim, shared exposure and history. Existing Quint and Lean issuer premises remain
 explicit; no new behavioral proof or runtime acceptance is claimed by this change.
 
+** Retained standard-entry failure
+
+The isolated cold =check-scheme= attempt against the inspected Agentic AI Lab
+commit failed during =gerbil deps --install=, before Weaver's build/test stages.
+The declared =gerbil-ascent= build exited with encoded status 31744 (exit 124).
+Its committed =build.ss= uses a 180-second timeout; neither that limit nor any
+dependency declaration was changed. The preparation log remains ignored at
+=.cache/governance-governor-check-scheme.log=. No successful Scheme package or
+FFI acceptance is inferred from the separate passing SDK, Quint and Lean checks.
+
+This source snapshot also declares its own Core gitlink while transitive package
+installation selects dependency revisions through package metadata. Complete
+cohort/ABI agreement must be checked after successful preparation; a matching
+directory name is insufficient. The upstream working checkout was not modified.
+
 #+CAPTION: 00a-readme-overview.svg — Core component ownership
 [[file:../../architecture/diagrams/00a-readme-overview.svg]]
 

@@ -491,7 +491,9 @@ package WeaverProject {
             part 'weaver-governance' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;
             part 'weaver-execution' : RuntimeDependency;
+            part 'weaver-telemetry' : RuntimeDependency;
         }
+        part 'crates/telemetry' : RustPackage;
         part 'crates/contracts/benches/support' : Directory;
         part 'crates/policy/benches/support' : Directory;
         part 'crates/ledger/benches/support' : Directory;
@@ -503,6 +505,7 @@ package WeaverProject {
         part 'go/dev' : GoPackage;
         part 'go/internal/config' : GoPackage;
         part 'go/internal/controlplane' : GoPackage;
+        part 'go/internal/telemetry' : GoPackage;
         part 'go/internal/devrunner' : GoPackage;
         part 'go/internal/gatewayclient' : GoPackage;
         part 'go/internal/routing' : GoPackage;
@@ -583,4 +586,6 @@ package WeaverProject {
     allocation brokerCode allocate Architecture::broker to Layout::'crates/execution';
     allocation transportCode allocate Architecture::executor to Layout::'crates/execution';
     allocation telemetryDesign allocate Architecture::telemetry to Layout::'docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org';
+    allocation telemetryCode allocate Architecture::telemetry to Layout::'crates/telemetry';
+    allocation telemetryControlCode allocate Architecture::telemetry to Layout::'go/internal/telemetry';
 }

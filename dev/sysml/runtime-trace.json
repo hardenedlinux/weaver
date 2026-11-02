@@ -1,4 +1,14 @@
 [
+  {"id":"TelemetryNoninterference","witnesses":[
+    {"file":"crates/telemetry/tests/unit/metrics.rs","pattern":"fn observations_are_monotone_and_restart_local"},
+    {"file":"go/internal/telemetry/metrics_test.go","pattern":"func TestPropertyCountersAreBoundedMonotoneAndRestartLocal"},
+    {"file":"go/dev/provider_telemetry_test.go","pattern":"func TestProviderTelemetryCannotRefundOrRedispatchUnknownSend"},
+    {"file":"go/dev/provider_telemetry_test.go","pattern":"func TestProviderControlTelemetryObservesBothServices"},
+    {"file":"dev/proofs/quint/TursoMvcc.qnt","pattern":"run telemetryReadsAndRestartCannotRefundTest"},
+    {"file":"dev/proofs/quint/TursoMvcc.qnt","pattern":"run telemetryAsRefundCounterexampleTest"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem arbitrary_observations_keep_execution","declaration":"Weaver.RuntimeAdmission.MVCC.Telemetry.arbitrary_observations_keep_execution"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem telemetry_reset_keeps_unknown_hold","declaration":"Weaver.RuntimeAdmission.MVCC.Telemetry.telemetry_reset_keeps_unknown_hold"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem observations_preserve_effect_safety","declaration":"Weaver.RuntimeAdmission.MVCC.Telemetry.observations_preserve_effect_safety"}]},
   {"id":"SharedDomainAuthority","witnesses":[
     {"file":"crates/ledger/src/domains/binding.rs","pattern":"fn bind"},
     {"file":"crates/ledger/src/domains/migration.rs","pattern":"fn migrate_execution_domains"},

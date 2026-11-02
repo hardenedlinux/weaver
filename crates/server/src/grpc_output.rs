@@ -8,6 +8,7 @@ use tokio_util::sync::CancellationToken;
 use weaver_contracts::{Error, ProviderEvent, ProviderRoute, Result};
 use weaver_execution::ProviderOutput;
 pub(crate) struct Output {
+    pub telemetry: std::sync::Arc<weaver_telemetry::Metrics>,
     pub sender: mpsc::Sender<std::result::Result<pb::ProviderFrame, tonic::Status>>,
     pub cancelled: CancellationToken,
     pub shutdown: CancellationToken,
@@ -20,28 +21,33 @@ impl ProviderOutput for Output {
         self.cancelled.is_cancelled() || self.shutdown.is_cancelled() || self.sender.is_closed()
     }
     fn reserve(&mut self) -> Result<Self::Slot> {
-        self.runtime.block_on(async {
-            tokio::select! {
-                biased;
-                _=self.cancelled.cancelled()=>{
-                    #[cfg(all(test, unix))]
-                    backpressure_tests::cancelled();
-                    Err(Error::Conflict("RPC cancelled"))
-                },
-                _=self.shutdown.cancelled()=>Err(Error::Conflict("server closing")),
-                slot=tokio::time::timeout(std::time::Duration::from_secs(1),{
-                    #[cfg(all(test, unix))]
-                    { backpressure_tests::observe(self.sender.clone().reserve_owned()) }
-                    #[cfg(not(all(test, unix)))]
-                    { self.sender.clone().reserve_owned() }
-                })=>
-                    slot.map_err(|_|{
+        self.runtime
+            .block_on(async {
+                tokio::select! {
+                    biased;
+                    _=self.cancelled.cancelled()=>{
                         #[cfg(all(test, unix))]
-                        backpressure_tests::expired();
-                        Error::Conflict("RPC flow control deadline")
-                    })?.map_err(|_|Error::Conflict("RPC receiver closed")),
-            }
-        })
+                        backpressure_tests::cancelled();
+                        Err(Error::Conflict("RPC cancelled"))
+                    },
+                    _=self.shutdown.cancelled()=>Err(Error::Conflict("server closing")),
+                    slot=tokio::time::timeout(std::time::Duration::from_secs(1),{
+                        #[cfg(all(test, unix))]
+                        { backpressure_tests::observe(self.sender.clone().reserve_owned()) }
+                        #[cfg(not(all(test, unix)))]
+                        { self.sender.clone().reserve_owned() }
+                    })=>
+                        slot.map_err(|_|{
+                            #[cfg(all(test, unix))]
+                            backpressure_tests::expired();
+                            Error::Conflict("RPC flow control deadline")
+                        })?.map_err(|_|Error::Conflict("RPC receiver closed")),
+                }
+            })
+            .inspect_err(|_| {
+                self.telemetry
+                    .record(weaver_telemetry::Signal::QueueWaitFailed)
+            })
     }
     fn emit(
         &mut self,
@@ -64,6 +70,8 @@ impl ProviderOutput for Output {
             },
         })?;
         slot.send(Ok(frame));
+        self.telemetry
+            .record(weaver_telemetry::Signal::ResponseFramesQueued);
         #[cfg(all(test, unix))]
         backpressure_tests::enqueued(events);
         Ok(())

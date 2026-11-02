@@ -508,7 +508,7 @@ package WeaverExecution {
     }
     part def TelemetryService {
         attribute displayName : String = "Telemetry";
-        attribute responsibility : String = "Local operational\nobservations\nExplicitly governed export\nEvents grant no\nexecution rights";
+        attribute responsibility : String = "Local counters\nAuthenticated reads\nNo execution rights";
         attribute glyph : String = "evidence";
         attribute visualRole : String = "capture";
         doc /* Current Go source/startup producers emit fixed-label local slog
@@ -516,10 +516,28 @@ package WeaverExecution {
            These ordinary stderr diagnostics are not the target bounded event
            bus, loss counters, exporter, durable audit or readiness authority.
            Their presence cannot prove completion or discharge unknown holds. */
-        doc /* Default service in the target architecture; implementation and exporter delivery remain pending. Local bounded signals observe source/authority/effects. Export needs explicit configuration and Policy. Telemetry cannot acknowledge an authority commit, authorize a send or release unknown budget. */
+        doc /* Local metrics are implemented by weaver-telemetry and the Go
+           telemetry package, enabled with each existing runtime owner. Fixed
+           counters accept no payload, identity label, arbitrary trace context,
+           callback or exporter. Existing authenticated gRPC carries snapshots;
+           Rust additionally checks current source authority. No new listener.
+           Snapshots are independent relaxed atomic observations, not a coherent
+           ledger image. Saturating updates use constant space but do not promise
+           wait-free latency under contention. Counter reset on restart cannot
+           clear durable claims or unknown holds. OTLP, traces, security event
+           export and durable audit remain delivery gates requiring explicit
+           destination/credential publication and Policy. */
         doc /* Observe already extracted metadata with bounded nonblocking
            submission. Do not re-read a mutable request, retry an effect or mutate
            authority/history/accounting from a telemetry callback. */
+    }
+    requirement def TelemetryNoninterference {
+        doc /* Metrics cannot issue sends, change claims, settle budgets or
+           acknowledge source commits. Only fixed counter kinds cross the API;
+           no prompt, response text, credential or variable-cardinality identity.
+           Rust source-only inspection and Go authenticated inspection use existing
+           listeners. Unknown effects stay consumed/held across arbitrary reads
+           and local-counter reset. No external exporter is currently enabled. */
     }
     part def DerivedEvidenceAdapter {
         attribute displayName : String = "Derived evidence";

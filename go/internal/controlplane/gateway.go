@@ -9,6 +9,7 @@ import (
 	"github.com/HardenedLinux/weaver/go/internal/config"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"github.com/HardenedLinux/weaver/go/internal/routing"
+	"github.com/HardenedLinux/weaver/go/internal/telemetry"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"io"
@@ -17,6 +18,7 @@ import (
 
 type Gateway struct {
 	pb.UnimplementedGatewayServer
+	metrics    telemetry.Metrics
 	owner      *gatewayclient.Client
 	tasks      map[string]v1.Task
 	operations map[[2]string]bool
@@ -74,7 +76,15 @@ func Bootstrap(ctx context.Context, source, owner *gatewayclient.Client, bundle 
 	return g, nil
 }
 
-func (g *Gateway) ExecuteProvider(in *pb.ProviderRequest, out pb.Gateway_ExecuteProviderServer) error {
+func (g *Gateway) ExecuteProvider(in *pb.ProviderRequest, out pb.Gateway_ExecuteProviderServer) (result error) {
+	g.metrics.Record(telemetry.ProviderAdmitted)
+	defer func() {
+		if result == nil {
+			g.metrics.Record(telemetry.ProviderCompleted)
+		} else {
+			g.metrics.Record(telemetry.ProviderFailed)
+		}
+	}()
 	if in == nil || in.Plan == nil || !utf8.Valid(in.Plan.Body) {
 		return status.Error(codes.InvalidArgument, "provider proposal required")
 	}
@@ -113,7 +123,15 @@ func (g *Gateway) ExecuteProvider(in *pb.ProviderRequest, out pb.Gateway_Execute
 		if err = out.Send(frame); err != nil {
 			return err
 		}
+		g.metrics.Record(telemetry.ResponseFramesQueued)
 	}
+}
+
+// The existing authenticated server interceptor protects this bounded local read.
+// No source publication, ledger query, provider call or remote export is involved.
+func (g *Gateway) InspectTelemetry(context.Context, *pb.Empty) (*pb.TelemetrySnapshot, error) {
+	g.metrics.Record(telemetry.SnapshotReads)
+	return g.metrics.Snapshot(), nil
 }
 
 func (g *Gateway) Inspect(ctx context.Context, key *pb.OperationKey) (*pb.ProviderReceipt, error) {

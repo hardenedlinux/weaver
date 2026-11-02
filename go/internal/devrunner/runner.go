@@ -277,8 +277,17 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	if stage.Name == "grpc-benchmark" && err == nil && closeErr == nil {
 		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
 	}
-	if stage.Name == "storage-final-benchmark" && err == nil && closeErr == nil {
-		err = collectBenchmarks(root, directory, started.UTC().Format(time.RFC3339Nano), storageBenchmarkCases...)
+	if (stage.Name == "storage-final-benchmark" || stage.Name == "telemetry-benchmark") && err == nil && closeErr == nil {
+		cases := storageBenchmarkCases
+		if stage.Name == "telemetry-benchmark" {
+			cases = nil
+			for _, name := range rustBenchmarkCases {
+				if owner, _ := benchmarkPackage(name); owner == "weaver-telemetry" {
+					cases = append(cases, name)
+				}
+			}
+		}
+		err = collectBenchmarks(root, directory, started.UTC().Format(time.RFC3339Nano), cases...)
 		if err == nil {
 			var data []byte
 			data, err = os.ReadFile(filepath.Join(directory, "benchmark-summary.org"))

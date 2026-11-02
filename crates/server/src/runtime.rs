@@ -14,6 +14,7 @@ pub struct RuntimeOwner {
     inner: Arc<Inner>,
 }
 struct Inner {
+    telemetry: Arc<weaver_telemetry::Metrics>,
     gate: Mutex<AdmissionState>,
     closed: AtomicBool,
     cancel: CancellationToken,
@@ -67,6 +68,7 @@ impl RuntimeOwner {
     pub fn new() -> Self {
         Self {
             inner: Arc::new(Inner {
+                telemetry: Arc::new(weaver_telemetry::Metrics::default()),
                 gate: Mutex::new(AdmissionState {
                     governance: None,
                     producers: None,
@@ -76,6 +78,10 @@ impl RuntimeOwner {
                 tasks: TaskTracker::new(),
             }),
         }
+    }
+    /// Bounded local observations only; callers acquire no authority capability.
+    pub fn telemetry(&self) -> &Arc<weaver_telemetry::Metrics> {
+        &self.inner.telemetry
     }
     /// Terminal resource state; it is not execution or no-execution evidence.
     pub fn closing(&self) -> bool {

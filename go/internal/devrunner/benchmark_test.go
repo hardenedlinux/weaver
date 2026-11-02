@@ -10,7 +10,7 @@ import (
 )
 
 func TestBenchmarkPackagesRequireExactWorkspaceCoverage(t *testing.T) {
-	members := []string{"weaver-contracts", "weaver-governance", "weaver-governance-build", "weaver-policy", "weaver-policy-ffi", "weaver-ledger", "weaver-execution", "weaver-server"}
+	members := []string{"weaver-contracts", "weaver-governance", "weaver-governance-build", "weaver-policy", "weaver-policy-ffi", "weaver-ledger", "weaver-execution", "weaver-server", "weaver-telemetry"}
 	if err := ValidateBenchmarkPackages(members); err != nil {
 		t.Fatal(err)
 	}

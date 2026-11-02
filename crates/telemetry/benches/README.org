@@ -1,0 +1,20 @@
+#+TITLE: Local Telemetry Benchmarks
+#+LANGUAGE: en
+
+* Workload
+
+The =gateway= Criterion target measures one saturating atomic observation and a
+detached nine-counter snapshot. It excludes exporters, network IO, durable audit
+and ledger effects. Storage is fixed; there are no caller-controlled labels.
+
+* Measurement boundary
+
+Only local atomic recording and independent atomic reads are measured. Saturation
+is tested separately; no contention or whole-Gateway latency claim follows.
+
+* Entrypoints
+
+Each workload takes thirty samples, one second of warm-up and two seconds of
+requested measurement. Run through the existing Go benchmark driver
+or =cargo bench -p weaver-telemetry --bench gateway --locked --offline -- --noplot=.
+These measurements do not establish provider throughput or a Gateway SLO.

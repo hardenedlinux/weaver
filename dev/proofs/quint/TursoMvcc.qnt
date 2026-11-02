@@ -18,6 +18,14 @@ module TursoMvcc {
       not(s.active.exists(k=>family(k)==d) and s.pending.exists(k=>family(k)==d))) and
     s.recorded.forall(k=>s.spent.contains(k) and s.calls.get(k)==1)
   action init=s'=initial
+  // Project local metric increments, reads, overflow and reset to authority
+  // stuttering. Refinement premise: the recorder cannot invoke ledger/transport.
+  action telemetryObservation=s'=s
+  run telemetryReadsAndRestartCannotRefundTest=accepted.then(finalGuard(0)).then(send(0))
+    .then(telemetryObservation).then(restart).then(telemetryObservation)
+    .expect(safety and s.calls.get(0)==1 and s.held.get(0)==3)
+  run telemetryAsRefundCounterexampleTest=accepted.then(telemetryObservation)
+    .then(unsafeRefund(0)).expect(not(safety))
   action begin(k:int):bool=all{not(s.active.exists(p=>family(p)==family(k))),not(s.pending.exists(p=>family(p)==family(k))),s'=s.with("pending",s.pending.union(Set(k)))}
   action reserve(k:int):bool=all{s.pending.contains(k),not(s.queued.contains(k)),
     s'=s.with("pending",s.pending.exclude(Set(k))).with("queued",s.queued.union(Set(k)))
@@ -41,7 +49,7 @@ module TursoMvcc {
   action unsafeRefund(k:int):bool=s'=s.with("held",s.held.set(k,0))
   action unsafeClaimOnlyLock(k:int):bool=all{s.permits.contains(k),s'=s.with("active",s.active.union(Set(k)))}
   action accepted=init.then(begin(0)).then(reserve(0)).then(begin(0)).then(consume(0))
-  action step={nondet k=logicalKeys.oneOf() any{begin(k),reserve(k),consume(k),conflict(k),publish,finalGuard(k),send(k),finish(k),failUse(k),replyLoss,restart}}
+  action step={nondet k=logicalKeys.oneOf() any{begin(k),reserve(k),consume(k),conflict(k),publish,finalGuard(k),send(k),finish(k),failUse(k),replyLoss,restart,telemetryObservation}}
   run independentFamiliesOverlapTest=init.then(begin(0)).then(begin(2)).then(reserve(0)).then(reserve(2)).expect(safety and s.held.get(0)==3 and s.held.get(2)==3)
   run sharedFamilySerializesTest=init.then(begin(0)).then(begin(1).fail())
   run publishWaitsForAdmissionTest=init.then(begin(0)).then(publish.fail())

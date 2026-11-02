@@ -5636,6 +5636,16 @@ dependencies = [
  "weaver-governance",
  "weaver-ledger",
  "weaver-policy-ffi",
+ "weaver-telemetry",
+]
+
+[[package]]
+name = "weaver-telemetry"
+version = "0.1.0"
+dependencies = [
+ "asp-rust",
+ "criterion",
+ "proptest",
 ]
 
 [[package]]

@@ -152,6 +152,18 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			}
 		}
 		return selected, nil
+	case "check-telemetry":
+		return []Stage{
+			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "./internal/devrunner", "-run", "^Test(ProjectArchitecture|SysML|CargoWorkspace|Benchmark|ModelViewsUseActualSDK)"}},
+			{"rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
+			{"telemetry-rust", "cargo", []string{"test", "-p", "weaver-telemetry", "-p", "weaver-server", "--lib", "--locked", "--offline"}},
+			{"telemetry-go", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "./internal/telemetry", "./internal/controlplane"}},
+			{"telemetry-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider(Telemetry|ControlTelemetry|RevocationDuringSSE|PartialRequestAndRestartRetainUnknownClaim|ControlJSONYAMLRevocationAndRestart|ControlCompleteStreamsShareBudgetAndRejectSDKRetry|ControlPublicationReplyLossCannotActivateOrRebase)", "-v"}},
+			{"telemetry-quint", "quint", []string{"test", "dev/proofs/quint/TursoMvcc.qnt", "--main", "TursoMvcc", "--seed", "293"}},
+			{"telemetry-safety", "quint", []string{"run", "dev/proofs/quint/TursoMvcc.qnt", "--main", "TursoMvcc", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
+			{"telemetry-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/RuntimeAdmission.lean"}},
+			{"telemetry-benchmark", "cargo", []string{"bench", "-p", "weaver-telemetry", "--bench", "gateway", "--locked", "--offline", "--", "--noplot"}},
+		}, nil
 	case "check-scheme":
 		return []Stage{
 			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership|CIWorkflows)", "-v"}},

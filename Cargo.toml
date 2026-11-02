@@ -9,6 +9,7 @@ members = [
     "crates/ledger",
     "crates/execution",
     "crates/server",
+    "crates/telemetry",
 ]
 
 [workspace.package]
@@ -24,6 +25,7 @@ weaver-governance-build = { path = "crates/governance-build" }
 weaver-policy-ffi = { path = "crates/policy-ffi" }
 weaver-ledger = { path = "crates/ledger" }
 weaver-execution = { path = "crates/execution" }
+weaver-telemetry = { path = "crates/telemetry" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror = "2.0"

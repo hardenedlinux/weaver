@@ -17,6 +17,7 @@ mod shutdown;
 mod source_artifact;
 mod source_identity;
 mod source_owner;
+mod telemetry;
 #[cfg(test)]
 #[path = "../tests/unit/fixtures.rs"]
 mod test_fixtures;

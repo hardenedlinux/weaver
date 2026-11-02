@@ -281,6 +281,17 @@ impl Gateway {
         request: &Request<T>,
         role: RpcRole,
     ) -> std::result::Result<(), Status> {
+        self.authenticate_request(request, role).inspect_err(|_| {
+            self.runtime
+                .telemetry()
+                .record(weaver_telemetry::Signal::RpcAuthRejected);
+        })
+    }
+    fn authenticate_request<T>(
+        &self,
+        request: &Request<T>,
+        role: RpcRole,
+    ) -> std::result::Result<(), Status> {
         if self.runtime.closing() {
             return Err(Status::unavailable("server closing"));
         }
@@ -313,6 +324,20 @@ impl Gateway {
 }
 #[tonic::async_trait]
 impl pb::gateway_server::Gateway for Gateway {
+    async fn inspect_telemetry(
+        &self,
+        request: Request<pb::Empty>,
+    ) -> std::result::Result<Response<pb::TelemetrySnapshot>, Status> {
+        let caller = self.source_identity(&request)?;
+        let _slot = self.admission.observation()?;
+        self.ingress.source()?.authority(caller).await?;
+        self.runtime
+            .telemetry()
+            .record(weaver_telemetry::Signal::SnapshotReads);
+        Ok(Response::new(crate::telemetry::snapshot(
+            self.runtime.telemetry(),
+        )))
+    }
     async fn register_original_task(
         &self,
         request: Request<pb::RegisterOriginalTaskRequest>,
@@ -468,7 +493,10 @@ impl pb::gateway_server::Gateway for Gateway {
             .submit(&producer, &before)
             .map_err(compilation_status)?;
         let bound = tokio::select! {
-            result=job=>result.map_err(|error|compilation_status(error.into()))?,
+            result=job=>result.map_err(|error|{
+                self.runtime.telemetry().record(weaver_telemetry::Signal::CompilationFailed);
+                compilation_status(error.into())
+            })?,
             _=self.runtime.cancellation()=>return Err(Status::unavailable("source compilation closed")),
         };
         // No source SQL lane is retained while foreign code runs. Re-observe the
@@ -492,6 +520,9 @@ impl pb::gateway_server::Gateway for Gateway {
                 "compiled source exceeds RPC response bound",
             ));
         }
+        self.runtime
+            .telemetry()
+            .record(weaver_telemetry::Signal::CompilationSucceeded);
         Ok(Response::new(reply))
     }
     async fn execute_provider(
@@ -518,6 +549,7 @@ impl pb::gateway_server::Gateway for Gateway {
         let (sender, receiver) = mpsc::channel(2);
         let cancelled = CancellationToken::new();
         let mut output = Output {
+            telemetry: self.runtime.telemetry().clone(),
             sender: sender.clone(),
             cancelled: cancelled.clone(),
             shutdown: CancellationToken::new(),
@@ -544,6 +576,11 @@ impl pb::gateway_server::Gateway for Gateway {
                         &mut output,
                     )
                 })();
+                output.telemetry.record(if result.is_ok() {
+                    weaver_telemetry::Signal::ProviderCompleted
+                } else {
+                    weaver_telemetry::Signal::ProviderFailed
+                });
                 if result.is_err() {
                     let _ = sender.try_send(Err(Status::failed_precondition(
                         "provider execution not completed; inspect original operation",
@@ -552,6 +589,9 @@ impl pb::gateway_server::Gateway for Gateway {
                 result
             })
             .map_err(|_| Status::unavailable("native admission closed"))?;
+        self.runtime
+            .telemetry()
+            .record(weaver_telemetry::Signal::ProviderAdmitted);
         drop(job); // The runtime tracker, not the disconnected caller, owns completion.
         Ok(Response::new(ResponseStream {
             receiver: ReceiverStream::new(receiver),

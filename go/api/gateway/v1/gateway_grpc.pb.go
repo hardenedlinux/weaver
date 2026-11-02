@@ -34,6 +34,7 @@ const (
 	Gateway_InspectSourceAuthority_FullMethodName  = "/weaver.gateway.v1.Gateway/InspectSourceAuthority"
 	Gateway_RotateSourceAuthority_FullMethodName   = "/weaver.gateway.v1.Gateway/RotateSourceAuthority"
 	Gateway_CompileSource_FullMethodName           = "/weaver.gateway.v1.Gateway/CompileSource"
+	Gateway_InspectTelemetry_FullMethodName        = "/weaver.gateway.v1.Gateway/InspectTelemetry"
 )
 
 // GatewayClient is the client API for Gateway service.
@@ -60,6 +61,8 @@ type GatewayClient interface {
 	// Preparation only. Actual ingress/source state selects an installed original;
 	// request labels cannot supply authority, replacement source or module paths.
 	CompileSource(ctx context.Context, in *ProducerRequest, opts ...grpc.CallOption) (*CompiledSource, error)
+	// Statistical process-local counters only; never durable execution evidence.
+	InspectTelemetry(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*TelemetrySnapshot, error)
 }
 
 type gatewayClient struct {
@@ -243,6 +246,16 @@ func (c *gatewayClient) CompileSource(ctx context.Context, in *ProducerRequest, 
 	return out, nil
 }
 
+func (c *gatewayClient) InspectTelemetry(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*TelemetrySnapshot, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TelemetrySnapshot)
+	err := c.cc.Invoke(ctx, Gateway_InspectTelemetry_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GatewayServer is the server API for Gateway service.
 // All implementations must embed UnimplementedGatewayServer
 // for forward compatibility
@@ -267,6 +280,8 @@ type GatewayServer interface {
 	// Preparation only. Actual ingress/source state selects an installed original;
 	// request labels cannot supply authority, replacement source or module paths.
 	CompileSource(context.Context, *ProducerRequest) (*CompiledSource, error)
+	// Statistical process-local counters only; never durable execution evidence.
+	InspectTelemetry(context.Context, *Empty) (*TelemetrySnapshot, error)
 	mustEmbedUnimplementedGatewayServer()
 }
 
@@ -318,6 +333,9 @@ func (UnimplementedGatewayServer) RotateSourceAuthority(context.Context, *Source
 }
 func (UnimplementedGatewayServer) CompileSource(context.Context, *ProducerRequest) (*CompiledSource, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompileSource not implemented")
+}
+func (UnimplementedGatewayServer) InspectTelemetry(context.Context, *Empty) (*TelemetrySnapshot, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InspectTelemetry not implemented")
 }
 func (UnimplementedGatewayServer) mustEmbedUnimplementedGatewayServer() {}
 
@@ -605,6 +623,24 @@ func _Gateway_CompileSource_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_InspectTelemetry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).InspectTelemetry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_InspectTelemetry_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).InspectTelemetry(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Gateway_ServiceDesc is the grpc.ServiceDesc for Gateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -667,6 +703,10 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CompileSource",
 			Handler:    _Gateway_CompileSource_Handler,
+		},
+		{
+			MethodName: "InspectTelemetry",
+			Handler:    _Gateway_InspectTelemetry_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
