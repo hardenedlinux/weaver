@@ -201,8 +201,10 @@ package ControlActivation {
            Cellar paths are not deployment authority. Preserve ABI, existing
            compiler flags and pinned Gerbil identity; successful archive compilation
            alone does not qualify final linking or source recovery. */
-        doc /* Cargo is a native root; gerbil-scheme-rust drives Gerbil build.ss
-           through its process API and private child pipes, never the reverse.
+        doc /* Cargo owns Rust dependency resolution. gerbil-scheme-rust drives
+           package build/test through its existing affine VM owner and C ABI.
+           Process APIs and private child pipes own image bootstrap and actual
+           compiler backends; they are not the public package build/test API.
            Scheme owns the PackageSpec and pkg-config declaration, not an outer
            Cargo driver or another byte-forwarding loop. The upstream Rust driver
            uses Tokio for process I/O and cancellation. Gambit owns its nonblocking
@@ -214,15 +216,21 @@ package ControlActivation {
            host parallelism and original output/wall budgets. Neither descriptor
            flag resets on shared handles nor lower job counts qualify a repair. */
         doc /* The required public build/test boundary is embedded Gerbil C ABI,
-           maintained in gerbil-scheme-rust. gerbil-scheme-build owns the typed
-           tooling session, gerbil-scheme and gerbil-scheme-sys own VM/root/C ABI
-           lifetime, and gerbil-scheme-aot-build owns bootstrap and compiler-owned
+           maintained in gerbil-scheme-rust. gerbil-scheme exposes package
+           operations on the existing GerbilRuntime; gerbil-scheme-sys owns
+           checked foreign spans and C ABI transport. No second ToolingSession
+           or consumer-owned scheduler is required. gerbil-scheme-aot-build
+           owns bootstrap and compiler-owned
            artifacts. A command-process wrapper is not this public API. The
            tooling image must admit the complete compiler, PackageSpec and gxtest
            module closure; the minimal value-conversion image is insufficient.
            Tokio coordinates admission, I/O and cancellation without migrating
            a live thread-affine VM. Reuse the existing VM owner and rooted values.
-           build.ss stays declarative. C/Gambit backend compiler processes may
+           The Scheme adapter invokes the package's build.ss main and the
+           official gerbil/tools/gxtest main, preserving their result semantics.
+           These Scheme procedures are exposed by bridge-owned C exports, not
+           invented official gerbil_build or gerbil_test C symbols. build.ss
+           owns PackageSpec, pkg-config and compiler policy. C/Gambit backend compiler processes may
            remain package-owned implementation details. An unqualified image or
            unsupported ABI refuses; it never silently falls back to gxi commands.
            Current pin consumers and new upstream capability have separate evidence. */
@@ -230,9 +238,12 @@ package ControlActivation {
            strong-root C ABI. Build admission requires explicit package-relative
            artifact expectations; test admission must reject an empty successful
            harness. Scheme retains compiler, PackageSpec and gxtest semantics.
-           A compiler-owned backend callback copies foreign argv before borrowing
-           ends and delegates only native compiler work to the upstream Tokio
-           process owner. It never launches a Scheme frontend as a fallback.
+           A foreign borrow cannot outlive its owner call. Compiler backend
+           integration must preserve official build/test semantics and copy any
+           argv retained asynchronously. A new callback protocol, compiler
+           carrier rewriting or environment switch is not a prerequisite and
+           requires separate source-grounded justification. No Scheme frontend
+           command serves as a fallback for the public operation.
            Queued cancellation refuses entry; entered cancellation returns only
            after actual foreign completion and child drain. It does not undo
            generated artifacts or admit premature VM cleanup. Final close consumes

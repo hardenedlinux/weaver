@@ -163,6 +163,8 @@ increase is used to turn those failures into acceptance.
 
 The complete local producer-dependency preparation exits naturally with status
 zero. It is prerequisite acquisition/build evidence, not a complete MRR test
-receipt. The complete C ABI build/test image remains an implementation gap; the
-existing bound export APIs define the composition boundary, not a claim that
-that image is already implemented.
+receipt. The published PR revision does not yet qualify the complete C ABI
+build/test image. An unpublished package-tools draft already adds build_package
+and test_package to the existing GerbilRuntime; it is the reuse baseline, not
+a completed integration receipt. See the [[file:59.76-embedded-tooling-and-darwin-io.org][direct package API boundary]] for its
+remaining image, provenance, cancellation and cleanup obligations.

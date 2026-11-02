@@ -4,18 +4,20 @@
 * Required architecture
 
 The public build/test boundary belongs to =gerbil-scheme-rust= and uses the
-Gerbil/Gambit C ABI. =gerbil-scheme-build= owns the typed tooling session;
-=gerbil-scheme= and =gerbil-scheme-sys= own rooted values, foreign calls and VM
-lifetime. =gerbil-scheme-aot-build= owns bootstrap and canonical native artifacts.
+Gerbil/Gambit C ABI. =gerbil-scheme= exposes package operations on the existing
+affine =GerbilRuntime=. =gerbil-scheme-sys= checks borrowed foreign values and
+owns C ABI transport. =gerbil-scheme-aot-build= owns bootstrap and canonical
+compiled artifacts. No additional tooling session or scheduler is required.
 Weaver and MRR consume that library. They must not implement another compiler
 driver, generic eval endpoint or command configuration language.
 
-Compose the existing LinkedGerbilProgram, GerbilRuntime::initialize_program,
-bound object/byte exports and their call methods. The bound Scheme entries
-invoke the official build and gxtest procedures using the supported C interface.
-The tooling session means that existing VM owner lifecycle; it does not require
-a second opaque session object or a family of environment-variable controls.
-Hypothetical official gerbil_build or gerbil_test C symbols are not assumed.
+Use direct bridge-owned C exports on the existing VM owner to invoke the
+official Scheme procedures: load the package's =build.ss= and call its =main=
+for compilation; call =:gerbil/tools/gxtest='s =main= for tests. The bridge
+does not assume official C symbols named =gerbil_build= or =gerbil_test=.
+A =LinkedGerbilProgram= and =initialize_program= may provide an admitted image;
+they do not create another lifecycle. No consumer environment switch selects
+a replacement build/test implementation.
 
 This tooling capability belongs to build/test hosts. It does not place a
 compiler or test runner in the gateway request path. Runtime Scheme governance
@@ -69,77 +71,64 @@ and linked strong-root exports. The separate Tokio subprocess refactor alone
 does not implement it. A frozen Gerbil bridge consumer cannot be described as
 consuming an unpublished or newer capability.
 
-* Current source status and required tooling admission
+* Existing implementation and remaining admission
 
-The currently inspected PR #18 revision still exposes command-backed
-GerbilCompiler entry points and does not contain ToolingSession or an
-embedded-tooling feature implementation. The implementation account below is
-an earlier research record, not acceptance of those exports at this revision.
-The supported Gambit/Gerbil C interface and official package/gxtest procedures
-remain the required integration boundary. Do not turn this gap into another
-consumer-owned scheduler or a collection of environment-variable switches.
-See [[file:59.79-quint-preparation-and-completion.org][preparation, current source evidence and unchanged gates]].
+The published PR #18 revision and the unpublished package-tools draft have
+separate evidence. The published revision's compiler facade still launches
+bootstrap commands. The frozen working-tree draft adds =package-tools= with
+=GerbilRuntime::build_package= and =test_package=. These call checked C exports;
+Scheme loads =build.ss= in a scoped expander context and calls the official
+GxTest entry. This is an implementation to audit and finish, not a reason to
+invent =ToolingSession=, an alternate test harness or a consumer-owned protocol.
+The source cut is retained under the persistent investigation directory; its
+hashes identify unpublished source and do not establish runtime acceptance.
 
-The =embedded-tooling= feature in upstream =gerbil-scheme-build= builds a full
-compiler/expander/test graph through the existing compiler-owned manifest.
-=ToolingSession= invokes distinct build/test C exports. A fresh top-level context
-and scoped default Gerbil prelude evaluate the package's actual =build.ss=.
-The test adapter reuses gxtest's collector and harness and the standard test
-runner, while rejecting a successful harness with no executed cases. It omits
-the CLI-only process-environment mutation. No generic eval endpoint is exposed.
+| Owner | Responsibility |
+|-------+----------------|
+| Existing GerbilRuntime | Live VM, owner-thread check, direct package operation and final cleanup |
+| gerbil-scheme-sys | Checked UTF-8 spans, C transport status and call-scoped borrows |
+| Scheme package adapter | Scoped expander context, build.ss main, official GxTest main and exception containment |
+| Package build.ss | Modules, PackageSpec, pkg-config dependencies and compilation policy |
+| AOT build owner | Complete tooling image, source provenance, paired compiler and canonical archive |
+| Tokio coordination | Host I/O and owned backend work; cancellation cannot abandon an entered foreign call |
+| MRR / Weaver | Call the upstream API and check actual artifacts and test evidence |
 
-Build requests require explicit package-relative output expectations. Zero status
-without those actual files cannot qualify completion. Paths are canonicalized;
-checks reject parent paths and observed canonical symlink escapes. Callers must
-freeze the source and dependency filesystem: canonical paths alone do not
-exclude concurrent replacement or ABA. This is trusted build-host tooling, not an in-process sandbox for
-arbitrary Scheme programs. Package code that mutates process-global state needs
-its own audited contract; per-session serialization does not isolate other host
-threads from such changes.
+The public operation must execute in the existing host process, not wrap a
+=Command= that launches =gerbil build=, =gerbil test= or =gxi=. One-time image
+bootstrap and actual C compiler/linker subprocesses are separate, necessary
+build work. This boundary alone is not evidence of lower wall-clock cost.
+Keep cold image construction, warm calls and complete shutdown measurements
+separate. Resolve parallelism from the executing machine rather than adding
+consumer controls or compiling a fixed core count into the bridge.
 
-Actual embedding exposed two CLI assumptions: Gambit's generic evaluator does
-not establish Gerbil syntax, and backend compiler invocations need the paired
-installation mapping. The implementation uses the actual Gerbil expander and
-binds the VM's installation directories. A source-owned compiler backend callback
-copies call-scoped UTF-8 argv, admits the paired compiler/builder, captures output
-through private pipes and lets the existing upstream Tokio owner reap the child.
-The public build/test operation remains a direct Scheme C ABI call. Native
-backend processes and one-time image bootstrap are explicit implementation work.
+The draft is not yet accepted. Its package-tools/external-program feature
+combination must not expose operations without the matching linked module
+closure. Generated-SCM provenance must remain checked on the tooling-image
+path. An arbitrary initialized VM is not proof that package-tools exports are
+available. The link-options extension must also preserve the existing
+per-module host-layout declaration, rather than reinterpret its positional
+argument. These are upstream image/build obligations, not new MRR flags.
 
-The paired compiler uses block-optimized calls to its keyword invoke leaf, so
-rebinding its public procedure is insufficient. Upstream stages a derivative of
-the compiler-owned carrier, checks the unique expected invoke shape and lowers
-that leaf to the backend callback. The installed toolchain is unchanged. Unknown
-or ambiguous compiler shapes refuse image construction. MRR and Weaver do not
-own a copy of this version adapter.
+Build completion requires the requested artifacts. A returned zero from GxTest
+requires the expected nonempty inventory and failure detection; do not replace
+GxTest semantics with another harness. Preserve errors, missing tests and
+exceptions as failures. Freeze source and dependency inputs for the operation;
+a canonical path alone does not prevent replacement or ABA. This is trusted
+build-host tooling, not a sandbox for arbitrary Scheme package code.
 
-Backend start returns an owned job and Scheme polling yields to other green
-threads. Tokio drains I/O and actual child exit without receiving VM objects.
-An observed concurrent backend population checks overlapping admitted jobs.
-It does not measure simultaneous compiler CPU execution or prove a speedup.
-The accepted real fixture has two independent modules and requires overlapping
-backend jobs while unrelated host Tokio children also complete.
+Keep queue cancellation distinct from cancellation after foreign entry. An
+entered call retains its live owner and borrowed inputs until actual return
+and backend drain; dropping a Tokio waiter cannot acknowledge cleanup. Check
+repeated calls, real pass/fail suites, descriptor/signal state, directory and
+environment restoration, and natural process exit. A marker emitted before VM
+destruction does not prove shutdown. Cross-platform acceptance and complete
+MRR entry evidence remain separate from focused bridge tests.
 
-Cancellation is monotonic. Before admission it refuses the operation without
-entering Scheme. After entry it waits for actual foreign return and backend
-drain, retains the Scheme status and reports cancelled-after-drain. This does
-not promise prompt preemption or artifact rollback. Dropping an outer waiter
-cannot publish a cancellation-complete receipt or release the live owner.
-
-The real test entry checks package compilation, output artifacts, a passing and
-failing suite, an empty harness, cancellation before entry and after an entered
-case, recovery of the same owner, root release and terminal close. Host descriptor
-and environment checks remain distinct from broad claims about every package's
-side effects. Failed intermediate runs are retained in temporary evidence;
-neither a watchdog-terminated call nor an unfinished CI job is acceptance.
-
-The accepted scoped-owner fixture loads its freshly built module and rejects a
-stale backend operation epoch before process admission. A later extension adds
-standard pkg-config and Gambit-only build targets. Its first run stalls and is
-refused at the unchanged idle gate; the staged standard-make adapter's next
-build fails in Apple's linker with a bus error before test entry. That extension
-is not qualified by the earlier passing fixture. Complete current-source
-build/test, strict lint, benchmark and cleanup receipts remain separate gates.
+Earlier session/backend-callback experiments are historical investigation,
+not the authoritative API. A callback protocol or compiler-carrier rewrite is
+not required by this architecture. Reuse official Scheme behavior first; any
+necessary backend integration needs its own demonstrated gap and upstream
+ownership. See [[file:59.79-quint-preparation-and-completion.org][current published CI and retained failures]].
 
 * Authorized Agentic AI Lab source migration
 
