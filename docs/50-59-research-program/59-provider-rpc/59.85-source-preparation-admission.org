@@ -109,5 +109,14 @@ the assertion now precedes that action, preserving both the assertion and the
 negative control. These are verification-owner and model receipts, not a
 successful native package build or Gateway SPEC admission.
 
+On committed source =d01e4acc139df8b71f9a4ccdf8dc3c4a588d28d5=, the complete
+Go race suite passes with loopback access, and all twelve stages of the existing
+=-clean-source check-telemetry= regression pass. The original sandbox-denied
+loopback attempt is retained separately. A real isolated Lab checkout with the
+transitive Core selected instead of its declared gitlink is rejected by the
+ordinary =-clean-source check-scheme= entry before package preparation or tests.
+Its compact result is FAIL, with the exact Core source-admission error; this is
+an executed negative control, not a native package acceptance receipt.
+
 #+CAPTION: 59.76-embedded-tooling-and-darwin-io.svg — Upstream package-operation ownership
 [[file:59.76-embedded-tooling-and-darwin-io.svg]]
