@@ -1,0 +1,66 @@
+#+TITLE: SPEC Source Closure and Architecture Admission
+#+LANGUAGE: en
+
+* Source ownership
+
+The locked SPEC revision 38af276ffbd17a378408bb7886e8122faadcbcfd does not
+provide CedarPooSpec.Gateway.ZeroTrust. Its inherited LeanPoo revision
+71609603d45bead8eec6375471991a4f76dbb430 also predates the required functional
+Contract and Session surface. This is a source-closure gap, not a misspelled
+search path. The ordinary architecture entry must reject it; it must not use
+a research checkout, an empty model or copied semantic declarations as fallback.
+
+The published SPEC revision c4fd32c820911dcc3468c92af8634c545a533686 provides
+the required modules and inherits LeanPoo ed1a2834991b44e8b8e7f47d739229edd599da9b.
+An isolated persistent candidate resolves that complete producer closure.
+The Cedar, Batteries and Lean toolchain identities remain unchanged. The
+historical 9489ee91ac26562bd0e34275d5bd78165ed627f5 experiment is not selected
+as a new baseline: it is older than the published merged source.
+
+* Existing proof composition
+
+The candidate changes six consumer references from CompoundAuthorization to
+the producer's Authorization.Compound namespace. It does not add a semantic
+compatibility layer. The existing publication/provider recovery modules are
+registered as a Lake library, and the existing ZeroTrustEnrichment consumer
+imports them. SPEC remains the semantic owner; Quint remains the schedule and
+counterexample owner. No second Zero Trust or authorization model is created.
+
+The standard framework/publication/Weaver bridge build completes 385 jobs.
+The existing enrichment composition completes 388 jobs. These are Lean source
+composition results, not proof of actual Rust sending, durable host storage or
+Gerbil build/test availability. Their host premises remain explicit.
+
+#+CAPTION: The core Zero Trust architecture remains a consumer of the generic SPEC framework.
+[[file:59.51-zero-trust-architecture.svg]]
+
+* Whole architecture admission remains separate
+
+The persistent candidate exports all 115 views and checks their source binding,
+node/edge coverage, readable text and original resource cleanup obligations.
+Browser validation retains the original 30-second complete-view bound and
+5-second source/resource hooks. Failed runs, including reuse of a page's load
+lifecycle, remain evidence. A passing source build or successful SVG export is
+not a passing whole architecture gate.
+
+The bounded-width project composition uses the public Library for model
+interpretation, theme/font resources and export. Captured SysML parent identity
+is authoritative, including root nodes. A raw D2 scene grouping is explicitly
+marked presentation containment when the Library supplies no semantic parent;
+it cannot establish inheritance or execution authority. Tests reject invented
+captured parents and substituted relationship endpoints.
+
+Every Library export retains its SVG, PNG, HTML and provenance receipt. The
+830-pixel validation retains all DOM, font, overlap, source/hash and independent
+image-decode assertions. A redundant additional full-page raster is not an
+assertion. Removing it does not remove any view or validation condition.
+
+* Promotion boundary
+
+The candidate is isolated under the persistent research checkout. Its dependency
+closure and renderer changes are not promoted while the complete gate fails.
+The maintained dependency pins therefore remain unchanged in this delivery.
+Do not report the locked baseline as qualified, or treat the candidate's 115-view
+cohort as the newer documentation cohort without rerunning the complete entry.
+Production code still cannot import dev assets; production artifacts belong in
+prod. Raw failure receipts and research patches stay in the ignored cache.

@@ -3,6 +3,12 @@
 
 * Current implementation
 
+[[file:59.83-spec-source-closure-and-architecture-admission.org][SPEC source closure and architecture admission]] records the actual missing
+modules, isolated producer closure and the still-separate whole-entry gate.
+
+[[file:59.84-quint-preparation-and-completion.org][Quint preparation and package-owned tooling]] separates repeated frontend cost,
+original checks, terminal completion and the unchanged CI limits.
+
 [[file:59.82-semantic-responsibility-allocation.org][Model-first semantic responsibility allocation]] defines Scheme, Cedar/SPEC,
 Go and Rust ownership in the existing SysML parts and typed actions. It separates
 the implemented original-binding checks from the remaining authentic-key issuance gap.

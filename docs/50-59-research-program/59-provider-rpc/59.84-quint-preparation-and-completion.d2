@@ -1,0 +1,130 @@
+...@../../../dev/d2/themes/flow
+vars: {d2-config: {layout-engine: elk; pad: 50}}
+direction: down
+classes: {card: {style.font-size: 24; style.border-radius: 12; width: 420; height: 100}}
+input: Canonical model\nOne source of truth {class: card}
+owner: Official Quint frontend\nParse and typecheck {class: card}
+artifact: Original checks\nInterpreter scenarios / Rust exploration {class: card}
+closing: Evaluator completion\nAwait owned children {class: card}
+exit: Observed CLI exit\nOne terminal result {class: card}
+failed: Invalid or incomplete check\nPreserve the failure {class: card; style.fill: "#f8e9e7"}
+input -> owner: Bind original source
+owner -> artifact: Select checked entry
+artifact -> closing: Execute original checks
+closing -> exit: Observe actual exit
+owner -> failed: Early exit or error
+failed -> closing: Keep failure
+
+vars: {d2-config: {data: {figure: |json
+{
+  "title": "Quint preparation and completion",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How does a check preserve its source and observe completion?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Use the official frontend, preserve every obligation, and observe actual completion."
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.84-quint-preparation-and-completion.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "reading",
+    "workflow-labels"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "input"
+        },
+        {
+          "id": "owner"
+        },
+        {
+          "id": "artifact"
+        },
+        {
+          "id": "closing"
+        },
+        {
+          "id": "exit"
+        },
+        {
+          "id": "failed"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "input": "model",
+      "owner": "decision",
+      "artifact": "obligation",
+      "closing": "pending",
+      "exit": "evidence",
+      "failed": "question"
+    },
+    "roles": {
+      "input": "default",
+      "owner": "default",
+      "artifact": "default",
+      "closing": "default",
+      "exit": "default",
+      "failed": "counter"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+}}}
