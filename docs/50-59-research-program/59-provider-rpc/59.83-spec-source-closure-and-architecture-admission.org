@@ -7,24 +7,24 @@ The maintained dependency now imports Gateway.ZeroTrust through the SPEC
 owner's release-aligned declaration and lock. LeanPoo v0.1.2 is inherited from
 that owner, not overridden by Weaver. The ordinary Lake targets include the
 Weaver enrichment and architecture environment. See
-[[file:59.86-release-zero-trust-integration.org][Release integration]] for exact source identities, native qualification and
+[[file:59.86-release-zero-trust-integration.org][Release integration]] for package ownership, native qualification and
 remaining implementation premises. The observations below describe the former
 baseline and isolated experiment; they are not the current dependency pin.
 
 * Historical source ownership
 
-The locked SPEC revision 38af276ffbd17a378408bb7886e8122faadcbcfd does not
-provide CedarPooSpec.Gateway.ZeroTrust. Its inherited LeanPoo revision
-71609603d45bead8eec6375471991a4f76dbb430 also predates the required functional
+The former locked SPEC source did not
+provide CedarPooSpec.Gateway.ZeroTrust. Its inherited LeanPoo source
+also predated the required functional
 Contract and Session surface. This is a source-closure gap, not a misspelled
 search path. The ordinary architecture entry must reject it; it must not use
 a research checkout, an empty model or copied semantic declarations as fallback.
 
-The published SPEC revision c4fd32c820911dcc3468c92af8634c545a533686 provides
-the required modules and inherits LeanPoo ed1a2834991b44e8b8e7f47d739229edd599da9b.
+The subsequently published SPEC source provided
+the required modules and declared its corresponding LeanPoo dependency.
 An isolated persistent candidate resolves that complete producer closure.
 The Cedar, Batteries and Lean toolchain identities remain unchanged. The
-historical 9489ee91ac26562bd0e34275d5bd78165ed627f5 experiment is not selected
+historical isolated experiment is not selected
 as a new baseline: it is older than the published merged source.
 
 * Existing proof composition

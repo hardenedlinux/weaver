@@ -1,0 +1,148 @@
+#+TITLE: 59.87 SPEC Upgrade and Gateway Delivery Plan
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Maintained baseline
+
+Weaver consumes the inspected source of the existing
+[[https://github.com/hardenedlinux/cedar-poo-spec/pull/12][SPEC PR 12]], which remains draft, not a published release. Rust and Lean
+select the same producer through [[file:../../../Cargo.toml][Cargo.toml]], [[file:../../../Cargo.lock][Cargo.lock]],
+[[file:../../../dev/proofs/cedar/lakefile.toml][lakefile.toml]] and [[file:../../../dev/proofs/cedar/lake-manifest.json][lake-manifest.json]]. SPEC owns its inherited LeanPoo
+dependency. [[file:../../../gerbil.pkg][gerbil.pkg]] declares the Scheme library dependency; its producer
+owns the transitive declarations. These package mechanisms own versions and
+resolved identities; this document does not duplicate their dependency ledger.
+Other Weaver dependencies and the selected Scheme cohort remain unchanged.
+Continue delivery in [[https://github.com/hardenedlinux/weaver/pull/1][Weaver PR 1]]; do not open another integration PR.
+
+Compared with Weaver's previous SPEC selection, this revision changes
+typed SDK preparation, source-body correspondence, literal-context construction
+and canonical-schema hashing. It also includes producer native-build lifecycle
+and CI fixes. The Gateway and generic ZeroTrust Lean definitions are unchanged
+in this comparison. A newer source revision therefore does not establish a new
+security theorem, a qualified deployment, or a Gateway performance improvement.
+
+The source preparation reuse is keyed by the complete immutable source. Typed
+body matching has an independent parser/fallback; schema-directed contexts keep
+their original interpretation. These paths must not become caches of current
+authorization, schema admission, source authority, budget, history or fences.
+Weaver continues to compare the candidate and captured predecessor against the
+actual publication. Canonical schema identity is not interchangeable with the
+original publication command's byte commitment.
+
+* Execution and proof ownership
+
+| Owner | Responsibility | Evidence boundary |
+|-------+----------------+-------------------|
+| Agentic AI Lab / Scheme | Typed configuration, Governor selection, Governance assessment and complete Policy/source-asset projection | Standard gerbil build/test and real rooted FFI compilation |
+| Cedar / SPEC | Policy meaning, schema-bound replay and Gateway.ZeroTrust contracts | Actual locked Rust APIs and imported Lean declarations |
+| Go | Configuration admission, cloud identity, authenticated gRPC, authority publication, Routing proposals and unified validation | Real service orchestration, race tests and property framework |
+| Rust / MRR Data | Authoritative Turso transactions, current-use admission, budget/claim retention and final provider bytes | Durable state and observed transport effects, including ambiguity |
+| Quint | Interleavings, bounded fault schedules and unsafe counterexamples | Explicit finite domains; no unbounded execution claim |
+| Lean | Composition and preservation under stated host premises | Imported SPEC laws; no claim of compiled-code correctness |
+| SysML / Library | Runtime allocation and source-bound architecture interpretation | Lean JSON through Go/OpenSysML into upstream rendering |
+
+* Ordered delivery gates
+
+** S1: Qualify the exact dependency upgrade
+
+Keep the Rust and Lean SPEC revisions identical, including their locks. Run the
+existing complete Policy/FFI tests and strict Clippy gate, maintained Lake
+targets, complete Go race suite and clean-source check-policy. Preserve original
+negative controls for schema substitution, predecessor replacement, named Policy
+IDs, changed receipts and changed preparation cuts. Existing PBT is the primary
+generator; do not substitute a script enumerating convenient examples.
+
+Exit: exact-source receipts identify the upgraded revision and all required
+stages. Earlier passes remain historical evidence. No new compatibility layer,
+authorization interpreter, storage boundary or dependency upgrade is required.
+
+** S2: Close standard Scheme package qualification
+
+Use the retained Agentic AI Lab/Core/POO cohort from
+[[file:59.86-release-zero-trust-integration.org][the release closure record]]. Retry the full existing clean-source check-scheme
+entry after the recorded Ascent clone interruption. Keep dependency preparation,
+module discovery/loading, test execution and natural cleanup separately visible.
+Confirm the corrected upstream module-role imports through actual package build
+and tests, not an AOT-only entry or a manually loaded substitute module.
+
+Exit: standard gerbil build/test, the rooted Scheme/Rust SDK tests, all real Go
+control integration cases, source-currentness and cleanup pass on one stable
+source cut. A preparation failure or a killed test is FAIL. Keep the existing
+runtime and lifecycle gates, all generated cases and host-derived core count.
+Do not use forced exit, package uninstall or a changed dependency pin as a retry.
+
+** S3: Qualify authorization through actual provider effects
+
+Reuse the compiled-program/source-assets cases in
+go/dev/provider_program_deployment_test.go and the existing authenticated relay
+in provider_control_test.go. The actual installed Scheme producer must compile
+the source; no synthetic compiler result can qualify this gate.
+
+| Scenario | Required observable result |
+|----------+----------------------------|
+| Revocation after an allowed response prefix | No further unauthorized range; original exposure retained |
+| Publication or staging response lost after commit | Recover the same operation outcome; no guessed activation or rebased authorization |
+| Provider reads a request prefix, then disconnects | Unknown exposure remains reserved; retry and restart do not duplicate the call |
+| Source or owner changes while a permit waits | Final deciding admission rejects stale authority; no permit from a historical receipt |
+| Concurrent families share a budget/history domain | Shared constraints remain one authority despite aliases or disjoint worker queues |
+
+Inspect provider call counts and actual bytes alongside original task/family,
+reservation, pending outcome and fence. An error response alone does not prove
+the absence of an external effect. Successful enqueue, commit, recovery or
+preflight never supplies an independent send capability. Keep unknown budget
+until existing terminal/accounting evidence resolves it; do not promise
+exactly-once delivery to a non-idempotent external provider.
+
+** S4: Complete the implementation-to-model correspondence
+
+For each S3 transition, map the existing Rust deciding transaction and transport
+boundary to the existing SysML action, Quint transition/counterexample and Lean
+host premise. Reuse PublicationRecovery, ProviderRpc and ZeroTrustEnrichment;
+extend an existing owner only for an observed correspondence gap. Preserve
+required-parent, original committed prefix and current-context obligations.
+
+Exit: reviewers can identify the native producer of every decisive fact and the
+test that falsifies a weakened premise. External identity truth and independent
+all-copy rollback protection remain deployment assumptions unless independently
+supplied. Finite replay and a source hash do not prove either assumption.
+
+Architecture figures continue to describe runtime components, trust boundaries
+and effects. Export actual Lean JSON, join it through Go/OpenSysML, then render
+with the upstream Library. Do not edit D2 as an alternative semantic authority
+or place revision numbers and test verdicts inside runtime figures.
+
+** S5: Measure runtime benefit after semantic acceptance
+
+Use existing crate-owned benches for Policy, ledger, executor and server scopes.
+Compare the previous SPEC selection and this exact revision under matched
+workload, seeds, concurrency, source size and original lifecycle budgets.
+Distinguish source preparation cost, current Cedar evaluation, deciding Turso
+commit, conflict/retry cost and final-send latency. Startup/compiler time is a
+separate diagnostic, not the primary Gateway runtime metric.
+
+Report cold and warm paths, allocation/CPU and tail latency, hot shared-domain
+contention and disjoint-domain concurrency. Retain non-wins. Upstream catalog
+speedups are hypotheses for Weaver; do not claim them as measured Gateway gains.
+No performance change may cache final authorization, split a shared constraint,
+redispatch an ambiguous attempt or refund unknown exposure.
+
+* Current qualification and next decision
+
+The upgraded dependency passes the maintained Lake build (391 jobs), complete
+Policy tests (2 library and 10 unit tests), FFI tests (7 tests including ASP deny)
+and strict Policy/FFI Clippy tests/benches. The complete Go race suite also passes.
+Raw results remain ignored under .cache. Seven affected mapped views pass the
+existing Library source-capture, readability, font and icon checks. Previous
+check-policy and native failures are retained in the
+release closure record; they do not qualify the upgraded native chain.
+
+The next delivery decision is S2/S3 acceptance, not expansion of the feature
+surface. Defer adaptive Routing, additional protocol profiles and new caches
+until this original task-to-final-effect trace is qualified. This plan does not
+declare Scheme end-to-end acceptance or stable performance improvement.
+
+#+CAPTION: Runtime responsibilities and the final execution boundary.
+[[file:../../architecture/diagrams/00c-gateway-runtime.svg]]
+
+#+CAPTION: The imported Zero Trust contract constrains actual Gateway use.
+[[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]

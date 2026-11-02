@@ -1,25 +1,24 @@
 #+TITLE: 59.86 Release Closure and Gateway Zero Trust Integration
 #+LANGUAGE: en
 
+The maintained dependency is now upgraded to the latest inspected owner-review
+head under [[file:59.87-spec-upgrade-and-delivery-plan.org][59.87 SPEC Upgrade and Gateway Delivery Plan]]. Historical failure
+and source-cohort records below retain their original qualification scope.
+
 * Dependency ownership
 
-LeanPoo and its companion Gerbil POO library publish v0.1.2. SPEC and Core
-must inherit those releases through their own declarations. A successful local
+SPEC and Core inherit the published LeanPoo and Gerbil POO releases through
+their own package declarations. A successful local
 checkout of a retired branch commit does not establish ordinary clone/install
 availability. Initial standard preparation failed during checkout, before any
 Weaver package test; it was not a runtime timeout. The former Ascent/Core
 conflict and retired-commit checkout are distinct failures.
 
-| Owner | Selected source | Dependency obligation |
-|-------+-----------------+-----------------------|
-| LeanPoo | v0.1.2 / b29ea0d9d2ffeed0c13b66794fc6d418fd5b0393 | Released proof library |
-| Gerbil POO | v0.1.2 / a84e76c1b1a61de2db52e38ba8d1d8c8671ec601 | Released Scheme object/types/property framework |
-| SPEC | 76381738b9a2afde13c79c36650b025b82b1b979 | Inherits LeanPoo v0.1.2; Cargo and Lake select this same producer |
-| Core | a8030b11417520eec727b4634f180241512ec575 | Inherits Gerbil POO v0.1.2 |
-| Parser | 27b31d2b110363e341b351c0f10d00baec760879 | Inherits the selected Core |
-| Ascent | 96faa6917cc389018fde049455d1d0d0c058beef | Inherits the same Core |
-| Orgize | 5873bffee72e5756fee99e36c91d76eea27bda9c | Scheme and Rust inherit the same Parser |
-| Agentic AI Lab | aeac4f4c12b1722f992da9354695b611d3e0851f | Gitlink, Parser, Ascent and Orgize select that common closure |
+Rust resolves dependencies through [[file:../../../Cargo.toml][Cargo.toml]] and [[file:../../../Cargo.lock][Cargo.lock]].
+Lean resolves its closure through [[file:../../../dev/proofs/cedar/lakefile.toml][lakefile.toml]] and [[file:../../../dev/proofs/cedar/lake-manifest.json][lake-manifest.json]].
+Scheme uses [[file:../../../gerbil.pkg][gerbil.pkg]] and the upstream producers' own package declarations
+and gitlinks. Exact resolved identities belong to these mechanisms and retained
+verification receipts, not a second package inventory in architecture documents.
 
 Owner fixes are retained in the existing owner reviews listed below. The five
 temporary Scheme alignment branches have been deleted after fetching each
@@ -35,12 +34,12 @@ candidate is not the maintained dependency source.
 
 | Owner | Active review | Retention of selected source |
 |-------+---------------+------------------------------|
-| Core | [[https://github.com/tao3k/gebril-yuanxu/pull/19][PR 19]] | a8030b1 retained by merge 6e86abf |
-| Parser | [[https://github.com/tao3k/gerbil-parser/pull/13][PR 13]] | Fast-forward to 27b31d2 |
-| Ascent | [[https://github.com/tao3k/gerbil-ascent/pull/1][PR 1]] | 96faa69 retained by merge 433a8f0 |
-| Orgize | [[https://github.com/tao3k/orgize/pull/18][PR 18]] | Fast-forward to 5873bff |
-| Agentic AI Lab | [[https://github.com/tao3k/agentic-ai-lab/pull/34][PR 34]] | Fast-forward to aeac4f4 |
-| SPEC | [[https://github.com/hardenedlinux/cedar-poo-spec/pull/12][PR 12]] | 7638173 retained by merge 4719381; duplicate PR 13 closed |
+| Core | [[https://github.com/tao3k/gebril-yuanxu/pull/19][PR 19]] | Selected cohort retained by ordinary merge |
+| Parser | [[https://github.com/tao3k/gerbil-parser/pull/13][PR 13]] | Repair fast-forwarded into the existing review |
+| Ascent | [[https://github.com/tao3k/gerbil-ascent/pull/1][PR 1]] | Selected cohort retained by ordinary merge |
+| Orgize | [[https://github.com/tao3k/orgize/pull/18][PR 18]] | Repair fast-forwarded into the existing review |
+| Agentic AI Lab | [[https://github.com/tao3k/agentic-ai-lab/pull/34][PR 34]] | Repair fast-forwarded into the existing review |
+| SPEC | [[https://github.com/hardenedlinux/cedar-poo-spec/pull/12][PR 12]] | Previous selection retained; duplicate PR 13 closed |
 
 Core and Ascent had subsequent peer changes. Their ordinary merges preserve
 those changes, including the active Core dependency and matching replay-proof
@@ -48,7 +47,8 @@ binding. Their latest review heads are not substituted for Weaver's frozen
 release cohort. Ancestry retains the selected cohort without claiming that
 the newer review heads have passed this cohort's qualification. SPEC PR 12
 already contained the same release metadata; its retention merge changes no
-files relative to its preceding head. The selected SPEC pin remains unchanged.
+files relative to its preceding head. The later upgrade selects PR 12's inspected
+head in both downstream locks while preserving the former commit's ancestry.
 Weaver continues exclusively in its existing PR 1. No PR is merged into main.
 
 * Tag resolution and source admission
@@ -132,7 +132,7 @@ source-bytes unit. The complete failure and timing remain in
 changes invalidate its source-currentness stage; no successful sibling stage
 promotes that run. A fresh, stable-source standard run is required after fixes.
 
-On frozen source e26facf, the complete clean-source check-policy passes all 61
+On the preceding frozen source cut, the complete clean-source check-policy passes all 61
 stages. The subsequent standard check-scheme attempt fails in dependency
 preparation: the ordinary Ascent clone reports a connection reset, early EOF
 and invalid index-pack output. Package tests do not start. The preserved receipt

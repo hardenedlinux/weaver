@@ -593,6 +593,12 @@ package ControlActivation {
            qualification and independent registry recovery are separate obligations.
            Cedar source may use official materialized PolicySet JSON to preserve
            named IDs; renderer comments cannot substitute for those identities. */
+        doc /* SPEC may reuse preparation keyed by complete immutable source,
+           typed Policy bodies and canonical schema identity. Such reuse carries
+           no current authorization, owner, budget, history or fence verdict.
+           Canonical schema identity cannot replace the original publication's
+           byte commitment. Final admission retains fresh context and the
+           authoritative deciding transaction after any preparation hit. */
         doc /* Recovery joins one independently retained authority generation and
            committed prefix, not a maximum epoch copied from startup config.
            Epoch/owner, issuance/revocation decisions, original artifact bindings

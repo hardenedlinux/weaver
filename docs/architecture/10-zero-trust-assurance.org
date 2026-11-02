@@ -95,9 +95,9 @@ accepted integrated build. In particular, their declarations differ:
 
 | Selected source | Declared toolchain / dependency | Consequence |
 |-----------------+--------------------------------+-------------|
-| cedar-poo-spec c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 | Lean 4.34.1; Cedar 017c35c3d1f856a0f8b62a66660ee6628870bbcf; LeanPoo ccb94dc44d874050dc8a8ede692bb2afac55ea37 | C7/C12 fix this semantic source closure |
-| POO Flow a74fc2fd63437252175b5a67649ee54b886d3bf4 proof package | Lean 4.31.0; Cedar e9fa9c1e6b636f29b0897d8706bd7aa5eaf06f9a | P9 fixes a different Lean/Cedar closure |
-| POO Flow Cedar Rust bridge | Rust manifest pins cedar-poo-spec c8d1a06 | A Rust dependency pin does not align the separate Lean package or native ABI |
+| cedar-poo-spec historical proof package | Original lean-toolchain and Lake manifest/lock | C7/C12 qualify this semantic source closure |
+| POO Flow historical proof package | Its own lean-toolchain and Lake manifest/lock | P9 qualifies a different Lean/Cedar closure |
+| POO Flow Cedar Rust bridge | Original Rust workspace manifest/lock | A Rust dependency pin does not align the separate Lean package or native ABI |
 | POO Flow Core / Lambda Aitia | Distinct revisions in the source register; Core checkout differs from parent gitlink | Reproduce each owner independently before asserting an integrated closure |
 
 Do not reuse =.olean= files or native Lean objects across toolchains, assume

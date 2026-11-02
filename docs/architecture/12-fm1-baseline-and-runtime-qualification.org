@@ -43,13 +43,11 @@ The cache-copy staging area and Cargo input home both live under that directory;
 no shared owner cache or global package installation was changed. Input cache
 identity does not establish build or semantic correctness.
 
-- cedar-poo-spec: c8d1a0641120cf65e299e8a98f9fe7666ca96ab5.
-- POO Flow: a74fc2fd63437252175b5a67649ee54b886d3bf4.
-- POO Core for the isolated POO parent build:
-  377761072f2e8e39ae03ee26027d1fa5ad80b018, the parent's actual gitlink.
-  The separately reviewed Core 80e2e740 remains a different research snapshot.
-- Exact Cedar, LeanPoo and batteries commits come from each owner's original
-  manifest, with no replacement by the active adjacent cache checkout.
+The historical source selections are retained in the original stage receipts.
+Each owner's package manifest, lock and parent gitlink determine its dependency
+closure; the separately reviewed Core checkout is not interchangeable with the
+parent's declared Core. Do not replace these inputs with an adjacent cache
+checkout or duplicate their revision inventory in this document.
 
 The build environment removes inherited LEAN_PATH/LEAN_SYSROOT and runtime
 artifact overrides, fixes the selected installed compiler and uses local builds
@@ -61,11 +59,11 @@ an accepted closure because another stage passed.
 
 | Owner | Exact selected direct/transitive dependency facts | Scope |
 |-------+--------------------------------------------------+-------|
-| cedar-poo-spec Lean | Lean 4.34.1; Cedar 017c35c3d1f856a0f8b62a66660ee6628870bbcf; LeanPoo ccb94dc44d874050dc8a8ede692bb2afac55ea37; batteries f2effa3d803fda822b1f97b806c47cf2adfbcbc2 | Build CedarPooSpec, Examples and Tests against original manifest |
-| POO Lean | Lean 4.31.0; Cedar e9fa9c1e6b636f29b0897d8706bd7aa5eaf06f9a; batteries fa08db58b30eb033edcdab331bba000827f9f785; PooFlowCoreProof path at parent gitlink | Build PooFlowProof and selected native targets; no use of drifting local cache |
+| cedar-poo-spec Lean | Original lean-toolchain and Lake dependency closure | Build CedarPooSpec, Examples and Tests against original manifest |
+| POO Lean | Original lean-toolchain and Lake closure; PooFlowCoreProof path at parent gitlink | Build PooFlowProof and selected native targets; no use of drifting local cache |
 | Core proof package | Lean 4.31.0; empty external package list at selected Core commit | Path identity is part of the POO proof closure |
-| cedar-poo-spec Rust | Original Cargo.lock contains 203 package records; Cedar Rust 4.12.0; runtime features ipaddr/decimal/datetime | Dev/test closure also includes ASP Rust 9b95fd6744a89f3f38e87f9bda33ea762f1f65e1; count is not feature activation evidence |
-| POO Cedar Rust workspace | Original Cargo.lock contains 265 package records; Cedar Rust 4.12.0; prost 0.14.4; cedar-poo-spec c8d1a06; Gerbil bridge b3eb5dce9bfb1e57c3ce618de46798e360213f6a | Workspace selection/features determine actual graph; its lock is distinct from cedar-poo-spec's own dev/test lock |
+| cedar-poo-spec Rust | Original Cargo.lock and selected runtime features | Dev/test closure also includes ASP Rust; package count is not feature activation evidence |
+| POO Cedar Rust workspace | Original workspace Cargo.toml and Cargo.lock | Workspace selection/features determine actual graph; its lock is distinct from cedar-poo-spec's own dev/test lock |
 
 The isolated all-features metadata commands resolved all 203 and 265 package
 records respectively, offline and locked. The Cedar policy feature sets were

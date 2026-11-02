@@ -64,11 +64,11 @@ alone does not prove that an embedded VM or arbitrary descendant has quiesced.
 
 * Source-grounded blockers retained
 
-The inspected Lab source declares Core gitlink
-=3a4648aed6d85a4edacedd8a96ed756a611714bc=. Its pinned Ascent dependency declares
-Core =0353d86ac017442506e89617e86e6ef778a3111e=. Package installation selected
-the latter in the retained cold attempt. Upstream must reconcile this producer
-closure; downstream source admission refuses a mixed selection.
+The historical Lab source and its pinned Ascent dependency declared different
+Core sources. Package installation selected the Ascent declaration in the
+retained cold attempt. This mismatch requires upstream closure reconciliation;
+downstream source admission refuses a mixed selection. The original dependency
+identities remain in that attempt's receipt and package declarations.
 
 That attempt also hit Ascent's committed 180-second build limit, returning
 encoded build status 31744 (124) through dependency-manager exit 70. It never

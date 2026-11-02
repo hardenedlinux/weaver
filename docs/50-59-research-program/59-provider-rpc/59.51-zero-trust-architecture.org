@@ -171,13 +171,11 @@ Native materialization of the claim and complete family reservation list under
 the final transaction remains an explicit refinement premise, not a theorem
 about Rust or SQLite supplied by the SPEC library.
 
-The reviewed new models are in open PR #8 at commit
-=9489ee91ac26562bd0e34275d5bd78165ed627f5=. Upstream main and Weaver's
-existing runtime/proof pin remain =38af276ffbd17a378408bb7886e8122faadcbcfd=.
-Thus current runtime enforcement and default standalone proof checks are
-landable now; the new upstream Lean consumer remains isolated candidate
-qualification until an explicit dependency promotion. Do not label this as a
-default fixed-pin ZeroTrust import or complete deployment qualification.
+The earlier review qualified these models only in an isolated candidate.
+The maintained Rust and Lean packages now consume the producer through their
+normal declarations and locks; see
+[[file:59.87-spec-upgrade-and-delivery-plan.org][the current integration plan]]. Package resolution does not establish complete
+deployment qualification or discharge the native refinement premises above.
 
 ** Provider refinement baseline receipt
 
