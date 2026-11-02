@@ -71,64 +71,96 @@ and linked strong-root exports. The separate Tokio subprocess refactor alone
 does not implement it. A frozen Gerbil bridge consumer cannot be described as
 consuming an unpublished or newer capability.
 
-* Existing implementation and remaining admission
+* Implemented upstream package operations
 
-The published PR #18 revision and the unpublished package-tools draft have
-separate evidence. The published revision's compiler facade still launches
-bootstrap commands. The frozen working-tree draft adds =package-tools= with
-=GerbilRuntime::build_package= and =test_package=. These call checked C exports;
-Scheme loads =build.ss= in a scoped expander context and calls the official
-GxTest entry. This is an implementation to audit and finish, not a reason to
-invent =ToolingSession=, an alternate test harness or a consumer-owned protocol.
-The source cut is retained under the persistent investigation directory; its
-hashes identify unpublished source and do not establish runtime acceptance.
+PR #18 now publishes the opt-in =package-tools= implementation at
+=276c47013bcf3afe1c370f5d9d5b1f82f9cdfe29=. The working-tree draft is no longer
+the only source. The existing =GerbilRuntime= exposes build_package,
+test_package, run_package_main, stage_package_program and immutable package
+path binding. Checked C exports invoke the actual build.ss and official GxTest
+procedures. There is no ToolingSession or frontend-command fallback.
 
-| Owner | Responsibility |
-|-------+----------------|
-| Existing GerbilRuntime | Live VM, owner-thread check, direct package operation and final cleanup |
-| gerbil-scheme-sys | Checked UTF-8 spans, C transport status and call-scoped borrows |
-| Scheme package adapter | Scoped expander context, build.ss main, official GxTest main and exception containment |
-| Package build.ss | Modules, PackageSpec, pkg-config dependencies and compilation policy |
-| AOT build owner | Complete tooling image, source provenance, paired compiler and canonical archive |
-| Tokio coordination | Host I/O and owned backend work; cancellation cannot abandon an entered foreign call |
-| MRR / Weaver | Call the upstream API and check actual artifacts and test evidence |
+The image admits compiler, expander, core and GxTest metadata through the
+existing program archive. Generated-SCM validation precedes tooling-image
+selection. The C entry also checks the exact initialized tooling linker;
+an arbitrary live VM is insufficient. Staging preserves the previous
+per-module host-layout argument and adds a distinct link-options keyword.
 
-The public operation must execute in the existing host process, not wrap a
-=Command= that launches =gerbil build=, =gerbil test= or =gxi=. One-time image
-bootstrap and actual C compiler/linker subprocesses are separate, necessary
-build work. This boundary alone is not evidence of lower wall-clock cost.
-Keep cold image construction, warm calls and complete shutdown measurements
-separate. Resolve parallelism from the executing machine rather than adding
-consumer controls or compiling a fixed core count into the bridge.
+A real fixture now compiles its module, checks artifacts and the same process
+identity, runs passing and deliberately failing official tests, rejects a
+missing directory and immutable-prefix replacement, cancels before entry,
+observes cancellation after an entered test, reuses the owner, stages a complete
+program manifest, invokes actual build.ss arguments and rejects malformed UTF-8
+and post-close calls. The complete read-only source check naturally exits in
+2.19 seconds with 12 Tokio workers and passes strict Clippy. That receipt
+did not establish post-cleanup environment storage lifetime; the stronger
+counterexample below supersedes that narrow host-state claim. The original
+15-second wall and five-second output-idle gates remain. Image construction
+and full consumer qualification are separate receipts.
 
-The draft is not yet accepted. Its package-tools/external-program feature
-combination must not expose operations without the matching linked module
-closure. Generated-SCM provenance must remain checked on the tooling-image
-path. An arbitrary initialized VM is not proof that package-tools exports are
-available. The link-options extension must also preserve the existing
-per-module host-layout declaration, rather than reinterpret its positional
-argument. These are upstream image/build obligations, not new MRR flags.
+The original setup failure required Gambit's supported installation mapping
+for both the host VM and child gsc. Environment restoration must use the
+single-argument Gerbil setenv to remove an absent variable. Argument
+materialization belongs inside the Scheme exception boundary; a misbound
+C-FFI helper previously escaped the foreign call and produced SIGSEGV.
+Those failures and an Apple linker bus error remain in the ignored cache.
+No compiler flag, timeout, dependency pin or core count is weakened to accept them.
 
-Build completion requires the requested artifacts. A returned zero from GxTest
-requires the expected nonempty inventory and failure detection; do not replace
-GxTest semantics with another harness. Preserve errors, missing tests and
-exceptions as failures. Freeze source and dependency inputs for the operation;
-a canonical path alone does not prevent replacement or ABA. This is trusted
-build-host tooling, not a sandbox for arbitrary Scheme package code.
+| Owner | Implemented responsibility |
+|-------+----------------------------|
+| Existing GerbilRuntime | One live affine VM, owner-thread checks, direct package operations and final cleanup |
+| gerbil-scheme-sys / C boundary | Borrowed UTF-8/array validation, matching tooling image, transport status and host-state restoration |
+| Scheme package adapter | Scoped expander context, immutable prefix, standard environment restoration and official build/GxTest calls |
+| Package build.ss | Module declaration, PackageSpec, pkg-config and compilation policy |
+| AOT build owner | Bootstrap, generated source provenance, complete module manifest and archive |
+| Official Gambit compiler invocation | Compiler subprocess status and child reaping during an entered Scheme operation |
+| Tokio test supervisor | Actual output, unchanged deadlines, process exit and failed-call cleanup |
+| MRR / Weaver consumer | Expected artifacts, complete nonempty inventory and independent full-entry qualification |
 
-Keep queue cancellation distinct from cancellation after foreign entry. An
-entered call retains its live owner and borrowed inputs until actual return
-and backend drain; dropping a Tokio waiter cannot acknowledge cleanup. Check
-repeated calls, real pass/fail suites, descriptor/signal state, directory and
-environment restoration, and natural process exit. A marker emitted before VM
-destruction does not prove shutdown. Cross-platform acceptance and complete
-MRR entry evidence remain separate from focused bridge tests.
+The cancellation flag is monotonic for a pending call. Its acquire load is
+the entry fence. Cancellation before that point performs no Scheme work;
+a later cancellation retains the result until actual foreign return. Dropping
+a waiter cannot declare the owner stopped, erase a failure or roll back artifacts.
+The direct synchronous API does not claim prompt preemption of arbitrary Scheme.
 
-Earlier session/backend-callback experiments are historical investigation,
-not the authoritative API. A callback protocol or compiler-carrier rewrite is
-not required by this architecture. Reuse official Scheme behavior first; any
-necessary backend integration needs its own demonstrated gap and upstream
-ownership. See [[file:59.84-quint-preparation-and-completion.org][current published CI and retained failures]].
+This remains trusted, exclusive build-host tooling. Package code can affect
+process-global state; unrelated subprocess/environment access cannot overlap
+an entered call. A fresh expander context does not guarantee fresh evaluation
+of a mutable source cut. Official GxTest suite objects can retain subtests over
+repeated calls. Freeze inputs and require a new host for a different source cut;
+zero status alone never establishes a complete nonempty test inventory.
+
+MRR's consumer adapter is being connected to the published API for package
+build, program staging, declared link projection and official tests. The old
+runtime binding pin is unchanged. The full MRR entry, restart/cleanup evidence
+and both platform CI results are not implied by the fixture. Weaver's frozen
+production dependency likewise does not gain an upstream feature by documentation.
+
+Earlier session/backend-callback experiments are historical investigation.
+They are not required API layers. Keep semantic proof ownership in SPEC/Lean
+and lifecycle ordering in the existing Quint models; these implementation
+checks add evidence rather than another semantic model.
+
+** Host environment lifetime counterexample and repair
+
+Darwin CI at =6552c7f= printed its cleanup marker and subsequently crashed.
+A retained local counterexample allocates ordinary Rust buffers after VM
+cleanup and then reads =vars_os=. It reproduces SIGSEGV in =strlen= against
+an overwritten environment pointer. This is not a deadline or CPU-count issue.
+Gambit's [[https://github.com/gambit/gambit/blob/master/lib/os_shell.c][shell-module cleanup]] frees an extended =environ= pointer table without
+replacing the process pointer. Restoring individual variable values is insufficient.
+
+Upstream =ad8ac98cd75c92dbe5c837ab690adade010088cd= repairs the existing C
+cleanup boundary: capture a complete owned environment before teardown, let
+Gambit release its table, then transfer the surviving copy to host-process
+lifetime. Allocation failure refuses cleanup acknowledgement. No forced exit,
+concurrent environment access or zero-retained-storage claim is admitted.
+The strengthened fixture checks exact environment preservation after allocation
+churn and naturally exits in 1.82 seconds with 12 workers. Strict Clippy passes.
+The 15-second wall and five-second idle limits are unchanged. The negative
+crash report and positive transcript remain in ignored persistent cache.
+This local repair does not substitute for the complete MRR inventory or
+the new exact-head Darwin and Ubuntu CI results.
 
 * Authorized Agentic AI Lab source migration
 

@@ -276,6 +276,11 @@ package ControlActivation {
            strong-root C ABI. Build admission requires explicit package-relative
            artifact expectations; test admission must reject an empty successful
            harness. Scheme retains compiler, PackageSpec and gxtest semantics.
+           The admitted tooling linker identity is checked at foreign entry.
+           Package paths bind once; scoped standard environment values restore
+           on failure as well as success. Official Gambit invocation owns compiler
+           child status during entered Scheme work; Tokio supervision observes
+           output and natural host completion. It is not a replacement compiler.
            A foreign borrow cannot outlive its owner call. Compiler backend
            integration must preserve official build/test semantics and copy any
            argv retained asynchronously. A new callback protocol, compiler
@@ -285,7 +290,12 @@ package ControlActivation {
            Queued cancellation refuses entry; entered cancellation returns only
            after actual foreign completion and child drain. It does not undo
            generated artifacts or admit premature VM cleanup. Final close consumes
-           the one-shot owner; a finalized VM cannot be resurrected. */
+           the one-shot owner; a finalized VM cannot be resurrected.
+           Final host-state acceptance includes valid process environment storage
+           after Gambit teardown and subsequent host allocation and environment
+           reads. Restoring variable values or printing a cleanup marker alone
+           cannot establish that lifetime. Environment access is exclusive during
+           tooling and teardown; retained host storage survives native cleanup. */
         doc /* MRR's explicitly authorized source migration consumes the renamed
            Agentic AI Lab package and its owned Yuanxu Core gitlink. Generic Core
            role and Flow interfaces belong to Yuanxu; application Query, Search
