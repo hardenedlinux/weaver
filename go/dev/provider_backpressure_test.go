@@ -7,7 +7,6 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -42,42 +41,10 @@ func observedServer(t *testing.T) string {
 		cmd.Dir = root(t)
 		var stderr bytes.Buffer
 		cmd.Stderr = &stderr
-		output, err := cmd.StdoutPipe()
+		var err error
+		observedBuild.binary, err = buildCargoExecutable(cmd, cargoTarget{Name: "weaver_server", Kind: "lib", Test: true})
 		if err != nil {
-			observedBuild.err = err
-			return
-		}
-		if err = cmd.Start(); err != nil {
-			observedBuild.err = err
-			return
-		}
-		decoder := json.NewDecoder(output)
-		for {
-			var artifact struct {
-				Reason     string  `json:"reason"`
-				Executable *string `json:"executable"`
-				Target     struct {
-					Name string `json:"name"`
-				} `json:"target"`
-				Profile struct {
-					Test bool `json:"test"`
-				} `json:"profile"`
-			}
-			if err = decoder.Decode(&artifact); err == io.EOF {
-				break
-			} else if err != nil {
-				observedBuild.err = err
-				break
-			}
-			if artifact.Reason == "compiler-artifact" && artifact.Target.Name == "weaver_server" && artifact.Profile.Test && artifact.Executable != nil {
-				observedBuild.binary = *artifact.Executable
-			}
-		}
-		if err = cmd.Wait(); err != nil {
 			observedBuild.err = fmt.Errorf("observed test build: %w: %s", err, stderr.String())
-		}
-		if observedBuild.binary == "" && observedBuild.err == nil {
-			observedBuild.err = errors.New("server test artifact missing")
 		}
 	})
 	if observedBuild.err != nil {

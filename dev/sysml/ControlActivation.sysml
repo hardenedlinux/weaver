@@ -240,6 +240,10 @@ package ControlActivation {
            Cargo invalidates staging when its target pkg-config environment or
            producer link declaration changes. Discovery is build-time work and
            grants no Policy, publication, consumption or final-send authority.
+           Test deployment copies the executable reported by Cargo for the exact
+           binary or library-test target and observes the real child exit. A
+           conventional target/debug path is not an artifact identity; custom
+           Cargo output directories must not select a stale deployment image.
            Gerbil build-host
            Cellar paths are not deployment authority. Preserve ABI, existing
            compiler flags and pinned Gerbil identity; successful archive compilation

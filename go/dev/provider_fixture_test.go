@@ -46,11 +46,11 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	repo := filepath.Clean(filepath.Join(filepath.Dir(source), "../.."))
-	cmd := exec.Command("cargo", "build", "-p", "weaver-server", "--features", providerRuntimeFeatures, "--locked", "--offline")
+	cmd := exec.Command("cargo", "build", "-p", "weaver-server", "--bin", "weaver-server", "--features", providerRuntimeFeatures, "--locked", "--offline", "--message-format=json-render-diagnostics")
 	cmd.Dir = repo
-	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
+	executable, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver-server", Kind: "bin"})
+	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -60,7 +60,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	serverBinary = filepath.Join(directory, "weaver-server")
-	digest, err := publishProviderImage(filepath.Join(repo, "target/debug/weaver-server"), serverBinary)
+	digest, err := publishProviderImage(executable, serverBinary)
 	if err != nil {
 		os.RemoveAll(directory)
 		fmt.Fprintln(os.Stderr, err)
