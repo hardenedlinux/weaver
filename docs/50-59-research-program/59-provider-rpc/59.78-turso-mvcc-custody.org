@@ -161,3 +161,21 @@ This is a one-view receipt, not full SPEC/architecture admission. Earlier scoped
 render attempts retained missing-out-of-scope-capture and existing-log-name
 failures; explicit selection and per-invocation proof directories address these
 without accepting a missing imported security declaration.
+
+At committed source =c5c807650199608659cbcd94040a0d3c0718774c=, the ordinary
+=go -C go run ./cmd/weaver-dev -clean-source check-storage= entrypoint passes all
+seventeen stages: architecture, workspace types, format, native/PBT and ASP,
+strict Clippy, streaming and Turso/MVCC Quint, both Lean JSON owners, the full
+race-enabled Provider suite, source-currentness and committed-source checks
+before/after. The host exposes twelve CPUs and the builds use twelve jobs.
+All Go packages also pass =go test -race -count=1 ./...=.
+
+The first unified run failed architecture compilation because its reused Go
+cache alias referred to missing standard-library archives. The preserved failure
+receipt is distinct from the subsequent complete PASS with the entrypoint's own
+real cache directory. This isolates acceptance from the shared-cache failure;
+it does not establish that failure's operating-system cause or a cold-runtime
+performance claim. No vet check, dependency pin or timeout was relaxed. The
+following change records this receipt only; runtime, proof and model sources
+remain those of the admitted commit. Raw and structured receipts remain ignored
+under =.cache= and are not promoted into tracked execution logs.
