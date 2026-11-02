@@ -234,6 +234,12 @@ package ControlActivation {
         doc /* Hosted dynamic-library discovery uses the package manager's
            declared PackageSpec pkg-config dependencies as producer-owned link inputs.
            CI must not inject linker selection or library paths through RUSTFLAGS.
+           The SDK package build and low-level staging share one native dependency
+           declaration. Rust consumes its compiler manifest and rejects missing or
+           incorrectly typed libraries; Weaver does not rediscover OpenSSL paths.
+           Cargo invalidates staging when its target pkg-config environment or
+           producer link declaration changes. Discovery is build-time work and
+           grants no Policy, publication, consumption or final-send authority.
            Gerbil build-host
            Cellar paths are not deployment authority. Preserve ABI, existing
            compiler flags and pinned Gerbil identity; successful archive compilation

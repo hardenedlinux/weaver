@@ -79,6 +79,43 @@ package failure or a killed test is FAIL. Keep the existing
 runtime and lifecycle gates, all generated cases and host-derived core count.
 Do not use forced exit, package uninstall or a changed dependency pin as a retry.
 
+*** Producer-owned native link inputs
+
+The observed missing-libcrypto failure originates in a low-level SDK staging
+path that omitted the package owner's pkg-config declaration and retained an
+obsolete installation directory from Gerbil metadata. Resolve this at the SDK
+owner: package build and staging must share one declaration. Weaver consumes the
+resulting manifest, preserves the Rust archive availability/static/dynamic checks
+and records target pkg-config environment changes as Cargo build inputs. Do not
+add a downstream library locator, compatibility path, runtime probe or another
+package installer. The host supplies its target package metadata search path;
+that search path does not select or repair the C compiler/linker.
+
+Acceptance requires ordinary low-level staging without consumer-supplied library
+paths, unchanged explicit flag ordering, rejection of missing target metadata,
+the generated-source provenance gate and the actual Weaver FFI/provider tests.
+Build-input correctness does not establish a ZeroTrust theorem. Existing Lean
+host premises and Quint execution transitions remain unchanged; successful
+archive construction cannot supply a grant or resolve unknown exposure.
+
+The upstream repair is delivered through the existing SDK PR. Its standard
+package build, three Scheme regression cases, 29 Rust library cases, 19 Rust
+integration cases and strict Clippy passed locally. The seven pre-existing
+ignored Rust cases remain ignored. Generated sources were rebuilt through the
+upstream regeneration entry and their provenance gate passed. Raw successes,
+earlier failures and the package-manager lock update are retained under ignored
+=.cache/sdk-link-contract/=, not committed as source.
+
+The separate Weaver standard-package experiment remains FAIL: all four complete
+trials reached the unchanged 15-second deadline. One trial emitted the harness
+OK marker before supervision killed the process; this is not natural-exit
+acceptance. A one-second OS sample during another trial observed dynamic loading
+and dyld image bookkeeping around the fourth second. This identifies work before
+test completion, not a sufficient cause for every deadline failure. Concurrent
+host workloads and sampling prevent treating these trials as controlled cold
+performance comparisons. Do not infer an exit-only defect, lower runtime cost,
+or provider-send correctness from these observations.
+
 ** S3: Qualify authorization through actual provider effects
 
 Reuse the compiled-program/source-assets cases in
