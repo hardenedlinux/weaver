@@ -398,6 +398,7 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.76-embedded-tooling-and-darwin-io.svg' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.77-mrr-turso-storage.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.78-turso-mvcc-custody.org' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.79-turso-final-domains.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.77-mrr-turso-storage.d2' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.77-mrr-turso-storage.svg' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.75-complete-entry-and-output-contract.d2' : File;

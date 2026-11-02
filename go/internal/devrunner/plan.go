@@ -118,6 +118,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"storage-workspace-types", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
 			{"storage-rust-tests", "cargo", []string{"test", "-p", "weaver-ledger", "-p", "weaver-execution", "--locked", "--offline"}},
 			{"storage-rust-clippy", "cargo", []string{"clippy", "-p", "weaver-ledger", "-p", "weaver-execution", "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
+			{"storage-final-benchmark", "cargo", []string{"bench", "-p", "weaver-ledger", "--bench", "gateway", "--locked", "--offline", "--", "ledger/final_family_pair"}},
 		}
 		for _, stage := range Plan(goBinary) {
 			if stage.Name == "lean" || stage.Name == "lean-stream" || stage.Name == "quint-stream-tests" || stage.Name == "quint-stream-safety" || stage.Name == "turso-atomicity-tests" || stage.Name == "turso-atomicity-safety" || stage.Name == "turso-mvcc-tests" || stage.Name == "turso-mvcc-safety" {

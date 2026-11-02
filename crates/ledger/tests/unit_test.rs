@@ -2,6 +2,8 @@
 mod concurrency;
 #[path = "unit/execution_exposure.rs"]
 mod execution_exposure;
+#[path = "unit/final_domains.rs"]
+mod final_domains;
 #[path = "unit/fixtures.rs"]
 mod fixtures;
 #[path = "unit/mvcc.rs"]

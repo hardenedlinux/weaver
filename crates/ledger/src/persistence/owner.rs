@@ -5,7 +5,7 @@ use std::{
     collections::BTreeMap,
     fs::{File, OpenOptions},
     path::{Path, PathBuf},
-    sync::{Arc, Mutex, OnceLock, RwLock, Weak},
+    sync::{Arc, Mutex, OnceLock, RwLock, Weak, atomic::AtomicBool},
 };
 
 /// Explicit storage profile. Existing nonempty databases are never converted.
@@ -19,6 +19,7 @@ pub(super) struct Owner {
     pub journal: Journal,
     pub gate: RwLock<()>,
     pub families: [Mutex<()>; 64],
+    pub ledger_initialized: AtomicBool,
     // Drop the engine before releasing process custody. Never unlink this file.
     _custody: File,
 }
@@ -104,6 +105,7 @@ pub(super) fn open(path: &Path, requested: Option<Journal>) -> driver::Result<Ar
         journal,
         gate: RwLock::new(()),
         families: std::array::from_fn(|_| Mutex::new(())),
+        ledger_initialized: AtomicBool::new(false),
         _custody: custody,
     });
     owners.insert(path, Arc::downgrade(&owner));

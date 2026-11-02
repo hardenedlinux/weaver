@@ -46,7 +46,8 @@ impl Ledger {
         write: impl FnOnce(&[u8]) -> WriteObservation,
     ) -> Result<WriteObservation> {
         verify_binding(&self.session, owner, &permit)?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx =
+            crate::persistence::begin_family(&mut self.connection, &owner.family).map_err(db)?;
         let row = active_range(&tx, &permit)?;
         let contract = state::contract(&tx, &permit.family, &permit.node)?;
         let guarded = verify_owner(&tx, &self.session, owner).and_then(|()| {

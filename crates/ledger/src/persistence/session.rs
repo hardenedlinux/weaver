@@ -54,6 +54,22 @@ impl Session {
             poisoned: AtomicBool::new(false),
         })
     }
+    /// Initialize this live MVCC owner's ledger once; this never caches authorization.
+    pub(crate) fn initialize_ledger(&mut self) -> driver::Result<()> {
+        self.require_quiescent()?;
+        let owner = self.owner.clone();
+        let mvcc = owner.journal == super::Journal::Mvcc;
+        if mvcc && owner.ledger_initialized.load(Ordering::Acquire) {
+            return Ok(());
+        }
+        let transaction = super::begin(self)?;
+        if !mvcc || !owner.ledger_initialized.load(Ordering::Acquire) {
+            script(&transaction, crate::schema::SCHEMA)?;
+        }
+        transaction.commit()?;
+        owner.ledger_initialized.store(true, Ordering::Release);
+        Ok(())
+    }
     /// Refuse reuse after an unresolved or failed transaction.
     pub fn require_quiescent(&self) -> driver::Result<()> {
         if self.poisoned.load(Ordering::Acquire) || !self.connection.is_autocommit()? {

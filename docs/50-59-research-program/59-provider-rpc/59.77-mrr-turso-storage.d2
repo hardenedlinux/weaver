@@ -6,7 +6,7 @@ vars: { d2-config: { data: { figure: |json
     "engineering",
     "weaver"
   ],
-  "title": "Parallel admission. Current final use.",
+  "title": "Independent effects. One authority order.",
   "purpose": "architecture",
   "kind": "system",
   "language": "en",
@@ -76,7 +76,8 @@ vars: { d2-config: { data: { figure: |json
       "n2": "decision",
       "n3": "capture",
       "n4": "decision",
-      "n5": "pending"
+      "n5": "decision",
+      "n6": "pending"
     },
     "roles": {
       "n0": "semantic",
@@ -84,7 +85,8 @@ vars: { d2-config: { data: { figure: |json
       "n2": "policy",
       "n3": "execution",
       "n4": "policy",
-      "n5": "pending"
+      "n5": "publication",
+      "n6": "pending"
     },
     "edgeLabels": false,
     "graph": {
@@ -99,31 +101,37 @@ vars: { d2-config: { data: { figure: |json
         {
           "id": "n1",
           "layoutOptions": {
-            "elk.partitioning.partition": "0"
+            "elk.partitioning.partition": "1"
           }
         },
         {
           "id": "n2",
           "layoutOptions": {
-            "elk.partitioning.partition": "1"
+            "elk.partitioning.partition": "2"
           }
         },
         {
           "id": "n3",
           "layoutOptions": {
-            "elk.partitioning.partition": "1"
+            "elk.partitioning.partition": "3"
           }
         },
         {
           "id": "n4",
           "layoutOptions": {
-            "elk.partitioning.partition": "2"
+            "elk.partitioning.partition": "4"
           }
         },
         {
           "id": "n5",
           "layoutOptions": {
-            "elk.partitioning.partition": "2"
+            "elk.partitioning.partition": "5"
+          }
+        },
+        {
+          "id": "n6",
+          "layoutOptions": {
+            "elk.partitioning.partition": "6"
           }
         }
       ],
@@ -139,15 +147,16 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::storage",
-    "modelHash": "98283dd9f62b400f621ceb7377cc388c0ffdc6c76974b8efe4bcab6d5a2ae068",
+    "modelHash": "9a795936a5e20965eccf3620b78f0d925b37444c467bf7f40823938c2f033309",
     "portProjection": "owner",
     "labels": {
       "n0": "Rust / Authority ledger\nMRR Data Backend / Turso\nClaim, budget and fence together\nPersist original consumption",
       "n1": "MRR Data / Turso\nOne physical storage engine\nShared database, private connections\nDurable original outcomes",
-      "n2": "Family admission\nIndependent families run concurrently\nSame family keeps one budget order\nCommit performs no provider send",
+      "n2": "Family admission\nCommit the original consumption\nSame claim and budget stay bound\nAdmission never sends bytes",
       "n3": "Rust / Final broker\nOwn consumed opportunities\nGuard dispatch and each range\nUnknown exposure remains held",
-      "n4": "Current final-use custody\nDrain concurrent admissions\nSerialize Policy and owner changes\nCheck current scope through sending",
-      "n5": "Unknown stays held\nRead the original outcome\nNo new claim on a retry\nNo refund from missing evidence"
+      "n4": "Family execution custody\nOriginal claim, budget and history\nIndependent families send together\nCurrent Policy stays bound to bytes",
+      "n5": "Policy and owner publication\nExclusive authority mutation\nWait for all live family scopes\nLater releases check the new fence",
+      "n6": "Unknown stays held\nRead the original outcome\nNo new claim on a retry\nNo refund from missing evidence"
     }
   }
 }

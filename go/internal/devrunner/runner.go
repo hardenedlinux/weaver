@@ -24,23 +24,24 @@ type Stage struct {
 	Args         []string
 }
 type Result struct {
-	Name           string        `json:"name"`
-	Status         string        `json:"status"`
-	Binary         string        `json:"binary"`
-	ResolvedBinary string        `json:"resolvedBinary,omitempty"`
-	Args           []string      `json:"args"`
-	Log            string        `json:"log"`
-	OutputSHA256   string        `json:"outputSha256,omitempty"`
-	FailureTail    string        `json:"failureTail,omitempty"`
-	Details        string        `json:"details,omitempty"`
-	ExitCode       *int          `json:"exitCode,omitempty"`
-	Error          string        `json:"error,omitempty"`
-	Duration       string        `json:"duration"`
-	SchemeTiming   *SchemeTiming `json:"schemeTiming,omitempty"`
-	UserCPU        string        `json:"userCpu,omitempty"`
-	SystemCPU      string        `json:"systemCpu,omitempty"`
-	GoBenchmarks   []GoBenchmark `json:"goBenchmarks,omitempty"`
-	Lean           *LeanEvidence `json:"lean,omitempty"`
+	Name             string        `json:"name"`
+	Status           string        `json:"status"`
+	Binary           string        `json:"binary"`
+	ResolvedBinary   string        `json:"resolvedBinary,omitempty"`
+	Args             []string      `json:"args"`
+	Log              string        `json:"log"`
+	OutputSHA256     string        `json:"outputSha256,omitempty"`
+	FailureTail      string        `json:"failureTail,omitempty"`
+	Details          string        `json:"details,omitempty"`
+	ExitCode         *int          `json:"exitCode,omitempty"`
+	Error            string        `json:"error,omitempty"`
+	Duration         string        `json:"duration"`
+	SchemeTiming     *SchemeTiming `json:"schemeTiming,omitempty"`
+	UserCPU          string        `json:"userCpu,omitempty"`
+	SystemCPU        string        `json:"systemCpu,omitempty"`
+	GoBenchmarks     []GoBenchmark `json:"goBenchmarks,omitempty"`
+	BenchmarkSummary string        `json:"benchmarkSummary,omitempty"`
+	Lean             *LeanEvidence `json:"lean,omitempty"`
 }
 type Receipt struct {
 	Revision           string            `json:"revision,omitempty"`
@@ -275,6 +276,14 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	}
 	if stage.Name == "grpc-benchmark" && err == nil && closeErr == nil {
 		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
+	}
+	if stage.Name == "storage-final-benchmark" && err == nil && closeErr == nil {
+		err = collectBenchmarks(root, directory, started.UTC().Format(time.RFC3339Nano), finalSendBenchmarkCases...)
+		if err == nil {
+			var data []byte
+			data, err = os.ReadFile(filepath.Join(directory, "benchmark-summary.org"))
+			result.BenchmarkSummary = string(data)
+		}
 	}
 	if stage.Name == "scheme-unit-tests" && err == nil {
 		err = validateSchemeResult(root, filepath.Join(directory, result.Log))

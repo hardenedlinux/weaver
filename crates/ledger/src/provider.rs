@@ -147,7 +147,8 @@ impl Ledger {
         send: impl FnOnce() -> T,
     ) -> Result<T> {
         self.check_provider_session(permit)?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+            .map_err(db)?;
         guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
         active(&tx, permit)?;
         // Persist a separate affine dispatch burn: borrowing a handle cannot repeat this callback.
@@ -161,7 +162,8 @@ impl Ledger {
             return Err(Error::Conflict("provider dispatch already burned"));
         }
         tx.commit().map_err(db)?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+            .map_err(db)?;
         guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
         active(&tx, permit)?;
         let result = send();
@@ -179,7 +181,8 @@ impl Ledger {
             return Err(Error::Invalid("provider release rows"));
         }
         self.check_provider_session(permit)?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+            .map_err(db)?;
         active(&tx, permit)?;
         started(&tx, permit)?;
         let seq: u64 = crate::persistence::one(
@@ -242,7 +245,8 @@ impl Ledger {
         if release.plan_digest != permit.digest || release.format != format {
             return Err(Error::Conflict("foreign provider release binding"));
         }
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+            .map_err(db)?;
         active(&tx, permit)?;
         for offset in 0..release.length {
             guard_live(
@@ -264,7 +268,8 @@ impl Ledger {
     }
     pub fn complete_provider(&mut self, permit: &ProviderDispatch, format: &str) -> Result<()> {
         self.check_provider_session(permit)?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+            .map_err(db)?;
         active(&tx, permit)?;
         started(&tx, permit)?;
         guard_live(&tx, permit, "emitProvider", 0, format)?;

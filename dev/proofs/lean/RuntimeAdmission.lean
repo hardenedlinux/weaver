@@ -262,11 +262,11 @@ theorem committed_consume_survives_reply_loss_and_restart (image : Image)
 end Persistence
 
 namespace MVCC
-/- Native refinement premises: one process owns one Database; every global
-mutation and final callback acquires exclusive custody; family transactions
-hold shared custody and the same canonical-family mutex through commit/abort.
-No external effect is inside a concurrent admission transaction. A conflict
-does not re-execute a callback. Filesystem custody and native IO are not proved. -/
+/- Native premises: one process owns one Database. Global mutations acquire
+exclusive custody. Admission and final use retain shared custody and the same
+original claim/budget/history-family mutex through commit/abort. Admission never
+sends. A final native observation conflict cannot undo physical bytes or replay
+consumption. Filesystem custody, actual locks and IO refinement are not proved. -/
 def replaceDomain (domains : Nat → State) (key : Nat) (next : State) : Nat → State :=
   fun observed => if observed = key then next else domains observed
 
@@ -315,5 +315,60 @@ theorem native_final_send_preserves_original_hold (state : State)
 #print axioms family_step_preserves_all_budgets
 #print axioms exclusive_final_use_keeps_current_fence
 #print axioms native_final_send_preserves_original_hold
+
+inductive PublicationStep (readers : Nat) : Nat → Nat → Prop where
+  | publish (drained : readers = 0) : PublicationStep readers fence (fence+1)
+  | unchanged : PublicationStep readers fence fence
+
+theorem shared_final_readers_keep_current_fence (live : 0 < readers)
+    (step : PublicationStep readers before after) : after = before := by
+  cases step with
+  | publish drained => omega
+  | unchanged => rfl
+
+theorem two_independent_final_uses_preserve_all_budgets
+    (domains : Nat → State) (budgets : Nat → Nat) (left right : Nat)
+    (a b : State) (distinct : left ≠ right)
+    (safe : ∀ domain, Safe (budgets domain) (domains domain))
+    (first : Step (budgets left) (domains left) a)
+    (second : Step (budgets right) (domains right) b) :
+    ∀ domain, Safe (budgets domain)
+      (replaceDomain (replaceDomain domains left a) right b domain) := by
+  apply family_step_preserves_all_budgets _ budgets right b
+    (family_step_preserves_all_budgets domains budgets left a safe first)
+  simpa [replaceDomain,Ne.symm distinct] using second
+
+/- execution.calls records irreversible physical effects, not a SQL acknowledgement
+counter. The native refinement must never restore that counter by rolling back a
+transaction. Observations do not authorize budget settlement. -/
+structure EffectImage where
+  execution : State
+  recorded : Bool := false
+
+inductive EffectStep (budget : Nat) : EffectImage → EffectImage → Prop where
+  | execute (image next) (admitted : Step budget image.execution next) :
+      EffectStep budget image {image with execution := next}
+  | observation (image) (committed : Bool) :
+      EffectStep budget image {image with recorded := committed}
+
+theorem observation_or_conflict_cannot_erase_effect_safety
+    (safe : Safe budget before.execution) (step : EffectStep budget before after) :
+    Safe budget after.execution := by
+  cases step with
+  | execute next admitted => exact safe_step safe admitted
+  | observation => exact safe
+
+theorem failed_observation_after_send_keeps_spent_hold (image : EffectImage)
+    (safe : Safe budget image.execution) (sent : 0 < image.execution.calls) :
+    ({image with recorded := false} : EffectImage).execution.spent = true ∧
+    0 < ({image with recorded := false} : EffectImage).execution.held ∧
+    ({image with recorded := false} : EffectImage).execution.calls ≤ 1 := by
+  have spent := safe.2.2.2 sent
+  exact ⟨spent,safe.2.2.1 spent,safe.1⟩
+
+#print axioms shared_final_readers_keep_current_fence
+#print axioms two_independent_final_uses_preserve_all_budgets
+#print axioms observation_or_conflict_cannot_erase_effect_safety
+#print axioms failed_observation_after_send_keeps_spent_hold
 end MVCC
 end Weaver.RuntimeAdmission

@@ -2,6 +2,13 @@
   {"id":"TursoMvccCustody","witnesses":[
     {"file":"crates/ledger/src/persistence/owner.rs","pattern":"fn open"},
     {"file":"crates/ledger/src/persistence/scope.rs","pattern":"fn begin_family"},
+    {"file":"crates/ledger/tests/unit/final_domains.rs","pattern":"fn mvcc_final_domains_overlap_including_new_executor_connection"},
+    {"file":"crates/ledger/tests/unit/final_domains.rs","pattern":"fn mvcc_same_budget_and_history_family_keeps_final_order"},
+    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn mvcc_effect_before_failed_observation_never_releases_or_replays"},
+    {"file":"go/dev/provider_final_domains_test.go","pattern":"func TestProviderMVCCIndependentFinalSendsAndRevocation"},
+    {"file":"dev/proofs/quint/TursoMvcc.qnt","pattern":"run postSendCommitConflictKeepsPhysicalEffectTest"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem shared_final_readers_keep_current_fence","declaration":"Weaver.RuntimeAdmission.MVCC.shared_final_readers_keep_current_fence"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem failed_observation_after_send_keeps_spent_hold","declaration":"Weaver.RuntimeAdmission.MVCC.failed_observation_after_send_keeps_spent_hold"},
     {"file":"crates/ledger/tests/unit/persistence_transactions.rs","pattern":"fn mvcc_disjoint_admissions_have_overlapping_native_writes"},
     {"file":"crates/ledger/tests/unit/persistence_transactions.rs","pattern":"fn mvcc_process_custody_refuses_a_second_process"},
     {"file":"crates/ledger/tests/unit/mvcc.rs","pattern":"fn mvcc_concurrent_family_budget_has_one_original_reservation"},

@@ -25,7 +25,7 @@ package WeaverStorage {
     }
     part def TursoWriteScope {
         attribute displayName:String="Family admission";
-        attribute responsibility:String="Independent families run concurrently\nSame family keeps one budget order\nCommit performs no provider send";
+        attribute responsibility:String="Commit the original consumption\nSame claim and budget stay bound\nAdmission never sends bytes";
         attribute glyph:String="decision";
         attribute visualRole:String="policy";
         port transaction:~ScopePort;
@@ -33,12 +33,20 @@ package WeaverStorage {
         port unresolved:ExposurePort;
     }
     part def FinalUseCustody {
-        attribute displayName:String="Current final-use custody";
-        attribute responsibility:String="Drain concurrent admissions\nSerialize Policy and owner changes\nCheck current scope through sending";
+        attribute displayName:String="Family execution custody";
+        attribute responsibility:String="Original claim, budget and history\nIndependent families send together\nCurrent Policy stays bound to bytes";
         attribute glyph:String="decision";
         attribute visualRole:String="policy";
         port admission:~ScopePort;
         port finalUse:ScopePort;
+        port publication:~ScopePort;
+    }
+    part def GlobalPublication {
+        attribute displayName:String="Policy and owner publication";
+        attribute responsibility:String="Exclusive authority mutation\nWait for all live family scopes\nLater releases check the new fence";
+        attribute glyph:String="decision";
+        attribute visualRole:String="publication";
+        port publication:ScopePort;
     }
     part def RetainedExposure {
         attribute displayName:String="Unknown stays held";
@@ -53,11 +61,13 @@ package WeaverStorage {
         part transaction:TursoWriteScope;
         part broker:StorageBroker;
         part custody:FinalUseCustody;
+        part publication:GlobalPublication;
         part retained:RetainedExposure;
         connection storage connect ledger.storage to driver.commands;
         connection scope connect driver.transaction to transaction.transaction;
         connection finalUse connect transaction.guardedUse to custody.admission;
         connection actualSend connect custody.finalUse to broker.guardedUse;
+        connection authorityOrder connect publication.publication to custody.publication;
         connection unresolved connect transaction.unresolved to retained.unresolved;
     }
 }

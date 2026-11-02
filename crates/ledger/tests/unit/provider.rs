@@ -15,6 +15,39 @@ const SCHEMA: &str = include_str!(concat!(
 fn fixture(path: &std::path::Path) -> (Ledger, ProviderPlan) {
     fixture_nodes(path, &["infer"])
 }
+
+proptest! {
+    #![proptest_config(Config::with_cases(16))]
+    #[test]
+    fn mvcc_effect_before_failed_observation_never_releases_or_replays(lost_callback: bool) {
+        let directory = tempfile::tempdir().expect("directory");
+        let path = directory.path().join("post-effect.db");
+        let storage = weaver_ledger::persistence::Session::open_with_journal(&path, weaver_ledger::persistence::Journal::Mvcc).expect("MVCC");
+        let (mut ledger, plan) = fixture(&path);
+        ledger.enqueue_provider(&plan).expect("queue");
+        let permit = ledger.consume_provider("f", "infer", &BTreeSet::from(["primary".into()])).expect("consume");
+        ledger.dispatch_provider(&permit, || ()).expect("original dispatch");
+        let release = ledger.prepare_provider_release(&permit, "original-event", "protobuf", 1).expect("durable release burn");
+        if !lost_callback {
+            weaver_ledger::persistence::script(&storage,"CREATE TRIGGER fail_final_ack BEFORE UPDATE ON provider_releases WHEN NEW.state='released' BEGIN SELECT RAISE(ABORT,'injected post-effect observation failure'); END;").expect("fault after possible bytes");
+        }
+        let mut calls = 0;
+        let result = ledger.release_provider(&permit,release,"protobuf", |_| {
+            calls += 1;
+            if lost_callback { Err(weaver_contracts::Error::Conflict("lost write response")) } else { Ok(()) }
+        });
+        prop_assert!(result.is_err()); prop_assert_eq!(calls,1);
+        prop_assert_eq!(ledger.held("f").expect("held"),4);
+        prop_assert!(ledger.prepare_provider_release(&permit,"new-event","protobuf",1).is_err());
+        drop(ledger); storage.close().expect("owner drain");
+        let storage = weaver_ledger::persistence::Session::open_with_journal(&path,weaver_ledger::persistence::Journal::Mvcc).expect("recovery");
+        let mut recovered = Ledger::open(&path).expect("new worker");
+        recovered.publish_typed(Some(0),POLICY,SCHEMA,2).expect("new authority cannot unspend");
+        prop_assert!(recovered.consume_provider("f","infer",&BTreeSet::from(["primary".into()])).is_err());
+        prop_assert_eq!(recovered.held("f").expect("original exposure"),4);
+        drop(recovered); storage.close().expect("clean close");
+    }
+}
 fn fixture_nodes(path: &std::path::Path, nodes: &[&str]) -> (Ledger, ProviderPlan) {
     fixture_with_ceiling(path, nodes, 4)
 }

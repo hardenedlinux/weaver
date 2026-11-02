@@ -20,10 +20,11 @@ package WeaverExecution {
     }
     requirement def TursoMvccCustody {
         doc /* Explicit MVCC retains one MRR Data Database under one process
-           lease. Parallel admission/consumption holds shared custody and a
-           canonical-family mutex through commit or abort. Global mutations,
-           owner transfers, schema changes and final callbacks hold exclusive
-           custody. Acquire custody before starting a snapshot. Distinct families
+           lease. Admission, consumption and final callbacks hold shared custody
+           and the same original claim/budget/history-family mutex through native
+           commit or abort. Global mutations, owner transfers and schema changes
+           require exclusive custody and drain all live family scopes. Acquire
+           custody before starting a snapshot. Distinct families
            have independent budgets; future shared accounting domains must use
            the same conflict key before parallel admission. Native conflicts
            never replay callbacks or refund unknown exposure. Restart recovers
@@ -311,7 +312,8 @@ package WeaverExecution {
            Physical driver reuse does not prove independent anti-rollback custody
            or provider exactly-once delivery. Explicit MVCC shares one process
            owner and Database. Family scopes can overlap; global mutation and
-           final-use custody exclude concurrent admissions. */
+           publication excludes all live scopes. Final use overlaps only across
+           independent original claim/budget/history families. */
         doc /* One deciding store owns immutable tasks, reservations, logical keys, current revision and fence. */
         doc /* Commit-floor target: reuse publication exact-result retention,
            account/WAL owner validation and current-cut CAS. Independent authority

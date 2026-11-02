@@ -20,8 +20,8 @@ pub struct WriteScope<'a> {
 pub fn begin(session: &mut Session) -> driver::Result<WriteScope<'_>> {
     start(session, None)
 }
-/// Parallel MVCC transactions only for one original family and its shared budget.
-/// All global mutations and final callbacks use `begin`, excluding these scopes.
+/// Parallel MVCC admission or final use for one original claim/budget/history family.
+/// Global mutations use `begin`, excluding every live family scope through commit.
 pub fn begin_family<'a>(session: &'a mut Session, family: &str) -> driver::Result<WriteScope<'a>> {
     start(session, Some(family))
 }

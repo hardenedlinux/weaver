@@ -4,6 +4,11 @@
 
 * Execution boundary
 
+[[file:59.79-turso-final-domains.org][Independent final-effect domains]] supersedes this initial profile's global
+final-send serialization. The exclusive-final-use design and receipts below
+retain their historical provenance; current family final use holds shared
+authority custody and the original budget/history-family mutex.
+
 This extends [[file:59.77-mrr-turso-storage.org][the single MRR Data / Turso storage boundary]]. The service accepts
 =WEAVER_STORAGE_JOURNAL=mvcc= explicitly; WAL remains the default. Both profiles
 use the same pinned engine, schema, budget rules and execution code. Nonempty

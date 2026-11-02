@@ -3,9 +3,9 @@
 
 * Current implementation
 
-[[file:59.78-turso-mvcc-custody.org][MVCC admission and final-use custody]] adds an explicit single-process
-concurrent profile. Independent family admission/consumption can overlap;
-Policy/owner publication and actual final sends retain exclusive custody.
+[[file:59.79-turso-final-domains.org][Independent final-effect domains]] extends the single-process MVCC profile
+to simultaneous final sends. Original shared-budget/history families retain one
+order; global Policy/owner publication drains all live family scopes.
 
 [[file:59.77-mrr-turso-storage.org][MRR Data Backend / Turso storage]] is the current implementation.
 Runtime, PBT, recovery fault injection and benchmarks share one driver and

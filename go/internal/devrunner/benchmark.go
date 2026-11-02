@@ -13,6 +13,8 @@ import (
 )
 
 // Every timed case must produce fresh evidence; one case cannot qualify its package.
+var finalSendBenchmarkCases = []string{"ledger_final_family_pair/wal", "ledger_final_family_pair/mvcc-serial", "ledger_final_family_pair/mvcc-parallel"}
+
 var rustBenchmarkCases = []string{
 	"governance_owned_source_validate",
 	"governance_original_source_capture_and_bind",
@@ -40,6 +42,9 @@ var rustBenchmarkCases = []string{
 	"ledger_fresh_admission",
 	"ledger_concurrent_family_pair/wal",
 	"ledger_concurrent_family_pair/mvcc",
+	"ledger_final_family_pair/wal",
+	"ledger_final_family_pair/mvcc-serial",
+	"ledger_final_family_pair/mvcc-parallel",
 	"ledger_consume_and_dispatch_burn",
 	"ledger_shared_exposure_dispatch/1",
 	"ledger_shared_exposure_dispatch/8",
@@ -160,7 +165,18 @@ func positiveFinite(value float64) bool {
 }
 
 // Copy only structured Criterion data; raw stage logs retain Go/Rust environment receipts.
-func collectBenchmarks(root, directory, started string) error {
+func collectBenchmarks(root, directory, started string, selected ...string) error {
+	expected := rustBenchmarkCases
+	if len(selected) != 0 {
+		seen := map[string]bool{}
+		for _, name := range selected {
+			if !slices.Contains(rustBenchmarkCases, name) || seen[name] {
+				return fmt.Errorf("invalid selected benchmark: %s", name)
+			}
+			seen[name] = true
+		}
+		expected = selected
+	}
 	begin, err := time.Parse(time.RFC3339Nano, started)
 	if err != nil {
 		return err
@@ -188,6 +204,9 @@ func collectBenchmarks(root, directory, started string) error {
 		relative, err := filepath.Rel(source, path)
 		if err != nil {
 			return err
+		}
+		if len(selected) != 0 && !slices.ContainsFunc(expected, func(name string) bool { return strings.HasPrefix(filepath.ToSlash(relative), name+"/") }) {
+			return nil
 		}
 		bytes, err := os.ReadFile(path)
 		if err != nil {
@@ -240,7 +259,7 @@ func collectBenchmarks(root, directory, started string) error {
 	if err != nil {
 		return err
 	}
-	for _, name := range rustBenchmarkCases {
+	for _, name := range expected {
 		if !measured[name] {
 			return fmt.Errorf("missing fresh Rust benchmark case: %s", name)
 		}

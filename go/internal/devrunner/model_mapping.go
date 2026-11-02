@@ -174,8 +174,12 @@ func mapModelDeclarationsWithEvidence(root string, capture *ModelViewCapture, re
 			options["elk.partitioning.activate"] = "true"
 			options["elk.separateConnectedComponents"] = "false"
 			graph := &mappedGraph{ID: "read-model", LayoutOptions: options}
+			columns := description.Columns
+			if columns == 0 {
+				columns = 2
+			}
 			for index, node := range rendered.Nodes {
-				graph.Children = append(graph.Children, mappedGraphNode{ID: node.ID, LayoutOptions: map[string]string{"elk.partitioning.partition": fmt.Sprint(index / 2)}})
+				graph.Children = append(graph.Children, mappedGraphNode{ID: node.ID, LayoutOptions: map[string]string{"elk.partitioning.partition": fmt.Sprint(index / columns)}})
 			}
 			presentation.Graph = graph
 		}

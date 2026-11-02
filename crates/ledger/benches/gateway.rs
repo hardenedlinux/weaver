@@ -17,14 +17,38 @@ mod source_fixture;
 #[path = "support/provider_store.rs"]
 mod stores;
 fn concurrent_admission(c: &mut Criterion) {
+    let mut admission = c.benchmark_group("ledger/concurrent_family_pair");
     for (name, journal) in [
         ("wal", weaver_ledger::persistence::Journal::Wal),
         ("mvcc", weaver_ledger::persistence::Journal::Mvcc),
     ] {
-        c.bench_function(&format!("ledger/concurrent_family_pair/{name}"), |b| {
+        admission.bench_function(name, |b| {
             b.iter_batched(
                 || mvcc::fresh(journal),
                 |fixture| fixture.reserve(),
+                BatchSize::PerIteration,
+            )
+        });
+    }
+    admission.finish();
+    let mut final_use = c.benchmark_group("ledger/final_family_pair");
+    for (name, journal, serialized) in [
+        ("wal", weaver_ledger::persistence::Journal::Wal, false),
+        (
+            "mvcc-serial",
+            weaver_ledger::persistence::Journal::Mvcc,
+            true,
+        ),
+        (
+            "mvcc-parallel",
+            weaver_ledger::persistence::Journal::Mvcc,
+            false,
+        ),
+    ] {
+        final_use.bench_function(name, |b| {
+            b.iter_batched(
+                || mvcc::fresh(journal).prepare(),
+                |ready| ready.send(serialized),
                 BatchSize::PerIteration,
             )
         });

@@ -1,6 +1,5 @@
 //! Atomic publication, holds, consumption and serialized dispatch guard.
 use crate::persistence::{Session, WriteScope};
-use crate::schema::SCHEMA;
 use std::path::Path;
 use weaver_contracts::{Error, Outcome, Proposal, Receipt, Result, Task};
 
@@ -36,9 +35,7 @@ impl Ledger {
     /// Open a single-host deciding store with full synchronous WAL durability.
     pub fn open(path: impl AsRef<Path>) -> Result<Self> {
         let mut connection = Session::open(path).map_err(db)?;
-        let transaction = crate::persistence::begin(&mut connection).map_err(db)?;
-        crate::persistence::script(&transaction, SCHEMA).map_err(db)?;
-        transaction.commit().map_err(db)?;
+        connection.initialize_ledger().map_err(db)?;
         // A missing retained manifest cannot be reconstructed from outcome rows.
         // Older images require explicit authoritative recovery, never backfill.
         let _: Vec<String> = crate::persistence::read_all(
@@ -238,7 +235,7 @@ impl Ledger {
             return Err(Error::Conflict("foreign ledger handle"));
         }
         let p = permit.proposal;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &p.family).map_err(db)?;
         guard(&tx, &p)?;
         crate::execution_exposure::request(&tx, &p)?;
         let old =
