@@ -8,13 +8,21 @@ use weaver_ledger::{
 
 #[test]
 fn mvcc_final_domains_overlap_including_new_executor_connection() {
-    exercise(false);
+    exercise(false, 0);
 }
 #[test]
 fn mvcc_same_budget_and_history_family_keeps_final_order() {
-    exercise(true);
+    exercise(true, 0);
 }
-fn exercise(shared: bool) {
+#[test]
+fn mvcc_cross_family_shared_budget_serializes_final_use() {
+    exercise(false, 1);
+}
+#[test]
+fn mvcc_cross_family_shared_history_serializes_final_use() {
+    exercise(false, 2);
+}
+fn exercise(shared: bool, domain: u8) {
     let directory = tempfile::tempdir().expect("directory");
     let path = directory.path().join("domains.db");
     let storage = Session::open_with_journal(&path, Journal::Mvcc).expect("owner");
@@ -22,21 +30,20 @@ fn exercise(shared: bool) {
     first.publish(None, POLICY, 1).expect("authority");
     let mut original = task();
     original.family = "a".into();
-    first.register_task(&original).expect("first original");
+    register(&mut first, &original, domain);
     let mut left = proposal(0, 4);
     left.family = "a".into();
     let mut right = proposal(if shared { 1 } else { 0 }, 4);
     right.family = if shared { "a" } else { "b" }.into();
     if !shared {
         original.family = "b".into();
-        first
-            .register_task(&original)
-            .expect("independent original");
+        register(&mut first, &original, domain);
     }
     first.enqueue(&left).expect("left reservation");
     first.enqueue(&right).expect("right reservation");
     let left_permit = first.consume("a", "n0").expect("left consumption");
-    let prepared = if shared {
+    let serialized = shared || domain > 0;
+    let prepared = if serialized {
         let mut second = Ledger::open(&path).expect("second prepared worker");
         let permit = second
             .consume(&right.family, &right.node)
@@ -85,13 +92,13 @@ fn exercise(shared: bool) {
         .recv_timeout(Duration::from_secs(2))
         .expect("second candidate ready");
     let overlapped = other
-        .recv_timeout(Duration::from_millis(if shared { 40 } else { 2000 }))
+        .recv_timeout(Duration::from_millis(if serialized { 40 } else { 2000 }))
         .is_ok();
     release.send(()).expect("release first");
     first_job.join().expect("first natural drain");
     second_job.join().expect("second natural drain");
     assert_eq!(
-        overlapped, !shared,
+        overlapped, !serialized,
         "concurrency must follow original budget/history domain"
     );
     let recovered = Ledger::open(&path).expect("observer");
@@ -104,4 +111,30 @@ fn exercise(shared: bool) {
     }
     drop(recovered);
     storage.close().expect("owner drains");
+}
+fn register(ledger: &mut Ledger, task: &weaver_contracts::Task, domain: u8) {
+    if domain == 0 {
+        ledger.register_task(task).expect("independent original");
+        return;
+    }
+    ledger
+        .register_task_domains(
+            task,
+            &weaver_contracts::DomainBinding {
+                origin: task.family.clone(),
+                budget: if domain == 1 {
+                    "shared".into()
+                } else {
+                    task.family.clone()
+                },
+                history: if domain == 2 {
+                    "shared".into()
+                } else {
+                    task.family.clone()
+                },
+                budget_limit: 20,
+            },
+            None,
+        )
+        .expect("authoritative shared roots");
 }

@@ -15,6 +15,9 @@ pub struct Fixture {
     right: ProviderPlan,
 }
 pub fn fresh(journal: Journal) -> Fixture {
+    fresh_domains(journal, 0)
+}
+pub fn fresh_domains(journal: Journal, shared: u8) -> Fixture {
     let directory = tempfile::tempdir().expect("directory");
     let path = directory.path().join("pair.db");
     let storage = Session::open_with_journal(&path, journal).expect("selected profile");
@@ -33,7 +36,30 @@ pub fn fresh(journal: Journal) -> Fixture {
         plan.family = family.into();
         task.stream_contracts
             .insert("infer".into(), plan.digest().expect("original commitment"));
-        ledger.register_task(&task).expect("independent original");
+        if shared == 0 {
+            ledger.register_task(&task).expect("independent original");
+        } else {
+            ledger
+                .register_task_domains(
+                    &task,
+                    &weaver_contracts::DomainBinding {
+                        origin: family.into(),
+                        budget: if shared == 1 {
+                            "shared".into()
+                        } else {
+                            family.into()
+                        },
+                        history: if shared == 2 {
+                            "shared".into()
+                        } else {
+                            family.into()
+                        },
+                        budget_limit: task.budget,
+                    },
+                    None,
+                )
+                .expect("shared original domain");
+        }
         plan
     };
     let left = make("left", &mut first);

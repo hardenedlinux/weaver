@@ -13,7 +13,7 @@ import (
 )
 
 // Every timed case must produce fresh evidence; one case cannot qualify its package.
-var finalSendBenchmarkCases = []string{"ledger_final_family_pair/wal", "ledger_final_family_pair/mvcc-serial", "ledger_final_family_pair/mvcc-parallel"}
+var finalSendBenchmarkCases = []string{"ledger_final_family_pair/wal", "ledger_final_family_pair/mvcc-serial", "ledger_final_family_pair/mvcc-parallel", "ledger_final_family_pair/mvcc-shared-budget", "ledger_final_family_pair/mvcc-shared-history"}
 
 var rustBenchmarkCases = []string{
 	"governance_owned_source_validate",
@@ -45,6 +45,8 @@ var rustBenchmarkCases = []string{
 	"ledger_final_family_pair/wal",
 	"ledger_final_family_pair/mvcc-serial",
 	"ledger_final_family_pair/mvcc-parallel",
+	"ledger_final_family_pair/mvcc-shared-budget",
+	"ledger_final_family_pair/mvcc-shared-history",
 	"ledger_consume_and_dispatch_burn",
 	"ledger_shared_exposure_dispatch/1",
 	"ledger_shared_exposure_dispatch/8",

@@ -24,8 +24,8 @@ package WeaverStorage {
         port transaction:ScopePort;
     }
     part def TursoWriteScope {
-        attribute displayName:String="Family admission";
-        attribute responsibility:String="Commit the original consumption\nSame claim and budget stay bound\nAdmission never sends bytes";
+        attribute displayName:String="Original claim admission";
+        attribute responsibility:String="Reserve local and shared capacity\nRetain the exact claim and history\nCommit consumption before effects";
         attribute glyph:String="decision";
         attribute visualRole:String="policy";
         port transaction:~ScopePort;
@@ -33,17 +33,25 @@ package WeaverStorage {
         port unresolved:ExposurePort;
     }
     part def FinalUseCustody {
-        attribute displayName:String="Family execution custody";
-        attribute responsibility:String="Original claim, budget and history\nIndependent families send together\nCurrent Policy stays bound to bytes";
+        attribute displayName:String="Shared-domain execution custody";
+        attribute responsibility:String="Resolve roots before the snapshot\nShared budget or history orders use\nCurrent Policy constrains actual bytes";
         attribute glyph:String="decision";
         attribute visualRole:String="policy";
         port admission:~ScopePort;
         port finalUse:ScopePort;
         port publication:~ScopePort;
+        port bindings:~ScopePort;
+    }
+    part def OriginRegistry {
+        attribute displayName:String="Origin and domain registry";
+        attribute responsibility:String="Aliases recover the original task\nWhole-domain unions retain holds\nNew epochs fence old permits";
+        attribute glyph:String="reference";
+        attribute visualRole:String="publication";
+        port roots:ScopePort;
     }
     part def GlobalPublication {
         attribute displayName:String="Policy and owner publication";
-        attribute responsibility:String="Exclusive authority mutation\nWait for all live family scopes\nLater releases check the new fence";
+        attribute responsibility:String="Exclusive Policy and domain changes\nDrain all live execution scopes\nLater releases rejoin the new fence";
         attribute glyph:String="decision";
         attribute visualRole:String="publication";
         port publication:ScopePort;
@@ -61,12 +69,14 @@ package WeaverStorage {
         part transaction:TursoWriteScope;
         part broker:StorageBroker;
         part custody:FinalUseCustody;
+        part registry:OriginRegistry;
         part publication:GlobalPublication;
         part retained:RetainedExposure;
         connection storage connect ledger.storage to driver.commands;
         connection scope connect driver.transaction to transaction.transaction;
         connection finalUse connect transaction.guardedUse to custody.admission;
         connection actualSend connect custody.finalUse to broker.guardedUse;
+        connection rootBinding connect registry.roots to custody.bindings;
         connection authorityOrder connect publication.publication to custody.publication;
         connection unresolved connect transaction.unresolved to retained.unresolved;
     }

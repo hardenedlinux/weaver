@@ -4,6 +4,11 @@
 
 * Current implementation
 
+The cross-family limitation described in this cohort is superseded by
+[[file:59.80-shared-domain-authority.org][59.80 authoritative shared domains]]. Its original measurements and failed
+cohorts remain historical evidence. Current lock keys come from persisted origin,
+budget and history roots; family names alone no longer decide independence.
+
 This extends [[file:59.78-turso-mvcc-custody.org][the initial MVCC admission profile]] to actual final use. It uses the
 same pinned MRR Data Turso driver, one process owner, native transactions and
 existing original claims. There is no new provider, runtime scheduler, retry

@@ -3,6 +3,11 @@
 
 * Current implementation
 
+[[file:59.80-shared-domain-authority.org][Authoritative origins and cross-family shared domains]] supersedes the
+independent-family assumption below. New aliases retain the original claim;
+shared budget or history roots serialize use, and whole-domain unions preserve
+exposure while fencing old permits. Disjoint domains retain concurrent final use.
+
 [[file:59.79-turso-final-domains.org][Independent final-effect domains]] extends the single-process MVCC profile
 to simultaneous final sends. Original shared-budget/history families retain one
 order; global Policy/owner publication drains all live family scopes.

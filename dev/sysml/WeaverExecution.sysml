@@ -21,20 +21,35 @@ package WeaverExecution {
     requirement def TursoMvccCustody {
         doc /* Explicit MVCC retains one MRR Data Database under one process
            lease. Admission, consumption and final callbacks hold shared custody
-           and the same original claim/budget/history-family mutex through native
+           and the same authoritative origin/budget/history-root mutexes through native
            commit or abort. Global mutations, owner transfers and schema changes
            require exclusive custody and drain all live family scopes. Acquire
-           custody before starting a snapshot. Distinct families
-           have independent budgets; future shared accounting domains must use
-           the same conflict key before parallel admission. Native conflicts
+           custody before resolving current roots and starting a snapshot. New
+           families may share either root; they acquire the same sorted mutexes.
+           Whole-domain unions drain every scope and fence old permits with new
+           root epochs. Only disjoint roots may overlap. Native conflicts
            never replay callbacks or refund unknown exposure. Restart recovers
            consumption, not volatile permits. Custody is not anti-rollback. */
+    }
+    requirement def SharedDomainAuthority {
+        doc /* Current authenticated source atomically registers an immutable
+           origin, canonical task and budget/history binding. A family alias
+           resolves to that original and cannot own another task or consumption.
+           Domain unions preserve every member, reservation and history event;
+           aggregate holds must fit the minimum original cap. Root epochs advance
+           before new use, fencing request, provider and stream owners. A lost
+           migration reply recovers its original operation/digest receipt. Native
+           final use validates exact manifests and history coverage under the
+           resolved root locks. New family, route, nonce and restored worker do
+           not authorize independent accounting. Genuine origin identity is a
+           source-admission premise; coherent rollback needs an independent floor. */
     }
     requirement def OriginalTaskBinding {
         doc /* Preserve family, declared node, profile, endpoint and exact wire body commitment. */
     }
     requirement def SharedBudget {
-        doc /* Original node holds sum to no more than the original family budget. */
+        doc /* Original node holds fit both their immutable task budget and the
+           authoritative shared root cap across all member families. */
         doc /* A single deciding projection covers request, stream-message and
            provider reservations together. Admission and actual use require all
            retained execution-kind claims and an exact bijection between each

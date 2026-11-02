@@ -698,6 +698,7 @@ fn typed_publication_does_not_yet_require_delta_evidence() {
                     action: "invokeProvider",
                     sequence: 0,
                     format: "protobuf",
+                    domains: None,
                 }
             )
             .is_err()
@@ -710,6 +711,7 @@ fn typed_publication_does_not_yet_require_delta_evidence() {
                     action: "invokeProvider",
                     sequence: 0,
                     format: "protobuf",
+                    domains: None,
                 }
             )
             .is_ok()

@@ -14,7 +14,7 @@ pub struct WriteScope<'a> {
     poisoned: &'a AtomicBool,
     _exclusive: Option<RwLockWriteGuard<'a, ()>>,
     _shared: Option<RwLockReadGuard<'a, ()>>,
-    _family: Option<MutexGuard<'a, ()>>,
+    _domains: Vec<MutexGuard<'a, ()>>,
 }
 /// Acquire an immediate write transaction with exclusive Rust session custody.
 pub fn begin(session: &mut Session) -> driver::Result<WriteScope<'_>> {
@@ -39,16 +39,21 @@ fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<W
     } else {
         None
     };
-    let family = if parallel {
-        family
-            .map(|key| {
-                session.owner.families[super::owner::stripe(key)]
+    let domains = if parallel {
+        let keys = crate::domains::lock_keys(&session.connection, family.unwrap_or_default())?;
+        let mut stripes: Vec<usize> = keys.iter().map(|key| super::owner::stripe(key)).collect();
+        stripes.sort_unstable();
+        stripes.dedup();
+        stripes
+            .into_iter()
+            .map(|index| {
+                session.owner.families[index]
                     .lock()
                     .map_err(super::owner::error)
             })
-            .transpose()?
+            .collect::<driver::Result<Vec<_>>>()?
     } else {
-        None
+        Vec::new()
     };
     // The mutable Session borrow provides exclusive custody for the whole scope.
     let native = block_on(driver::transaction::Transaction::new_unchecked(
@@ -65,7 +70,7 @@ fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<W
         poisoned: &session.poisoned,
         _exclusive: exclusive,
         _shared: shared,
-        _family: family,
+        _domains: domains,
     })
 }
 impl WriteScope<'_> {

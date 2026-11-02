@@ -6,7 +6,7 @@ vars: { d2-config: { data: { figure: |json
     "engineering",
     "weaver"
   ],
-  "title": "Independent effects. One authority order.",
+  "title": "Shared constraints. Independent effects.",
   "purpose": "architecture",
   "kind": "system",
   "language": "en",
@@ -34,7 +34,8 @@ vars: { d2-config: { data: { figure: |json
     "model8": "dev/sysml/WeaverExecution.sysml",
     "model9": "dev/sysml/ZeroTrustRefinement.sysml",
     "proof0": "dev/proofs/lean/RuntimeAdmission.lean",
-    "proof1": "dev/proofs/lean/StreamingExecution.lean",
+    "proof1": "dev/proofs/lean/SharedDomains.lean",
+    "proof2": "dev/proofs/lean/StreamingExecution.lean",
     "sdkCapture": "dev/sysml/captures/WeaverViews-storage.json"
   },
   "copy": {},
@@ -54,7 +55,8 @@ vars: { d2-config: { data: { figure: |json
     ],
     "obligationRefs": [
       "proof0",
-      "proof1"
+      "proof1",
+      "proof2"
     ],
     "evidenceRefs": []
   },
@@ -76,8 +78,9 @@ vars: { d2-config: { data: { figure: |json
       "n2": "decision",
       "n3": "capture",
       "n4": "decision",
-      "n5": "decision",
-      "n6": "pending"
+      "n5": "reference",
+      "n6": "decision",
+      "n7": "pending"
     },
     "roles": {
       "n0": "semantic",
@@ -86,7 +89,8 @@ vars: { d2-config: { data: { figure: |json
       "n3": "execution",
       "n4": "policy",
       "n5": "publication",
-      "n6": "pending"
+      "n6": "publication",
+      "n7": "pending"
     },
     "edgeLabels": false,
     "graph": {
@@ -133,6 +137,12 @@ vars: { d2-config: { data: { figure: |json
           "layoutOptions": {
             "elk.partitioning.partition": "6"
           }
+        },
+        {
+          "id": "n7",
+          "layoutOptions": {
+            "elk.partitioning.partition": "7"
+          }
         }
       ],
       "layoutOptions": {
@@ -147,16 +157,17 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::storage",
-    "modelHash": "9a795936a5e20965eccf3620b78f0d925b37444c467bf7f40823938c2f033309",
+    "modelHash": "3620283225f68d54deb332af731699d0d162a13878c1111897d5496f810f4649",
     "portProjection": "owner",
     "labels": {
       "n0": "Rust / Authority ledger\nMRR Data Backend / Turso\nClaim, budget and fence together\nPersist original consumption",
       "n1": "MRR Data / Turso\nOne physical storage engine\nShared database, private connections\nDurable original outcomes",
-      "n2": "Family admission\nCommit the original consumption\nSame claim and budget stay bound\nAdmission never sends bytes",
+      "n2": "Original claim admission\nReserve local and shared capacity\nRetain the exact claim and history\nCommit consumption before effects",
       "n3": "Rust / Final broker\nOwn consumed opportunities\nGuard dispatch and each range\nUnknown exposure remains held",
-      "n4": "Family execution custody\nOriginal claim, budget and history\nIndependent families send together\nCurrent Policy stays bound to bytes",
-      "n5": "Policy and owner publication\nExclusive authority mutation\nWait for all live family scopes\nLater releases check the new fence",
-      "n6": "Unknown stays held\nRead the original outcome\nNo new claim on a retry\nNo refund from missing evidence"
+      "n4": "Shared-domain execution custody\nResolve roots before the snapshot\nShared budget or history orders use\nCurrent Policy constrains actual bytes",
+      "n5": "Origin and domain registry\nAliases recover the original task\nWhole-domain unions retain holds\nNew epochs fence old permits",
+      "n6": "Policy and owner publication\nExclusive Policy and domain changes\nDrain all live execution scopes\nLater releases rejoin the new fence",
+      "n7": "Unknown stays held\nRead the original outcome\nNo new claim on a retry\nNo refund from missing evidence"
     }
   }
 }

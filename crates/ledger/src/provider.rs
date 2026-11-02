@@ -16,6 +16,7 @@ pub struct ProviderDispatch {
     session: String,
     digest: String,
     binding: weaver_policy::BoundProviderPolicy,
+    domains: weaver_contracts::DomainStamp,
 }
 impl ProviderDispatch {
     pub fn plan(&self) -> &ProviderPlan {
@@ -131,6 +132,7 @@ impl Ledger {
             ],
         )
         .map_err(db)?;
+        let domains = crate::domains::stamp(&tx, family)?;
         tx.commit().map_err(db)?;
         Ok(ProviderDispatch {
             plan,
@@ -138,6 +140,7 @@ impl Ledger {
             session: self.session.clone(),
             digest,
             binding,
+            domains,
         })
     }
     /// The exact consumed route and current authority serialize with the sole HTTPS request.
@@ -298,6 +301,7 @@ impl Ledger {
     }
 }
 fn active(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<()> {
+    crate::domains::require_stamp(tx, &p.plan.family, &p.domains)?;
     let same:bool=crate::persistence::one(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND digest=?3 AND target=?4 AND state='unknown')", crate::persistence::params![(p.plan.family).to_owned(),(p.plan.node).to_owned(),(p.digest).to_owned(),(p.route.target).to_owned()], |r|r.get(0)).map_err(db)?;
     if same {
         require_exposure(tx, &p.plan, &p.digest)
@@ -374,6 +378,7 @@ fn guard(
             action,
             sequence,
             format,
+            domains: Some(&crate::domains::view(tx, &p.family)?),
         },
     )
 }
@@ -403,6 +408,7 @@ fn guard_live(
             action,
             sequence,
             format,
+            domains: Some(&crate::domains::view(tx, &p.plan.family)?),
         },
     )
 }

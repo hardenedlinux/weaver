@@ -28,6 +28,7 @@ fn current_policy(c: &mut Criterion) {
                     action: "emitProvider",
                     sequence: 1,
                     format: "protobuf",
+                    domains: None,
                 },
             ))
             .expect("current decision")

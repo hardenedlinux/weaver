@@ -1,5 +1,47 @@
 use crate::persistence::{self, Session};
 
+// Native transaction tests intentionally omit task admission. Their deciding lock
+// identities still come from persisted roots, never from caller-selected stripes.
+fn roots(session: &mut Session) {
+    session.initialize_ledger().expect("ledger schema");
+    for family in ["a", "b"] {
+        persistence::exec(
+            session,
+            "INSERT INTO budget_domains VALUES(?1,?1,20,20,0,1)",
+            [family],
+        )
+        .expect("budget root");
+        persistence::exec(
+            session,
+            "INSERT INTO history_domains VALUES(?1,?1,0,1)",
+            [family],
+        )
+        .expect("history root");
+        persistence::exec(
+            session,
+            "INSERT INTO execution_origins VALUES(?1,?1,?2,?1,?1)",
+            [
+                family,
+                serde_json::to_string(&weaver_contracts::DomainBinding {
+                    origin: family.into(),
+                    budget: family.into(),
+                    history: family.into(),
+                    budget_limit: 20,
+                })
+                .expect("immutable binding")
+                .as_str(),
+            ],
+        )
+        .expect("origin");
+        persistence::exec(
+            session,
+            "INSERT INTO family_origins VALUES(?1,?1)",
+            [family],
+        )
+        .expect("family");
+    }
+}
+
 #[test]
 fn mvcc_second_process_probe() {
     let Some(path) = std::env::var_os("WEAVER_MVCC_CUSTODY_PROBE") else {
@@ -43,6 +85,7 @@ fn mvcc_conflicting_snapshot_aborts_without_a_reusable_session() {
     let directory = tempfile::tempdir().expect("directory");
     let path = directory.path().join("conflict.db");
     let mut first = Session::open_with_journal(&path, persistence::Journal::Mvcc).expect("owner");
+    roots(&mut first);
     persistence::script(&first, "CREATE TABLE exposure(id INTEGER PRIMARY KEY, held INTEGER); INSERT INTO exposure VALUES(1,3);").expect("schema");
     let mut second = Session::open(&path).expect("second connection");
     let one = persistence::begin_family(&mut first, "a").expect("first snapshot");
@@ -74,6 +117,7 @@ fn mvcc_disjoint_admissions_have_overlapping_native_writes() {
     let path = directory.path().join("parallel.db");
     let mut first =
         Session::open_with_journal(&path, persistence::Journal::Mvcc).expect("MVCC owner");
+    roots(&mut first);
     persistence::script(
         &first,
         "CREATE TABLE admissions(id INTEGER PRIMARY KEY, held INTEGER);",
@@ -110,6 +154,7 @@ fn mvcc_final_scope_excludes_admission_and_publication() {
     let path = directory.path().join("gate.db");
     let mut final_owner =
         Session::open_with_journal(&path, persistence::Journal::Mvcc).expect("owner");
+    roots(&mut final_owner);
     let mut admission = Session::open(&path).expect("admission");
     let final_scope = persistence::begin(&mut final_owner).expect("final boundary");
     let (attempt, started) = mpsc::channel();

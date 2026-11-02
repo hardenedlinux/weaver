@@ -24,6 +24,8 @@ mod publication_review;
 mod recovery;
 #[path = "unit/serialization.rs"]
 mod serialization;
+#[path = "unit/shared_domains.rs"]
+mod shared_domains;
 #[path = "unit/storage_snapshot.rs"]
 mod snapshot;
 #[path = "unit/source_authority.rs"]

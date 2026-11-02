@@ -23,6 +23,29 @@ struct Envelope {
     command: Command,
 }
 enum Command {
+    RegisterDomain {
+        task: Box<Task>,
+        domains: weaver_contracts::DomainBinding,
+        publication: Option<PublicationKey>,
+        reply: oneshot::Sender<Result<()>>,
+        slot: OwnedSemaphorePermit,
+    },
+    Alias {
+        family: String,
+        origin: String,
+        reply: oneshot::Sender<Result<weaver_contracts::DomainView>>,
+        slot: OwnedSemaphorePermit,
+    },
+    Domains {
+        family: String,
+        reply: oneshot::Sender<Result<weaver_contracts::DomainView>>,
+        slot: OwnedSemaphorePermit,
+    },
+    Migrate {
+        change: weaver_contracts::DomainMigration,
+        reply: oneshot::Sender<Result<weaver_contracts::DomainMigrationReceipt>>,
+        slot: OwnedSemaphorePermit,
+    },
     Authority {
         reply: oneshot::Sender<Result<SourceAuthority>>,
         slot: OwnedSemaphorePermit,
@@ -66,6 +89,60 @@ impl SourceWorker {
     }
 }
 impl SourceOwner {
+    pub(crate) async fn register_domain(
+        &self,
+        caller: SourceIdentity,
+        task: Task,
+        domains: weaver_contracts::DomainBinding,
+        publication: Option<PublicationKey>,
+    ) -> std::result::Result<(), Status> {
+        self.submit(caller, |reply, slot| Command::RegisterDomain {
+            task: Box::new(task),
+            domains,
+            publication,
+            reply,
+            slot,
+        })
+        .await
+    }
+    pub(crate) async fn alias(
+        &self,
+        caller: SourceIdentity,
+        family: String,
+        origin: String,
+    ) -> std::result::Result<weaver_contracts::DomainView, Status> {
+        self.submit(caller, |reply, slot| Command::Alias {
+            family,
+            origin,
+            reply,
+            slot,
+        })
+        .await
+    }
+    pub(crate) async fn domains(
+        &self,
+        caller: SourceIdentity,
+        family: String,
+    ) -> std::result::Result<weaver_contracts::DomainView, Status> {
+        self.submit(caller, |reply, slot| Command::Domains {
+            family,
+            reply,
+            slot,
+        })
+        .await
+    }
+    pub(crate) async fn migrate(
+        &self,
+        caller: SourceIdentity,
+        change: weaver_contracts::DomainMigration,
+    ) -> std::result::Result<weaver_contracts::DomainMigrationReceipt, Status> {
+        self.submit(caller, |reply, slot| Command::Migrate {
+            change,
+            reply,
+            slot,
+        })
+        .await
+    }
     pub(crate) async fn start(
         runtime: RuntimeOwner,
         slot: Arc<OwnedSemaphorePermit>,
@@ -229,6 +306,50 @@ fn process(
         ledger.require_quiescent()?;
         let Envelope { caller, command } = command;
         match command {
+            Command::RegisterDomain {
+                task,
+                domains,
+                publication,
+                reply,
+                slot,
+            } => {
+                let result = ledger.with_authenticated_source(&caller, |l| {
+                    for endpoint in task.endpoints.values() {
+                        weaver_execution::HttpsTransport::validate_endpoint(endpoint)?;
+                    }
+                    l.register_task_domains(&task, &domains, publication.as_ref())
+                });
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::Alias {
+                family,
+                origin,
+                reply,
+                slot,
+            } => {
+                let result = ledger.with_authenticated_source(&caller, |l| {
+                    l.register_family_alias(&family, &origin)
+                });
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::Domains {
+                family,
+                reply,
+                slot,
+            } => {
+                let result =
+                    ledger.with_authenticated_source(&caller, |l| l.execution_domains(&family));
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::Migrate {
+                change,
+                reply,
+                slot,
+            } => {
+                let result = ledger
+                    .with_authenticated_source(&caller, |l| l.migrate_execution_domains(&change));
+                answer(ledger, reply, result, slot)?;
+            }
             Command::Authority { reply, slot } => {
                 let result = ledger.with_authenticated_source(&caller, |l| {
                     l.source_authority()?.ok_or(Error::Denied)

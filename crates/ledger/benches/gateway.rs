@@ -32,22 +32,36 @@ fn concurrent_admission(c: &mut Criterion) {
     }
     admission.finish();
     let mut final_use = c.benchmark_group("ledger/final_family_pair");
-    for (name, journal, serialized) in [
-        ("wal", weaver_ledger::persistence::Journal::Wal, false),
+    for (name, journal, serialized, shared) in [
+        ("wal", weaver_ledger::persistence::Journal::Wal, false, 0),
         (
             "mvcc-serial",
             weaver_ledger::persistence::Journal::Mvcc,
             true,
+            0,
         ),
         (
             "mvcc-parallel",
             weaver_ledger::persistence::Journal::Mvcc,
             false,
+            0,
+        ),
+        (
+            "mvcc-shared-budget",
+            weaver_ledger::persistence::Journal::Mvcc,
+            false,
+            1,
+        ),
+        (
+            "mvcc-shared-history",
+            weaver_ledger::persistence::Journal::Mvcc,
+            false,
+            2,
         ),
     ] {
         final_use.bench_function(name, |b| {
             b.iter_batched(
-                || mvcc::fresh(journal).prepare(),
+                || mvcc::fresh_domains(journal, shared).prepare(),
                 |ready| ready.send(serialized),
                 BatchSize::PerIteration,
             )

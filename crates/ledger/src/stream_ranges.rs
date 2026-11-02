@@ -10,6 +10,7 @@ use weaver_policy::StreamCheck;
 
 /// Non-clonable consumed opportunity; crash or loss never creates a replacement token.
 pub struct RangePermit {
+    domains: weaver_contracts::DomainStamp,
     session: String,
     generation: u64,
     family: String,
@@ -49,6 +50,7 @@ impl Ledger {
         let tx =
             crate::persistence::begin_family(&mut self.connection, &owner.family).map_err(db)?;
         let row = active_range(&tx, &permit)?;
+        crate::domains::require_stamp(&tx, &permit.family, &permit.domains)?;
         let contract = state::contract(&tx, &permit.family, &permit.node)?;
         let guarded = verify_owner(&tx, &self.session, owner).and_then(|()| {
             state::authorize_committed(
@@ -121,6 +123,7 @@ fn prepare_range(
         return Err(Error::Conflict("immutable payload coverage"));
     }
     Ok(RangePermit {
+        domains: crate::domains::stamp(tx, &owner.family)?,
         session: session.to_owned(),
         generation: owner.generation,
         family: owner.family.clone(),

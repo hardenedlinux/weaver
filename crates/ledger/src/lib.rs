@@ -5,6 +5,7 @@
 pub mod persistence;
 #[cfg(test)]
 extern crate self as weaver_ledger;
+mod domains;
 mod execution_exposure;
 mod exposure_manifest;
 mod provider;

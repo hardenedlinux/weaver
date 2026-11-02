@@ -1,4 +1,18 @@
 [
+  {"id":"SharedDomainAuthority","witnesses":[
+    {"file":"crates/ledger/src/domains/binding.rs","pattern":"fn bind"},
+    {"file":"crates/ledger/src/domains/migration.rs","pattern":"fn migrate_execution_domains"},
+    {"file":"crates/ledger/src/domains/view.rs","pattern":"fn require_stamp"},
+    {"file":"crates/ledger/tests/unit/final_domains.rs","pattern":"fn mvcc_cross_family_shared_history_serializes_final_use"},
+    {"file":"crates/ledger/tests/unit/shared_domains.rs","pattern":"fn finite_families_never_split_a_shared_cap"},
+    {"file":"go/dev/provider_shared_domains_test.go","pattern":"func TestProviderSharedDomainsProperty"},
+    {"file":"go/dev/provider_shared_domains_test.go","pattern":"func TestProviderSharedDomainsCedarReadsCurrentAuthority"},
+    {"file":"dev/proofs/quint/SharedDomains.qnt","pattern":"run overCapacityUnionKeepsOriginalDecisionTest"},
+    {"file":"dev/proofs/quint/SharedDomains.qnt","pattern":"run domainSplitCounterexampleTest"},
+    {"file":"dev/proofs/lean/SharedDomains.lean","pattern":"theorem union_cannot_split_any_shared_pair","declaration":"Weaver.SharedDomains.union_cannot_split_any_shared_pair"},
+    {"file":"dev/proofs/lean/SharedDomains.lean","pattern":"theorem admitted_union_conserves_capacity","declaration":"Weaver.SharedDomains.admitted_union_conserves_capacity"},
+    {"file":"dev/proofs/lean/SharedDomains.lean","pattern":"theorem union_retains_history","declaration":"Weaver.SharedDomains.union_retains_history"},
+    {"file":"dev/proofs/lean/SharedDomains.lean","pattern":"theorem union_fences_both_old_permits","declaration":"Weaver.SharedDomains.union_fences_both_old_permits"}]},
   {"id":"TursoMvccCustody","witnesses":[
     {"file":"crates/ledger/src/persistence/owner.rs","pattern":"fn open"},
     {"file":"crates/ledger/src/persistence/scope.rs","pattern":"fn begin_family"},

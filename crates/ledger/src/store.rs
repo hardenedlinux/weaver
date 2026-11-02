@@ -18,6 +18,7 @@ pub struct Ledger {
 pub struct Dispatch {
     proposal: Proposal,
     session: String,
+    domains: weaver_contracts::DomainStamp,
 }
 
 impl Ledger {
@@ -75,7 +76,7 @@ impl Ledger {
 
     /// Register or recover the exact immutable original task.
     pub fn register_task(&mut self, task: &Task) -> Result<()> {
-        self.register_task_binding(task, None)
+        self.register_task_binding(task, None, None)
     }
 
     /// Staged control tasks cannot execute before their original publication commits.
@@ -84,18 +85,20 @@ impl Ledger {
         task: &Task,
         key: &weaver_contracts::PublicationKey,
     ) -> Result<()> {
-        self.register_task_binding(task, Some(key))
+        self.register_task_binding(task, Some(key), None)
     }
 
-    fn register_task_binding(
+    pub(crate) fn register_task_binding(
         &mut self,
         task: &Task,
         key: Option<&weaver_contracts::PublicationKey>,
+        domains: Option<&weaver_contracts::DomainBinding>,
     ) -> Result<()> {
         task.validate()?;
         let record = serde_json::to_string(task)?;
         let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
         crate::source_authority::require(&tx, self.source.as_ref())?;
+        crate::domains::bind(&tx, task, domains)?;
         if let Some(profile) = &task.provider_profile {
             crate::provider_profiles::register(&tx, profile)?;
         }
@@ -216,10 +219,12 @@ impl Ledger {
             crate::persistence::params![(family).to_owned(), (node).to_owned()],
         )
         .map_err(db)?;
+        let domains = crate::domains::stamp(&tx, family)?;
         tx.commit().map_err(db)?;
         Ok(Dispatch {
             proposal: p,
             session: self.session.clone(),
+            domains,
         })
     }
 
@@ -236,6 +241,7 @@ impl Ledger {
         }
         let p = permit.proposal;
         let tx = crate::persistence::begin_family(&mut self.connection, &p.family).map_err(db)?;
+        crate::domains::require_stamp(&tx, &p.family, &permit.domains)?;
         guard(&tx, &p)?;
         crate::execution_exposure::request(&tx, &p)?;
         let old =

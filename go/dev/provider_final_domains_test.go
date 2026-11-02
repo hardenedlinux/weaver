@@ -18,6 +18,9 @@ import (
 )
 
 func independentProviderPlans(t *testing.T, f *fixture) []v1.ProviderPlan {
+	return boundProviderPlans(t, f, 0)
+}
+func boundProviderPlans(t *testing.T, f *fixture, sharedCap uint64) []v1.ProviderPlan {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -45,7 +48,12 @@ func independentProviderPlans(t *testing.T, f *fixture) []v1.ProviderPlan {
 			targets = append(targets, route.Target)
 		}
 		task := v1.Task{ProviderProfile: providerProfile(), Family: family, Principal: "alice", Profile: "p", Nodes: []string{"infer"}, Targets: targets, Endpoints: endpoints, BodyDigests: map[string]string{"infer": hex.EncodeToString(body[:])}, NodeCostBounds: map[string]uint64{"infer": 4}, StreamContracts: map[string]string{"infer": digest}, Models: []string{"model-a"}, Budget: 8}
-		if _, err := f.admin.RPC.RegisterTask(f.admin.Context(ctx), &pb.RegisterTaskRequest{Task: gatewayclient.Task(task)}); err != nil {
+		if sharedCap == 0 {
+			_, err = f.admin.RPC.RegisterTask(f.admin.Context(ctx), &pb.RegisterTaskRequest{Task: gatewayclient.Task(task)})
+		} else {
+			_, err = f.admin.RPC.RegisterDomainTask(f.admin.Context(ctx), &pb.RegisterDomainTaskRequest{Task: gatewayclient.Task(task), Domains: &pb.DomainBinding{Origin: family, Budget: "shared", History: "shared", BudgetLimit: sharedCap}})
+		}
+		if err != nil {
 			t.Fatal(err)
 		}
 		plans = append(plans, plan)

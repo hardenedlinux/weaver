@@ -17,6 +17,7 @@ pub struct StreamOwner {
     pub(crate) fence: u64,
     revision: u64,
     connection_consumed: bool,
+    domains: weaver_contracts::DomainStamp,
 }
 /// One explicit source/view request; this record carries no execution authority.
 pub struct StreamClaim<'a> {
@@ -45,6 +46,7 @@ impl Ledger {
         let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
         admit_custody(&tx, &request)?;
         let generation = advance_generation(&tx, &request, &self.session)?;
+        let domains = crate::domains::stamp(&tx, family)?;
         tx.commit().map_err(db)?;
         Ok(StreamOwner {
             family: family.into(),
@@ -55,6 +57,7 @@ impl Ledger {
             fence,
             revision: request.revision,
             connection_consumed: false,
+            domains,
         })
     }
     /// Serialize a single native connection setup with current source authority and custody.
@@ -134,6 +137,7 @@ pub(crate) fn verify_owner(
     if session != owner.session {
         return Err(Error::Conflict("foreign stream ledger handle"));
     }
+    crate::domains::require_stamp(tx, &owner.family, &owner.domains)?;
     let (generation, holder, fence): (u64, String, u64) = crate::persistence::one(
         tx,
         "SELECT generation,owner,owner_fence FROM streams WHERE family=?1 AND node=?2",
