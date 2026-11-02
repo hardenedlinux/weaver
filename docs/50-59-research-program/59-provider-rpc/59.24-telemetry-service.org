@@ -121,6 +121,20 @@ These laws assume the runtime recorder has no ledger/transport callback and that
 the existing durable owner recovers the original effect. They do not prove the
 native binary, atomic instruction timing or an external exporter.
 
+** Accepted local cohort
+
+The merged PR1 cohort =7efd256c4a405cc0fc973ca43e6c5d9fecf63a76= passed all
+twelve stages of =-clean-source check-telemetry=, including committed-source
+checks before and after. The receipt is
+=.cache/verification/latest-check-telemetry.json=. Server library checks retain
+the existing separately launched integration observation; no ignored test is
+counted as having executed by the library suite.
+
+This is telemetry-scoped acceptance. The separate cold Scheme entry failed
+before Weaver tests during its declared Ascent dependency build, as recorded in
+[[file:59.82-semantic-responsibility-allocation.org][59.82]]. Complete Gateway SPEC import retains the source-closure gate in
+[[file:59.83-spec-source-closure-and-architecture-admission.org][59.83]]. Neither failure is converted into a passing result by this gate.
+
 * OpenShell reference and Weaver leverage
 
 The fuller [[file:59.25-openshell-and-tao3k-ecosystem.org][OpenShell and TAO3K ecosystem review]] separates Scheme's programmable
