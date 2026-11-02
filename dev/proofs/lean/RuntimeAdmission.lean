@@ -260,4 +260,60 @@ theorem committed_consume_survives_reply_loss_and_restart (image : Image)
 #print axioms commit_itself_does_not_send
 #print axioms committed_consume_survives_reply_loss_and_restart
 end Persistence
+
+namespace MVCC
+/- Native refinement premises: one process owns one Database; every global
+mutation and final callback acquires exclusive custody; family transactions
+hold shared custody and the same canonical-family mutex through commit/abort.
+No external effect is inside a concurrent admission transaction. A conflict
+does not re-execute a callback. Filesystem custody and native IO are not proved. -/
+def replaceDomain (domains : Nat → State) (key : Nat) (next : State) : Nat → State :=
+  fun observed => if observed = key then next else domains observed
+
+theorem disjoint_domain_commits_commute (domains : Nat → State)
+    (left right : Nat) (a b : State) (separate : left ≠ right) :
+    replaceDomain (replaceDomain domains left a) right b =
+    replaceDomain (replaceDomain domains right b) left a := by
+  funext observed
+  by_cases l : observed = left
+  · subst observed
+    simp [replaceDomain,separate]
+  · by_cases r : observed = right
+    · subst observed
+      simp [replaceDomain,Ne.symm separate]
+    · simp [replaceDomain,l,r]
+
+theorem family_step_preserves_all_budgets (domains : Nat → State)
+    (budgets : Nat → Nat) (key : Nat) (next : State)
+    (before : ∀ domain, Safe (budgets domain) (domains domain))
+    (transition : Step (budgets key) (domains key) next) :
+    ∀ domain, Safe (budgets domain) (replaceDomain domains key next domain) := by
+  intro domain
+  by_cases equal : domain = key
+  · subst domain
+    simpa [replaceDomain] using safe_step (before key) transition
+  · simpa [replaceDomain,equal] using before domain
+
+inductive CustodyStep : Bool → Nat → Nat → Prop where
+  | publish (unowned : owned = false) : CustodyStep owned fence (fence+1)
+  | unchanged : CustodyStep owned fence fence
+
+theorem exclusive_final_use_keeps_current_fence
+    (transition : CustodyStep true before after) : after = before := by
+  cases transition with
+  | publish impossible => contradiction
+  | unchanged => rfl
+
+theorem native_final_send_preserves_original_hold (state : State)
+    (safe : Safe budget state) (spent : state.spent = true) (fresh : state.calls = 0) :
+    Safe budget {state with calls := 1} ∧
+      ({state with calls := 1} : State).held = state.held :=
+  ⟨safe_step safe (Step.send state spent fresh (observedRevision := state.revision)
+    (observedFence := state.fence) rfl rfl),rfl⟩
+
+#print axioms disjoint_domain_commits_commute
+#print axioms family_step_preserves_all_budgets
+#print axioms exclusive_final_use_keeps_current_fence
+#print axioms native_final_send_preserves_original_hold
+end MVCC
 end Weaver.RuntimeAdmission

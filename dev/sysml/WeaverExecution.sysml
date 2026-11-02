@@ -18,6 +18,17 @@ package WeaverExecution {
            mandatory. Atomicity and FULL durability are native refinement premises,
            exercised by actual concurrent/failure/restart/partial-write tests. */
     }
+    requirement def TursoMvccCustody {
+        doc /* Explicit MVCC retains one MRR Data Database under one process
+           lease. Parallel admission/consumption holds shared custody and a
+           canonical-family mutex through commit or abort. Global mutations,
+           owner transfers, schema changes and final callbacks hold exclusive
+           custody. Acquire custody before starting a snapshot. Distinct families
+           have independent budgets; future shared accounting domains must use
+           the same conflict key before parallel admission. Native conflicts
+           never replay callbacks or refund unknown exposure. Restart recovers
+           consumption, not volatile permits. Custody is not anti-rollback. */
+    }
     requirement def OriginalTaskBinding {
         doc /* Preserve family, declared node, profile, endpoint and exact wire body commitment. */
     }
@@ -298,7 +309,9 @@ package WeaverExecution {
            be recovered with fresh authoritative state. Complete closed-store
            fault images include the durable WAL and discard transient SHM.
            Physical driver reuse does not prove independent anti-rollback custody
-           or provider exactly-once delivery. MVCC scheduling is not activated. */
+           or provider exactly-once delivery. Explicit MVCC shares one process
+           owner and Database. Family scopes can overlap; global mutation and
+           final-use custody exclude concurrent admissions. */
         doc /* One deciding store owns immutable tasks, reservations, logical keys, current revision and fence. */
         doc /* Commit-floor target: reuse publication exact-result retention,
            account/WAL owner validation and current-cut CAS. Independent authority

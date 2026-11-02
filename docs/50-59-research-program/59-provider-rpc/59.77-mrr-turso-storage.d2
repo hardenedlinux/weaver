@@ -6,7 +6,7 @@ vars: { d2-config: { data: { figure: |json
     "engineering",
     "weaver"
   ],
-  "title": "One store. One deciding scope.",
+  "title": "Parallel admission. Current final use.",
   "purpose": "architecture",
   "kind": "system",
   "language": "en",
@@ -75,14 +75,16 @@ vars: { d2-config: { data: { figure: |json
       "n1": "library",
       "n2": "decision",
       "n3": "capture",
-      "n4": "pending"
+      "n4": "decision",
+      "n5": "pending"
     },
     "roles": {
       "n0": "semantic",
       "n1": "publication",
       "n2": "policy",
       "n3": "execution",
-      "n4": "pending"
+      "n4": "policy",
+      "n5": "pending"
     },
     "edgeLabels": false,
     "graph": {
@@ -117,6 +119,12 @@ vars: { d2-config: { data: { figure: |json
           "layoutOptions": {
             "elk.partitioning.partition": "2"
           }
+        },
+        {
+          "id": "n5",
+          "layoutOptions": {
+            "elk.partitioning.partition": "2"
+          }
         }
       ],
       "layoutOptions": {
@@ -131,14 +139,15 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::storage",
-    "modelHash": "ca4288bd33fa55a8541b1d4f44805a5db373cebd3382b8531fcda8acabf22f28",
+    "modelHash": "98283dd9f62b400f621ceb7377cc388c0ffdc6c76974b8efe4bcab6d5a2ae068",
     "portProjection": "owner",
     "labels": {
       "n0": "Rust / Authority ledger\nMRR Data Backend / Turso\nClaim, budget and fence together\nPersist original consumption",
-      "n1": "MRR Data / Turso\nOne physical storage engine\nWAL, FULL and foreign keys\nSame backend for tests and runtime",
-      "n2": "One deciding transaction\nClaim, budget and fence together\nCommit performs no provider send\nRollback or poison on failure",
+      "n1": "MRR Data / Turso\nOne physical storage engine\nShared database, private connections\nDurable original outcomes",
+      "n2": "Family admission\nIndependent families run concurrently\nSame family keeps one budget order\nCommit performs no provider send",
       "n3": "Rust / Final broker\nOwn consumed opportunities\nGuard dispatch and each range\nUnknown exposure remains held",
-      "n4": "Unknown stays held\nRead the original outcome\nNo new claim on a retry\nNo refund from missing evidence"
+      "n4": "Current final-use custody\nDrain concurrent admissions\nSerialize Policy and owner changes\nCheck current scope through sending",
+      "n5": "Unknown stays held\nRead the original outcome\nNo new claim on a retry\nNo refund from missing evidence"
     }
   }
 }

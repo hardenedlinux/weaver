@@ -4,6 +4,10 @@
 
 * Decision and ownership
 
+[[file:59.78-turso-mvcc-custody.org][Explicit MVCC admission and final-use custody]] now extends this initial WAL
+profile. Earlier non-activation statements and receipts below describe the
+original migration, not the new optional MVCC profile.
+
 Weaver uses =mrr-data-backend::turso_driver= as its only physical database
 implementation. The public MRR Data export explicitly supports hosts retaining
 their own domain schema and transaction policy. Weaver does not route its SQL

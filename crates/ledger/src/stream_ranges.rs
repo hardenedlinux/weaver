@@ -30,7 +30,8 @@ impl Ledger {
         if max_bytes == 0 || max_bytes > MAX_BODY_BYTES {
             return Err(Error::Invalid("range bound"));
         }
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx =
+            crate::persistence::begin_family(&mut self.connection, &owner.family).map_err(db)?;
         let permit = prepare_range(&tx, &self.session, owner, message, max_bytes)?;
         persist_burn(&tx, &permit)?;
         tx.commit().map_err(db)?;

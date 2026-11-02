@@ -61,6 +61,17 @@ the selected view.
 
 * Presentation declarations
 
+The Go driver accepts =-view <exact-mapped-source> render-diagrams= or
+=check-diagrams= for a declared subset. It compiles current local Lean JSON
+owners, captures SysML through OpenSysML, and records only the selected derived
+D2/SVG outputs. Subset receipts cannot pass a full-inventory check. Views requiring
+imported SPEC declarations still reject missing current Lean environments; a
+local storage view does not substitute an isolated SPEC checkout for that import.
+Each invocation owns a fresh ignored proof-log directory, so an earlier failure
+cannot be overwritten or prevent another invocation through an existing log name.
+Scoped checks retain all source/graph/vector checks for the selected view and run
+capture PBT plus standalone readability tests; full checks retain the full suite.
+
 Project-owned themes extend the public theme-layer map. README views select
 hand-drawn paper, Kalam typography and engineering glyphs. Optional technology
 logos are captured source assets exposed through an icon pack. Themes and

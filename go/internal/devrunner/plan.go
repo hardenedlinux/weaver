@@ -52,6 +52,8 @@ func Plan(goBinary string) []Stage {
 		{"quint-safety", "quint", []string{"run", "dev/proofs/quint/RuntimeAdmission.qnt", "--main", "RuntimeAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "50", "--seed", "293"}},
 		{"lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/RuntimeAdmission.lean"}},
 		{"turso-atomicity-tests", "quint", []string{"test", "dev/proofs/quint/TursoAdmission.qnt", "--main", "TursoAdmission", "--seed", "293"}},
+		{"turso-mvcc-tests", "quint", []string{"test", "dev/proofs/quint/TursoMvcc.qnt", "--main", "TursoMvcc", "--seed", "293"}},
+		{"turso-mvcc-safety", "quint", []string{"run", "dev/proofs/quint/TursoMvcc.qnt", "--main", "TursoMvcc", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"turso-atomicity-safety", "quint", []string{"run", "dev/proofs/quint/TursoAdmission.qnt", "--main", "TursoAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"provider-routing-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzProviderPlanCannotExpandAuthority", "-fuzztime=3s"}},
 		{"provider-routing-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzCompiledProviderOwnsRouteOrder", "-fuzztime=3s"}},
@@ -118,7 +120,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"storage-rust-clippy", "cargo", []string{"clippy", "-p", "weaver-ledger", "-p", "weaver-execution", "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
 		}
 		for _, stage := range Plan(goBinary) {
-			if stage.Name == "lean" || stage.Name == "lean-stream" || stage.Name == "quint-stream-tests" || stage.Name == "quint-stream-safety" || stage.Name == "turso-atomicity-tests" || stage.Name == "turso-atomicity-safety" {
+			if stage.Name == "lean" || stage.Name == "lean-stream" || stage.Name == "quint-stream-tests" || stage.Name == "quint-stream-safety" || stage.Name == "turso-atomicity-tests" || stage.Name == "turso-atomicity-safety" || stage.Name == "turso-mvcc-tests" || stage.Name == "turso-mvcc-safety" {
 				selected = append(selected, stage)
 			}
 		}

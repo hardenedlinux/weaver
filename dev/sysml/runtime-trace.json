@@ -1,4 +1,15 @@
 [
+  {"id":"TursoMvccCustody","witnesses":[
+    {"file":"crates/ledger/src/persistence/owner.rs","pattern":"fn open"},
+    {"file":"crates/ledger/src/persistence/scope.rs","pattern":"fn begin_family"},
+    {"file":"crates/ledger/tests/unit/persistence_transactions.rs","pattern":"fn mvcc_disjoint_admissions_have_overlapping_native_writes"},
+    {"file":"crates/ledger/tests/unit/persistence_transactions.rs","pattern":"fn mvcc_process_custody_refuses_a_second_process"},
+    {"file":"crates/ledger/tests/unit/mvcc.rs","pattern":"fn mvcc_concurrent_family_budget_has_one_original_reservation"},
+    {"file":"go/dev/provider_mvcc_test.go","pattern":"func TestProviderMVCCExecutionBoundary"},
+    {"file":"dev/proofs/quint/TursoMvcc.qnt","pattern":"run snapshotWriteSkewCounterexampleTest"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem disjoint_domain_commits_commute","declaration":"Weaver.RuntimeAdmission.MVCC.disjoint_domain_commits_commute"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem family_step_preserves_all_budgets","declaration":"Weaver.RuntimeAdmission.MVCC.family_step_preserves_all_budgets"},
+    {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem exclusive_final_use_keeps_current_fence","declaration":"Weaver.RuntimeAdmission.MVCC.exclusive_final_use_keeps_current_fence"}]},
   {"id":"ArchitectureViewGrammar","witnesses":[
     {"file":"dev/sysml/ArchitectureViews.sysml","pattern":"view zeroTrust"},
     {"file":"go/internal/devrunner/model_views.go","pattern":"func CaptureModelViews"},
@@ -7,7 +18,7 @@
     {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestArchitectureDiagramsUseDifferentViewProfiles"},
     {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestDiagramProfilesAreExplicitAndLocal"},
     {"file":"go/internal/devrunner/diagrams.go","pattern":"func RenderDiagrams"},
-    {"file":"dev/d2/src/render.ts","pattern":"composeFigure\\(input,composeModelView\\)"},
+    {"file":"dev/d2/src/render.ts","pattern":"composeFigure\\(input,input.layout==='sequence-view'\\?composeSequence:composeModelView\\)"},
     {"file":"dev/d2/test/model-view.test.ts","pattern":"public Library binds native SysML identity"},
     {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestDiagramEvidenceRejectsLostNodesAndRelationships"}]},
   {"id":"ProductionAssetBoundary","witnesses":[

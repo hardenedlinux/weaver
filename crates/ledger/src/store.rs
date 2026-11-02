@@ -35,8 +35,10 @@ impl Ledger {
     }
     /// Open a single-host deciding store with full synchronous WAL durability.
     pub fn open(path: impl AsRef<Path>) -> Result<Self> {
-        let connection = Session::open(path).map_err(db)?;
-        crate::persistence::script(&connection, SCHEMA).map_err(db)?;
+        let mut connection = Session::open(path).map_err(db)?;
+        let transaction = crate::persistence::begin(&mut connection).map_err(db)?;
+        crate::persistence::script(&transaction, SCHEMA).map_err(db)?;
+        transaction.commit().map_err(db)?;
         // A missing retained manifest cannot be reconstructed from outcome rows.
         // Older images require explicit authoritative recovery, never backfill.
         let _: Vec<String> = crate::persistence::read_all(
@@ -135,7 +137,8 @@ impl Ledger {
     /// Queue publication never calls a transport. Lost replies recover the same digest.
     pub fn enqueue(&mut self, proposal: &Proposal) -> Result<Receipt> {
         let digest = proposal.digest()?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx =
+            crate::persistence::begin_family(&mut self.connection, &proposal.family).map_err(db)?;
         if let Some(old) = receipt(&tx, &proposal.family, &proposal.node)? {
             if old.digest != digest {
                 return Err(Error::Conflict("logical key already bound"));
@@ -198,7 +201,7 @@ impl Ledger {
 
     /// Durable consumption precedes any possible external call. Crash means unknown.
     pub fn consume(&mut self, family: &str, node: &str) -> Result<Dispatch> {
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
         let body: Option<String> = crate::persistence::maybe(
             &tx,
             "SELECT proposal FROM operations WHERE family=?1 AND node=?2 AND state='queued'",

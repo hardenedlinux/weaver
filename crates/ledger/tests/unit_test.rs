@@ -4,6 +4,8 @@ mod concurrency;
 mod execution_exposure;
 #[path = "unit/fixtures.rs"]
 mod fixtures;
+#[path = "unit/mvcc.rs"]
+mod mvcc;
 #[path = "unit/properties.rs"]
 mod properties;
 #[path = "unit/provider.rs"]

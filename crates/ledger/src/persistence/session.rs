@@ -1,33 +1,36 @@
 //! One verified durable `Turso` session owned by the Gateway host.
 use super::{driver, one, script};
-use futures_executor::block_on;
 use std::{
     ops::Deref,
     path::Path,
-    sync::atomic::{AtomicBool, Ordering},
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
     time::Duration,
 };
 
 /// One FULL/WAL Turso connection. There is no automatic engine/store conversion.
 pub struct Session {
     pub(super) connection: driver::Connection,
-    _database: driver::Database,
+    pub(super) owner: Arc<super::owner::Owner>,
     pub(super) poisoned: AtomicBool,
 }
 impl Session {
     /// Open through MRR Data and read back the required durability settings.
     pub fn open(path: impl AsRef<Path>) -> driver::Result<Self> {
-        let path = path
-            .as_ref()
-            .to_str()
-            .filter(|p| !p.is_empty() && *p != ":memory:")
-            .ok_or_else(|| driver::Error::Misuse("durable storage path required".into()))?;
-        let database = block_on(
-            driver::Builder::new_local(path)
-                .experimental_multiprocess_wal(true)
-                .build(),
-        )?;
-        let connection = database.connect()?;
+        Self::connect(path.as_ref(), None)
+    }
+    /// Select MVCC explicitly; default opens join this live owner's profile.
+    pub fn open_with_journal(
+        path: impl AsRef<Path>,
+        journal: super::Journal,
+    ) -> driver::Result<Self> {
+        Self::connect(path.as_ref(), Some(journal))
+    }
+    fn connect(path: &Path, requested: Option<super::Journal>) -> driver::Result<Self> {
+        let owner = super::owner::open(path, requested)?;
+        let connection = owner.database.connect()?;
         connection.busy_timeout(Duration::from_secs(10))?;
         script(
             &connection,
@@ -36,14 +39,18 @@ impl Session {
         let mode: String = one(&connection, "PRAGMA journal_mode", (), |r| r.get(0))?;
         let synchronous: i64 = one(&connection, "PRAGMA synchronous", (), |r| r.get(0))?;
         let foreign_keys: i64 = one(&connection, "PRAGMA foreign_keys", (), |r| r.get(0))?;
-        if mode != "wal" || synchronous != 2 || foreign_keys != 1 {
+        let expected = match owner.journal {
+            super::Journal::Wal => "wal",
+            super::Journal::Mvcc => "mvcc",
+        };
+        if mode != expected || synchronous != 2 || foreign_keys != 1 {
             return Err(driver::Error::Misuse(
                 "required WAL/FULL/foreign-key storage profile unavailable".into(),
             ));
         }
         Ok(Self {
             connection,
-            _database: database,
+            owner,
             poisoned: AtomicBool::new(false),
         })
     }

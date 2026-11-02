@@ -14,8 +14,8 @@ import {themes} from '../themes';
 import {composeSequence} from './sequence';
 
 const root=fileURLToPath(new URL('../../../',import.meta.url));
-const catalog=collectCatalog(root);
 const {values}=parseArgs({args:process.argv.slice(2),options:{view:{type:'string',multiple:true}}});
+const catalog=collectCatalog(root,values.view);
 const selected=catalog.views.filter(view=>!values.view||values.view.includes(view.source));
 if(!selected.length||values.view&&selected.length!==new Set(values.view).size)throw new Error('Unknown requested view');
 const hash=(bytes:string|Uint8Array)=>createHash('sha256').update(bytes).digest('hex');
@@ -50,10 +50,10 @@ try{
  }));
 }finally{await browser.close();process.off('SIGINT',stop);process.off('SIGTERM',stop);}
 if(cancelled)errors.push('Cancelled after active library exports drained');
-if(JSON.stringify(collectCatalog(root))!==JSON.stringify(catalog))errors.push('Captured inputs changed');
+if(JSON.stringify(collectCatalog(root,values.view))!==JSON.stringify(catalog))errors.push('Captured inputs changed');
 if(images.length!==selected.length)errors.push('Incomplete library export');
 images.sort((a,b)=>a.source.localeCompare(b.source));
 await mkdir(path.join(root,'.cache/d2'),{recursive:true});
-await writeFile(path.join(root,'.cache/d2/typescript-render.json'),JSON.stringify({status:errors.length?'FAIL':'PASS',modelCaptureSHA256:catalog.modelCapture?.sha256,hostCPUs:cpus().length,workers:count,engine:'@deterministic-engineering/render',images,errors},null,2));
+await writeFile(path.join(root,'.cache/d2/typescript-render.json'),JSON.stringify({status:errors.length?'FAIL':'PASS',selection:values.view,modelCaptureSHA256:catalog.modelCapture?.sha256,hostCPUs:cpus().length,workers:count,engine:'@deterministic-engineering/render',images,errors},null,2));
 if(errors.length)throw new Error('Library rendering failed; see cache receipt');
 console.log(`PASS: ${images.length} library-driven images, ${count} host lanes`);

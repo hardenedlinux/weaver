@@ -3,6 +3,10 @@
 
 * Current implementation
 
+[[file:59.78-turso-mvcc-custody.org][MVCC admission and final-use custody]] adds an explicit single-process
+concurrent profile. Independent family admission/consumption can overlap;
+Policy/owner publication and actual final sends retain exclusive custody.
+
 [[file:59.77-mrr-turso-storage.org][MRR Data Backend / Turso storage]] is the current implementation.
 Runtime, PBT, recovery fault injection and benchmarks share one driver and
 immediate transaction boundary. Earlier SQLite measurements and opt-in storage

@@ -38,6 +38,8 @@ var rustBenchmarkCases = []string{
 	"policy_spec_parent_bound_revision_replay",
 	"policy-ffi_typed_preflight",
 	"ledger_fresh_admission",
+	"ledger_concurrent_family_pair/wal",
+	"ledger_concurrent_family_pair/mvcc",
 	"ledger_consume_and_dispatch_burn",
 	"ledger_shared_exposure_dispatch/1",
 	"ledger_shared_exposure_dispatch/8",

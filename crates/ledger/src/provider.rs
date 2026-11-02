@@ -37,7 +37,8 @@ pub struct ProviderRelease {
 impl Ledger {
     pub fn enqueue_provider(&mut self, plan: &ProviderPlan) -> Result<ProviderReceipt> {
         let digest = plan.digest()?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx =
+            crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
         if let Some(old) = receipt(&tx, &plan.family, &plan.node)? {
             if old.digest != digest {
                 return Err(Error::Conflict("provider logical key already bound"));
@@ -97,7 +98,7 @@ impl Ledger {
         node: &str,
         eligible: &BTreeSet<String>,
     ) -> Result<ProviderDispatch> {
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
         let record: Option<String> = crate::persistence::maybe(
             &tx,
             "SELECT plan FROM provider_runs WHERE family=?1 AND node=?2 AND state='queued'",

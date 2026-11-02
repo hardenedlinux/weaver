@@ -116,6 +116,7 @@ type diagramImage struct {
 	Edges        int    `json:"edges"`
 }
 type diagramRenderReport struct {
+	Selection    []string       `json:"selection,omitempty"`
 	ModelCapture string         `json:"modelCaptureSHA256"`
 	Status       string         `json:"status"`
 	HostCPUs     int            `json:"hostCPUs"`
@@ -278,8 +279,8 @@ func diagramEvidence(data []byte, image diagramImage) error {
 }
 
 // CheckDiagrams runs TypeScript type/property checks and offline image rendering.
-func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
-	modelDigest, err := publishArchitecture(ctx, root)
+func CheckDiagrams(ctx context.Context, root string, out io.Writer, selected ...string) error {
+	modelDigest, err := publishSelectedArchitecture(ctx, root, selected)
 	if err != nil {
 		return err
 	}
@@ -301,30 +302,49 @@ func CheckDiagrams(ctx context.Context, root string, out io.Writer) error {
 	if err := run("run", "typecheck"); err != nil {
 		return err
 	}
-	if err := renderDiagrams(ctx, root, modelDigest, out); err != nil {
+	if err := renderDiagrams(ctx, root, modelDigest, out, selected...); err != nil {
 		return err
 	}
 	// Browser assertions inspect the newly generated standalone vectors, not the
 	// previous checked-in image generation. Unit/property suites run once here.
+	if len(selected) != 0 {
+		return run("test", "test/model-capture.test.ts", "test/vector-readability.test.ts")
+	}
 	return run("test")
 }
 
 // RenderDiagrams owns a shell-free TypeScript -> SVG/PNG build, not an HTTP service.
-func RenderDiagrams(ctx context.Context, root string, out io.Writer) error {
-	modelDigest, err := publishArchitecture(ctx, root)
+func RenderDiagrams(ctx context.Context, root string, out io.Writer, selected ...string) error {
+	modelDigest, err := publishSelectedArchitecture(ctx, root, selected)
 	if err != nil {
 		return err
 	}
 	if err := writeMappedDeclarations(root); err != nil {
 		return err
 	}
-	return renderDiagrams(ctx, root, modelDigest, out)
+	return renderDiagrams(ctx, root, modelDigest, out, selected...)
 }
 
-func renderDiagrams(ctx context.Context, root, modelDigest string, out io.Writer) error {
+func renderDiagrams(ctx context.Context, root, modelDigest string, out io.Writer, selected ...string) error {
 	sources, err := diagramSources(root)
 	if err != nil {
 		return err
+	}
+	if len(selected) != 0 {
+		chosen := make([]string, 0, len(selected))
+		for _, source := range sources {
+			relative, err := filepath.Rel(root, source)
+			if err != nil {
+				return err
+			}
+			if slices.Contains(selected, filepath.ToSlash(relative)) {
+				chosen = append(chosen, source)
+			}
+		}
+		if len(chosen) != len(selected) {
+			return errors.New("selected image inventory differs from captured scope")
+		}
+		sources = chosen
 	}
 	before, err := SourceInputs(root)
 	if err != nil {
@@ -334,7 +354,11 @@ func renderDiagrams(ctx context.Context, root, modelDigest string, out io.Writer
 	if err != nil {
 		return err
 	}
-	command := exec.CommandContext(ctx, binary, "run", "src/render.ts")
+	args := []string{"run", "src/render.ts"}
+	for _, source := range selected {
+		args = append(args, "--view", source)
+	}
+	command := exec.CommandContext(ctx, binary, args...)
 	command.Env = append(os.Environ(), "WEAVER_DIAGRAM_MODEL_SHA256="+modelDigest)
 	command.Dir = filepath.Join(root, "dev/d2")
 	command.Stdout = out
@@ -355,6 +379,9 @@ func renderDiagrams(ctx context.Context, root, modelDigest string, out io.Writer
 	}
 	if report.Status != "PASS" || len(report.Images) != len(sources) {
 		failures = append(failures, errors.New("incomplete TypeScript image render"))
+	}
+	if !slices.Equal(report.Selection, selected) {
+		failures = append(failures, errors.New("renderer selection differs from the requested scope"))
 	}
 	if report.ModelCapture != modelDigest {
 		failures = append(failures, errors.New("renderer receipt does not bind the current SDK capture"))
