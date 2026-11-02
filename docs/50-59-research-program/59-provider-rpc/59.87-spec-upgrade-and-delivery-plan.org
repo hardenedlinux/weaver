@@ -107,15 +107,17 @@ check with unavailable package metadata and two different search paths retained
 the external artifact as fresh. This is build-input evidence, not Runtime
 performance evidence. Use the producer's regeneration entry for source receipts.
 
-The separate Weaver standard-package experiment remains FAIL: all four complete
-trials reached the unchanged 15-second deadline. One trial emitted the harness
+The historical predecessor standard-package experiment remains FAIL: all four
+complete trials reached the unchanged 15-second deadline. One trial emitted the harness
 OK marker before supervision killed the process; this is not natural-exit
 acceptance. A one-second OS sample during another trial observed dynamic loading
 and dyld image bookkeeping around the fourth second. This identifies work before
 test completion, not a sufficient cause for every deadline failure. Concurrent
 host workloads and sampling prevent treating these trials as controlled cold
 performance comparisons. Do not infer an exit-only defect, lower runtime cost,
-or provider-send correctness from these observations.
+or provider-send correctness from these observations. Later complete-entry
+runs passed the same package gate naturally. No deadline or workload changed;
+those successes do not relabel the failed trials or isolate a performance cause.
 
 Provider fixtures now stream Cargo's artifact JSON and select the unique actual
 binary/library-test target, retaining process-exit checks and test-owned image
@@ -127,10 +129,10 @@ qualification; do not remove that admission to make a test pass.
 
 | Evidence owner | Established result | Remaining boundary |
 |----------------+--------------------+--------------------|
-| SDK package | Standard build, four Scheme link cases, Rust build/runtime suites, source regeneration and strict Clippy passed in isolation | Requalify the final joined upstream source in Weaver; pre-existing ignored cases stay ignored |
-| Weaver FFI | Complete rooted SDK stage passed, including actual Scheme capture, independent Go/mTLS consumer, Rust final Policy denial, owner cleanup and stream concurrency cases | A passing archive or capture alone does not qualify every provider recovery scenario |
-| Go provider | Real compiled-source revoke/restart cases passed; Cargo target-path assumption was removed | Reply-loss fixture omitted InspectSourceAuthority, so the client correctly refused before mutation; corrected relay and exact read/write counters require complete rerun |
-| Formal/model | All 61 check-policy stages and current SysML SDK view extraction passed on the preceding committed source | Source-bound evidence must be refreshed after subsequent integration changes |
+| SDK package | Standard build, four Scheme link cases, Rust build/runtime suites, source regeneration and strict Clippy passed in isolation | Pre-existing ignored cases stay ignored; producer tests do not replace Weaver integration |
+| Weaver FFI | Complete rooted SDK stage passed on the joined upstream source, including actual Scheme capture, independent Go/mTLS consumer, Rust final Policy denial, owner cleanup and stream concurrency | An archive or capture alone does not establish provider recovery correctness |
+| Go provider | Complete original integration stage passed with real compiled-source revoke, publication/staging reply loss, restart and partial writes; corrected relay retained exact read/write counters | InspectSourceAuthority remains mandatory; the earlier pre-mutation refusals did not exercise the intended lost-commit scenario |
+| Formal/model | All 61 check-policy stages and source-bound core diagram projections passed | Refresh source-bound receipts when their inputs change; finite checks do not strengthen Lean's explicit host premises |
 
 The reply-loss relay must forward the real current-authority read, not fabricate
 a view or skip the client check. Require one read per compiled bootstrap, exact
@@ -138,6 +140,15 @@ publication/staging counts and the original outcome across both restarts. Missin
 calls do not establish a lost-commit scenario or prove absence of a retry.
 Failures, paired controls and exact-source receipts remain under ignored
 =.cache/sdk-link-contract/=; raw logs and dependency hashes are not document data.
+
+The complete check-scheme entry passed all twelve stages on one committed source
+cut with the original 15-second package gate and twelve host cores. Preserve the
+earlier Apple linker SIGBUS snapshot and failure receipt: disk usage was 99%;
+after cleaning only this run's finished SDK build cache, the unchanged complete
+entry passed. This correlation does not prove a linker-crash cause. No compiler,
+linker or Runtime safety option was relaxed. The authoritative latest state is in
+the Go-owned structured receipts, not a copied verdict inside an architecture
+figure. The core diagrams contain the runtime design and inherited contracts.
 
 ** S3: Qualify authorization through actual provider effects
 
