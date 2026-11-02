@@ -95,3 +95,34 @@ theorem committed_receipt_survives_head_change (receipts : Nat → Option Domain
 #print axioms observation_and_restart_never_refund
 #print axioms committed_receipt_survives_head_change
 end Weaver.SharedDomains
+
+namespace Weaver.TaskOrigin
+structure Assignment where
+  family : Nat
+  origin : Nat
+  claim : Nat
+  budget : Nat
+  history : Nat
+  publication : Nat
+  deriving DecidableEq
+def register (registry : Nat → Option Assignment) (key : Nat) (value : Assignment) :=
+  match registry key with
+  | some _ => registry
+  | none => fun other => if other = key then some value else registry other
+theorem assigned_task_cannot_rebind (registry : Nat → Option Assignment)
+    (key : Nat) (original replacement : Assignment) (bound : registry key = some original) :
+    register registry key replacement key = some original := by
+  simp [register,bound]
+theorem source_epoch_does_not_change_task_scope (registry : Nat → Option Assignment)
+    (key oldEpoch newEpoch : Nat) (original replacement : Assignment)
+    (bound : registry key = some original) (_handoff : oldEpoch < newEpoch) :
+    register registry key replacement key = some original := assigned_task_cannot_rebind _ _ _ _ bound
+theorem stale_source_command_cannot_commit (expected current : Nat)
+    (changed : expected < current) : ¬ expected = current := by omega
+/- Native receipt replay is observational and the entire assignment/consumption
+   prefix must survive restart. Authentic stable key assignment remains a host
+   premise; these results do not detect an issuer inventing every new label. -/
+#print axioms assigned_task_cannot_rebind
+#print axioms source_epoch_does_not_change_task_scope
+#print axioms stale_source_command_cannot_commit
+end Weaver.TaskOrigin

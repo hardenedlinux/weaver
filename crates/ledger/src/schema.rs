@@ -1,6 +1,11 @@
 //! Deciding-store constraints; there is no budget release without evidence.
 /// Native owner boundary for `SCHEMA`.
 pub const SCHEMA: &str = r#"
+CREATE TABLE IF NOT EXISTS original_tasks (
+ task_key TEXT PRIMARY KEY, family TEXT NOT NULL UNIQUE, origin TEXT NOT NULL UNIQUE,
+ task_digest TEXT NOT NULL, binding_digest TEXT NOT NULL, publication TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS task_admissions (
+ operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, receipt TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS budget_domains (
  id TEXT PRIMARY KEY, root TEXT NOT NULL, declared_limit INTEGER NOT NULL CHECK(declared_limit>0),
  ceiling INTEGER NOT NULL CHECK(ceiling>0 AND ceiling<=declared_limit), held INTEGER NOT NULL CHECK(held>=0 AND held<=ceiling), epoch INTEGER NOT NULL CHECK(epoch>0));

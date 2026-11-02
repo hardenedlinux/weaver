@@ -6,6 +6,8 @@ mod exposure;
 mod fixtures;
 #[path = "support/mvcc.rs"]
 mod mvcc;
+#[path = "support/task_origins.rs"]
+mod origins;
 #[path = "../../policy/benches/support/fixtures.rs"]
 mod policy_fixture;
 #[path = "../../policy/tests/support/publication_replay.rs"]
@@ -552,5 +554,5 @@ fn source_authority(c: &mut Criterion) {
         )
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=concurrent_admission,durable_operations,shared_exposure,original_reservation_bytes,stream_manifest_guard,range_tail_guard,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=origins::benchmarks,concurrent_admission,durable_operations,shared_exposure,original_reservation_bytes,stream_manifest_guard,range_tail_guard,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
 criterion_main!(benches);

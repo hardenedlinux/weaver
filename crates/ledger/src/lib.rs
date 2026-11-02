@@ -19,6 +19,7 @@ mod schema;
 mod snapshot;
 mod source_authority;
 mod source_rotation;
+mod task_origins;
 pub use provider::{ProviderDispatch, ProviderRelease};
 mod store;
 mod stream_catalog;

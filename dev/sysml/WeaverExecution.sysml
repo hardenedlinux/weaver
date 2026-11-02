@@ -46,6 +46,13 @@ package WeaverExecution {
     }
     requirement def OriginalTaskBinding {
         doc /* Preserve family, declared node, profile, endpoint and exact wire body commitment. */
+        doc /* A stable source-owned task key maps to one canonical family and
+           origin across source epochs. Original task/domain commitments and
+           registration decision commit with the task. Final use rejoins that
+           registry; partial recovery cannot backfill it. Fresh commands compare
+           the current source epoch, while replay of a committed decision is
+           observational only. Authentic assignment of the stable upstream task
+           key remains an issuer premise, not content-based deduplication. */
     }
     requirement def SharedBudget {
         doc /* Original node holds fit both their immutable task budget and the

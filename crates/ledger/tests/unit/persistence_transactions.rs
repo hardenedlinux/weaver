@@ -7,6 +7,12 @@ fn roots(session: &mut Session) {
     for family in ["a", "b"] {
         persistence::exec(
             session,
+            "INSERT INTO original_tasks VALUES(?1,?1,?1,'native-probe','native-probe','null')",
+            [family],
+        )
+        .expect("native lock identity fixture");
+        persistence::exec(
+            session,
             "INSERT INTO budget_domains VALUES(?1,?1,20,20,0,1)",
             [family],
         )

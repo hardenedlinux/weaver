@@ -51,7 +51,7 @@ func boundProviderPlans(t *testing.T, f *fixture, sharedCap uint64) []v1.Provide
 		if sharedCap == 0 {
 			_, err = f.admin.RPC.RegisterTask(f.admin.Context(ctx), &pb.RegisterTaskRequest{Task: gatewayclient.Task(task)})
 		} else {
-			_, err = f.admin.RPC.RegisterDomainTask(f.admin.Context(ctx), &pb.RegisterDomainTaskRequest{Task: gatewayclient.Task(task), Domains: &pb.DomainBinding{Origin: family, Budget: "shared", History: "shared", BudgetLimit: sharedCap}})
+			_, err = f.admin.RPC.RegisterOriginalTask(f.admin.Context(ctx), &pb.RegisterOriginalTaskRequest{Task: gatewayclient.Task(task), Domains: &pb.DomainBinding{Origin: family, Budget: "shared", History: "shared", BudgetLimit: sharedCap}, Admission: &pb.TaskAdmission{TaskKey: family, OperationId: "source-task-" + family, ExpectedSourceEpoch: 0}})
 		}
 		if err != nil {
 			t.Fatal(err)

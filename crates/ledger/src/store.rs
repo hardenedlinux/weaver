@@ -94,46 +94,60 @@ impl Ledger {
         key: Option<&weaver_contracts::PublicationKey>,
         domains: Option<&weaver_contracts::DomainBinding>,
     ) -> Result<()> {
-        task.validate()?;
-        let record = serde_json::to_string(task)?;
         let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
         crate::source_authority::require(&tx, self.source.as_ref())?;
-        crate::domains::bind(&tx, task, domains)?;
-        if let Some(profile) = &task.provider_profile {
-            crate::provider_profiles::register(&tx, profile)?;
-        }
-        let old: Option<String> = crate::persistence::maybe(
-            &tx,
-            "SELECT record FROM tasks WHERE family=?1",
-            crate::persistence::params![task.family.to_owned()],
-            |r| r.get(0),
-        )
-        .map_err(db)?;
-        match old {
-            Some(value) => {
-                let original: Task = weaver_contracts::decode(value.as_bytes())?;
-                if original != *task {
-                    return Err(Error::Conflict("original task is immutable"));
-                }
-            }
-            None => {
-                crate::persistence::exec(
-                    &tx,
-                    "INSERT INTO tasks(family,record,budget) VALUES(?1,?2,?3)",
-                    crate::persistence::params![
-                        (task.family).to_owned(),
-                        (record).to_owned(),
-                        (task.budget as i64).to_owned()
-                    ],
-                )
-                .map_err(db)?;
-            }
-        }
-        crate::task_publication::bind(&tx, &task.family, key)?;
+        crate::task_origins::default_binding(&tx, task, domains, key)?;
+        register_task_in(&tx, task, key, domains)?;
         tx.commit().map_err(db)?;
         Ok(())
     }
+}
 
+pub(crate) fn register_task_in(
+    tx: &WriteScope<'_>,
+    task: &Task,
+    key: Option<&weaver_contracts::PublicationKey>,
+    domains: Option<&weaver_contracts::DomainBinding>,
+) -> Result<()> {
+    task.validate()?;
+    let record = serde_json::to_string(task)?;
+    crate::domains::bind(tx, task, domains)?;
+    if let Some(profile) = &task.provider_profile {
+        crate::provider_profiles::register(tx, profile)?;
+    }
+    let old: Option<String> = crate::persistence::maybe(
+        tx,
+        "SELECT record FROM tasks WHERE family=?1",
+        crate::persistence::params![task.family.to_owned()],
+        |r| r.get(0),
+    )
+    .map_err(db)?;
+    match old {
+        Some(value) => {
+            let original: Task = weaver_contracts::decode(value.as_bytes())?;
+            if original != *task {
+                return Err(Error::Conflict("original task is immutable"));
+            }
+        }
+        None => {
+            crate::persistence::exec(
+                tx,
+                "INSERT INTO tasks(family,record,budget) VALUES(?1,?2,?3)",
+                crate::persistence::params![
+                    (task.family).to_owned(),
+                    (record).to_owned(),
+                    (task.budget as i64).to_owned()
+                ],
+            )
+            .map_err(db)?;
+        }
+    }
+    crate::task_publication::bind(tx, &task.family, key)?;
+    crate::task_origins::seal_publication(tx, &task.family)?;
+    Ok(())
+}
+
+impl Ledger {
     /// Queue publication never calls a transport. Lost replies recover the same digest.
     pub fn enqueue(&mut self, proposal: &Proposal) -> Result<Receipt> {
         let digest = proposal.digest()?;

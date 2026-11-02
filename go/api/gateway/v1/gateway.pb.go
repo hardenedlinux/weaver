@@ -1367,6 +1367,7 @@ type DomainStamp struct {
 	HistoryRoot   string                 `protobuf:"bytes,3,opt,name=history_root,json=historyRoot,proto3" json:"history_root,omitempty"`
 	BudgetEpoch   uint64                 `protobuf:"varint,4,opt,name=budget_epoch,json=budgetEpoch,proto3" json:"budget_epoch,omitempty"`
 	HistoryEpoch  uint64                 `protobuf:"varint,5,opt,name=history_epoch,json=historyEpoch,proto3" json:"history_epoch,omitempty"`
+	TaskKey       string                 `protobuf:"bytes,6,opt,name=task_key,json=taskKey,proto3" json:"task_key,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1434,6 +1435,13 @@ func (x *DomainStamp) GetHistoryEpoch() uint64 {
 		return x.HistoryEpoch
 	}
 	return 0
+}
+
+func (x *DomainStamp) GetTaskKey() string {
+	if x != nil {
+		return x.TaskKey
+	}
+	return ""
 }
 
 type DomainView struct {
@@ -1580,6 +1588,218 @@ func (x *RegisterDomainTaskRequest) GetPublication() *PublicationKey {
 	return nil
 }
 
+type TaskAdmission struct {
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	TaskKey             string                 `protobuf:"bytes,1,opt,name=task_key,json=taskKey,proto3" json:"task_key,omitempty"`
+	OperationId         string                 `protobuf:"bytes,2,opt,name=operation_id,json=operationId,proto3" json:"operation_id,omitempty"`
+	ExpectedSourceEpoch uint64                 `protobuf:"varint,3,opt,name=expected_source_epoch,json=expectedSourceEpoch,proto3" json:"expected_source_epoch,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *TaskAdmission) Reset() {
+	*x = TaskAdmission{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TaskAdmission) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskAdmission) ProtoMessage() {}
+
+func (x *TaskAdmission) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskAdmission.ProtoReflect.Descriptor instead.
+func (*TaskAdmission) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *TaskAdmission) GetTaskKey() string {
+	if x != nil {
+		return x.TaskKey
+	}
+	return ""
+}
+
+func (x *TaskAdmission) GetOperationId() string {
+	if x != nil {
+		return x.OperationId
+	}
+	return ""
+}
+
+func (x *TaskAdmission) GetExpectedSourceEpoch() uint64 {
+	if x != nil {
+		return x.ExpectedSourceEpoch
+	}
+	return 0
+}
+
+type RegisterOriginalTaskRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Task          *Task                  `protobuf:"bytes,1,opt,name=task,proto3" json:"task,omitempty"`
+	Domains       *DomainBinding         `protobuf:"bytes,2,opt,name=domains,proto3" json:"domains,omitempty"`
+	Admission     *TaskAdmission         `protobuf:"bytes,3,opt,name=admission,proto3" json:"admission,omitempty"`
+	Publication   *PublicationKey        `protobuf:"bytes,4,opt,name=publication,proto3" json:"publication,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisterOriginalTaskRequest) Reset() {
+	*x = RegisterOriginalTaskRequest{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterOriginalTaskRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterOriginalTaskRequest) ProtoMessage() {}
+
+func (x *RegisterOriginalTaskRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterOriginalTaskRequest.ProtoReflect.Descriptor instead.
+func (*RegisterOriginalTaskRequest) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *RegisterOriginalTaskRequest) GetTask() *Task {
+	if x != nil {
+		return x.Task
+	}
+	return nil
+}
+
+func (x *RegisterOriginalTaskRequest) GetDomains() *DomainBinding {
+	if x != nil {
+		return x.Domains
+	}
+	return nil
+}
+
+func (x *RegisterOriginalTaskRequest) GetAdmission() *TaskAdmission {
+	if x != nil {
+		return x.Admission
+	}
+	return nil
+}
+
+func (x *RegisterOriginalTaskRequest) GetPublication() *PublicationKey {
+	if x != nil {
+		return x.Publication
+	}
+	return nil
+}
+
+type TaskAdmissionReceipt struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OperationId   string                 `protobuf:"bytes,1,opt,name=operation_id,json=operationId,proto3" json:"operation_id,omitempty"`
+	Digest        string                 `protobuf:"bytes,2,opt,name=digest,proto3" json:"digest,omitempty"`
+	TaskKey       string                 `protobuf:"bytes,3,opt,name=task_key,json=taskKey,proto3" json:"task_key,omitempty"`
+	Family        string                 `protobuf:"bytes,4,opt,name=family,proto3" json:"family,omitempty"`
+	Origin        string                 `protobuf:"bytes,5,opt,name=origin,proto3" json:"origin,omitempty"`
+	SourceEpoch   uint64                 `protobuf:"varint,6,opt,name=source_epoch,json=sourceEpoch,proto3" json:"source_epoch,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TaskAdmissionReceipt) Reset() {
+	*x = TaskAdmissionReceipt{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TaskAdmissionReceipt) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskAdmissionReceipt) ProtoMessage() {}
+
+func (x *TaskAdmissionReceipt) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskAdmissionReceipt.ProtoReflect.Descriptor instead.
+func (*TaskAdmissionReceipt) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *TaskAdmissionReceipt) GetOperationId() string {
+	if x != nil {
+		return x.OperationId
+	}
+	return ""
+}
+
+func (x *TaskAdmissionReceipt) GetDigest() string {
+	if x != nil {
+		return x.Digest
+	}
+	return ""
+}
+
+func (x *TaskAdmissionReceipt) GetTaskKey() string {
+	if x != nil {
+		return x.TaskKey
+	}
+	return ""
+}
+
+func (x *TaskAdmissionReceipt) GetFamily() string {
+	if x != nil {
+		return x.Family
+	}
+	return ""
+}
+
+func (x *TaskAdmissionReceipt) GetOrigin() string {
+	if x != nil {
+		return x.Origin
+	}
+	return ""
+}
+
+func (x *TaskAdmissionReceipt) GetSourceEpoch() uint64 {
+	if x != nil {
+		return x.SourceEpoch
+	}
+	return 0
+}
+
 type FamilyAliasRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Family        string                 `protobuf:"bytes,1,opt,name=family,proto3" json:"family,omitempty"`
@@ -1590,7 +1810,7 @@ type FamilyAliasRequest struct {
 
 func (x *FamilyAliasRequest) Reset() {
 	*x = FamilyAliasRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1602,7 +1822,7 @@ func (x *FamilyAliasRequest) String() string {
 func (*FamilyAliasRequest) ProtoMessage() {}
 
 func (x *FamilyAliasRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1615,7 +1835,7 @@ func (x *FamilyAliasRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FamilyAliasRequest.ProtoReflect.Descriptor instead.
 func (*FamilyAliasRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{20}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *FamilyAliasRequest) GetFamily() string {
@@ -1649,7 +1869,7 @@ type DomainMigration struct {
 
 func (x *DomainMigration) Reset() {
 	*x = DomainMigration{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1661,7 +1881,7 @@ func (x *DomainMigration) String() string {
 func (*DomainMigration) ProtoMessage() {}
 
 func (x *DomainMigration) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1674,7 +1894,7 @@ func (x *DomainMigration) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DomainMigration.ProtoReflect.Descriptor instead.
 func (*DomainMigration) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{21}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *DomainMigration) GetOperationId() string {
@@ -1755,7 +1975,7 @@ type DomainMigrationReceipt struct {
 
 func (x *DomainMigrationReceipt) Reset() {
 	*x = DomainMigrationReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1767,7 +1987,7 @@ func (x *DomainMigrationReceipt) String() string {
 func (*DomainMigrationReceipt) ProtoMessage() {}
 
 func (x *DomainMigrationReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1780,7 +2000,7 @@ func (x *DomainMigrationReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DomainMigrationReceipt.ProtoReflect.Descriptor instead.
 func (*DomainMigrationReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{22}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *DomainMigrationReceipt) GetOperationId() string {
@@ -1843,7 +2063,7 @@ type RegisterPublishedTaskRequest struct {
 
 func (x *RegisterPublishedTaskRequest) Reset() {
 	*x = RegisterPublishedTaskRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1855,7 +2075,7 @@ func (x *RegisterPublishedTaskRequest) String() string {
 func (*RegisterPublishedTaskRequest) ProtoMessage() {}
 
 func (x *RegisterPublishedTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1868,7 +2088,7 @@ func (x *RegisterPublishedTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterPublishedTaskRequest.ProtoReflect.Descriptor instead.
 func (*RegisterPublishedTaskRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{23}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *RegisterPublishedTaskRequest) GetTask() *Task {
@@ -1898,7 +2118,7 @@ type PublishRequest struct {
 
 func (x *PublishRequest) Reset() {
 	*x = PublishRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1910,7 +2130,7 @@ func (x *PublishRequest) String() string {
 func (*PublishRequest) ProtoMessage() {}
 
 func (x *PublishRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1923,7 +2143,7 @@ func (x *PublishRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishRequest.ProtoReflect.Descriptor instead.
 func (*PublishRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{24}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *PublishRequest) GetExpectedRevision() uint64 {
@@ -1974,7 +2194,7 @@ type PublicationReceipt struct {
 
 func (x *PublicationReceipt) Reset() {
 	*x = PublicationReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1986,7 +2206,7 @@ func (x *PublicationReceipt) String() string {
 func (*PublicationReceipt) ProtoMessage() {}
 
 func (x *PublicationReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1999,7 +2219,7 @@ func (x *PublicationReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicationReceipt.ProtoReflect.Descriptor instead.
 func (*PublicationReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{25}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *PublicationReceipt) GetOperationId() string {
@@ -2047,7 +2267,7 @@ type PublicationKey struct {
 
 func (x *PublicationKey) Reset() {
 	*x = PublicationKey{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2059,7 +2279,7 @@ func (x *PublicationKey) String() string {
 func (*PublicationKey) ProtoMessage() {}
 
 func (x *PublicationKey) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2072,7 +2292,7 @@ func (x *PublicationKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicationKey.ProtoReflect.Descriptor instead.
 func (*PublicationKey) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{26}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *PublicationKey) GetOperationId() string {
@@ -2099,7 +2319,7 @@ type SourceAuthorityView struct {
 
 func (x *SourceAuthorityView) Reset() {
 	*x = SourceAuthorityView{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2111,7 +2331,7 @@ func (x *SourceAuthorityView) String() string {
 func (*SourceAuthorityView) ProtoMessage() {}
 
 func (x *SourceAuthorityView) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2124,7 +2344,7 @@ func (x *SourceAuthorityView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceAuthorityView.ProtoReflect.Descriptor instead.
 func (*SourceAuthorityView) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{27}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *SourceAuthorityView) GetEpoch() uint64 {
@@ -2154,7 +2374,7 @@ type SourceRotationRequest struct {
 
 func (x *SourceRotationRequest) Reset() {
 	*x = SourceRotationRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2166,7 +2386,7 @@ func (x *SourceRotationRequest) String() string {
 func (*SourceRotationRequest) ProtoMessage() {}
 
 func (x *SourceRotationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2179,7 +2399,7 @@ func (x *SourceRotationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceRotationRequest.ProtoReflect.Descriptor instead.
 func (*SourceRotationRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{28}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *SourceRotationRequest) GetOperationId() string {
@@ -2222,7 +2442,7 @@ type SourceRotationReceipt struct {
 
 func (x *SourceRotationReceipt) Reset() {
 	*x = SourceRotationReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2234,7 +2454,7 @@ func (x *SourceRotationReceipt) String() string {
 func (*SourceRotationReceipt) ProtoMessage() {}
 
 func (x *SourceRotationReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2247,7 +2467,7 @@ func (x *SourceRotationReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceRotationReceipt.ProtoReflect.Descriptor instead.
 func (*SourceRotationReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{29}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *SourceRotationReceipt) GetOperationId() string {
@@ -2388,14 +2608,15 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x06origin\x18\x01 \x01(\tR\x06origin\x12\x16\n" +
 	"\x06budget\x18\x02 \x01(\tR\x06budget\x12\x18\n" +
 	"\ahistory\x18\x03 \x01(\tR\ahistory\x12!\n" +
-	"\fbudget_limit\x18\x04 \x01(\x04R\vbudgetLimit\"\xb1\x01\n" +
+	"\fbudget_limit\x18\x04 \x01(\x04R\vbudgetLimit\"\xcc\x01\n" +
 	"\vDomainStamp\x12\x16\n" +
 	"\x06origin\x18\x01 \x01(\tR\x06origin\x12\x1f\n" +
 	"\vbudget_root\x18\x02 \x01(\tR\n" +
 	"budgetRoot\x12!\n" +
 	"\fhistory_root\x18\x03 \x01(\tR\vhistoryRoot\x12!\n" +
 	"\fbudget_epoch\x18\x04 \x01(\x04R\vbudgetEpoch\x12#\n" +
-	"\rhistory_epoch\x18\x05 \x01(\x04R\fhistoryEpoch\"\xe1\x01\n" +
+	"\rhistory_epoch\x18\x05 \x01(\x04R\fhistoryEpoch\x12\x19\n" +
+	"\btask_key\x18\x06 \x01(\tR\ataskKey\"\xe1\x01\n" +
 	"\n" +
 	"DomainView\x12\x16\n" +
 	"\x06family\x18\x01 \x01(\tR\x06family\x12)\n" +
@@ -2407,7 +2628,23 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x19RegisterDomainTaskRequest\x12+\n" +
 	"\x04task\x18\x01 \x01(\v2\x17.weaver.gateway.v1.TaskR\x04task\x12:\n" +
 	"\adomains\x18\x02 \x01(\v2 .weaver.gateway.v1.DomainBindingR\adomains\x12C\n" +
-	"\vpublication\x18\x03 \x01(\v2!.weaver.gateway.v1.PublicationKeyR\vpublication\"D\n" +
+	"\vpublication\x18\x03 \x01(\v2!.weaver.gateway.v1.PublicationKeyR\vpublication\"\x81\x01\n" +
+	"\rTaskAdmission\x12\x19\n" +
+	"\btask_key\x18\x01 \x01(\tR\ataskKey\x12!\n" +
+	"\foperation_id\x18\x02 \x01(\tR\voperationId\x122\n" +
+	"\x15expected_source_epoch\x18\x03 \x01(\x04R\x13expectedSourceEpoch\"\x8b\x02\n" +
+	"\x1bRegisterOriginalTaskRequest\x12+\n" +
+	"\x04task\x18\x01 \x01(\v2\x17.weaver.gateway.v1.TaskR\x04task\x12:\n" +
+	"\adomains\x18\x02 \x01(\v2 .weaver.gateway.v1.DomainBindingR\adomains\x12>\n" +
+	"\tadmission\x18\x03 \x01(\v2 .weaver.gateway.v1.TaskAdmissionR\tadmission\x12C\n" +
+	"\vpublication\x18\x04 \x01(\v2!.weaver.gateway.v1.PublicationKeyR\vpublication\"\xbf\x01\n" +
+	"\x14TaskAdmissionReceipt\x12!\n" +
+	"\foperation_id\x18\x01 \x01(\tR\voperationId\x12\x16\n" +
+	"\x06digest\x18\x02 \x01(\tR\x06digest\x12\x19\n" +
+	"\btask_key\x18\x03 \x01(\tR\ataskKey\x12\x16\n" +
+	"\x06family\x18\x04 \x01(\tR\x06family\x12\x16\n" +
+	"\x06origin\x18\x05 \x01(\tR\x06origin\x12!\n" +
+	"\fsource_epoch\x18\x06 \x01(\x04R\vsourceEpoch\"D\n" +
 	"\x12FamilyAliasRequest\x12\x16\n" +
 	"\x06family\x18\x01 \x01(\tR\x06family\x12\x16\n" +
 	"\x06origin\x18\x02 \x01(\tR\x06origin\"\xe0\x02\n" +
@@ -2476,14 +2713,14 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x15SourceRotationOutcome\x12'\n" +
 	"#SOURCE_ROTATION_OUTCOME_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSOURCE_ROTATED\x10\x01\x12\x1c\n" +
-	"\x18SOURCE_ROTATION_REJECTED\x10\x022\xa1\n" +
-	"\n" +
+	"\x18SOURCE_ROTATION_REJECTED\x10\x022\x92\v\n" +
 	"\aGateway\x12Y\n" +
 	"\x0fExecuteProvider\x12\".weaver.gateway.v1.ProviderRequest\x1a .weaver.gateway.v1.ProviderFrame0\x01\x12N\n" +
 	"\aInspect\x12\x1f.weaver.gateway.v1.OperationKey\x1a\".weaver.gateway.v1.ProviderReceipt\x12P\n" +
 	"\fRegisterTask\x12&.weaver.gateway.v1.RegisterTaskRequest\x1a\x18.weaver.gateway.v1.Empty\x12b\n" +
 	"\x15RegisterPublishedTask\x12/.weaver.gateway.v1.RegisterPublishedTaskRequest\x1a\x18.weaver.gateway.v1.Empty\x12\\\n" +
-	"\x12RegisterDomainTask\x12,.weaver.gateway.v1.RegisterDomainTaskRequest\x1a\x18.weaver.gateway.v1.Empty\x12[\n" +
+	"\x12RegisterDomainTask\x12,.weaver.gateway.v1.RegisterDomainTaskRequest\x1a\x18.weaver.gateway.v1.Empty\x12o\n" +
+	"\x14RegisterOriginalTask\x12..weaver.gateway.v1.RegisterOriginalTaskRequest\x1a'.weaver.gateway.v1.TaskAdmissionReceipt\x12[\n" +
 	"\x13RegisterFamilyAlias\x12%.weaver.gateway.v1.FamilyAliasRequest\x1a\x1d.weaver.gateway.v1.DomainView\x12h\n" +
 	"\x17MigrateExecutionDomains\x12\".weaver.gateway.v1.DomainMigration\x1a).weaver.gateway.v1.DomainMigrationReceipt\x12Y\n" +
 	"\x17InspectExecutionDomains\x12\x1f.weaver.gateway.v1.OperationKey\x1a\x1d.weaver.gateway.v1.DomainView\x12\\\n" +
@@ -2507,7 +2744,7 @@ func file_gateway_v1_gateway_proto_rawDescGZIP() []byte {
 }
 
 var file_gateway_v1_gateway_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
+var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_gateway_v1_gateway_proto_goTypes = []any{
 	(Encoding)(0),                        // 0: weaver.gateway.v1.Encoding
 	(PublicationOutcome)(0),              // 1: weaver.gateway.v1.PublicationOutcome
@@ -2532,81 +2769,90 @@ var file_gateway_v1_gateway_proto_goTypes = []any{
 	(*DomainStamp)(nil),                  // 20: weaver.gateway.v1.DomainStamp
 	(*DomainView)(nil),                   // 21: weaver.gateway.v1.DomainView
 	(*RegisterDomainTaskRequest)(nil),    // 22: weaver.gateway.v1.RegisterDomainTaskRequest
-	(*FamilyAliasRequest)(nil),           // 23: weaver.gateway.v1.FamilyAliasRequest
-	(*DomainMigration)(nil),              // 24: weaver.gateway.v1.DomainMigration
-	(*DomainMigrationReceipt)(nil),       // 25: weaver.gateway.v1.DomainMigrationReceipt
-	(*RegisterPublishedTaskRequest)(nil), // 26: weaver.gateway.v1.RegisterPublishedTaskRequest
-	(*PublishRequest)(nil),               // 27: weaver.gateway.v1.PublishRequest
-	(*PublicationReceipt)(nil),           // 28: weaver.gateway.v1.PublicationReceipt
-	(*PublicationKey)(nil),               // 29: weaver.gateway.v1.PublicationKey
-	(*SourceAuthorityView)(nil),          // 30: weaver.gateway.v1.SourceAuthorityView
-	(*SourceRotationRequest)(nil),        // 31: weaver.gateway.v1.SourceRotationRequest
-	(*SourceRotationReceipt)(nil),        // 32: weaver.gateway.v1.SourceRotationReceipt
-	nil,                                  // 33: weaver.gateway.v1.Task.EndpointsEntry
-	nil,                                  // 34: weaver.gateway.v1.Task.BodyDigestsEntry
-	nil,                                  // 35: weaver.gateway.v1.Task.NodeCostBoundsEntry
-	nil,                                  // 36: weaver.gateway.v1.Task.StreamContractsEntry
+	(*TaskAdmission)(nil),                // 23: weaver.gateway.v1.TaskAdmission
+	(*RegisterOriginalTaskRequest)(nil),  // 24: weaver.gateway.v1.RegisterOriginalTaskRequest
+	(*TaskAdmissionReceipt)(nil),         // 25: weaver.gateway.v1.TaskAdmissionReceipt
+	(*FamilyAliasRequest)(nil),           // 26: weaver.gateway.v1.FamilyAliasRequest
+	(*DomainMigration)(nil),              // 27: weaver.gateway.v1.DomainMigration
+	(*DomainMigrationReceipt)(nil),       // 28: weaver.gateway.v1.DomainMigrationReceipt
+	(*RegisterPublishedTaskRequest)(nil), // 29: weaver.gateway.v1.RegisterPublishedTaskRequest
+	(*PublishRequest)(nil),               // 30: weaver.gateway.v1.PublishRequest
+	(*PublicationReceipt)(nil),           // 31: weaver.gateway.v1.PublicationReceipt
+	(*PublicationKey)(nil),               // 32: weaver.gateway.v1.PublicationKey
+	(*SourceAuthorityView)(nil),          // 33: weaver.gateway.v1.SourceAuthorityView
+	(*SourceRotationRequest)(nil),        // 34: weaver.gateway.v1.SourceRotationRequest
+	(*SourceRotationReceipt)(nil),        // 35: weaver.gateway.v1.SourceRotationReceipt
+	nil,                                  // 36: weaver.gateway.v1.Task.EndpointsEntry
+	nil,                                  // 37: weaver.gateway.v1.Task.BodyDigestsEntry
+	nil,                                  // 38: weaver.gateway.v1.Task.NodeCostBoundsEntry
+	nil,                                  // 39: weaver.gateway.v1.Task.StreamContractsEntry
 }
 var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	5,  // 0: weaver.gateway.v1.SourceArtifact.governance:type_name -> weaver.gateway.v1.GovernanceSelection
 	16, // 1: weaver.gateway.v1.SourceArtifact.tasks:type_name -> weaver.gateway.v1.Task
 	10, // 2: weaver.gateway.v1.SourceArtifact.plans:type_name -> weaver.gateway.v1.ProviderPlan
-	27, // 3: weaver.gateway.v1.SourceArtifact.publication:type_name -> weaver.gateway.v1.PublishRequest
-	30, // 4: weaver.gateway.v1.CompiledSource.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
+	30, // 3: weaver.gateway.v1.SourceArtifact.publication:type_name -> weaver.gateway.v1.PublishRequest
+	33, // 4: weaver.gateway.v1.CompiledSource.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
 	6,  // 5: weaver.gateway.v1.CompiledSource.artifact:type_name -> weaver.gateway.v1.SourceArtifact
 	9,  // 6: weaver.gateway.v1.ProviderPlan.routes:type_name -> weaver.gateway.v1.Route
 	10, // 7: weaver.gateway.v1.ProviderRequest.plan:type_name -> weaver.gateway.v1.ProviderPlan
 	0,  // 8: weaver.gateway.v1.ProviderRequest.encoding:type_name -> weaver.gateway.v1.Encoding
 	12, // 9: weaver.gateway.v1.ProviderFrame.event:type_name -> weaver.gateway.v1.Event
 	13, // 10: weaver.gateway.v1.ProviderFrame.arrow:type_name -> weaver.gateway.v1.ArrowBatch
-	33, // 11: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
-	34, // 12: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
-	35, // 13: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
-	36, // 14: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
+	36, // 11: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
+	37, // 12: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
+	38, // 13: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
+	39, // 14: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
 	17, // 15: weaver.gateway.v1.Task.provider_profile:type_name -> weaver.gateway.v1.ProviderProfile
 	16, // 16: weaver.gateway.v1.RegisterTaskRequest.task:type_name -> weaver.gateway.v1.Task
 	20, // 17: weaver.gateway.v1.DomainView.stamp:type_name -> weaver.gateway.v1.DomainStamp
 	16, // 18: weaver.gateway.v1.RegisterDomainTaskRequest.task:type_name -> weaver.gateway.v1.Task
 	19, // 19: weaver.gateway.v1.RegisterDomainTaskRequest.domains:type_name -> weaver.gateway.v1.DomainBinding
-	29, // 20: weaver.gateway.v1.RegisterDomainTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
-	16, // 21: weaver.gateway.v1.RegisterPublishedTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	29, // 22: weaver.gateway.v1.RegisterPublishedTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
-	1,  // 23: weaver.gateway.v1.PublicationReceipt.outcome:type_name -> weaver.gateway.v1.PublicationOutcome
-	2,  // 24: weaver.gateway.v1.SourceRotationReceipt.outcome:type_name -> weaver.gateway.v1.SourceRotationOutcome
-	30, // 25: weaver.gateway.v1.SourceRotationReceipt.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
-	11, // 26: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
-	8,  // 27: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
-	18, // 28: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
-	26, // 29: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
-	22, // 30: weaver.gateway.v1.Gateway.RegisterDomainTask:input_type -> weaver.gateway.v1.RegisterDomainTaskRequest
-	23, // 31: weaver.gateway.v1.Gateway.RegisterFamilyAlias:input_type -> weaver.gateway.v1.FamilyAliasRequest
-	24, // 32: weaver.gateway.v1.Gateway.MigrateExecutionDomains:input_type -> weaver.gateway.v1.DomainMigration
-	8,  // 33: weaver.gateway.v1.Gateway.InspectExecutionDomains:input_type -> weaver.gateway.v1.OperationKey
-	27, // 34: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	27, // 35: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	29, // 36: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
-	3,  // 37: weaver.gateway.v1.Gateway.InspectSourceAuthority:input_type -> weaver.gateway.v1.Empty
-	31, // 38: weaver.gateway.v1.Gateway.RotateSourceAuthority:input_type -> weaver.gateway.v1.SourceRotationRequest
-	4,  // 39: weaver.gateway.v1.Gateway.CompileSource:input_type -> weaver.gateway.v1.ProducerRequest
-	14, // 40: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
-	15, // 41: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
-	3,  // 42: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
-	3,  // 43: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
-	3,  // 44: weaver.gateway.v1.Gateway.RegisterDomainTask:output_type -> weaver.gateway.v1.Empty
-	21, // 45: weaver.gateway.v1.Gateway.RegisterFamilyAlias:output_type -> weaver.gateway.v1.DomainView
-	25, // 46: weaver.gateway.v1.Gateway.MigrateExecutionDomains:output_type -> weaver.gateway.v1.DomainMigrationReceipt
-	21, // 47: weaver.gateway.v1.Gateway.InspectExecutionDomains:output_type -> weaver.gateway.v1.DomainView
-	28, // 48: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
-	29, // 49: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
-	28, // 50: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
-	30, // 51: weaver.gateway.v1.Gateway.InspectSourceAuthority:output_type -> weaver.gateway.v1.SourceAuthorityView
-	32, // 52: weaver.gateway.v1.Gateway.RotateSourceAuthority:output_type -> weaver.gateway.v1.SourceRotationReceipt
-	7,  // 53: weaver.gateway.v1.Gateway.CompileSource:output_type -> weaver.gateway.v1.CompiledSource
-	40, // [40:54] is the sub-list for method output_type
-	26, // [26:40] is the sub-list for method input_type
-	26, // [26:26] is the sub-list for extension type_name
-	26, // [26:26] is the sub-list for extension extendee
-	0,  // [0:26] is the sub-list for field type_name
+	32, // 20: weaver.gateway.v1.RegisterDomainTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
+	16, // 21: weaver.gateway.v1.RegisterOriginalTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	19, // 22: weaver.gateway.v1.RegisterOriginalTaskRequest.domains:type_name -> weaver.gateway.v1.DomainBinding
+	23, // 23: weaver.gateway.v1.RegisterOriginalTaskRequest.admission:type_name -> weaver.gateway.v1.TaskAdmission
+	32, // 24: weaver.gateway.v1.RegisterOriginalTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
+	16, // 25: weaver.gateway.v1.RegisterPublishedTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	32, // 26: weaver.gateway.v1.RegisterPublishedTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
+	1,  // 27: weaver.gateway.v1.PublicationReceipt.outcome:type_name -> weaver.gateway.v1.PublicationOutcome
+	2,  // 28: weaver.gateway.v1.SourceRotationReceipt.outcome:type_name -> weaver.gateway.v1.SourceRotationOutcome
+	33, // 29: weaver.gateway.v1.SourceRotationReceipt.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
+	11, // 30: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
+	8,  // 31: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
+	18, // 32: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
+	29, // 33: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
+	22, // 34: weaver.gateway.v1.Gateway.RegisterDomainTask:input_type -> weaver.gateway.v1.RegisterDomainTaskRequest
+	24, // 35: weaver.gateway.v1.Gateway.RegisterOriginalTask:input_type -> weaver.gateway.v1.RegisterOriginalTaskRequest
+	26, // 36: weaver.gateway.v1.Gateway.RegisterFamilyAlias:input_type -> weaver.gateway.v1.FamilyAliasRequest
+	27, // 37: weaver.gateway.v1.Gateway.MigrateExecutionDomains:input_type -> weaver.gateway.v1.DomainMigration
+	8,  // 38: weaver.gateway.v1.Gateway.InspectExecutionDomains:input_type -> weaver.gateway.v1.OperationKey
+	30, // 39: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	30, // 40: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	32, // 41: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
+	3,  // 42: weaver.gateway.v1.Gateway.InspectSourceAuthority:input_type -> weaver.gateway.v1.Empty
+	34, // 43: weaver.gateway.v1.Gateway.RotateSourceAuthority:input_type -> weaver.gateway.v1.SourceRotationRequest
+	4,  // 44: weaver.gateway.v1.Gateway.CompileSource:input_type -> weaver.gateway.v1.ProducerRequest
+	14, // 45: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
+	15, // 46: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
+	3,  // 47: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
+	3,  // 48: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
+	3,  // 49: weaver.gateway.v1.Gateway.RegisterDomainTask:output_type -> weaver.gateway.v1.Empty
+	25, // 50: weaver.gateway.v1.Gateway.RegisterOriginalTask:output_type -> weaver.gateway.v1.TaskAdmissionReceipt
+	21, // 51: weaver.gateway.v1.Gateway.RegisterFamilyAlias:output_type -> weaver.gateway.v1.DomainView
+	28, // 52: weaver.gateway.v1.Gateway.MigrateExecutionDomains:output_type -> weaver.gateway.v1.DomainMigrationReceipt
+	21, // 53: weaver.gateway.v1.Gateway.InspectExecutionDomains:output_type -> weaver.gateway.v1.DomainView
+	31, // 54: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
+	32, // 55: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
+	31, // 56: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
+	33, // 57: weaver.gateway.v1.Gateway.InspectSourceAuthority:output_type -> weaver.gateway.v1.SourceAuthorityView
+	35, // 58: weaver.gateway.v1.Gateway.RotateSourceAuthority:output_type -> weaver.gateway.v1.SourceRotationReceipt
+	7,  // 59: weaver.gateway.v1.Gateway.CompileSource:output_type -> weaver.gateway.v1.CompiledSource
+	45, // [45:60] is the sub-list for method output_type
+	30, // [30:45] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_gateway_v1_gateway_proto_init() }
@@ -2618,15 +2864,15 @@ func file_gateway_v1_gateway_proto_init() {
 		(*ProviderFrame_Event)(nil),
 		(*ProviderFrame_Arrow)(nil),
 	}
-	file_gateway_v1_gateway_proto_msgTypes[24].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[25].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[27].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[28].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gateway_v1_gateway_proto_rawDesc), len(file_gateway_v1_gateway_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   34,
+			NumMessages:   37,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

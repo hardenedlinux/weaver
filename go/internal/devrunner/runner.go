@@ -278,7 +278,7 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
 	}
 	if stage.Name == "storage-final-benchmark" && err == nil && closeErr == nil {
-		err = collectBenchmarks(root, directory, started.UTC().Format(time.RFC3339Nano), finalSendBenchmarkCases...)
+		err = collectBenchmarks(root, directory, started.UTC().Format(time.RFC3339Nano), storageBenchmarkCases...)
 		if err == nil {
 			var data []byte
 			data, err = os.ReadFile(filepath.Join(directory, "benchmark-summary.org"))

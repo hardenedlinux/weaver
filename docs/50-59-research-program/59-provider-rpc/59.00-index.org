@@ -3,6 +3,10 @@
 
 * Current implementation
 
+[[file:59.81-original-task-origin-registration.org][Original task registration and source handoff]] binds the stable source task key
+to one original origin, scope and durable receipt across source epochs. Final
+use rejects missing original registration; issuer identity truth remains explicit.
+
 [[file:59.80-shared-domain-authority.org][Authoritative origins and cross-family shared domains]] supersedes the
 independent-family assumption below. New aliases retain the original claim;
 shared budget or history roots serialize use, and whole-domain unions preserve

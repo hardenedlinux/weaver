@@ -2,7 +2,7 @@
 use crate::{publication, store::db};
 use weaver_contracts::{Error, PublicationKey, PublicationOutcome, Result};
 
-fn binding(
+pub(crate) fn binding(
     connection: &crate::persistence::driver::Connection,
     family: &str,
 ) -> Result<Option<PublicationKey>> {

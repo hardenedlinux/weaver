@@ -46,6 +46,15 @@
     {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRuntimeAssetBoundary"},
     {"file":"go/dev/runtime_boundary_test.go","pattern":"func TestProjectArchitectureRejectsRuntimeDevReferences"}]},
   {"id":"OriginalTaskBinding","witnesses":[
+    {"file":"crates/ledger/tests/unit/task_publication.rs","pattern":"fn lost_birth_projection_cannot_authorize_or_be_silently_repaired"},
+    {"file":"crates/ledger/src/task_origins.rs","pattern":"fn register_original_task"},
+    {"file":"crates/ledger/tests/unit/task_origins.rs","pattern":"fn source_rotation_cannot_reallocate_task_and_lost_reply_recovers_original_commit"},
+    {"file":"crates/ledger/tests/unit/task_origins.rs","pattern":"fn trusted_issuer_relabeling_every_identity_is_outside_local_deduplication"},
+    {"file":"go/dev/provider_task_origin_test.go","pattern":"func TestProviderOriginalTaskOriginLostReplySourceSwitchAndRestart"},
+    {"file":"dev/proofs/quint/TaskOrigin.qnt","pattern":"run issuerTrustCounterexampleTest"},
+    {"file":"dev/proofs/lean/SharedDomains.lean","pattern":"theorem assigned_task_cannot_rebind","declaration":"Weaver.TaskOrigin.assigned_task_cannot_rebind"},
+    {"file":"dev/proofs/lean/SharedDomains.lean","pattern":"theorem source_epoch_does_not_change_task_scope","declaration":"Weaver.TaskOrigin.source_epoch_does_not_change_task_scope"},
+    {"file":"dev/proofs/lean/SharedDomains.lean","pattern":"theorem stale_source_command_cannot_commit","declaration":"Weaver.TaskOrigin.stale_source_command_cannot_commit"},
     {"file":"crates/ledger/tests/unit/recovery.rs","pattern":"fn original_task_body_and_profile_cannot_be_replaced"},
     {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run originalBindingTest"}]},
   {"id":"SharedBudget","witnesses":[

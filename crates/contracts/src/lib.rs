@@ -1,5 +1,6 @@
 //! Canonical proposal boundary; records carry no execution authority.
 mod domains;
+pub use domains::{TaskAdmission, TaskAdmissionReceipt};
 mod json;
 pub use domains::{
     DomainBinding, DomainMigration, DomainMigrationReceipt, DomainStamp, DomainView,

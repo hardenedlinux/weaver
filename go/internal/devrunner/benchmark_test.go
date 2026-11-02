@@ -167,17 +167,17 @@ func TestBenchmarkEvidenceRequiresEveryCase(t *testing.T) {
 
 func TestFinalSendBenchmarkSubsetCannotQualifyWholeWorkspace(t *testing.T) {
 	root := t.TempDir()
-	for _, name := range finalSendBenchmarkCases {
+	for _, name := range storageBenchmarkCases {
 		writeBenchmarkEstimate(t, root, name)
 	}
 	started := time.Unix(200, 0).UTC().Format(time.RFC3339Nano)
-	if err := collectBenchmarks(root, t.TempDir(), started, finalSendBenchmarkCases...); err != nil {
+	if err := collectBenchmarks(root, t.TempDir(), started, storageBenchmarkCases...); err != nil {
 		t.Fatal(err)
 	}
 	if err := collectBenchmarks(root, t.TempDir(), started); err == nil {
 		t.Fatal("selected final-send results qualified unrelated packages")
 	}
-	for _, selected := range [][]string{{"unowned"}, {finalSendBenchmarkCases[0], finalSendBenchmarkCases[0]}} {
+	for _, selected := range [][]string{{"unowned"}, {storageBenchmarkCases[0], storageBenchmarkCases[0]}} {
 		if err := collectBenchmarks(root, t.TempDir(), started, selected...); err == nil {
 			t.Fatal("invalid or duplicate selected measurement admitted")
 		}

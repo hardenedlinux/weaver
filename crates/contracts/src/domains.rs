@@ -2,6 +2,27 @@
 use crate::{Error, MAX_CREDITS, Result, identifier};
 use serde::{Deserialize, Serialize};
 
+/// Stable source-owned task identity and exact registration attempt, never a grant.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct TaskAdmission {
+    pub task_key: String,
+    pub operation_id: String,
+    pub expected_source_epoch: u64,
+}
+
+/// Durable task-to-origin registration result; replay is observational only.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct TaskAdmissionReceipt {
+    pub operation_id: String,
+    pub digest: String,
+    pub task_key: String,
+    pub family: String,
+    pub origin: String,
+    pub source_epoch: u64,
+}
+
 /// Immutable source assignment of one original task to shared constraint domains.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -26,6 +47,7 @@ impl DomainBinding {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DomainStamp {
+    pub task_key: String,
     pub origin: String,
     pub budget_root: String,
     pub history_root: String,

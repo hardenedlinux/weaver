@@ -24,6 +24,7 @@ const (
 	Gateway_RegisterTask_FullMethodName            = "/weaver.gateway.v1.Gateway/RegisterTask"
 	Gateway_RegisterPublishedTask_FullMethodName   = "/weaver.gateway.v1.Gateway/RegisterPublishedTask"
 	Gateway_RegisterDomainTask_FullMethodName      = "/weaver.gateway.v1.Gateway/RegisterDomainTask"
+	Gateway_RegisterOriginalTask_FullMethodName    = "/weaver.gateway.v1.Gateway/RegisterOriginalTask"
 	Gateway_RegisterFamilyAlias_FullMethodName     = "/weaver.gateway.v1.Gateway/RegisterFamilyAlias"
 	Gateway_MigrateExecutionDomains_FullMethodName = "/weaver.gateway.v1.Gateway/MigrateExecutionDomains"
 	Gateway_InspectExecutionDomains_FullMethodName = "/weaver.gateway.v1.Gateway/InspectExecutionDomains"
@@ -45,6 +46,7 @@ type GatewayClient interface {
 	RegisterPublishedTask(ctx context.Context, in *RegisterPublishedTaskRequest, opts ...grpc.CallOption) (*Empty, error)
 	// Source-only admission. Domain roots and the immutable task commit together.
 	RegisterDomainTask(ctx context.Context, in *RegisterDomainTaskRequest, opts ...grpc.CallOption) (*Empty, error)
+	RegisterOriginalTask(ctx context.Context, in *RegisterOriginalTaskRequest, opts ...grpc.CallOption) (*TaskAdmissionReceipt, error)
 	RegisterFamilyAlias(ctx context.Context, in *FamilyAliasRequest, opts ...grpc.CallOption) (*DomainView, error)
 	MigrateExecutionDomains(ctx context.Context, in *DomainMigration, opts ...grpc.CallOption) (*DomainMigrationReceipt, error)
 	InspectExecutionDomains(ctx context.Context, in *OperationKey, opts ...grpc.CallOption) (*DomainView, error)
@@ -135,6 +137,16 @@ func (c *gatewayClient) RegisterDomainTask(ctx context.Context, in *RegisterDoma
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Empty)
 	err := c.cc.Invoke(ctx, Gateway_RegisterDomainTask_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayClient) RegisterOriginalTask(ctx context.Context, in *RegisterOriginalTaskRequest, opts ...grpc.CallOption) (*TaskAdmissionReceipt, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TaskAdmissionReceipt)
+	err := c.cc.Invoke(ctx, Gateway_RegisterOriginalTask_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -241,6 +253,7 @@ type GatewayServer interface {
 	RegisterPublishedTask(context.Context, *RegisterPublishedTaskRequest) (*Empty, error)
 	// Source-only admission. Domain roots and the immutable task commit together.
 	RegisterDomainTask(context.Context, *RegisterDomainTaskRequest) (*Empty, error)
+	RegisterOriginalTask(context.Context, *RegisterOriginalTaskRequest) (*TaskAdmissionReceipt, error)
 	RegisterFamilyAlias(context.Context, *FamilyAliasRequest) (*DomainView, error)
 	MigrateExecutionDomains(context.Context, *DomainMigration) (*DomainMigrationReceipt, error)
 	InspectExecutionDomains(context.Context, *OperationKey) (*DomainView, error)
@@ -275,6 +288,9 @@ func (UnimplementedGatewayServer) RegisterPublishedTask(context.Context, *Regist
 }
 func (UnimplementedGatewayServer) RegisterDomainTask(context.Context, *RegisterDomainTaskRequest) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterDomainTask not implemented")
+}
+func (UnimplementedGatewayServer) RegisterOriginalTask(context.Context, *RegisterOriginalTaskRequest) (*TaskAdmissionReceipt, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterOriginalTask not implemented")
 }
 func (UnimplementedGatewayServer) RegisterFamilyAlias(context.Context, *FamilyAliasRequest) (*DomainView, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterFamilyAlias not implemented")
@@ -405,6 +421,24 @@ func _Gateway_RegisterDomainTask_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GatewayServer).RegisterDomainTask(ctx, req.(*RegisterDomainTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gateway_RegisterOriginalTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterOriginalTaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).RegisterOriginalTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_RegisterOriginalTask_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).RegisterOriginalTask(ctx, req.(*RegisterOriginalTaskRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -593,6 +627,10 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterDomainTask",
 			Handler:    _Gateway_RegisterDomainTask_Handler,
+		},
+		{
+			MethodName: "RegisterOriginalTask",
+			Handler:    _Gateway_RegisterOriginalTask_Handler,
 		},
 		{
 			MethodName: "RegisterFamilyAlias",

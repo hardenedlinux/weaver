@@ -43,6 +43,7 @@ impl BoundProviderPolicy {
         context["sequence"] = serde_json::json!(check.sequence);
         context["format"] = serde_json::json!(check.format);
         if let Some(domains) = check.domains {
+            context["task_key"] = serde_json::json!(domains.stamp.task_key);
             context["origin"] = serde_json::json!(domains.stamp.origin);
             context["budget_domain"] = serde_json::json!(domains.stamp.budget_root);
             context["history_domain"] = serde_json::json!(domains.stamp.history_root);

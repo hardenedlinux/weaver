@@ -34,5 +34,7 @@ mod source_authority;
 mod stream_admission_pbt;
 #[path = "unit/stream_properties.rs"]
 mod stream_properties;
+#[path = "unit/task_origins.rs"]
+mod task_origins;
 #[path = "unit/task_publication.rs"]
 mod task_publication;

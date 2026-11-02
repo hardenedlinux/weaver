@@ -23,6 +23,14 @@ struct Envelope {
     command: Command,
 }
 enum Command {
+    Original {
+        task: Box<Task>,
+        domains: weaver_contracts::DomainBinding,
+        admission: weaver_contracts::TaskAdmission,
+        publication: Option<PublicationKey>,
+        reply: oneshot::Sender<Result<weaver_contracts::TaskAdmissionReceipt>>,
+        slot: OwnedSemaphorePermit,
+    },
     RegisterDomain {
         task: Box<Task>,
         domains: weaver_contracts::DomainBinding,
@@ -89,6 +97,24 @@ impl SourceWorker {
     }
 }
 impl SourceOwner {
+    pub(crate) async fn original(
+        &self,
+        caller: SourceIdentity,
+        task: Task,
+        domains: weaver_contracts::DomainBinding,
+        admission: weaver_contracts::TaskAdmission,
+        publication: Option<PublicationKey>,
+    ) -> std::result::Result<weaver_contracts::TaskAdmissionReceipt, Status> {
+        self.submit(caller, |reply, slot| Command::Original {
+            task: Box::new(task),
+            domains,
+            admission,
+            publication,
+            reply,
+            slot,
+        })
+        .await
+    }
     pub(crate) async fn register_domain(
         &self,
         caller: SourceIdentity,
@@ -306,6 +332,22 @@ fn process(
         ledger.require_quiescent()?;
         let Envelope { caller, command } = command;
         match command {
+            Command::Original {
+                task,
+                domains,
+                admission,
+                publication,
+                reply,
+                slot,
+            } => {
+                let result = ledger.with_authenticated_source(&caller, |l| {
+                    for endpoint in task.endpoints.values() {
+                        weaver_execution::HttpsTransport::validate_endpoint(endpoint)?;
+                    }
+                    l.register_original_task(&task, &domains, &admission, publication.as_ref())
+                });
+                answer(ledger, reply, result, slot)?;
+            }
             Command::RegisterDomain {
                 task,
                 domains,

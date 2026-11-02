@@ -43,8 +43,8 @@ package WeaverStorage {
         port bindings:~ScopePort;
     }
     part def OriginRegistry {
-        attribute displayName:String="Origin and domain registry";
-        attribute responsibility:String="Aliases recover the original task\nWhole-domain unions retain holds\nNew epochs fence old permits";
+        attribute displayName:String="Original task and origin registry";
+        attribute responsibility:String="One stable task, one original origin\nSource changes retain the same scope\nRecover the original commit decision";
         attribute glyph:String="reference";
         attribute visualRole:String="publication";
         port roots:ScopePort;

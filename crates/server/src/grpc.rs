@@ -31,6 +31,7 @@ fn domain_view(v: weaver_contracts::DomainView) -> pb::DomainView {
         family: v.family,
         canonical_family: v.canonical_family,
         stamp: Some(pb::DomainStamp {
+            task_key: v.stamp.task_key,
             origin: v.stamp.origin,
             budget_root: v.stamp.budget_root,
             history_root: v.stamp.history_root,
@@ -312,6 +313,53 @@ impl Gateway {
 }
 #[tonic::async_trait]
 impl pb::gateway_server::Gateway for Gateway {
+    async fn register_original_task(
+        &self,
+        request: Request<pb::RegisterOriginalTaskRequest>,
+    ) -> std::result::Result<Response<pb::TaskAdmissionReceipt>, Status> {
+        let caller = self.source_identity(&request)?;
+        let r = request.into_inner();
+        let task = r
+            .task
+            .ok_or(Status::invalid_argument("original task required"))?;
+        let d = r
+            .domains
+            .ok_or(Status::invalid_argument("original binding required"))?;
+        let a = r.admission.ok_or(Status::invalid_argument(
+            "stable source task identity required",
+        ))?;
+        let receipt = self
+            .ingress
+            .source()?
+            .original(
+                caller,
+                task_contract(task),
+                weaver_contracts::DomainBinding {
+                    origin: d.origin,
+                    budget: d.budget,
+                    history: d.history,
+                    budget_limit: d.budget_limit,
+                },
+                weaver_contracts::TaskAdmission {
+                    task_key: a.task_key,
+                    operation_id: a.operation_id,
+                    expected_source_epoch: a.expected_source_epoch,
+                },
+                r.publication.map(|p| weaver_contracts::PublicationKey {
+                    operation_id: p.operation_id,
+                    digest: p.digest,
+                }),
+            )
+            .await?;
+        Ok(Response::new(pb::TaskAdmissionReceipt {
+            operation_id: receipt.operation_id,
+            digest: receipt.digest,
+            task_key: receipt.task_key,
+            family: receipt.family,
+            origin: receipt.origin,
+            source_epoch: receipt.source_epoch,
+        }))
+    }
     async fn register_domain_task(
         &self,
         request: Request<pb::RegisterDomainTaskRequest>,

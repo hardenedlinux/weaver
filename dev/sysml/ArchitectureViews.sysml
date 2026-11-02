@@ -113,6 +113,7 @@ package WeaverViews {
         requirement atomicity:WeaverExecution::TursoAdmissionAtomicity;
         requirement custody:WeaverExecution::TursoMvccCustody;
         requirement domains:WeaverExecution::SharedDomainAuthority;
+        requirement origin:WeaverExecution::OriginalTaskBinding;
         requirement budget:WeaverExecution::SharedBudget;
         requirement effects:WeaverExecution::ConsumeBeforeSend;
         attribute mappedFile:String="docs/50-59-research-program/59-provider-rpc/59.77-mrr-turso-storage.d2";

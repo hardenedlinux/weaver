@@ -13,6 +13,7 @@ pub(crate) fn require(tx: &WriteScope<'_>, family: &str) -> Result<()> {
     let mut held = 0u64;
     let mut checked = std::collections::BTreeSet::new();
     for (member, amount) in rows {
+        crate::task_origins::require(tx, &member)?;
         crate::exposure_manifest::require(tx, &member)?;
         checked.insert(member);
         held = held
@@ -40,6 +41,7 @@ pub(crate) fn require(tx: &WriteScope<'_>, family: &str) -> Result<()> {
     let mut expected = std::collections::BTreeMap::new();
     for (origin, member) in origins {
         if !checked.contains(&member) {
+            crate::task_origins::require(tx, &member)?;
             crate::exposure_manifest::require(tx, &member)?;
         }
         let claims = persistence::read_all(
