@@ -3,6 +3,7 @@
         (only-in :clan/poo/mop validate json<-)
         (only-in :std/encoding/json json->string JSONWriteOptions)
         (only-in :yuanxu/module-system/interface yuanxu-load-modules)
+        (only-in :agentic-ai-lab/modules/loop-engine/control/governor loop-governor->contract)
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceAssessmentContext)
         (only-in :hardenedlinux/weaver/scheme/governance/capture governance-profile-snapshot)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyProjection)
@@ -10,7 +11,12 @@
         (only-in "./snapshot.ss" copy-source-data)
         (only-in "./program.ss" make-gateway-program)
         "./contracts.ss")
-(export compile-gateway emit-gateway emit-governed-gateway capture-governed-gateway gateway-source-json make-gateway-program)
+(export compile-gateway emit-gateway emit-governed-gateway capture-governed-gateway gateway-source-json make-gateway-program governor-open-nodes)
+
+;;; Only project upstream symbolic node names to the gateway's wire identifiers.
+;;; Governor owns selection; Governance assessment cannot replace its result.
+(def (governor-open-nodes governor states)
+  (map symbol->string (cdr (assq 'open-patterns (loop-governor->contract governor states)))))
 
 (def (compile-gateway governance policy governor profile context states task-values plan-values publication-value)
   (unless (= (length task-values) 1)
@@ -32,7 +38,7 @@
                  (eq? profile-assessor (.get profile .assess-governance))
                  (eq? threat-assessor (.get (.get profile threat-model) .assess-threats)))
       (error "Governance source changed during assessment")))
-  (let* ((nodes ((.get governance open) governor states))
+  (let* ((nodes (governor-open-nodes governor states))
          (source-family (.get (car retained-tasks) family)))
     (def (same-node-set? actual)
       (and (= (length nodes) (length actual))

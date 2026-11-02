@@ -4,6 +4,9 @@
         (only-in :clan/poo/object .o .get .slot? object-slots-set!)
         (only-in :clan/poo/mop TypeError?)
         (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile. agentic-ai-lab-governance-source)
+        (only-in :agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
+        (only-in :agentic-ai-lab/modules/loop-engine/control/strategy make-loop-strategy-plan)
+        (only-in :agentic-ai-lab/modules/loop-engine/control/descriptor make-loop-pattern-descriptor)
         (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
         (only-in ../scheme/policy/func project-policy)
         (only-in ../scheme/gateway/capture capture-gateway-source deliver-gateway-source)
@@ -16,6 +19,11 @@
 (export gateway-source-test)
 
 (def commitment (make-string 64 #\a))
+(def source-governor
+  (make-loop-governor 'weaver-test
+    (make-loop-strategy-plan 'source
+      (list (make-loop-pattern-descriptor 'infer "Original inference" '((level . l2)))))
+    '()))
 (def profile
   (.o (:: @ AgenticAILabGovernanceProfile.) identity: "weaver/test" revision: "1" owner: "operator"))
 (def task
@@ -310,7 +318,7 @@
                        plans: (list (.o (:: @ plan) routes: (reverse (.get plan routes))))))) => #f))
     (test-case "assessed compilation owns its image across all delegated callbacks"
       (def field-labels '(policy schema family endpoint nodes routes profile root policy-id asset-path))
-      (def phase-labels '(after-return assessment reproject project governor preflight))
+      (def phase-labels '(after-return assessment reproject project ignored-governance-selector preflight))
       (def report
         (property.check-property
           (generator.generator-sequence
@@ -356,9 +364,11 @@
                           assess: (lambda (_profile _context) (when (= phase 1) (mutate!)) #t))
                       (.o validate: (lambda (_policy _schema) (when (= phase 5) (mutate!)) #t)
                           project: project-image)
-                      #f profile-value (.o request: 'publish source_root: root-text)
+                      source-governor profile-value (.o request: 'publish source_root: root-text)
                       '() (list task-value) (list plan-value) pub-value))))
-              (if (= phase 0)
+              ;; A caller's Governance.open callback is no longer a selection
+              ;; hook. It must remain uncalled; upstream Governor owns selection.
+              (if (or (= phase 0) (= phase 4))
                 (begin
                   (mutate!)
                   (and (not (eq? outcome 'refused))
@@ -384,18 +394,58 @@
       (check-equal?
         (refusal-message
           (lambda ()
-            (compile-gateway (.o open: (lambda (_governor _states) '("infer")))
+            (compile-gateway (.o)
                              (.o validate: (lambda (_policy _schema) #f)
                                  project: (lambda (p text root) (project-policy p text '() root)))
-                             #f profile (.o request: 'publish) '() (list task) (list plan) source-publication)))
+                             source-governor profile (.o request: 'publish) '() (list task) (list plan) source-publication)))
         "Policy preflight declined the source handoff"))
+    (test-case "upstream Governor selection cannot be replaced by a Governance callback"
+      (def report
+        (property.check-property
+          (generator.generator-sequence
+            (list (generator.generator-integer 0 1) (generator.generator-integer 0 1)))
+          (lambda (row)
+            (let* ((denied? (= (car row) 1)) (occupied? (= (cadr row) 1))
+                   (selector-calls 0) (assessments 0)
+                   (governor (make-loop-governor 'weaver-test
+                     (make-loop-strategy-plan 'source
+                       (list (make-loop-pattern-descriptor 'infer "Original inference" '((level . l2)))))
+                     (if denied? '((shared-denylist . (infer))) '())))
+                   (outcome
+                    (refusal-message
+                      (lambda ()
+                        (compile-gateway
+                          (.o open: (lambda (_governor _states)
+                                      (set! selector-calls (1+ selector-calls)) '("infer"))
+                              assess: (lambda (_profile _context)
+                                        (set! assessments (1+ assessments)) #t))
+                          (.o validate: (lambda (_policy _schema) #t)
+                              project: (lambda (p text root) (project-policy p text '() root)))
+                          governor profile (.o request: 'publish)
+                          (if occupied? '(((acting_on . infer))) '())
+                          (list task) (list plan) source-publication)))))
+              (and (= selector-calls 0)
+                   (if (or denied? occupied?)
+                     (and (= assessments 0) (string? outcome))
+                     (and (= assessments 1) (not outcome))))))
+          (property.make-specification
+            (lambda (row) (and (list? row) (= (length row) 2)
+                              (andmap (lambda (value) (and (exact-integer? value) (<= 0 value 1))) row)))
+            (lambda (row) (apply + row)))
+          seed: 947 cases: 32 size: 32 shrink-budget: 32
+          policy: (property.make-policy name: 'upstream-governor-ownership
+                    labels: (lambda (row)
+                              (list (if (= (car row) 1) 'denied 'not-denied)
+                                    (if (= (cadr row) 1) 'occupied 'idle)))
+                    required: '((denied . 1) (not-denied . 1) (occupied . 1) (idle . 1)))))
+      (check-property report)
+      (check-equal? (property.report-accepted report) 32))
     (test-case "a false Governance assessment cannot emit a source handoff"
       (check-equal?
         (refusal-message
           (lambda ()
-            (compile-gateway (.o open: (lambda (_governor _states) '("infer"))
-                                assess: (lambda (_profile _context) #f))
+            (compile-gateway (.o assess: (lambda (_profile _context) #f))
                              (.o validate: (lambda (_policy _schema) #t)
                                  project: (lambda (p text root) (project-policy p text '() root)))
-                             #f profile (.o request: 'publish) '() (list task) (list plan) source-publication)))
+                             source-governor profile (.o request: 'publish) '() (list task) (list plan) source-publication)))
         "Governance declined the source handoff"))))

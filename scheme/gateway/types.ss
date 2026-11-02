@@ -1,13 +1,18 @@
 ;;; Gateway configuration operations; actual routing compilation remains in Go.
 (import (only-in :clan/poo/object .cc)
         (only-in :clan/poo/mop Function Bool)
-        (only-in :clan/poo/type Record List)
+        (only-in :clan/poo/type Record List Pair Or Symbol String Enum)
         (only-in :yuanxu/object-types/contracts YuanxuContract.)
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceScopeContract
-                 GovernanceContext GovernorState AgenticAILabGovernanceProfile +loop-governor-type-contract+)
+                 GovernanceContext AgenticAILabGovernanceProfile)
+        (only-in :agentic-ai-lab/modules/loop-engine/control/governor +loop-governor-type-contract+)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyScopeContract)
         "./contracts.ss")
 (export GatewayScopeContract GovernanceScopeContract PolicyScopeContract GatewaySourceProducer GatewayProgram)
+;;; Gateway's typed projection of the upstream governor's state input. Selection
+;;; algorithms and governor objects remain owned by Agentic AI Lab.
+(def ActionKey (Or Symbol String (Enum #f)))
+(def GovernorState (List (Pair Symbol ActionKey)))
 (def GatewaySourceProducer (Function (list GatewayArtifact) (list GatewayArtifact)))
 (def GatewayProgram
   (.cc (Record install: (list (Function (list Bool) (list GatewaySourceProducer)))

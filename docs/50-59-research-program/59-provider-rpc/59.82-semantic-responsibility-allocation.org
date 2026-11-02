@@ -20,6 +20,43 @@ service or permits a shortcut between source compilation and external bytes.
 
 * Scheme semantics and upstream reuse
 
+** Governance and Governor are separate upstream responsibilities
+
+| Agentic AI Lab public owner | Meaning | Weaver integration |
+|----------------------------+---------+--------------------|
+| =modules/governance/interface.ss= | Engine-neutral Profile, threat model, assessment and open generic dispatch | Configure an upstream Profile; retain only gateway-specific exact source/context binding |
+| =modules/governor/config.ss= | Public module-selection bundle for the loop governor; other standalone role files currently publish no additional bindings | Reuse the existing upstream composition mechanism rather than declaring a second selection language |
+| =modules/loop-engine/control/governor.ss= | Public facade for actual governor objects, policy classification and contract projection | Project eligible symbolic nodes to gateway identifiers; retain upstream denylist, state conflict and aggregate-selection rules |
+
+Keep these contracts separate under the common upstream library. They can be
+configured together without merging assessment and selection into one method.
+The current directory named governor is largely a selection facade, whereas its
+kernel lives under loop-engine/control. This naming/layout does not make it a
+second Governance framework. No upstream directory or module identity is renamed
+by this change.
+
+Weaver's =GovernanceScopeContract= now exposes only the specific typed =assess=
+method. Gateway compilation calls the upstream governor facade directly and
+performs only symbol-to-string projection. A caller-supplied =Governance.open=
+slot cannot replace that selection. The POO Record/Function boundary and the
+upstream Governor object contract remain distinct, composable checks.
+
+Upstream configuration bundles select modules and features; actual objects are
+explicit caller values. A Profile is extended through upstream POO inheritance
+and generic dispatch. Configuration must not acquire ambient send authority.
+Existing =init.ss= declares the local adapting scopes, and =gerbil.pkg= declares
+Agentic AI Lab as the inherited dependency. No nested package, extra framework
+DSL or independent Yuanxu dependency is added.
+
+Framework-level Profile protocols, governor algorithms and reusable module
+composition belong upstream. Gateway-specific source projections, Cedar provider
+adaptation, authoritative publication and final execution remain downstream.
+The exact source/context snapshot checks still live in Weaver: their gateway
+wire fields are application-specific. Further extraction must establish a public
+upstream contract first, rather than moving code and importing private files.
+
+** Semantic and execution allocation
+
 Scheme owns routine meaning, original task scope, required parent profiles and
 permitted derivation or alias relations. Reuse Agentic AI Lab Governor selection
 and Governance assessment, obligations and source assets. Reuse inherited specific
@@ -71,6 +108,20 @@ Do not introduce parallel issuer credentials, another ledger or content deduplic
 as a substitute for that binding.
 
 * Model validation and delivery gate
+
+The standard Scheme suite uses the upstream POO property framework to generate
+denylist/state combinations. It checks that an injected Governance selector is
+never called, blocked nodes cannot reach assessment and eligible nodes still
+require assessment. The existing 128-case callback/image property retains its
+mutation checks; its former selector phase now checks that the removed callback
+is ignored, rather than preserving a nonexistent dispatch hook.
+
+The Quint boundary independently requires =governorChecked= and
+=governanceChecked=. Its missing-Governor negative control admits the unsafe
+boundary only through the deliberately unsafe action and witnesses invariant
+failure. Lean proves neither accepted check can replace the other. These are
+composition laws conditional on runtime refinement; they do not prove the
+upstream classification algorithm, identity provenance or final transport.
 
 =TestSysMLSemanticResponsibilityAllocation= queries the linked strict OpenSysML
 model for the four typed action owners and rejects allocation of GuardFinalEffect

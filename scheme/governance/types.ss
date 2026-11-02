@@ -1,12 +1,11 @@
 ;;; Scheme POO scope Contract for inert governance semantics.
 (import (only-in :clan/poo/object .cc)
         (only-in :clan/poo/mop Function Bool)
-        (only-in :clan/poo/type Record List String Symbol Pair Or Enum)
+        (only-in :clan/poo/type Record List String Symbol Or Enum)
         (only-in :yuanxu/object-types/contracts YuanxuContract.)
-        (only-in :agentic-ai-lab/modules/governance/types AgenticAILabGovernanceProfile)
-        (only-in :agentic-ai-lab/modules/loop-engine/control/governor +loop-governor-type-contract+))
-(export GovernanceScopeContract GovernanceContext GovernanceAssessmentContext GovernorState ActionKey
-        AgenticAILabGovernanceProfile +loop-governor-type-contract+ GovernanceProfileSnapshot)
+        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile))
+(export GovernanceScopeContract GovernanceContext GovernanceAssessmentContext
+        AgenticAILabGovernanceProfile GovernanceProfileSnapshot)
 (def GovernanceContext
   (.cc (Record request: (list (Enum publish)) source_root: (list String optional: #t))
        identity: 'weaver/governance/context sealed: #t))
@@ -44,11 +43,7 @@
                threats: (list (List ThreatSnapshot)) policies: (list (List PolicySourceSnapshot))
                source_assets: (list (List SourceAssetSnapshot)))
        identity: 'weaver/governance/profile-snapshot sealed: #t))
-(def ActionKey (Or Symbol String (Enum #f)))
-(def GovernorState (List (Pair Symbol ActionKey)))
 (def GovernanceScopeContract
   (.cc YuanxuContract. value-contract: (Record
-         assess: (list (Function (list Bool) (list AgenticAILabGovernanceProfile GovernanceAssessmentContext)))
-         open: (list (Function (list (List String))
-                              (list +loop-governor-type-contract+ (List GovernorState)))))
+         assess: (list (Function (list Bool) (list AgenticAILabGovernanceProfile GovernanceAssessmentContext))))
        identity: 'weaver/governance/scope))

@@ -10,7 +10,7 @@
         (prefix-in :clan/poo/testing/property property.)
         (only-in :clan/poo/testing/property/test check-property)
         (only-in ../scheme/governance/objects Governance.)
-        (only-in ../scheme/governance/func governor-open-nodes))
+        (only-in ../scheme/gateway/func governor-open-nodes))
 (export governance-test)
 (def (assess-governance! profile context) ((.get Governance. assess) profile context))
 

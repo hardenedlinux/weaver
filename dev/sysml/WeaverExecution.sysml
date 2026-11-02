@@ -162,6 +162,11 @@ package WeaverExecution {
            task identity and permitted alias/derivation relations. The original
            binds claim, profile commitment and shared budget/history domains;
            reconnect, source rotation and route fallback cannot redefine it.
+           Governor selects eligible steps; Governance assesses the configured
+           Profile through open generic dispatch. They compose in the source
+           program but do not share a replaceable selector/assessment method.
+           The downstream GovernanceScopeContract exposes assessment only;
+           Gateway projects the upstream public governor contract directly.
            This is semantic ownership, not a separate identity issuer service.
            An authenticated independent original must precede compilation;
            Scheme cannot authenticate that original merely by echoing it.
@@ -179,7 +184,7 @@ package WeaverExecution {
         attribute securityName : String = "Scheme / Original contract";
         attribute securityResponsibility : String = "Task scope and required parents\nPublished selected profile\nConfiguration grants no send right";
         attribute displayName : String = "Scheme / Semantics";
-        attribute responsibility : String = "Agentic AI Lab modules\nRoutines + original profiles\nPolicy and source projections";
+        attribute responsibility : String = "Governor: eligible steps\nGovernance: profile assessment\nInert source projections";
         attribute glyph : String = "library";
         attribute visualRole : String = "publication";
         doc /* Scheme is the programmable semantic owner of reusable routines,

@@ -1,11 +1,10 @@
-;;; Reuse Agentic AI Lab's actual Profile and governor implementations.
-(import (only-in :agentic-ai-lab/modules/loop-engine/control/governor loop-governor->contract)
-        (only-in :agentic-ai-lab/modules/governance/funs agentic-ai-lab-governance-evaluate)
-        (only-in :agentic-ai-lab/modules/governance/types agentic-ai-lab-governance-assessment?)
+;;; Reuse Agentic AI Lab's actual Profile and assessment protocols.
+(import (only-in :agentic-ai-lab/modules/governance/interface
+                 agentic-ai-lab-governance-evaluate agentic-ai-lab-governance-assessment?)
         (only-in :clan/poo/mop element?)
         (only-in :clan/poo/object .ref)
         "./types.ss" "./capture.ss")
-(export assess-governance! governor-open-nodes)
+(export assess-governance!)
 
 (def (assess-governance! profile context blocking-threat?)
   (def original-profile (governance-profile-snapshot profile))
@@ -38,7 +37,3 @@
                  (not (.ref assessment 'runtime-executed?)))
       (error "Scheme Governance assessment does not admit an inert source handoff")))
   #t)
-
-(def (governor-open-nodes governor states)
-  (let ((contract (loop-governor->contract governor states)))
-    (map symbol->string (cdr (assq 'open-patterns contract)))))

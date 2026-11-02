@@ -466,6 +466,7 @@ structure BoundaryContext where
   committedOutput : Nat
   schemaChecked : Bool
   governanceChecked : Bool
+  governorChecked : Bool
   borrowedRegionValid : Bool
   borrowedRegionStable : Bool
   rustOwned : Bool
@@ -486,7 +487,7 @@ def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
   s.authenticatedCallback = s.expectedCallback ∧
   s.captured = s.expectedCapture ∧ s.inputValue = s.committedInput ∧
   s.semanticOutput = s.committedOutput ∧ s.schemaChecked = true ∧
-  s.governanceChecked = true ∧ s.borrowedRegionValid = true ∧
+  s.governanceChecked = true ∧ s.governorChecked = true ∧ s.borrowedRegionValid = true ∧
   s.borrowedRegionStable = true ∧ s.rustOwned = true ∧
   s.retainsForeignPointer = false ∧ s.reentrant = false ∧
   s.captureEmissions = 1 ∧ s.captureCompleted = true ∧ s.capturePoisoned = false ∧
@@ -498,6 +499,19 @@ instance (s : BoundaryContext) : Decidable s.Ready := by
   infer_instance
 
 def BoundaryContext.ready (s : BoundaryContext) : Bool := decide s.Ready
+
+/-- Native refinement must supply both upstream checks independently. A ready
+Governance assessment cannot replace the Governor's eligible-node projection. -/
+theorem governance_cannot_replace_governor (s : BoundaryContext)
+    (missing : s.governorChecked = false) : s.ready = false := by
+  simp [BoundaryContext.ready, BoundaryContext.Ready, missing]
+
+theorem governor_cannot_replace_governance (s : BoundaryContext)
+    (missing : s.governanceChecked = false) : s.ready = false := by
+  simp [BoundaryContext.ready, BoundaryContext.Ready, missing]
+
+#print axioms governance_cannot_replace_governor
+#print axioms governor_cannot_replace_governance
 
 theorem source_capture_requires_one_emission (s : BoundaryContext)
     (wrong : s.captureEmissions ≠ 1) : s.ready = false := by

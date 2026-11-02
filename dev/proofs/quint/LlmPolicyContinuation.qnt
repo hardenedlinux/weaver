@@ -33,7 +33,7 @@ module LlmPolicyContinuation {
   // A Binding refusal and same-VM original recovery are both required; local
   // shape validity alone cannot establish the input/output equality below.
   type BoundaryEvidence={kind:int,root:int,claim:int,profile:int,configurationSchema:int,normalizer:int,programModule:int,environment:int,
-    vm:int,call:int,epoch:int,cut:int,input:int,output:int,schemaChecked:bool,governanceChecked:bool,
+    vm:int,call:int,epoch:int,cut:int,input:int,output:int,schemaChecked:bool,governanceChecked:bool,governorChecked:bool,
     readable:bool,stable:bool,owned:bool,retainedPointer:bool,reentrant:bool,
     emissions:int,captureCompleted:bool,capturePoisoned:bool,schemeTyped:bool,exactIntegers:bool,keyKinds:bool,assessmentImageOwned:bool,status:int}
   type BoundaryCheck={evidence:BoundaryEvidence,configurationSchema:int,normalizer:int,programModule:int,environment:int,vm:int,call:int,epoch:int,cut:int,value:int,senderVM:int,senderCall:int,senderEpoch:int}
@@ -87,7 +87,7 @@ module LlmPolicyContinuation {
   pure def catalogValid(entries:Set[Producer]):bool=entries.size()>0 and entries.size()<=64 and entries.forall(e=>producerValid(e)) and
     entries.forall(a=>entries.forall(b=>((a.name==b.name or a.root==b.root) implies a==b) and (a.publication==b.publication implies a.proposal==b.proposal)))
   pure val boundary0={kind:0,root:10,claim:11,profile:20,configurationSchema:1,normalizer:1,programModule:0,environment:0,
-    vm:0,call:0,epoch:0,cut:0,input:0,output:0,schemaChecked:true,governanceChecked:true,
+    vm:0,call:0,epoch:0,cut:0,input:0,output:0,schemaChecked:true,governanceChecked:true,governorChecked:true,
     readable:true,stable:true,owned:true,retainedPointer:false,reentrant:false,
     emissions:1,captureCompleted:true,capturePoisoned:false,schemeTyped:true,exactIntegers:true,keyKinds:true,assessmentImageOwned:true,status:0}
   def tip=if(s.log.length()==0)0 else s.log.nth(s.log.length()-1).change.id
@@ -117,7 +117,7 @@ module LlmPolicyContinuation {
     e.configurationSchema>0 and e.configurationSchema==u.configurationSchema and e.normalizer==u.normalizer and
     e.programModule==u.programModule and e.environment==u.environment and e.vm==u.vm and e.call==u.call and e.epoch==u.epoch and
     u.senderVM==u.vm and u.senderCall==u.call and u.senderEpoch==u.epoch and
-    e.cut==u.cut and e.input==u.value and e.output==u.value and e.schemaChecked and e.governanceChecked and
+    e.cut==u.cut and e.input==u.value and e.output==u.value and e.schemaChecked and e.governanceChecked and e.governorChecked and
     e.readable and e.stable and e.owned and not(e.retainedPointer) and not(e.reentrant) and
     e.emissions==1 and e.captureCompleted and not(e.capturePoisoned) and
     e.schemeTyped and e.exactIntegers and e.keyKinds and e.assessmentImageOwned and e.status==0}
@@ -646,6 +646,9 @@ module LlmPolicyContinuation {
   run jsonAndSchemeShareSemanticOutputTest=init.then(recordBoundary(boundary0)).then(recordBoundary(boundary0.with("kind",1)))
     .expect(safety and s.boundaryRecords.length()==2 and s.calls==0 and s.frontier==0 and s.hold==6)
   run jsonCannotSkipGovernanceTest=init.then(recordBoundary(boundary0.with("governanceChecked",false)).fail())
+  run governanceCannotReplaceGovernorTest=init.then(recordBoundary(boundary0.with("governorChecked",false)).fail())
+  run missingGovernorCounterexampleTest=init
+    .then(unsafeBoundaryRecord(boundary0.with("governorChecked",false))).expect(not(boundaryBound))
   run schemeCannotSkipConfigurationValidationTest=init.then(recordBoundary(boundary0.with("kind",1).with("schemaChecked",false)).fail())
   run unconstrainedDefaultSchemaCannotAdmitTest=init.then(recordBoundary(boundary0.with("configurationSchema",0)).fail())
   run changedConfigurationSchemaRejectsOldCaptureTest=factPending.then(rebindConfiguration).then(projectFromBoundary(boundary0).fail())

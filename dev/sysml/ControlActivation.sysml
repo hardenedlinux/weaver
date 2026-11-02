@@ -14,6 +14,12 @@ package ControlActivation {
            Startup errors/cancellation close and naturally drain the same owner. */
     }
     requirement def SpecificSourceContracts {
+        doc /* Agentic AI Lab owns Governor objects, selection algorithms and
+           Governance Profile/threat assessment protocols. Configured upstream
+           modules compose through their existing library interfaces. Weaver's
+           Governance scope exposes only typed assess; it cannot override
+           Governor selection with an open callback. A selected step still needs
+           an accepted assessment, publication and current final-use authority. */
         doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
     requirement def SourceStartupObservation {
