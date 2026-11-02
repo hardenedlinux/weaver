@@ -9,6 +9,38 @@ import (
 	"testing"
 )
 
+func TestSelectedArchitectureKeepsExactMappedScope(t *testing.T) {
+	root, err := FindRoot(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	inputs, err := SourceInputs(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	isolated := copyVerificationInputs(t, root, inputs)
+	const selected = "docs/50-59-research-program/59-provider-rpc/59.77-mrr-turso-storage.d2"
+	if _, err := publishModelViewsWithEvidence(context.Background(), isolated, nil, selected); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(filepath.Join(isolated, ".cache/d2/model-views.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var capture ModelViewCapture
+	if err := json.Unmarshal(data, &capture); err != nil {
+		t.Fatal(err)
+	}
+	if len(capture.Mapped) != 1 || capture.Mapped[selected] == "" {
+		t.Fatal("selected mapping widened or lost its source")
+	}
+	for _, selection := range [][]string{{"../outside.d2"}, {selected, selected}, {"docs/missing.d2"}, {"docs/architecture/diagrams/00d-zero-trust-overview.d2"}} {
+		if _, err := publishModelViewsWithEvidence(context.Background(), isolated, nil, selection...); err == nil {
+			t.Fatalf("accepted incomplete or invalid scope: %v", selection)
+		}
+	}
+}
+
 func TestD2SemanticCopyCannotOverrideSDKProjection(t *testing.T) {
 	root, err := FindRoot(".")
 	if err != nil {

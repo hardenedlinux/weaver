@@ -6,7 +6,7 @@ vars: { d2-config: { data: { figure: |json
     "engineering",
     "weaver"
   ],
-  "title": "One store. One deciding scope.",
+  "title": "Shared constraints. Independent effects.",
   "purpose": "architecture",
   "kind": "system",
   "language": "en",
@@ -34,7 +34,8 @@ vars: { d2-config: { data: { figure: |json
     "model8": "dev/sysml/WeaverExecution.sysml",
     "model9": "dev/sysml/ZeroTrustRefinement.sysml",
     "proof0": "dev/proofs/lean/RuntimeAdmission.lean",
-    "proof1": "dev/proofs/lean/StreamingExecution.lean",
+    "proof1": "dev/proofs/lean/SharedDomains.lean",
+    "proof2": "dev/proofs/lean/StreamingExecution.lean",
     "sdkCapture": "dev/sysml/captures/WeaverViews-storage.json"
   },
   "copy": {},
@@ -54,7 +55,8 @@ vars: { d2-config: { data: { figure: |json
     ],
     "obligationRefs": [
       "proof0",
-      "proof1"
+      "proof1",
+      "proof2"
     ],
     "evidenceRefs": []
   },
@@ -75,14 +77,20 @@ vars: { d2-config: { data: { figure: |json
       "n1": "library",
       "n2": "decision",
       "n3": "capture",
-      "n4": "pending"
+      "n4": "decision",
+      "n5": "reference",
+      "n6": "decision",
+      "n7": "pending"
     },
     "roles": {
       "n0": "semantic",
       "n1": "publication",
       "n2": "policy",
       "n3": "execution",
-      "n4": "pending"
+      "n4": "policy",
+      "n5": "publication",
+      "n6": "publication",
+      "n7": "pending"
     },
     "edgeLabels": false,
     "graph": {
@@ -97,25 +105,43 @@ vars: { d2-config: { data: { figure: |json
         {
           "id": "n1",
           "layoutOptions": {
-            "elk.partitioning.partition": "0"
+            "elk.partitioning.partition": "1"
           }
         },
         {
           "id": "n2",
           "layoutOptions": {
-            "elk.partitioning.partition": "1"
+            "elk.partitioning.partition": "2"
           }
         },
         {
           "id": "n3",
           "layoutOptions": {
-            "elk.partitioning.partition": "1"
+            "elk.partitioning.partition": "3"
           }
         },
         {
           "id": "n4",
           "layoutOptions": {
-            "elk.partitioning.partition": "2"
+            "elk.partitioning.partition": "4"
+          }
+        },
+        {
+          "id": "n5",
+          "layoutOptions": {
+            "elk.partitioning.partition": "5"
+          }
+        },
+        {
+          "id": "n6",
+          "layoutOptions": {
+            "elk.partitioning.partition": "6"
+          }
+        },
+        {
+          "id": "n7",
+          "layoutOptions": {
+            "elk.partitioning.partition": "7"
           }
         }
       ],
@@ -131,14 +157,17 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::storage",
-    "modelHash": "ca4288bd33fa55a8541b1d4f44805a5db373cebd3382b8531fcda8acabf22f28",
+    "modelHash": "4f034a5f6971e2fc83cfde2d44ab1858d016ca428fe03340e90f55365a9d0b70",
     "portProjection": "owner",
     "labels": {
       "n0": "Rust / Authority ledger\nMRR Data Backend / Turso\nClaim, budget and fence together\nPersist original consumption",
-      "n1": "MRR Data / Turso\nOne physical storage engine\nWAL, FULL and foreign keys\nSame backend for tests and runtime",
-      "n2": "One deciding transaction\nClaim, budget and fence together\nCommit performs no provider send\nRollback or poison on failure",
+      "n1": "MRR Data / Turso\nOne physical storage engine\nShared database, private connections\nDurable original outcomes",
+      "n2": "Original claim admission\nReserve local and shared capacity\nRetain the exact claim and history\nCommit consumption before effects",
       "n3": "Rust / Final broker\nOwn consumed opportunities\nGuard dispatch and each range\nUnknown exposure remains held",
-      "n4": "Unknown stays held\nRead the original outcome\nNo new claim on a retry\nNo refund from missing evidence"
+      "n4": "Shared-domain execution custody\nResolve roots before the snapshot\nShared budget or history orders use\nCurrent Policy constrains actual bytes",
+      "n5": "Original task and origin registry\nOne stable task, one original origin\nSource changes retain the same scope\nRecover the original commit decision",
+      "n6": "Policy and owner publication\nExclusive Policy and domain changes\nDrain all live execution scopes\nLater releases rejoin the new fence",
+      "n7": "Unknown stays held\nRead the original outcome\nNo new claim on a retry\nNo refund from missing evidence"
     }
   }
 }

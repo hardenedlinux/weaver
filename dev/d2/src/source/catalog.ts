@@ -11,7 +11,7 @@ function files(directory: string): string[] {
     return entry.isDirectory() ? (entry.name === 'lib' ? [] : files(file)) : [file];
   });
 }
-export function collectCatalog(root: string): SourceCatalog {
+export function collectCatalog(root: string, selection?: readonly string[]): SourceCatalog {
   const fs: Record<string, string> = {};
   const views: ViewEntry[] = [];
   for (const file of [...files(path.join(root, 'docs')).filter(file => file.endsWith('.d2')), ...files(path.join(root, 'dev/d2/themes')).filter(file => file.endsWith('.d2'))]) {
@@ -37,7 +37,7 @@ export function collectCatalog(root: string): SourceCatalog {
       }
     }
   }
-  const modelCapture=expected?readModelCapture(rawCapture!,expected,{...fs,...documents}):undefined;
+  const modelCapture=expected?readModelCapture(rawCapture!,expected,{...fs,...documents},selection):undefined;
   for(const[view,capture]of Object.entries(capturedViews(modelCapture)))documents['dev/sysml/captures/'+view.replaceAll('::','-')+'.json']=JSON.stringify(capture);
   for (const name of ['go', 'rust', 'kubernetes']) {
     const source = `docs/architecture/diagrams/assets/${name}.svg`;

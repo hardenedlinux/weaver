@@ -174,7 +174,7 @@ func publishModelViews(ctx context.Context, root string) (string, error) {
 	return publishModelViewsWithEvidence(ctx, root, results)
 }
 
-func publishModelViewsWithEvidence(ctx context.Context, root string, results []Result) (string, error) {
+func publishModelViewsWithEvidence(ctx context.Context, root string, results []Result, selected ...string) (string, error) {
 	before, err := SourceInputs(root)
 	if err != nil {
 		return "", err
@@ -182,6 +182,25 @@ func publishModelViewsWithEvidence(ctx context.Context, root string, results []R
 	capture, err := CaptureModelViews(ctx, root)
 	if err != nil {
 		return "", err
+	}
+	if len(selected) != 0 {
+		wanted := map[string]bool{}
+		for _, source := range selected {
+			if !filepath.IsLocal(source) || filepath.ToSlash(filepath.Clean(source)) != source || wanted[source] {
+				return "", fmt.Errorf("invalid or duplicate selected view: %s", source)
+			}
+			wanted[source] = true
+		}
+		for view, description := range capture.Descriptions {
+			if !wanted[description.File] {
+				delete(capture.Descriptions, view)
+			} else {
+				delete(wanted, description.File)
+			}
+		}
+		if len(wanted) != 0 {
+			return "", fmt.Errorf("unknown selected model views: %v", wanted)
+		}
 	}
 	if err := mapModelDeclarationsWithEvidence(root, capture, results); err != nil {
 		return "", err

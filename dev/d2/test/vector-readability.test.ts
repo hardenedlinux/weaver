@@ -6,13 +6,14 @@ import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../../../',import.meta.url));
 const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
 test('all Library model SVGs retain legible fonts, vector icons and complete text at GitHub width',async()=>{
- const receipt:{status:string;report:{modelCaptureSHA256:string;images:{source:string;layout:string;sourceSHA256:string;svgSHA256:string}[]}}=JSON.parse(await readFile(root+'.cache/d2/latest-render.json','utf8'));
+ const receipt:{status:string;report:{selection?:string[];modelCaptureSHA256:string;images:{source:string;layout:string;sourceSHA256:string;svgSHA256:string}[]}}=JSON.parse(await readFile(root+'.cache/d2/latest-render.json','utf8'));
  const modelDigest=process.env.WEAVER_DIAGRAM_MODEL_SHA256;
  if(!modelDigest)throw new Error('Standalone vector admission requires the Go-owned SDK capture');
  expect(receipt.status).toBe('PASS');
  expect(receipt.report.modelCaptureSHA256).toBe(modelDigest);
  const images=receipt.report.images.filter(image=>image.layout==='model-view'||image.layout==='sequence-view');
- expect(images.length).toBeGreaterThan(3);
+ if(receipt.report.selection){expect(images.map(image=>image.source).sort()).toEqual([...receipt.report.selection].sort());expect(images.length).toBeGreaterThan(0);}
+ else expect(images.length).toBeGreaterThan(3);
  const browser=await chromium.launch();
  const failures:string[]=[];
  try{

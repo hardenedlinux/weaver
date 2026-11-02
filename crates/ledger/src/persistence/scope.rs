@@ -4,6 +4,7 @@ use futures_executor::block_on;
 use std::{
     ops::Deref,
     sync::atomic::{AtomicBool, Ordering},
+    sync::{MutexGuard, RwLockReadGuard, RwLockWriteGuard},
 };
 
 /// Exclusive native transaction; final guarded callbacks keep this scope alive.
@@ -11,19 +12,65 @@ pub struct WriteScope<'a> {
     connection: &'a driver::Connection,
     native: Option<driver::transaction::Transaction<'a>>,
     poisoned: &'a AtomicBool,
+    _exclusive: Option<RwLockWriteGuard<'a, ()>>,
+    _shared: Option<RwLockReadGuard<'a, ()>>,
+    _domains: Vec<MutexGuard<'a, ()>>,
 }
 /// Acquire an immediate write transaction with exclusive Rust session custody.
 pub fn begin(session: &mut Session) -> driver::Result<WriteScope<'_>> {
+    start(session, None)
+}
+/// Parallel MVCC admission or final use for one original claim/budget/history family.
+/// Global mutations use `begin`, excluding every live family scope through commit.
+pub fn begin_family<'a>(session: &'a mut Session, family: &str) -> driver::Result<WriteScope<'a>> {
+    start(session, Some(family))
+}
+fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<WriteScope<'a>> {
     session.require_quiescent()?;
+    let concurrent = session.owner.journal == super::Journal::Mvcc;
+    let parallel = concurrent && family.is_some();
+    let exclusive = if parallel || !concurrent {
+        None
+    } else {
+        Some(session.owner.gate.write().map_err(super::owner::error)?)
+    };
+    let shared = if parallel {
+        Some(session.owner.gate.read().map_err(super::owner::error)?)
+    } else {
+        None
+    };
+    let domains = if parallel {
+        let keys = crate::domains::lock_keys(&session.connection, family.unwrap_or_default())?;
+        let mut stripes: Vec<usize> = keys.iter().map(|key| super::owner::stripe(key)).collect();
+        stripes.sort_unstable();
+        stripes.dedup();
+        stripes
+            .into_iter()
+            .map(|index| {
+                session.owner.families[index]
+                    .lock()
+                    .map_err(super::owner::error)
+            })
+            .collect::<driver::Result<Vec<_>>>()?
+    } else {
+        Vec::new()
+    };
     // The mutable Session borrow provides exclusive custody for the whole scope.
     let native = block_on(driver::transaction::Transaction::new_unchecked(
         &session.connection,
-        driver::transaction::TransactionBehavior::Immediate,
+        if parallel {
+            driver::transaction::TransactionBehavior::Concurrent
+        } else {
+            driver::transaction::TransactionBehavior::Immediate
+        },
     ))?;
     Ok(WriteScope {
         connection: &session.connection,
         native: Some(native),
         poisoned: &session.poisoned,
+        _exclusive: exclusive,
+        _shared: shared,
+        _domains: domains,
     })
 }
 impl WriteScope<'_> {

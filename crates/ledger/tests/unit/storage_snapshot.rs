@@ -29,6 +29,13 @@ pub fn copy_closed(source: impl AsRef<Path>, destination: impl AsRef<Path>) -> i
         Err(e) if e.kind() == io::ErrorKind::NotFound => remove_if_present(&destination_wal)?,
         Err(e) => return Err(e),
     }
+    let source_log = source.with_extension("db-log");
+    let destination_log = destination.with_extension("db-log");
+    match fs::copy(&source_log, &destination_log) {
+        Ok(_) => (),
+        Err(e) if e.kind() == io::ErrorKind::NotFound => remove_if_present(&destination_log)?,
+        Err(e) => return Err(e),
+    }
     // No process may retain this derived index across a whole-image restore.
     remove_if_present(&sidecar(destination, "-shm"))?;
     Ok(())

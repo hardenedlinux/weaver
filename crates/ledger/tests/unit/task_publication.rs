@@ -19,6 +19,49 @@ fn source(id: &str, parent: u64) -> Publication {
 }
 
 #[test]
+fn lost_birth_projection_cannot_authorize_or_be_silently_repaired() {
+    let directory = tempfile::tempdir().expect("directory");
+    let path = directory.path().join("lost-birth.db");
+    let mut ledger = Ledger::open(&path).expect("ledger");
+    let original = source("birth-commit", 0);
+    ledger
+        .publish_typed(None, &original.policy, &original.schema, 1)
+        .expect("authority");
+    let key = ledger.stage_authority(&original).expect("stage");
+    let task = fixtures::task();
+    ledger
+        .register_published_task(&task, &key)
+        .expect("original task");
+    assert_eq!(
+        ledger
+            .publish_authority(&original)
+            .expect("birth commit")
+            .outcome,
+        PublicationOutcome::Committed
+    );
+    let mut proposal = fixtures::proposal(0, 1);
+    proposal.revision = 1;
+    proposal.fence = 2;
+    ledger.enqueue(&proposal).expect("hold");
+    let permit = ledger.consume("family", "n0").expect("consumed");
+    let fault = weaver_ledger::persistence::Session::open(&path).expect("fault writer");
+    weaver_ledger::persistence::exec(
+        &fault,
+        "DELETE FROM task_publications WHERE family='family'",
+        (),
+    )
+    .expect("partial recovery");
+    assert!(
+        ledger
+            .dispatch(permit, |_| panic!("lost birth reached transport"))
+            .is_err()
+    );
+    assert!(ledger.register_task(&task).is_err());
+    assert!(ledger.register_published_task(&task, &key).is_err());
+    assert_eq!(ledger.held("family").expect("unknown hold"), 1);
+}
+
+#[test]
 fn rejected_task_birth_cannot_execute_under_an_unrelated_allowing_policy() {
     let temp = tempfile::tempdir().expect("store");
     let path = temp.path().join("birth.db");

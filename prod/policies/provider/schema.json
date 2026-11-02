@@ -5,6 +5,9 @@
       "family":{"type":"String"},"node":{"type":"String"},"profile":{"type":"String"},"model":{"type":"String"},
       "profile_digest":{"type":"String"},"protocol":{"type":"String"},"output_token_limit":{"type":"Long"},"message_count":{"type":"Long"},
       "endpoint":{"type":"String"},"body_digest":{"type":"String"},"plan_digest":{"type":"String"},
+      "origin":{"type":"String","required":false},"budget_domain":{"type":"String","required":false},"history_domain":{"type":"String","required":false},
+      "task_key":{"type":"String","required":false},
+      "budget_epoch":{"type":"Long","required":false},"history_epoch":{"type":"Long","required":false},"shared_held":{"type":"Long","required":false},"shared_limit":{"type":"Long","required":false},"history_count":{"type":"Long","required":false},
       "ceiling":{"type":"Long"},"revision":{"type":"Long"},"fence":{"type":"Long"},"sequence":{"type":"Long"},"format":{"type":"String"}
     }}},
     "actions": {

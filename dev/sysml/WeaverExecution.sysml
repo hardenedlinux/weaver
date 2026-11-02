@@ -18,11 +18,45 @@ package WeaverExecution {
            mandatory. Atomicity and FULL durability are native refinement premises,
            exercised by actual concurrent/failure/restart/partial-write tests. */
     }
+    requirement def TursoMvccCustody {
+        doc /* Explicit MVCC retains one MRR Data Database under one process
+           lease. Admission, consumption and final callbacks hold shared custody
+           and the same authoritative origin/budget/history-root mutexes through native
+           commit or abort. Global mutations, owner transfers and schema changes
+           require exclusive custody and drain all live family scopes. Acquire
+           custody before resolving current roots and starting a snapshot. New
+           families may share either root; they acquire the same sorted mutexes.
+           Whole-domain unions drain every scope and fence old permits with new
+           root epochs. Only disjoint roots may overlap. Native conflicts
+           never replay callbacks or refund unknown exposure. Restart recovers
+           consumption, not volatile permits. Custody is not anti-rollback. */
+    }
+    requirement def SharedDomainAuthority {
+        doc /* Current authenticated source atomically registers an immutable
+           origin, canonical task and budget/history binding. A family alias
+           resolves to that original and cannot own another task or consumption.
+           Domain unions preserve every member, reservation and history event;
+           aggregate holds must fit the minimum original cap. Root epochs advance
+           before new use, fencing request, provider and stream owners. A lost
+           migration reply recovers its original operation/digest receipt. Native
+           final use validates exact manifests and history coverage under the
+           resolved root locks. New family, route, nonce and restored worker do
+           not authorize independent accounting. Genuine origin identity is a
+           source-admission premise; coherent rollback needs an independent floor. */
+    }
     requirement def OriginalTaskBinding {
         doc /* Preserve family, declared node, profile, endpoint and exact wire body commitment. */
+        doc /* A stable source-owned task key maps to one canonical family and
+           origin across source epochs. Original task/domain commitments and
+           registration decision commit with the task. Final use rejoins that
+           registry; partial recovery cannot backfill it. Fresh commands compare
+           the current source epoch, while replay of a committed decision is
+           observational only. Authentic assignment of the stable upstream task
+           key remains an issuer premise, not content-based deduplication. */
     }
     requirement def SharedBudget {
-        doc /* Original node holds sum to no more than the original family budget. */
+        doc /* Original node holds fit both their immutable task budget and the
+           authoritative shared root cap across all member families. */
         doc /* A single deciding projection covers request, stream-message and
            provider reservations together. Admission and actual use require all
            retained execution-kind claims and an exact bijection between each
@@ -96,7 +130,50 @@ package WeaverExecution {
     port def WirePort {
         out item request : CanonicalWireRequest;
     }
+    action def DeriveSemanticCandidate {
+        in item original : PolicyEvidenceDesign::SemanticCommitment;
+        out item candidate : PolicyEvidenceDesign::SourceCommand;
+        doc /* Derivation preserves independently admitted original meaning.
+           This action grants no publication, consumption or transport right. */
+    }
+    action def OrchestrateSourcePublication {
+        in item candidate : PolicyEvidenceDesign::SourceCommand;
+        out item command : PolicyEvidenceDesign::SourceCommand;
+        doc /* Preserve original commitment while submitting authenticated
+           current-source commands; reconcile uncertain outcomes by identity. */
+    }
+    action def CommitOriginalAdmission {
+        in item command : PolicyEvidenceDesign::SourceCommand;
+        out item observation : PolicyEvidenceDesign::PublishedObservation;
+        doc /* Existing deciding transaction, current authority and immutable
+           original binding. Commit produces an observation, never external IO. */
+    }
+    action def GuardFinalEffect {
+        in item permit : ConsumedPermit;
+        out item request : CanonicalWireRequest;
+        doc /* Rejoin actual current authority and retained consumption under
+           final custody. An inert candidate cannot invoke this action. */
+    }
     part def SchemeSemanticPublisher {
+        action deriveCandidate : DeriveSemanticCandidate;
+        doc /* Normative semantic allocation: reuse Agentic AI Lab Governor to
+           select admitted original scope and Governance to assess obligations,
+           evidence and source assets. Scheme defines routine meaning, original
+           task identity and permitted alias/derivation relations. The original
+           binds claim, profile commitment and shared budget/history domains;
+           reconnect, source rotation and route fallback cannot redefine it.
+           This is semantic ownership, not a separate identity issuer service.
+           An authenticated independent original must precede compilation;
+           Scheme cannot authenticate that original merely by echoing it.
+           Existing SourceExpectation/BoundSource checks preserve typed original
+           equality, not the truth of a caller-selected task key. End-to-end
+           authentic task-key issuance remains a delivery gap (59.82).
+           Output is an inert typed candidate through sourceCandidates. Reuse
+           inherited Record/Function contracts and Scheme-to-Rust FFI conversion;
+           no new governance DSL, credential system or parallel source ledger.
+           Scheme does not own database commits, spend-state, budget settlement,
+           transport credentials or final sends. A successful semantic assessment
+           cannot mint a ConsumedPermit or release an unknown reservation. */
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.ProfileObject.Publication";
         attribute leanFields : String = "context,session,selected,projected";
         attribute securityName : String = "Scheme / Original contract";
@@ -126,6 +203,13 @@ package WeaverExecution {
         port effectObservations : ~PolicyEvidenceDesign::EffectObservationPort;
     }
     part def GoControlAdapter {
+        action publishCandidate : OrchestrateSourcePublication;
+        doc /* Preserve the semantic original through configuration normalization,
+           protocol aliasing and authenticated publication. JSON/YAML populates
+           the same admitted contracts; it cannot define another authorization
+           language. Routing, retries and fallback select candidates within that
+           original. Go neither invents original task keys from session labels
+           nor treats compile/publication acknowledgments as final-use permits. */
         attribute displayName : String = "Go / Control + routing";
         attribute responsibility : String = "Cloud and protocol integration\nPublish authenticated proposals\nChoose eligible providers";
         attribute glyph : String = "go";
@@ -251,6 +335,12 @@ package WeaverExecution {
            authorize transport. AWS AgentCore stays platform-specific. */
     }
     part def RustPolicy {
+        doc /* Cedar/SPEC owns reusable authorization meaning and conditional
+           preservation laws. Rust materializes authenticated actual context and
+           evaluates the existing Cedar mechanism; it does not reimplement
+           Scheme semantics or add an independent identity authorization DSL.
+           Imported proof declarations must exist in the pinned dependency;
+           target Gateway declarations are not evidence of a checked import. */
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.Receipt";
         attribute leanFields : String = "preparationValid,contextMatches,sourceMatches,effectMatches,stateMatches,checksAccepted,policyCurrent,requestValid,entitiesValid,allowed";
         attribute securityName : String = "Cedar / Actual request";
@@ -275,6 +365,13 @@ package WeaverExecution {
         enum mrrDataBackend;
     }
     part def RustLedger {
+        action commitOriginal : CommitOriginalAdmission;
+        doc /* Implement the semantic original binding in the existing source
+           deciding transaction, with exact-outcome recovery and current fencing.
+           Rust validates provenance and equality; it cannot infer whether two
+           entirely relabeled tasks are the same original from body equality.
+           Retain claim, domain lineage and unknown holds across source handoff.
+           Model allocation does not close the authentic-key issuance gap. */
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.Proposal";
         attribute leanFields : String = "before,receipt,contextBound,authorityId,after,consumption";
         attribute securityName : String = "Rust / Original consumption";
@@ -298,7 +395,10 @@ package WeaverExecution {
            be recovered with fresh authoritative state. Complete closed-store
            fault images include the durable WAL and discard transient SHM.
            Physical driver reuse does not prove independent anti-rollback custody
-           or provider exactly-once delivery. MVCC scheduling is not activated. */
+           or provider exactly-once delivery. Explicit MVCC shares one process
+           owner and Database. Family scopes can overlap; global mutation and
+           publication excludes all live scopes. Final use overlaps only across
+           independent original claim/budget/history families. */
         doc /* One deciding store owns immutable tasks, reservations, logical keys, current revision and fence. */
         doc /* Commit-floor target: reuse publication exact-result retention,
            account/WAL owner validation and current-cut CAS. Independent authority
@@ -315,6 +415,7 @@ package WeaverExecution {
         port policyEvaluation : PolicyEvaluationPort;
     }
     part def RustFinalBroker {
+        action guardEffect : GuardFinalEffect;
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.FinalUse";
         attribute leanFields : String = "sameView,authenticated,current,profileAuthority,committed,unknownRetained,notRevoked,mediated";
         attribute securityName : String = "Rust / Final-use guard";

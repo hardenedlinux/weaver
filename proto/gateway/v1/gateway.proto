@@ -6,6 +6,12 @@ service Gateway {
   rpc Inspect(OperationKey) returns (ProviderReceipt);
   rpc RegisterTask(RegisterTaskRequest) returns (Empty);
   rpc RegisterPublishedTask(RegisterPublishedTaskRequest) returns (Empty);
+  // Source-only admission. Domain roots and the immutable task commit together.
+  rpc RegisterDomainTask(RegisterDomainTaskRequest) returns (Empty);
+  rpc RegisterOriginalTask(RegisterOriginalTaskRequest) returns (TaskAdmissionReceipt);
+  rpc RegisterFamilyAlias(FamilyAliasRequest) returns (DomainView);
+  rpc MigrateExecutionDomains(DomainMigration) returns (DomainMigrationReceipt);
+  rpc InspectExecutionDomains(OperationKey) returns (DomainView);
   rpc PublishAuthority(PublishRequest) returns (PublicationReceipt);
   // Durably block fresh effects for this exact proposal, or observe its existing decision.
   // A returned key is not a publication outcome or an execution grant.
@@ -45,6 +51,16 @@ message Task {
 }
 message ProviderProfile { string id = 1; string protocol = 2; uint64 max_output_tokens = 3; uint64 max_messages = 4; uint64 max_body_bytes = 5; }
 message RegisterTaskRequest { Task task = 1; }
+message DomainBinding { string origin = 1; string budget = 2; string history = 3; uint64 budget_limit = 4; }
+message DomainStamp { string origin = 1; string budget_root = 2; string history_root = 3; uint64 budget_epoch = 4; uint64 history_epoch = 5; string task_key = 6; }
+message DomainView { string family = 1; string canonical_family = 2; DomainStamp stamp = 3; uint64 budget_limit = 4; uint64 held = 5; uint64 history_count = 6; }
+message RegisterDomainTaskRequest { Task task = 1; DomainBinding domains = 2; PublicationKey publication = 3; }
+message TaskAdmission { string task_key = 1; string operation_id = 2; uint64 expected_source_epoch = 3; }
+message RegisterOriginalTaskRequest { Task task = 1; DomainBinding domains = 2; TaskAdmission admission = 3; PublicationKey publication = 4; }
+message TaskAdmissionReceipt { string operation_id = 1; string digest = 2; string task_key = 3; string family = 4; string origin = 5; uint64 source_epoch = 6; }
+message FamilyAliasRequest { string family = 1; string origin = 2; }
+message DomainMigration { string operation_id = 1; string budget_from = 2; string budget_to = 3; string history_from = 4; string history_to = 5; uint64 budget_from_epoch = 6; uint64 budget_to_epoch = 7; uint64 history_from_epoch = 8; uint64 history_to_epoch = 9; }
+message DomainMigrationReceipt { string operation_id = 1; string digest = 2; bool committed = 3; string budget_root = 4; string history_root = 5; uint64 budget_epoch = 6; uint64 history_epoch = 7; }
 // Distinct source capability: both fields are required by the server. No fallback.
 message RegisterPublishedTaskRequest { Task task = 1; PublicationKey publication = 2; }
 message PublishRequest { optional uint64 expected_revision = 1; uint64 fence = 2; string policy = 3; string schema = 4; string operation_id = 5; }

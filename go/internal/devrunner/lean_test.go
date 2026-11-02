@@ -102,7 +102,7 @@ func TestLeanPlanUsesStructuredEvidenceInPolicyLane(t *testing.T) {
 				controls++
 			}
 		}
-		if mode == "check-policy" && (proofs != 4 || controls != 1) {
+		if mode == "check-policy" && (proofs != 5 || controls != 1) {
 			t.Fatalf("policy lane lost machine proof evidence: %d/%d", proofs, controls)
 		}
 		if mode == "check-go" && (proofs != 0 || controls != 0) {

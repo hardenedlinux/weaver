@@ -1,6 +1,26 @@
 //! Deciding-store constraints; there is no budget release without evidence.
 /// Native owner boundary for `SCHEMA`.
 pub const SCHEMA: &str = r#"
+CREATE TABLE IF NOT EXISTS original_tasks (
+ task_key TEXT PRIMARY KEY, family TEXT NOT NULL UNIQUE, origin TEXT NOT NULL UNIQUE,
+ task_digest TEXT NOT NULL, binding_digest TEXT NOT NULL, publication TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS task_admissions (
+ operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, receipt TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS budget_domains (
+ id TEXT PRIMARY KEY, root TEXT NOT NULL, declared_limit INTEGER NOT NULL CHECK(declared_limit>0),
+ ceiling INTEGER NOT NULL CHECK(ceiling>0 AND ceiling<=declared_limit), held INTEGER NOT NULL CHECK(held>=0 AND held<=ceiling), epoch INTEGER NOT NULL CHECK(epoch>0));
+CREATE TABLE IF NOT EXISTS history_domains (
+ id TEXT PRIMARY KEY, root TEXT NOT NULL, events INTEGER NOT NULL CHECK(events>=0), epoch INTEGER NOT NULL CHECK(epoch>0));
+CREATE TABLE IF NOT EXISTS execution_origins (
+ id TEXT PRIMARY KEY, canonical_family TEXT NOT NULL UNIQUE, binding TEXT NOT NULL,
+ budget_root TEXT NOT NULL, history_root TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS origins_budget ON execution_origins(budget_root);
+CREATE INDEX IF NOT EXISTS origins_history ON execution_origins(history_root);
+CREATE TABLE IF NOT EXISTS family_origins (family TEXT PRIMARY KEY, origin TEXT NOT NULL REFERENCES execution_origins(id));
+CREATE TABLE IF NOT EXISTS domain_history (
+ origin TEXT NOT NULL, node TEXT NOT NULL, member TEXT NOT NULL, event TEXT NOT NULL, digest TEXT NOT NULL,
+ PRIMARY KEY(origin,node,member,event));
+CREATE TABLE IF NOT EXISTS domain_migrations (operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, receipt TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS source_authority (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), epoch INTEGER NOT NULL CHECK(epoch>=0), record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS source_keys (

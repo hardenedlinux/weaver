@@ -32,6 +32,7 @@ type ModelDescription struct {
 	Source          string             `json:"source"`
 	Requirements    []ModelRequirement `json:"requirements"`
 	LeanEnvironment bool               `json:"leanEnvironment,omitempty"`
+	Columns         int                `json:"columns,omitempty"`
 }
 
 func stringAttributes(symbol *opensysml.Symbol) map[string]string {
@@ -61,6 +62,16 @@ func describeModelView(ctx context.Context, client opensysml.Client, model *open
 		}
 	}
 	description := &ModelDescription{File: attributes["mappedFile"], Heading: attributes["displayTitle"], Subtitle: attributes["displaySubtitle"], Eyebrow: attributes["displayEyebrow"], Question: attributes["readerQuestion"]}
+	description.Columns = 2
+	for _, attribute := range symbol.Attributes {
+		if attribute.Name == "layoutColumns" {
+			value, ok := attribute.Value.(opensysml.Int)
+			if !ok || value < 1 || value > 4 {
+				return nil, fmt.Errorf("invalid typed layoutColumns on %s", name)
+			}
+			description.Columns = int(value)
+		}
+	}
 	description.LeanEnvironment = attributes["leanEnvironment"] == "required"
 	obligations, err := client.Query(ctx, model, opensysml.Query{Scope: []string{name}, Where: opensysml.Equals("@type", "RequirementUsage")})
 	if err != nil {

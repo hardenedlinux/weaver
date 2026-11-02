@@ -64,6 +64,9 @@ pub(crate) fn write(
 fn has_application_rows(connection: &crate::persistence::driver::Connection) -> Result<bool> {
     let tables = crate::persistence::read_all(connection,"SELECT name FROM main.sqlite_schema WHERE type='table' AND name NOT GLOB 'sqlite_*' ORDER BY name",(),|r|r.get::<String>(0)).map_err(db)?;
     for table in tables {
+        if crate::persistence::engine_metadata(connection, &table).map_err(db)? {
+            continue;
+        }
         let identifier = table.replace('"', "\"\"");
         let occupied: bool = crate::persistence::one(
             connection,

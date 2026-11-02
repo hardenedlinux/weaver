@@ -231,6 +231,11 @@ package PolicyEvidenceDesign {
            unavailable. No fact change is justified by pointwise Policy delta. */
     }
     item def SemanticCommitment {
+        doc /* Scheme-owned meaning, carried unchanged by Go and joined to
+           authoritative Rust state at admission and final use. taskRoot names
+           an independently admitted original, not a protocol/session alias.
+           These fields describe a target contract, not proof of provenance.
+           Binding a caller-chosen root to itself does not establish identity. */
         attribute taskRoot : String;
         attribute claim : String;
         attribute profile : String;
@@ -584,7 +589,7 @@ package PolicyEvidenceDesign {
            Compare observed/current deciding coordinates inside the serialized
            guard. Historical publication outcomes never restore an active head.
            Recovery requires an independently authenticated monotonic floor;
-           local SQLite WAL and a new process session do not establish it.
+           local Turso WAL and a new process session do not establish it.
            The floor covers execution consumption, account applications and
            history prefixes as well as publication. A publication-only floor
            misses rollback of a spend under an unchanged valid publication.

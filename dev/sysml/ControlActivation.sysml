@@ -32,6 +32,14 @@ package ControlActivation {
            belongs in producer-created phase attributes. */
     }
     requirement def GovernorSourceHandoff {
+        doc /* Allocate original semantics and derivation constraints to
+           WeaverExecution::SchemeSemanticPublisher, authenticated publication
+           orchestration to GoControlAdapter, Cedar evaluation to RustPolicy,
+           durable assignment/consumption to RustLedger and external bytes to
+           RustFinalBroker/HttpsExecutor. SourceCommand remains the shared lane.
+           Independent original identity is a premise still requiring runtime
+           issuance evidence; an immutable catalog and typed equality alone
+           cannot establish it. No second issuer ledger is implied. */
         doc /* A Scheme GatewayProgram has sealed specific Record/Function
            methods. Typed invalid arguments reject before installation entry;
            admitted installation seals its slot, and duplicates preserve the
@@ -482,7 +490,7 @@ package ControlActivation {
            continuity is not independent subject/incarnation issuance, full
            reviewed-publication qualification or whole-store anti-rollback. */
         doc /* First source enrollment requires every durable application table
-           in the current main SQLite catalog to be empty. Discovery and row
+           in the current main Turso catalog to be empty. Discovery and row
            checks run under the same Immediate writer transaction as the initial
            binding/key commit. Residual schema/review projections and new tables
            cannot disappear behind a fixed allowlist or a temporary table alias.
@@ -553,7 +561,7 @@ package ControlActivation {
            abort nor permission to register replacement evidence. */
         doc /* Trust anchors and prefix retention belong to the independent
            authority deployment contract; a shared Kubernetes identity, restored
-           startup certificate or ordinary SQLite restart supplies neither.
+           startup certificate or ordinary Turso restart supplies neither.
            Consistent rollback of the entire local registry can erase an earlier
            artifact binding. Keep its executable counterexample until an actual
            independent authority adapter demonstrates recovery. Runtime assets
@@ -593,7 +601,7 @@ package ControlActivation {
            a missing projection blocks final CAS and is not an artifact rejection. */
         doc /* Final publication must join the authority registry prefix and
            authenticated registrar incarnation/term in the same authoritative
-           decision. Independent precheck followed by local SQLite commit is
+           decision. Independent precheck followed by local Turso commit is
            insufficient. Source-role TLS/token authorization does not establish
            registrar incarnation. Current production accepts retained source-role
            credentials after restart; keep that expected coverage counterexample. */
@@ -637,7 +645,7 @@ package ControlActivation {
            family to its original publication key. A stage
            key proves durable pending or an already recorded exact decision,
            never current authority. All effect guards reject any unresolved
-           Policy proposal under the same SQLite transaction. Final publication
+           Policy proposal under the same Turso transaction. Final publication
            records committed/rejected outcome and removes only that proposal
            atomically. Lost replies and restart preserve pending and unknown
            holds. This administrative Policy proposal protocol is not the

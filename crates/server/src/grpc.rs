@@ -26,6 +26,23 @@ use tonic::{Request, Response, Status};
 use weaver_contracts::{Error, ProviderPlan, ProviderRoute, Task};
 use weaver_execution::ProviderTransport;
 use weaver_ledger::Ledger;
+fn domain_view(v: weaver_contracts::DomainView) -> pb::DomainView {
+    pb::DomainView {
+        family: v.family,
+        canonical_family: v.canonical_family,
+        stamp: Some(pb::DomainStamp {
+            task_key: v.stamp.task_key,
+            origin: v.stamp.origin,
+            budget_root: v.stamp.budget_root,
+            history_root: v.stamp.history_root,
+            budget_epoch: v.stamp.budget_epoch,
+            history_epoch: v.stamp.history_epoch,
+        }),
+        budget_limit: v.budget_limit,
+        held: v.held,
+        history_count: v.history_count,
+    }
+}
 #[derive(Clone)]
 struct Gateway {
     config: ServerConfig,
@@ -296,6 +313,142 @@ impl Gateway {
 }
 #[tonic::async_trait]
 impl pb::gateway_server::Gateway for Gateway {
+    async fn register_original_task(
+        &self,
+        request: Request<pb::RegisterOriginalTaskRequest>,
+    ) -> std::result::Result<Response<pb::TaskAdmissionReceipt>, Status> {
+        let caller = self.source_identity(&request)?;
+        let r = request.into_inner();
+        let task = r
+            .task
+            .ok_or(Status::invalid_argument("original task required"))?;
+        let d = r
+            .domains
+            .ok_or(Status::invalid_argument("original binding required"))?;
+        let a = r.admission.ok_or(Status::invalid_argument(
+            "stable source task identity required",
+        ))?;
+        let receipt = self
+            .ingress
+            .source()?
+            .original(
+                caller,
+                task_contract(task),
+                weaver_contracts::DomainBinding {
+                    origin: d.origin,
+                    budget: d.budget,
+                    history: d.history,
+                    budget_limit: d.budget_limit,
+                },
+                weaver_contracts::TaskAdmission {
+                    task_key: a.task_key,
+                    operation_id: a.operation_id,
+                    expected_source_epoch: a.expected_source_epoch,
+                },
+                r.publication.map(|p| weaver_contracts::PublicationKey {
+                    operation_id: p.operation_id,
+                    digest: p.digest,
+                }),
+            )
+            .await?;
+        Ok(Response::new(pb::TaskAdmissionReceipt {
+            operation_id: receipt.operation_id,
+            digest: receipt.digest,
+            task_key: receipt.task_key,
+            family: receipt.family,
+            origin: receipt.origin,
+            source_epoch: receipt.source_epoch,
+        }))
+    }
+    async fn register_domain_task(
+        &self,
+        request: Request<pb::RegisterDomainTaskRequest>,
+    ) -> std::result::Result<Response<pb::Empty>, Status> {
+        let caller = self.source_identity(&request)?;
+        let body = request.into_inner();
+        let task = body.task.ok_or(Status::invalid_argument("task missing"))?;
+        let domains = body
+            .domains
+            .ok_or(Status::invalid_argument("original domains missing"))?;
+        self.ingress
+            .source()?
+            .register_domain(
+                caller,
+                task_contract(task),
+                weaver_contracts::DomainBinding {
+                    origin: domains.origin,
+                    budget: domains.budget,
+                    history: domains.history,
+                    budget_limit: domains.budget_limit,
+                },
+                body.publication
+                    .map(|key| weaver_contracts::PublicationKey {
+                        operation_id: key.operation_id,
+                        digest: key.digest,
+                    }),
+            )
+            .await?;
+        Ok(Response::new(pb::Empty {}))
+    }
+    async fn register_family_alias(
+        &self,
+        request: Request<pb::FamilyAliasRequest>,
+    ) -> std::result::Result<Response<pb::DomainView>, Status> {
+        let caller = self.source_identity(&request)?;
+        let body = request.into_inner();
+        let view = self
+            .ingress
+            .source()?
+            .alias(caller, body.family, body.origin)
+            .await?;
+        Ok(Response::new(domain_view(view)))
+    }
+    async fn inspect_execution_domains(
+        &self,
+        request: Request<pb::OperationKey>,
+    ) -> std::result::Result<Response<pb::DomainView>, Status> {
+        let caller = self.source_identity(&request)?;
+        let view = self
+            .ingress
+            .source()?
+            .domains(caller, request.into_inner().family)
+            .await?;
+        Ok(Response::new(domain_view(view)))
+    }
+    async fn migrate_execution_domains(
+        &self,
+        request: Request<pb::DomainMigration>,
+    ) -> std::result::Result<Response<pb::DomainMigrationReceipt>, Status> {
+        let caller = self.source_identity(&request)?;
+        let c = request.into_inner();
+        let r = self
+            .ingress
+            .source()?
+            .migrate(
+                caller,
+                weaver_contracts::DomainMigration {
+                    operation_id: c.operation_id,
+                    budget_from: c.budget_from,
+                    budget_to: c.budget_to,
+                    history_from: c.history_from,
+                    history_to: c.history_to,
+                    budget_from_epoch: c.budget_from_epoch,
+                    budget_to_epoch: c.budget_to_epoch,
+                    history_from_epoch: c.history_from_epoch,
+                    history_to_epoch: c.history_to_epoch,
+                },
+            )
+            .await?;
+        Ok(Response::new(pb::DomainMigrationReceipt {
+            operation_id: r.operation_id,
+            digest: r.digest,
+            committed: r.committed,
+            budget_root: r.budget_root,
+            history_root: r.history_root,
+            budget_epoch: r.budget_epoch,
+            history_epoch: r.history_epoch,
+        }))
+    }
     type ExecuteProviderStream = ResponseStream;
     async fn compile_source(
         &self,

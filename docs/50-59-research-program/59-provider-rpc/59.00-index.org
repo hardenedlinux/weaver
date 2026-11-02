@@ -3,11 +3,28 @@
 
 * Current implementation
 
-[[file:59.78-spec-source-closure-and-architecture-admission.org][SPEC source closure and architecture admission]] records the actual missing
+[[file:59.83-spec-source-closure-and-architecture-admission.org][SPEC source closure and architecture admission]] records the actual missing
 modules, isolated producer closure and the still-separate whole-entry gate.
 
-[[file:59.79-quint-preparation-and-completion.org][Quint preparation and package-owned tooling]] separates repeated frontend cost,
+[[file:59.84-quint-preparation-and-completion.org][Quint preparation and package-owned tooling]] separates repeated frontend cost,
 original checks, terminal completion and the unchanged CI limits.
+
+[[file:59.82-semantic-responsibility-allocation.org][Model-first semantic responsibility allocation]] defines Scheme, Cedar/SPEC,
+Go and Rust ownership in the existing SysML parts and typed actions. It separates
+the implemented original-binding checks from the remaining authentic-key issuance gap.
+
+[[file:59.81-original-task-origin-registration.org][Original task registration and source handoff]] binds the stable source task key
+to one original origin, scope and durable receipt across source epochs. Final
+use rejects missing original registration; issuer identity truth remains explicit.
+
+[[file:59.80-shared-domain-authority.org][Authoritative origins and cross-family shared domains]] supersedes the
+independent-family assumption below. New aliases retain the original claim;
+shared budget or history roots serialize use, and whole-domain unions preserve
+exposure while fencing old permits. Disjoint domains retain concurrent final use.
+
+[[file:59.79-turso-final-domains.org][Independent final-effect domains]] extends the single-process MVCC profile
+to simultaneous final sends. Original shared-budget/history families retain one
+order; global Policy/owner publication drains all live family scopes.
 
 [[file:59.77-mrr-turso-storage.org][MRR Data Backend / Turso storage]] is the current implementation.
 Runtime, PBT, recovery fault injection and benchmarks share one driver and

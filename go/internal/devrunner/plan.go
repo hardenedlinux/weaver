@@ -52,6 +52,13 @@ func Plan(goBinary string) []Stage {
 		{"quint-safety", "quint", []string{"run", "dev/proofs/quint/RuntimeAdmission.qnt", "--main", "RuntimeAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "50", "--seed", "293"}},
 		{"lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/RuntimeAdmission.lean"}},
 		{"turso-atomicity-tests", "quint", []string{"test", "dev/proofs/quint/TursoAdmission.qnt", "--main", "TursoAdmission", "--seed", "293"}},
+		{"turso-mvcc-tests", "quint", []string{"test", "dev/proofs/quint/TursoMvcc.qnt", "--main", "TursoMvcc", "--seed", "293"}},
+		{"turso-mvcc-safety", "quint", []string{"run", "dev/proofs/quint/TursoMvcc.qnt", "--main", "TursoMvcc", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
+		{"shared-domains-tests", "quint", []string{"test", "dev/proofs/quint/SharedDomains.qnt", "--main", "SharedDomains", "--seed", "293"}},
+		{"task-origin-tests", "quint", []string{"test", "dev/proofs/quint/TaskOrigin.qnt", "--main", "TaskOrigin", "--seed", "293"}},
+		{"task-origin-safety", "quint", []string{"run", "dev/proofs/quint/TaskOrigin.qnt", "--main", "TaskOrigin", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
+		{"shared-domains-safety", "quint", []string{"run", "dev/proofs/quint/SharedDomains.qnt", "--main", "SharedDomains", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
+		{"shared-domains-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/SharedDomains.lean"}},
 		{"turso-atomicity-safety", "quint", []string{"run", "dev/proofs/quint/TursoAdmission.qnt", "--main", "TursoAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"provider-routing-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzProviderPlanCannotExpandAuthority", "-fuzztime=3s"}},
 		{"provider-routing-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzCompiledProviderOwnsRouteOrder", "-fuzztime=3s"}},
@@ -116,9 +123,10 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"storage-workspace-types", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
 			{"storage-rust-tests", "cargo", []string{"test", "-p", "weaver-ledger", "-p", "weaver-execution", "--locked", "--offline"}},
 			{"storage-rust-clippy", "cargo", []string{"clippy", "-p", "weaver-ledger", "-p", "weaver-execution", "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
+			{"storage-final-benchmark", "cargo", []string{"bench", "-p", "weaver-ledger", "--bench", "gateway", "--locked", "--offline", "--", "ledger/(final_family_pair|task_origin_registration)"}},
 		}
 		for _, stage := range Plan(goBinary) {
-			if stage.Name == "lean" || stage.Name == "lean-stream" || stage.Name == "quint-stream-tests" || stage.Name == "quint-stream-safety" || stage.Name == "turso-atomicity-tests" || stage.Name == "turso-atomicity-safety" {
+			if stage.Name == "lean" || stage.Name == "lean-stream" || stage.Name == "quint-stream-tests" || stage.Name == "quint-stream-safety" || stage.Name == "turso-atomicity-tests" || stage.Name == "turso-atomicity-safety" || stage.Name == "turso-mvcc-tests" || stage.Name == "turso-mvcc-safety" || stage.Name == "shared-domains-tests" || stage.Name == "shared-domains-safety" || stage.Name == "shared-domains-lean" || stage.Name == "task-origin-tests" || stage.Name == "task-origin-safety" {
 				selected = append(selected, stage)
 			}
 		}

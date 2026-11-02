@@ -109,11 +109,15 @@ package WeaverViews {
     }
 
     view storage {
+        attribute layoutColumns:Integer=1;
         requirement atomicity:WeaverExecution::TursoAdmissionAtomicity;
+        requirement custody:WeaverExecution::TursoMvccCustody;
+        requirement domains:WeaverExecution::SharedDomainAuthority;
+        requirement origin:WeaverExecution::OriginalTaskBinding;
         requirement budget:WeaverExecution::SharedBudget;
         requirement effects:WeaverExecution::ConsumeBeforeSend;
         attribute mappedFile:String="docs/50-59-research-program/59-provider-rpc/59.77-mrr-turso-storage.d2";
-        attribute displayTitle:String="One store. One deciding scope.";
+        attribute displayTitle:String="Shared constraints. Independent effects.";
         attribute displaySubtitle:String="MRR Data owns the physical driver. Weaver owns admission and actual effects.";
         attribute readerQuestion:String="How do claims, budget and fencing stay atomic through recovery?";
         attribute displayEyebrow:String="WEAVER / STORAGE AND EXECUTION";
@@ -121,10 +125,16 @@ package WeaverViews {
         expose WeaverStorage::admission::driver;
         expose WeaverStorage::admission::transaction;
         expose WeaverStorage::admission::broker;
+        expose WeaverStorage::admission::custody;
+        expose WeaverStorage::admission::registry;
+        expose WeaverStorage::admission::rootBinding;
+        expose WeaverStorage::admission::publication;
         expose WeaverStorage::admission::retained;
         expose WeaverStorage::admission::storage;
         expose WeaverStorage::admission::scope;
         expose WeaverStorage::admission::finalUse;
+        expose WeaverStorage::admission::actualSend;
+        expose WeaverStorage::admission::authorityOrder;
         expose WeaverStorage::admission::unresolved;
         render asInterconnectionDiagram;
     }

@@ -16,6 +16,7 @@ pub struct ProviderDispatch {
     session: String,
     digest: String,
     binding: weaver_policy::BoundProviderPolicy,
+    domains: weaver_contracts::DomainStamp,
 }
 impl ProviderDispatch {
     pub fn plan(&self) -> &ProviderPlan {
@@ -37,7 +38,8 @@ pub struct ProviderRelease {
 impl Ledger {
     pub fn enqueue_provider(&mut self, plan: &ProviderPlan) -> Result<ProviderReceipt> {
         let digest = plan.digest()?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx =
+            crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
         if let Some(old) = receipt(&tx, &plan.family, &plan.node)? {
             if old.digest != digest {
                 return Err(Error::Conflict("provider logical key already bound"));
@@ -97,7 +99,7 @@ impl Ledger {
         node: &str,
         eligible: &BTreeSet<String>,
     ) -> Result<ProviderDispatch> {
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
         let record: Option<String> = crate::persistence::maybe(
             &tx,
             "SELECT plan FROM provider_runs WHERE family=?1 AND node=?2 AND state='queued'",
@@ -130,6 +132,7 @@ impl Ledger {
             ],
         )
         .map_err(db)?;
+        let domains = crate::domains::stamp(&tx, family)?;
         tx.commit().map_err(db)?;
         Ok(ProviderDispatch {
             plan,
@@ -137,6 +140,7 @@ impl Ledger {
             session: self.session.clone(),
             digest,
             binding,
+            domains,
         })
     }
     /// The exact consumed route and current authority serialize with the sole HTTPS request.
@@ -146,7 +150,8 @@ impl Ledger {
         send: impl FnOnce() -> T,
     ) -> Result<T> {
         self.check_provider_session(permit)?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+            .map_err(db)?;
         guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
         active(&tx, permit)?;
         // Persist a separate affine dispatch burn: borrowing a handle cannot repeat this callback.
@@ -160,7 +165,8 @@ impl Ledger {
             return Err(Error::Conflict("provider dispatch already burned"));
         }
         tx.commit().map_err(db)?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+            .map_err(db)?;
         guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
         active(&tx, permit)?;
         let result = send();
@@ -178,7 +184,8 @@ impl Ledger {
             return Err(Error::Invalid("provider release rows"));
         }
         self.check_provider_session(permit)?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+            .map_err(db)?;
         active(&tx, permit)?;
         started(&tx, permit)?;
         let seq: u64 = crate::persistence::one(
@@ -241,7 +248,8 @@ impl Ledger {
         if release.plan_digest != permit.digest || release.format != format {
             return Err(Error::Conflict("foreign provider release binding"));
         }
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+            .map_err(db)?;
         active(&tx, permit)?;
         for offset in 0..release.length {
             guard_live(
@@ -263,7 +271,8 @@ impl Ledger {
     }
     pub fn complete_provider(&mut self, permit: &ProviderDispatch, format: &str) -> Result<()> {
         self.check_provider_session(permit)?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+            .map_err(db)?;
         active(&tx, permit)?;
         started(&tx, permit)?;
         guard_live(&tx, permit, "emitProvider", 0, format)?;
@@ -292,6 +301,7 @@ impl Ledger {
     }
 }
 fn active(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<()> {
+    crate::domains::require_stamp(tx, &p.plan.family, &p.domains)?;
     let same:bool=crate::persistence::one(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND digest=?3 AND target=?4 AND state='unknown')", crate::persistence::params![(p.plan.family).to_owned(),(p.plan.node).to_owned(),(p.digest).to_owned(),(p.route.target).to_owned()], |r|r.get(0)).map_err(db)?;
     if same {
         require_exposure(tx, &p.plan, &p.digest)
@@ -368,6 +378,7 @@ fn guard(
             action,
             sequence,
             format,
+            domains: Some(&crate::domains::view(tx, &p.family)?),
         },
     )
 }
@@ -397,6 +408,7 @@ fn guard_live(
             action,
             sequence,
             format,
+            domains: Some(&crate::domains::view(tx, &p.plan.family)?),
         },
     )
 }

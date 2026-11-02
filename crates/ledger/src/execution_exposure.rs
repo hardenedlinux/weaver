@@ -71,13 +71,22 @@ pub(crate) fn retain(tx: &WriteScope<'_>, claim: ReservationClaim<'_>) -> Result
     if changed != 1 {
         return Err(Error::Conflict("logical reservation already claimed"));
     }
+    crate::domains::charge(tx, claim.family, claim.ceiling)?;
+    crate::domains::history(
+        tx,
+        claim.family,
+        claim.node,
+        claim.member,
+        kind,
+        claim.digest,
+    )?;
     Ok(())
 }
 
 /// Read every retained family reservation and its original kind under the writer.
 /// Completion is observational: none of these execution paths authorizes refunds.
 pub(crate) fn require_family(tx: &WriteScope<'_>, family: &str) -> Result<()> {
-    crate::exposure_manifest::require(tx, family)
+    crate::domains::require(tx, family)
 }
 
 pub(crate) fn request(tx: &WriteScope<'_>, proposal: &Proposal) -> Result<()> {

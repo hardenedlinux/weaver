@@ -1,6 +1,5 @@
 //! Atomic publication, holds, consumption and serialized dispatch guard.
 use crate::persistence::{Session, WriteScope};
-use crate::schema::SCHEMA;
 use std::path::Path;
 use weaver_contracts::{Error, Outcome, Proposal, Receipt, Result, Task};
 
@@ -19,6 +18,7 @@ pub struct Ledger {
 pub struct Dispatch {
     proposal: Proposal,
     session: String,
+    domains: weaver_contracts::DomainStamp,
 }
 
 impl Ledger {
@@ -35,8 +35,8 @@ impl Ledger {
     }
     /// Open a single-host deciding store with full synchronous WAL durability.
     pub fn open(path: impl AsRef<Path>) -> Result<Self> {
-        let connection = Session::open(path).map_err(db)?;
-        crate::persistence::script(&connection, SCHEMA).map_err(db)?;
+        let mut connection = Session::open(path).map_err(db)?;
+        connection.initialize_ledger().map_err(db)?;
         // A missing retained manifest cannot be reconstructed from outcome rows.
         // Older images require explicit authoritative recovery, never backfill.
         let _: Vec<String> = crate::persistence::read_all(
@@ -76,7 +76,7 @@ impl Ledger {
 
     /// Register or recover the exact immutable original task.
     pub fn register_task(&mut self, task: &Task) -> Result<()> {
-        self.register_task_binding(task, None)
+        self.register_task_binding(task, None, None)
     }
 
     /// Staged control tasks cannot execute before their original publication commits.
@@ -85,57 +85,74 @@ impl Ledger {
         task: &Task,
         key: &weaver_contracts::PublicationKey,
     ) -> Result<()> {
-        self.register_task_binding(task, Some(key))
+        self.register_task_binding(task, Some(key), None)
     }
 
-    fn register_task_binding(
+    pub(crate) fn register_task_binding(
         &mut self,
         task: &Task,
         key: Option<&weaver_contracts::PublicationKey>,
+        domains: Option<&weaver_contracts::DomainBinding>,
     ) -> Result<()> {
-        task.validate()?;
-        let record = serde_json::to_string(task)?;
         let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
         crate::source_authority::require(&tx, self.source.as_ref())?;
-        if let Some(profile) = &task.provider_profile {
-            crate::provider_profiles::register(&tx, profile)?;
-        }
-        let old: Option<String> = crate::persistence::maybe(
-            &tx,
-            "SELECT record FROM tasks WHERE family=?1",
-            crate::persistence::params![task.family.to_owned()],
-            |r| r.get(0),
-        )
-        .map_err(db)?;
-        match old {
-            Some(value) => {
-                let original: Task = weaver_contracts::decode(value.as_bytes())?;
-                if original != *task {
-                    return Err(Error::Conflict("original task is immutable"));
-                }
-            }
-            None => {
-                crate::persistence::exec(
-                    &tx,
-                    "INSERT INTO tasks(family,record,budget) VALUES(?1,?2,?3)",
-                    crate::persistence::params![
-                        (task.family).to_owned(),
-                        (record).to_owned(),
-                        (task.budget as i64).to_owned()
-                    ],
-                )
-                .map_err(db)?;
-            }
-        }
-        crate::task_publication::bind(&tx, &task.family, key)?;
+        crate::task_origins::default_binding(&tx, task, domains, key)?;
+        register_task_in(&tx, task, key, domains)?;
         tx.commit().map_err(db)?;
         Ok(())
     }
+}
 
+pub(crate) fn register_task_in(
+    tx: &WriteScope<'_>,
+    task: &Task,
+    key: Option<&weaver_contracts::PublicationKey>,
+    domains: Option<&weaver_contracts::DomainBinding>,
+) -> Result<()> {
+    task.validate()?;
+    let record = serde_json::to_string(task)?;
+    crate::domains::bind(tx, task, domains)?;
+    if let Some(profile) = &task.provider_profile {
+        crate::provider_profiles::register(tx, profile)?;
+    }
+    let old: Option<String> = crate::persistence::maybe(
+        tx,
+        "SELECT record FROM tasks WHERE family=?1",
+        crate::persistence::params![task.family.to_owned()],
+        |r| r.get(0),
+    )
+    .map_err(db)?;
+    match old {
+        Some(value) => {
+            let original: Task = weaver_contracts::decode(value.as_bytes())?;
+            if original != *task {
+                return Err(Error::Conflict("original task is immutable"));
+            }
+        }
+        None => {
+            crate::persistence::exec(
+                tx,
+                "INSERT INTO tasks(family,record,budget) VALUES(?1,?2,?3)",
+                crate::persistence::params![
+                    (task.family).to_owned(),
+                    (record).to_owned(),
+                    (task.budget as i64).to_owned()
+                ],
+            )
+            .map_err(db)?;
+        }
+    }
+    crate::task_publication::bind(tx, &task.family, key)?;
+    crate::task_origins::seal_publication(tx, &task.family)?;
+    Ok(())
+}
+
+impl Ledger {
     /// Queue publication never calls a transport. Lost replies recover the same digest.
     pub fn enqueue(&mut self, proposal: &Proposal) -> Result<Receipt> {
         let digest = proposal.digest()?;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx =
+            crate::persistence::begin_family(&mut self.connection, &proposal.family).map_err(db)?;
         if let Some(old) = receipt(&tx, &proposal.family, &proposal.node)? {
             if old.digest != digest {
                 return Err(Error::Conflict("logical key already bound"));
@@ -198,7 +215,7 @@ impl Ledger {
 
     /// Durable consumption precedes any possible external call. Crash means unknown.
     pub fn consume(&mut self, family: &str, node: &str) -> Result<Dispatch> {
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
         let body: Option<String> = crate::persistence::maybe(
             &tx,
             "SELECT proposal FROM operations WHERE family=?1 AND node=?2 AND state='queued'",
@@ -216,10 +233,12 @@ impl Ledger {
             crate::persistence::params![(family).to_owned(), (node).to_owned()],
         )
         .map_err(db)?;
+        let domains = crate::domains::stamp(&tx, family)?;
         tx.commit().map_err(db)?;
         Ok(Dispatch {
             proposal: p,
             session: self.session.clone(),
+            domains,
         })
     }
 
@@ -235,7 +254,8 @@ impl Ledger {
             return Err(Error::Conflict("foreign ledger handle"));
         }
         let p = permit.proposal;
-        let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;
+        let tx = crate::persistence::begin_family(&mut self.connection, &p.family).map_err(db)?;
+        crate::domains::require_stamp(&tx, &p.family, &permit.domains)?;
         guard(&tx, &p)?;
         crate::execution_exposure::request(&tx, &p)?;
         let old =

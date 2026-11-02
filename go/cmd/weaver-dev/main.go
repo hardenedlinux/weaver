@@ -23,6 +23,7 @@ func main() {
 func run() (resultErr error) {
 	goBinary := flag.String("go-bin", "", "Go executable; defaults to the compiling toolchain")
 	clean := flag.Bool("clean-source", false, "Require every verification input to match the same committed revision")
+	view := flag.String("view", "", "Render one exact SysML-mapped D2 source; default renders the complete inventory")
 	schemeSource := flag.String("scheme-source", "", "Agentic AI Lab source checkout for Scheme source qualification")
 	schemeLibrary := flag.String("scheme-library", "", "Optional additional qualified Scheme dependency library")
 	schemePoo := flag.String("scheme-poo", "", "Gerbil POO checkout at Core's existing declared dependency pin")
@@ -49,10 +50,19 @@ func run() (resultErr error) {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 	if flag.Arg(0) == "render-diagrams" {
+		if *view != "" {
+			return devrunner.RenderDiagrams(ctx, working, os.Stdout, *view)
+		}
 		return devrunner.RenderDiagrams(ctx, working, os.Stdout)
 	}
 	if flag.Arg(0) == "check-diagrams" {
+		if *view != "" {
+			return devrunner.CheckDiagrams(ctx, working, os.Stdout, *view)
+		}
 		return devrunner.CheckDiagrams(ctx, working, os.Stdout)
+	}
+	if *view != "" {
+		return errors.New("-view requires render-diagrams or check-diagrams")
 	}
 	if flag.Arg(0) == "scheme-poo-revision" {
 		source := *schemeSource

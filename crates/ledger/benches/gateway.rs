@@ -4,6 +4,10 @@ use std::{collections::BTreeSet, hint::black_box, time::Duration};
 mod exposure;
 #[path = "../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
+#[path = "support/mvcc.rs"]
+mod mvcc;
+#[path = "support/task_origins.rs"]
+mod origins;
 #[path = "../../policy/benches/support/fixtures.rs"]
 mod policy_fixture;
 #[path = "../../policy/tests/support/publication_replay.rs"]
@@ -14,6 +18,58 @@ mod revision_fixture;
 mod source_fixture;
 #[path = "support/provider_store.rs"]
 mod stores;
+fn concurrent_admission(c: &mut Criterion) {
+    let mut admission = c.benchmark_group("ledger/concurrent_family_pair");
+    for (name, journal) in [
+        ("wal", weaver_ledger::persistence::Journal::Wal),
+        ("mvcc", weaver_ledger::persistence::Journal::Mvcc),
+    ] {
+        admission.bench_function(name, |b| {
+            b.iter_batched(
+                || mvcc::fresh(journal),
+                |fixture| fixture.reserve(),
+                BatchSize::PerIteration,
+            )
+        });
+    }
+    admission.finish();
+    let mut final_use = c.benchmark_group("ledger/final_family_pair");
+    for (name, journal, serialized, shared) in [
+        ("wal", weaver_ledger::persistence::Journal::Wal, false, 0),
+        (
+            "mvcc-serial",
+            weaver_ledger::persistence::Journal::Mvcc,
+            true,
+            0,
+        ),
+        (
+            "mvcc-parallel",
+            weaver_ledger::persistence::Journal::Mvcc,
+            false,
+            0,
+        ),
+        (
+            "mvcc-shared-budget",
+            weaver_ledger::persistence::Journal::Mvcc,
+            false,
+            1,
+        ),
+        (
+            "mvcc-shared-history",
+            weaver_ledger::persistence::Journal::Mvcc,
+            false,
+            2,
+        ),
+    ] {
+        final_use.bench_function(name, |b| {
+            b.iter_batched(
+                || mvcc::fresh_domains(journal, shared).prepare(),
+                |ready| ready.send(serialized),
+                BatchSize::PerIteration,
+            )
+        });
+    }
+}
 fn durable_operations(c: &mut Criterion) {
     c.bench_function("ledger/fresh_admission", |b| {
         b.iter_batched(
@@ -498,5 +554,5 @@ fn source_authority(c: &mut Criterion) {
         )
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=durable_operations,shared_exposure,original_reservation_bytes,stream_manifest_guard,range_tail_guard,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=origins::benchmarks,concurrent_admission,durable_operations,shared_exposure,original_reservation_bytes,stream_manifest_guard,range_tail_guard,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
 criterion_main!(benches);

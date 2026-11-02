@@ -12,6 +12,7 @@ pub struct ProviderCheck<'a> {
     pub action: &'static str,
     pub sequence: u64,
     pub format: &'a str,
+    pub domains: Option<&'a weaver_contracts::DomainView>,
 }
 /// Validate the source commitment once before constructing cached immutable facts.
 pub fn bind_provider(
@@ -41,6 +42,17 @@ impl BoundProviderPolicy {
         let mut context = self.context.clone();
         context["sequence"] = serde_json::json!(check.sequence);
         context["format"] = serde_json::json!(check.format);
+        if let Some(domains) = check.domains {
+            context["task_key"] = serde_json::json!(domains.stamp.task_key);
+            context["origin"] = serde_json::json!(domains.stamp.origin);
+            context["budget_domain"] = serde_json::json!(domains.stamp.budget_root);
+            context["history_domain"] = serde_json::json!(domains.stamp.history_root);
+            context["budget_epoch"] = serde_json::json!(domains.stamp.budget_epoch);
+            context["history_epoch"] = serde_json::json!(domains.stamp.history_epoch);
+            context["shared_held"] = serde_json::json!(domains.held);
+            context["shared_limit"] = serde_json::json!(domains.budget_limit);
+            context["history_count"] = serde_json::json!(domains.history_count);
+        }
         crate::authorize::evaluate(source, &self.principal, &self.target, check.action, context)
     }
 }
