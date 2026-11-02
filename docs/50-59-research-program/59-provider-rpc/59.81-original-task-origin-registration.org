@@ -164,3 +164,45 @@ These are synthetic native measurements including natural owner drain, not a
 provider latency SLO or TLS benchmark. Differences from 59.80 do not establish
 that the additional registry checks improved performance; the workloads and host
 cohorts differ. Every measured cohort remains visible.
+
+** Accepted committed cohort
+
+The unchanged =-clean-source check-storage= entry passed all 23 stages at
+=405930789442806ecd60e1a9022f309dec15d4f6=, starting
+=2026-11-02T05:53:03.80401Z= on the 12-core host. Before/after committed-source
+checks and source currentness pass. Native evidence includes all 30 ledger
+library/ASP checks, 113 integration/property tests and 15 execution tests, plus
+Clippy and the complete race-enabled real provider suite. TaskOrigin passes 12
+scenarios including deliberate unsafe variants and 1,000 sixty-step schedules.
+All five named =OriginalTaskBinding= Lean trace declarations are =CHECKED= against
+the accepted source hash. Existing shared-domain and recovery checks remain active.
+
+The affected contracts/policy/server library gates separately passed 1, 2 and 25
+tests; the server's one existing ignored private observation entry is launched
+by Go integration. The full Go race suite and all five scoped Library diagram
+checks pass. The final algorithm refactor changes Rust helper boundaries and the
+birth-seal proof; it does not change protocol pins, source semantics or resource
+gates. This record is a subsequent documentation change, not a new runtime cohort.
+
+| Accepted cohort | Samples | Mean ms | 95% interval ms |
+|-----------------+---------+---------+-----------------|
+| Fresh registration | 30 | 1.981 | 1.793 to 2.225 |
+| Receipt replay | 30 | 1.147 | 1.081 to 1.218 |
+| Rebind rejection | 30 | 1.090 | 1.024 to 1.169 |
+| WAL final pair | 30 | 26.749 | 24.809 to 28.861 |
+| MVCC serial final pair | 30 | 24.933 | 22.811 to 27.349 |
+| MVCC parallel final pair | 30 | 16.610 | 14.497 to 19.218 |
+| MVCC shared-budget pair | 30 | 40.060 | 36.331 to 44.330 |
+| MVCC shared-history pair | 30 | 39.972 | 35.004 to 45.595 |
+
+The accepted cohort is slower than the preceding measurements in several cases;
+no best-cohort selection or general speedup claim is made. Shared constraints
+remain serialized and verified. Profiling, not weakened binding or history checks,
+is required before attributing or optimizing this cost.
+
+An admission receipt records successful registration. Pre-decision validation
+errors are not a durable rejected-intent protocol. An error or absent acknowledgment
+does not prove abort: recovery retains the original command and observes its
+decision under current source authority. There is no automatic parent/epoch
+rebasing or unknown-budget release. Authentic key issuance and independent
+all-copy rollback protection remain explicit premises.
