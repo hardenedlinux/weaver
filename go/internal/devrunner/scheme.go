@@ -22,7 +22,7 @@ import (
 
 // PrepareScheme uses development links without changing either source checkout,
 // global Gerbil packages, or existing dependency pins. No package is uninstalled.
-func PrepareScheme(ctx context.Context, root, source, poo, library string, output io.Writer) (map[string]string, error) {
+func PrepareScheme(ctx context.Context, root, source, poo, library string, evidence *Receipt, output io.Writer) (configured map[string]string, prepareErr error) {
 	compiler := os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER")
 	if !filepath.IsAbs(compiler) || source == "" || poo == "" {
 		return nil, errors.New("explicit Scheme compiler, source checkout and dependency library required")
@@ -76,6 +76,26 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 	if declared != heads["gerbil-poo"] {
 		return nil, errors.New("Gerbil POO source must match Core's declared exact dependency pin")
 	}
+	link := exec.CommandContext(ctx, "git", "-C", source, "ls-tree", "HEAD", "core")
+	declaredCore, err := link.Output()
+	if err != nil {
+		return nil, err
+	}
+	fields := strings.Fields(string(declaredCore))
+	if len(fields) != 4 || fields[0] != "160000" || fields[1] != "commit" || fields[3] != "core" || fields[2] != heads["gebril-yuanxu"] {
+		return nil, errors.New("Core source must match Agentic AI Lab's declared gitlink")
+	}
+	// Freeze the source cut before package loading/building, not after it.
+	hashes, err := schemeSourceHashes(source, poo)
+	if err != nil {
+		return nil, err
+	}
+	digest, err := schemeSourceDigest(hashes)
+	if err != nil {
+		return nil, err
+	}
+	evidence.LinkedSourceHeads = maps.Clone(heads)
+	evidence.LinkedSourceSHA256 = digest
 	directory, err := os.MkdirTemp("", "weaver-scheme-*")
 	if err != nil {
 		return nil, err
@@ -83,7 +103,7 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 	complete := false
 	defer func() {
 		if !complete {
-			os.RemoveAll(directory)
+			prepareErr = errors.Join(prepareErr, os.RemoveAll(directory))
 		}
 	}()
 	if library == "" {
@@ -175,30 +195,24 @@ func PrepareScheme(ctx context.Context, root, source, poo, library string, outpu
 		if err = cmd.Run(); err != nil {
 			return nil, fmt.Errorf("Gerbil package preparation %v: %w", args, err)
 		}
-	}
-	for _, name := range []string{"gebril-yuanxu", "gerbil-poo"} {
-		installed := filepath.Join(directory, "pkg", "github.com", "tao3k", name)
-		cmd := exec.CommandContext(ctx, "git", "-C", installed, "rev-parse", "HEAD")
-		data, err := cmd.Output()
-		if err != nil {
-			return nil, fmt.Errorf("read installed %s identity: %w", name, err)
-		}
-		if strings.TrimSpace(string(data)) != heads[name] {
-			return nil, fmt.Errorf("installed %s differs from the declared source cohort: got %s want %s", name, strings.TrimSpace(string(data)), heads[name])
+		// Reject a transitive dependency replacement before compiling the Lab
+		// application against a different Core/POO than its linked source cut.
+		if err = checkInstalledSchemeHeads(ctx, directory, heads); err != nil {
+			return nil, err
 		}
 	}
-	hashes, err := schemeSourceHashes(source, poo)
+	current, err := schemeSourceHashes(source, poo)
 	if err != nil {
 		return nil, err
 	}
-	receipt := struct {
-		Environment       map[string]string `json:"environment"`
-		SourceHeads       map[string]string `json:"source_heads"`
-		DependencyLibrary string            `json:"dependency_library"`
-		SourceRoot        string            `json:"source_root"`
-		SourceHashes      map[string]string `json:"source_hashes"`
-		PooSource         string            `json:"poo_source"`
-	}{settings, heads, library, source, hashes, poo}
+	if !maps.Equal(current, hashes) {
+		return nil, errors.New("linked Scheme sources changed during package preparation")
+	}
+	if err := checkLinkedSchemeHeads(ctx, source, poo, heads); err != nil {
+		return nil, err
+	}
+	receipt := schemeLinkReceipt{Environment: settings, SourceHeads: heads, DependencyLibrary: library,
+		SourceRoot: source, SourceHashes: hashes, PooSource: poo}
 	data, err := json.MarshalIndent(receipt, "", "  ")
 	if err != nil {
 		return nil, err
@@ -239,10 +253,33 @@ func schemeSourceHashes(source, poo string) (map[string]string, error) {
 		}
 	}
 	hashes := map[string]string{}
+	// These files select module closure, dependencies, compilation and its limits.
+	for _, name := range []string{"init.ss", "build.ss", "gerbil.pkg", ".gitmodules"} {
+		path := filepath.Join(source, name)
+		info, err := os.Lstat(path)
+		if os.IsNotExist(err) && name == ".gitmodules" {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		if !info.Mode().IsRegular() {
+			return nil, fmt.Errorf("linked Scheme metadata must be a regular file: %s", name)
+		}
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return nil, err
+		}
+		sum := sha256.Sum256(data)
+		hashes[name] = hex.EncodeToString(sum[:])
+	}
 	for _, directory := range []string{"modules", "core"} {
 		err := filepath.WalkDir(filepath.Join(source, directory), func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err
+			}
+			if entry.Type()&os.ModeSymlink != 0 {
+				return errors.New("nested linked Scheme source alias is unsupported")
 			}
 			if entry.IsDir() {
 				if strings.HasPrefix(entry.Name(), ".") {
@@ -256,7 +293,7 @@ func schemeSourceHashes(source, poo string) (map[string]string, error) {
 				return nil
 			}
 			switch filepath.Ext(path) {
-			case ".ss", ".scm", ".inc", ".pkg", ".h":
+			case ".ss", ".scm", ".inc", ".pkg", ".h", ".cedar", ".cedarschema", ".json", ".yaml", ".yml":
 				data, err := os.ReadFile(path)
 				if err != nil {
 					return err
@@ -278,6 +315,9 @@ func schemeSourceHashes(source, poo string) (map[string]string, error) {
 		err := filepath.WalkDir(poo, func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err
+			}
+			if entry.Type()&os.ModeSymlink != 0 {
+				return errors.New("nested Gerbil POO source alias is unsupported")
 			}
 			if entry.IsDir() {
 				if strings.HasPrefix(entry.Name(), ".") {
@@ -312,16 +352,23 @@ func schemeSourceHashes(source, poo string) (map[string]string, error) {
 
 // External linked sources have their own receipt; they cannot be admitted as
 // committed Weaver blobs. Native dependency-library qualification is separate.
-func schemeSourceCurrentness(directory, name string) Result {
+func schemeSourceCurrentness(ctx context.Context, directory, name string, settings map[string]string, original Receipt) Result {
 	result := Result{Name: name, Binary: "internal/linked-source-sha256", Status: "FAIL", Log: name + ".log"}
-	data, err := os.ReadFile(os.Getenv("WEAVER_SCHEME_LINK_RECEIPT"))
-	var receipt struct {
-		SourceRoot   string            `json:"source_root"`
-		SourceHashes map[string]string `json:"source_hashes"`
-		PooSource    string            `json:"poo_source"`
-	}
+	data, err := os.ReadFile(settings["WEAVER_SCHEME_LINK_RECEIPT"])
+	var receipt schemeLinkReceipt
 	if err == nil {
 		err = json.Unmarshal(data, &receipt)
+	}
+	if err == nil {
+		var digest string
+		digest, err = schemeSourceDigest(receipt.SourceHashes)
+		if err == nil && (digest != original.LinkedSourceSHA256 || !maps.Equal(receipt.SourceHeads, original.LinkedSourceHeads) ||
+			receipt.SourceRoot != settings["WEAVER_SCHEME_AGENTIC_SOURCE"] || receipt.PooSource != settings["WEAVER_SCHEME_POO_SOURCE"]) {
+			err = errors.New("linked Scheme receipt does not match the independently retained original source cut")
+		}
+	}
+	if err == nil {
+		err = checkLinkedSchemeHeads(ctx, receipt.SourceRoot, receipt.PooSource, receipt.SourceHeads)
 	}
 	if err == nil {
 		var current map[string]string

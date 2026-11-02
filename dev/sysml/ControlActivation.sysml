@@ -23,6 +23,22 @@ package ControlActivation {
         doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
     requirement def SourceStartupObservation {
+        doc /* The existing Go verification owner records package preparation in
+           the same check-scheme receipt before package tests. Dependency failure
+           cannot escape as an absent result or be interpreted as a test pass.
+           Capture original source hashes before preparation, including root
+           init/build/package metadata and Policy/schema assets. Preserve that
+           original cut; compare source bytes and revisions after preparation.
+           Use the explicit owner-selected receipt, not ambient process state.
+           Compare it to the owner-retained original digest, source heads and
+           canonical roots; agreeing rewritten source/receipt aliases cannot
+           replace that independent expectation.
+           Canonical root aliases are allowed; nested source aliases are denied.
+           The supplied Core must match the Lab gitlink. Installed Core/POO
+           identities are checked after dependency preparation before Lab build.
+           A late cleanup error invalidates a passing verification receipt.
+           Endpoint equality alone does not exclude an unobserved filesystem ABA;
+           immutable artifact/source admission remains an upstream prerequisite. */
         doc /* Local Go startup phases distinguish configuration readiness,
            authority connections/reconciliation and issuing Serve; only the
            actual authenticated channel proves readiness. Go deployment never

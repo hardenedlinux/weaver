@@ -20,7 +20,7 @@ func main() {
 	}
 }
 
-func run() (resultErr error) {
+func run() error {
 	goBinary := flag.String("go-bin", "", "Go executable; defaults to the compiling toolchain")
 	clean := flag.Bool("clean-source", false, "Require every verification input to match the same committed revision")
 	view := flag.String("view", "", "Render one exact SysML-mapped D2 source; default renders the complete inventory")
@@ -84,22 +84,7 @@ func run() (resultErr error) {
 		fmt.Fprintln(os.Stdout, revision)
 		return nil
 	}
-	if flag.Arg(0) == "check-scheme" {
-		root, err := devrunner.FindRoot(working)
-		if err != nil {
-			return err
-		}
-		settings, err := devrunner.PrepareScheme(ctx, root, *schemeSource, *schemePoo, *schemeLibrary, os.Stdout)
-		if err != nil {
-			return err
-		}
-		defer func() { resultErr = errors.Join(resultErr, os.RemoveAll(settings["GERBIL_PATH"])) }()
-		for key, value := range settings {
-			if err := os.Setenv(key, value); err != nil {
-				return err
-			}
-		}
-	}
-	_, err = devrunner.Run(ctx, devrunner.Config{Root: working, GoBinary: *goBinary, Mode: flag.Arg(0), RequireClean: *clean}, os.Stdout)
+	_, err = devrunner.Run(ctx, devrunner.Config{Root: working, GoBinary: *goBinary, Mode: flag.Arg(0), RequireClean: *clean,
+		SchemeSource: *schemeSource, SchemePoo: *schemePoo, SchemeLibrary: *schemeLibrary}, os.Stdout)
 	return err
 }

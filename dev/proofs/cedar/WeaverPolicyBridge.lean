@@ -584,6 +584,17 @@ theorem changed_capture_cannot_reuse_adapter_evidence (s : BoundaryContext)
     (changed : s.captured ≠ s.expectedCapture) : s.ready = false := by
   simp [BoundaryContext.ready,BoundaryContext.Ready,changed]
 
+/-- Preparation retains the original source cut. The host must establish full
+metadata/asset coverage and source/artifact identity independently; pre/post
+hash equality alone does not prove an immutable filesystem snapshot. -/
+theorem changed_preparation_cut_cannot_rebase_boundary (s : BoundaryContext)
+    (changed : s.captured.sourceCut ≠ s.expectedCapture.sourceCut) : s.ready = false := by
+  apply changed_capture_cannot_reuse_adapter_evidence
+  intro same
+  exact changed (congrArg CaptureDependency.sourceCut same)
+
+#print axioms changed_preparation_cut_cannot_rebase_boundary
+
 /-- The expected capture names the independently retained pre-assessment data,
 not a second pointer to the same mutable live Profile/context. Native canonical
 capture and method/source qualification remain explicit refinement premises. -/

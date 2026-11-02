@@ -130,34 +130,19 @@ func publishLatestResult(root, directory, mode string, runErr error) (path strin
 		receipt.Stages = []Result{{Name: "initialization", Status: "FAIL", Error: fmt.Sprint(errors.Join(runErr, readErr))}}
 		err = errors.Join(err, readErr)
 	}
-	if runErr != nil && receipt.Status == "RUNNING" {
-		receipt.Status = "FAIL"
+	if runErr != nil {
+		if receipt.Status == "PASS" {
+			receipt.Stages = append(receipt.Stages, Result{Name: "run-finalization", Status: "FAIL", Error: runErr.Error()})
+		}
+		if receipt.Status != "CANCELLED" {
+			receipt.Status = "FAIL"
+		}
 	}
 	for index := range receipt.Stages {
 		if failure := summarizeOutput(directory, &receipt.Stages[index]); failure != nil {
 			err = errors.Join(err, failure)
 		}
 		receipt.Stages[index].Log = ""
-	}
-	if mode == "check-scheme" {
-		if bytes, failure := os.ReadFile(os.Getenv("WEAVER_SCHEME_LINK_RECEIPT")); failure == nil {
-			var source struct {
-				Heads  map[string]string `json:"source_heads"`
-				Hashes map[string]string `json:"source_hashes"`
-			}
-			if err := json.Unmarshal(bytes, &source); err != nil {
-				return path, err
-			}
-			receipt.LinkedSourceHeads = source.Heads
-			canonical, err := json.Marshal(source.Hashes)
-			if err != nil {
-				return path, err
-			}
-			digest := sha256.Sum256(canonical)
-			receipt.LinkedSourceSHA256 = hex.EncodeToString(digest[:])
-		} else {
-			err = errors.Join(err, failure)
-		}
 	}
 	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
 		return path, err

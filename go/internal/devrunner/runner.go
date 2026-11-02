@@ -16,8 +16,9 @@ import (
 )
 
 type Config struct {
-	Root, GoBinary, Mode string
-	RequireClean         bool
+	Root, GoBinary, Mode                   string
+	RequireClean                           bool
+	SchemeSource, SchemePoo, SchemeLibrary string
 }
 type Stage struct {
 	Name, Binary string
@@ -135,9 +136,44 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		}
 		fmt.Fprintf(output, "PASS %s\n", admission.Name)
 	}
+	if err := writeReceipt(directory, receipt); err != nil {
+		return directory, err
+	}
 	failed := false
+	var schemeEnvironment map[string]string
 	if mode == "check-scheme" {
-		result := schemeSourceCurrentness(directory, "linked-source-before")
+		configured, preparation := prepareSchemeStage(ctx, root, directory, config, &receipt)
+		if configured != nil {
+			defer func() {
+				if cleanup := os.RemoveAll(configured["GERBIL_PATH"]); cleanup != nil {
+					receipt.Status = "FAIL"
+					receipt.Stages = append(receipt.Stages, Result{Name: "scheme-preparation-cleanup", Status: "FAIL", Error: cleanup.Error()})
+					runErr = errors.Join(runErr, cleanup, writeReceipt(directory, receipt))
+				}
+			}()
+		}
+		receipt.Stages = append(receipt.Stages, preparation)
+		if preparation.Status != "PASS" {
+			receipt.Status = preparation.Status
+		}
+		fmt.Fprintf(output, "%s %s\n", preparation.Status, preparation.Name)
+		if err := writeReceipt(directory, receipt); err != nil {
+			return directory, err
+		}
+		if preparation.Status != "PASS" {
+			return directory, errors.New("Scheme preparation failed; package tests did not start")
+		}
+		for key, value := range configured {
+			settings[key] = value
+		}
+		environment = Environment(settings)
+		for i := range stages {
+			if stages[i].Name == "scheme-unit-tests" {
+				stages[i].Binary = configured["WEAVER_SCHEME_TOOL"]
+			}
+		}
+		schemeEnvironment = configured
+		result := schemeSourceCurrentness(ctx, directory, "linked-source-before", schemeEnvironment, receipt)
 		receipt.Stages = append(receipt.Stages, result)
 		fmt.Fprintf(output, "%s %s\n", result.Status, result.Name)
 		if result.Status != "PASS" {
@@ -173,7 +209,7 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		fmt.Fprintf(output, "%s %s\n", current.Status, current.Name)
 	}
 	if mode == "check-scheme" {
-		result := schemeSourceCurrentness(directory, "linked-source-after")
+		result := schemeSourceCurrentness(ctx, directory, "linked-source-after", schemeEnvironment, receipt)
 		receipt.Stages = append(receipt.Stages, result)
 		fmt.Fprintf(output, "%s %s\n", result.Status, result.Name)
 		if result.Status != "PASS" {

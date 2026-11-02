@@ -652,6 +652,13 @@ module LlmPolicyContinuation {
   run schemeCannotSkipConfigurationValidationTest=init.then(recordBoundary(boundary0.with("kind",1).with("schemaChecked",false)).fail())
   run unconstrainedDefaultSchemaCannotAdmitTest=init.then(recordBoundary(boundary0.with("configurationSchema",0)).fail())
   run changedConfigurationSchemaRejectsOldCaptureTest=factPending.then(rebindConfiguration).then(projectFromBoundary(boundary0).fail())
+  // The retained pre-preparation cut cannot be silently replaced by a later
+  // metadata snapshot. Complete hashing and absence of filesystem ABA are host
+  // refinement premises, not established by this logical generation counter.
+  run changedPackageMetadataCannotRebaseSnapshotTest=init.then(rebindConfiguration)
+    .expect(s.calls==0 and s.hold==6).then(recordBoundary(boundary0).fail())
+  run stalePreparationReceiptCounterexampleTest=init.then(rebindConfiguration)
+    .then(unsafeBoundaryRecord(boundary0)).expect(not(boundaryBound))
   run changedNormalizerRejectsCaptureTest=init.then(recordBoundary(boundary0.with("normalizer",2)).fail())
   run changedProgramRejectsCaptureTest=init.then(recordBoundary(boundary0.with("programModule",1)).fail())
   run changedCapturedEnvironmentRejectsCaptureTest=init.then(recordBoundary(boundary0.with("environment",1)).fail())
