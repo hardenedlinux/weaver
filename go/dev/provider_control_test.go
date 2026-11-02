@@ -508,8 +508,13 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	if loseStage {
 		writes = 0
 	}
-	if proxy.calls.Load() != writes || proxy.inspections.Load() != 1 || proxy.stages.Load() != 1 {
-		t.Fatalf("source protocol count mismatch: inspect=%d stage=%d final=%d; expected inspect=1 stage=1 final=%d (missing calls do not establish retry)", proxy.inspections.Load(), proxy.stages.Load(), proxy.calls.Load(), writes)
+	views := int64(0)
+	if policies.producer != "" {
+		views = 1
+	}
+	if proxy.calls.Load() != writes || proxy.inspections.Load() != 1 || proxy.stages.Load() != 1 || proxy.sourceViews.Load() != views {
+		data, readErr := os.ReadFile(filepath.Join(c.directory, "lost-publication.log"))
+		t.Fatalf("source protocol count mismatch: authority=%d inspect=%d stage=%d final=%d; expected authority=%d inspect=1 stage=1 final=%d (missing calls do not establish retry); log-error=%v log=%s", proxy.sourceViews.Load(), proxy.inspections.Load(), proxy.stages.Load(), proxy.calls.Load(), views, writes, readErr, data)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -538,8 +543,8 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	if f.primary.Load() != 1 {
 		t.Fatal("recovery duplicated provider send")
 	}
-	if proxy.calls.Load() != 1 || proxy.inspections.Load() != 2 {
-		t.Fatal("committed recovery submitted another publication")
+	if proxy.calls.Load() != 1 || proxy.inspections.Load() != 2 || proxy.sourceViews.Load() != 2*views {
+		t.Fatalf("recovery changed source protocol: authority=%d inspect=%d final=%d", proxy.sourceViews.Load(), proxy.inspections.Load(), proxy.calls.Load())
 	}
 	key := &pb.OperationKey{Family: bundle.Plans[0].Family, Node: bundle.Plans[0].Node}
 	before, err := c.client.RPC.Inspect(c.client.Context(ctx), key)
@@ -558,7 +563,7 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 		t.Fatal("dual restart reopened the consumed claim")
 	}
 	after, err := c.client.RPC.Inspect(c.client.Context(ctx), key)
-	if err != nil || !proto.Equal(before, after) || f.primary.Load() != 1 || proxy.calls.Load() != 1 || proxy.inspections.Load() != 3 {
+	if err != nil || !proto.Equal(before, after) || f.primary.Load() != 1 || proxy.calls.Load() != 1 || proxy.inspections.Load() != 3 || proxy.sourceViews.Load() != 3*views {
 		t.Fatal("observed recovery changed original accounting or submitted publication", err)
 	}
 	c.stop(t)

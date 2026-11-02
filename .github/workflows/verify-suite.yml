@@ -43,7 +43,7 @@ jobs:
         run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-proofs
       - name: Prepare published Scheme SDK
         if: inputs.suite == 'check-scheme'
-        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@57d2cd9930c1504379fc3f646122e6fc8add1cf6
+        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@ff50ec4c7c87772b8c4d66279af3cade7fc72958
         with:
           release-root: ${{ runner.temp }}/gerbil-sdk
       - name: Install declared Scheme dependencies

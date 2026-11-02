@@ -30,6 +30,7 @@ type publicationReplyLoss struct {
 	calls       atomic.Int64
 	inspections atomic.Int64
 	stages      atomic.Int64
+	sourceViews atomic.Int64
 	loseStage   bool
 }
 
@@ -42,6 +43,12 @@ func (s *publicationReplyLoss) replaceSource(source *gatewayclient.Client) {
 	s.sourceMu.Lock()
 	defer s.sourceMu.Unlock()
 	s.source = source
+}
+
+func (s *publicationReplyLoss) InspectSourceAuthority(ctx context.Context, in *pb.Empty) (*pb.SourceAuthorityView, error) {
+	s.sourceViews.Add(1)
+	source := s.sourceClient()
+	return source.RPC.InspectSourceAuthority(source.Context(ctx), in)
 }
 
 func (s *publicationReplyLoss) InspectPublication(ctx context.Context, key *pb.PublicationKey) (*pb.PublicationReceipt, error) {

@@ -244,6 +244,9 @@ package ControlActivation {
            binary or library-test target and observes the real child exit. A
            conventional target/debug path is not an artifact identity; custom
            Cargo output directories must not select a stale deployment image.
+           Reply-loss qualification forwards the actual current-source-authority
+           read and retains exact write counts. Failure before that prerequisite
+           is not evidence that a commit reply was lost or safely recovered.
            Gerbil build-host
            Cellar paths are not deployment authority. Preserve ABI, existing
            compiler flags and pinned Gerbil identity; successful archive compilation

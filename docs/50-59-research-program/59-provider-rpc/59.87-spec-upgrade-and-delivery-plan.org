@@ -98,13 +98,14 @@ Build-input correctness does not establish a ZeroTrust theorem. Existing Lean
 host premises and Quint execution transitions remain unchanged; successful
 archive construction cannot supply a grant or resolve unknown exposure.
 
-The upstream repair is delivered through the existing SDK PR. Its standard
-package build, three Scheme regression cases, 29 Rust library cases, 19 Rust
-integration cases and strict Clippy passed locally. The seven pre-existing
-ignored Rust cases remain ignored. Generated sources were rebuilt through the
-upstream regeneration entry and their provenance gate passed. Raw successes,
-earlier failures and the package-manager lock update are retained under ignored
-=.cache/sdk-link-contract/=, not committed as source.
+The existing SDK PR owns the shared declaration, compiler-option propagation and
+native package loading. Retain its system-directory option: ordinary pkg-config
+output can omit system search paths required by strict archive validation.
+The default image consumes these inputs; its lifecycle-only external profile
+does not depend on another consumer's pkg-config environment. A paired Cargo
+check with unavailable package metadata and two different search paths retained
+the external artifact as fresh. This is build-input evidence, not Runtime
+performance evidence. Use the producer's regeneration entry for source receipts.
 
 The separate Weaver standard-package experiment remains FAIL: all four complete
 trials reached the unchanged 15-second deadline. One trial emitted the harness
@@ -116,22 +117,27 @@ host workloads and sampling prevent treating these trials as controlled cold
 performance comparisons. Do not infer an exit-only defect, lower runtime cost,
 or provider-send correctness from these observations.
 
-The first integrated SDK run completed Weaver's real AOT archive and final link,
-then passed all 22 governance library tests. It failed the VM fixture's explicit
-host-environment admission because GERBIL_HOME was absent. The Go provider build
-also completed, but its fixture incorrectly selected a conventional target/debug
-path despite CARGO_TARGET_DIR. No provider case executed in that run. Keep both
-failures independent of the resolved native-link input failure.
-
 Provider fixtures now stream Cargo's artifact JSON and select the unique actual
 binary/library-test target, retaining process-exit checks and test-owned image
 copy/hash checks. The same decoder serves the existing observed-server fixture.
 Malformed, absent, empty, duplicate and wrong-target artifacts are rejected;
 the Go fuzz framework exercised 1,000 generated cases with 12 workers. The host
 must still provide the explicitly approved Gerbil installation for embedded VM
-qualification; do not remove that admission to make a test pass. The preceding
-committed cut passed all 61 check-policy stages and current SysML SDK view
-extraction. These results do not replace the pending complete native rerun.
+qualification; do not remove that admission to make a test pass.
+
+| Evidence owner | Established result | Remaining boundary |
+|----------------+--------------------+--------------------|
+| SDK package | Standard build, four Scheme link cases, Rust build/runtime suites, source regeneration and strict Clippy passed in isolation | Requalify the final joined upstream source in Weaver; pre-existing ignored cases stay ignored |
+| Weaver FFI | Complete rooted SDK stage passed, including actual Scheme capture, independent Go/mTLS consumer, Rust final Policy denial, owner cleanup and stream concurrency cases | A passing archive or capture alone does not qualify every provider recovery scenario |
+| Go provider | Real compiled-source revoke/restart cases passed; Cargo target-path assumption was removed | Reply-loss fixture omitted InspectSourceAuthority, so the client correctly refused before mutation; corrected relay and exact read/write counters require complete rerun |
+| Formal/model | All 61 check-policy stages and current SysML SDK view extraction passed on the preceding committed source | Source-bound evidence must be refreshed after subsequent integration changes |
+
+The reply-loss relay must forward the real current-authority read, not fabricate
+a view or skip the client check. Require one read per compiled bootstrap, exact
+publication/staging counts and the original outcome across both restarts. Missing
+calls do not establish a lost-commit scenario or prove absence of a retry.
+Failures, paired controls and exact-source receipts remain under ignored
+=.cache/sdk-link-contract/=; raw logs and dependency hashes are not document data.
 
 ** S3: Qualify authorization through actual provider effects
 
