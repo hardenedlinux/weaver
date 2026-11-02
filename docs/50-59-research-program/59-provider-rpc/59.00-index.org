@@ -3,6 +3,12 @@
 
 * Current implementation
 
+[[file:59.78-spec-source-closure-and-architecture-admission.org][SPEC source closure and architecture admission]] records the actual missing
+modules, isolated producer closure and the still-separate whole-entry gate.
+
+[[file:59.79-quint-preparation-and-completion.org][Quint preparation and package-owned tooling]] separates repeated frontend cost,
+original checks, terminal completion and the unchanged CI limits.
+
 [[file:59.77-mrr-turso-storage.org][MRR Data Backend / Turso storage]] is the current implementation.
 Runtime, PBT, recovery fault injection and benchmarks share one driver and
 immediate transaction boundary. Earlier SQLite measurements and opt-in storage

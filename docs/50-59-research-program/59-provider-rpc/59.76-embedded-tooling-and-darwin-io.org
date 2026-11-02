@@ -10,6 +10,13 @@ lifetime. =gerbil-scheme-aot-build= owns bootstrap and canonical native artifact
 Weaver and MRR consume that library. They must not implement another compiler
 driver, generic eval endpoint or command configuration language.
 
+Compose the existing LinkedGerbilProgram, GerbilRuntime::initialize_program,
+bound object/byte exports and their call methods. The bound Scheme entries
+invoke the official build and gxtest procedures using the supported C interface.
+The tooling session means that existing VM owner lifecycle; it does not require
+a second opaque session object or a family of environment-variable controls.
+Hypothetical official gerbil_build or gerbil_test C symbols are not assumed.
+
 This tooling capability belongs to build/test hosts. It does not place a
 compiler or test runner in the gateway request path. Runtime Scheme governance
 uses the separately admitted production image and artifacts; production code
@@ -62,7 +69,16 @@ and linked strong-root exports. The separate Tokio subprocess refactor alone
 does not implement it. A frozen Gerbil bridge consumer cannot be described as
 consuming an unpublished or newer capability.
 
-* Embedded tooling implementation and admission
+* Current source status and required tooling admission
+
+The currently inspected PR #18 revision still exposes command-backed
+GerbilCompiler entry points and does not contain ToolingSession or an
+embedded-tooling feature implementation. The implementation account below is
+an earlier research record, not acceptance of those exports at this revision.
+The supported Gambit/Gerbil C interface and official package/gxtest procedures
+remain the required integration boundary. Do not turn this gap into another
+consumer-owned scheduler or a collection of environment-variable switches.
+See [[file:59.79-quint-preparation-and-completion.org][preparation, current source evidence and unchanged gates]].
 
 The =embedded-tooling= feature in upstream =gerbil-scheme-build= builds a full
 compiler/expander/test graph through the existing compiler-owned manifest.
