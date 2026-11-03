@@ -38,6 +38,10 @@ var rustBenchmarkCases = []string{
 	"contracts_profile_request_validation/16384",
 	"contracts_profile_request_validation/524288",
 	"policy_typed_schema_validation",
+	"policy_context_json_local",
+	"policy_context_literal_local",
+	"policy_context_json_shared",
+	"policy_context_literal_shared",
 	"policy_warm_compilation_current_decision",
 	"policy_compilation_cache_churn",
 	"policy_materialized_json_schema_validation",
@@ -172,7 +176,7 @@ func positiveFinite(value float64) bool {
 }
 
 // Copy only structured Criterion data; raw stage logs retain Go/Rust environment receipts.
-func collectBenchmarks(root, directory, started string, selected ...string) error {
+func collectBenchmarks(targetDirectory, directory, started string, selected ...string) error {
 	expected := rustBenchmarkCases
 	if len(selected) != 0 {
 		seen := map[string]bool{}
@@ -188,7 +192,7 @@ func collectBenchmarks(root, directory, started string, selected ...string) erro
 	if err != nil {
 		return err
 	}
-	source := filepath.Join(root, "target/criterion")
+	source := filepath.Join(targetDirectory, "criterion")
 	measured := map[string]bool{}
 	rows := []string{}
 	err = filepath.WalkDir(source, func(path string, entry fs.DirEntry, err error) error {

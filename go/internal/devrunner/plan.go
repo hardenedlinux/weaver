@@ -180,6 +180,14 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"scheme-rooted-sdk-integration", "cargo", []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "-p", "weaver-server", "--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification", "--locked", "--offline"}},
 			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration,schemeintegration", "./dev", "-run", "^TestProviderControl", "-v"}},
 		}, nil
+	case "bench-execution":
+		return []Stage{
+			{"execution-benchmark-target", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=integration", "./internal/devrunner", "-run", "^TestCargoBenchmarkTargetFollowsCargoConfiguration$", "-v"}},
+			{"execution-policy-tests", "cargo", []string{"test", "-p", "weaver-policy", "--locked", "--offline"}},
+			{"execution-policy-benchmark", "cargo", []string{"bench", "-p", "weaver-policy", "--bench", "gateway", "--locked", "--offline", "--", "policy/context_", "--noplot"}},
+			{"execution-provider-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}},
+			{"published-pipeline-benchmark", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayPublishedPipeline$", "-benchtime=1x", "-count=3", "-benchmem"}},
+		}, nil
 	case "bench-runtime":
 		return []Stage{
 			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},

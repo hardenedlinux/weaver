@@ -1,3 +1,10 @@
+use weaver_policy::ProviderCheck;
+#[path = "support/context.rs"]
+mod context_bench;
+#[path = "../src/provider_context.rs"]
+mod literal_context;
+#[path = "../tests/support/provider_context.rs"]
+mod reference_context;
 use criterion::{Criterion, criterion_group, criterion_main};
 use std::{hint::black_box, time::Duration};
 #[path = "../../contracts/benches/support/fixtures.rs"]
@@ -82,5 +89,5 @@ fn candidate_replay(c: &mut Criterion) {
         })
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=current_policy,candidate_replay}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=current_policy,candidate_replay,context_bench::contexts}
 criterion_main!(benches);

@@ -20,18 +20,25 @@ type PipelineBenchmark struct {
 	Allocs     uint64  `json:"allocsPerOp"`
 }
 
-func readPipelineBenchmarks(path string, cpus int) ([]PipelineBenchmark, error) {
+func readPipelineBenchmarks(path string, cpus int, expected ...string) ([]PipelineBenchmark, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
-	counts := map[string]int{"BenchmarkGatewayCompiledPipeline/inline": 0, "BenchmarkGatewayCompiledPipeline/assets": 0}
+	names := []string{"BenchmarkGatewayCompiledPipeline/inline", "BenchmarkGatewayCompiledPipeline/assets"}
+	if len(expected) > 0 {
+		names = expected
+	}
+	counts := make(map[string]int, len(names))
+	for _, name := range names {
+		counts[name] = 0
+	}
 	rows := []PipelineBenchmark{}
 	scan := bufio.NewScanner(file)
 	for scan.Scan() {
 		fields := strings.Fields(scan.Text())
-		if len(fields) < 3 || !strings.HasPrefix(fields[0], "BenchmarkGatewayCompiledPipeline/") {
+		if len(fields) < 3 || !strings.HasPrefix(fields[0], "BenchmarkGateway") {
 			continue
 		}
 		if len(fields) != 12 {

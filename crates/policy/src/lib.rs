@@ -2,6 +2,7 @@
 mod authorize;
 mod compiled;
 mod provider;
+mod provider_context;
 pub use provider::{BoundProviderPolicy, ProviderCheck, bind_provider};
 mod publication_replay;
 mod stream;
@@ -13,3 +14,7 @@ pub use typed::validate_typed;
 
 #[cfg(test)]
 asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_rust_config());
+
+#[cfg(test)]
+#[path = "../tests/unit/provider_context.rs"]
+mod provider_context_tests;

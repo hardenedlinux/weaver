@@ -203,4 +203,9 @@ module ProviderRpc {
     .then(advanceDomainCut).expect(safe and s.pending and s.held==4).then(emitPrepared(1).fail())
   run allowWithoutCurrentUsageEvidenceCounterexampleTest=spent.then(advanceDomainCut)
     .then(unsafeCreditAsAuthority).expect(not(safe))
+  // Literal construction reuses immutable facts, never the mutable decision cut.
+  run retainedLiteralsCannotCacheRevocationTest=spent.then(publish).expect(safe and s.held==4).then(batch(1,0).fail())
+  run restoredAllowCannotRestoreOldLiteralContextTest=spent.then(publish).then(restorePolicy).expect(safe and s.held==4).then(batch(1,0).fail())
+  run literalContextRejoinsHistoryAfterQueueWaitTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1)).then(advanceDomainCut).expect(safe and s.held==4).then(emitPrepared(1).fail())
+  run staleLiteralContextCounterexampleTest=spent.then(advanceDomainCut).then(unsafeStaleRelease).expect(not(safe))
 }

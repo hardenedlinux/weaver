@@ -120,7 +120,7 @@ func TestBenchmarkEvidenceRejectsInvalidMeasurements(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err := collectBenchmarks(root, output, time.Unix(200, 0).UTC().Format(time.RFC3339Nano)); err == nil {
+			if err := collectBenchmarks(filepath.Join(root, "target"), output, time.Unix(200, 0).UTC().Format(time.RFC3339Nano)); err == nil {
 				t.Fatal("invalid measured evidence accepted")
 			}
 			if _, err := os.Stat(filepath.Join(output, "benchmark-summary.org")); !os.IsNotExist(err) {
@@ -139,7 +139,7 @@ func TestBenchmarkEvidenceRequiresEveryCase(t *testing.T) {
 					writeBenchmarkEstimate(t, root, name)
 				}
 			}
-			err := collectBenchmarks(root, output, time.Unix(200, 0).UTC().Format(time.RFC3339Nano))
+			err := collectBenchmarks(filepath.Join(root, "target"), output, time.Unix(200, 0).UTC().Format(time.RFC3339Nano))
 			if omitted != "" {
 				if err == nil || !strings.Contains(err.Error(), omitted) {
 					t.Fatalf("partial package evidence accepted or unexplained: %v", err)
@@ -171,14 +171,14 @@ func TestFinalSendBenchmarkSubsetCannotQualifyWholeWorkspace(t *testing.T) {
 		writeBenchmarkEstimate(t, root, name)
 	}
 	started := time.Unix(200, 0).UTC().Format(time.RFC3339Nano)
-	if err := collectBenchmarks(root, t.TempDir(), started, storageBenchmarkCases...); err != nil {
+	if err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), started, storageBenchmarkCases...); err != nil {
 		t.Fatal(err)
 	}
-	if err := collectBenchmarks(root, t.TempDir(), started); err == nil {
+	if err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), started); err == nil {
 		t.Fatal("selected final-send results qualified unrelated packages")
 	}
 	for _, selected := range [][]string{{"unowned"}, {storageBenchmarkCases[0], storageBenchmarkCases[0]}} {
-		if err := collectBenchmarks(root, t.TempDir(), started, selected...); err == nil {
+		if err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), started, selected...); err == nil {
 			t.Fatal("invalid or duplicate selected measurement admitted")
 		}
 	}
@@ -187,7 +187,7 @@ func TestFinalSendBenchmarkSubsetCannotQualifyWholeWorkspace(t *testing.T) {
 func TestBenchmarkEvidenceRejectsUnmappedCase(t *testing.T) {
 	root := t.TempDir()
 	writeBenchmarkEstimate(t, root, "contracts_spoofed")
-	err := collectBenchmarks(root, t.TempDir(), time.Unix(200, 0).UTC().Format(time.RFC3339Nano))
+	err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), time.Unix(200, 0).UTC().Format(time.RFC3339Nano))
 	if err == nil || !strings.Contains(err.Error(), "unmapped") {
 		t.Fatalf("unmapped case accepted: %v", err)
 	}

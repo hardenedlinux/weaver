@@ -17,6 +17,17 @@ package ProviderRpc {
         doc /* Go rejects unsupported request shapes; Rust independently admits exactly one original token cap in the range 1 through 4096 before reservation or dispatch. Source commitments cannot qualify competing caps. Neither cap nor usage observations authorize monetary settlement. */
     }
     requirement def SourceProviderProfileBinding {
+        doc /* Rust retains only immutable Cedar literals and parsed subject/
+           target identities in BoundProviderPolicy. Each effect constructs a
+           fresh official Cedar Context from its actual sequence, format and
+           authoritative shared-domain view. No JSON clone/parser is needed for
+           this scalar provider context. Checked u64-to-long conversion retains
+           rejection above Cedar signed range; missing domains remain missing.
+           Current Policy text, owner fence and domain checks are still read
+           under the deciding transaction and evaluated on every use.
+           Go config/publication/Routing and Rust final sends can be qualified
+           without Scheme preparation; this does not qualify a new Scheme
+           dependency or alter its source-currentness contract. */
         doc /* Authenticated source registration atomically binds an immutable profile artifact and original task. Plans commit the exact profile digest. Fresh Cedar evaluates protocol, profile digest and validated request facts before final sends. */
     }
     requirement def ClosedProviderRequestSchema {

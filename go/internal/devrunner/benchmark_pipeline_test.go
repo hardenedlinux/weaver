@@ -82,3 +82,27 @@ func TestSourceAdmissionBenchmarksRetainEverySizeAndRepetition(t *testing.T) {
 		t.Fatal("missing local admission sample accepted")
 	}
 }
+
+func TestPublishedPipelineKeepsSchemeOutsideExecutionQualification(t *testing.T) {
+	stages, err := Stages("bench-execution", "go")
+	if err != nil || len(stages) != 5 {
+		t.Fatal("execution qualification", err)
+	}
+	for _, stage := range stages {
+		if strings.Contains(strings.Join(stage.Args, " "), "schemeintegration") || strings.Contains(stage.Name, "scheme") {
+			t.Fatal("execution boundary depends on Scheme", stage)
+		}
+	}
+	var output strings.Builder
+	for range 3 {
+		fmt.Fprintln(&output, "BenchmarkGatewayPublishedPipeline/registered-12 1 1000 ns/op 800 activation-ns/op 190 send-ns/op 100 B/op 2 allocs/op")
+	}
+	path := filepath.Join(t.TempDir(), "published.log")
+	if err := os.WriteFile(path, []byte(output.String()), 0600); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := readPipelineBenchmarks(path, 12, "BenchmarkGatewayPublishedPipeline/registered")
+	if err != nil || len(rows) != 3 {
+		t.Fatal("published measurements lost", err)
+	}
+}

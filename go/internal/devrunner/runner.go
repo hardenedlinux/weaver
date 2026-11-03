@@ -178,7 +178,7 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		fmt.Fprintf(output, "%s %s\n", current.Status, current.Name)
 	}
 	if mode == "bench" && !failed {
-		if err := collectBenchmarks(root, directory, receipt.Started); err != nil {
+		if err := collectCargoBenchmarks(ctx, root, directory, receipt.Started, environment); err != nil {
 			failed = true
 			fmt.Fprintf(output, "FAIL benchmark artifacts: %v\n", err)
 		}
@@ -285,6 +285,10 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	if stage.Name == "runtime-projection-benchmark" && err == nil && closeErr == nil {
 		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), sourceAdmissionBenchmarks...)
 	}
+	if stage.Name == "published-pipeline-benchmark" && err == nil && closeErr == nil {
+		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), "BenchmarkGatewayPublishedPipeline/registered")
+		result.Details = "Real Go/Cedar/Rust path; Scheme preparation excluded, not a latency qualification."
+	}
 	if stage.Name == "runtime-pipeline-benchmark" && err == nil && closeErr == nil {
 		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
 		result.Details = "Complete functional pipeline samples; no end-to-end speedup or non-regression qualification."
@@ -292,8 +296,11 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	if stage.Name == "grpc-benchmark" && err == nil && closeErr == nil {
 		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
 	}
-	if (stage.Name == "storage-final-benchmark" || stage.Name == "telemetry-benchmark") && err == nil && closeErr == nil {
+	if (stage.Name == "storage-final-benchmark" || stage.Name == "telemetry-benchmark" || stage.Name == "execution-policy-benchmark") && err == nil && closeErr == nil {
 		cases := storageBenchmarkCases
+		if stage.Name == "execution-policy-benchmark" {
+			cases = []string{"policy_context_json_local", "policy_context_literal_local", "policy_context_json_shared", "policy_context_literal_shared"}
+		}
 		if stage.Name == "telemetry-benchmark" {
 			cases = nil
 			for _, name := range rustBenchmarkCases {
@@ -302,7 +309,7 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 				}
 			}
 		}
-		err = collectBenchmarks(root, directory, started.UTC().Format(time.RFC3339Nano), cases...)
+		err = collectCargoBenchmarks(ctx, root, directory, started.UTC().Format(time.RFC3339Nano), environment, cases...)
 		if err == nil {
 			var data []byte
 			data, err = os.ReadFile(filepath.Join(directory, "benchmark-summary.org"))

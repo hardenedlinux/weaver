@@ -511,11 +511,11 @@ theorem projects_existing_release_history (history : Run s t) : ReleaseRun s.cor
   | refl => exact .refl _
   | next prior event ih => exact .next ih (release_projection event)
 
-theorem stale_context_blocks_even_reserved_slot (stale : b.context ≠ s.context) : ¬ CanEmit s b := by
+theorem stale_context_blocks_even_reserved_slot (stale : b.context ≠ s.context) : ¬ Flow.CanEmit s b := by
   intro ready
   exact stale ready.2.2.2.2.1
 
-theorem observed_cancellation_blocks_release (stopped : s.stopped = true) : ¬ CanEmit s b := by
+theorem observed_cancellation_blocks_release (stopped : s.stopped = true) : ¬ Flow.CanEmit s b := by
   simp_all [CanEmit, Eligible]
 
 theorem final_guard_checks_actual_owner_rows (ready : CanEmit s b) (within : offset < b.rows) :
@@ -847,4 +847,22 @@ theorem wire_bound_does_not_prove_allocation_bound :
 end DecodeAllocation
 #print axioms DecodeAllocation.finite_run_preserves_cumulative_bound
 #print axioms DecodeAllocation.wire_bound_does_not_prove_allocation_bound
+
+/-- Context is the complete current effect image, including Policy/fence,
+shared budget/history and optional-field presence. The SDK representation must
+preserve that value; immutable plan literals alone do not satisfy this premise. -/
+theorem equivalent_context_preserves_emission {Key Context Representation : Type} {b : Flow.Batch Key Context} {s : Flow.Pipe Key Context}
+    (decode : Representation → Context) (encode : Context → Representation)
+    (faithful : decode (encode b.context) = b.context) :
+    Flow.CanEmit s {b with context := decode (encode b.context)} ↔ Flow.CanEmit s b := by
+  simp [faithful]
+
+/-- An otherwise valid prepared frame cannot retain an old mutable context.
+No premise about literal construction replaces the actual current-use guard. -/
+theorem stale_context_cannot_emit {Key Context : Type} {b : Flow.Batch Key Context} {s : Flow.Pipe Key Context} (changed : b.context ≠ s.context) : ¬ Flow.CanEmit s b := by
+  intro emitted
+  exact changed emitted.2.2.2.2.1
+
+#print axioms equivalent_context_preserves_emission
+#print axioms stale_context_cannot_emit
 end Weaver.ProviderRpc

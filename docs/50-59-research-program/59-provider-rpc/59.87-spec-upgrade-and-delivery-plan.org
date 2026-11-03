@@ -2,6 +2,13 @@
 #+LANGUAGE: en
 #+OPTIONS: toc:2
 
+* Active priority
+
+Deliver the Rust, Go and Cedar execution path first. Scheme reader/bootstrap and
+prepared-scope optimization is being handled by its upstream owner; consume that
+work only after it is ready. Keep current Scheme interfaces and dependency pins.
+See the current Rust/Go/Cedar delivery section below for this implementation.
+
 * Maintained baseline
 
 Weaver consumes the inspected source of the existing
@@ -205,7 +212,7 @@ speedups are hypotheses for Weaver; do not claim them as measured Gateway gains.
 No performance change may cache final authorization, split a shared constraint,
 redispatch an ambiguous attempt or refund unknown exposure.
 
-* Current qualification and next decision
+* Prior Scheme qualification and retained evidence
 
 ** Scheme reuse and runtime conversion review
 
@@ -568,3 +575,84 @@ The maintained =bench-runtime= gate verifies source currentness, functional
 behavior, units and complete sample inventory. A PASS is not performance
 admission against a throughput, percentile or non-regression threshold. The
 existing higher performance-qualification contract remains separate.
+
+* Current delivery priority: Rust, Go and Cedar
+
+Scheme reader/bootstrap and prepared-scope optimization is upstream owner work
+and is deferred from this change. Keep its current source interface and package
+selection. No Scheme source or dependency pin is changed. Rust/Go execution must
+remain independently testable while that upstream work proceeds.
+
+** Typed Cedar facts on the execution path
+
+The existing BoundProviderPolicy now retains official Cedar RestrictedExpression
+literals for the immutable original plan/profile facts and parsed principal/target
+identities. Identity parsing keeps its prior accepting/rejecting syntax; it runs
+once for bound subjects, not on every frame. The effect's action remains fresh.
+Each authorization constructs a new official Context with Context.from_pairs.
+This replaces deep JSON cloning and JSON-to-Cedar decoding on each effect, rather
+than introducing a Policy interpreter or another validation/result cache.
+
+Sequence, format, task/origin identity, budget/history roots and epochs, held
+exposure, shared limit and history count are supplied afresh by the deciding
+owner. Missing optional domains remain absent. Unsigned values outside Cedar's
+signed long range reject instead of truncating, clamping or silently wrapping.
+No current Policy text, mutable domain view or allow decision is retained in the
+binding. The exact-source compiled-Policy cache keeps its existing bounded scope.
+
+The deciding Turso transaction still reads current Policy/fence and authoritative
+domain state after waits, checks original profile/claim/reservation binding and
+runs a new error-free Cedar decision before dispatch/release. Preparation, queue
+capacity and literal construction do not mint execution authority. Revocation,
+commit conflicts, unknown outcomes and partial writes preserve their old holds
+and spent roots. There is no transport retry, redirect or connection-pool change.
+
+** Validation and measurement boundaries
+
+Two actual Proptest properties generate 128 cases each. An independent test-only
+JSON oracle checks complete Context value parity, missing-domain restoration and
+full unsigned numeric ranges. The decision property varies current source Policy,
+sequence, format, shared exposure/limit, budget/history epochs and domain roots;
+revocation and missing live fields must still deny with the same binding.
+
+The Criterion local/shared JSON-versus-literal cases use the same Rust process,
+SDK and immutable/current inputs. The literal constructor is the production
+source, included by the benchmark without exposing a new public API. The JSON
+oracle is confined to test/benchmark support. Both construct actual Cedar Context
+values; these measurements exclude decision evaluation, SQL, transport and
+Scheme preparation. All four cases retain thirty samples. Broader throughput or
+latency admission requires separate evidence.
+
+=go run ./cmd/weaver-dev bench-execution= from =go/= runs Rust Policy PBT, these
+same-process construction benchmarks, real default Go/Rust provider integration
+and three fresh =BenchmarkGatewayPublishedPipeline/registered= samples. The
+published path includes JSON configuration admission, authenticated publication
+CAS, Go Routing and the Rust/Turso final HTTPS stream. Builds, fixture PKI/server
+startup and frontend connection setup remain outside its timer. Its published
+phase is not Scheme source preparation. Zero provider calls before execution,
+exactly one external invocation and refusal of redispatch are checked per sample.
+
+The existing compiled-Scheme benchmark reuses that same actual final-send fixture
+while keeping its existing preparation/activation path. This is a Go test-fixture
+convergence, not a change to Scheme semantics or an alternative Gerbil entry.
+Current Scheme native/Quint/Lean evidence retains its original source scope;
+this change does not qualify an unpublished upstream optimization.
+
+ProviderRpc Lean adds representation-preserving emission and stale-context
+refusal using the existing Flow.CanEmit contract. The constructor equivalence is
+an explicit native SDK premise, exercised by finite PBT rather than declared a
+proof of Rust compilation. Quint adds retained-literal revocation, restored-Allow
+and domain-cut/queue-wait schedules plus an unsafe stale-context counterexample.
+The original claim, exposure, cancellation, fencing and no-duplicate invariants
+remain unchanged.
+
+#+CAPTION: Current authority and final execution stay distinct from source preparation.
+[[file:../../architecture/diagrams/00a-readme-overview.svg]]
+
+The execution benchmark also checks actual Cargo target selection. Collection
+uses Cargo metadata's absolute target_directory under the same command
+environment, including absolute/relative CARGO_TARGET_DIR and workspace Cargo
+configuration. It does not infer root/target. The first complete execution run
+remains FAIL because the old collector selected the wrong directory, even though
+its actual integration and published-stream samples passed. Corrected collection
+must admit all fresh cases and samples again; partial success cannot replace it.

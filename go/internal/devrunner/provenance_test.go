@@ -44,7 +44,7 @@ func TestOldBenchmarkFilesCannotQualifyCurrentRun(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if err := collectBenchmarks(root, t.TempDir(), time.Unix(200, 0).UTC().Format(time.RFC3339Nano)); err == nil {
+	if err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), time.Unix(200, 0).UTC().Format(time.RFC3339Nano)); err == nil {
 		t.Fatal("stale benchmarks accepted")
 	}
 }

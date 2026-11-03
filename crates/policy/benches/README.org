@@ -30,3 +30,19 @@ Regression warnings remain evidence even when the benchmark process succeeds;
 these measurements do not establish a production latency or throughput target.
 
 See [[file:../../../docs/50-59-research-program/59-provider-rpc/59.05-benchmarks.org][the workspace benchmark contract]] for the complete matrix and interpretation rules.
+
+* Per-effect context construction
+
+=policy/context_json_{local,shared}= and
+=policy/context_literal_{local,shared}= run in the same Criterion binary, with
+identical immutable facts and current-effect inputs. The JSON reference is
+compiled only into tests/benchmarks. The literal case includes the production
+context-construction source directly, without exposing a public benchmark API.
+Both construct actual Cedar SDK Context values. These cases measure construction,
+not authorization, persistence, queueing, network latency or Scheme preparation.
+The existing current-decision case still performs a new error-free Cedar decision.
+
+=go run ./cmd/weaver-dev bench-execution= from =go/= adds complete Rust PBT,
+real Go/Cedar/Rust fault integration and fresh published-source streaming samples.
+It does not build or invoke Scheme. The earlier =bench-runtime= entry remains
+available for the separate complete compiled-Scheme source chain.
