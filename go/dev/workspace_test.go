@@ -5,13 +5,16 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"testing"
+	"testing/quick"
 	"time"
 
 	"github.com/HardenedLinux/weaver/go/internal/devrunner"
@@ -136,7 +139,6 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 	if len(metadata.Members) != len(layers) {
 		t.Fatal("unmapped native workspace members")
 	}
-	inherited := regexp.MustCompile(`^[A-Za-z0-9_-]+(?:\.workspace\s*=\s*true|\s*=\s*\{\s*workspace\s*=\s*true,\s*optional\s*=\s*true(?:,\s*features\s*=\s*\["[A-Za-z0-9_/-]+"(?:,\s*"[A-Za-z0-9_/-]+")*\])?\s*\})\s*$`)
 	aspPin := regexp.MustCompile(`[?&]rev=[a-f0-9]{40}(?:$|&)`)
 	for _, id := range metadata.Members {
 		p := packages[id]
@@ -160,7 +162,7 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 				dependencies = strings.Contains(line, "dependencies")
 				continue
 			}
-			if dependencies && line != "" && !inherited.MatchString(line) {
+			if dependencies && line != "" && !inheritedDependency.MatchString(line) {
 				t.Fatalf("dependency not inherited from workspace: %s: %s", p.Name, line)
 			}
 		}
@@ -287,5 +289,35 @@ func TestSysMLSDKIsAbsentFromProductionBuild(t *testing.T) {
 	}
 	if production == 0 {
 		t.Fatal("no production commands were checked")
+	}
+}
+
+// Canonical member declarations may select workspace features without becoming
+// optional. Source/version/path overrides remain forbidden; Cargo metadata above
+// independently resolves every member and checks its actual dependency graph.
+var inheritedDependency = regexp.MustCompile(`^[A-Za-z0-9_-]+(?:\.workspace\s*=\s*true|\s*=\s*\{\s*workspace\s*=\s*true(?:,\s*optional\s*=\s*true)?(?:,\s*features\s*=\s*\["[A-Za-z0-9_/-]+"(?:,\s*"[A-Za-z0-9_/-]+")*\])?\s*\})\s*$`)
+
+func TestCargoWorkspaceInheritanceForms(t *testing.T) {
+	check := func(selector uint8) bool {
+		gap := strings.Repeat(" ", int(selector%4))
+		feature := "commit-observer-" + strconv.Itoa(int(selector))
+		base := "weaver-ledger = {" + gap + "workspace = true"
+		optional := ""
+		if selector&1 != 0 {
+			optional = ", optional = true"
+		}
+		valid := base + optional + ", features = [\"" + feature + "\"]" + gap + "}"
+		if !inheritedDependency.MatchString(valid) || !inheritedDependency.MatchString("weaver-ledger.workspace = true") {
+			return false
+		}
+		for _, override := range []string{`version = "1"`, `path = "../ledger"`, `git = "https://example.invalid/ledger"`, `workspace = false`} {
+			if inheritedDependency.MatchString("weaver-ledger = {"+override+"}") || inheritedDependency.MatchString(base+", "+override+"}") {
+				return false
+			}
+		}
+		return true
+	}
+	if err := quick.Check(check, &quick.Config{MaxCount: 64, Rand: rand.New(rand.NewSource(293))}); err != nil {
+		t.Fatal(err)
 	}
 }

@@ -23,7 +23,7 @@ func Plan(goBinary string) []Stage {
 		{"quint-environment", "quint", []string{"--version"}},
 		{"proof-environment", "elan", []string{"run", proofToolchain, "lean", "--version"}},
 		{"lean-json-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=proofintegration", "./internal/devrunner", "-run", "^TestLeanJSONCompilerAndRunner$", "-v"}},
-		{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership|CIWorkflows)", "-v"}},
+		{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|SchemeModuleOwnership|CIWorkflows)", "-v"}},
 		{"workflow-contract", "actionlint", nil},
 		{"rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
 		{"rust-default-profile", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
@@ -122,7 +122,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		return Plan(goBinary), nil
 	case "check-storage":
 		selected := []Stage{
-			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates)", "-v"}},
+			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace)", "-v"}},
 			{"storage-rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
 			{"storage-workspace-types", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
 			{"storage-rust-tests", "cargo", []string{"test", "-p", "weaver-ledger", "-p", "weaver-execution", "--locked", "--offline"}},
@@ -170,7 +170,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "check-scheme":
 		return []Stage{
-			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership|CIWorkflows)", "-v"}},
+			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|SchemeModuleOwnership|CIWorkflows)", "-v"}},
 			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},
 			{"scheme-policy-preflight", "cargo", []string{"test", "-p", "weaver-policy-ffi", "--lib", "--benches", "--locked", "--offline"}},
 			{"scheme-policy-pkg-config", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "policy_pkg_config", "--locked", "--offline"}},
@@ -210,7 +210,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "bench":
 		return []Stage{
-			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership|CIWorkflows)", "-v"}},
+			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|SchemeModuleOwnership|CIWorkflows)", "-v"}},
 			{"rust-environment", "rustc", []string{"-vV"}},
 			{"go-environment", goBinary, []string{"-C", "go", "version"}},
 			{"benchmark-package-contract", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "./internal/devrunner", "-run", "^Test(CargoWorkspaceAndDevelopmentGates|Benchmark.*)$"}},
