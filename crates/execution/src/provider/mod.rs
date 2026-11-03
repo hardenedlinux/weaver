@@ -8,5 +8,5 @@ mod write_seal;
 pub use runtime::{ProviderExecution, ProviderOutput, ProviderTransport, execute_provider};
 
 #[cfg(test)]
-#[path = "../../tests/support/runtime.rs"]
+#[path = "../../tests/unit/runtime.rs"]
 mod test_runtime;

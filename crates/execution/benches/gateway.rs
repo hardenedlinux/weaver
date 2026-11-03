@@ -39,7 +39,7 @@ impl ProviderOutput for Sink {
         Ok(())
     }
 }
-#[path = "../tests/support/runtime.rs"]
+#[path = "../tests/unit/runtime.rs"]
 mod fixture_runtime;
 struct Provider {
     runtime: tokio::runtime::Runtime,
