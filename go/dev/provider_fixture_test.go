@@ -9,6 +9,7 @@ package dev
 import (
 	"context"
 	"crypto/ecdsa"
+	"crypto/ed25519"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
@@ -154,6 +155,7 @@ func pki(t testing.TB) *testPKI {
 }
 
 type fixture struct {
+	reviewKey                         ed25519.PrivateKey
 	directory, address, sourceAddress string
 	binary                            string
 	pki                               *testPKI
@@ -251,6 +253,20 @@ func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, b
 	f.env = []string{"WEAVER_DB=" + filepath.Join(f.directory, "owner.db"), "WEAVER_PRINCIPAL=alice", "WEAVER_LISTEN=" + f.address, "WEAVER_TOKEN_SHA256=" + hex.EncodeToString(ownerHash[:]), "WEAVER_ADMIN_TOKEN_SHA256=" + hex.EncodeToString(adminHash[:]), "WEAVER_GRPC_PEER_SHA256=" + hex.EncodeToString(peerHash[:]), "WEAVER_GRPC_CERT=" + filepath.Join(f.directory, "server.pem"), "WEAVER_GRPC_KEY=" + filepath.Join(f.directory, "server-key.pem"), "WEAVER_GRPC_CLIENT_CA=" + filepath.Join(f.directory, "ca.pem"), "WEAVER_PROVIDER_CA=" + filepath.Join(f.directory, "ca.pem"), `WEAVER_PROVIDER_CREDENTIAL_ENVS={"primary":"WEAVER_TEST_KEY","backup":"WEAVER_TEST_KEY","denied":"WEAVER_TEST_KEY"}`, "WEAVER_TEST_KEY=test-provider-key"}
 	sourceHash := sha256.Sum256(f.pki.source.Certificate[0])
 	f.env = append(f.env, "WEAVER_SOURCE_LISTEN="+f.sourceAddress, "WEAVER_GRPC_SOURCE_PEER_SHA256="+hex.EncodeToString(sourceHash[:]))
+	_, f.reviewKey, err = ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reviewConfig, err := json.Marshal(struct {
+		Audience       string `json:"audience"`
+		Epoch          uint64 `json:"epoch"`
+		PublicKey      string `json:"public_key"`
+		AllowExpansion bool   `json:"allow_expansion"`
+	}{"test-gateway", 0, hex.EncodeToString(f.reviewKey.Public().(ed25519.PublicKey)), true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.env = append(f.env, "WEAVER_REVIEW_AUTHORITY="+string(reviewConfig))
 	f.env = append(f.env, extraEnvironment...)
 	f.start(t)
 	t.Cleanup(func() { f.stop(t) })
@@ -318,6 +334,7 @@ func (f *fixture) start(t testing.TB) {
 		f.stop(t)
 		t.Fatalf("source gRPC startup: %v", err)
 	}
+	f.admin.RPC = &fixtureReviewer{GatewayClient: f.admin.RPC, key: f.reviewKey}
 	if stages, err := os.ReadFile(filepath.Join(f.directory, "server.log")); err == nil {
 		t.Logf("Rust owner startup stage observations: %s", stages)
 	}

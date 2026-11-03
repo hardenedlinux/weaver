@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
 
 //! Cedar admission API for the final deciding owner.
+mod delta_review;
+pub use delta_review::verify_delta_review;
 mod authorize;
 mod compiled;
 mod provider;

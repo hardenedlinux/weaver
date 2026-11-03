@@ -150,6 +150,13 @@ fn decide_publication(
             digest: digest.into(),
         },
     );
+    let delta = crate::delta_registration::require_current(
+        tx,
+        &PublicationKey {
+            operation_id: change.operation_id.clone(),
+            digest: digest.into(),
+        },
+    );
     let decision = apply(
         tx,
         AuthorityChange {
@@ -159,10 +166,17 @@ fn decide_publication(
             fence: change.fence,
         },
     )?;
-    if decision.outcome == PublicationOutcome::Committed {
+    let evidence = if decision.outcome == PublicationOutcome::Committed {
         review?;
+        delta?
+    } else {
+        None
+    };
+    let receipt = record_decision(tx, change, digest, decision)?;
+    if let Some(evidence) = evidence {
+        crate::reviewed_head::bind(tx, &receipt, &evidence)?;
     }
-    record_decision(tx, change, digest, decision)
+    Ok(receipt)
 }
 
 impl Ledger {

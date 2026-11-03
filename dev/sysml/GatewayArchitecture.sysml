@@ -44,11 +44,23 @@ package WeaverGatewayArchitecture {
         port requirements : ~WorkPort;
         port proposal : WorkPort;
     }
+    part def ReviewedPublication {
+        attribute displayName : String = "Reviewed Policy publication";
+        attribute responsibility : String = "Independent SPEC review producer\nGo carries signed original evidence\nRust commits current Policy + parent";
+        attribute glyph : String = "obligation";
+        attribute visualRole : String = "publication";
+        doc /* A logical publication responsibility, not a new Gateway signer.
+           The independent producer uses the SPEC Library. Deployment owns its
+           verification public key. The Rust deciding transaction associates
+           the current Policy with the approved original publication. */
+        port policy : WorkPort;
+    }
     part def RustExecution {
         attribute displayName : String = "Rust / governed execution";
-        attribute responsibility : String = "Cedar + claim + shared budget\nSealed writer + observed commit\nFresh checks on every release";
+        attribute responsibility : String = "Cedar + current reviewed Policy\nClaim + budget + writer seal\nFresh checks on every release";
         attribute glyph : String = "rust";
         attribute visualRole : String = "execution";
+        port policy : ~WorkPort;
         port proposal : ~WorkPort;
         port request : WorkPort;
     }
@@ -74,9 +86,11 @@ package WeaverGatewayArchitecture {
         part routine : RoutineProgram;
         part catalog : ModelCatalog;
         part routing : Routing;
+        part publication : ReviewedPublication;
         part execution : RustExecution;
         part providers : ModelProviders;
         part stream : StreamLifecycle;
+        connection reviewed_policy connect publication.policy to execution.policy;
         connection input connect ingress.request to routing.intent;
         connection semantics connect routine.requirements to routing.requirements;
         connection catalogBindings connect catalog.bindings to routing.catalog;

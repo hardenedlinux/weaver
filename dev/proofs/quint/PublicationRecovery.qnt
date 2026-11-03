@@ -7,6 +7,7 @@ module PublicationRecovery {
   type Event = {id:int,decision:Decision}
   type Proposal = {id:int,payload:int,parent:int,fence:int}
   type Review = {command:Proposal,artifact:int,head:int,fence:int,parentPolicy:int,parentSchema:int,cut:Cut,epoch:int}
+  type ProducerReview={review:Review,reviewerEpoch:int,sourceEpoch:int}
   type ReviewEntry={review:Review,owner:int,term:int,index:int}
   // Opaque references to Lean-qualified bindings. No role, subject, public-key,
   // scope, audience or signature semantics are evaluated in this schedule owner.
@@ -29,7 +30,7 @@ module PublicationRecovery {
     owner:int,liveOwners:Set[int],egressOwners:Set[int],handoff:bool,calls:int,external:int,
     registry:List[ReviewEntry],registrarOwner:int,registrarTerm:int,
     sourceDecisions:List[SourceDecision],sourceRevoked:Set[int]}
-  type Ledger = {head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int,registryQualifications:Set[SourceObservation],retainedSource:SourceCut,trustedRoot:int,retentionGeneration:int,retentionAvailable:bool,retainedQualifications:Set[RetainedQualification],exposureProjection:ExecutionRetention,mrrApprovals:Set[RetainedQualification],mrrBodyAvailable:bool}
+  type Ledger = {reviewMetadata:bool,reviewerEpoch:int,producerReviews:Set[ProducerReview],reviewedHead:Set[ProducerReview],head:int,fence:int,policy:int,schema:int,records:int->Decision,log:List[Event],commits:List[Event],held:int,calls:int,floor:Floor,pending:Set[Proposal],reviews:int->Set[Review],reviewProjection:List[ReviewEntry],sourceUses:Set[SourceUse],requiredReviews:Set[int],sourceObservations:Set[SourceObservation],sourceImage:SourceCut,sourceReachable:bool,sourceSession:int,registryQualifications:Set[SourceObservation],retainedSource:SourceCut,trustedRoot:int,retentionGeneration:int,retentionAvailable:bool,retainedQualifications:Set[RetainedQualification],exposureProjection:ExecutionRetention,mrrApprovals:Set[RetainedQualification],mrrBodyAvailable:bool}
   var authority:Ledger
   val ids=Set(0,1,2)
   val empty={payload:0,parent:-1,requestedFence:1,outcome:0,resultHead:-1,resultFence:1,review:Set(),validatedFence:1,validatedCut:emptyCut,validatedEpoch:0}
@@ -45,7 +46,7 @@ module PublicationRecovery {
   // refund arithmetic is defined by this publication/recovery schedule owner.
   pure val execution0={cut:emptyCut,burned:Set(),reservation:101,exposure:201,held:4,owner:1,epoch:0}
   pure val sourceCut0={epoch:0,owner:1,revoked:Set(),decisions:List({slot:0,credential:100,key:100}),registry:List(),head:-1,fence:1,execution:execution0}
-  action init = authority'={head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0,registryQualifications:Set(),retainedSource:sourceCut0,trustedRoot:7,retentionGeneration:0,retentionAvailable:true,retainedQualifications:Set(),exposureProjection:execution0,mrrApprovals:Set(),mrrBodyAvailable:true}
+  action init = authority'={reviewMetadata:true,reviewerEpoch:0,producerReviews:Set(),reviewedHead:Set(),head:-1,fence:1,policy:0,schema:0,records:ids.mapBy(_=>empty),log:[],commits:[],held:4,calls:1,floor:floor0,pending:Set(),reviews:ids.mapBy(_=>Set()),reviewProjection:List(),sourceUses:Set(),requiredReviews:Set(),sourceObservations:Set(),sourceImage:sourceCut0,sourceReachable:true,sourceSession:0,registryQualifications:Set(),retainedSource:sourceCut0,trustedRoot:7,retentionGeneration:0,retentionAvailable:true,retainedQualifications:Set(),exposureProjection:execution0,mrrApprovals:Set(),mrrBodyAvailable:true}
   def canStage(q:Proposal):bool={val d=authority.records.get(q.id)
     authority.pending.forall(p=>p.id!=q.id or p==q) and
       (d.outcome==0 or (d.payload==q.payload and d.parent==q.parent and d.requestedFence==q.fence))}
@@ -56,19 +57,21 @@ module PublicationRecovery {
     all {canStage(q),d.outcome==0 or authority.requiredReviews.contains(q.id),
       authority'=authority.with("requiredReviews",authority.requiredReviews.union(Set(q.id)))
         .with("pending",if(d.outcome==0)authority.pending.union(Set(q)) else authority.pending)}}
-  action decidePublication(id:int,payload:int,parent:int,fence:int,review:Set[Review],qualified:bool):bool = {
-    val accepted=parent==authority.head and fence>=authority.fence and qualified
+  pure def publicationDecision(s:Ledger,id:int,payload:int,parent:int,fence:int,review:Set[Review],qualified:bool):Ledger={
+    val accepted=parent==s.head and fence>=s.fence and qualified
     val d={payload:payload,parent:parent,requestedFence:fence,outcome:if(accepted)1 else 2,
-      resultHead:if(accepted)authority.head+1 else authority.head,resultFence:if(accepted)fence else authority.fence,review:review,validatedFence:authority.fence,validatedCut:authority.floor.cut,validatedEpoch:authority.floor.epoch}
+      resultHead:if(accepted)s.head+1 else s.head,resultFence:if(accepted)fence else s.fence,review:review,validatedFence:s.fence,validatedCut:s.floor.cut,validatedEpoch:s.floor.epoch}
     val event={id:id,decision:d}
-    all {authority.records.get(id).outcome==0,
-      authority.pending.forall(p=>p.id!=id or p=={id:id,payload:payload,parent:parent,fence:fence}),
-      authority'=authority.with("records",authority.records.set(id,d)).with("log",authority.log.append(event))
-        .with("pending",authority.pending.filter(p=>p.id!=id))
-        .with("commits",if(accepted)authority.commits.append(event) else authority.commits)
-        .with("head",d.resultHead).with("fence",d.resultFence)
-        .with("policy",if(accepted)payload else authority.policy).with("schema",if(accepted)payload else authority.schema)}
+    s.with("records",s.records.set(id,d)).with("log",s.log.append(event))
+      .with("pending",s.pending.filter(p=>p.id!=id))
+      .with("commits",if(accepted)s.commits.append(event) else s.commits)
+      .with("head",d.resultHead).with("fence",d.resultFence)
+      .with("policy",if(accepted)payload else s.policy).with("schema",if(accepted)payload else s.schema)
   }
+  action decidePublication(id:int,payload:int,parent:int,fence:int,review:Set[Review],qualified:bool):bool=all {
+    authority.records.get(id).outcome==0,
+    authority.pending.forall(p=>p.id!=id or p=={id:id,payload:payload,parent:parent,fence:fence}),
+    authority'=publicationDecision(authority,id,payload,parent,fence,review,qualified)}
   // Native local review latch. Unlatched source RPCs retain their explicit
   // trusted-source profile. This local guard does NOT establish floor recovery,
   // registrar incarnation or independent semantic qualification.
@@ -848,4 +851,59 @@ module PublicationRecovery {
     restartSourceObserver,reconnectSourceObserver,floorLoseReply,floorRead,floorRepair,floorActivate,
     floorRequestHandoff,floorConfirmTransportStopped(true),floorStartOwner,
     retentionAvailability(false),retentionAvailability(true),admitAfterMRR(executionReceipt,1,f.cut,f.epoch)}
+  // Served-profile extension of this owner. Authentication and actual SPEC
+  // qualification arrive independently; schedules do not evaluate cryptography
+  // or infer NoGain from finite replay, a signature or an approval label.
+  action registerProducerReview(r:Review,epoch:int,authenticated:bool,qualified:bool):bool=all {
+    authority.reviewMetadata,authenticated,qualified,epoch==authority.reviewerEpoch,
+    authority.pending.contains(r.command),r.command.parent==authority.head,
+    r.head==authority.head,r.fence==authority.fence,
+    r.parentPolicy==authority.policy,r.parentSchema==authority.schema,
+    authority.producerReviews.forall(e=>e.review.command.id!=r.command.id or e.review==r),
+    authority'=authority.with("producerReviews",authority.producerReviews.union(Set({review:r,reviewerEpoch:epoch,sourceEpoch:authority.floor.registrarTerm})))
+      .with("reviews",authority.reviews.set(r.command.id,Set(r)))}
+  def currentProducer(r:Review):bool=authority.reviewMetadata and authority.producerReviews.contains({review:r,reviewerEpoch:authority.reviewerEpoch,sourceEpoch:authority.floor.registrarTerm})
+  // The same pure decision update is used by local and served profiles. The
+  // native transaction atomically joins outcome, pending-clear and association.
+  action publishProducer(r:Review):bool=all {
+    currentProducer(r),locallyApproved(r.command),authority.pending.contains(r.command),
+    authority.records.get(r.command.id).outcome==0,r.command.parent==authority.head,r.command.fence>=authority.fence,
+    val decided=publicationDecision(authority,r.command.id,r.command.payload,r.command.parent,r.command.fence,Set(r),true)
+    authority'=decided.with("reviewedHead",Set({review:r,reviewerEpoch:authority.reviewerEpoch,sourceEpoch:authority.floor.registrarTerm}))}
+  action loseReviewMetadata=authority'=authority.with("reviewMetadata",false)
+  action rotateReviewKey=authority'=authority.with("reviewerEpoch",authority.reviewerEpoch+1)
+  val reviewedHeadCurrent=authority.reviewMetadata and authority.reviewedHead.exists(e=>e.reviewerEpoch==authority.reviewerEpoch and
+    e.review.command.parent+1==authority.head and e.review.command.fence==authority.fence and
+    e.review.command.payload==authority.policy and authority.records.get(e.review.command.id).outcome==1)
+  action useReviewedHead=all {authority.pending==Set(),reviewedHeadCurrent,authority'=authority}
+  run producerSignatureCannotReplaceQualificationTest=init.then(stageRequiringReview(staged0))
+    .expect(authority.pending.contains(staged0) and authority.held==4).then(registerProducerReview(review0,0,true,false).fail())
+  run producerKeyRotationBeforeCASRejectsOldReviewTest=init.then(stageRequiringReview(staged0))
+    .then(registerProducerReview(review0,0,true,true)).then(rotateReviewKey)
+    .expect(authority.pending.contains(staged0) and authority.calls==1 and authority.held==4).then(publishProducer(review0).fail())
+  run producerRegistrationLostResponseCannotActivateTest=init.then(stageRequiringReview(staged0))
+    .then(registerProducerReview(review0,0,true,true)).then(restart).then(useReviewedHead.fail())
+  run committedReviewSurvivesRestartButRotationInvalidatesTest=init.then(stageRequiringReview(staged0))
+    .then(registerProducerReview(review0,0,true,true)).then(publishProducer(review0)).then(restart)
+    .then(useReviewedHead).then(rotateReviewKey).then(observe).expect(safe and authority.held==4).then(useReviewedHead.fail())
+  action unsafeUseHistoricalReview=all {authority.reviewedHead!=Set(),authority'=authority}
+  run missingFinalReviewCheckCounterexampleTest=init.then(stageRequiringReview(staged0))
+    .then(registerProducerReview(review0,0,true,true)).then(publishProducer(review0)).then(rotateReviewKey)
+    .then(unsafeUseHistoricalReview).expect(not(reviewedHeadCurrent) and authority.records.get(0).outcome==1)
+  val producerReviewSafe=safe and authority.commits.indices().forall(i=>{
+    val event=authority.commits.nth(i)
+    authority.producerReviews.exists(e=>e.review.command=={id:event.id,payload:event.decision.payload,parent:event.decision.parent,fence:event.decision.requestedFence})})
+  action producerReviewSchedule=any {
+    stageRequiringReview(staged0),stageRequiringReview(sibling),stageRequiringReview(successor),
+    registerProducerReview(review0,authority.reviewerEpoch,true,true),
+    registerProducerReview(siblingReview,authority.reviewerEpoch,true,true),
+    registerProducerReview(successorReview,authority.reviewerEpoch,true,true),
+    registerProducerReview(review0,0,true,false),registerProducerReview(review0,0,false,true),
+    publishProducer(review0),publishProducer(siblingReview),publishProducer(successorReview),
+    loseReviewMetadata,rotateReviewKey,rotateRegistrar,restart,observe,useReviewedHead}
+  run missingVerifierCannotDowngradeAfterRestartTest=init.then(stageRequiringReview(staged0))
+    .then(registerProducerReview(review0,0,true,true)).then(publishProducer(review0))
+    .then(loseReviewMetadata).then(restart).expect(authority.records.get(0).outcome==1 and authority.held==4)
+    .then(useReviewedHead.fail())
+
 }

@@ -169,6 +169,58 @@ func (SourceRotationOutcome) EnumDescriptor() ([]byte, []int) {
 	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{2}
 }
 
+type DeltaDisposition int32
+
+const (
+	DeltaDisposition_DELTA_DISPOSITION_UNSPECIFIED DeltaDisposition = 0
+	DeltaDisposition_BOOTSTRAP                     DeltaDisposition = 1
+	DeltaDisposition_NO_EXECUTION_GAIN             DeltaDisposition = 2
+	DeltaDisposition_EXPLICIT_APPROVAL             DeltaDisposition = 3
+)
+
+// Enum value maps for DeltaDisposition.
+var (
+	DeltaDisposition_name = map[int32]string{
+		0: "DELTA_DISPOSITION_UNSPECIFIED",
+		1: "BOOTSTRAP",
+		2: "NO_EXECUTION_GAIN",
+		3: "EXPLICIT_APPROVAL",
+	}
+	DeltaDisposition_value = map[string]int32{
+		"DELTA_DISPOSITION_UNSPECIFIED": 0,
+		"BOOTSTRAP":                     1,
+		"NO_EXECUTION_GAIN":             2,
+		"EXPLICIT_APPROVAL":             3,
+	}
+)
+
+func (x DeltaDisposition) Enum() *DeltaDisposition {
+	p := new(DeltaDisposition)
+	*p = x
+	return p
+}
+
+func (x DeltaDisposition) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DeltaDisposition) Descriptor() protoreflect.EnumDescriptor {
+	return file_gateway_v1_gateway_proto_enumTypes[3].Descriptor()
+}
+
+func (DeltaDisposition) Type() protoreflect.EnumType {
+	return &file_gateway_v1_gateway_proto_enumTypes[3]
+}
+
+func (x DeltaDisposition) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DeltaDisposition.Descriptor instead.
+func (DeltaDisposition) EnumDescriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{3}
+}
+
 type TelemetrySnapshot struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
 	CompilationsSucceeded uint64                 `protobuf:"varint,1,opt,name=compilations_succeeded,json=compilationsSucceeded,proto3" json:"compilations_succeeded,omitempty"`
@@ -2610,6 +2662,423 @@ func (x *SourceRotationReceipt) GetAuthority() *SourceAuthorityView {
 	return nil
 }
 
+// Review preparation and registration are source-only; none activates Policy.
+type AuthorityParent struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Revision      uint64                 `protobuf:"varint,1,opt,name=revision,proto3" json:"revision,omitempty"`
+	Fence         uint64                 `protobuf:"varint,2,opt,name=fence,proto3" json:"fence,omitempty"`
+	PolicyDigest  string                 `protobuf:"bytes,3,opt,name=policy_digest,json=policyDigest,proto3" json:"policy_digest,omitempty"`
+	SchemaDigest  *string                `protobuf:"bytes,4,opt,name=schema_digest,json=schemaDigest,proto3,oneof" json:"schema_digest,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuthorityParent) Reset() {
+	*x = AuthorityParent{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthorityParent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthorityParent) ProtoMessage() {}
+
+func (x *AuthorityParent) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthorityParent.ProtoReflect.Descriptor instead.
+func (*AuthorityParent) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *AuthorityParent) GetRevision() uint64 {
+	if x != nil {
+		return x.Revision
+	}
+	return 0
+}
+
+func (x *AuthorityParent) GetFence() uint64 {
+	if x != nil {
+		return x.Fence
+	}
+	return 0
+}
+
+func (x *AuthorityParent) GetPolicyDigest() string {
+	if x != nil {
+		return x.PolicyDigest
+	}
+	return ""
+}
+
+func (x *AuthorityParent) GetSchemaDigest() string {
+	if x != nil && x.SchemaDigest != nil {
+		return *x.SchemaDigest
+	}
+	return ""
+}
+
+type ReviewAuthority struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Audience       string                 `protobuf:"bytes,1,opt,name=audience,proto3" json:"audience,omitempty"`
+	Epoch          uint64                 `protobuf:"varint,2,opt,name=epoch,proto3" json:"epoch,omitempty"`
+	PublicKey      string                 `protobuf:"bytes,3,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	AllowExpansion bool                   `protobuf:"varint,4,opt,name=allow_expansion,json=allowExpansion,proto3" json:"allow_expansion,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *ReviewAuthority) Reset() {
+	*x = ReviewAuthority{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewAuthority) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewAuthority) ProtoMessage() {}
+
+func (x *ReviewAuthority) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewAuthority.ProtoReflect.Descriptor instead.
+func (*ReviewAuthority) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *ReviewAuthority) GetAudience() string {
+	if x != nil {
+		return x.Audience
+	}
+	return ""
+}
+
+func (x *ReviewAuthority) GetEpoch() uint64 {
+	if x != nil {
+		return x.Epoch
+	}
+	return 0
+}
+
+func (x *ReviewAuthority) GetPublicKey() string {
+	if x != nil {
+		return x.PublicKey
+	}
+	return ""
+}
+
+func (x *ReviewAuthority) GetAllowExpansion() bool {
+	if x != nil {
+		return x.AllowExpansion
+	}
+	return false
+}
+
+type PublicationReview struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Publication   *PublicationKey        `protobuf:"bytes,1,opt,name=publication,proto3" json:"publication,omitempty"`
+	Parent        *AuthorityParent       `protobuf:"bytes,2,opt,name=parent,proto3" json:"parent,omitempty"`
+	Artifact      string                 `protobuf:"bytes,3,opt,name=artifact,proto3" json:"artifact,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PublicationReview) Reset() {
+	*x = PublicationReview{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublicationReview) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublicationReview) ProtoMessage() {}
+
+func (x *PublicationReview) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublicationReview.ProtoReflect.Descriptor instead.
+func (*PublicationReview) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *PublicationReview) GetPublication() *PublicationKey {
+	if x != nil {
+		return x.Publication
+	}
+	return nil
+}
+
+func (x *PublicationReview) GetParent() *AuthorityParent {
+	if x != nil {
+		return x.Parent
+	}
+	return nil
+}
+
+func (x *PublicationReview) GetArtifact() string {
+	if x != nil {
+		return x.Artifact
+	}
+	return ""
+}
+
+type DeltaReview struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	Review               *PublicationReview     `protobuf:"bytes,1,opt,name=review,proto3" json:"review,omitempty"`
+	Audience             string                 `protobuf:"bytes,2,opt,name=audience,proto3" json:"audience,omitempty"`
+	ReviewerEpoch        uint64                 `protobuf:"varint,3,opt,name=reviewer_epoch,json=reviewerEpoch,proto3" json:"reviewer_epoch,omitempty"`
+	SourceEpoch          uint64                 `protobuf:"varint,4,opt,name=source_epoch,json=sourceEpoch,proto3" json:"source_epoch,omitempty"`
+	SourceIdentityDigest string                 `protobuf:"bytes,5,opt,name=source_identity_digest,json=sourceIdentityDigest,proto3" json:"source_identity_digest,omitempty"`
+	Disposition          DeltaDisposition       `protobuf:"varint,6,opt,name=disposition,proto3,enum=weaver.gateway.v1.DeltaDisposition" json:"disposition,omitempty"`
+	Delta                string                 `protobuf:"bytes,7,opt,name=delta,proto3" json:"delta,omitempty"`
+	Signature            string                 `protobuf:"bytes,8,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *DeltaReview) Reset() {
+	*x = DeltaReview{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeltaReview) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeltaReview) ProtoMessage() {}
+
+func (x *DeltaReview) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeltaReview.ProtoReflect.Descriptor instead.
+func (*DeltaReview) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *DeltaReview) GetReview() *PublicationReview {
+	if x != nil {
+		return x.Review
+	}
+	return nil
+}
+
+func (x *DeltaReview) GetAudience() string {
+	if x != nil {
+		return x.Audience
+	}
+	return ""
+}
+
+func (x *DeltaReview) GetReviewerEpoch() uint64 {
+	if x != nil {
+		return x.ReviewerEpoch
+	}
+	return 0
+}
+
+func (x *DeltaReview) GetSourceEpoch() uint64 {
+	if x != nil {
+		return x.SourceEpoch
+	}
+	return 0
+}
+
+func (x *DeltaReview) GetSourceIdentityDigest() string {
+	if x != nil {
+		return x.SourceIdentityDigest
+	}
+	return ""
+}
+
+func (x *DeltaReview) GetDisposition() DeltaDisposition {
+	if x != nil {
+		return x.Disposition
+	}
+	return DeltaDisposition_DELTA_DISPOSITION_UNSPECIFIED
+}
+
+func (x *DeltaReview) GetDelta() string {
+	if x != nil {
+		return x.Delta
+	}
+	return ""
+}
+
+func (x *DeltaReview) GetSignature() string {
+	if x != nil {
+		return x.Signature
+	}
+	return ""
+}
+
+type PublicationReviewContext struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Publication   *PublicationKey        `protobuf:"bytes,1,opt,name=publication,proto3" json:"publication,omitempty"`
+	Parent        *AuthorityParent       `protobuf:"bytes,2,opt,name=parent,proto3" json:"parent,omitempty"`
+	Reviewer      *ReviewAuthority       `protobuf:"bytes,3,opt,name=reviewer,proto3" json:"reviewer,omitempty"`
+	Source        *SourceAuthorityView   `protobuf:"bytes,4,opt,name=source,proto3" json:"source,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PublicationReviewContext) Reset() {
+	*x = PublicationReviewContext{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublicationReviewContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublicationReviewContext) ProtoMessage() {}
+
+func (x *PublicationReviewContext) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublicationReviewContext.ProtoReflect.Descriptor instead.
+func (*PublicationReviewContext) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *PublicationReviewContext) GetPublication() *PublicationKey {
+	if x != nil {
+		return x.Publication
+	}
+	return nil
+}
+
+func (x *PublicationReviewContext) GetParent() *AuthorityParent {
+	if x != nil {
+		return x.Parent
+	}
+	return nil
+}
+
+func (x *PublicationReviewContext) GetReviewer() *ReviewAuthority {
+	if x != nil {
+		return x.Reviewer
+	}
+	return nil
+}
+
+func (x *PublicationReviewContext) GetSource() *SourceAuthorityView {
+	if x != nil {
+		return x.Source
+	}
+	return nil
+}
+
+type ReviewRegistrationReceipt struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Publication   *PublicationKey        `protobuf:"bytes,1,opt,name=publication,proto3" json:"publication,omitempty"`
+	ReviewDigest  string                 `protobuf:"bytes,2,opt,name=review_digest,json=reviewDigest,proto3" json:"review_digest,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewRegistrationReceipt) Reset() {
+	*x = ReviewRegistrationReceipt{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewRegistrationReceipt) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewRegistrationReceipt) ProtoMessage() {}
+
+func (x *ReviewRegistrationReceipt) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewRegistrationReceipt.ProtoReflect.Descriptor instead.
+func (*ReviewRegistrationReceipt) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *ReviewRegistrationReceipt) GetPublication() *PublicationKey {
+	if x != nil {
+		return x.Publication
+	}
+	return nil
+}
+
+func (x *ReviewRegistrationReceipt) GetReviewDigest() string {
+	if x != nil {
+		return x.ReviewDigest
+	}
+	return ""
+}
+
 var File_gateway_v1_gateway_proto protoreflect.FileDescriptor
 
 const file_gateway_v1_gateway_proto_rawDesc = "" +
@@ -2824,7 +3293,40 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\foperation_id\x18\x01 \x01(\tR\voperationId\x12\x16\n" +
 	"\x06digest\x18\x02 \x01(\tR\x06digest\x12B\n" +
 	"\aoutcome\x18\x03 \x01(\x0e2(.weaver.gateway.v1.SourceRotationOutcomeR\aoutcome\x12D\n" +
-	"\tauthority\x18\x04 \x01(\v2&.weaver.gateway.v1.SourceAuthorityViewR\tauthority*'\n" +
+	"\tauthority\x18\x04 \x01(\v2&.weaver.gateway.v1.SourceAuthorityViewR\tauthority\"\xa4\x01\n" +
+	"\x0fAuthorityParent\x12\x1a\n" +
+	"\brevision\x18\x01 \x01(\x04R\brevision\x12\x14\n" +
+	"\x05fence\x18\x02 \x01(\x04R\x05fence\x12#\n" +
+	"\rpolicy_digest\x18\x03 \x01(\tR\fpolicyDigest\x12(\n" +
+	"\rschema_digest\x18\x04 \x01(\tH\x00R\fschemaDigest\x88\x01\x01B\x10\n" +
+	"\x0e_schema_digest\"\x8b\x01\n" +
+	"\x0fReviewAuthority\x12\x1a\n" +
+	"\baudience\x18\x01 \x01(\tR\baudience\x12\x14\n" +
+	"\x05epoch\x18\x02 \x01(\x04R\x05epoch\x12\x1d\n" +
+	"\n" +
+	"public_key\x18\x03 \x01(\tR\tpublicKey\x12'\n" +
+	"\x0fallow_expansion\x18\x04 \x01(\bR\x0eallowExpansion\"\xb0\x01\n" +
+	"\x11PublicationReview\x12C\n" +
+	"\vpublication\x18\x01 \x01(\v2!.weaver.gateway.v1.PublicationKeyR\vpublication\x12:\n" +
+	"\x06parent\x18\x02 \x01(\v2\".weaver.gateway.v1.AuthorityParentR\x06parent\x12\x1a\n" +
+	"\bartifact\x18\x03 \x01(\tR\bartifact\"\xe2\x02\n" +
+	"\vDeltaReview\x12<\n" +
+	"\x06review\x18\x01 \x01(\v2$.weaver.gateway.v1.PublicationReviewR\x06review\x12\x1a\n" +
+	"\baudience\x18\x02 \x01(\tR\baudience\x12%\n" +
+	"\x0ereviewer_epoch\x18\x03 \x01(\x04R\rreviewerEpoch\x12!\n" +
+	"\fsource_epoch\x18\x04 \x01(\x04R\vsourceEpoch\x124\n" +
+	"\x16source_identity_digest\x18\x05 \x01(\tR\x14sourceIdentityDigest\x12E\n" +
+	"\vdisposition\x18\x06 \x01(\x0e2#.weaver.gateway.v1.DeltaDispositionR\vdisposition\x12\x14\n" +
+	"\x05delta\x18\a \x01(\tR\x05delta\x12\x1c\n" +
+	"\tsignature\x18\b \x01(\tR\tsignature\"\x9b\x02\n" +
+	"\x18PublicationReviewContext\x12C\n" +
+	"\vpublication\x18\x01 \x01(\v2!.weaver.gateway.v1.PublicationKeyR\vpublication\x12:\n" +
+	"\x06parent\x18\x02 \x01(\v2\".weaver.gateway.v1.AuthorityParentR\x06parent\x12>\n" +
+	"\breviewer\x18\x03 \x01(\v2\".weaver.gateway.v1.ReviewAuthorityR\breviewer\x12>\n" +
+	"\x06source\x18\x04 \x01(\v2&.weaver.gateway.v1.SourceAuthorityViewR\x06source\"\x85\x01\n" +
+	"\x19ReviewRegistrationReceipt\x12C\n" +
+	"\vpublication\x18\x01 \x01(\v2!.weaver.gateway.v1.PublicationKeyR\vpublication\x12#\n" +
+	"\rreview_digest\x18\x02 \x01(\tR\freviewDigest*'\n" +
 	"\bEncoding\x12\f\n" +
 	"\bPROTOBUF\x10\x00\x12\r\n" +
 	"\tARROW_IPC\x10\x01*V\n" +
@@ -2835,7 +3337,12 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x15SourceRotationOutcome\x12'\n" +
 	"#SOURCE_ROTATION_OUTCOME_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSOURCE_ROTATED\x10\x01\x12\x1c\n" +
-	"\x18SOURCE_ROTATION_REJECTED\x10\x022\xe6\v\n" +
+	"\x18SOURCE_ROTATION_REJECTED\x10\x02*r\n" +
+	"\x10DeltaDisposition\x12!\n" +
+	"\x1dDELTA_DISPOSITION_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tBOOTSTRAP\x10\x01\x12\x15\n" +
+	"\x11NO_EXECUTION_GAIN\x10\x02\x12\x15\n" +
+	"\x11EXPLICIT_APPROVAL\x10\x032\x9d\x0e\n" +
 	"\aGateway\x12Y\n" +
 	"\x0fExecuteProvider\x12\".weaver.gateway.v1.ProviderRequest\x1a .weaver.gateway.v1.ProviderFrame0\x01\x12N\n" +
 	"\aInspect\x12\x1f.weaver.gateway.v1.OperationKey\x1a\".weaver.gateway.v1.ProviderReceipt\x12P\n" +
@@ -2848,7 +3355,10 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x17InspectExecutionDomains\x12\x1f.weaver.gateway.v1.OperationKey\x1a\x1d.weaver.gateway.v1.DomainView\x12\\\n" +
 	"\x10PublishAuthority\x12!.weaver.gateway.v1.PublishRequest\x1a%.weaver.gateway.v1.PublicationReceipt\x12V\n" +
 	"\x0eStageAuthority\x12!.weaver.gateway.v1.PublishRequest\x1a!.weaver.gateway.v1.PublicationKey\x12^\n" +
-	"\x12InspectPublication\x12!.weaver.gateway.v1.PublicationKey\x1a%.weaver.gateway.v1.PublicationReceipt\x12Z\n" +
+	"\x12InspectPublication\x12!.weaver.gateway.v1.PublicationKey\x1a%.weaver.gateway.v1.PublicationReceipt\x12^\n" +
+	"\x16StageReviewedAuthority\x12!.weaver.gateway.v1.PublishRequest\x1a!.weaver.gateway.v1.PublicationKey\x12j\n" +
+	"\x18InspectPublicationReview\x12!.weaver.gateway.v1.PublicationKey\x1a+.weaver.gateway.v1.PublicationReviewContext\x12i\n" +
+	"\x19RegisterPublicationReview\x12\x1e.weaver.gateway.v1.DeltaReview\x1a,.weaver.gateway.v1.ReviewRegistrationReceipt\x12Z\n" +
 	"\x16InspectSourceAuthority\x12\x18.weaver.gateway.v1.Empty\x1a&.weaver.gateway.v1.SourceAuthorityView\x12k\n" +
 	"\x15RotateSourceAuthority\x12(.weaver.gateway.v1.SourceRotationRequest\x1a(.weaver.gateway.v1.SourceRotationReceipt\x12V\n" +
 	"\rCompileSource\x12\".weaver.gateway.v1.ProducerRequest\x1a!.weaver.gateway.v1.CompiledSource\x12R\n" +
@@ -2866,119 +3376,141 @@ func file_gateway_v1_gateway_proto_rawDescGZIP() []byte {
 	return file_gateway_v1_gateway_proto_rawDescData
 }
 
-var file_gateway_v1_gateway_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 38)
+var file_gateway_v1_gateway_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
 var file_gateway_v1_gateway_proto_goTypes = []any{
 	(Encoding)(0),                        // 0: weaver.gateway.v1.Encoding
 	(PublicationOutcome)(0),              // 1: weaver.gateway.v1.PublicationOutcome
 	(SourceRotationOutcome)(0),           // 2: weaver.gateway.v1.SourceRotationOutcome
-	(*TelemetrySnapshot)(nil),            // 3: weaver.gateway.v1.TelemetrySnapshot
-	(*Empty)(nil),                        // 4: weaver.gateway.v1.Empty
-	(*ProducerRequest)(nil),              // 5: weaver.gateway.v1.ProducerRequest
-	(*GovernanceSelection)(nil),          // 6: weaver.gateway.v1.GovernanceSelection
-	(*SourceArtifact)(nil),               // 7: weaver.gateway.v1.SourceArtifact
-	(*CompiledSource)(nil),               // 8: weaver.gateway.v1.CompiledSource
-	(*OperationKey)(nil),                 // 9: weaver.gateway.v1.OperationKey
-	(*Route)(nil),                        // 10: weaver.gateway.v1.Route
-	(*ProviderPlan)(nil),                 // 11: weaver.gateway.v1.ProviderPlan
-	(*ProviderRequest)(nil),              // 12: weaver.gateway.v1.ProviderRequest
-	(*Event)(nil),                        // 13: weaver.gateway.v1.Event
-	(*ArrowBatch)(nil),                   // 14: weaver.gateway.v1.ArrowBatch
-	(*ProviderFrame)(nil),                // 15: weaver.gateway.v1.ProviderFrame
-	(*ProviderReceipt)(nil),              // 16: weaver.gateway.v1.ProviderReceipt
-	(*Task)(nil),                         // 17: weaver.gateway.v1.Task
-	(*ProviderProfile)(nil),              // 18: weaver.gateway.v1.ProviderProfile
-	(*RegisterTaskRequest)(nil),          // 19: weaver.gateway.v1.RegisterTaskRequest
-	(*DomainBinding)(nil),                // 20: weaver.gateway.v1.DomainBinding
-	(*DomainStamp)(nil),                  // 21: weaver.gateway.v1.DomainStamp
-	(*DomainView)(nil),                   // 22: weaver.gateway.v1.DomainView
-	(*RegisterDomainTaskRequest)(nil),    // 23: weaver.gateway.v1.RegisterDomainTaskRequest
-	(*TaskAdmission)(nil),                // 24: weaver.gateway.v1.TaskAdmission
-	(*RegisterOriginalTaskRequest)(nil),  // 25: weaver.gateway.v1.RegisterOriginalTaskRequest
-	(*TaskAdmissionReceipt)(nil),         // 26: weaver.gateway.v1.TaskAdmissionReceipt
-	(*FamilyAliasRequest)(nil),           // 27: weaver.gateway.v1.FamilyAliasRequest
-	(*DomainMigration)(nil),              // 28: weaver.gateway.v1.DomainMigration
-	(*DomainMigrationReceipt)(nil),       // 29: weaver.gateway.v1.DomainMigrationReceipt
-	(*RegisterPublishedTaskRequest)(nil), // 30: weaver.gateway.v1.RegisterPublishedTaskRequest
-	(*PublishRequest)(nil),               // 31: weaver.gateway.v1.PublishRequest
-	(*PublicationReceipt)(nil),           // 32: weaver.gateway.v1.PublicationReceipt
-	(*PublicationKey)(nil),               // 33: weaver.gateway.v1.PublicationKey
-	(*SourceAuthorityView)(nil),          // 34: weaver.gateway.v1.SourceAuthorityView
-	(*SourceRotationRequest)(nil),        // 35: weaver.gateway.v1.SourceRotationRequest
-	(*SourceRotationReceipt)(nil),        // 36: weaver.gateway.v1.SourceRotationReceipt
-	nil,                                  // 37: weaver.gateway.v1.Task.EndpointsEntry
-	nil,                                  // 38: weaver.gateway.v1.Task.BodyDigestsEntry
-	nil,                                  // 39: weaver.gateway.v1.Task.NodeCostBoundsEntry
-	nil,                                  // 40: weaver.gateway.v1.Task.StreamContractsEntry
+	(DeltaDisposition)(0),                // 3: weaver.gateway.v1.DeltaDisposition
+	(*TelemetrySnapshot)(nil),            // 4: weaver.gateway.v1.TelemetrySnapshot
+	(*Empty)(nil),                        // 5: weaver.gateway.v1.Empty
+	(*ProducerRequest)(nil),              // 6: weaver.gateway.v1.ProducerRequest
+	(*GovernanceSelection)(nil),          // 7: weaver.gateway.v1.GovernanceSelection
+	(*SourceArtifact)(nil),               // 8: weaver.gateway.v1.SourceArtifact
+	(*CompiledSource)(nil),               // 9: weaver.gateway.v1.CompiledSource
+	(*OperationKey)(nil),                 // 10: weaver.gateway.v1.OperationKey
+	(*Route)(nil),                        // 11: weaver.gateway.v1.Route
+	(*ProviderPlan)(nil),                 // 12: weaver.gateway.v1.ProviderPlan
+	(*ProviderRequest)(nil),              // 13: weaver.gateway.v1.ProviderRequest
+	(*Event)(nil),                        // 14: weaver.gateway.v1.Event
+	(*ArrowBatch)(nil),                   // 15: weaver.gateway.v1.ArrowBatch
+	(*ProviderFrame)(nil),                // 16: weaver.gateway.v1.ProviderFrame
+	(*ProviderReceipt)(nil),              // 17: weaver.gateway.v1.ProviderReceipt
+	(*Task)(nil),                         // 18: weaver.gateway.v1.Task
+	(*ProviderProfile)(nil),              // 19: weaver.gateway.v1.ProviderProfile
+	(*RegisterTaskRequest)(nil),          // 20: weaver.gateway.v1.RegisterTaskRequest
+	(*DomainBinding)(nil),                // 21: weaver.gateway.v1.DomainBinding
+	(*DomainStamp)(nil),                  // 22: weaver.gateway.v1.DomainStamp
+	(*DomainView)(nil),                   // 23: weaver.gateway.v1.DomainView
+	(*RegisterDomainTaskRequest)(nil),    // 24: weaver.gateway.v1.RegisterDomainTaskRequest
+	(*TaskAdmission)(nil),                // 25: weaver.gateway.v1.TaskAdmission
+	(*RegisterOriginalTaskRequest)(nil),  // 26: weaver.gateway.v1.RegisterOriginalTaskRequest
+	(*TaskAdmissionReceipt)(nil),         // 27: weaver.gateway.v1.TaskAdmissionReceipt
+	(*FamilyAliasRequest)(nil),           // 28: weaver.gateway.v1.FamilyAliasRequest
+	(*DomainMigration)(nil),              // 29: weaver.gateway.v1.DomainMigration
+	(*DomainMigrationReceipt)(nil),       // 30: weaver.gateway.v1.DomainMigrationReceipt
+	(*RegisterPublishedTaskRequest)(nil), // 31: weaver.gateway.v1.RegisterPublishedTaskRequest
+	(*PublishRequest)(nil),               // 32: weaver.gateway.v1.PublishRequest
+	(*PublicationReceipt)(nil),           // 33: weaver.gateway.v1.PublicationReceipt
+	(*PublicationKey)(nil),               // 34: weaver.gateway.v1.PublicationKey
+	(*SourceAuthorityView)(nil),          // 35: weaver.gateway.v1.SourceAuthorityView
+	(*SourceRotationRequest)(nil),        // 36: weaver.gateway.v1.SourceRotationRequest
+	(*SourceRotationReceipt)(nil),        // 37: weaver.gateway.v1.SourceRotationReceipt
+	(*AuthorityParent)(nil),              // 38: weaver.gateway.v1.AuthorityParent
+	(*ReviewAuthority)(nil),              // 39: weaver.gateway.v1.ReviewAuthority
+	(*PublicationReview)(nil),            // 40: weaver.gateway.v1.PublicationReview
+	(*DeltaReview)(nil),                  // 41: weaver.gateway.v1.DeltaReview
+	(*PublicationReviewContext)(nil),     // 42: weaver.gateway.v1.PublicationReviewContext
+	(*ReviewRegistrationReceipt)(nil),    // 43: weaver.gateway.v1.ReviewRegistrationReceipt
+	nil,                                  // 44: weaver.gateway.v1.Task.EndpointsEntry
+	nil,                                  // 45: weaver.gateway.v1.Task.BodyDigestsEntry
+	nil,                                  // 46: weaver.gateway.v1.Task.NodeCostBoundsEntry
+	nil,                                  // 47: weaver.gateway.v1.Task.StreamContractsEntry
 }
 var file_gateway_v1_gateway_proto_depIdxs = []int32{
-	6,  // 0: weaver.gateway.v1.SourceArtifact.governance:type_name -> weaver.gateway.v1.GovernanceSelection
-	17, // 1: weaver.gateway.v1.SourceArtifact.tasks:type_name -> weaver.gateway.v1.Task
-	11, // 2: weaver.gateway.v1.SourceArtifact.plans:type_name -> weaver.gateway.v1.ProviderPlan
-	31, // 3: weaver.gateway.v1.SourceArtifact.publication:type_name -> weaver.gateway.v1.PublishRequest
-	34, // 4: weaver.gateway.v1.CompiledSource.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
-	7,  // 5: weaver.gateway.v1.CompiledSource.artifact:type_name -> weaver.gateway.v1.SourceArtifact
-	10, // 6: weaver.gateway.v1.ProviderPlan.routes:type_name -> weaver.gateway.v1.Route
-	11, // 7: weaver.gateway.v1.ProviderRequest.plan:type_name -> weaver.gateway.v1.ProviderPlan
+	7,  // 0: weaver.gateway.v1.SourceArtifact.governance:type_name -> weaver.gateway.v1.GovernanceSelection
+	18, // 1: weaver.gateway.v1.SourceArtifact.tasks:type_name -> weaver.gateway.v1.Task
+	12, // 2: weaver.gateway.v1.SourceArtifact.plans:type_name -> weaver.gateway.v1.ProviderPlan
+	32, // 3: weaver.gateway.v1.SourceArtifact.publication:type_name -> weaver.gateway.v1.PublishRequest
+	35, // 4: weaver.gateway.v1.CompiledSource.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
+	8,  // 5: weaver.gateway.v1.CompiledSource.artifact:type_name -> weaver.gateway.v1.SourceArtifact
+	11, // 6: weaver.gateway.v1.ProviderPlan.routes:type_name -> weaver.gateway.v1.Route
+	12, // 7: weaver.gateway.v1.ProviderRequest.plan:type_name -> weaver.gateway.v1.ProviderPlan
 	0,  // 8: weaver.gateway.v1.ProviderRequest.encoding:type_name -> weaver.gateway.v1.Encoding
-	13, // 9: weaver.gateway.v1.ProviderFrame.event:type_name -> weaver.gateway.v1.Event
-	14, // 10: weaver.gateway.v1.ProviderFrame.arrow:type_name -> weaver.gateway.v1.ArrowBatch
-	37, // 11: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
-	38, // 12: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
-	39, // 13: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
-	40, // 14: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
-	18, // 15: weaver.gateway.v1.Task.provider_profile:type_name -> weaver.gateway.v1.ProviderProfile
-	17, // 16: weaver.gateway.v1.RegisterTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	21, // 17: weaver.gateway.v1.DomainView.stamp:type_name -> weaver.gateway.v1.DomainStamp
-	17, // 18: weaver.gateway.v1.RegisterDomainTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	20, // 19: weaver.gateway.v1.RegisterDomainTaskRequest.domains:type_name -> weaver.gateway.v1.DomainBinding
-	33, // 20: weaver.gateway.v1.RegisterDomainTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
-	17, // 21: weaver.gateway.v1.RegisterOriginalTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	20, // 22: weaver.gateway.v1.RegisterOriginalTaskRequest.domains:type_name -> weaver.gateway.v1.DomainBinding
-	24, // 23: weaver.gateway.v1.RegisterOriginalTaskRequest.admission:type_name -> weaver.gateway.v1.TaskAdmission
-	33, // 24: weaver.gateway.v1.RegisterOriginalTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
-	17, // 25: weaver.gateway.v1.RegisterPublishedTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	33, // 26: weaver.gateway.v1.RegisterPublishedTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
+	14, // 9: weaver.gateway.v1.ProviderFrame.event:type_name -> weaver.gateway.v1.Event
+	15, // 10: weaver.gateway.v1.ProviderFrame.arrow:type_name -> weaver.gateway.v1.ArrowBatch
+	44, // 11: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
+	45, // 12: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
+	46, // 13: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
+	47, // 14: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
+	19, // 15: weaver.gateway.v1.Task.provider_profile:type_name -> weaver.gateway.v1.ProviderProfile
+	18, // 16: weaver.gateway.v1.RegisterTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	22, // 17: weaver.gateway.v1.DomainView.stamp:type_name -> weaver.gateway.v1.DomainStamp
+	18, // 18: weaver.gateway.v1.RegisterDomainTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	21, // 19: weaver.gateway.v1.RegisterDomainTaskRequest.domains:type_name -> weaver.gateway.v1.DomainBinding
+	34, // 20: weaver.gateway.v1.RegisterDomainTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
+	18, // 21: weaver.gateway.v1.RegisterOriginalTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	21, // 22: weaver.gateway.v1.RegisterOriginalTaskRequest.domains:type_name -> weaver.gateway.v1.DomainBinding
+	25, // 23: weaver.gateway.v1.RegisterOriginalTaskRequest.admission:type_name -> weaver.gateway.v1.TaskAdmission
+	34, // 24: weaver.gateway.v1.RegisterOriginalTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
+	18, // 25: weaver.gateway.v1.RegisterPublishedTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	34, // 26: weaver.gateway.v1.RegisterPublishedTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
 	1,  // 27: weaver.gateway.v1.PublicationReceipt.outcome:type_name -> weaver.gateway.v1.PublicationOutcome
 	2,  // 28: weaver.gateway.v1.SourceRotationReceipt.outcome:type_name -> weaver.gateway.v1.SourceRotationOutcome
-	34, // 29: weaver.gateway.v1.SourceRotationReceipt.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
-	12, // 30: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
-	9,  // 31: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
-	19, // 32: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
-	30, // 33: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
-	23, // 34: weaver.gateway.v1.Gateway.RegisterDomainTask:input_type -> weaver.gateway.v1.RegisterDomainTaskRequest
-	25, // 35: weaver.gateway.v1.Gateway.RegisterOriginalTask:input_type -> weaver.gateway.v1.RegisterOriginalTaskRequest
-	27, // 36: weaver.gateway.v1.Gateway.RegisterFamilyAlias:input_type -> weaver.gateway.v1.FamilyAliasRequest
-	28, // 37: weaver.gateway.v1.Gateway.MigrateExecutionDomains:input_type -> weaver.gateway.v1.DomainMigration
-	9,  // 38: weaver.gateway.v1.Gateway.InspectExecutionDomains:input_type -> weaver.gateway.v1.OperationKey
-	31, // 39: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	31, // 40: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	33, // 41: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
-	4,  // 42: weaver.gateway.v1.Gateway.InspectSourceAuthority:input_type -> weaver.gateway.v1.Empty
-	35, // 43: weaver.gateway.v1.Gateway.RotateSourceAuthority:input_type -> weaver.gateway.v1.SourceRotationRequest
-	5,  // 44: weaver.gateway.v1.Gateway.CompileSource:input_type -> weaver.gateway.v1.ProducerRequest
-	4,  // 45: weaver.gateway.v1.Gateway.InspectTelemetry:input_type -> weaver.gateway.v1.Empty
-	15, // 46: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
-	16, // 47: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
-	4,  // 48: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
-	4,  // 49: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
-	4,  // 50: weaver.gateway.v1.Gateway.RegisterDomainTask:output_type -> weaver.gateway.v1.Empty
-	26, // 51: weaver.gateway.v1.Gateway.RegisterOriginalTask:output_type -> weaver.gateway.v1.TaskAdmissionReceipt
-	22, // 52: weaver.gateway.v1.Gateway.RegisterFamilyAlias:output_type -> weaver.gateway.v1.DomainView
-	29, // 53: weaver.gateway.v1.Gateway.MigrateExecutionDomains:output_type -> weaver.gateway.v1.DomainMigrationReceipt
-	22, // 54: weaver.gateway.v1.Gateway.InspectExecutionDomains:output_type -> weaver.gateway.v1.DomainView
-	32, // 55: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
-	33, // 56: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
-	32, // 57: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
-	34, // 58: weaver.gateway.v1.Gateway.InspectSourceAuthority:output_type -> weaver.gateway.v1.SourceAuthorityView
-	36, // 59: weaver.gateway.v1.Gateway.RotateSourceAuthority:output_type -> weaver.gateway.v1.SourceRotationReceipt
-	8,  // 60: weaver.gateway.v1.Gateway.CompileSource:output_type -> weaver.gateway.v1.CompiledSource
-	3,  // 61: weaver.gateway.v1.Gateway.InspectTelemetry:output_type -> weaver.gateway.v1.TelemetrySnapshot
-	46, // [46:62] is the sub-list for method output_type
-	30, // [30:46] is the sub-list for method input_type
-	30, // [30:30] is the sub-list for extension type_name
-	30, // [30:30] is the sub-list for extension extendee
-	0,  // [0:30] is the sub-list for field type_name
+	35, // 29: weaver.gateway.v1.SourceRotationReceipt.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
+	34, // 30: weaver.gateway.v1.PublicationReview.publication:type_name -> weaver.gateway.v1.PublicationKey
+	38, // 31: weaver.gateway.v1.PublicationReview.parent:type_name -> weaver.gateway.v1.AuthorityParent
+	40, // 32: weaver.gateway.v1.DeltaReview.review:type_name -> weaver.gateway.v1.PublicationReview
+	3,  // 33: weaver.gateway.v1.DeltaReview.disposition:type_name -> weaver.gateway.v1.DeltaDisposition
+	34, // 34: weaver.gateway.v1.PublicationReviewContext.publication:type_name -> weaver.gateway.v1.PublicationKey
+	38, // 35: weaver.gateway.v1.PublicationReviewContext.parent:type_name -> weaver.gateway.v1.AuthorityParent
+	39, // 36: weaver.gateway.v1.PublicationReviewContext.reviewer:type_name -> weaver.gateway.v1.ReviewAuthority
+	35, // 37: weaver.gateway.v1.PublicationReviewContext.source:type_name -> weaver.gateway.v1.SourceAuthorityView
+	34, // 38: weaver.gateway.v1.ReviewRegistrationReceipt.publication:type_name -> weaver.gateway.v1.PublicationKey
+	13, // 39: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
+	10, // 40: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
+	20, // 41: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
+	31, // 42: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
+	24, // 43: weaver.gateway.v1.Gateway.RegisterDomainTask:input_type -> weaver.gateway.v1.RegisterDomainTaskRequest
+	26, // 44: weaver.gateway.v1.Gateway.RegisterOriginalTask:input_type -> weaver.gateway.v1.RegisterOriginalTaskRequest
+	28, // 45: weaver.gateway.v1.Gateway.RegisterFamilyAlias:input_type -> weaver.gateway.v1.FamilyAliasRequest
+	29, // 46: weaver.gateway.v1.Gateway.MigrateExecutionDomains:input_type -> weaver.gateway.v1.DomainMigration
+	10, // 47: weaver.gateway.v1.Gateway.InspectExecutionDomains:input_type -> weaver.gateway.v1.OperationKey
+	32, // 48: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	32, // 49: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	34, // 50: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
+	32, // 51: weaver.gateway.v1.Gateway.StageReviewedAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	34, // 52: weaver.gateway.v1.Gateway.InspectPublicationReview:input_type -> weaver.gateway.v1.PublicationKey
+	41, // 53: weaver.gateway.v1.Gateway.RegisterPublicationReview:input_type -> weaver.gateway.v1.DeltaReview
+	5,  // 54: weaver.gateway.v1.Gateway.InspectSourceAuthority:input_type -> weaver.gateway.v1.Empty
+	36, // 55: weaver.gateway.v1.Gateway.RotateSourceAuthority:input_type -> weaver.gateway.v1.SourceRotationRequest
+	6,  // 56: weaver.gateway.v1.Gateway.CompileSource:input_type -> weaver.gateway.v1.ProducerRequest
+	5,  // 57: weaver.gateway.v1.Gateway.InspectTelemetry:input_type -> weaver.gateway.v1.Empty
+	16, // 58: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
+	17, // 59: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
+	5,  // 60: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
+	5,  // 61: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
+	5,  // 62: weaver.gateway.v1.Gateway.RegisterDomainTask:output_type -> weaver.gateway.v1.Empty
+	27, // 63: weaver.gateway.v1.Gateway.RegisterOriginalTask:output_type -> weaver.gateway.v1.TaskAdmissionReceipt
+	23, // 64: weaver.gateway.v1.Gateway.RegisterFamilyAlias:output_type -> weaver.gateway.v1.DomainView
+	30, // 65: weaver.gateway.v1.Gateway.MigrateExecutionDomains:output_type -> weaver.gateway.v1.DomainMigrationReceipt
+	23, // 66: weaver.gateway.v1.Gateway.InspectExecutionDomains:output_type -> weaver.gateway.v1.DomainView
+	33, // 67: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
+	34, // 68: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
+	33, // 69: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
+	34, // 70: weaver.gateway.v1.Gateway.StageReviewedAuthority:output_type -> weaver.gateway.v1.PublicationKey
+	42, // 71: weaver.gateway.v1.Gateway.InspectPublicationReview:output_type -> weaver.gateway.v1.PublicationReviewContext
+	43, // 72: weaver.gateway.v1.Gateway.RegisterPublicationReview:output_type -> weaver.gateway.v1.ReviewRegistrationReceipt
+	35, // 73: weaver.gateway.v1.Gateway.InspectSourceAuthority:output_type -> weaver.gateway.v1.SourceAuthorityView
+	37, // 74: weaver.gateway.v1.Gateway.RotateSourceAuthority:output_type -> weaver.gateway.v1.SourceRotationReceipt
+	9,  // 75: weaver.gateway.v1.Gateway.CompileSource:output_type -> weaver.gateway.v1.CompiledSource
+	4,  // 76: weaver.gateway.v1.Gateway.InspectTelemetry:output_type -> weaver.gateway.v1.TelemetrySnapshot
+	58, // [58:77] is the sub-list for method output_type
+	39, // [39:58] is the sub-list for method input_type
+	39, // [39:39] is the sub-list for extension type_name
+	39, // [39:39] is the sub-list for extension extendee
+	0,  // [0:39] is the sub-list for field type_name
 }
 
 func init() { file_gateway_v1_gateway_proto_init() }
@@ -2992,13 +3524,14 @@ func file_gateway_v1_gateway_proto_init() {
 	}
 	file_gateway_v1_gateway_proto_msgTypes[28].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[29].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[34].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gateway_v1_gateway_proto_rawDesc), len(file_gateway_v1_gateway_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   38,
+			NumEnums:      4,
+			NumMessages:   44,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

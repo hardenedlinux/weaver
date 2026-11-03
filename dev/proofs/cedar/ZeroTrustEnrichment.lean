@@ -88,6 +88,34 @@ theorem registrar_binding_reaches_final_cas
 
 #print axioms registrar_binding_reaches_final_cas
 
+/- Independent producer qualification and the SPEC final-use contract are both
+   required. This theorem does not derive qualified from authenticated, or prove
+   the native SQL/IO refinement. Integration fixtures discharge neither premise. -/
+theorem authenticated_producer_and_spec_publication_compose
+    {Result : Type}
+    {authority : CedarPooSpec.Gateway.PublicationReview.Host Nat Result
+      (PublicationRecovery.State Nat) Nat Nat Nat}
+    {template : LeanPoo.Functional.DeclarativeMetadata.Contract Unit Nat Result}
+    {prepare : PublicationRecovery.State Nat → Nat → Except Unit (Result × PublicationRecovery.State Nat)}
+    {command payload fence : Nat} {actual : PublicationRecovery.State Nat}
+    {auth qualified : PublicationRecovery.DeploymentReview.Evidence → Prop}
+    {cut : PublicationRecovery.DeploymentReview.Cut}
+    {evidence : PublicationRecovery.DeploymentReview.Evidence}
+    (admitted : PublicationRecovery.DeploymentReview.Admitted auth qualified cut actual command payload fence evidence)
+    (final : CedarPooSpec.Gateway.PublicationReview.Final authority template prepare command actual)
+    (refinement : ∀ before result after, authority.commit before result after →
+      PublicationRecovery.Step before after)
+    (safe : PublicationRecovery.Safe held calls actual) :
+    auth evidence ∧ qualified evidence ∧
+      (authority.security.currentAtUse actual ∧ authority.pendingAdmissible command actual ∧
+      PublicationRecovery.Extends actual final.receipt.state ∧
+      PublicationRecovery.PreservesIntents actual final.receipt.state ∧
+      PublicationRecovery.Safe held calls final.receipt.state) := by
+  exact ⟨admitted.1, admitted.2.1,
+    reviewed_publication_keeps_recovery_contract final refinement safe⟩
+
+#print axioms authenticated_producer_and_spec_publication_compose
+
 structure RuntimeView extends PolicyBridge.PublicationContext where
   semanticContext : CedarPooSpec.Gateway.Context
   commitFloor : Nat

@@ -25,7 +25,7 @@ pub(crate) fn parent(
         })).map_err(db)
 }
 
-fn requirement(
+pub(crate) fn requirement(
     connection: &crate::persistence::driver::Connection,
     key: &PublicationKey,
 ) -> Result<Option<String>> {
@@ -46,7 +46,7 @@ fn requirement(
         .transpose()
 }
 
-fn registered(
+pub(crate) fn registered(
     connection: &crate::persistence::driver::Connection,
     key: &PublicationKey,
 ) -> Result<Option<PublicationReview>> {
@@ -175,7 +175,7 @@ impl Ledger {
     }
 }
 
-fn register_current(
+pub(crate) fn register_current(
     connection: &crate::persistence::driver::Connection,
     review: &PublicationReview,
     digest: &str,

@@ -17,6 +17,12 @@ async fn aliased_or_empty_source_identity_is_rejected_before_serving() {
             .expect("source"),
     };
     let mut settings = GrpcConfig {
+        review_authority: weaver_contracts::ReviewAuthority {
+            audience: "test-gateway".into(),
+            epoch: 0,
+            public_key: "4".repeat(64),
+            allow_expansion: false,
+        },
         owner: ServerConfig {
             database: "unused.db".into(),
             principal: "alice".into(),

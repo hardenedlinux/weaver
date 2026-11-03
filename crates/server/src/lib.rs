@@ -18,6 +18,7 @@ pub mod pb;
 #[cfg(all(test, unix))]
 #[path = "../tests/unit/provider_commit.rs"]
 mod provider_commit_tests;
+mod review_wire;
 mod rpc_security;
 mod runtime;
 mod shutdown;
@@ -38,3 +39,7 @@ pub use runtime::RuntimeOwner as ServiceRuntime;
 pub use source_identity::certificate_identity as source_certificate_identity;
 #[cfg(test)]
 asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_rust_config());
+
+#[cfg(test)]
+#[path = "../tests/unit/review_rpc.rs"]
+mod review_rpc_tests;

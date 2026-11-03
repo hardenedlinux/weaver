@@ -122,6 +122,12 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
     let source_address = listeners.source.local_addr().expect("source address");
     let operation_address = listeners.operation.local_addr().expect("operation address");
     let settings = GrpcConfig {
+        review_authority: weaver_contracts::ReviewAuthority {
+            audience: "test-gateway".into(),
+            epoch: 0,
+            public_key: "4".repeat(64),
+            allow_expansion: false,
+        },
         owner: ServerConfig {
             database: database.clone(),
             principal: "alice".into(),

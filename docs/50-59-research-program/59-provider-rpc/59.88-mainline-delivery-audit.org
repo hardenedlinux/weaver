@@ -20,25 +20,19 @@ PR status prose must not override this active runtime scope or package managers.
 
 * First: make governed publication explicit at the service boundary
 
-[[file:../../../crates/ledger/src/publication_review.rs][publication_review.rs]] already
-provides reviewed staging, captured-parent checking and schema-bound replay.
-However, absence of a review requirement currently permits ordinary publication.
-[[file:../../../crates/server/src/source_owner.rs][source_owner.rs]] calls the ordinary
-stage/publish operations. The maintained test
-=typed_publication_does_not_yet_require_delta_evidence= in
-[[file:../../../crates/ledger/tests/unit/provider.rs][provider.rs]] makes this gap explicit.
+The served profile now requires independent SPEC producer evidence and a
+verification public key owned by deployment. Go transports the signed evidence;
+Rust authenticates it at registration and final publication CAS. The Policy,
+schema, outcome, pending-clear and reviewed-head association commit together.
+Existing final-use transactions require that current association alongside Cedar,
+claim, budget/history, currentness and fence. Staging and publication send no bytes.
 
-Define which authenticated publication operations require upstream review, then
-route those operations through the existing requirement and replay mechanisms.
-Root-authorized bootstrap or contract changes need an explicit authority model;
-not every authorized policy change is globally monotone. A replayed candidate
-alone does not authenticate its producer or establish the required Delta/NoGain
-premises. Reuse SPEC contracts; do not replace them with a downstream DSL.
-
-Acceptance must cover missing, forged, stale and wrong-parent evidence; a valid
-reviewed publication; competing changes; a committed result whose response is
-lost; and recovery by the original operation identity. Final consumption must
-still check currentness, revocation and fencing. No commit stage sends bytes.
+[[file:59.89-reviewed-publication-authority-boundary.org][The review boundary]] records
+implemented checks, recovery rules and evidence. Finite replay and a valid
+signature do not prove Delta/NoGain. Qualifying the actual independent SPEC
+producer, native refinement and independent whole-store rollback protection
+remain explicit deployment obligations. Existing low-level trusted embedding
+APIs are not the reviewed service profile. Scheme remains deferred.
 
 * Second: deliver useful routing and routine execution without new authority
 

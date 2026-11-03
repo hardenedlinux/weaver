@@ -83,6 +83,21 @@ enum Command {
         reply: oneshot::Sender<Result<PublicationReceipt>>,
         slot: OwnedSemaphorePermit,
     },
+    StageReviewed {
+        change: Publication,
+        reply: oneshot::Sender<Result<PublicationKey>>,
+        slot: OwnedSemaphorePermit,
+    },
+    ReviewContext {
+        key: PublicationKey,
+        reply: oneshot::Sender<Result<weaver_contracts::PublicationReviewContext>>,
+        slot: OwnedSemaphorePermit,
+    },
+    RegisterReview {
+        evidence: Box<weaver_contracts::DeltaReview>,
+        reply: oneshot::Sender<Result<String>>,
+        slot: OwnedSemaphorePermit,
+    },
     Inspect {
         key: PublicationKey,
         reply: oneshot::Sender<Result<Option<PublicationReceipt>>>,
@@ -173,17 +188,37 @@ impl SourceOwner {
         })
         .await
     }
+    pub(crate) async fn start_reviewed(
+        runtime: RuntimeOwner,
+        slot: Arc<OwnedSemaphorePermit>,
+        database: PathBuf,
+        authority: weaver_contracts::ReviewAuthority,
+    ) -> Result<SourceWorker> {
+        authority.validate()?;
+        Self::start_inner(runtime, slot, database, Some(authority)).await
+    }
+    #[cfg(test)]
     pub(crate) async fn start(
         runtime: RuntimeOwner,
         slot: Arc<OwnedSemaphorePermit>,
         database: PathBuf,
+    ) -> Result<SourceWorker> {
+        Self::start_inner(runtime, slot, database, None).await
+    }
+    async fn start_inner(
+        runtime: RuntimeOwner,
+        slot: Arc<OwnedSemaphorePermit>,
+        database: PathBuf,
+        authority: Option<weaver_contracts::ReviewAuthority>,
     ) -> Result<SourceWorker> {
         let (sender, receiver) = mpsc::channel(1);
         let (ready_tx, ready_rx) = oneshot::channel();
         let handle = Handle::current();
         let exit = runtime.shutdown_guard();
         let job = runtime.spawn_blocking(slot, move |cancel| {
-            run(database, receiver, ready_tx, handle, cancel, exit)
+            run(
+                database, authority, receiver, ready_tx, handle, cancel, exit,
+            )
         })?;
         let ready = ready_rx
             .await
@@ -274,6 +309,42 @@ impl SourceOwner {
         self.submit(caller, |reply, slot| Command::Inspect { key, reply, slot })
             .await
     }
+    pub(crate) async fn stage_reviewed(
+        &self,
+        caller: SourceIdentity,
+        change: Publication,
+    ) -> std::result::Result<PublicationKey, Status> {
+        self.submit(caller, |reply, slot| Command::StageReviewed {
+            change,
+            reply,
+            slot,
+        })
+        .await
+    }
+    pub(crate) async fn review_context(
+        &self,
+        caller: SourceIdentity,
+        key: PublicationKey,
+    ) -> std::result::Result<weaver_contracts::PublicationReviewContext, Status> {
+        self.submit(caller, |reply, slot| Command::ReviewContext {
+            key,
+            reply,
+            slot,
+        })
+        .await
+    }
+    pub(crate) async fn register_review(
+        &self,
+        caller: SourceIdentity,
+        evidence: weaver_contracts::DeltaReview,
+    ) -> std::result::Result<String, Status> {
+        self.submit(caller, |reply, slot| Command::RegisterReview {
+            evidence: Box::new(evidence),
+            reply,
+            slot,
+        })
+        .await
+    }
     pub(crate) async fn authority(
         &self,
         caller: SourceIdentity,
@@ -296,6 +367,7 @@ impl SourceOwner {
 }
 fn run(
     database: PathBuf,
+    authority: Option<weaver_contracts::ReviewAuthority>,
     receiver: mpsc::Receiver<Envelope>,
     ready: oneshot::Sender<Result<()>>,
     handle: Handle,
@@ -309,6 +381,14 @@ fn run(
             return Err(Error::Conflict("source database unavailable"));
         }
     };
+    if let Some(authority) = authority
+        && let Err(error) = ledger.install_review_authority(&authority)
+    {
+        let _ = ready.send(Err(error));
+        return ledger
+            .close()
+            .and(Err(Error::Conflict("review authority startup refused")));
+    }
     let result = if ready.send(Ok(())).is_err() {
         Err(Error::Conflict("source startup abandoned"))
     } else {
@@ -437,6 +517,29 @@ fn process(
             } => {
                 let result =
                     ledger.with_authenticated_source(&caller, |l| l.publish_authority(&change));
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::StageReviewed {
+                change,
+                reply,
+                slot,
+            } => {
+                let result = ledger
+                    .with_authenticated_source(&caller, |l| l.stage_reviewed_authority(&change));
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::ReviewContext { key, reply, slot } => {
+                let result = ledger
+                    .with_authenticated_source(&caller, |l| l.publication_review_context(&key));
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::RegisterReview {
+                evidence,
+                reply,
+                slot,
+            } => {
+                let result = ledger
+                    .with_authenticated_source(&caller, |l| l.register_delta_review(&evidence));
                 answer(ledger, reply, result, slot)?;
             }
             Command::Inspect { key, reply, slot } => {

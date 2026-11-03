@@ -23,22 +23,25 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	Gateway_ExecuteProvider_FullMethodName         = "/weaver.gateway.v1.Gateway/ExecuteProvider"
-	Gateway_Inspect_FullMethodName                 = "/weaver.gateway.v1.Gateway/Inspect"
-	Gateway_RegisterTask_FullMethodName            = "/weaver.gateway.v1.Gateway/RegisterTask"
-	Gateway_RegisterPublishedTask_FullMethodName   = "/weaver.gateway.v1.Gateway/RegisterPublishedTask"
-	Gateway_RegisterDomainTask_FullMethodName      = "/weaver.gateway.v1.Gateway/RegisterDomainTask"
-	Gateway_RegisterOriginalTask_FullMethodName    = "/weaver.gateway.v1.Gateway/RegisterOriginalTask"
-	Gateway_RegisterFamilyAlias_FullMethodName     = "/weaver.gateway.v1.Gateway/RegisterFamilyAlias"
-	Gateway_MigrateExecutionDomains_FullMethodName = "/weaver.gateway.v1.Gateway/MigrateExecutionDomains"
-	Gateway_InspectExecutionDomains_FullMethodName = "/weaver.gateway.v1.Gateway/InspectExecutionDomains"
-	Gateway_PublishAuthority_FullMethodName        = "/weaver.gateway.v1.Gateway/PublishAuthority"
-	Gateway_StageAuthority_FullMethodName          = "/weaver.gateway.v1.Gateway/StageAuthority"
-	Gateway_InspectPublication_FullMethodName      = "/weaver.gateway.v1.Gateway/InspectPublication"
-	Gateway_InspectSourceAuthority_FullMethodName  = "/weaver.gateway.v1.Gateway/InspectSourceAuthority"
-	Gateway_RotateSourceAuthority_FullMethodName   = "/weaver.gateway.v1.Gateway/RotateSourceAuthority"
-	Gateway_CompileSource_FullMethodName           = "/weaver.gateway.v1.Gateway/CompileSource"
-	Gateway_InspectTelemetry_FullMethodName        = "/weaver.gateway.v1.Gateway/InspectTelemetry"
+	Gateway_ExecuteProvider_FullMethodName           = "/weaver.gateway.v1.Gateway/ExecuteProvider"
+	Gateway_Inspect_FullMethodName                   = "/weaver.gateway.v1.Gateway/Inspect"
+	Gateway_RegisterTask_FullMethodName              = "/weaver.gateway.v1.Gateway/RegisterTask"
+	Gateway_RegisterPublishedTask_FullMethodName     = "/weaver.gateway.v1.Gateway/RegisterPublishedTask"
+	Gateway_RegisterDomainTask_FullMethodName        = "/weaver.gateway.v1.Gateway/RegisterDomainTask"
+	Gateway_RegisterOriginalTask_FullMethodName      = "/weaver.gateway.v1.Gateway/RegisterOriginalTask"
+	Gateway_RegisterFamilyAlias_FullMethodName       = "/weaver.gateway.v1.Gateway/RegisterFamilyAlias"
+	Gateway_MigrateExecutionDomains_FullMethodName   = "/weaver.gateway.v1.Gateway/MigrateExecutionDomains"
+	Gateway_InspectExecutionDomains_FullMethodName   = "/weaver.gateway.v1.Gateway/InspectExecutionDomains"
+	Gateway_PublishAuthority_FullMethodName          = "/weaver.gateway.v1.Gateway/PublishAuthority"
+	Gateway_StageAuthority_FullMethodName            = "/weaver.gateway.v1.Gateway/StageAuthority"
+	Gateway_InspectPublication_FullMethodName        = "/weaver.gateway.v1.Gateway/InspectPublication"
+	Gateway_StageReviewedAuthority_FullMethodName    = "/weaver.gateway.v1.Gateway/StageReviewedAuthority"
+	Gateway_InspectPublicationReview_FullMethodName  = "/weaver.gateway.v1.Gateway/InspectPublicationReview"
+	Gateway_RegisterPublicationReview_FullMethodName = "/weaver.gateway.v1.Gateway/RegisterPublicationReview"
+	Gateway_InspectSourceAuthority_FullMethodName    = "/weaver.gateway.v1.Gateway/InspectSourceAuthority"
+	Gateway_RotateSourceAuthority_FullMethodName     = "/weaver.gateway.v1.Gateway/RotateSourceAuthority"
+	Gateway_CompileSource_FullMethodName             = "/weaver.gateway.v1.Gateway/CompileSource"
+	Gateway_InspectTelemetry_FullMethodName          = "/weaver.gateway.v1.Gateway/InspectTelemetry"
 )
 
 // GatewayClient is the client API for Gateway service.
@@ -60,6 +63,9 @@ type GatewayClient interface {
 	// A returned key is not a publication outcome or an execution grant.
 	StageAuthority(ctx context.Context, in *PublishRequest, opts ...grpc.CallOption) (*PublicationKey, error)
 	InspectPublication(ctx context.Context, in *PublicationKey, opts ...grpc.CallOption) (*PublicationReceipt, error)
+	StageReviewedAuthority(ctx context.Context, in *PublishRequest, opts ...grpc.CallOption) (*PublicationKey, error)
+	InspectPublicationReview(ctx context.Context, in *PublicationKey, opts ...grpc.CallOption) (*PublicationReviewContext, error)
+	RegisterPublicationReview(ctx context.Context, in *DeltaReview, opts ...grpc.CallOption) (*ReviewRegistrationReceipt, error)
 	InspectSourceAuthority(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SourceAuthorityView, error)
 	RotateSourceAuthority(ctx context.Context, in *SourceRotationRequest, opts ...grpc.CallOption) (*SourceRotationReceipt, error)
 	// Preparation only. Actual ingress/source state selects an installed original;
@@ -220,6 +226,36 @@ func (c *gatewayClient) InspectPublication(ctx context.Context, in *PublicationK
 	return out, nil
 }
 
+func (c *gatewayClient) StageReviewedAuthority(ctx context.Context, in *PublishRequest, opts ...grpc.CallOption) (*PublicationKey, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PublicationKey)
+	err := c.cc.Invoke(ctx, Gateway_StageReviewedAuthority_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayClient) InspectPublicationReview(ctx context.Context, in *PublicationKey, opts ...grpc.CallOption) (*PublicationReviewContext, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PublicationReviewContext)
+	err := c.cc.Invoke(ctx, Gateway_InspectPublicationReview_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayClient) RegisterPublicationReview(ctx context.Context, in *DeltaReview, opts ...grpc.CallOption) (*ReviewRegistrationReceipt, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReviewRegistrationReceipt)
+	err := c.cc.Invoke(ctx, Gateway_RegisterPublicationReview_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gatewayClient) InspectSourceAuthority(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SourceAuthorityView, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SourceAuthorityView)
@@ -279,6 +315,9 @@ type GatewayServer interface {
 	// A returned key is not a publication outcome or an execution grant.
 	StageAuthority(context.Context, *PublishRequest) (*PublicationKey, error)
 	InspectPublication(context.Context, *PublicationKey) (*PublicationReceipt, error)
+	StageReviewedAuthority(context.Context, *PublishRequest) (*PublicationKey, error)
+	InspectPublicationReview(context.Context, *PublicationKey) (*PublicationReviewContext, error)
+	RegisterPublicationReview(context.Context, *DeltaReview) (*ReviewRegistrationReceipt, error)
 	InspectSourceAuthority(context.Context, *Empty) (*SourceAuthorityView, error)
 	RotateSourceAuthority(context.Context, *SourceRotationRequest) (*SourceRotationReceipt, error)
 	// Preparation only. Actual ingress/source state selects an installed original;
@@ -328,6 +367,15 @@ func (UnimplementedGatewayServer) StageAuthority(context.Context, *PublishReques
 }
 func (UnimplementedGatewayServer) InspectPublication(context.Context, *PublicationKey) (*PublicationReceipt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InspectPublication not implemented")
+}
+func (UnimplementedGatewayServer) StageReviewedAuthority(context.Context, *PublishRequest) (*PublicationKey, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StageReviewedAuthority not implemented")
+}
+func (UnimplementedGatewayServer) InspectPublicationReview(context.Context, *PublicationKey) (*PublicationReviewContext, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InspectPublicationReview not implemented")
+}
+func (UnimplementedGatewayServer) RegisterPublicationReview(context.Context, *DeltaReview) (*ReviewRegistrationReceipt, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterPublicationReview not implemented")
 }
 func (UnimplementedGatewayServer) InspectSourceAuthority(context.Context, *Empty) (*SourceAuthorityView, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InspectSourceAuthority not implemented")
@@ -573,6 +621,60 @@ func _Gateway_InspectPublication_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_StageReviewedAuthority_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PublishRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).StageReviewedAuthority(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_StageReviewedAuthority_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).StageReviewedAuthority(ctx, req.(*PublishRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gateway_InspectPublicationReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PublicationKey)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).InspectPublicationReview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_InspectPublicationReview_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).InspectPublicationReview(ctx, req.(*PublicationKey))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gateway_RegisterPublicationReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeltaReview)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).RegisterPublicationReview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_RegisterPublicationReview_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).RegisterPublicationReview(ctx, req.(*DeltaReview))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Gateway_InspectSourceAuthority_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
@@ -695,6 +797,18 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "InspectPublication",
 			Handler:    _Gateway_InspectPublication_Handler,
+		},
+		{
+			MethodName: "StageReviewedAuthority",
+			Handler:    _Gateway_StageReviewedAuthority_Handler,
+		},
+		{
+			MethodName: "InspectPublicationReview",
+			Handler:    _Gateway_InspectPublicationReview_Handler,
+		},
+		{
+			MethodName: "RegisterPublicationReview",
+			Handler:    _Gateway_RegisterPublicationReview_Handler,
 		},
 		{
 			MethodName: "InspectSourceAuthority",

@@ -21,6 +21,9 @@ service Gateway {
   // A returned key is not a publication outcome or an execution grant.
   rpc StageAuthority(PublishRequest) returns (PublicationKey);
   rpc InspectPublication(PublicationKey) returns (PublicationReceipt);
+  rpc StageReviewedAuthority(PublishRequest) returns (PublicationKey);
+  rpc InspectPublicationReview(PublicationKey) returns (PublicationReviewContext);
+  rpc RegisterPublicationReview(DeltaReview) returns (ReviewRegistrationReceipt);
   rpc InspectSourceAuthority(Empty) returns (SourceAuthorityView);
   rpc RotateSourceAuthority(SourceRotationRequest) returns (SourceRotationReceipt);
   // Preparation only. Actual ingress/source state selects an installed original;
@@ -89,3 +92,12 @@ message SourceAuthorityView { uint64 epoch = 1; string identity_digest = 2; }
 message SourceRotationRequest { string operation_id = 1; uint64 expected_epoch = 2; bytes next_certificate = 3; string next_credential_sha256 = 4; }
 enum SourceRotationOutcome { SOURCE_ROTATION_OUTCOME_UNSPECIFIED = 0; SOURCE_ROTATED = 1; SOURCE_ROTATION_REJECTED = 2; }
 message SourceRotationReceipt { string operation_id = 1; string digest = 2; SourceRotationOutcome outcome = 3; SourceAuthorityView authority = 4; }
+
+// Review preparation and registration are source-only; none activates Policy.
+message AuthorityParent { uint64 revision = 1; uint64 fence = 2; string policy_digest = 3; optional string schema_digest = 4; }
+message ReviewAuthority { string audience = 1; uint64 epoch = 2; string public_key = 3; bool allow_expansion = 4; }
+message PublicationReview { PublicationKey publication = 1; AuthorityParent parent = 2; string artifact = 3; }
+enum DeltaDisposition { DELTA_DISPOSITION_UNSPECIFIED = 0; BOOTSTRAP = 1; NO_EXECUTION_GAIN = 2; EXPLICIT_APPROVAL = 3; }
+message DeltaReview { PublicationReview review = 1; string audience = 2; uint64 reviewer_epoch = 3; uint64 source_epoch = 4; string source_identity_digest = 5; DeltaDisposition disposition = 6; string delta = 7; string signature = 8; }
+message PublicationReviewContext { PublicationKey publication = 1; AuthorityParent parent = 2; ReviewAuthority reviewer = 3; SourceAuthorityView source = 4; }
+message ReviewRegistrationReceipt { PublicationKey publication = 1; string review_digest = 2; }

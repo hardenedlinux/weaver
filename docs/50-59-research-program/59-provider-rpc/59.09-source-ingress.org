@@ -47,6 +47,7 @@ kept as a fallback. No CLI/stdio or HTTP request bridge is added.
 | WEAVER_GRPC_SOURCE_PEER_SHA256 | Required approved source leaf DER digest; distinct from operation |
 | WEAVER_TOKEN_SHA256 | Operation bearer digest |
 | WEAVER_ADMIN_TOKEN_SHA256 | Required source bearer digest; distinct from operation |
+| WEAVER_REVIEW_AUTHORITY | Required bounded JSON: audience, epoch, public_key (Ed25519 verification key), allow_expansion; independent producer, deployment-owned |
 | WEAVER_GRPC_CERT / WEAVER_GRPC_KEY / WEAVER_GRPC_CLIENT_CA | Process-owned server identity and client issuer roots shared by the two listeners |
 
 Both addresses must remain loopback in this deployment profile and must be
@@ -169,3 +170,10 @@ These are serial Apple M2 Pro/Darwin samples, not a matched before/after study.
 Variance, filesystem durability and validation work must be considered; these
 numbers do not establish a publication latency bound under contested locks.
 The source benchmark's zero-provider-call assertion passes in every run.
+
+* Independent reviewed publication
+
+The default served profile requires the deployment verification key before
+serving. Source-role authentication cannot issue reviews or install that key.
+See [[file:59.89-reviewed-publication-authority-boundary.org][Independent SPEC Review and Governed Publication]] for the signed evidence,
+original-parent CAS, current reviewed-head guard and recovery obligations.

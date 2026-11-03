@@ -181,6 +181,8 @@ package WeaverViews {
         expose WeaverGatewayArchitecture::gateway::routine;
         expose WeaverGatewayArchitecture::gateway::catalog;
         expose WeaverGatewayArchitecture::gateway::routing;
+        expose WeaverGatewayArchitecture::gateway::publication;
+        expose WeaverGatewayArchitecture::gateway::reviewed_policy;
         expose WeaverGatewayArchitecture::gateway::execution;
         expose WeaverGatewayArchitecture::gateway::providers;
         expose WeaverGatewayArchitecture::gateway::stream;

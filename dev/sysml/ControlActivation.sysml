@@ -707,8 +707,7 @@ package ControlActivation {
            Replacement evidence rejects; stale parent/fence is an original
            terminal rejection, never an implicit rebase. Resolving one proposal
            preserves siblings. Historical outcomes remain queryable but confer
-           no current execution authority. Production RPC has no Delta artifact
-           field yet: command commitment tests do not qualify review admission. */
+           no current execution authority. The served profile requires independent producer authentication and deployment audience/key epoch. Registration and final CAS check the exact original source identity, source epoch and captured parent. Signature verification does not prove SPEC Delta correctness. */
         doc /* The build-host SDK tooling VM invokes the root Scheme package
            declaration and native program staging with typed arguments. Cargo
            keeps its features separate from the external application VM.
@@ -719,9 +718,7 @@ package ControlActivation {
         doc /* Reviewed no-gain publication additionally needs exact original
            parent/profile/source/schema/policy evidence bound at the final CAS.
            Typed validation, a source credential and a publication receipt do
-           not establish Authorization Delta review. Current Rust publication
-           accepts an authorized widening command without such an artifact;
-           preserve that expected counterexample as an unimplemented target. */
+           not establish Authorization Delta review. The served Rust profile rejects missing producer evidence and disallowed expansion. The producer must run actual SPEC analysis/release: synthetic integration issuers do not qualify semantic NoGain. A durable reviewed-deployment latch and retained evidence prevent verifier loss from selecting an embedding fallback. Missing key history requires original-floor recovery. The Turso outcome and current reviewed-head association commit atomically; every final effect checks that association against current Policy and deployment epoch. */
     }
     requirement def ControlActivationAcknowledgment {
         doc /* Go exposes operation ingress only after original-task registration and an exact committed publication acknowledgment. Unknown outcomes cannot activate or trigger automatic rebase. Exact recovery may observe a historical decision without making it current authority. */

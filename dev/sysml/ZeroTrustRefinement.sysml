@@ -57,7 +57,7 @@ package WeaverZeroTrust {
     }
     part def ApplicationInterpretation {
         attribute displayName : String = "Weaver / Interpretation";
-        attribute responsibility : String = "Original task + profile\nShared budget + history\nCurrent authoritative facts\nHost materialization premises";
+        attribute responsibility : String = "Original task + profile\nShared budget + history\nCurrent facts + reviewed Policy\nHost materialization premises";
         attribute glyph : String = "model";
         attribute visualRole : String = "policy";
         doc /* CedarPooSpec.Gateway.ZeroTrust specializes the generic contracts.
@@ -72,12 +72,12 @@ package WeaverZeroTrust {
     }
     part def FinalEnforcement {
         attribute displayName : String = "Rust / Actual use";
-        attribute responsibility : String = "Persist original consumption\nCheck current Policy + fence\nMediate final external bytes\nUnknown writes keep their hold";
+        attribute responsibility : String = "Persist original consumption\nCurrent reviewed Policy + fence\nMediate final external bytes\nUnknown writes keep their hold";
         attribute glyph : String = "rust";
         attribute visualRole : String = "execution";
         doc /* Existing Rust ledger/policy/broker/executor roles discharge the
            application interpretation at final use, under the deciding transaction:
-           current Cedar and fence, original claim, exact exposure and durable burn.
+           current Cedar and fence, original claim, exact exposure and durable burn. Independent SPEC review producer qualification is bound to an immutable original publication and authority-owned parent. Deployment owns only its verification key. The current reviewed-head association is checked inside each existing effect transaction; registration and publication cannot send bytes. Authentication and actual semantic qualification remain separate premises.
            Recheck after waits; ambiguous or partial writes keep their hold. External
            identity/fact authority and independent rollback protection still need
            deployment evidence. A conditional proof is not a writable capability. */

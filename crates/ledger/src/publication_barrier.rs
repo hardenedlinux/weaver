@@ -17,7 +17,7 @@ pub(crate) fn require_resolved(connection: &crate::persistence::driver::Connecti
     if pending {
         return Err(Error::Conflict("unresolved Policy proposal"));
     }
-    Ok(())
+    crate::reviewed_head::require(connection)
 }
 
 pub(crate) fn require_binding(
@@ -44,6 +44,9 @@ impl Ledger {
     /// Acknowledgment means durable staging or an already recorded exact decision.
     /// It never asserts that this proposal committed, or that authority is current.
     pub fn stage_authority(&mut self, change: &Publication) -> Result<PublicationKey> {
+        if crate::review_authority::current(&self.connection)?.is_some() {
+            return self.stage_reviewed_authority(change);
+        }
         let digest = change.digest()?;
         weaver_policy::validate_typed(&change.policy, &change.schema)?;
         let tx = crate::persistence::begin(&mut self.connection).map_err(db)?;

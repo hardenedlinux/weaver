@@ -9,6 +9,7 @@
 pub mod persistence;
 #[cfg(test)]
 extern crate self as weaver_ledger;
+mod delta_registration;
 mod domains;
 mod execution_exposure;
 mod exposure_manifest;
@@ -17,6 +18,11 @@ mod provider_profiles;
 mod publication;
 mod publication_barrier;
 mod publication_review;
+mod review_authority;
+#[cfg(test)]
+#[path = "../tests/unit/review_fixture.rs"]
+mod review_fixture;
+mod reviewed_head;
 mod schema;
 #[cfg(test)]
 #[path = "../tests/unit/storage_snapshot.rs"]

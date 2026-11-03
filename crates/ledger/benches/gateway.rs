@@ -20,6 +20,8 @@ mod policy_fixture;
 mod provider_release;
 #[path = "../../policy/tests/support/publication_replay.rs"]
 mod replay_fixture;
+#[path = "../tests/unit/review_fixture.rs"]
+mod review_fixture;
 #[path = "../../policy/tests/support/publication_revision.rs"]
 mod revision_fixture;
 #[path = "../../contracts/benches/support/source_authority.rs"]

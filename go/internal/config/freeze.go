@@ -21,10 +21,7 @@ func FreezeBundle(input Bundle) (Bundle, error) {
 	}
 	result := input
 	result.Governance.OpenNodes = slices.Clone(input.Governance.OpenNodes)
-	if input.Publication.ExpectedRevision != nil {
-		revision := *input.Publication.ExpectedRevision
-		result.Publication.ExpectedRevision = &revision
-	}
+	result.Publication = input.Publication.Clone()
 	result.Tasks = make([]v1.Task, len(input.Tasks))
 	for index, t := range input.Tasks {
 		copy := t
@@ -83,6 +80,26 @@ func sourceTextBound(input Bundle) bool {
 	}
 	if !strings([]string{input.Governance.Schema, input.Governance.Family, input.Publication.OperationID, input.Publication.Policy, input.Publication.Schema}) || !strings(input.Governance.OpenNodes) {
 		return false
+	}
+	if r := input.Publication.Review; r != nil {
+		if !strings([]string{r.Audience, r.SourceIdentityDigest, r.Signature, r.Delta, r.Review.Artifact, r.Review.Publication.OperationID, r.Review.Publication.Digest, string(r.Disposition)}) {
+			return false
+		}
+		if p := r.Review.Parent; p != nil {
+			if !strings([]string{p.PolicyDigest}) {
+				return false
+			}
+			if p.SchemaDigest != nil && !add(*p.SchemaDigest) {
+				return false
+			}
+		}
+		if _, err := r.SigningDigest(); err != nil {
+			return false
+		}
+		digest, err := input.Publication.Digest()
+		if err != nil || r.Review.Publication.OperationID != input.Publication.OperationID || r.Review.Publication.Digest != digest {
+			return false
+		}
 	}
 	for _, t := range input.Tasks {
 		if !strings([]string{t.Family, t.Principal, t.Profile}) || !strings(t.Nodes) || !strings(t.Targets) || !strings(t.Models) || !mapping(t.Endpoints) || !mapping(t.BodyDigests) || !mapping(t.StreamContracts) {

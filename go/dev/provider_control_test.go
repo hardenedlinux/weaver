@@ -185,6 +185,19 @@ func (c *controlProcess) stop(t testing.TB) {
 
 func writeControlBundle(t testing.TB, f *fixture, b config.Bundle, format string) string {
 	t.Helper()
+	if b.Publication.Review == nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		reviewer, ok := f.admin.RPC.(*fixtureReviewer)
+		if !ok {
+			t.Fatal("independent fixture reviewer missing")
+		}
+		reviewed, err := reviewer.review(f.admin.Context(ctx), b.Publication)
+		if err != nil {
+			t.Fatal(err)
+		}
+		b.Publication.Review = reviewed
+	}
 	data, err := json.Marshal(b)
 	if err != nil {
 		t.Fatal(err)
@@ -601,4 +614,11 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	if f.primary.Load() != 1 || f.backup.Load() != 0 || proxy.calls.Load() != 1 || proxy.inspections.Load() != 4 {
 		t.Fatal("historical recovery sent or republished")
 	}
+}
+
+// Forward independently produced evidence through the existing lost-reply relay.
+// This method neither issues a review nor changes publication reply-loss counts.
+func (p *publicationReplyLoss) RegisterPublicationReview(ctx context.Context, in *pb.DeltaReview) (*pb.ReviewRegistrationReceipt, error) {
+	source := p.sourceClient()
+	return source.RPC.RegisterPublicationReview(source.Context(ctx), in)
 }

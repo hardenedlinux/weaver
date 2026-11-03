@@ -44,11 +44,7 @@ func Publication(p v1.Publication) *pb.PublishRequest {
 // caller must keep input stable during this initial copy; this is not concurrent
 // memory synchronization. Each outbound request receives its own parent too.
 func snapshotPublication(p v1.Publication) v1.Publication {
-	if p.ExpectedRevision != nil {
-		parent := *p.ExpectedRevision
-		p.ExpectedRevision = &parent
-	}
-	return p
+	return p.Clone()
 }
 
 // Publish stages the exact proposal then makes one final CAS call. Errors never
@@ -68,6 +64,11 @@ func (c *Client) FinalizePublication(ctx context.Context, p v1.Publication) (*pb
 	digest, err := p.Digest()
 	if err != nil {
 		return nil, err
+	}
+	if p.Review != nil {
+		if err := c.RegisterReview(ctx, p, *p.Review); err != nil {
+			return nil, err
+		}
 	}
 	receipt, err := c.RPC.PublishAuthority(c.Context(ctx), Publication(p))
 	if err != nil {

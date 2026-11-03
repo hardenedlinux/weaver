@@ -86,18 +86,20 @@ vars: { d2-config: { data: { figure: |json
       "n1": "library",
       "n2": "selection",
       "n3": "go",
-      "n4": "rust",
-      "n5": "model",
-      "n6": "capture"
+      "n4": "obligation",
+      "n5": "rust",
+      "n6": "model",
+      "n7": "capture"
     },
     "roles": {
       "n0": "selection",
       "n1": "semantic",
       "n2": "selection",
       "n3": "selection",
-      "n4": "execution",
-      "n5": "selection",
-      "n6": "execution"
+      "n4": "publication",
+      "n5": "execution",
+      "n6": "selection",
+      "n7": "execution"
     },
     "edgeLabels": false,
     "graph": {
@@ -144,6 +146,12 @@ vars: { d2-config: { data: { figure: |json
           "layoutOptions": {
             "elk.partitioning.partition": "3"
           }
+        },
+        {
+          "id": "n7",
+          "layoutOptions": {
+            "elk.partitioning.partition": "3"
+          }
         }
       ],
       "layoutOptions": {
@@ -163,16 +171,17 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::gateway",
-    "modelHash": "cb82395a61247fb27f9cafa262a69cdc871b2ddd92ecdec24ef063e3c955269b",
+    "modelHash": "c3fe03338d9902f5f358163e1eab3d16b3237c4eae135a8ed3a6ddd2cce3ac5c",
     "portProjection": "owner",
     "labels": {
       "n0": "Agent + protocol ingress\nLLM APIs / MCP / A2A / ACP\nAuthenticate and normalize\nPreserve task and message identity",
       "n1": "Routines + semantics\nScheme / Agentic AI Lab\nTyped steps, tools and profiles\nJSON/YAML share owned contracts",
       "n2": "Model catalog + virtual models\nAlias to deployment bindings\nCapabilities, regions and quotas\nCurrent health observations",
       "n3": "Go / routing + cloud\nDiscovery and model capabilities\nEligible model/provider choices\nBound retry + fallback proposals",
-      "n4": "Rust / governed execution\nCedar + claim + shared budget\nSealed writer + observed commit\nFresh checks on every release",
-      "n5": "LLM providers + tools\nExact model, endpoint and codec\nStreaming and tool-call results\nNo hidden SDK retry or redirect",
-      "n6": "Stream + routine lifecycle\nRust-to-Go authenticated gRPC\nBounded queues / optional Arrow\nReceipts advance original routine"
+      "n4": "Reviewed Policy publication\nIndependent SPEC review producer\nGo carries signed original evidence\nRust commits current Policy + parent",
+      "n5": "Rust / governed execution\nCedar + current reviewed Policy\nClaim + budget + writer seal\nFresh checks on every release",
+      "n6": "LLM providers + tools\nExact model, endpoint and codec\nStreaming and tool-call results\nNo hidden SDK retry or redirect",
+      "n7": "Stream + routine lifecycle\nRust-to-Go authenticated gRPC\nBounded queues / optional Arrow\nReceipts advance original routine"
     }
   }
 }

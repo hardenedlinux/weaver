@@ -139,11 +139,17 @@ async fn serve_owned(
     let slot = admission
         .publication()
         .map_err(|_| Error::Conflict("source startup capacity"))?;
-    let source_worker =
-        match SourceOwner::start(runtime.clone(), slot, settings.owner.database.clone()).await {
-            Ok(owner) => owner,
-            Err(error) => return Err(error),
-        };
+    let source_worker = match SourceOwner::start_reviewed(
+        runtime.clone(),
+        slot,
+        settings.owner.database.clone(),
+        settings.review_authority.clone(),
+    )
+    .await
+    {
+        Ok(owner) => owner,
+        Err(error) => return Err(error),
+    };
     let operation = Gateway::new(
         &settings,
         Ingress::Operation,
@@ -179,6 +185,7 @@ fn validate_listeners(
     settings: &GrpcConfig,
 ) -> weaver_contracts::Result<()> {
     settings.owner.validate()?;
+    settings.review_authority.validate()?;
     let operation = listeners
         .operation
         .local_addr()
@@ -723,6 +730,70 @@ impl pb::gateway_server::Gateway for Gateway {
             )
             .await?;
         Ok(Response::new(publication_receipt(receipt)))
+    }
+    async fn stage_reviewed_authority(
+        &self,
+        request: Request<pb::PublishRequest>,
+    ) -> std::result::Result<Response<pb::PublicationKey>, Status> {
+        let caller = self.source_identity(&request)?;
+        let p = request.into_inner();
+        let key = self
+            .ingress
+            .source()?
+            .stage_reviewed(
+                caller,
+                weaver_contracts::Publication {
+                    operation_id: p.operation_id,
+                    expected_revision: p.expected_revision,
+                    fence: p.fence,
+                    policy: p.policy,
+                    schema: p.schema,
+                },
+            )
+            .await?;
+        Ok(Response::new(pb::PublicationKey {
+            operation_id: key.operation_id,
+            digest: key.digest,
+        }))
+    }
+    async fn inspect_publication_review(
+        &self,
+        request: Request<pb::PublicationKey>,
+    ) -> std::result::Result<Response<pb::PublicationReviewContext>, Status> {
+        let caller = self.source_identity(&request)?;
+        let key = request.into_inner();
+        let context = self
+            .ingress
+            .source()?
+            .review_context(
+                caller,
+                weaver_contracts::PublicationKey {
+                    operation_id: key.operation_id,
+                    digest: key.digest,
+                },
+            )
+            .await?;
+        Ok(Response::new(crate::review_wire::context(context)?))
+    }
+    async fn register_publication_review(
+        &self,
+        request: Request<pb::DeltaReview>,
+    ) -> std::result::Result<Response<pb::ReviewRegistrationReceipt>, Status> {
+        let caller = self.source_identity(&request)?;
+        let evidence = crate::review_wire::evidence(request.into_inner())?;
+        let key = evidence.review.publication.clone();
+        let digest = self
+            .ingress
+            .source()?
+            .register_review(caller, evidence)
+            .await?;
+        Ok(Response::new(pb::ReviewRegistrationReceipt {
+            publication: Some(pb::PublicationKey {
+                operation_id: key.operation_id,
+                digest: key.digest,
+            }),
+            review_digest: digest,
+        }))
     }
     async fn inspect_publication(
         &self,

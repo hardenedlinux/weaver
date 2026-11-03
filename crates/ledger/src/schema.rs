@@ -31,6 +31,10 @@ CREATE TABLE IF NOT EXISTS source_keys (
  public_key_sha256 TEXT PRIMARY KEY, epoch INTEGER NOT NULL UNIQUE CHECK(epoch>=0), certificate_sha256 TEXT NOT NULL UNIQUE);
 CREATE TABLE IF NOT EXISTS source_rotations (
  operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, proposer TEXT NOT NULL, command TEXT NOT NULL, receipt TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS review_deployment (singleton INTEGER PRIMARY KEY CHECK(singleton=1));
+CREATE TABLE IF NOT EXISTS review_keys (epoch INTEGER PRIMARY KEY CHECK(epoch>=0), record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS review_authority (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), epoch INTEGER NOT NULL CHECK(epoch>=0), record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority_pending (
  operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, proposal TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority_review_requirements (
@@ -38,6 +42,10 @@ CREATE TABLE IF NOT EXISTS authority_review_requirements (
 CREATE TABLE IF NOT EXISTS authority_reviews (
  operation_id TEXT PRIMARY KEY REFERENCES authority_review_requirements(operation_id),
  digest TEXT NOT NULL, artifact_digest TEXT NOT NULL, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS authority_delta_reviews (
+ operation_id TEXT NOT NULL REFERENCES authority_reviews(operation_id), reviewer_epoch INTEGER NOT NULL,
+ source_epoch INTEGER NOT NULL, digest TEXT NOT NULL, record TEXT NOT NULL,
+ PRIMARY KEY(operation_id,reviewer_epoch,source_epoch));
 CREATE TABLE IF NOT EXISTS task_publications (
  family TEXT PRIMARY KEY REFERENCES tasks(family), operation_id TEXT NOT NULL, digest TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority (
@@ -47,6 +55,10 @@ CREATE TABLE IF NOT EXISTS authority_schema (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), schema TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority_publications (
  operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, request TEXT NOT NULL, receipt TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS authority_review_heads (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), operation_id TEXT NOT NULL REFERENCES authority_publications(operation_id),
+ digest TEXT NOT NULL, revision INTEGER NOT NULL, fence INTEGER NOT NULL, reviewer_epoch INTEGER NOT NULL,
+ source_epoch INTEGER NOT NULL, issuer_record TEXT NOT NULL, review_record TEXT NOT NULL, delta_record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS tasks (
  family TEXT PRIMARY KEY, record TEXT NOT NULL,
  budget INTEGER NOT NULL CHECK(budget>0), held INTEGER NOT NULL DEFAULT 0 CHECK(held>=0 AND held<=budget));

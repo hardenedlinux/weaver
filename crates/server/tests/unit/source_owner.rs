@@ -225,3 +225,44 @@ async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finis
         4
     );
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn review_context_uses_provisioned_metadata_and_does_not_publish() {
+    let directory = tempfile::tempdir().expect("dir");
+    let path = directory.path().join("review.db");
+    let mut ledger = Ledger::open(&path).expect("store");
+    ledger
+        .install_review_authority(&weaver_contracts::ReviewAuthority {
+            audience: "test-gateway".into(),
+            epoch: 0,
+            public_key: "4".repeat(64),
+            allow_expansion: false,
+        })
+        .expect("native provision");
+    drop(ledger);
+    let runtime = RuntimeOwner::new();
+    let worker = SourceOwner::start(runtime.clone(), slot(), path.clone())
+        .await
+        .expect("start");
+    let p = change("reviewed", None);
+    let key = worker
+        .client
+        .stage_reviewed(caller(), p)
+        .await
+        .expect("stage");
+    let context = worker
+        .client
+        .review_context(caller(), key.clone())
+        .await
+        .expect("owned context");
+    assert_eq!(context.parent, None);
+    assert_eq!(context.publication, key);
+    assert_eq!(context.reviewer.audience, "test-gateway");
+    assert_eq!(context.source.identity, caller());
+    assert_eq!(
+        worker.client.inspect(caller(), key).await.expect("observe"),
+        None
+    );
+    runtime.drain().await;
+    worker.finish().await.expect("natural drain");
+}

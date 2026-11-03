@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
 
 //! Canonical proposal boundary; records carry no execution authority.
+mod delta_review;
+pub use delta_review::{DeltaDisposition, DeltaReview, PublicationReviewContext, ReviewAuthority};
 mod domains;
 pub use domains::{TaskAdmission, TaskAdmissionReceipt};
 mod json;

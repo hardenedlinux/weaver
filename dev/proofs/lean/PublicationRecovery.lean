@@ -861,3 +861,89 @@ theorem single_admission_and_publication_recovery [DecidableEq Key]
 #print axioms local_admission_idempotent
 #print axioms single_admission_and_publication_recovery
 end Weaver.PublicationRecovery
+
+/- Native deployment binding refines the existing publication owner. These are
+   proof obligations for authenticated producer evidence, not a second issuer or
+   a new Delta solver. Signature correctness and SPEC semantic qualification are
+   separate Host premises. Whole-store rollback is deliberately not assumed away
+   by a local epoch comparison. -/
+namespace Weaver.PublicationRecovery.DeploymentReview
+structure Cut where
+  reviewerEpoch : Nat
+  sourceEpoch : Nat
+  audience : Nat
+  deriving DecidableEq
+structure Evidence where
+  command : Nat
+  payload : Nat
+  parent : Nat
+  fence : Nat
+  artifact : Nat
+  cut : Cut
+  deriving DecidableEq
+
+def Admitted (authenticated qualified : Evidence → Prop) (current : Cut)
+    (s : State Nat) (id payload fence : Nat) (e : Evidence) : Prop :=
+  authenticated e ∧ qualified e ∧ e.cut = current ∧ e.command = id ∧
+  e.payload = payload ∧ e.parent = s.head ∧ e.fence = fence ∧
+  LocalReviewAdmissible s id payload fence
+
+def HeadBound (s : State Nat) (reviewerEpoch : Nat) (e : Evidence) : Prop :=
+  e.cut.reviewerEpoch = reviewerEpoch ∧ s.head = e.parent + 1 ∧ s.fence = e.fence ∧
+  ∃ d, s.records e.command = some d ∧ d.committed = true ∧
+    d.payload = e.payload ∧ d.parent = e.parent ∧ d.resultHead = s.head
+
+variable {id payload fence epoch held calls : Nat} {s : State Nat}
+variable {e : Evidence} {current : Cut} {auth qualified : Evidence → Prop}
+
+theorem stale_review_cannot_commit
+    (stale : e.cut ≠ current) : ¬ Admitted auth qualified current s id payload fence e := by
+  intro h; exact stale h.2.2.1
+
+theorem authenticated_bytes_do_not_establish_delta
+    (missing : ¬ qualified e) : ¬ Admitted auth qualified current s id payload fence e := by
+  intro h; exact missing h.2.1
+
+theorem changed_parent_cannot_commit
+    (changed : e.parent ≠ s.head) : ¬ Admitted auth qualified current s id payload fence e := by
+  intro h; exact changed h.2.2.2.2.2.1
+
+theorem rotated_key_invalidates_historical_head
+    (bound : HeadBound s epoch e) : ¬ HeadBound s (epoch + 1) e := by
+  intro after
+  have impossible : epoch = epoch + 1 := bound.1.symm.trans after.1
+  exact Nat.ne_of_lt (Nat.lt_succ_self epoch) impossible
+
+theorem reviewed_commit_composes_with_original_recovery
+    (approval : Admitted auth qualified current s id payload fence e)
+    (fresh : s.records id = none) (monotone : s.fence ≤ fence)
+    (pending : s.pending id = none ∨ s.pending id = some (payload,s.head,fence))
+    (safe : Safe held calls s) :
+    let t := {s with head := s.head+1, fence := fence, commits := s.commits ++ [id], records := write s.records id ⟨payload,s.head,fence,true,s.head+1,fence⟩, pending := clear s.pending id}
+    Extends s t ∧ PreservesIntents s t ∧ Safe held calls t := by
+  let step := Step.commit s id payload fence fresh monotone pending approval.2.2.2.2.2.2.2
+  exact ⟨step_preserves_original_decisions step, step_preserves_original_intents step,
+    step_preserves_accounting safe step⟩
+
+#print axioms stale_review_cannot_commit
+#print axioms authenticated_bytes_do_not_establish_delta
+#print axioms changed_parent_cannot_commit
+#print axioms rotated_key_invalidates_historical_head
+#print axioms reviewed_commit_composes_with_original_recovery
+/-- The served profile never chooses an embedding-mode fallback on missing
+verification metadata. Actual SQL mode/key projection checks refine these two
+premises; a historical head alone cannot supply either of them. -/
+def EffectiveHead (modePresent keysRecovered : Prop) (s : State Nat) (epoch : Nat) (e : Evidence) :=
+  modePresent ∧ keysRecovered ∧ HeadBound s epoch e
+
+theorem missing_verifier_cannot_downgrade (missing : ¬ keysRecovered) :
+    ¬ EffectiveHead modePresent keysRecovered s epoch e := by
+  intro ready; exact missing ready.2.1
+
+theorem missing_mode_cannot_activate_historical_head (missing : ¬ modePresent) :
+    ¬ EffectiveHead modePresent keysRecovered s epoch e := by
+  intro ready; exact missing ready.1
+
+#print axioms missing_verifier_cannot_downgrade
+#print axioms missing_mode_cannot_activate_historical_head
+end Weaver.PublicationRecovery.DeploymentReview

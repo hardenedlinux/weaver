@@ -68,6 +68,15 @@ pub(crate) fn write(
 fn has_application_rows(connection: &crate::persistence::driver::Connection) -> Result<bool> {
     let tables = crate::persistence::read_all(connection,"SELECT name FROM main.sqlite_schema WHERE type='table' AND name NOT GLOB 'sqlite_*' ORDER BY name",(),|r|r.get::<String>(0)).map_err(db)?;
     for table in tables {
+        // An independently provisioned verifier is deployment metadata, not
+        // application ownership. Invalid metadata still refuses enrollment.
+        if matches!(
+            table.as_str(),
+            "review_authority" | "review_keys" | "review_deployment"
+        ) {
+            crate::review_authority::current(connection)?;
+            continue;
+        }
         if crate::persistence::engine_metadata(connection, &table).map_err(db)? {
             continue;
         }

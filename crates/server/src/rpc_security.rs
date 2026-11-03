@@ -26,6 +26,8 @@ pub(crate) enum RpcRole {
 }
 /// Named deployment inputs for the default Rust RPC owner.
 pub struct GrpcConfig {
+    /// Independent SPEC review producer verification key, owned by deployment.
+    pub review_authority: weaver_contracts::ReviewAuthority,
     pub owner: ServerConfig,
     pub security: RpcSecurity,
     pub provider: ProviderTransport,

@@ -114,6 +114,7 @@ func TestProviderSourceLateCommitReplyAfterRotationRemainsHistorical(t *testing.
 		t.Fatal(err)
 	}
 	defer oldWorker.Connection.Close()
+	oldWorker.RPC = &fixtureReviewer{GatewayClient: oldWorker.RPC, key: f.reviewKey}
 	type reply struct {
 		receipt *pb.PublicationReceipt
 		err     error
@@ -397,8 +398,8 @@ func TestProviderConcurrentSameIDStagingHasOneDurableBinding(t *testing.T) {
 	}
 }
 
-// Expected coverage boundary: a source-role credential survives process restart.
-// It does not yet authenticate a newly fenced registrar incarnation or artifact.
+// A source-role credential survives restart but does not issue a review.
+// Independent producer evidence is required; registrar incarnation is separate.
 func TestProviderSourceRoleCredentialIsNotRegistrarIncarnationEvidence(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
@@ -412,16 +413,29 @@ func TestProviderSourceRoleCredentialIsNotRegistrarIncarnationEvidence(t *testin
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { oldWorker.Connection.Close() })
-	if _, err := oldWorker.Publish(ctx, pendingChange(f, "retained-source-credential")); err != nil {
-		t.Fatal("source-role coverage boundary changed; audit incarnation enforcement", err)
+	if _, err := oldWorker.RPC.InspectSourceAuthority(oldWorker.Context(ctx), &pb.Empty{}); err != nil {
+		t.Fatal("source role no longer authenticates", err)
+	}
+	original := pendingChange(f, "retained-source-credential")
+	if _, err := oldWorker.Publish(ctx, original); status.Code(err) != codes.FailedPrecondition {
+		t.Fatal("source role alone supplied review authority", err)
+	}
+	// The refusal retains the original pending command. A separately issued
+	// review can complete that same command without replacing its identity.
+	e, err := f.admin.RPC.(*fixtureReviewer).review(f.admin.Context(ctx), original)
+	if err != nil || e == nil {
+		t.Fatal("review", err)
+	}
+	original.Review = e
+	if _, err := f.admin.FinalizePublication(ctx, original); err != nil {
+		t.Fatal("reviewed original recovery", err)
 	}
 	if f.primary.Load() != 0 {
 		t.Fatal("publication phase sent externally")
 	}
 }
 
-// This exercises the deployed command commitment, not Delta-artifact admission:
-// the current wire protocol has no reviewed-artifact field.
+// Original command commitment remains mandatory alongside independent review.
 func TestProviderPendingCommandSubstitutionAndHistoricalRecovery(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)

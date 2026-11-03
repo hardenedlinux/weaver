@@ -93,6 +93,9 @@ fn load() -> Result<(GrpcConfig, ListenAddresses)> {
     }
     Ok((
         GrpcConfig {
+            review_authority: weaver_contracts::decode(
+                required("WEAVER_REVIEW_AUTHORITY")?.as_bytes(),
+            )?,
             owner,
             security: load_security()?,
             provider: load_transport()?,
