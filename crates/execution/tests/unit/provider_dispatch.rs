@@ -1,4 +1,5 @@
 use super::{ProviderOutput, ProviderTransport, open_guarded};
+use crate::provider::test_runtime as fixture_runtime;
 use std::{
     collections::{BTreeMap, BTreeSet},
     io::{Read, Write},
@@ -13,8 +14,6 @@ use std::{
 };
 use weaver_contracts::{ProviderEvent, ProviderRoute, Result};
 use weaver_ledger::Ledger;
-#[path = "../support/runtime.rs"]
-mod fixture_runtime;
 #[path = "../../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
 const SCHEMA: &str = include_str!("../../../../prod/policies/provider/schema.json");
@@ -462,6 +461,10 @@ fn configured_ca_bundle_preserves_later_approved_root() {
         endpoint.runtime.handle().clone(),
     )
     .expect("bundle");
+    assert_eq!(
+        transport.inner.tls.alpn_protocols,
+        vec![b"http/1.1".to_vec()]
+    );
     let output = Cancellation {
         stopped: Arc::new(AtomicBool::new(false)),
         checkpoint: Mutex::new(None),

@@ -41,7 +41,7 @@ impl ProviderTransport {
         ))
         .with_safe_default_protocol_versions()
         .map_err(|_| Error::Invalid("provider TLS protocols"))?;
-        let tls = if let Some(pem) = root_pem {
+        let mut tls = if let Some(pem) = root_pem {
             let mut roots = rustls::RootCertStore::empty();
             for certificate in rustls::pki_types::CertificateDer::pem_slice_iter(pem) {
                 roots
@@ -58,6 +58,7 @@ impl ProviderTransport {
                 .map_err(|_| Error::Invalid("provider platform trust"))?
                 .with_no_client_auth()
         };
+        tls.alpn_protocols = vec![b"http/1.1".to_vec()];
         Ok(Self {
             inner: Arc::new(Settings {
                 credentials,

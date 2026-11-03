@@ -1022,7 +1022,7 @@ to already locked HTTP/TLS components were added.
 
 Explicit CA bundles retain every configured root without appending platform roots.
 The default verifier uses platform trust and verifies the actual endpoint/SNI;
-there is no insecure verifier or test-root fallback in production.
+there is no insecure verifier or test-root fallback in production. HTTP/1.1 ALPN\nis explicit. The bearer HeaderValue retains the original SDK sensitive flag, so\nstandard request/header debug formatting cannot disclose the credential.
 
 ** Early response, partial write and recovery boundaries
 

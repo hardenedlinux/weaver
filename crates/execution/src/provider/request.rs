@@ -51,11 +51,14 @@ impl PreparedRequest {
             .authority()
             .ok_or(Error::Invalid("provider authority"))?
             .as_str();
+        let mut authorization = hyper::header::HeaderValue::try_from(format!("Bearer {secret}"))
+            .map_err(|_| Error::Invalid("provider authorization"))?;
+        authorization.set_sensitive(true);
         let request = Request::builder()
             .method("POST")
             .uri(uri.path_and_query().map_or("/", |p| p.as_str()))
             .header("Host", authority)
-            .header("Authorization", format!("Bearer {secret}"))
+            .header("Authorization", authorization)
             .header("Content-Type", "application/json")
             .header("Accept", "text/event-stream")
             .header("Content-Length", body.len())
@@ -104,3 +107,7 @@ impl PreparedRequest {
         })
     }
 }
+
+#[cfg(test)]
+#[path = "../../tests/unit/provider_request.rs"]
+mod tests;
