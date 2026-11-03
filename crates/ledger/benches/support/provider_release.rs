@@ -17,7 +17,7 @@ pub fn benchmarks(c: &mut Criterion) {
                         .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
                         .expect("consume");
                     ledger
-                        .dispatch_provider(&permit, || ())
+                        .dispatch_provider(&permit, || Ok(()))
                         .expect("single request burn");
                     (temp, ledger, permit)
                 },

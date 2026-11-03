@@ -120,8 +120,12 @@ formal premises and qualification evidence.
 
 The original dispatch burn advances from =1= to =2= in the final guarded callback
 transaction. Both values mean spent; =2= is a callback-transaction observation,
-not a seal, successful callback, provider receipt, usage record or refund grant.
-The callback may itself return an error. No new schema or outbox is introduced.
+not a provider receipt, usage record or refund grant. The typed callback must
+succeed before that record or the final native commit window is reached. In the
+production transport its result is the private =SealedRequest=; errors return
+before the commit observer and roll back the final scope, retaining burn =1=.
+The generic ledger API's successful callback result alone is not a seal. No new
+schema or outbox is introduced.
 An applied commit with an unavailable acknowledgment poisons its connection;
 autocommit does not make that worker reusable. A fresh process reads retained
 history but cannot reconstruct the private socket or replay the original request.

@@ -110,6 +110,7 @@ fn original_task_floor_prevents_missing_registry_from_rebinding_identity() {
     ledger
         .dispatch_provider(&permit, || {
             calls += 1;
+            Ok(())
         })
         .expect("same claim dispatch");
     assert_eq!(calls, 1);
@@ -174,6 +175,7 @@ fn metadata_key_order_does_not_reinterpret_the_original_profile() {
     recovered
         .dispatch_provider(&permit, || {
             calls += 1;
+            Ok(())
         })
         .expect("original dispatch");
     assert_eq!(calls, 1);
@@ -212,6 +214,7 @@ fn unknown_null_profile_field_cannot_hide_behind_cached_facts() {
         ledger
             .dispatch_provider(&permit, || {
                 calls += 1;
+                Ok(())
             })
             .is_err()
     );
@@ -305,6 +308,7 @@ fn missing_artifact_identifier_cannot_erase_the_task_profile_floor() {
         ledger
             .dispatch_provider(&permit, || {
                 calls += 1;
+                Ok(())
             })
             .is_err()
     );
@@ -392,6 +396,7 @@ fn restored_registry_mismatch_blocks_cached_dispatch_and_release() {
             ledger
                 .dispatch_provider(&permit, || {
                     calls += 1;
+                    Ok(())
                 })
                 .expect("dispatch");
             Some(
@@ -429,6 +434,7 @@ fn restored_registry_mismatch_blocks_cached_dispatch_and_release() {
                 ledger
                     .dispatch_provider(&permit, || {
                         calls += 1;
+                        Ok(())
                     })
                     .is_err()
             );

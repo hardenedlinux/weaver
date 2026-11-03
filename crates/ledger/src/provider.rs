@@ -141,10 +141,12 @@ impl Ledger {
         })
     }
     /// The exact consumed route and current authority serialize with the sole HTTPS request.
+    /// A failed callback rolls back the final scope before its commit window;
+    /// the earlier affine burn and original unknown reservation remain spent.
     pub fn dispatch_provider<T>(
         &mut self,
         permit: &ProviderDispatch,
-        send: impl FnOnce() -> T,
+        send: impl FnOnce() -> Result<T>,
     ) -> Result<T> {
         self.check_provider_session(permit)?;
         burn_dispatch(&mut self.connection, permit)?;
@@ -152,7 +154,7 @@ impl Ledger {
             .map_err(db)?;
         guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
         active(&tx, permit)?;
-        let result = tx.request_effect(send);
+        let result = tx.request_effect(send)?;
         record_dispatch_callback(&tx, permit)?;
         tx.commit_provider().map_err(db)?;
         Ok(result)
@@ -301,8 +303,8 @@ fn burn_dispatch(
     Ok(())
 }
 fn record_dispatch_callback(tx: &WriteScope<'_>, permit: &ProviderDispatch) -> Result<()> {
-    // 2 records the guarded callback transaction, NOT remote execution,
-    // a successful callback, writer seal, known usage, or refund authority.
+    // 2 records a successful guarded callback transaction, NOT
+    // writer seal, remote execution, known usage, or refund authority.
     // Both 1 and 2 permanently retain the original affine dispatch burn.
     let recorded = crate::persistence::exec(
         tx,

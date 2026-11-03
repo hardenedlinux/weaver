@@ -474,7 +474,10 @@ fn commit_floor_survives_gateway_restore_and_blocks_duplicate_real_dispatch() {
             .expect("local state may forget consumption");
         let admitted = floor.send(&projection, 0, "f/infer", || {
             ledger
-                .dispatch_provider(&permit, || calls += 1)
+                .dispatch_provider(&permit, || {
+                    calls += 1;
+                    Ok(())
+                })
                 .expect("actual Ledger final callback");
         });
         assert_eq!(admitted, !restore);
@@ -542,7 +545,10 @@ fn identical_prefix_after_whole_store_restore_can_replay_dispatch_counterexample
         assert!(
             floor.send(&projection, 0, "f/infer", || {
                 worker
-                    .dispatch_provider(&permit, || calls += 1)
+                    .dispatch_provider(&permit, || {
+                        calls += 1;
+                        Ok(())
+                    })
                     .expect("real ledger callback");
             }),
             "expected gap: restoring both stores reopens the burn"
@@ -591,7 +597,10 @@ fn prefix_qualification_does_not_reconstruct_rolled_back_budget_counterexample()
     let mut calls = 0;
     assert!(floor.send(&projection, 0, "f/infer", || {
         ledger
-            .dispatch_provider(&permit, || calls += 1)
+            .dispatch_provider(&permit, || {
+                calls += 1;
+                Ok(())
+            })
             .expect("original actual dispatch");
     }));
     assert_eq!(ledger.held("f").expect("original unknown exposure"), 4);

@@ -168,6 +168,7 @@ async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finis
                 blocked
                     .recv_timeout(Duration::from_secs(3))
                     .expect("release writer");
+                Ok(())
             })
             .expect("guarded writer")
     });

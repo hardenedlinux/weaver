@@ -4,6 +4,8 @@ use weaver_contracts::{ProviderPlan, ProviderRoute, Task, body_digest};
 use weaver_ledger::{Ledger, ProviderDispatch, ProviderRelease};
 #[path = "commit_floor.rs"]
 mod commit_floor;
+#[path = "provider_observation.rs"]
+mod observation;
 const POLICY: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../../prod/policies/provider/provider.cedar"
@@ -16,38 +18,6 @@ fn fixture(path: &std::path::Path) -> (Ledger, ProviderPlan) {
     fixture_nodes(path, &["infer"])
 }
 
-proptest! {
-    #![proptest_config(Config::with_cases(16))]
-    #[test]
-    fn mvcc_effect_before_failed_observation_never_releases_or_replays(lost_callback: bool) {
-        let directory = tempfile::tempdir().expect("directory");
-        let path = directory.path().join("post-effect.db");
-        let storage = weaver_ledger::persistence::Session::open_with_journal(&path, weaver_ledger::persistence::Journal::Mvcc).expect("MVCC");
-        let (mut ledger, plan) = fixture(&path);
-        ledger.enqueue_provider(&plan).expect("queue");
-        let permit = ledger.consume_provider("f", "infer", &BTreeSet::from(["primary".into()])).expect("consume");
-        ledger.dispatch_provider(&permit, || ()).expect("original dispatch");
-        let release = ledger.prepare_provider_release(&permit, "original-event", "protobuf", 1).expect("durable release burn");
-        if !lost_callback {
-            weaver_ledger::persistence::script(&storage,"CREATE TRIGGER fail_final_ack BEFORE UPDATE ON provider_releases WHEN NEW.state='released' BEGIN SELECT RAISE(ABORT,'injected post-effect observation failure'); END;").expect("fault after possible bytes");
-        }
-        let mut calls = 0;
-        let result = ledger.release_provider(&permit,release,"protobuf", |_| {
-            calls += 1;
-            if lost_callback { Err(weaver_contracts::Error::Conflict("lost write response")) } else { Ok(()) }
-        });
-        prop_assert!(result.is_err()); prop_assert_eq!(calls,1);
-        prop_assert_eq!(ledger.held("f").expect("held"),4);
-        prop_assert!(ledger.prepare_provider_release(&permit,"new-event","protobuf",1).is_err());
-        drop(ledger); storage.close().expect("owner drain");
-        let storage = weaver_ledger::persistence::Session::open_with_journal(&path,weaver_ledger::persistence::Journal::Mvcc).expect("recovery");
-        let mut recovered = Ledger::open(&path).expect("new worker");
-        recovered.publish_typed(Some(0),POLICY,SCHEMA,2).expect("new authority cannot unspend");
-        prop_assert!(recovered.consume_provider("f","infer",&BTreeSet::from(["primary".into()])).is_err());
-        prop_assert_eq!(recovered.held("f").expect("original exposure"),4);
-        drop(recovered); storage.close().expect("clean close");
-    }
-}
 fn fixture_nodes(path: &std::path::Path, nodes: &[&str]) -> (Ledger, ProviderPlan) {
     fixture_with_ceiling(path, nodes, 4)
 }
@@ -116,10 +86,10 @@ proptest! {
         let permit = ledger.consume_provider("f", "infer", &BTreeSet::from(["primary".into()])).expect("consume");
         let mut callbacks = 0;
         let release = if phase == 1 {
-            ledger.dispatch_provider(&permit, || ()).expect("dispatch");
+            ledger.dispatch_provider(&permit, || Ok(())).expect("dispatch");
             Some(ledger.prepare_provider_release(&permit, "tail", "protobuf", 1).expect("release"))
         } else if phase == 2 {
-            ledger.dispatch_provider(&permit, || ()).expect("dispatch");
+            ledger.dispatch_provider(&permit, || Ok(())).expect("dispatch");
             None
         } else { None };
         let connection = weaver_ledger::persistence::Session::open(&path).expect("recovery fault connection");
@@ -134,7 +104,7 @@ proptest! {
         let result = match release {
             Some(range) => ledger.release_provider(&permit, range, "protobuf", |_| { callbacks += 1; Ok(()) }),
             None if phase == 2 => ledger.complete_provider(&permit, "protobuf"),
-            None => ledger.dispatch_provider(&permit, || { callbacks += 1; }),
+            None => ledger.dispatch_provider(&permit, || { callbacks += 1;  Ok(()) }),
         };
         prop_assert!(result.is_err(), "inconsistent durable evidence reached final use");
         prop_assert_eq!(callbacks, 0);
@@ -224,7 +194,10 @@ fn stale_registry_read_and_reopened_worker_preserve_unknown_provider_exposure() 
         .expect("original consumption");
     let mut calls = 0;
     ledger
-        .dispatch_provider(&permit, || calls += 1)
+        .dispatch_provider(&permit, || {
+            calls += 1;
+            Ok(())
+        })
         .expect("original dispatch");
     let range = ledger
         .prepare_provider_release(&permit, "uncertain-tail", "arrow", 2)
@@ -308,7 +281,14 @@ fn stale_registry_read_and_reopened_worker_preserve_unknown_provider_exposure() 
         "fresh read sees inherited local registration"
     );
     drop(reader);
-    assert!(ledger.dispatch_provider(&permit, || calls += 1).is_err());
+    assert!(
+        ledger
+            .dispatch_provider(&permit, || {
+                calls += 1;
+                Ok(())
+            })
+            .is_err()
+    );
     assert!(ledger.complete_provider(&permit, "arrow").is_err());
     drop(old_worker);
     drop(ledger);
@@ -320,7 +300,14 @@ fn stale_registry_read_and_reopened_worker_preserve_unknown_provider_exposure() 
         Some(review)
     );
     assert!(recovered.register_approved_review(&replacement).is_err());
-    assert!(recovered.dispatch_provider(&permit, || calls += 1).is_err());
+    assert!(
+        recovered
+            .dispatch_provider(&permit, || {
+                calls += 1;
+                Ok(())
+            })
+            .is_err()
+    );
     assert!(
         recovered
             .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
@@ -363,7 +350,9 @@ fn equal_batch_digests_cannot_transfer_release_between_original_nodes() {
         let owner = ledger
             .consume_provider("f", &plan.node, &BTreeSet::from(["primary".into()]))
             .expect("consume");
-        ledger.dispatch_provider(&owner, || ()).expect("dispatch");
+        ledger
+            .dispatch_provider(&owner, || Ok(()))
+            .expect("dispatch");
         owners.push(owner);
     }
     let first_release = ledger
@@ -417,7 +406,9 @@ fn release_encoding_cannot_change_after_preparation() {
     let owner = ledger
         .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
         .expect("consume");
-    ledger.dispatch_provider(&owner, || ()).expect("dispatch");
+    ledger
+        .dispatch_provider(&owner, || Ok(()))
+        .expect("dispatch");
     let release = ledger
         .prepare_provider_release(&owner, "same-batch-digest", "arrow", 1)
         .expect("release");
@@ -456,9 +447,19 @@ fn affine_provider_dispatch_and_revoked_batch_never_repeat_or_refund() {
     );
     let mut calls = 0;
     ledger
-        .dispatch_provider(&owner, || calls += 1)
+        .dispatch_provider(&owner, || {
+            calls += 1;
+            Ok(())
+        })
         .expect("dispatch");
-    assert!(ledger.dispatch_provider(&owner, || calls += 1).is_err());
+    assert!(
+        ledger
+            .dispatch_provider(&owner, || {
+                calls += 1;
+                Ok(())
+            })
+            .is_err()
+    );
     assert_eq!(calls, 1);
     let release = ledger
         .prepare_provider_release(&owner, "digest", "arrow", 2)
@@ -478,7 +479,14 @@ fn affine_provider_dispatch_and_revoked_batch_never_repeat_or_refund() {
     assert_eq!(releases, 0);
     drop(ledger);
     let mut ledger = Ledger::open(&path).expect("restart");
-    assert!(ledger.dispatch_provider(&owner, || calls += 1).is_err());
+    assert!(
+        ledger
+            .dispatch_provider(&owner, || {
+                calls += 1;
+                Ok(())
+            })
+            .is_err()
+    );
     assert!(
         ledger
             .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
@@ -526,7 +534,14 @@ fn historical_publication_replay_cannot_reopen_original_claim_or_dispatch() {
         );
         let mut calls = 0;
         if let Some(permit) = &owner {
-            assert!(ledger.dispatch_provider(permit, || calls += 1).is_err());
+            assert!(
+                ledger
+                    .dispatch_provider(permit, || {
+                        calls += 1;
+                        Ok(())
+                    })
+                    .is_err()
+            );
         }
         assert!(ledger.consume_provider("f", "infer", &targets).is_err());
         ledger.close().expect("close deciding connection");
@@ -538,7 +553,14 @@ fn historical_publication_replay_cannot_reopen_original_claim_or_dispatch() {
             historical
         );
         if let Some(permit) = &owner {
-            assert!(recovered.dispatch_provider(permit, || calls += 1).is_err());
+            assert!(
+                recovered
+                    .dispatch_provider(permit, || {
+                        calls += 1;
+                        Ok(())
+                    })
+                    .is_err()
+            );
         }
         let mut rebound = plan.clone();
         rebound.revision = 2;
@@ -558,11 +580,17 @@ fn historical_publication_replay_cannot_reopen_original_claim_or_dispatch() {
             // authorization refreshes its observation coordinates under CAS.
             let fresh_owner = refreshed.expect("freshly authorized original claim");
             recovered
-                .dispatch_provider(&fresh_owner, || calls += 1)
+                .dispatch_provider(&fresh_owner, || {
+                    calls += 1;
+                    Ok(())
+                })
                 .expect("fresh send");
             assert!(
                 recovered
-                    .dispatch_provider(&fresh_owner, || calls += 1)
+                    .dispatch_provider(&fresh_owner, || {
+                        calls += 1;
+                        Ok(())
+                    })
                     .is_err()
             );
         }
@@ -610,7 +638,7 @@ fn final_release_keeps_current_guard_and_unknown_commit_in_one_transaction() {
         .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
         .expect("consume original");
     ledger
-        .dispatch_provider(&owner, || ())
+        .dispatch_provider(&owner, || Ok(()))
         .expect("durable invocation burn");
     let release = ledger
         .prepare_provider_release(&owner, "release-digest", "arrow", 2)
@@ -663,7 +691,10 @@ fn final_release_keeps_current_guard_and_unknown_commit_in_one_transaction() {
     );
     assert!(
         recovered
-            .dispatch_provider(&owner, || callbacks += 1)
+            .dispatch_provider(&owner, || {
+                callbacks += 1;
+                Ok(())
+            })
             .is_err()
     );
     assert_eq!(callbacks, 1);
@@ -767,7 +798,10 @@ fn whole_database_rollback_requires_an_independent_recovery_floor() {
             .consume_provider("f", "infer", &targets)
             .expect("consume restored queued state");
         owner
-            .dispatch_provider(&permit, || external_calls += 1)
+            .dispatch_provider(&permit, || {
+                external_calls += 1;
+                Ok(())
+            })
             .expect("external effect");
         assert_eq!(owner.held("f").expect("one restored hold"), 4);
         owner.close().expect("close before next image replacement");
@@ -808,7 +842,7 @@ proptest! {
         for original in [&plan, &second] {
             ledger.enqueue_provider(original).expect("queue");
             let owner = ledger.consume_provider("f", &original.node, &BTreeSet::from(["primary".into()])).expect("consume");
-            ledger.dispatch_provider(&owner, || ()).expect("dispatch");
+            ledger.dispatch_provider(&owner, || Ok(())).expect("dispatch");
             owners.push(owner);
         }
         let prepared = if prepared_arrow {"arrow"} else {"protobuf"};
@@ -835,7 +869,7 @@ proptest! {
             match action {
                 0=>{if ledger.enqueue_provider(&plan).is_ok(){admitted=true;}},
                 1=>{if let Ok(permit)=ledger.consume_provider("f","infer",&BTreeSet::from(["primary".into()])){owner=Some(permit);}},
-                2=>{if let Some(ref permit)=owner {let _=ledger.dispatch_provider(permit,||calls+=1);}},
+                2=>{if let Some(ref permit)=owner {let _=ledger.dispatch_provider(permit,||{ calls+=1; Ok(()) });}},
                 3=>{if release.is_none() && let Some(ref permit)=owner && let Ok(r)=ledger.prepare_provider_release(permit,"batch-digest","arrow",length){release=Some((r,length));}},
                 4=>{if let (Some(permit),Some((r,count)))=(owner.as_ref(),release.take()){let _=ledger.release_provider(permit,r,"arrow",|start|{for row in start..start+count {assert!(rows.insert(row),"repeated logical response row");}Ok(())});}},
                 5=>{drop(ledger);ledger=Ledger::open(&path).expect("restart");},
@@ -905,7 +939,7 @@ proptest! {
         ledger.enqueue_provider(&plan).expect("reservation");
         let eligible=BTreeSet::from(["primary".into()]);
         let permit=ledger.consume_provider("f","infer",&eligible).expect("consume");
-        ledger.dispatch_provider(&permit,||()).expect("request burn");
+        ledger.dispatch_provider(&permit,||Ok(())).expect("request burn");
         let prepared=ledger.prepare_provider_release(&permit,"bounded-batch","arrow",length);
         if fault==1 {
             prop_assert!(prepared.is_err(),"an interior denied row admitted the batch");

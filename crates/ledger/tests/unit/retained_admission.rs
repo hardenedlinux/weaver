@@ -107,7 +107,10 @@ fn retained_admission_reply_loss_and_gateway_restore_do_not_release_exposure() {
         |_| {},
         || {
             ledger
-                .dispatch_provider(&permit, || calls += 1)
+                .dispatch_provider(&permit, || {
+                    calls += 1;
+                    Ok(())
+                })
                 .expect("actual dispatch");
         }
     ));
@@ -213,7 +216,10 @@ fn retained_admission_prefix_failure_atomically_rolls_back_burn() {
         |_| {},
         || {
             ledger
-                .dispatch_provider(&permit, || calls += 1)
+                .dispatch_provider(&permit, || {
+                    calls += 1;
+                    Ok(())
+                })
                 .expect("same original continuation");
         }
     ));
@@ -250,7 +256,10 @@ fn retained_prefix_without_burn_projection_cannot_repeat_admission() {
         |_| {},
         || {
             ledger
-                .dispatch_provider(&permit, || calls += 1)
+                .dispatch_provider(&permit, || {
+                    calls += 1;
+                    Ok(())
+                })
                 .expect("actual dispatch");
         }
     ));
@@ -309,7 +318,10 @@ fn retained_burn_fenced_before_callback_keeps_original_unknown_exposure() {
         },
         || {
             ledger
-                .dispatch_provider(&permit, || calls += 1)
+                .dispatch_provider(&permit, || {
+                    calls += 1;
+                    Ok(())
+                })
                 .expect("actual callback");
         }
     ));

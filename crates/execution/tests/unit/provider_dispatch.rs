@@ -218,6 +218,7 @@ fn cancellation_during_sql_wait_blocks_transport_and_keeps_spent_claim() {
             .dispatch_provider(&blocked, || {
                 entered.send(()).expect("locked");
                 unlock.recv_timeout(Duration::from_secs(3)).expect("unlock");
+                Ok(())
             })
             .expect("writer guard")
     });
@@ -331,7 +332,7 @@ proptest::proptest! {
         if revoked {ledger.publish(Some(0),"forbid(principal,action,resource);",2).expect("new fence");}
         if discarded {drop(request);} else {
             let result=ledger.dispatch_provider(&permit,||request.write_and_seal());
-            if revoked {proptest::prop_assert!(result.is_err());} else {let sealed=result.expect("guard").expect("actual HTTPS seal");sealed.wait_for_response_headers().expect("headers");}
+            if revoked {proptest::prop_assert!(result.is_err());} else {let sealed=result.expect("guarded actual HTTPS seal");sealed.wait_for_response_headers().expect("headers");}
         }
         proptest::prop_assert_eq!(endpoint.calls.load(Ordering::SeqCst),usize::from(!revoked&&!discarded));
         proptest::prop_assert_eq!(ledger.held("f").expect("held"),4);
@@ -407,8 +408,7 @@ fn dropped_sealed_result_closes_sole_driver_without_header_read_or_refund() {
         .expect("inert request");
     let sealed = ledger
         .dispatch_provider(&permit, || request.write_and_seal())
-        .expect("guard commit")
-        .expect("seal");
+        .expect("guard commit and seal");
     // This is the same ownership drop used if the deciding commit fails or its
     // sealed result is lost. It is not an injected native storage-commit fault.
     drop(sealed);
@@ -424,7 +424,7 @@ fn dropped_sealed_result_closes_sole_driver_without_header_read_or_refund() {
     let mut recovered = Ledger::open(path).expect("recover");
     assert!(
         recovered
-            .dispatch_provider(&permit, || panic!("old worker invoked"))
+            .dispatch_provider::<()>(&permit, || panic!("old worker invoked"))
             .is_err()
     );
     assert_eq!(

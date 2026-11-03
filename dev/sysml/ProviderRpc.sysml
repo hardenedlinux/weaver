@@ -62,6 +62,12 @@ package ProviderRpc {
            are insufficient; batching never increases semantic or monetary budget. */
     }
     requirement def ProviderUnknownRetention {
+        doc /* Invocation callbacks return Result. Failure exits before recording
+           callback success or entering the final commit window. The private
+           production SealedRequest is required for that window; a failed write
+           cannot satisfy a seal/crash test by merely returning an error. Native
+           commit acknowledgment loss poisons old custody; recovered records
+           preserve the original burn and hold without restoring IO capability. */
         doc /* At consumption and each final use, Rust joins the original stream
            claim and exact plan reservation, and requires the shared held amount
            to cover every retained provider reservation in that family. A missing
@@ -153,7 +159,10 @@ package ProviderRpc {
        TLS and exactly one fixed-length HTTP request. WriteSeal observes accepted
        plaintext plus successful TLS flush, then permanently rejects every new
        application write. The affine owned driver is never spawned or cloned.
-       The deciding transaction records callback completion in the original burn,
+       The callback returns a typed Result of the private sealed IO owner. An
+       error rolls back the final scope before its commit window; the original
+       burn and unknown hold remain. A successful callback enters the deciding
+       transaction's completion record in the original burn,
        without certifying remote execution or known usage. Only after its native
        commit is observed may it read headers/body outside
        the guard. Early headers and body EOF cannot forge that seal. A failed

@@ -207,7 +207,7 @@ fn open_guarded<O: ProviderOutput>(
             return Err(Error::Conflict("cancelled before provider invocation"));
         }
         request.write_and_seal()
-    })??;
+    })?;
     if output.stopped() {
         return Err(Error::Conflict("cancelled after provider seal"));
     }

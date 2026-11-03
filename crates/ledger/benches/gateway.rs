@@ -99,7 +99,10 @@ fn durable_operations(c: &mut Criterion) {
                     .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
                     .expect("consume");
                 ledger
-                    .dispatch_provider(&permit, || black_box(()))
+                    .dispatch_provider(&permit, || {
+                        black_box(());
+                        Ok(())
+                    })
                     .expect("guarded callback");
                 assert_eq!(ledger.held("f").expect("hold"), 4);
                 black_box((temp, ledger))
@@ -129,7 +132,10 @@ fn shared_exposure(c: &mut Criterion) {
                         .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
                         .expect("consume");
                     ledger
-                        .dispatch_provider(&permit, || black_box(()))
+                        .dispatch_provider(&permit, || {
+                            black_box(());
+                            Ok(())
+                        })
                         .expect("current final use");
                     black_box((temp, ledger))
                 },
@@ -161,7 +167,10 @@ fn original_reservation_bytes(c: &mut Criterion) {
                             .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
                             .expect("consume original");
                         ledger
-                            .dispatch_provider(&permit, || black_box(()))
+                            .dispatch_provider(&permit, || {
+                                black_box(());
+                                Ok(())
+                            })
                             .expect("current original amounts");
                         assert_eq!(ledger.held("f").expect("conserved hold"), count as u64 * 4);
                         black_box((temp, ledger))

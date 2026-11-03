@@ -47,7 +47,7 @@ pub fn benchmarks(c: &mut Criterion) {
                         .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
                         .expect("consume");
                     ledger
-                        .dispatch_provider(&permit, || ())
+                        .dispatch_provider(&permit, || Ok(()))
                         .expect("request burn");
                     let release = ledger
                         .prepare_provider_release(&permit, "events", "arrow", 32)

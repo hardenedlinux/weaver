@@ -995,6 +995,22 @@ structure CommitCustody where
   worker : Nat
   owner : Nat
 
+/-- The production callback returns a private sealed receipt in Except. An error
+returns before callback-record publication or its commit observer can run. -/
+def CallbackAllowsCommit (outcome : Except Unit WriteReceipt) : Prop :=
+  match outcome with
+  | .error _ => False
+  | .ok receipt => ValidReceipt receipt
+
+theorem failed_callback_cannot_enter_commit :
+    ¬ CallbackAllowsCommit (.error ()) := by simp [CallbackAllowsCommit]
+
+theorem successful_callback_requires_valid_seal
+    (eligible : CallbackAllowsCommit (.ok receipt)) : ValidReceipt receipt := eligible
+
+#print axioms failed_callback_cannot_enter_commit
+#print axioms successful_callback_requires_valid_seal
+
 def CanActivate (c : CommitCustody) (r : WriteReceipt) : Prop :=
   ValidReceipt r ∧ c.applied = true ∧ c.observed = true ∧
   c.poisoned = false ∧ c.socketLive = true ∧ c.worker = c.owner

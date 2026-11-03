@@ -148,7 +148,10 @@ impl Ready {
                     None
                 };
                 first
-                    .dispatch_provider(&left, || std::thread::sleep(Duration::from_millis(2)))
+                    .dispatch_provider(&left, || {
+                        std::thread::sleep(Duration::from_millis(2));
+                        Ok(())
+                    })
                     .expect("left bounded effect")
             });
             let _control = if serialized {
@@ -157,7 +160,10 @@ impl Ready {
                 None
             };
             second
-                .dispatch_provider(&right, || std::thread::sleep(Duration::from_millis(2)))
+                .dispatch_provider(&right, || {
+                    std::thread::sleep(Duration::from_millis(2));
+                    Ok(())
+                })
                 .expect("right bounded effect");
             drop(_control);
             job.join().expect("natural drain");
@@ -204,6 +210,7 @@ impl Ready {
                             .recv_timeout(Duration::from_secs(2))
                             .expect("bounded controller");
                         std::thread::sleep(Duration::from_millis(10));
+                        Ok(())
                     })
                     .expect("original request");
                 first
@@ -226,7 +233,7 @@ impl Ready {
                         .expect("ordered authority cut");
                 } else {
                     second
-                        .dispatch_provider(&right, || ())
+                        .dispatch_provider(&right, || Ok(()))
                         .expect("second original request");
                 }
                 second

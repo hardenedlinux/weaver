@@ -155,7 +155,7 @@ fn prepared_ledger(path: &std::path::Path) -> (Ledger, weaver_ledger::ProviderDi
         .consume_provider("f", "infer", &["primary".into()].into())
         .expect("consume");
     ledger
-        .dispatch_provider(&permit, || ())
+        .dispatch_provider(&permit, || Ok(()))
         .expect("burn dispatch; no network in this unit check");
     (ledger, permit)
 }
