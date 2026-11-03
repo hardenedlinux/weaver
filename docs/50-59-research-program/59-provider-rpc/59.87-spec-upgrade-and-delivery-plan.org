@@ -1079,6 +1079,10 @@ HTTPS: publication must commit while headers remain blocked; old rows stay denie
 partial/early headers retain exposure; restarting and adopting a newer fence
 cannot reopen the original operation. Both WAL and explicit MVCC profiles reuse
 the full provider fault suite, including publication/reply loss and queue failures.
+The independent-domain MVCC control holds both response heads back until revoke
+commits, then asserts zero stale rows across both streams (or ten current rows
+without revoke), unchanged holds and no recovery replay. Waiting for response
+headers is not a valid premise for publication exclusion after request sealing.
 
 ** Same-image measurement
 

@@ -6,9 +6,11 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"io"
 	"net/http"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -70,6 +72,10 @@ func TestProviderMVCCIndependentFinalSendsAndRevocation(t *testing.T) {
 			tail := make(chan struct{})
 			var releaseHeaders, releaseTail sync.Once
 			f := newFixture(t, func(w http.ResponseWriter, r *http.Request) {
+				if _, err := io.Copy(io.Discard, r.Body); err != nil {
+					t.Error(err)
+					return
+				}
 				entered <- struct{}{}
 				<-headers
 				w.Header().Set("Content-Type", "text/event-stream")
@@ -82,10 +88,11 @@ func TestProviderMVCCIndependentFinalSendsAndRevocation(t *testing.T) {
 			plans := independentProviderPlans(t, f)
 			ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 			defer cancel()
+			var released atomic.Int64
 			done := make(chan error, 2)
 			for _, plan := range plans {
 				go func() {
-					_, err := f.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil })
+					_, err := f.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { released.Add(1); return nil })
 					done <- err
 				}()
 			}
@@ -108,28 +115,31 @@ func TestProviderMVCCIndependentFinalSendsAndRevocation(t *testing.T) {
 					}
 					published <- err
 				}()
-				select {
-				case err := <-published:
-					t.Fatalf("publication passed live final-use custody: %v", err)
-				case <-time.After(60 * time.Millisecond):
-				}
-			}
-			releaseHeaders.Do(func() { close(headers) })
-			if revoke {
+				// Both complete request bodies are drained and their Rust
+				// writers sealed. Publication must finish while all response
+				// headers remain blocked, not after either stream returns.
 				select {
 				case err := <-published:
 					if err != nil {
 						t.Fatal(err)
 					}
 				case <-ctx.Done():
-					t.Fatal("revocation could not drain live sends")
+					t.Fatal("sealed independent sends retained publication custody", ctx.Err())
 				}
 			}
+			releaseHeaders.Do(func() { close(headers) })
 			releaseTail.Do(func() { close(tail) })
 			for range 2 {
 				if err := <-done; (err != nil) != revoke {
 					t.Fatalf("unexpected execution outcome: revoke=%v err=%v", revoke, err)
 				}
+			}
+			expected := int64(10)
+			if revoke {
+				expected = 0
+			}
+			if released.Load() != expected {
+				t.Fatalf("wrong current-context row release count: got=%d expected=%d", released.Load(), expected)
 			}
 			f.stop(t)
 			f.start(t)
